@@ -21,8 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\.gdproj.cs" />
-    <ClInclude Include="..\Math\MathCompilerSetupStart.h" />
-    <ClInclude Include="..\Math\MathCompilerSetupEnd.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Algorithm.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\TypeTraits.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Utility.h" />
@@ -66,6 +64,10 @@
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.cpp" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.h" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.inl" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.cpp" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.h" />
+    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.SDL2.inl" />
+    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.WinApi.inl" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Path\Path.cpp" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Path\Path.h" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\Stream.cpp" />
@@ -80,12 +82,14 @@
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\All.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\HavokBindings.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Math.h" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\MathCompilerSetupEnd.h" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\MathCompilerSetupStart.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Matrix3.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Matrix4x4.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Quaternion.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector2.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector3.h" />
-    <ClInclude Include="..\Math\Vector3Fast.h" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector3Fast.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector4.h" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\FastMath\FastMath.h" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\FastMath\FastMath.inl" />
@@ -169,7 +173,7 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>;;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\Windows.Debug.lib;winmm.lib;imm32.lib;version.lib;msvcrt.lib;libcmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>True</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -187,7 +191,7 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>;;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\Windows.Release.lib;;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>False</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
     </Link>

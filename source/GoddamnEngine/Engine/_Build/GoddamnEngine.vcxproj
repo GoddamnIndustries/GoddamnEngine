@@ -72,30 +72,12 @@
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Shader.h" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.cpp" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererDefines.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererMethods.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.cpp" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.cpp" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.h" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererDefines.h" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererMethods.h" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.cpp" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.h" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.inl" />

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <!--
 ##########################################################################
 # *.vcxproj/sln: Some Visual Studio project/solution file part.
@@ -9,425 +9,438 @@
 ##########################################################################
 -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup>
-    <Filter Include="Allocator">
-      <UniqueIdentifier>{ce798c83-06cb-4e2a-bbb1-176d4aebaea5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Compilers">
-      <UniqueIdentifier>{ccf8b259-a0f1-46ad-8d61-5e4d754390ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Compilers\StreamedLexer">
-      <UniqueIdentifier>{fe3dfc2e-5677-4fc5-80c6-5bf7a9a653cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Compilers\StreamedPreprocessor">
-      <UniqueIdentifier>{785d3501-cde9-4591-8fef-83d54f59fdda}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Compilers\Toolchain">
-      <UniqueIdentifier>{02cf048f-6297-4e1a-922a-fde0068cbd23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Containers">
-      <UniqueIdentifier>{66af8070-3c84-4e04-ade9-ebf7f81224cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Containers\LockFreeList">
-      <UniqueIdentifier>{a2510a0f-4d92-427b-be79-721622d34831}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Containers\Map">
-      <UniqueIdentifier>{d8d06901-e137-4fee-bfce-b9d021fe0688}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Containers\Pair">
-      <UniqueIdentifier>{e43e32b2-e7e5-4476-9651-c2ec469dda88}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Containers\Pointer">
-      <UniqueIdentifier>{53f66573-24e2-4d24-8aba-e8eced9ecc1e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Containers\String">
-      <UniqueIdentifier>{01e7b7ce-14bd-431b-8084-33bf0a586b9d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Containers\Vector">
-      <UniqueIdentifier>{04e0d268-df9d-450d-9a91-1a8ec39dcdc1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Diagnostics">
-      <UniqueIdentifier>{b8d9056e-0c52-431f-9c29-c4464f5f9c17}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Diagnostics\Assertion">
-      <UniqueIdentifier>{b1b6c83c-e417-4a52-acd4-55e552442f8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Diagnostics\Profiling">
-      <UniqueIdentifier>{966469b1-45c3-4046-b57d-182ee1e44986}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Events">
-      <UniqueIdentifier>{28518f43-2026-4fe2-b512-c95a21f29757}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Format">
-      <UniqueIdentifier>{6be5436c-9f54-46d9-8245-decd9ba1cbd3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="IO">
-      <UniqueIdentifier>{1298b591-df75-4226-8932-aaccf2d1018f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="IO\Path">
-      <UniqueIdentifier>{104983d7-1dfc-4113-b3d1-bd98b2f98b7a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="IO\Stream">
-      <UniqueIdentifier>{20beb02a-b392-47cf-adc1-0f54c7600ee5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LowLevelSystem">
-      <UniqueIdentifier>{d01b87a4-e538-4970-b9ed-3e0a537946fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Math">
-      <UniqueIdentifier>{971449b6-5080-4588-80dc-f85d557e207d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Math\FastMath">
-      <UniqueIdentifier>{2130db6c-0b4b-43ea-9e78-d3a6b3e98344}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Math\Float32x4Intrinsics">
-      <UniqueIdentifier>{0500212b-0806-4a33-8dd2-985b4d5ea92e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object">
-      <UniqueIdentifier>{26eb6441-0ee1-4e90-87f1-3e87c30a5594}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\RefPtr">
-      <UniqueIdentifier>{af0dfff7-8475-4031-b260-38855d3d65e2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Singleton">
-      <UniqueIdentifier>{43915f57-3365-46c8-bd4f-bcea92873e91}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Reflection">
-      <UniqueIdentifier>{96efa6e0-0db3-41c5-a671-2c95a5e7e7ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Reflection\Assembly">
-      <UniqueIdentifier>{61d04474-3e13-4827-b3d8-7c2f810c61ea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Reflection\FieldInformation">
-      <UniqueIdentifier>{25db93f6-2295-4ae1-9707-9f5f67f2c25b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Reflection\MethodInformation">
-      <UniqueIdentifier>{ecb2ebe3-2cc3-4d39-9a5d-8c74a707a9a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Reflection\PropertyInformation">
-      <UniqueIdentifier>{c3dd4ff1-3985-4f04-9b28-6d965141b435}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Reflection\TypeInformation">
-      <UniqueIdentifier>{a3ac1c32-5919-4748-bbf8-258d2028b4ef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Threading">
-      <UniqueIdentifier>{d632596b-3562-4a22-8a5e-0638d1bdad7e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Threading\Atomic">
-      <UniqueIdentifier>{ee17396d-0159-4c4d-be41-17d8098cd9eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Threading\CriticalSection">
-      <UniqueIdentifier>{818d56ad-bc5c-4651-94c4-d2cfc4e466b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Threading\SimpleThread">
-      <UniqueIdentifier>{24e93f99-37ef-45d8-bd2e-2db442a3c537}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Threading\Thread">
-      <UniqueIdentifier>{b4711dcf-2c18-4185-b262-a148415d6c13}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="_DLLResources">
-      <UniqueIdentifier>{973314da-76ae-48d3-85ae-19a5ffaac9c7}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\.gdproj.cs" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Algorithm.h" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\TypeTraits.h" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Utility.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\Allocator.cpp">
-      <Filter>Allocator</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\Allocator.h">
-      <Filter>Allocator</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\Allocator.inl">
-      <Filter>Allocator</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\OperatorNewDelete.h">
-      <Filter>Allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\CompilerBase.h">
-      <Filter>Compilers</Filter>
-    </ClInclude>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\StreamedLexer\StreamedLexer.cpp">
-      <Filter>Compilers\StreamedLexer</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\StreamedLexer\StreamedLexer.h">
-      <Filter>Compilers\StreamedLexer</Filter>
-    </ClInclude>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\StreamedPreprocessor\StreamedPreprocessor.cpp">
-      <Filter>Compilers\StreamedPreprocessor</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\StreamedPreprocessor\StreamedPreprocessor.h">
-      <Filter>Compilers\StreamedPreprocessor</Filter>
-    </ClInclude>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\Toolchain\Toolchain.cpp">
-      <Filter>Compilers\Toolchain</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\Toolchain\Toolchain.h">
-      <Filter>Compilers\Toolchain</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\Toolchain\Toolchain.inl">
-      <Filter>Compilers\Toolchain</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Containers.h">
-      <Filter>Containers</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Containers.inl">
-      <Filter>Containers</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\LockFreeList\LockFreeList.h">
-      <Filter>Containers\LockFreeList</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\LockFreeList\LockFreeList.inl">
-      <Filter>Containers\LockFreeList</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Map\Map.h">
-      <Filter>Containers\Map</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Map\Map.inl">
-      <Filter>Containers\Map</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Pair\Pair.h">
-      <Filter>Containers\Pair</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Pair\Pair.inl">
-      <Filter>Containers\Pair</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Pointer\Pointer.h">
-      <Filter>Containers\Pointer</Filter>
-    </ClInclude>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\String.cpp">
-      <Filter>Containers\String</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\String.h">
-      <Filter>Containers\String</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\String.inl">
-      <Filter>Containers\String</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\StringEx.h">
-      <Filter>Containers\String</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\BoolVector.h">
-      <Filter>Containers\Vector</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\BoolVector.inl">
-      <Filter>Containers\Vector</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\Vector.h">
-      <Filter>Containers\Vector</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\Vector.inl">
-      <Filter>Containers\Vector</Filter>
-    </None>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\Vector.natvis">
-      <Filter>Containers\Vector</Filter>
-    </None>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Diagnostics\Assertion\Assertion.cpp">
-      <Filter>Diagnostics\Assertion</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Diagnostics\Assertion\Assertion.h">
-      <Filter>Diagnostics\Assertion</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Events\Event.h">
-      <Filter>Events</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Events\EventFunctor.h">
-      <Filter>Events</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\Format.h">
-      <Filter>Format</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatFromString.h">
-      <Filter>Format</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatSelector.h">
-      <Filter>Format</Filter>
-    </ClInclude>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.cpp">
-      <Filter>Format</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.h">
-      <Filter>Format</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.inl">
-      <Filter>Format</Filter>
-    </None>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Path\Path.cpp">
-      <Filter>IO\Path</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Path\Path.h">
-      <Filter>IO\Path</Filter>
-    </ClInclude>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\Stream.cpp">
-      <Filter>IO\Stream</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\Stream.h">
-      <Filter>IO\Stream</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\Stream.inl">
-      <Filter>IO\Stream</Filter>
-    </None>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystem.cpp">
-      <Filter>LowLevelSystem</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystem.h">
-      <Filter>LowLevelSystem</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystem.inl">
-      <Filter>LowLevelSystem</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystemGamepadButtons.h">
-      <Filter>LowLevelSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystemKeyboardKeys.h">
-      <Filter>LowLevelSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystemMouseButtons.h">
-      <Filter>LowLevelSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\All.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\HavokBindings.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Math.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Matrix3.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Matrix4x4.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Quaternion.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector2.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector3.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector4.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\FastMath\FastMath.h">
-      <Filter>Math\FastMath</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\FastMath\FastMath.inl">
-      <Filter>Math\FastMath</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Float32x4Intrinsics\Float32x4Intrinsics.h">
-      <Filter>Math\Float32x4Intrinsics</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Float32x4Intrinsics\Float32x4IntrinsicsNeon.inl">
-      <Filter>Math\Float32x4Intrinsics</Filter>
-    </None>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Float32x4Intrinsics\Float32x4IntrinsicsSSE.inl">
-      <Filter>Math\Float32x4Intrinsics</Filter>
-    </None>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\Object.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\Object.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\Object.inl">
-      <Filter>Object</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\RefPtr\RefPtr.h">
-      <Filter>Object\RefPtr</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\RefPtr\RefPtr.inl">
-      <Filter>Object\RefPtr</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\Singleton\Singleton.h">
-      <Filter>Object\Singleton</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\Singleton\Singleton.inl">
-      <Filter>Object\Singleton</Filter>
-    </None>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\MemberInformation.h">
-      <Filter>Reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\Reflectable.h">
-      <Filter>Reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\Assembly\Assembly.h">
-      <Filter>Reflection\Assembly</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\Assembly\Assembly.inl">
-      <Filter>Reflection\Assembly</Filter>
-    </None>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\Assembly\Assembly.Posix.cpp">
-      <Filter>Reflection\Assembly</Filter>
-    </ClCompile>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\Assembly\Assembly.Win64.cpp">
-      <Filter>Reflection\Assembly</Filter>
-    </ClCompile>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\FieldInformation\FieldInformation.cpp">
-      <Filter>Reflection\FieldInformation</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\FieldInformation\FieldInformation.h">
-      <Filter>Reflection\FieldInformation</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\FieldInformation\FieldInformation.inl">
-      <Filter>Reflection\FieldInformation</Filter>
-    </None>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\MethodInformation\MethodInformation.cpp">
-      <Filter>Reflection\MethodInformation</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\MethodInformation\MethodInformation.h">
-      <Filter>Reflection\MethodInformation</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\MethodInformation\MethodInformation.inl">
-      <Filter>Reflection\MethodInformation</Filter>
-    </None>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\PropertyInformation\PropertyInformation.cpp">
-      <Filter>Reflection\PropertyInformation</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\PropertyInformation\PropertyInformation.h">
-      <Filter>Reflection\PropertyInformation</Filter>
-    </ClInclude>
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\PropertyInformation\PropertyInformation.inl">
-      <Filter>Reflection\PropertyInformation</Filter>
-    </None>
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\TypeInformation\TypeInformation.cpp">
-      <Filter>Reflection\TypeInformation</Filter>
-    </ClCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\TypeInformation\TypeInformation.h">
-      <Filter>Reflection\TypeInformation</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\Atomic\Atomic.h">
-      <Filter>Threading\Atomic</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\CriticalSection\CriticalSection.h">
-      <Filter>Threading\CriticalSection</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\SimpleThread\SimpleThread.h">
-      <Filter>Threading\SimpleThread</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\Thread\Thread.h">
-      <Filter>Threading\Thread</Filter>
-    </ClInclude>
-    <ResourceCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\_DLLResources\GoddamnCore.rc">
-      <Filter>_DLLResources</Filter>
-    </ResourceCompile>
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\_DLLResources\resource.h">
-      <Filter>_DLLResources</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Math\MathCompilerSetupEnd.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Math\MathCompilerSetupStart.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Math\Vector3Fast.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-  </ItemGroup>
+    <ItemGroup>
+        <Filter Include="Allocator">
+            <UniqueIdentifier>{a4ebe38d-ea5b-4c06-b572-039ec219ad92}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Compilers">
+            <UniqueIdentifier>{aef98404-c86a-4944-99cb-8573fcc38c48}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Compilers\StreamedLexer">
+            <UniqueIdentifier>{1a858c5c-fb72-4d02-a37c-f081469fb426}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Compilers\StreamedPreprocessor">
+            <UniqueIdentifier>{17823733-9e14-4e78-b105-6ff1b43f31c8}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Compilers\Toolchain">
+            <UniqueIdentifier>{38bad1ca-17b2-4692-9f8e-35b12c4b9fae}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Containers">
+            <UniqueIdentifier>{86cccd11-e456-42a1-ac3e-5f1701b6d170}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Containers\LockFreeList">
+            <UniqueIdentifier>{4adefcb1-a06d-4ac4-aaf4-34fca646ea07}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Containers\Map">
+            <UniqueIdentifier>{018a572c-68fb-4297-9b45-6145a8b6d907}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Containers\Pair">
+            <UniqueIdentifier>{914adf87-55a9-4346-9462-55c3197b409f}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Containers\Pointer">
+            <UniqueIdentifier>{3f7f9f62-1a9b-434b-997b-d701d601ecf5}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Containers\String">
+            <UniqueIdentifier>{1c69a964-a379-4749-8a49-8e6765dd69c2}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Containers\Vector">
+            <UniqueIdentifier>{1869c881-ccb0-44e2-a9d1-fdb988986b67}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Diagnostics">
+            <UniqueIdentifier>{cf207ad1-b871-4d82-8a23-2b96a0010c11}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Diagnostics\Assertion">
+            <UniqueIdentifier>{932c5edd-6254-405b-9bc1-4183cad05610}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Diagnostics\Profiling">
+            <UniqueIdentifier>{62e42a57-e356-4d2f-a326-a0d07bf1da2b}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Events">
+            <UniqueIdentifier>{db247e6b-ff59-4f9f-9674-b1a6a1665ff8}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Format">
+            <UniqueIdentifier>{7fcead7b-e41f-4be9-83f6-202cfcf42b9e}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Framework">
+            <UniqueIdentifier>{cff466f9-7a46-49bc-859b-45ca2f665b1e}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="IO">
+            <UniqueIdentifier>{03045117-591f-40b1-9898-6270e8c650ce}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="IO\Path">
+            <UniqueIdentifier>{abf68ce3-0d8b-47e5-9895-93c2ff8538ae}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="IO\Stream">
+            <UniqueIdentifier>{f4210e41-8c87-4b6c-99d6-1d13130a0d05}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="LowLevelSystem">
+            <UniqueIdentifier>{c05e880a-71d7-4667-9f17-67c535fb414f}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Math">
+            <UniqueIdentifier>{592249a6-aa47-4f51-bd0b-af2960937a3a}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Math\FastMath">
+            <UniqueIdentifier>{44be493d-0e4c-4d21-b42a-6f1569f19b00}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Math\Float32x4Intrinsics">
+            <UniqueIdentifier>{58a6a39e-18f1-4e91-99d9-c4ba43bb79e6}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Object">
+            <UniqueIdentifier>{f1be5ad8-4d2b-46e0-ae3e-8f36cf691d76}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Object\RefPtr">
+            <UniqueIdentifier>{db332ce3-3bf8-4777-a87b-a392a88a8643}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Object\Singleton">
+            <UniqueIdentifier>{0e7c20cf-fb00-4b77-b2ad-02b89c83250f}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Reflection">
+            <UniqueIdentifier>{71b54e40-d500-452d-9b12-7b010b653584}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Reflection\Assembly">
+            <UniqueIdentifier>{270ab3b2-9f4e-42d1-aa73-e040219e5dd6}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Reflection\FieldInformation">
+            <UniqueIdentifier>{cb258275-6ec3-4cf4-86a2-77ac46ed90d6}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Reflection\MethodInformation">
+            <UniqueIdentifier>{7e5e1082-fd4e-48f7-a337-96d0383e4d8b}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Reflection\PropertyInformation">
+            <UniqueIdentifier>{7d6c0b22-7998-4c4c-b989-f65f2743ba7b}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Reflection\TypeInformation">
+            <UniqueIdentifier>{511f8e03-f76a-42c7-817d-0a3be362ee8f}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Threading">
+            <UniqueIdentifier>{81e1537f-7a52-4892-aa13-1954e7ce1321}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Threading\Atomic">
+            <UniqueIdentifier>{40f27d48-8f3d-4473-a0df-ec0bfd52415b}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Threading\CriticalSection">
+            <UniqueIdentifier>{19ddf8e8-2b2c-4a31-a6fb-d27630b4c1c4}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Threading\SimpleThread">
+            <UniqueIdentifier>{974c4634-02d2-4b4a-a289-d9b7ccd1754d}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="Threading\Thread">
+            <UniqueIdentifier>{4c04db00-f5de-4e76-a93a-3d71f6fd90c8}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="_DLLResources">
+            <UniqueIdentifier>{4f752e38-1f55-4938-a03d-3907770ac912}</UniqueIdentifier>
+        </Filter>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\.gdproj.cs" />
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Algorithm.h" />
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\TypeTraits.h" />
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Utility.h" />
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\Allocator.cpp">
+            <Filter>Allocator</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\Allocator.h">
+            <Filter>Allocator</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\Allocator.inl">
+            <Filter>Allocator</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\OperatorNewDelete.h">
+            <Filter>Allocator</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\CompilerBase.h">
+            <Filter>Compilers</Filter>
+        </ClInclude>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\StreamedLexer\StreamedLexer.cpp">
+            <Filter>Compilers\StreamedLexer</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\StreamedLexer\StreamedLexer.h">
+            <Filter>Compilers\StreamedLexer</Filter>
+        </ClInclude>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\StreamedPreprocessor\StreamedPreprocessor.cpp">
+            <Filter>Compilers\StreamedPreprocessor</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\StreamedPreprocessor\StreamedPreprocessor.h">
+            <Filter>Compilers\StreamedPreprocessor</Filter>
+        </ClInclude>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\Toolchain\Toolchain.cpp">
+            <Filter>Compilers\Toolchain</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\Toolchain\Toolchain.h">
+            <Filter>Compilers\Toolchain</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\Toolchain\Toolchain.inl">
+            <Filter>Compilers\Toolchain</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Containers.h">
+            <Filter>Containers</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Containers.inl">
+            <Filter>Containers</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\LockFreeList\LockFreeList.h">
+            <Filter>Containers\LockFreeList</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\LockFreeList\LockFreeList.inl">
+            <Filter>Containers\LockFreeList</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Map\Map.h">
+            <Filter>Containers\Map</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Map\Map.inl">
+            <Filter>Containers\Map</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Pair\Pair.h">
+            <Filter>Containers\Pair</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Pair\Pair.inl">
+            <Filter>Containers\Pair</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Pointer\Pointer.h">
+            <Filter>Containers\Pointer</Filter>
+        </ClInclude>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\String.cpp">
+            <Filter>Containers\String</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\String.h">
+            <Filter>Containers\String</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\String.inl">
+            <Filter>Containers\String</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\StringEx.h">
+            <Filter>Containers\String</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\BoolVector.h">
+            <Filter>Containers\Vector</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\BoolVector.inl">
+            <Filter>Containers\Vector</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\Vector.h">
+            <Filter>Containers\Vector</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\Vector.inl">
+            <Filter>Containers\Vector</Filter>
+        </None>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\Vector.natvis">
+            <Filter>Containers\Vector</Filter>
+        </None>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Diagnostics\Assertion\Assertion.cpp">
+            <Filter>Diagnostics\Assertion</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Diagnostics\Assertion\Assertion.h">
+            <Filter>Diagnostics\Assertion</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Events\Event.h">
+            <Filter>Events</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Events\EventFunctor.h">
+            <Filter>Events</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\Format.h">
+            <Filter>Format</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatFromString.h">
+            <Filter>Format</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatSelector.h">
+            <Filter>Format</Filter>
+        </ClInclude>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.cpp">
+            <Filter>Format</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.h">
+            <Filter>Format</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.inl">
+            <Filter>Format</Filter>
+        </None>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.cpp">
+            <Filter>Framework</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.h">
+            <Filter>Framework</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.SDL2.inl">
+            <Filter>Framework</Filter>
+        </None>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.WinApi.inl">
+            <Filter>Framework</Filter>
+        </None>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Path\Path.cpp">
+            <Filter>IO\Path</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Path\Path.h">
+            <Filter>IO\Path</Filter>
+        </ClInclude>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\Stream.cpp">
+            <Filter>IO\Stream</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\Stream.h">
+            <Filter>IO\Stream</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\Stream.inl">
+            <Filter>IO\Stream</Filter>
+        </None>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystem.cpp">
+            <Filter>LowLevelSystem</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystem.h">
+            <Filter>LowLevelSystem</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystem.inl">
+            <Filter>LowLevelSystem</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystemGamepadButtons.h">
+            <Filter>LowLevelSystem</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystemKeyboardKeys.h">
+            <Filter>LowLevelSystem</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystemMouseButtons.h">
+            <Filter>LowLevelSystem</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\All.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\HavokBindings.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Math.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\MathCompilerSetupEnd.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\MathCompilerSetupStart.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Matrix3.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Matrix4x4.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Quaternion.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector2.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector3.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector3Fast.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Vector4.h">
+            <Filter>Math</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\FastMath\FastMath.h">
+            <Filter>Math\FastMath</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\FastMath\FastMath.inl">
+            <Filter>Math\FastMath</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Float32x4Intrinsics\Float32x4Intrinsics.h">
+            <Filter>Math\Float32x4Intrinsics</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Float32x4Intrinsics\Float32x4IntrinsicsNeon.inl">
+            <Filter>Math\Float32x4Intrinsics</Filter>
+        </None>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Math\Float32x4Intrinsics\Float32x4IntrinsicsSSE.inl">
+            <Filter>Math\Float32x4Intrinsics</Filter>
+        </None>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\Object.cpp">
+            <Filter>Object</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\Object.h">
+            <Filter>Object</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\Object.inl">
+            <Filter>Object</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\RefPtr\RefPtr.h">
+            <Filter>Object\RefPtr</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\RefPtr\RefPtr.inl">
+            <Filter>Object\RefPtr</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\Singleton\Singleton.h">
+            <Filter>Object\Singleton</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Object\Singleton\Singleton.inl">
+            <Filter>Object\Singleton</Filter>
+        </None>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\MemberInformation.h">
+            <Filter>Reflection</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\Reflectable.h">
+            <Filter>Reflection</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\Assembly\Assembly.h">
+            <Filter>Reflection\Assembly</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\Assembly\Assembly.inl">
+            <Filter>Reflection\Assembly</Filter>
+        </None>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\Assembly\Assembly.Posix.cpp">
+            <Filter>Reflection\Assembly</Filter>
+        </ClCompile>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\Assembly\Assembly.Win64.cpp">
+            <Filter>Reflection\Assembly</Filter>
+        </ClCompile>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\FieldInformation\FieldInformation.cpp">
+            <Filter>Reflection\FieldInformation</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\FieldInformation\FieldInformation.h">
+            <Filter>Reflection\FieldInformation</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\FieldInformation\FieldInformation.inl">
+            <Filter>Reflection\FieldInformation</Filter>
+        </None>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\MethodInformation\MethodInformation.cpp">
+            <Filter>Reflection\MethodInformation</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\MethodInformation\MethodInformation.h">
+            <Filter>Reflection\MethodInformation</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\MethodInformation\MethodInformation.inl">
+            <Filter>Reflection\MethodInformation</Filter>
+        </None>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\PropertyInformation\PropertyInformation.cpp">
+            <Filter>Reflection\PropertyInformation</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\PropertyInformation\PropertyInformation.h">
+            <Filter>Reflection\PropertyInformation</Filter>
+        </ClInclude>
+        <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\PropertyInformation\PropertyInformation.inl">
+            <Filter>Reflection\PropertyInformation</Filter>
+        </None>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\TypeInformation\TypeInformation.cpp">
+            <Filter>Reflection\TypeInformation</Filter>
+        </ClCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\TypeInformation\TypeInformation.h">
+            <Filter>Reflection\TypeInformation</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\Atomic\Atomic.h">
+            <Filter>Threading\Atomic</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\CriticalSection\CriticalSection.h">
+            <Filter>Threading\CriticalSection</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\SimpleThread\SimpleThread.h">
+            <Filter>Threading\SimpleThread</Filter>
+        </ClInclude>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\Thread\Thread.h">
+            <Filter>Threading\Thread</Filter>
+        </ClInclude>
+        <ResourceCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\_DLLResources\GoddamnCore.rc">
+            <Filter>_DLLResources</Filter>
+        </ResourceCompile>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\_DLLResources\resource.h">
+            <Filter>_DLLResources</Filter>
+        </ClInclude>
+    </ItemGroup>
 </Project>
