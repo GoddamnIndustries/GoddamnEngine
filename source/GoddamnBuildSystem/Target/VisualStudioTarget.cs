@@ -148,7 +148,7 @@ namespace GoddamnEngine.BuildSystem
                     ProjectConfig.WriteAttributeString("Condition", GenerateCondition(Configuration));
                     ProjectConfig.WriteAttributeString("Label", "Configuration");
                     ProjectConfig.WriteElementString("ConfigurationType", TheProject.BuildType.ToString());
-                    ProjectConfig.WriteElementString("PlatformToolset", "v140");
+                    ProjectConfig.WriteElementString("PlatformToolset", "CTP_Nov2013");
                     ProjectConfig.WriteElementString("CharacterSet", "MultiByte");
                     ProjectConfig.WriteEndElement();
                 }
