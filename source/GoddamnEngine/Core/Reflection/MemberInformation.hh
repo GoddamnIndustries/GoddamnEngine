@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// MemberInformation.h: Common interface for member information
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 07.04.2014 - Created by James Jhuighuy
@@ -10,7 +10,7 @@
 #define GD_CORE_REFLECTION_MEMBERINFORMATION
 
 #include <GoddamnEngine/Include.hh>
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
 
 #define GD_MEMBERINFORMATION_IMPLEMENT_NAME(ThisType)					virtual String const& GetName() const { static String const TypeInfoName(#ThisType); return TypeInfoName; }

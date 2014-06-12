@@ -1,13 +1,48 @@
-#include <GoddamnEngine/Core/Allocator/Allocator.hh>
+//////////////////////////////////////////////////////////////////////////
+/// Allocator.cc: memory allocator implementation.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// 
+/// History:
+///		* 12.06.2014 - Created by James Jhuighuy
+//////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <string.h>
+
+#include <GoddamnEngine/Core/Allocator/Allocator.hh>
+#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
+
+#define GD_USE_JEMALLOC 1
+
+#if (defined(GD_USE_JEMALLOC))
+#	define JEMALLOC_MANGLE 1
+#	include <jemalloc/jemalloc.h>
+#	include <jemalloc/jemalloc_mangle.h>
+#else	// if (defined(GD_USE_JEMALLOC))
+#	include <malloc.h>
+#endif	// if (defined(GD_USE_JEMALLOC))
 
 GD_NAMESPACE_BEGIN
  
-	//void* operator new(size_t const size) { return Allocator::AllocateMemory(size); }
-	//void  operator delete(void* const pointer) { Allocator::DeallocateMemory(pointer); }
+	handle Allocator::AllocateMemory(size_t const AllocationSize)
+	{
+		handle const AllocatedMemory = handle(::malloc(AllocationSize));
+		GD_ASSERT(AllocatedMemory != nullptr, "Failed to allocate memory");
+		return AllocatedMemory;
+	}
 
+	handle Allocator::ReallocateMemory(handle const Memory, size_t const AllocationSize)
+	{
+		handle const ReallocatedMemory = handle(::realloc(Memory, AllocationSize));
+		GD_ASSERT(ReallocatedMemory != nullptr, "Failed to reallocate memory");
+		return ReallocatedMemory;
+	}
+
+	void Allocator::DeallocateMemory(handle const Memory)
+	{
+		if(Memory != nullptr)
+			::free(Memory);
+	}
+
+	// Code left here just for history purposes.
 #if 0
 	void Allocator::ShiftRight(handle _memory, const size_t memorySize, const size_t from, const size_t to, const size_t offset)
 	{

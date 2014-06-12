@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// D3D11Shader.cpp: Direct3D 11 shaders implementation. 
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.02.2014  - Created by James Jhuighuy

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Include.h: Common definitions for all GD projects
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.--.2012 - Created by James Jhuighuy
@@ -208,7 +208,7 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#include <GoddamnEngine/Core/Allocator/OperatorNewDelete.hh>
+#include <GoddamnEngine/Core/Allocator/Allocator.hh>
 
 #define _USE_MATH_DEFINES
 #include <cmath>

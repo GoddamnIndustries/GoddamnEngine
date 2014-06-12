@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Shader.h: shaders common interface
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2014 - Created by James Jhuighuy
@@ -18,7 +18,7 @@
 #include <GoddamnEngine/Core/Format/Format.hh>
 #include <GoddamnEngine/Core/Object/Object.hh>
 #include <GoddamnEngine/Core/Object/RefPtr/RefPtr.hh>
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/Containers/Pointer/Pointer.hh>
 
 // Define this to get OpenGL-style name aliases.
@@ -461,7 +461,7 @@ GD_NAMESPACE_BEGIN
 
 	protected:
 		GDINL virtual ~HRIShaderProgram() { }
-		GDINL explicit HRIShaderProgram() { }
+		GDINL explicit HRIShaderProgram();
 
 	public:
 		/// Returns shader attached to this program by type

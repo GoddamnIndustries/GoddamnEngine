@@ -1,5 +1,5 @@
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.hh>
 
 #if (defined(GD_USE_CUSTOM_ASSERTS) && (defined(GD_PLATFORM_WINDOWS) || defined(GD_PLATFORM_XBOX_ONE))) 

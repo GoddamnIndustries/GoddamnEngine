@@ -2,7 +2,7 @@
 //#define GD_CORE_REFLECTION_TYPEINFORMATION
 //
 //#include <GoddamnEngine/Include.hh>
-//#include <GoddamnEngine/Core/Containers/String/String.hh>
+//#include <GoddamnEngine/Core/Text/String/String.hh>
 //
 //#include <GoddamnEngine/Core/Reflection/MemberInformation.hh>
 //
@@ -118,7 +118,7 @@
 #define GD_CORE_OBJECT_TYPEINFORMATION
 
 #include <GoddamnEngine/Include.hh>
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 
 #define TypeInformation ITypeInformation
 

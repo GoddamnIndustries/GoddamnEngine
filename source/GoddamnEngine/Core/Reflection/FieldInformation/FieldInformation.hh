@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// FieldInformation.h: Common interface for field information
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 17.04.2014 - Created by James Jhuighuy
@@ -11,7 +11,7 @@
 #define GD_CORE_REFLECTION_FGDLDINFORMATION
 
 #include <GoddamnEngine/Include.hh>
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
 
 #include <GoddamnEngine/Core/Reflection/MemberInformation.hh>

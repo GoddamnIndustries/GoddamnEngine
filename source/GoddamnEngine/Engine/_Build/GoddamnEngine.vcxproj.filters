@@ -11,127 +11,124 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
         <Filter Include="Application">
-            <UniqueIdentifier>{09023f8d-4d61-4f40-ac11-18d37e2ff0fb}</UniqueIdentifier>
+            <UniqueIdentifier>{d7698967-3af4-4fd9-997c-e51f5f81e8c0}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component">
-            <UniqueIdentifier>{d0231619-9fc5-4521-9698-5d2badb2b04a}</UniqueIdentifier>
+            <UniqueIdentifier>{91cc478a-4d9f-4207-819c-0a3953412252}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Camera">
-            <UniqueIdentifier>{5880f2d5-826c-4478-815f-01d53eb09789}</UniqueIdentifier>
+            <UniqueIdentifier>{14b42ae8-73ba-4dcb-996c-77899af6630f}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\GameObject">
-            <UniqueIdentifier>{9a52b9dd-aed4-407c-8e78-1ce95e7daccf}</UniqueIdentifier>
+            <UniqueIdentifier>{933a89c3-f744-49ae-a6f0-06e7030572f8}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\MeshRenderer">
-            <UniqueIdentifier>{0b690be8-49ac-415d-bfab-705236779e5c}</UniqueIdentifier>
+            <UniqueIdentifier>{0534025f-2646-47ca-a840-160e9468a716}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Rigidbody">
-            <UniqueIdentifier>{38b56545-2aec-4e43-9a25-f883a067b106}</UniqueIdentifier>
+            <UniqueIdentifier>{bf51ad01-7d72-41c3-b95b-d8f217911f0b}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Static">
-            <UniqueIdentifier>{6da5535e-6cfc-4767-8ae5-0d447d0c15d6}</UniqueIdentifier>
+            <UniqueIdentifier>{05f7746f-e05c-491d-bc5b-d13c83b3fb65}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Static\DeviceConfiguration">
-            <UniqueIdentifier>{6043b4a2-897c-4103-8ce5-f4142211a5a0}</UniqueIdentifier>
+            <UniqueIdentifier>{3e40dcb3-5863-4448-86d9-11332ddc4adc}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Static\Input">
-            <UniqueIdentifier>{2d24a6ca-6d54-4191-abe9-e9819d8e9475}</UniqueIdentifier>
+            <UniqueIdentifier>{2bc030ce-79ec-46f0-85c9-66751181686b}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Static\Physics">
-            <UniqueIdentifier>{ad0f8242-a2a5-4ea2-88c4-5fa45e092423}</UniqueIdentifier>
+            <UniqueIdentifier>{874d0a12-2187-4ce7-8211-7a1c5c8e053b}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Static\Screen">
-            <UniqueIdentifier>{0925fff3-8a95-4219-9995-e3822b0b11a7}</UniqueIdentifier>
+            <UniqueIdentifier>{e651ced0-735c-4e7f-ad73-2a291004e38c}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Transform">
-            <UniqueIdentifier>{1ae23c9d-28bd-41d3-b05a-34673fe74a34}</UniqueIdentifier>
+            <UniqueIdentifier>{c12612fd-e5ab-4cec-83df-84819fbbe7d5}</UniqueIdentifier>
         </Filter>
         <Filter Include="HUD">
-            <UniqueIdentifier>{b46539a0-8884-42e4-9a84-8b92e5601fe2}</UniqueIdentifier>
+            <UniqueIdentifier>{0ca63366-93ff-449e-a118-1e755f074eee}</UniqueIdentifier>
         </Filter>
         <Filter Include="Plugin">
-            <UniqueIdentifier>{d05cec6d-0720-4c8a-bf06-695eae97fae0}</UniqueIdentifier>
+            <UniqueIdentifier>{c0517d01-ca1e-4ebb-aa47-1896cf0c59e5}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer">
-            <UniqueIdentifier>{0949b246-fdb7-404d-adf6-4d4992a85300}</UniqueIdentifier>
+            <UniqueIdentifier>{3522c455-a6c7-43d1-b6e9-79e54fa57e90}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl">
-            <UniqueIdentifier>{5b6e953c-6a82-4dc0-a273-2390d1f4e292}</UniqueIdentifier>
+            <UniqueIdentifier>{2a21d7d3-d531-4dca-80cd-18ac3ce04db4}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl\Direct3D11">
-            <UniqueIdentifier>{81256711-f467-4762-b6ff-d96e01d05ab8}</UniqueIdentifier>
+            <UniqueIdentifier>{e5bfb468-ddd9-494a-9bf0-0b41b843fc2e}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl\Direct3D12">
-            <UniqueIdentifier>{a2b92162-8324-4d81-a3d5-ce9a629b57a7}</UniqueIdentifier>
+            <UniqueIdentifier>{e10a828c-2299-483b-8171-c10117546ff1}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl\GCM">
-            <UniqueIdentifier>{e27d493a-177e-4bcb-88ab-e248307d1f10}</UniqueIdentifier>
+            <UniqueIdentifier>{2442adf3-b6fc-4fb2-966c-a22371070ee5}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl\Mantle">
-            <UniqueIdentifier>{0ab6370c-7f8f-4a17-93bd-8ad54f387ec1}</UniqueIdentifier>
+            <UniqueIdentifier>{c26cf2c2-76c5-4395-a083-c91c6954b2a8}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl\Metal">
-            <UniqueIdentifier>{73846235-eafc-496a-9e60-b626c77c4e0e}</UniqueIdentifier>
-        </Filter>
-        <Filter Include="Renderer\Impl\OpenGL">
-            <UniqueIdentifier>{6aca1ea7-8e60-4b94-9aa0-5ba76b2e5048}</UniqueIdentifier>
+            <UniqueIdentifier>{01dfe96e-d951-4f63-a43c-0f137b1d2a52}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Shader">
-            <UniqueIdentifier>{a14a5e2c-eaa2-407d-878e-4a7325439cbe}</UniqueIdentifier>
+            <UniqueIdentifier>{2b1b8055-7560-430d-be6a-e5e1e9494251}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Shader\CrossCompiler">
-            <UniqueIdentifier>{fa7bdf5b-c0ad-408e-b22b-d76d0366ea9f}</UniqueIdentifier>
+            <UniqueIdentifier>{107ed2b3-dfde-4655-b257-115593d4e8c1}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Shader\CrossCompiler\Description">
-            <UniqueIdentifier>{b0da5768-8e35-47bf-aa1a-554488d21a25}</UniqueIdentifier>
+            <UniqueIdentifier>{137978e0-232a-4fff-b960-a31e91167ffe}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Shader\CrossCompiler\Generator">
-            <UniqueIdentifier>{9c1d75af-a4ae-4567-8ef2-2143bf12a789}</UniqueIdentifier>
+            <UniqueIdentifier>{20a26f24-4d71-4f25-af61-df91be13e74e}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Shader\CrossCompiler\Parser">
-            <UniqueIdentifier>{53edef87-8267-4622-8607-06e13fbd5ccd}</UniqueIdentifier>
+            <UniqueIdentifier>{eed1ff10-4ba2-465e-a135-ed4ea9af22f0}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource">
-            <UniqueIdentifier>{dfb5b48d-7fe2-480a-8ea1-a3a9de3b696c}</UniqueIdentifier>
+            <UniqueIdentifier>{d331f76d-b545-400d-8206-1e68da91f6c0}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\Material">
-            <UniqueIdentifier>{ed6d5500-9d48-4f97-8907-05c6a57861a3}</UniqueIdentifier>
+            <UniqueIdentifier>{44245fa3-c09f-4193-9e7e-2a5540fb6a7d}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceIdentifier">
-            <UniqueIdentifier>{703c11db-adb0-41e7-a539-bc899138c85c}</UniqueIdentifier>
+            <UniqueIdentifier>{af6d1523-f6c9-4c11-af51-f153be6e001e}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceLoader">
-            <UniqueIdentifier>{3e7535c7-f892-4fa9-a7ff-138d7aa7fab0}</UniqueIdentifier>
+            <UniqueIdentifier>{f08adfa0-a5c7-465c-bf5e-7207256755ab}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceLoader\FromFile">
-            <UniqueIdentifier>{d2ed662a-03d4-4966-afee-7013760f0c04}</UniqueIdentifier>
+            <UniqueIdentifier>{e08051ae-4e87-4c4a-bc2c-09c1fa7b2e8f}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceLoader\FromMemory">
-            <UniqueIdentifier>{1d31ac17-591d-4a12-9df1-598a46bb8695}</UniqueIdentifier>
+            <UniqueIdentifier>{8aa1195e-6970-46f3-8322-da538c4f093b}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceLoader\FromPackage">
-            <UniqueIdentifier>{91108024-ccae-4f51-8c7e-b5df72008f0c}</UniqueIdentifier>
+            <UniqueIdentifier>{2506b0b5-6861-4ff1-968d-c587adfdcee7}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceLoader\FromServer">
-            <UniqueIdentifier>{373dd14f-1334-4fc1-bd65-844f3e1cfff0}</UniqueIdentifier>
+            <UniqueIdentifier>{75a48d64-b4f3-434b-a806-201bbcf5a2b6}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceStreamer">
-            <UniqueIdentifier>{f5425990-9100-4721-a085-ad0d284e1eb7}</UniqueIdentifier>
+            <UniqueIdentifier>{28bce471-f4b5-4dd3-a305-229f51f74075}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ShaderProgram">
-            <UniqueIdentifier>{eed3fc49-84e2-48d2-9f08-88e59b531b1c}</UniqueIdentifier>
+            <UniqueIdentifier>{d19b4173-5125-474a-b2d2-168f19eeeb75}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\StaticMesh">
-            <UniqueIdentifier>{fa2df81e-a9ce-465e-ac6b-1b799640d9c9}</UniqueIdentifier>
+            <UniqueIdentifier>{b66f4d5f-d154-474c-8089-15754a321b9f}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\Texture2D">
-            <UniqueIdentifier>{aa79a097-e7ac-4dd7-bb48-aa474f447772}</UniqueIdentifier>
+            <UniqueIdentifier>{00816443-6e83-4233-87ce-e01309de75d1}</UniqueIdentifier>
         </Filter>
         <Filter Include="Scene">
-            <UniqueIdentifier>{1bfd6c94-894b-42e9-9633-eb47cb05e68d}</UniqueIdentifier>
+            <UniqueIdentifier>{b8fd8425-baae-42a1-806f-df67a29d087e}</UniqueIdentifier>
         </Filter>
         <Filter Include="_DLLResources">
-            <UniqueIdentifier>{e678b3f7-ae66-4738-909e-429fa2a4ff03}</UniqueIdentifier>
+            <UniqueIdentifier>{626590aa-12ef-428f-bb77-ca76a6164b5f}</UniqueIdentifier>
         </Filter>
     </ItemGroup>
     <ItemGroup>
@@ -288,24 +285,6 @@
         </ClCompile>
         <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.hh">
             <Filter>Renderer\Impl\Direct3D11</Filter>
-        </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.cc">
-            <Filter>Renderer\Impl\OpenGL</Filter>
-        </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.hh">
-            <Filter>Renderer\Impl\OpenGL</Filter>
-        </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.cc">
-            <Filter>Renderer\Impl\OpenGL</Filter>
-        </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.hh">
-            <Filter>Renderer\Impl\OpenGL</Filter>
-        </ClInclude>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererDefines.hh">
-            <Filter>Renderer\Impl\OpenGL</Filter>
-        </ClInclude>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererMethods.hh">
-            <Filter>Renderer\Impl\OpenGL</Filter>
         </ClInclude>
         <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.cc">
             <Filter>Renderer\Shader</Filter>

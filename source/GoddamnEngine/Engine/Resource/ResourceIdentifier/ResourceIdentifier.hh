@@ -3,7 +3,7 @@
 
 #include <GoddamnEngine/Include.hh>
 
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
 

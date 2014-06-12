@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Vector3.h: Three-dimensional vector class
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 07.06.2014  - Rewritten from scratch by James Jhuighuy,
@@ -37,10 +37,7 @@ GD_NAMESPACE_BEGIN
 			struct { ElementType x,     y,      z;     }; ///< Representation in XYZ coordinate system
 			struct { ElementType r,     g,      b;     }; ///< Representation in RGB color system
 			struct { ElementType u,     v,      w;     }; ///< Representation in UVW coordinate system
-			
 			struct { ElementType _0, _1, _2; };
-			struct { ElementType _0; Vector2t<ElementType> _12; };
-			struct { Vector2t<ElementType> _01; ElementType _2; };
 		};	// anonymous union
 
 	public /* Constructors */:

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// MathCompilerSetupStart.hh - disables useless warnings in vector and matrix headers.
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 10.06.2014  - Rewritten from scratch by James Jhuighuy,

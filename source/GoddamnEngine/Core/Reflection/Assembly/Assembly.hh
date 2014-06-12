@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Assembly.h: Common interface for assembly definition.
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 07.04.2014 - Created by James Jhuighuy
@@ -11,7 +11,7 @@
 
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/Object/Object.hh>
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
 
 GD_NAMESPACE_BEGIN

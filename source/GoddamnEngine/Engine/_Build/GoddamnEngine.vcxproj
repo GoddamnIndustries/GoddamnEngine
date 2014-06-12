@@ -72,12 +72,6 @@
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Shader.hh" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.hh" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.cc" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.hh" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.cc" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.hh" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererDefines.hh" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererMethods.hh" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.inl" />
@@ -180,6 +174,7 @@
       <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.Debug.lib;;;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\*Windows.Debug.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\*Windows.Debug.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>True</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
+      <IgnoreSpecificDefaultLibraries>Nafxcwd.lib;Libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Generator.h: shader cross compiler GLSL generator interface.
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 17.05.2014 - Created by James Jhuighuy

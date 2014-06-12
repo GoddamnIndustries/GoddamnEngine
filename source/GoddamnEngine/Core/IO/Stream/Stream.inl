@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Stream.inl - Base stream inline implementation.
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 30.04.2014 - Created by James Jhuighuy

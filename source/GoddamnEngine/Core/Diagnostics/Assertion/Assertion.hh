@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Assertion.h: Assertation mechanism definition
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2014  - Created by James Jhuighuy
@@ -23,9 +23,18 @@
 #		define _CrtDbgBreak abort 
 #	endif	// if (defined(GD_PLATFORM_WINDOWS) || defined(GD_PLATFORM_XBOX_ONE) || defined(GD_PLATFORM_WINPHONE))
 #	if (defined(GD_DEBUG))
-#		define  GD_ASSERT(Expression, Message, ...) do { if (!(Expression)) if (Assert( __FILE__ , __FUNCTION__, __LINE__ , #Expression, Message)) _CrtDbgBreak(); } while (false)
+#		define  GD_ASSERT(Expression, Message, ...) \
+			do { \
+				if (!(Expression)) \
+					if (Assert( __FILE__ , __FUNCTION__, __LINE__ , #Expression, Message)) _CrtDbgBreak(); \
+			} while (false)
+
 #	else	// We do not need to store debug information in release executables
-#		define  GD_ASSERT(Expression, Message, ...) do { if (!(Expression)) if (Assert(""/*File*/,  ""/*Func*/ , 0/*Line*/,  ""/*Expr*/, Message)) _CrtDbgBreak(); } while (false)
+#		define  GD_ASSERT(Expression, Message, ...) \
+			do { \
+				if (!(Expression)) \
+					if (Assert(""/*File*/,  ""/*Func*/ , 0/*Line*/,  ""/*Expr*/, Message)) abort(); \
+			} while (false)
 #	endif	// if (defined(GD_DEBUG))
 #	undef  assert
 #	define assert(Expression) GD_ASSERT(Expression, "Debug assertation failed!")

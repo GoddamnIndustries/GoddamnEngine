@@ -22,9 +22,7 @@ GD_NAMESPACE_BEGIN
 		mxml_node_t* const shaderProgramDescXml = mxmlLoadString(nullptr, &shaderProgramDescStr[0], MXML_TEXT_CALLBACK);
 		GD_ASSERT((shaderProgramDescXml != nullptr), "Failed to parse XML");
 
-		mxml_node_t* const shaderProgramDescNode
-			= mxmlFindElement(shaderProgramDescXml, shaderProgramDescXml,
-				"ShaderProgramDesc", nullptr, nullptr, MXML_DESCEND_FIRST);
+		mxml_node_t* const shaderProgramDescNode = mxmlFindElement(shaderProgramDescXml, shaderProgramDescXml, "ShaderProgramDesc", nullptr, nullptr, MXML_DESCEND_FIRST);
 		GD_ASSERT((shaderProgramDescNode != nullptr), "Failed locate root node ('ShaderProgramDesc')");
 
 		self->Program = HRInterface::GetInstance().CreateShaderProgram();
@@ -43,7 +41,28 @@ GD_NAMESPACE_BEGIN
 				ShaderInstanceDesc
 			);
 
-			HRInterface::GetInstance().CreateVertexShader(CtorInfo);
+			String const ShaderTypeStr(mxmlElementGetAttr(shaderDescNode, "Type"));
+			/**/ if (ShaderTypeStr == "GD_HRI_SHADER_TYPE_COMPUTE")
+				/*HRInterface::GetInstance().CreateComputeShader(CtorInfo)*/;
+			else if (ShaderTypeStr == "GD_HRI_SHADER_TYPE_GEOMETRY")
+				/*HRInterface::GetInstance().CreateGeometryShader(CtorInfo)*/;
+			else if (ShaderTypeStr == "GD_HRI_SHADER_TYPE_VERTEX")
+				HRInterface::GetInstance().CreateVertexShader(CtorInfo);
+			else if (ShaderTypeStr == "GD_HRI_SHADER_TYPE_HULL")
+				HRInterface::GetInstance().CreateHullShader(CtorInfo);
+			else if (ShaderTypeStr == "GD_HRI_SHADER_TYPE_DOMAIN")
+				HRInterface::GetInstance().CreateDomainShader(CtorInfo);
+			else if (ShaderTypeStr == "GD_HRI_SHADER_TYPE_PIXEL")
+				HRInterface::GetInstance().CreatePixelShader(CtorInfo);
+#if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
+			else if (ShaderTypeStr == "GD_HRI_SHADER_TYPE_TESSELLATION_CONTROL")
+				HRInterface::GetInstance().CreateHullShader(CtorInfo);
+			else if (ShaderTypeStr == "GD_HRI_SHADER_TYPE_TESSELLATION_EVALUATION")
+				HRInterface::GetInstance().CreateDomainShader(CtorInfo);
+			else if (ShaderTypeStr == "GD_HRI_SHADER_TYPE_FRAGMENT")
+				HRInterface::GetInstance().CreatePixelShader(CtorInfo);
+#endif	// if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
+			else GD_ASSERT_FALSE("Invalid shader type.");
 		}
 
 		mxmlDelete(shaderProgramDescXml);

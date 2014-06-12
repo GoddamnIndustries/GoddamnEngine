@@ -2,7 +2,7 @@
 #define GD_RESOURCES_RESOURCE_LOADER_RESOURCE_LOADER
 
 #include <GoddamnEngine/Include.hh>
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 
 #include <limits.h>
 

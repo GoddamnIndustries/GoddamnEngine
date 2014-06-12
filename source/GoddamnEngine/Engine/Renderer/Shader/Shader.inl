@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// HRIShader.inl: shader inline implementation
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2014 - Created by James Jhuighuy
@@ -293,6 +293,11 @@ GD_NAMESPACE_BEGIN
 	//////////////////////////////////////////////////////////////////////////
 	/// HRIShaderProgram
 	//////////////////////////////////////////////////////////////////////////
+
+	GDINL HRIShaderProgram::HRIShaderProgram()
+	{
+		ZeroMemory(&self->ProgramShaders, sizeof(self->ProgramShaders));
+	}
 
 	GDINL HRIShader const* HRIShaderProgram::GetProgramShader(HRIShaderType const Type) const
 	{

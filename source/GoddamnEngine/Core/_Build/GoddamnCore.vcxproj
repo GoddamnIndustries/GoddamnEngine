@@ -45,10 +45,6 @@
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Pair\Pair.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Pair\Pair.inl" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Pointer\Pointer.hh" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\String.cc" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\String.hh" />
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\String.inl" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\String\StringEx.hh" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\BoolVector.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\BoolVector.inl" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Containers\Vector\Vector.hh" />
@@ -120,6 +116,12 @@
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\PropertyInformation\PropertyInformation.inl" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\TypeInformation\TypeInformation.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Reflection\TypeInformation\TypeInformation.hh" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\CharHelpers.hh" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\CharTraits.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\String\String.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\String\String.hh" />
+    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\String\String.inl" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\String\StringEx.hh" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\Atomic\Atomic.hh" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\CriticalSection\CriticalSection.hh" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\SimpleThread\SimpleThread.hh" />
@@ -153,12 +155,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>GoddamnCore.Debug</TargetName>
     <OutDir>$(GODDAMN_SDK)bin\</OutDir>
-    <IncludePath>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\include;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\tlsf\include;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
+    <IncludePath>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\jemalloc\include;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\include;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\tlsf\include;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>GoddamnCore</TargetName>
     <OutDir>$(GODDAMN_SDK)bin\</OutDir>
-    <IncludePath>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\include;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\tlsf\include;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
+    <IncludePath>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\jemalloc\include;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\include;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\tlsf\include;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -173,9 +175,10 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\*Windows.Debug.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\jemalloc\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\*Windows.lib;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>True</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
+      <IgnoreSpecificDefaultLibraries>Nafxcwd.lib;Libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -191,7 +194,7 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\*Windows.Release.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\jemalloc\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\*Windows.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>False</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
     </Link>

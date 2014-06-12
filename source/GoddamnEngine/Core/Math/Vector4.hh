@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Vector4.h: Four-dimensional vector class
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 07.06.2014  - Rewritten from scratch by James Jhuighuy,
@@ -33,14 +33,7 @@ GD_NAMESPACE_BEGIN
 			struct { ElementType Left, Top, Width, Height; }; ///< Compatibility with Rectangle
 			struct { ElementType x,    y,   z,     w;      }; ///< Representation in XYZW coordinate system
 			struct { ElementType r,    g,   b,     a;      }; ///< Representation in RGBA color system
-
-			struct { ElementType _0; Vector3t<ElementType> _123; };
-			struct { ElementType _0; Vector2t<ElementType> _12; ElementType _3; };
-			struct { ElementType _0, _1; Vector2t<ElementType> _23; };
 			struct { ElementType _0, _1, _2, _3; };
-			struct { Vector2t<ElementType> _01, _23; };
-			struct { Vector2t<ElementType> _01; ElementType _2, _3; };
-			struct { Vector3t<ElementType> _012; ElementType _3; };
 		};	// anonymous union
 
 	public /* Constructors */:
@@ -380,14 +373,7 @@ GD_NAMESPACE_BEGIN
 			struct { Float32 Left, Top, Width, Height; };
 			struct { Float32 x,    y,   z,     w;      };
 			struct { Float32 r,    g,   b,     a;      };
-
-			struct { Float32 _0; Vector3t<Float32> _123; };
-			struct { Float32 _0; Vector2t<Float32> _12; Float32 _3; };
-			struct { Float32 _0, _1; Vector2t<Float32> _23; };
 			struct { Float32 _0, _1, _2, _3; };
-			struct { Vector2t<Float32> _01, _23; };
-			struct { Vector2t<Float32> _01; Float32 _2, _3; };
-			struct { Vector3t<Float32> _012; Float32 _3; };
 		};	// anonymous union
 
 	public /* Constructors */:

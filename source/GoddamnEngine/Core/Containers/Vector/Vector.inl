@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Vector.inl - Dynamically sized array implementation
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.11.2013 - Created by James Jhuighuy

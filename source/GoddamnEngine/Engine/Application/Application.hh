@@ -6,7 +6,7 @@
 #include <GoddamnEngine/Core/Object/Object.hh>
 #include <GoddamnEngine/Core/Object/RefPtr/RefPtr.hh>
 #include <GoddamnEngine/Core/Object/Singleton/Singleton.hh>
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/Containers/Map/Map.hh>
 #include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.hh>
 

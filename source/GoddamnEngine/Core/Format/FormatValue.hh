@@ -3,7 +3,7 @@
 
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/Format/Format.hh>
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 
 GD_NAMESPACE_BEGIN
 

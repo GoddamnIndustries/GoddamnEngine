@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Matrix4x4.hh - 4x4 matrix class.
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 09.06.2014  - Rewritten from scratch by James Jhuighuy,

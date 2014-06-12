@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Stream.hh - Base stream interface.
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 29.04.2014 - Created by James Jhuighuy
@@ -13,7 +13,7 @@
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/Utility.hh>					
 // #include <GoddamnEngine/Core/Threading/Task/Task.hh>		
-#include <GoddamnEngine/Core/Containers/String/String.hh>	
+#include <GoddamnEngine/Core/Text/String/String.hh>	
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
 
 GD_NAMESPACE_BEGIN

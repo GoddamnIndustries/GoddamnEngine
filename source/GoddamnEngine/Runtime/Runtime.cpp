@@ -185,7 +185,7 @@ int main(
 		}
 	}	time_t const NOSSETime = clock() - SSETime;*/
 
-	{
+	/*{
 		Matrix4x4 Matrix;
 		for (size_t cnt = 0; cnt < USHRT_MAX; cnt += 1)
 		{
@@ -193,7 +193,7 @@ int main(
 			A *= Matrix4x4().PerspectiveLh(60.0f, 16.0f/9.0f, 0.1f, 3000.0f);
 			A.Inverse().Transpose().Inverse().Rotate(Quaternion().SetEulerDegrees(Vector3Fast(30.0f, 60.0f, 90.0f)));
 		}
-	} time_t const SSETime = clock() - StartTime;
+	} time_t const SSETime = clock() - StartTime;*/
 
     DebugRuntime DebugRuntimeInstance(ArgumentsCount, ArgumentsList);
     Application::Execute(DebugRuntimeInstance);

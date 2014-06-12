@@ -4,7 +4,7 @@
 #include <GoddamnEngine/Engine/Resource/Resource.hh>
 
 #include <GoddamnEngine/Core/Containers/Map/Map.hh>
-#include <GoddamnEngine/Core/Containers/String/String.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
 
 GD_NAMESPACE_BEGIN

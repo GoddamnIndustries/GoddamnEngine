@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Vector2.h: Two-dimensional vector class
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 07.06.2014  - Rewritten from scratch by James Jhuighuy,

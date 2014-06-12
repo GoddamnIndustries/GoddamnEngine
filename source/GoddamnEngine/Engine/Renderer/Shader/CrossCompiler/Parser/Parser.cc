@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// Parser.hh - HLSL parser implementation.
-/// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 14.05.2014 - Created by James Jhuighuy
@@ -20,6 +20,22 @@ GD_NAMESPACE_BEGIN
 	
 	using namespace StreamedLexerDefaultOptions;
 	typedef Str HRIShaderCrossCompilerErrorDesc;
+
+	enum HLSLOperator : StreamedLexerOperator
+	{
+		GD_HLSL_OPERATOR_UNKNOWN = 0,
+		GD_HLSL_OPERATOR_INDEX_BEGIN = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_BEGIN,
+		GD_HLSL_OPERATOR_INDEX_END = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_END,
+		GD_HLSL_OPERATOR_SCOPE_BEGIN = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN,
+		GD_HLSL_OPERATOR_SCOPE_END = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END,
+		GD_HLSL_OPERATOR_PARAMS_BEGIN = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_BEGIN,
+		GD_HLSL_OPERATOR_PARAMS_END = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END,
+		GD_HLSL_OPERATOR_TEMPLATE_BEGIN = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN,
+		GD_HLSL_OPERATOR_TEMPLATE_END = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END,
+		GD_HLSL_OPERATOR_COLON = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COLON,
+		GD_HLSL_OPERATOR_SEMICOLON = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SEMICOLON,
+		GD_HLSL_OPERATOR_COMMA = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA,
+	};	// enum HLSLOperator
 
 	enum HLSLKeyword : StreamedLexerKeyword
 	{
@@ -43,32 +59,20 @@ GD_NAMESPACE_BEGIN
 
 #define GD_HLSL_IS_KEYWORD_OF_TYPE(Keyword, Type) (((Keyword) > GD_HLSL_KEYWORD_##Type##_BEGIN__) && ((Keyword) < GD_HLSL_KEYWORD_##Type##_END__))
 
-	enum HLSLOperator : StreamedLexerOperator
-	{
-		GD_HLSL_OPERATOR_UNKNOWN        = 0,
-		GD_HLSL_OPERATOR_INDEX_BEGIN    = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_BEGIN,
-		GD_HLSL_OPERATOR_INDEX_END      = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_END,
-		GD_HLSL_OPERATOR_SCOPE_BEGIN    = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN,
-		GD_HLSL_OPERATOR_SCOPE_END      = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END,
-		GD_HLSL_OPERATOR_PARAMS_BEGIN   = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_BEGIN,
-		GD_HLSL_OPERATOR_PARAMS_END     = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END,
-		GD_HLSL_OPERATOR_TEMPLATE_BEGIN = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN,
-		GD_HLSL_OPERATOR_TEMPLATE_END   = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END,
-		GD_HLSL_OPERATOR_COLON          = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COLON,
-		GD_HLSL_OPERATOR_SEMICOLON      = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SEMICOLON,
-		GD_HLSL_OPERATOR_COMMA          = GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA,
-	};	// enum HLSLOperator
-
 	static HLSLScope HLSLSuperGlobalScope;
 #define GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE() \
-	do { HLSLSuperGlobalScope.InnerDefinitions.PushLast(self); } while(false)
+	do { \
+		HLSLSuperGlobalScope.InnerDefinitions.PushLast(self); \
+	} while(false)
 
 	// Basic types.
 #define GD_HLSL_DEFINE_BASIC_TYPE(_Name, _HLSLName, _Class) \
-	struct _Name : public HLSLType { GDINL _Name() : HLSLType(_Class) { \
-		self->Name = _HLSLName; \
-		GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE(); \
-	} } static const _Name
+	struct _Name final : public HLSLType { \
+		GDINL _Name() : HLSLType(_Class) { \
+			self->Name = _HLSLName; \
+			GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE(); \
+		} \
+	} static const _Name
 	GD_HLSL_DEFINE_BASIC_TYPE(HLSLVoid,         "void",         GD_HLSL_TYPE_CLASS_VOID       );
 	GD_HLSL_DEFINE_BASIC_TYPE(HLSLTexture2D,    "Texture2D",    GD_HLSL_TYPE_CLASS_TEXTURE2D  );
 	GD_HLSL_DEFINE_BASIC_TYPE(HLSLTextureCube,  "TextureCube",  GD_HLSL_TYPE_CLASS_TEXTURECUBE);
@@ -77,11 +81,13 @@ GD_NAMESPACE_BEGIN
 
 	// Scalar types.
 #define GD_HLSL_DEFINE_SCALAR_TYPE(_Name, _DataType) \
-	struct _Name : public HLSLScalarType { GDINL _Name() { \
-		self->Name = #_DataType; \
-		self->DataType = GD_HLSL_TYPE_DATA_TYPE_##_DataType; \
-		GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE(); \
-	} } static const _Name
+	struct _Name final : public HLSLScalarType { \
+		GDINL _Name() { \
+			self->Name = #_DataType; \
+			self->DataType = GD_HLSL_TYPE_DATA_TYPE_##_DataType; \
+			GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE(); \
+		} \
+	} static const _Name
 	GD_HLSL_DEFINE_SCALAR_TYPE(HLSLBool   , bool  );
 	GD_HLSL_DEFINE_SCALAR_TYPE(HLSLInt    , int   );
 	GD_HLSL_DEFINE_SCALAR_TYPE(HLSLUInt   , uint  );
@@ -92,16 +98,18 @@ GD_NAMESPACE_BEGIN
 
 	// Vector types
 #define GD_HLSL_DEFINE_VECTOR_TYPE(_Name, _DataType, _ComponentsNumber) \
-	struct _Name : public HLSLVectorType { GDINL _Name() { \
-		self->Name = #_DataType#_ComponentsNumber; \
-		self->DataType = GD_HLSL_TYPE_DATA_TYPE_##_DataType; \
-		self->ComponentsNumber = _ComponentsNumber; \
-		GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE(); \
-	} } static const _Name
+	struct _Name##_ComponentsNumber final : public HLSLVectorType{ \
+		GDINL _Name##_ComponentsNumber() { \
+			self->Name = #_DataType#_ComponentsNumber; \
+			self->DataType = GD_HLSL_TYPE_DATA_TYPE_##_DataType; \
+			self->ComponentsNumber = _ComponentsNumber; \
+			GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE(); \
+		} \
+	} static const _Name##_ComponentsNumber
 #define GD_HLSL_DEFINE_VECTOR_TYPES(_Name, _DataType) \
-	GD_HLSL_DEFINE_VECTOR_TYPE(_Name##4, _DataType, 4); \
-	GD_HLSL_DEFINE_VECTOR_TYPE(_Name##3, _DataType, 3); \
-	GD_HLSL_DEFINE_VECTOR_TYPE(_Name##2, _DataType, 2) 
+	GD_HLSL_DEFINE_VECTOR_TYPE(_Name, _DataType, 4); \
+	GD_HLSL_DEFINE_VECTOR_TYPE(_Name, _DataType, 3); \
+	GD_HLSL_DEFINE_VECTOR_TYPE(_Name, _DataType, 2) 
 	GD_HLSL_DEFINE_VECTOR_TYPES(HLSLBool   , bool  );
 	GD_HLSL_DEFINE_VECTOR_TYPES(HLSLInt    , int   );
 	GD_HLSL_DEFINE_VECTOR_TYPES(HLSLUInt   , uint  );
@@ -112,23 +120,25 @@ GD_NAMESPACE_BEGIN
 
 	// Matrix types. 
 #define GD_HLSL_DEFINE_MATRIX_TYPE(_Name, _DataType, _RowsNumber, _ColumnsNumber) \
-	struct _Name : public HLSLMatrixType { GDINL _Name() { \
-		self->Name = #_DataType#_RowsNumber"x"#_ColumnsNumber; \
-		self->DataType = GD_HLSL_TYPE_DATA_TYPE_##_DataType; \
-		self->RowsNumber = _RowsNumber; \
-		self->ColumnsNumber = _ColumnsNumber; \
-		GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE(); \
-	} } static const _Name
+	struct _Name##_RowsNumber##x##_ColumnsNumber final : public HLSLMatrixType{ \
+		GDINL _Name##_RowsNumber##x##_ColumnsNumber() { \
+			self->Name = #_DataType#_RowsNumber"x"#_ColumnsNumber; \
+			self->DataType = GD_HLSL_TYPE_DATA_TYPE_##_DataType; \
+			self->RowsNumber = _RowsNumber; \
+			self->ColumnsNumber = _ColumnsNumber; \
+			GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE(); \
+		} \
+	} static const _Name##_RowsNumber##x##_ColumnsNumber
 #define GD_HLSL_DEFINE_MATRIX_TYPES(_Name, _DataType) \
-	GD_HLSL_DEFINE_MATRIX_TYPE(_Name##4x4, _DataType, 4, 4); \
-	GD_HLSL_DEFINE_MATRIX_TYPE(_Name##4x3, _DataType, 4, 3); \
-	GD_HLSL_DEFINE_MATRIX_TYPE(_Name##3x4, _DataType, 3, 4); \
-	GD_HLSL_DEFINE_MATRIX_TYPE(_Name##3x3, _DataType, 3, 3); \
-	GD_HLSL_DEFINE_MATRIX_TYPE(_Name##3x2, _DataType, 3, 2); \
-	GD_HLSL_DEFINE_MATRIX_TYPE(_Name##2x3, _DataType, 2, 3); \
-	GD_HLSL_DEFINE_MATRIX_TYPE(_Name##2x2, _DataType, 2, 2); \
-	GD_HLSL_DEFINE_MATRIX_TYPE(_Name##2x1, _DataType, 2, 1); \
-	GD_HLSL_DEFINE_MATRIX_TYPE(_Name##1x2, _DataType, 1, 2)
+	GD_HLSL_DEFINE_MATRIX_TYPE(_Name, _DataType, 4, 4); \
+	GD_HLSL_DEFINE_MATRIX_TYPE(_Name, _DataType, 4, 3); \
+	GD_HLSL_DEFINE_MATRIX_TYPE(_Name, _DataType, 3, 4); \
+	GD_HLSL_DEFINE_MATRIX_TYPE(_Name, _DataType, 3, 3); \
+	GD_HLSL_DEFINE_MATRIX_TYPE(_Name, _DataType, 3, 2); \
+	GD_HLSL_DEFINE_MATRIX_TYPE(_Name, _DataType, 2, 3); \
+	GD_HLSL_DEFINE_MATRIX_TYPE(_Name, _DataType, 2, 2); \
+	GD_HLSL_DEFINE_MATRIX_TYPE(_Name, _DataType, 2, 1); \
+	GD_HLSL_DEFINE_MATRIX_TYPE(_Name, _DataType, 1, 2)
 	GD_HLSL_DEFINE_MATRIX_TYPES(HLSLFloat  , float );
 	GD_HLSL_DEFINE_MATRIX_TYPES(HLSLDouble , double);
 #undef GD_HLSL_DEFINE_MATRIX_TYPES
