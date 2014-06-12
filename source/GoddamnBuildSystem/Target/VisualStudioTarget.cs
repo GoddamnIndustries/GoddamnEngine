@@ -141,7 +141,7 @@ namespace GoddamnEngine.BuildSystem
                 ProjectConfig.WriteAttributeString("Project", @"$(VCTargetsPath)\Microsoft.Cpp.Default.props");
                 ProjectConfig.WriteEndElement();
 
-                // Global TheProject properties:
+                // Global Project properties:
                 foreach (var Configuration in Configurations)
                 {
                     ProjectConfig.WriteStartElement("PropertyGroup");
@@ -227,6 +227,7 @@ namespace GoddamnEngine.BuildSystem
                     StringBuilder AdditionalDependencies = new StringBuilder();
                     foreach (var AdditionalDependency in TheProject.Dependencies)
                         AdditionalDependencies.Append(AdditionalDependency.ResolveDependency(Configuration)).Append(Path.PathSeparator);
+                    AdditionalDependencies.Append(@"winmm.lib;imm32.lib;version.lib;");
                     AdditionalDependencies.Append(@"%(AdditionalDependencies)");
                     ProjectConfig.WriteElementString("AdditionalDependencies", AdditionalDependencies.ToString());
                     ProjectConfig.WriteElementString("GenerateDebugInformation", IsDebugConfiguration.ToString());

@@ -11,26 +11,26 @@ namespace GoddamnEngine.BuildSystem
         public virtual string HeaderLocations { get { return Path.Combine(this.Location, "include"); } }
         public virtual string ResolveDependency(TargetConfiguration Configuration)
         {
-            string DependencyPathPCE = Path.Combine(this.Location, String.Format("{0}.{1}{2}", Target.Platform.ToString(), Configuration.ToString(), Target.GetPlatformStaticLibraryExtension()));
-            if (!File.Exists(DependencyPathPCE))
+            string DependencyPCE = String.Format("*{0}.{1}{2}", Target.Platform.ToString(), Configuration.ToString(), Target.GetPlatformStaticLibraryExtension());
+            if (Directory.GetFiles(this.Location, DependencyPCE).Length == 0)
             {   // Seams that library is build for all configurations into single library.
-                string DependencyPathPE = Path.Combine(this.Location, String.Format("{0}{1}", Target.Platform.ToString(), Target.GetPlatformStaticLibraryExtension()));
-                if (!File.Exists(DependencyPathPE))
+                string DependencyPE = String.Format("*{0}{1}", Target.Platform.ToString(), Target.GetPlatformStaticLibraryExtension());
+                if (Directory.GetFiles(this.Location, DependencyPE).Length == 0)
                 {   // Libary path on disk contains only extension
-                    string DependencyPathE = Path.Combine(this.Location, Target.GetPlatformStaticLibraryExtension());
-                    if (!File.Exists(DependencyPathE))
+                    string DependencyE = "*" + Target.GetPlatformStaticLibraryExtension();
+                    if (Directory.GetFiles(this.Location, DependencyE).Length == 0)
                     {   // Nothing found.
                         ConsoleOutput.WriteLine(Path.Combine(this.Location, ".gddep"), "warning: not static libraries was found this dependecy");
                         return "";
                     }
 
-                    return DependencyPathE;
+                    return Path.Combine(this.Location, DependencyE);
                 }
                     
-                return DependencyPathPE;
+                return Path.Combine(this.Location, DependencyPE);
             }
          
-            return DependencyPathPCE;
+            return Path.Combine(this.Location, DependencyPCE);
         }
 
     }   // class DependencyResolver

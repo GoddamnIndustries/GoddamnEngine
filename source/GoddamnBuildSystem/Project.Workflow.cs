@@ -114,9 +114,13 @@ namespace GoddamnEngine.BuildSystem
 
                 foreach (var CurrentSubdirectory in Directory.EnumerateDirectories(CurrentSourceFilesDirectory))
                 {
-                    if (File.Exists(Path.Combine(CurrentSubdirectory, ".gdproj.cs")) && (!Target.IsMonolithicBuild()))
-                    {
+                    /**/ if (File.Exists(Path.Combine(CurrentSubdirectory, ".gdproj.cs")) && (!Target.IsMonolithicBuild()))
+                    {   // This directory contains separate project.
                         ProcessProjectDirectory(CurrentSourceFilesDirectory);
+                        continue;
+                    }
+                    else if (File.Exists(Path.Combine(CurrentSubdirectory, ".gdexclude")))
+                    {   // This directory is excluded from build.
                         continue;
                     }
 
