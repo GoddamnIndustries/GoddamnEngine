@@ -4,6 +4,11 @@
 ###########################################################################
 ## Custom:
 utilities/
+*.lib
+*.a
+*.dll
+*.so
+*.dylib
 ###########################################################################
 
 # User-specific files
@@ -75,71 +80,6 @@ ipch/
 *.psess
 *.vsp
 *.vspx
-
-# TFS 2012 Local Workspace
-$tf/
-
-# Guidance Automation Toolkit
-*.gpState
-
-# ReSharper is a .NET coding add-in
-_ReSharper*/
-*.[Rr]e[Ss]harper
-*.DotSettings.user
-
-# JustCode is a .NET coding addin-in
-.JustCode
-
-# TeamCity is a build add-in
-_TeamCity*
-
-# DotCover is a Code Coverage Tool
-*.dotCover
-
-# NCrunch
-*.ncrunch*
-_NCrunch_*
-.*crunch*.local.xml
-
-# MightyMoose
-*.mm.*
-AutoTest.Net/
-
-# Web workbench (sass)
-.sass-cache/
-
-# Installshield output folder
-[Ee]xpress/
-
-# DocProject is a documentation generator add-in
-DocProject/buildhelp/
-DocProject/Help/*.HxT
-DocProject/Help/*.HxC
-DocProject/Help/*.hhc
-DocProject/Help/*.hhk
-DocProject/Help/*.hhp
-DocProject/Help/Html2
-DocProject/Help/html
-
-# Click-Once directory
-publish/
-
-# Publish Web Output
-*.[Pp]ublish.xml
-*.azurePubxml
-
-# NuGet Packages Directory
-packages/
-## TODO: If the tool you use requires repositories.config uncomment the next line
-#!packages/repositories.config
-
-# Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
-# This line needs to be after the ignore of the build folder (and the packages folder if the line above has been uncommented)
-!packages/build/
-
-# Windows Azure Build Output
-csx/
-*.build.csdef
 
 # Windows Store app package directory
 AppPackages/
