@@ -11,9 +11,9 @@
 #	error("Please, include Stream.h instead of Stream.inl")
 #endif
 
-#include <GoddamnEngine/Core/Utility.h>
-#include <GoddamnEngine/Core/TypeTraits.h>
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
+#include <GoddamnEngine/Core/Utility.hh>
+#include <GoddamnEngine/Core/TypeTraits.hh>
+#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
 
 GD_NAMESPACE_BEGIN
 

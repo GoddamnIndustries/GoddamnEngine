@@ -1,4 +1,4 @@
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
+#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
 
 #include <new>
 

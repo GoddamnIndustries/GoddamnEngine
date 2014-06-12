@@ -21,115 +21,109 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\.gdproj.cs" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Application\Application.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Application\Application.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Application\Application.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Application\Application.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Application\Application.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Component.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Component.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Component.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Component.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Component.inl" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Camera\Camera.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Camera\Camera.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\GameObject\GameObject.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\GameObject\GameObject.h" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Camera\Camera.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Camera\Camera.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\GameObject\GameObject.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\GameObject\GameObject.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\GameObject\GameObject.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer\MeshRenderer.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer\MeshRenderer.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\StaticComponent.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\StaticComponent.h" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\DeviceConfiguration\DeviceConfiguration.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\DeviceConfiguration\DeviceConfiguration_WIN32.cpp" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input_WIN32_WINAPI.cpp" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Physics\Physics.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Physics\Physics.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer\MeshRenderer.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer\MeshRenderer.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\StaticComponent.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\StaticComponent.hh" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\DeviceConfiguration\DeviceConfiguration.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\DeviceConfiguration\DeviceConfiguration_WIN32.cc" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input_WIN32_WINAPI.cc" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Physics\Physics.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Physics\Physics.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Physics\Physics.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Screen\Screen.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Screen\Screen.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Screen\Screen.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Screen\Screen.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Screen\Screen.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Transform\Transform.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Transform\Transform.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Transform\Transform.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Transform\Transform.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Transform\Transform.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\HUD\HUD.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\HUD\HUD.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Plugin\Plugin.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Plugin\Plugin.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Renderer.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Renderer.h" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\RendererMethods.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Buffer.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Buffer.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11IndexedShape.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11IndexedShape.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11LinkagePoint.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11LinkagePoint.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Renderer.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Renderer.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11RenderTarget.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11RenderTarget.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Shader.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Shader.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.h" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererDefines.h" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererMethods.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\HUD\HUD.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\HUD\HUD.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Plugin\Plugin.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Plugin\Plugin.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Renderer.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Renderer.hh" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\RendererMethods.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Buffer.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Buffer.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11IndexedShape.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11IndexedShape.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11LinkagePoint.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11LinkagePoint.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Renderer.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Renderer.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11RenderTarget.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11RenderTarget.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Shader.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Shader.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Material\Material.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Material\Material.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceIdentifier\ResourceIdentifier.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceIdentifier\ResourceIdentifier.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Material\Material.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Material\Material.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceIdentifier\ResourceIdentifier.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceIdentifier\ResourceIdentifier.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceIdentifier\ResourceIdentifier.inl" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\ResourceLoader.h" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\ResourceLoader.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\ResourceLoader.inl" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile.h" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile_STD.cpp" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile_STD.cc" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromPackage\ResourceLoaderFromPackage.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromPackage\ResourceLoaderFromPackage.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromPackage\ResourceLoaderFromPackage.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromPackage\ResourceLoaderFromPackage.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromPackage\ResourceLoaderFromPackage.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromServer\ResourceLoaderFromServer.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromServer\ResourceLoaderFromServer.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromServer\ResourceLoaderFromServer.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromServer\ResourceLoaderFromServer.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromServer\ResourceLoaderFromServer.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceStreamer\ResourceStreamer.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceStreamer\ResourceStreamer.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceStreamer\ResourceStreamer.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceStreamer\ResourceStreamer.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceStreamer\ResourceStreamer.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ShaderProgram\ShaderProgramResource.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ShaderProgram\ShaderProgramResource.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\StaticMesh\StaticMesh.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\StaticMesh\StaticMesh.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ShaderProgram\ShaderProgramResource.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ShaderProgram\ShaderProgramResource.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\StaticMesh\StaticMesh.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\StaticMesh\StaticMesh.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\StaticMesh\StaticMesh.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Texture2D\Texture2DResource.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Texture2D\Texture2DResource.h" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Scene\Scene.cpp" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Scene\Scene.h" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Texture2D\Texture2DResource.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Texture2D\Texture2DResource.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Scene\Scene.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Scene\Scene.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Scene\Scene.inl" />
     <ResourceCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\_DLLResources\IncredibleEngine.rc" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\_DLLResources\resource.h" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\_DLLResources\resource.hh" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CD17EE31-EDB8-4000-BA97-EF2F3D96B83C}</ProjectGuid>
@@ -177,7 +171,7 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.Debug.lib;;;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\Windows.Debug.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\Windows.Debug.lib;;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.Debug.lib;;;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\*Windows.Debug.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\*Windows.Debug.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>True</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -195,7 +189,7 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.lib;;;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\Windows.Release.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\Windows.Release.lib;;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.lib;;;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\*Windows.Release.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\*Windows.Release.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>False</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
     </Link>

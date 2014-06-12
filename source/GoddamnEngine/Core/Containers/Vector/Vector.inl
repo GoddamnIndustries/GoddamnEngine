@@ -11,9 +11,9 @@
 #	error "Attempting to include 'Vector.inl' file. Please, use 'Vector.h' instead.""
 #endif	// if (!defined(GD_CORE_CONTAINERS_VECTOR))
 
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
-#include <GoddamnEngine/Core/Math/FastMath/FastMath.h>
-#include <GoddamnEngine/Core/Utility.h>
+#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
+#include <GoddamnEngine/Core/Math/FastMath/FastMath.hh>
+#include <GoddamnEngine/Core/Utility.hh>
 #include <new>			// For placement new
 
 GD_NAMESPACE_BEGIN

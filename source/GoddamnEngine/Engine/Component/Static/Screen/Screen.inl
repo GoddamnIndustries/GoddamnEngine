@@ -1,4 +1,4 @@
-#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
+#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.hh>
 
 GD_NAMESPACE_BEGIN
 

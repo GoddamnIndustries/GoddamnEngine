@@ -69,7 +69,7 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.Debug.lib;D:\GoddamnEngine\lib\GoddamnEngine.Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.Debug.lib;D:\GoddamnEngine\lib\GoddamnEngine.Debug.lib;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>True</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -86,7 +86,7 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.lib;D:\GoddamnEngine\lib\GoddamnEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.lib;D:\GoddamnEngine\lib\GoddamnEngine.lib;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>False</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>

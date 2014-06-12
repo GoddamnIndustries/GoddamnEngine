@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoddamnBuildSystem", "GoddamnBuildSystem\GoddamnBuildSystem.csproj", "{A1A62CBD-D9A6-4E5B-9FAB-7B9E5255EDC4}"
 EndProject
@@ -79,7 +79,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{A1A62CBD-D9A6-4E5B-9FAB-7B9E5255EDC4} = {E5A9FDEC-6B5F-4E61-B701-EFDFDC3A0E6A}
 		{D7E95C33-5B6C-4AF3-845F-B1977935C7E8} = {E5A9FDEC-6B5F-4E61-B701-EFDFDC3A0E6A}
+		{A1A62CBD-D9A6-4E5B-9FAB-7B9E5255EDC4} = {E5A9FDEC-6B5F-4E61-B701-EFDFDC3A0E6A}
 	EndGlobalSection
 EndGlobal

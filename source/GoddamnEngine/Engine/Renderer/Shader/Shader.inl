@@ -8,9 +8,9 @@
 ///     * 05.05.2014 - Rewritten to match cross compiler
 //////////////////////////////////////////////////////////////////////////
 
-#include <GoddamnEngine/Core/IO/Stream/Stream.h>
-#include <GoddamnEngine/Core/Format/FormatFromString.h>
-#include <GoddamnEngine/Core/Format/FormatSelector.h>
+#include <GoddamnEngine/Core/IO/Stream/Stream.hh>
+#include <GoddamnEngine/Core/Format/FormatFromString.hh>
+#include <GoddamnEngine/Core/Format/FormatSelector.hh>
 
 GD_NAMESPACE_BEGIN
 

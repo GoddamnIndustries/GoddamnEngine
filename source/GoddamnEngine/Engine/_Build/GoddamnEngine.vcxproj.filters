@@ -11,447 +11,426 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
         <Filter Include="Application">
-            <UniqueIdentifier>{8809b761-d57a-4157-a8a3-9c618a19cf2a}</UniqueIdentifier>
+            <UniqueIdentifier>{b0f81000-3fab-40e8-90f8-e8b3fd7e8023}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component">
-            <UniqueIdentifier>{60316063-f8f3-4d80-9f91-94789b304c20}</UniqueIdentifier>
+            <UniqueIdentifier>{e4326f16-0ef3-4bcd-990a-4e68d6f1a85e}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Camera">
-            <UniqueIdentifier>{059428ac-a6b4-4eba-97b8-3d58d2cdc9a9}</UniqueIdentifier>
+            <UniqueIdentifier>{cd5725f1-c8e8-48b8-b613-5071c935c001}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\GameObject">
-            <UniqueIdentifier>{6306de56-ae4c-4c42-84e9-1b885bcb6b40}</UniqueIdentifier>
+            <UniqueIdentifier>{02756c59-53ed-4dad-807c-7dc003e0f338}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\MeshRenderer">
-            <UniqueIdentifier>{3d252b8b-284f-464b-9cf1-621686ebd0e8}</UniqueIdentifier>
+            <UniqueIdentifier>{37861d38-3f66-4756-b47a-11784a7f5a7a}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Rigidbody">
-            <UniqueIdentifier>{830077b0-9a20-4ade-b328-f8f1e995e8fa}</UniqueIdentifier>
+            <UniqueIdentifier>{3adbdcec-5e90-4611-aebe-39854955375e}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Static">
-            <UniqueIdentifier>{62058c42-df58-431f-9996-99e9377c0fbc}</UniqueIdentifier>
+            <UniqueIdentifier>{6b074d7d-8c44-4b6b-bc42-f733e74a89ad}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Static\DeviceConfiguration">
-            <UniqueIdentifier>{6f84eecb-6940-471c-a092-9081959449dc}</UniqueIdentifier>
+            <UniqueIdentifier>{9cb0a00d-d816-4f3a-af89-2a22938e1f4d}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Static\Input">
-            <UniqueIdentifier>{fd131749-ae5f-4b18-a61c-c492d2b49228}</UniqueIdentifier>
+            <UniqueIdentifier>{9f143cd3-efa5-4b06-80f6-2a04aa088270}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Static\Physics">
-            <UniqueIdentifier>{e0edea6a-a8c7-4eab-a448-881b4e546d34}</UniqueIdentifier>
+            <UniqueIdentifier>{ace0d777-5073-4268-91d7-53fd6ec67b3f}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Static\Screen">
-            <UniqueIdentifier>{dff28416-4923-4eba-9e79-06cc0eecdf63}</UniqueIdentifier>
+            <UniqueIdentifier>{a983564f-6b47-4bcc-aeeb-8f712c20f9ed}</UniqueIdentifier>
         </Filter>
         <Filter Include="Component\Transform">
-            <UniqueIdentifier>{47f8b9ec-6bcf-4af1-8006-21c02e61a709}</UniqueIdentifier>
+            <UniqueIdentifier>{850a6e35-a704-429a-a0d5-3cc7a2b545c3}</UniqueIdentifier>
         </Filter>
         <Filter Include="HUD">
-            <UniqueIdentifier>{5fd4faa2-8303-416a-80fd-b8a6182e39b7}</UniqueIdentifier>
+            <UniqueIdentifier>{6f2490fa-028f-46d1-87e1-8d5bcdfa4dbe}</UniqueIdentifier>
         </Filter>
         <Filter Include="Plugin">
-            <UniqueIdentifier>{0d0d6b34-7513-4b90-8690-b1698d34af83}</UniqueIdentifier>
+            <UniqueIdentifier>{7ea70b99-95d5-4358-a806-534f953a8ee9}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer">
-            <UniqueIdentifier>{a28cf95d-ac51-4f0f-af00-9d92180dea0d}</UniqueIdentifier>
+            <UniqueIdentifier>{7c0a5c0a-b80e-4b9d-8279-f09a54a0e158}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl">
-            <UniqueIdentifier>{301c229a-b56e-4c45-9876-5b38d54acd6a}</UniqueIdentifier>
+            <UniqueIdentifier>{e8e65845-6a6e-4c04-b61a-a8773d1cf6d6}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl\Direct3D11">
-            <UniqueIdentifier>{93ce875c-36d1-4165-9f39-0c9d4c3392a2}</UniqueIdentifier>
+            <UniqueIdentifier>{986165e9-c59b-40ca-bb5a-18e34cf935a9}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl\Direct3D12">
-            <UniqueIdentifier>{71afbeaa-1079-404a-a8f4-ac5da40a5f74}</UniqueIdentifier>
+            <UniqueIdentifier>{d323a14e-8d2b-446e-ab2c-be808fe0e6d2}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl\GCM">
-            <UniqueIdentifier>{d0694537-5085-4542-8a9f-0a5ddec1bfdf}</UniqueIdentifier>
+            <UniqueIdentifier>{ed4fae35-74af-44e9-9cac-3a95e16d88e4}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl\Mantle">
-            <UniqueIdentifier>{51ce9f9b-5374-4ed4-86ec-de272e808c3c}</UniqueIdentifier>
+            <UniqueIdentifier>{d5dbbc43-c042-4b78-9399-6e2e08f8fe1e}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Impl\Metal">
-            <UniqueIdentifier>{bc2d1f1f-7176-4a23-8ece-7a6b68cfe8f4}</UniqueIdentifier>
-        </Filter>
-        <Filter Include="Renderer\Impl\OpenGL">
-            <UniqueIdentifier>{4cdc020f-3e13-472f-ba4b-8b4beaffbb12}</UniqueIdentifier>
+            <UniqueIdentifier>{f467b8fb-d48b-41eb-a27c-7d2fb72fcb66}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Shader">
-            <UniqueIdentifier>{97869058-6a03-48a9-9b73-c5c575aa632f}</UniqueIdentifier>
+            <UniqueIdentifier>{51d3f10d-d4fd-4baf-8ebe-2592dbbc10ad}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Shader\CrossCompiler">
-            <UniqueIdentifier>{88691ef9-6c03-437f-89e7-25e2b1957834}</UniqueIdentifier>
+            <UniqueIdentifier>{96f57721-94e3-4c91-969a-8eddcb3eff7a}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Shader\CrossCompiler\Description">
-            <UniqueIdentifier>{8739bb82-bf79-4c38-aca4-d9b7c0740ae9}</UniqueIdentifier>
+            <UniqueIdentifier>{277f7380-59c7-4f5c-a2d5-8a42ad731f86}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Shader\CrossCompiler\Generator">
-            <UniqueIdentifier>{2fb4bab1-5495-4182-a5f0-64785380a2a9}</UniqueIdentifier>
+            <UniqueIdentifier>{80b7987a-2c55-44de-9a09-01bf5a9eca72}</UniqueIdentifier>
         </Filter>
         <Filter Include="Renderer\Shader\CrossCompiler\Parser">
-            <UniqueIdentifier>{17bbfefa-7f37-49a2-915c-a7c577085168}</UniqueIdentifier>
+            <UniqueIdentifier>{2e3f061f-0171-4e0a-89ce-4c5d9e79e819}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource">
-            <UniqueIdentifier>{15b362a3-f7a4-4e20-8057-d915bf369404}</UniqueIdentifier>
+            <UniqueIdentifier>{3efdb19c-90f4-4c8c-adc8-73f731c2160e}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\Material">
-            <UniqueIdentifier>{7e137470-76af-4380-b663-8fb8e6b5e06a}</UniqueIdentifier>
+            <UniqueIdentifier>{f2cd2226-e379-4b04-a149-4c29c1d99305}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceIdentifier">
-            <UniqueIdentifier>{d4637d01-c5a6-4b83-92a9-8a03d148d2f9}</UniqueIdentifier>
+            <UniqueIdentifier>{7845ec13-7ed2-4bc2-a752-613a7766833a}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceLoader">
-            <UniqueIdentifier>{7eca0be6-aa88-4da1-bbd4-6e6ed87e0a36}</UniqueIdentifier>
+            <UniqueIdentifier>{88364957-65c8-4b25-9eaa-ce5d49529aea}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceLoader\FromFile">
-            <UniqueIdentifier>{6becd4cc-3dbd-4403-b566-95f8c7b490d5}</UniqueIdentifier>
+            <UniqueIdentifier>{9df9c705-a98f-4e33-b2f1-e860ef2b4979}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceLoader\FromMemory">
-            <UniqueIdentifier>{cd6ed216-b43c-4043-bdb6-314e7baa67eb}</UniqueIdentifier>
+            <UniqueIdentifier>{85067f33-d25e-43d3-850a-68d54a62b67d}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceLoader\FromPackage">
-            <UniqueIdentifier>{ece85d77-b165-4514-8c7b-f0b2d30e6b79}</UniqueIdentifier>
+            <UniqueIdentifier>{419a7cfe-ba00-49b1-b1e8-847d2fedfd06}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceLoader\FromServer">
-            <UniqueIdentifier>{2469b33b-acbc-44c4-bbc4-d100c4b5d997}</UniqueIdentifier>
+            <UniqueIdentifier>{a5824d24-038c-4017-90b2-63a5a2c762bb}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ResourceStreamer">
-            <UniqueIdentifier>{9198ea9d-cd30-4c53-be03-c794ca8e417a}</UniqueIdentifier>
+            <UniqueIdentifier>{dc3e3f44-6083-4c0c-bdf0-15ac222b29c1}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\ShaderProgram">
-            <UniqueIdentifier>{8f1347f1-c368-4777-9c35-4d4efad7c6db}</UniqueIdentifier>
+            <UniqueIdentifier>{7c1476cc-15df-4cb5-9b50-7f24b6681ce9}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\StaticMesh">
-            <UniqueIdentifier>{b7bdd135-0b0e-45a6-8f66-a014963d23be}</UniqueIdentifier>
+            <UniqueIdentifier>{32120316-c93a-403f-ae06-912fd2747af0}</UniqueIdentifier>
         </Filter>
         <Filter Include="Resource\Texture2D">
-            <UniqueIdentifier>{0d904516-7e68-4426-b8e7-d01d649a22de}</UniqueIdentifier>
+            <UniqueIdentifier>{2444cff5-ad2d-4f77-831e-639835e1dea6}</UniqueIdentifier>
         </Filter>
         <Filter Include="Scene">
-            <UniqueIdentifier>{b1cd3ce5-99bd-43ed-be3c-609f05484595}</UniqueIdentifier>
+            <UniqueIdentifier>{d7b88734-2356-46ea-864e-178a88d165fd}</UniqueIdentifier>
         </Filter>
         <Filter Include="_DLLResources">
-            <UniqueIdentifier>{c56ad015-6915-4ced-aea8-86b5355208f8}</UniqueIdentifier>
+            <UniqueIdentifier>{2d18b3b8-48b4-4c2f-a445-94ccbdcd6513}</UniqueIdentifier>
         </Filter>
     </ItemGroup>
     <ItemGroup>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\.gdproj.cs" />
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Application\Application.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Application\Application.cc">
             <Filter>Application</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Application\Application.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Application\Application.hh">
             <Filter>Application</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Application\Application.inl">
             <Filter>Application</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Component.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Component.cc">
             <Filter>Component</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Component.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Component.hh">
             <Filter>Component</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Component.inl">
             <Filter>Component</Filter>
         </None>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer.hh">
             <Filter>Component</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Camera\Camera.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Camera\Camera.cc">
             <Filter>Component\Camera</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Camera\Camera.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Camera\Camera.hh">
             <Filter>Component\Camera</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\GameObject\GameObject.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\GameObject\GameObject.cc">
             <Filter>Component\GameObject</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\GameObject\GameObject.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\GameObject\GameObject.hh">
             <Filter>Component\GameObject</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\GameObject\GameObject.inl">
             <Filter>Component\GameObject</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer\MeshRenderer.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer\MeshRenderer.cc">
             <Filter>Component\MeshRenderer</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer\MeshRenderer.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\MeshRenderer\MeshRenderer.hh">
             <Filter>Component\MeshRenderer</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\StaticComponent.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\StaticComponent.cc">
             <Filter>Component\Static</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\StaticComponent.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\StaticComponent.hh">
             <Filter>Component\Static</Filter>
         </ClInclude>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\DeviceConfiguration\DeviceConfiguration.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\DeviceConfiguration\DeviceConfiguration.hh">
             <Filter>Component\Static\DeviceConfiguration</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\DeviceConfiguration\DeviceConfiguration_WIN32.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\DeviceConfiguration\DeviceConfiguration_WIN32.cc">
             <Filter>Component\Static\DeviceConfiguration</Filter>
         </ClCompile>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input.cc">
             <Filter>Component\Static\Input</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input.hh">
             <Filter>Component\Static\Input</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input_WIN32_WINAPI.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Input\Input_WIN32_WINAPI.cc">
             <Filter>Component\Static\Input</Filter>
         </ClCompile>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Physics\Physics.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Physics\Physics.cc">
             <Filter>Component\Static\Physics</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Physics\Physics.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Physics\Physics.hh">
             <Filter>Component\Static\Physics</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Physics\Physics.inl">
             <Filter>Component\Static\Physics</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Screen\Screen.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Screen\Screen.cc">
             <Filter>Component\Static\Screen</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Screen\Screen.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Screen\Screen.hh">
             <Filter>Component\Static\Screen</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Static\Screen\Screen.inl">
             <Filter>Component\Static\Screen</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Transform\Transform.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Transform\Transform.cc">
             <Filter>Component\Transform</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Transform\Transform.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Transform\Transform.hh">
             <Filter>Component\Transform</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Component\Transform\Transform.inl">
             <Filter>Component\Transform</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\HUD\HUD.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\HUD\HUD.cc">
             <Filter>HUD</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\HUD\HUD.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\HUD\HUD.hh">
             <Filter>HUD</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Plugin\Plugin.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Plugin\Plugin.cc">
             <Filter>Plugin</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Plugin\Plugin.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Plugin\Plugin.hh">
             <Filter>Plugin</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Renderer.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Renderer.cc">
             <Filter>Renderer</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Renderer.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Renderer.hh">
             <Filter>Renderer</Filter>
         </ClInclude>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\RendererMethods.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\RendererMethods.hh">
             <Filter>Renderer</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Buffer.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Buffer.cc">
             <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Buffer.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Buffer.hh">
             <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11IndexedShape.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11IndexedShape.cc">
             <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11IndexedShape.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11IndexedShape.hh">
             <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11LinkagePoint.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11LinkagePoint.cc">
             <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11LinkagePoint.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11LinkagePoint.hh">
             <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Renderer.cpp">
-            <Filter>Renderer\Impl\Direct3D11</Filter>
-        </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Renderer.h">
-            <Filter>Renderer\Impl\Direct3D11</Filter>
-        </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11RenderTarget.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Renderer.cc">
             <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11RenderTarget.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Renderer.hh">
             <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Shader.cpp">
-            <Filter>Renderer\Impl\Direct3D11</Filter>
-        </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Shader.h">
-            <Filter>Renderer\Impl\Direct3D11</Filter>
-        </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11RenderTarget.cc">
             <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11RenderTarget.hh">
             <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.cpp">
-            <Filter>Renderer\Impl\OpenGL</Filter>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Shader.cc">
+            <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLBuffer.h">
-            <Filter>Renderer\Impl\OpenGL</Filter>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Shader.hh">
+            <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.cpp">
-            <Filter>Renderer\Impl\OpenGL</Filter>
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.cc">
+            <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRenderer.h">
-            <Filter>Renderer\Impl\OpenGL</Filter>
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\D3D11Texture2D.hh">
+            <Filter>Renderer\Impl\Direct3D11</Filter>
         </ClInclude>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererDefines.h">
-            <Filter>Renderer\Impl\OpenGL</Filter>
-        </ClInclude>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\OpenGL\OGLRendererMethods.h">
-            <Filter>Renderer\Impl\OpenGL</Filter>
-        </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.cc">
             <Filter>Renderer\Shader</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.hh">
             <Filter>Renderer\Shader</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.inl">
             <Filter>Renderer\Shader</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.cc">
             <Filter>Renderer\Shader\CrossCompiler</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.hh">
             <Filter>Renderer\Shader\CrossCompiler</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.inl">
             <Filter>Renderer\Shader\CrossCompiler</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.cc">
             <Filter>Renderer\Shader\CrossCompiler\Description</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.hh">
             <Filter>Renderer\Shader\CrossCompiler\Description</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.inl">
             <Filter>Renderer\Shader\CrossCompiler\Description</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.cc">
             <Filter>Renderer\Shader\CrossCompiler\Generator</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.hh">
             <Filter>Renderer\Shader\CrossCompiler\Generator</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.inl">
             <Filter>Renderer\Shader\CrossCompiler\Generator</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.cc">
             <Filter>Renderer\Shader\CrossCompiler\Parser</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.hh">
             <Filter>Renderer\Shader\CrossCompiler\Parser</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.inl">
             <Filter>Renderer\Shader\CrossCompiler\Parser</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.cc">
             <Filter>Resource</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.hh">
             <Filter>Resource</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.inl">
             <Filter>Resource</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Material\Material.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Material\Material.cc">
             <Filter>Resource\Material</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Material\Material.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Material\Material.hh">
             <Filter>Resource\Material</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceIdentifier\ResourceIdentifier.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceIdentifier\ResourceIdentifier.cc">
             <Filter>Resource\ResourceIdentifier</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceIdentifier\ResourceIdentifier.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceIdentifier\ResourceIdentifier.hh">
             <Filter>Resource\ResourceIdentifier</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceIdentifier\ResourceIdentifier.inl">
             <Filter>Resource\ResourceIdentifier</Filter>
         </None>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\ResourceLoader.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\ResourceLoader.hh">
             <Filter>Resource\ResourceLoader</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\ResourceLoader.inl">
             <Filter>Resource\ResourceLoader</Filter>
         </None>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile.hh">
             <Filter>Resource\ResourceLoader\FromFile</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile.inl">
             <Filter>Resource\ResourceLoader\FromFile</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile_STD.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile_STD.cc">
             <Filter>Resource\ResourceLoader\FromFile</Filter>
         </ClCompile>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.cc">
             <Filter>Resource\ResourceLoader\FromMemory</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.hh">
             <Filter>Resource\ResourceLoader\FromMemory</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.inl">
             <Filter>Resource\ResourceLoader\FromMemory</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromPackage\ResourceLoaderFromPackage.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromPackage\ResourceLoaderFromPackage.cc">
             <Filter>Resource\ResourceLoader\FromPackage</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromPackage\ResourceLoaderFromPackage.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromPackage\ResourceLoaderFromPackage.hh">
             <Filter>Resource\ResourceLoader\FromPackage</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromPackage\ResourceLoaderFromPackage.inl">
             <Filter>Resource\ResourceLoader\FromPackage</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromServer\ResourceLoaderFromServer.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromServer\ResourceLoaderFromServer.cc">
             <Filter>Resource\ResourceLoader\FromServer</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromServer\ResourceLoaderFromServer.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromServer\ResourceLoaderFromServer.hh">
             <Filter>Resource\ResourceLoader\FromServer</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromServer\ResourceLoaderFromServer.inl">
             <Filter>Resource\ResourceLoader\FromServer</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceStreamer\ResourceStreamer.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceStreamer\ResourceStreamer.cc">
             <Filter>Resource\ResourceStreamer</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceStreamer\ResourceStreamer.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceStreamer\ResourceStreamer.hh">
             <Filter>Resource\ResourceStreamer</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceStreamer\ResourceStreamer.inl">
             <Filter>Resource\ResourceStreamer</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ShaderProgram\ShaderProgramResource.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ShaderProgram\ShaderProgramResource.cc">
             <Filter>Resource\ShaderProgram</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ShaderProgram\ShaderProgramResource.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ShaderProgram\ShaderProgramResource.hh">
             <Filter>Resource\ShaderProgram</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\StaticMesh\StaticMesh.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\StaticMesh\StaticMesh.cc">
             <Filter>Resource\StaticMesh</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\StaticMesh\StaticMesh.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\StaticMesh\StaticMesh.hh">
             <Filter>Resource\StaticMesh</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\StaticMesh\StaticMesh.inl">
             <Filter>Resource\StaticMesh</Filter>
         </None>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Texture2D\Texture2DResource.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Texture2D\Texture2DResource.cc">
             <Filter>Resource\Texture2D</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Texture2D\Texture2DResource.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Texture2D\Texture2DResource.hh">
             <Filter>Resource\Texture2D</Filter>
         </ClInclude>
-        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Scene\Scene.cpp">
+        <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Scene\Scene.cc">
             <Filter>Scene</Filter>
         </ClCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Scene\Scene.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Scene\Scene.hh">
             <Filter>Scene</Filter>
         </ClInclude>
         <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Scene\Scene.inl">
@@ -460,7 +439,7 @@
         <ResourceCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\_DLLResources\IncredibleEngine.rc">
             <Filter>_DLLResources</Filter>
         </ResourceCompile>
-        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\_DLLResources\resource.h">
+        <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\_DLLResources\resource.hh">
             <Filter>_DLLResources</Filter>
         </ClInclude>
     </ItemGroup>

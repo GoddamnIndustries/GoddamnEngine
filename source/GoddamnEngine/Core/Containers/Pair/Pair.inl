@@ -11,7 +11,7 @@
 #	error "Attempting to include 'Pair.inl' file. Please, use 'Pair.h' instead."
 #endif	// if (!defined(GD_CORE_CONTAINERS_PAIR))
 
-#include <GoddamnEngine/Core/Utility.h>
+#include <GoddamnEngine/Core/Utility.hh>
 
 GD_NAMESPACE_BEGIN
 

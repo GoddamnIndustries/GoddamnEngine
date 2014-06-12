@@ -1,9 +1,9 @@
-#include <GoddamnEngine/Engine/Application/Application.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
-#include <GoddamnEngine/Engine/Component/Transform/Transform.h>
-#include <GoddamnEngine/Engine/Component/MeshRenderer/MeshRenderer.h>
-#include <GoddamnEngine/Engine/Component/Static/Input/Input.h>
-#include <GoddamnEngine/Engine/Component/Static/Physics/Physics.h>
+#include <GoddamnEngine/Engine/Application/Application.hh>
+#include <GoddamnEngine/Engine/Component/GameObject/GameObject.hh>
+#include <GoddamnEngine/Engine/Component/Transform/Transform.hh>
+#include <GoddamnEngine/Engine/Component/MeshRenderer/MeshRenderer.hh>
+#include <GoddamnEngine/Engine/Component/Static/Input/Input.hh>
+#include <GoddamnEngine/Engine/Component/Static/Physics/Physics.hh>
 
 #include <vector>
 using namespace GD_NAMESPACE;
