@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// StreamedPreprocessor.h - C-style preprocessor interface.
+/// StreamedPreprocessor.hh - C-style preprocessor interface.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

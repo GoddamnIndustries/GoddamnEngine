@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// MathCompilerSetupEnd.h - resores compiler from MathCompilerSetupStart state.
+/// MathCompilerSetupEnd.hh - resores compiler from MathCompilerSetupStart state.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

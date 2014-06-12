@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Parser.h - HLSL parser implementation.
+/// Parser.hh - HLSL parser implementation.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

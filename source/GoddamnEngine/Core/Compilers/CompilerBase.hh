@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// CompilerBase.h - compilers common interface
+/// CompilerBase.hh - compilers common interface
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

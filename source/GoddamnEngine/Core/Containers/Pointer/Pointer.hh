@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Pointer.h - smart pointers interface.
+/// Pointer.hh - smart pointers interface.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Atomic.h - Atomic variables interface and implementation.
+/// Atomic.hh - Atomic variables interface and implementation.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

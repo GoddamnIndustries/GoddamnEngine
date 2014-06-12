@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// StreamedLexer.h - lexer interface.
+/// StreamedLexer.hh - lexer interface.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

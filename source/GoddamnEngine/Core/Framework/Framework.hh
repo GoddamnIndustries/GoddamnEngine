@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Framework.h - Framework interface.
+/// Framework.hh - Framework interface.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

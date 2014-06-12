@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// CrossCompiler.cpp - implementation for ICCSL compiler
+/// CrossCompiler.cc - implementation for ICCSL compiler
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

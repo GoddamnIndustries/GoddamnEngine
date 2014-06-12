@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Vector.h - Dynamically sized array interface
+/// Vector.hh - Dynamically sized array interface
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

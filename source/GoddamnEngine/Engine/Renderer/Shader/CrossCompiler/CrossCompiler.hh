@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// CrossCompiler.h - common interface for HLSL cross compiler.
+/// CrossCompiler.hh - common interface for HLSL cross compiler.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

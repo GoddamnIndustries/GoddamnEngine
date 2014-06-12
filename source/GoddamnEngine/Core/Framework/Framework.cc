@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Framework.cpp - Framework implementation selector (non-Cocoa) source file.
+/// Framework.cc - Framework implementation selector (non-Cocoa) source file.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

@@ -21,7 +21,7 @@ fi
 # Writing Header prefix
 cat << ___EndHeader___
 //////////////////////////////////////////////////////////////////////////
-/// OGLRendererMethods.h - OpenGL methods declarations.
+/// OGLRendererMethods.hh - OpenGL methods declarations.
 /// Copyright (C) \$(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Toolchain.h - toolchain element interface.
+/// Toolchain.hh - toolchain element interface.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

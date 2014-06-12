@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Matrix4x4.h - 4x4 matrix class.
+/// Matrix4x4.hh - 4x4 matrix class.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

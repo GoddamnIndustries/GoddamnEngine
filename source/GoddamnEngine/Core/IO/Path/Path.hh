@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Path.h - Path management utility interface.
+/// Path.hh - Path management utility interface.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

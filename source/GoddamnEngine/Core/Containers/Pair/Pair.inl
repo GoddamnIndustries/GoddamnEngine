@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Pair.h - pair structure class implementation.
+/// Pair.hh - pair structure class implementation.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

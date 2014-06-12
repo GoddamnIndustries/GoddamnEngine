@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// D3D11Buffer.h - HRI Buffer Direct3D 11 implementation interfaces.
+/// D3D11Buffer.hh - HRI Buffer Direct3D 11 implementation interfaces.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

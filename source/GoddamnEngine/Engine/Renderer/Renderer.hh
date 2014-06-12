@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Renderer.h - <p>Hardcore</p> Hardware Rendering Interface (HRI).
+/// Renderer.hh - <p>Hardcore</p> Hardware Rendering Interface (HRI).
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

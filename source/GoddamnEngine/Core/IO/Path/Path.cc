@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Path.cpp - Path management utility implementation.
+/// Path.cc - Path management utility implementation.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// D3D11Renderer.h - Direct3D 11 Hardware renderer implementation.
+/// D3D11Renderer.hh - Direct3D 11 Hardware renderer implementation.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

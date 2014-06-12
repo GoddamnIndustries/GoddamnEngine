@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// BoolVector.h - Dynamic bitset interface.
+/// BoolVector.hh - Dynamic bitset interface.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

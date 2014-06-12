@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Map.h - Dynamically sized associative vectors interfacs.
+/// Map.hh - Dynamically sized associative vectors interfacs.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

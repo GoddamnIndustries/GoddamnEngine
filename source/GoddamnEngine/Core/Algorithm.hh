@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Algorithm.h - Containers algorithms definition and implementations.
+/// Algorithm.hh - Containers algorithms definition and implementations.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

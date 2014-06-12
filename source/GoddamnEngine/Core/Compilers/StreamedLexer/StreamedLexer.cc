@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// StreamedLexer.cpp - tokenizer implementation
+/// StreamedLexer.cc - tokenizer implementation
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

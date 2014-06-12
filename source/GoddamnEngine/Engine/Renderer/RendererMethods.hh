@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// RendererMethods.h - HRI method declarations.
+/// RendererMethods.hh - HRI method declarations.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// String.h - Dynamically sized string interface
+/// String.hh - Dynamically sized string interface
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

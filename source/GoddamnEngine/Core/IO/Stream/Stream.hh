@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Stream.h - Base stream interface.
+/// Stream.hh - Base stream interface.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

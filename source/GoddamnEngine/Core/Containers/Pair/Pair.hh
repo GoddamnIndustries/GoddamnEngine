@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Pair.h - pair structure class interface.
+/// Pair.hh - pair structure class interface.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

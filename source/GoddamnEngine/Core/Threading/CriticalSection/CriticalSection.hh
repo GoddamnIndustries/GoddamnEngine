@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// CriticalSection.h - Critical section interface and implementation.
+/// CriticalSection.hh - Critical section interface and implementation.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

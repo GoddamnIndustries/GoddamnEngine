@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// StringEx.h - Extensions for strings
+/// StringEx.hh - Extensions for strings
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

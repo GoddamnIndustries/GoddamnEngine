@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// LockFreeList.h - Lock-free lst interface.
+/// LockFreeList.hh - Lock-free lst interface.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

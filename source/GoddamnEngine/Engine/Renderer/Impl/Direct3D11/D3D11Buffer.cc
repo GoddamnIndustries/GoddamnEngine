@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// D3D11Buffer.cpp - HRI Buffer Direct3D 11 implementation.
+/// D3D11Buffer.cc - HRI Buffer Direct3D 11 implementation.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

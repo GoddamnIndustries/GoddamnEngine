@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Containers.h - common alrorithms for containers interfaces.
+/// Containers.hh - common alrorithms for containers interfaces.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
