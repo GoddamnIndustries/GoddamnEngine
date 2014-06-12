@@ -19,7 +19,7 @@ if [[ ! -f $GL3HEADER ]]; then
 fi
 
 # Writing Header prefix
-cat << ___EndHeader___
+cat << ___EndOfData___
 //////////////////////////////////////////////////////////////////////////
 /// OGLRendererMethods.hh - OpenGL methods declarations.
 /// Copyright (C) \$(GD_DEV) 2011 - Present. All Rights Reserved.
@@ -124,9 +124,9 @@ cat << ___EndHeader___
 		GD_DEFINE_OGL_METHOD_GLUE_ARGS(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9) \\
 		)
 		
-#define GD_DEFINE_OGL_METHOD_10(ReturnType, MethodName, T0, A0, T1, A1, T2, A2, T3, A3, T4, A4, T5, A5, T6, A6, T7, A7, T8, A8, T9, A9, T10, A10) \\
+#define GD_DEFINE_OGL_METHOD_11(ReturnType, MethodName, T0, A0, T1, A1, T2, A2, T3, A3, T4, A4, T5, A5, T6, A6, T7, A7, T8, A8, T9, A9, T10, A10) \\
 	GD_DEFINE_OGL_METHOD(ReturnType, MethodName, \\
-		GD_DEFINE_OGL_METHOD_GLUE_ARGS(T0 A0, T1 A1, T2 A2, T3 A3, T4 A4, T5 A5, T6 A6, T7 A7, T8 A8, T9 A9, T10, A10), \\
+		GD_DEFINE_OGL_METHOD_GLUE_ARGS(T0 A0, T1 A1, T2 A2, T3 A3, T4 A4, T5 A5, T6 A6, T7 A7, T8 A8, T9 A9, T10 A10), \\
 		GD_DEFINE_OGL_METHOD_GLUE_ARGS(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10) \\
 		)
 
@@ -142,43 +142,69 @@ cat << ___EndHeader___
 //////////////////////////////////////////////////////////////////////////
 // OpenGL <-> Functionality
 //////////////////////////////////////////////////////////////////////////
-___EndHeader___
+___EndOfData___
 
 while read -r LINE; do
-	if [[ $LINE == GL_APICALL* ]]; then
+	if [[ $LINE == GL_API* ]]; then
 		# Found function definition	
 		# Locating parameters start brace
-		BRACE_OPEN_INDEX="$(awk -v a="$LINE" -v b='(' 'BEGIN{print index(a,b)}')"
-		BRACE_CLOSE_INDEX="$(awk -v a="$LINE" -v b=')' 'BEGIN{print index(a,b)}')"
-		FUNCTION_DECL=${LINE:0:`expr $BRACE_OPEN_INDEX - 1`}
+		BRACE_OPEN_INDEX=`awk -v a="$LINE" -v b='(' 'BEGIN{print index(a,b)}'`
+		BRACE_CLOSE_INDEX=`awk -v a="$LINE" -v b=')' 'BEGIN{print index(a,b)}'`
 
 		# Process function definition
-		FUNCTION_DECL=${LINE:0:`expr $BRACE_OPEN_INDEX - 1`}
-		FUNCTION_DECLS=(`echo $FUNCTION_DECL | tr " " "\n"`)
+		FUNCTION_DECLS=(`echo ${LINE:0:$(($BRACE_OPEN_INDEX - 1))} | tr " " "\n"`)
 		FUNCTION_TYPE=${FUNCTION_DECLS[1]}
-		FUNCTION_NAME=${FUNCTION_DECLS[3]:2}
+		if [[ $FUNCTION_TYPE == const ]]; then # Lets check if type is something like 'const GLsomething* param'
+			FUNCTION_TYPE='const '${FUNCTION_DECLS[2]}
+			FUNCTION_NAME=${FUNCTION_DECLS[4]:2}
+		else
+			FUNCTION_NAME=${FUNCTION_DECLS[3]:2}
+		fi
 				
 		# Processing function parameters.
-		PARAMETERS_DECL=${LINE:$BRACE_OPEN_INDEX:`expr $BRACE_CLOSE_INDEX - $BRACE_OPEN_INDEX - 1`}
-		PARAMETERS=(`echo $PARAMETERS_DECL | tr " " "\n"`)
-		PARAMETERS_COUNT=`expr ${#PARAMETERS[@]} / 2`
+		PARAMETERS=(`echo ${LINE:$BRACE_OPEN_INDEX:$(($BRACE_CLOSE_INDEX - $BRACE_OPEN_INDEX - 1))} | tr " " "\n"`)
+		PARAMETERS_LENGTH=${#PARAMETERS[@]}
 		
-		printf "\n\n// $LINE"
-		printf "\nGD_DEFINE_OGL_METHOD_$PARAMETERS_COUNT(\n\t$FUNCTION_TYPE, $FUNCTION_NAME,"
+		PARAMETERS_DECL='\n'
+		PARAMETERS_COUNT=0
 		
-		for (( PARAMETER_INDEX=0; PARAMETER_INDEX<${PARAMETERS_COUNT}; PARAMETER_INDEX++ )); do
-			PARAMETER_TYPE=${PARAMETERS[$PARAMETER_INDEX * 2]}
-			PARAMETER_NAME=${PARAMETERS[$PARAMETER_INDEX * 2 + 1]}
-			
-			printf "\n\t$PARAMETER_TYPE const, $PARAMETER_NAME"
-		done
+		# Explicit no parameters was defined using 'void' keyword.
+		if [[ $PARAMETERS_LENGTH != 1 ]]; then
+			PARAMETERS_DECL=',\n'
+			for (( PARAMETER_INDEX=0; PARAMETER_INDEX<$PARAMETERS_LENGTH; )); do
+				PARAMETER_TYPE=${PARAMETERS[$PARAMETER_INDEX]}
+				if [[ $PARAMETER_TYPE == const ]]; then	# Const pointer
+					PARAMETER_TYPE='const '${PARAMETERS[$PARAMETER_INDEX + 1]}
+					PARAMETER_TYPE_NEXT=${PARAMETERS[$PARAMETER_INDEX + 2]}
+					if [[ $PARAMETER_TYPE_NEXT == const* ]]; then	# Const pointer on const pointer
+						PARAMETER_TYPE=$PARAMETER_TYPE' '$PARAMETER_TYPE_NEXT
+						((PARAMETER_INDEX ++))
+					fi
+					
+					PARAMETER_NAME=${PARAMETERS[$PARAMETER_INDEX + 2]}
+					((PARAMETER_INDEX += 3))
+				else
+					PARAMETER_NAME=${PARAMETERS[$PARAMETER_INDEX + 1]}
+					((PARAMETER_INDEX += 2))
+				fi
+				
+				if [[ $PARAMETER_NAME == '*'* ]]; then	# Pointer sign was added to name and not to type
+					PARAMETER_NAME=${PARAMETER_NAME:1}
+					PARAMETER_TYPE=$PARAMETER_TYPE'*'
+				fi
+				
+				PARAMETERS_DECL=$PARAMETERS_DECL"\t$PARAMETER_TYPE const, $PARAMETER_NAME\n"
+				((PARAMETERS_COUNT ++))
+			done
+		fi
 		
-		printf "\n\t)"
+		printf "\n\n// $FUNCTION_TYPE gl$FUNCTION_NAME(${PARAMETERS[*]})"
+		printf "\nGD_DEFINE_OGL_METHOD_$PARAMETERS_COUNT(\n\t$FUNCTION_TYPE, $FUNCTION_NAME$PARAMETERS_DECL\t)"
 	fi
 done < "$GL3HEADER"
 
 # Writing Header postfix
-cat << ___EndHeader___
+cat << ___EndOfData___
 
 
 #undef GD_DEFINE_OGL_METHOD_0
@@ -195,6 +221,6 @@ cat << ___EndHeader___
 #undef GD_DEFINE_OGL_METHOD_11
 #undef GD_DEFINE_OGL_METHOD_GLUE_ARGS
 #undef GD_DEFINE_OGL_METHOD
-___EndHeader___
+___EndOfData___
 
 

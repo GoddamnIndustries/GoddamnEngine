@@ -1,4 +1,4 @@
-#include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRenderer.h>
+#include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRenderer.hh>
 
 #if (!defined(GD_HRI_OGL_ES))
 #	if (defined(GD_PLATFORM_WINDOWS))
@@ -21,7 +21,7 @@ GD_NAMESPACE_BEGIN
 #	  define  GD_DEFINE_OGL_METHOD(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) \
 		self->Driver->_##MethodName = static_cast<ReturnType (*)(ArgumentsDeclarations)>(GD_FIND_OGL_METHOD(#MethodName)); \
 		GD_ASSERT(self->Driver->_##MethodName != nullptr, "Unable to map 'gl"#MethodName"' method.");
-#	  include <GoddamnEngine/Engine/Renderer/RendererMethods.h>
+#	  include <GoddamnEngine/Engine/Renderer/RendererMethods.hh>
 #endif	// if (!defined(GD_HRI_OGL_ES))
 
 		return true;

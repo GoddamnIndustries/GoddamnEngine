@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// OGLRendererMethods.h - OpenGL methods declarations.
+/// OGLRendererMethods.hh - OpenGL methods declarations.
 /// Copyright (C) $(GD_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
@@ -102,9 +102,9 @@
 		GD_DEFINE_OGL_METHOD_GLUE_ARGS(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9) \
 		)
 		
-#define GD_DEFINE_OGL_METHOD_10(ReturnType, MethodName, T0, A0, T1, A1, T2, A2, T3, A3, T4, A4, T5, A5, T6, A6, T7, A7, T8, A8, T9, A9, T10, A10) \
+#define GD_DEFINE_OGL_METHOD_11(ReturnType, MethodName, T0, A0, T1, A1, T2, A2, T3, A3, T4, A4, T5, A5, T6, A6, T7, A7, T8, A8, T9, A9, T10, A10) \
 	GD_DEFINE_OGL_METHOD(ReturnType, MethodName, \
-		GD_DEFINE_OGL_METHOD_GLUE_ARGS(T0 A0, T1 A1, T2 A2, T3 A3, T4 A4, T5 A5, T6 A6, T7 A7, T8 A8, T9 A9, T10, A10), \
+		GD_DEFINE_OGL_METHOD_GLUE_ARGS(T0 A0, T1 A1, T2 A2, T3 A3, T4 A4, T5 A5, T6 A6, T7 A7, T8 A8, T9 A9, T10 A10), \
 		GD_DEFINE_OGL_METHOD_GLUE_ARGS(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10) \
 		)
 
@@ -122,56 +122,56 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-// GL_APICALL void           GL_APIENTRY glActiveTexture (GLenum texture);
+// void glActiveTexture(GLenum texture)
 GD_DEFINE_OGL_METHOD_1(
 	void, ActiveTexture,
 	GLenum const, texture
 	)
 
-// GL_APICALL void           GL_APIENTRY glAttachShader (GLuint program, GLuint shader);
+// void glAttachShader(GLuint program, GLuint shader)
 GD_DEFINE_OGL_METHOD_2(
 	void, AttachShader,
 	GLuint const, program,
 	GLuint const, shader
 	)
 
-// GL_APICALL void           GL_APIENTRY glBindAttribLocation (GLuint program, GLuint index, const GLchar* name);
+// void glBindAttribLocation(GLuint program, GLuint index, const GLchar* name)
 GD_DEFINE_OGL_METHOD_3(
 	void, BindAttribLocation,
 	GLuint const, program,
 	GLuint const, index,
-	const const, GLchar*
+	const GLchar* const, name
 	)
 
-// GL_APICALL void           GL_APIENTRY glBindBuffer (GLenum target, GLuint buffer);
+// void glBindBuffer(GLenum target, GLuint buffer)
 GD_DEFINE_OGL_METHOD_2(
 	void, BindBuffer,
 	GLenum const, target,
 	GLuint const, buffer
 	)
 
-// GL_APICALL void           GL_APIENTRY glBindFramebuffer (GLenum target, GLuint framebuffer);
+// void glBindFramebuffer(GLenum target, GLuint framebuffer)
 GD_DEFINE_OGL_METHOD_2(
 	void, BindFramebuffer,
 	GLenum const, target,
 	GLuint const, framebuffer
 	)
 
-// GL_APICALL void           GL_APIENTRY glBindRenderbuffer (GLenum target, GLuint renderbuffer);
+// void glBindRenderbuffer(GLenum target, GLuint renderbuffer)
 GD_DEFINE_OGL_METHOD_2(
 	void, BindRenderbuffer,
 	GLenum const, target,
 	GLuint const, renderbuffer
 	)
 
-// GL_APICALL void           GL_APIENTRY glBindTexture (GLenum target, GLuint texture);
+// void glBindTexture(GLenum target, GLuint texture)
 GD_DEFINE_OGL_METHOD_2(
 	void, BindTexture,
 	GLenum const, target,
 	GLuint const, texture
 	)
 
-// GL_APICALL void           GL_APIENTRY glBlendColor (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+// void glBlendColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 GD_DEFINE_OGL_METHOD_4(
 	void, BlendColor,
 	GLfloat const, red,
@@ -180,27 +180,27 @@ GD_DEFINE_OGL_METHOD_4(
 	GLfloat const, alpha
 	)
 
-// GL_APICALL void           GL_APIENTRY glBlendEquation (GLenum mode);
+// void glBlendEquation(GLenum mode)
 GD_DEFINE_OGL_METHOD_1(
 	void, BlendEquation,
 	GLenum const, mode
 	)
 
-// GL_APICALL void           GL_APIENTRY glBlendEquationSeparate (GLenum modeRGB, GLenum modeAlpha);
+// void glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha)
 GD_DEFINE_OGL_METHOD_2(
 	void, BlendEquationSeparate,
 	GLenum const, modeRGB,
 	GLenum const, modeAlpha
 	)
 
-// GL_APICALL void           GL_APIENTRY glBlendFunc (GLenum sfactor, GLenum dfactor);
+// void glBlendFunc(GLenum sfactor, GLenum dfactor)
 GD_DEFINE_OGL_METHOD_2(
 	void, BlendFunc,
 	GLenum const, sfactor,
 	GLenum const, dfactor
 	)
 
-// GL_APICALL void           GL_APIENTRY glBlendFuncSeparate (GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+// void glBlendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
 GD_DEFINE_OGL_METHOD_4(
 	void, BlendFuncSeparate,
 	GLenum const, srcRGB,
@@ -209,37 +209,37 @@ GD_DEFINE_OGL_METHOD_4(
 	GLenum const, dstAlpha
 	)
 
-// GL_APICALL void           GL_APIENTRY glBufferData (GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
+// void glBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage)
 GD_DEFINE_OGL_METHOD_4(
 	void, BufferData,
 	GLenum const, target,
 	GLsizeiptr const, size,
-	const const, GLvoid*
-	data, const, GLenum
+	const GLvoid* const, data,
+	GLenum const, usage
 	)
 
-// GL_APICALL void           GL_APIENTRY glBufferSubData (GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid* data);
+// void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid* data)
 GD_DEFINE_OGL_METHOD_4(
 	void, BufferSubData,
 	GLenum const, target,
 	GLintptr const, offset,
 	GLsizeiptr const, size,
-	const const, GLvoid*
+	const GLvoid* const, data
 	)
 
-// GL_APICALL GLenum         GL_APIENTRY glCheckFramebufferStatus (GLenum target);
+// GLenum glCheckFramebufferStatus(GLenum target)
 GD_DEFINE_OGL_METHOD_1(
 	GLenum, CheckFramebufferStatus,
 	GLenum const, target
 	)
 
-// GL_APICALL void           GL_APIENTRY glClear (GLbitfield mask);
+// void glClear(GLbitfield mask)
 GD_DEFINE_OGL_METHOD_1(
 	void, Clear,
 	GLbitfield const, mask
 	)
 
-// GL_APICALL void           GL_APIENTRY glClearColor (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+// void glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 GD_DEFINE_OGL_METHOD_4(
 	void, ClearColor,
 	GLfloat const, red,
@@ -248,19 +248,19 @@ GD_DEFINE_OGL_METHOD_4(
 	GLfloat const, alpha
 	)
 
-// GL_APICALL void           GL_APIENTRY glClearDepthf (GLfloat depth);
+// void glClearDepthf(GLfloat depth)
 GD_DEFINE_OGL_METHOD_1(
 	void, ClearDepthf,
 	GLfloat const, depth
 	)
 
-// GL_APICALL void           GL_APIENTRY glClearStencil (GLint s);
+// void glClearStencil(GLint s)
 GD_DEFINE_OGL_METHOD_1(
 	void, ClearStencil,
 	GLint const, s
 	)
 
-// GL_APICALL void           GL_APIENTRY glColorMask (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
+// void glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
 GD_DEFINE_OGL_METHOD_4(
 	void, ColorMask,
 	GLboolean const, red,
@@ -269,13 +269,13 @@ GD_DEFINE_OGL_METHOD_4(
 	GLboolean const, alpha
 	)
 
-// GL_APICALL void           GL_APIENTRY glCompileShader (GLuint shader);
+// void glCompileShader(GLuint shader)
 GD_DEFINE_OGL_METHOD_1(
 	void, CompileShader,
 	GLuint const, shader
 	)
 
-// GL_APICALL void           GL_APIENTRY glCompressedTexImage2D (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid* data);
+// void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid* data)
 GD_DEFINE_OGL_METHOD_8(
 	void, CompressedTexImage2D,
 	GLenum const, target,
@@ -285,10 +285,10 @@ GD_DEFINE_OGL_METHOD_8(
 	GLsizei const, height,
 	GLint const, border,
 	GLsizei const, imageSize,
-	const const, GLvoid*
+	const GLvoid* const, data
 	)
 
-// GL_APICALL void           GL_APIENTRY glCompressedTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const GLvoid* data);
+// void glCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const GLvoid* data)
 GD_DEFINE_OGL_METHOD_9(
 	void, CompressedTexSubImage2D,
 	GLenum const, target,
@@ -299,10 +299,10 @@ GD_DEFINE_OGL_METHOD_9(
 	GLsizei const, height,
 	GLenum const, format,
 	GLsizei const, imageSize,
-	const const, GLvoid*
+	const GLvoid* const, data
 	)
 
-// GL_APICALL void           GL_APIENTRY glCopyTexImage2D (GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
+// void glCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border)
 GD_DEFINE_OGL_METHOD_8(
 	void, CopyTexImage2D,
 	GLenum const, target,
@@ -315,7 +315,7 @@ GD_DEFINE_OGL_METHOD_8(
 	GLint const, border
 	)
 
-// GL_APICALL void           GL_APIENTRY glCopyTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height);
+// void glCopyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height)
 GD_DEFINE_OGL_METHOD_8(
 	void, CopyTexSubImage2D,
 	GLenum const, target,
@@ -328,102 +328,102 @@ GD_DEFINE_OGL_METHOD_8(
 	GLsizei const, height
 	)
 
-// GL_APICALL GLuint         GL_APIENTRY glCreateProgram (void);
+// GLuint glCreateProgram(void)
 GD_DEFINE_OGL_METHOD_0(
-	GLuint, CreateProgram,
+	GLuint, CreateProgram
 	)
 
-// GL_APICALL GLuint         GL_APIENTRY glCreateShader (GLenum type);
+// GLuint glCreateShader(GLenum type)
 GD_DEFINE_OGL_METHOD_1(
 	GLuint, CreateShader,
 	GLenum const, type
 	)
 
-// GL_APICALL void           GL_APIENTRY glCullFace (GLenum mode);
+// void glCullFace(GLenum mode)
 GD_DEFINE_OGL_METHOD_1(
 	void, CullFace,
 	GLenum const, mode
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteBuffers (GLsizei n, const GLuint* buffers);
+// void glDeleteBuffers(GLsizei n, const GLuint* buffers)
 GD_DEFINE_OGL_METHOD_2(
 	void, DeleteBuffers,
 	GLsizei const, n,
-	const const, GLuint*
+	const GLuint* const, buffers
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteFramebuffers (GLsizei n, const GLuint* framebuffers);
+// void glDeleteFramebuffers(GLsizei n, const GLuint* framebuffers)
 GD_DEFINE_OGL_METHOD_2(
 	void, DeleteFramebuffers,
 	GLsizei const, n,
-	const const, GLuint*
+	const GLuint* const, framebuffers
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteProgram (GLuint program);
+// void glDeleteProgram(GLuint program)
 GD_DEFINE_OGL_METHOD_1(
 	void, DeleteProgram,
 	GLuint const, program
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteRenderbuffers (GLsizei n, const GLuint* renderbuffers);
+// void glDeleteRenderbuffers(GLsizei n, const GLuint* renderbuffers)
 GD_DEFINE_OGL_METHOD_2(
 	void, DeleteRenderbuffers,
 	GLsizei const, n,
-	const const, GLuint*
+	const GLuint* const, renderbuffers
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteShader (GLuint shader);
+// void glDeleteShader(GLuint shader)
 GD_DEFINE_OGL_METHOD_1(
 	void, DeleteShader,
 	GLuint const, shader
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteTextures (GLsizei n, const GLuint* textures);
+// void glDeleteTextures(GLsizei n, const GLuint* textures)
 GD_DEFINE_OGL_METHOD_2(
 	void, DeleteTextures,
 	GLsizei const, n,
-	const const, GLuint*
+	const GLuint* const, textures
 	)
 
-// GL_APICALL void           GL_APIENTRY glDepthFunc (GLenum func);
+// void glDepthFunc(GLenum func)
 GD_DEFINE_OGL_METHOD_1(
 	void, DepthFunc,
 	GLenum const, func
 	)
 
-// GL_APICALL void           GL_APIENTRY glDepthMask (GLboolean flag);
+// void glDepthMask(GLboolean flag)
 GD_DEFINE_OGL_METHOD_1(
 	void, DepthMask,
 	GLboolean const, flag
 	)
 
-// GL_APICALL void           GL_APIENTRY glDepthRangef (GLfloat n, GLfloat f);
+// void glDepthRangef(GLfloat n, GLfloat f)
 GD_DEFINE_OGL_METHOD_2(
 	void, DepthRangef,
 	GLfloat const, n,
 	GLfloat const, f
 	)
 
-// GL_APICALL void           GL_APIENTRY glDetachShader (GLuint program, GLuint shader);
+// void glDetachShader(GLuint program, GLuint shader)
 GD_DEFINE_OGL_METHOD_2(
 	void, DetachShader,
 	GLuint const, program,
 	GLuint const, shader
 	)
 
-// GL_APICALL void           GL_APIENTRY glDisable (GLenum cap);
+// void glDisable(GLenum cap)
 GD_DEFINE_OGL_METHOD_1(
 	void, Disable,
 	GLenum const, cap
 	)
 
-// GL_APICALL void           GL_APIENTRY glDisableVertexAttribArray (GLuint index);
+// void glDisableVertexAttribArray(GLuint index)
 GD_DEFINE_OGL_METHOD_1(
 	void, DisableVertexAttribArray,
 	GLuint const, index
 	)
 
-// GL_APICALL void           GL_APIENTRY glDrawArrays (GLenum mode, GLint first, GLsizei count);
+// void glDrawArrays(GLenum mode, GLint first, GLsizei count)
 GD_DEFINE_OGL_METHOD_3(
 	void, DrawArrays,
 	GLenum const, mode,
@@ -431,38 +431,38 @@ GD_DEFINE_OGL_METHOD_3(
 	GLsizei const, count
 	)
 
-// GL_APICALL void           GL_APIENTRY glDrawElements (GLenum mode, GLsizei count, GLenum type, const GLvoid* indices);
+// void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices)
 GD_DEFINE_OGL_METHOD_4(
 	void, DrawElements,
 	GLenum const, mode,
 	GLsizei const, count,
 	GLenum const, type,
-	const const, GLvoid*
+	const GLvoid* const, indices
 	)
 
-// GL_APICALL void           GL_APIENTRY glEnable (GLenum cap);
+// void glEnable(GLenum cap)
 GD_DEFINE_OGL_METHOD_1(
 	void, Enable,
 	GLenum const, cap
 	)
 
-// GL_APICALL void           GL_APIENTRY glEnableVertexAttribArray (GLuint index);
+// void glEnableVertexAttribArray(GLuint index)
 GD_DEFINE_OGL_METHOD_1(
 	void, EnableVertexAttribArray,
 	GLuint const, index
 	)
 
-// GL_APICALL void           GL_APIENTRY glFinish (void);
+// void glFinish(void)
 GD_DEFINE_OGL_METHOD_0(
-	void, Finish,
+	void, Finish
 	)
 
-// GL_APICALL void           GL_APIENTRY glFlush (void);
+// void glFlush(void)
 GD_DEFINE_OGL_METHOD_0(
-	void, Flush,
+	void, Flush
 	)
 
-// GL_APICALL void           GL_APIENTRY glFramebufferRenderbuffer (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+// void glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
 GD_DEFINE_OGL_METHOD_4(
 	void, FramebufferRenderbuffer,
 	GLenum const, target,
@@ -471,7 +471,7 @@ GD_DEFINE_OGL_METHOD_4(
 	GLuint const, renderbuffer
 	)
 
-// GL_APICALL void           GL_APIENTRY glFramebufferTexture2D (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+// void glFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
 GD_DEFINE_OGL_METHOD_5(
 	void, FramebufferTexture2D,
 	GLenum const, target,
@@ -481,47 +481,47 @@ GD_DEFINE_OGL_METHOD_5(
 	GLint const, level
 	)
 
-// GL_APICALL void           GL_APIENTRY glFrontFace (GLenum mode);
+// void glFrontFace(GLenum mode)
 GD_DEFINE_OGL_METHOD_1(
 	void, FrontFace,
 	GLenum const, mode
 	)
 
-// GL_APICALL void           GL_APIENTRY glGenBuffers (GLsizei n, GLuint* buffers);
+// void glGenBuffers(GLsizei n, GLuint* buffers)
 GD_DEFINE_OGL_METHOD_2(
 	void, GenBuffers,
 	GLsizei const, n,
 	GLuint* const, buffers
 	)
 
-// GL_APICALL void           GL_APIENTRY glGenerateMipmap (GLenum target);
+// void glGenerateMipmap(GLenum target)
 GD_DEFINE_OGL_METHOD_1(
 	void, GenerateMipmap,
 	GLenum const, target
 	)
 
-// GL_APICALL void           GL_APIENTRY glGenFramebuffers (GLsizei n, GLuint* framebuffers);
+// void glGenFramebuffers(GLsizei n, GLuint* framebuffers)
 GD_DEFINE_OGL_METHOD_2(
 	void, GenFramebuffers,
 	GLsizei const, n,
 	GLuint* const, framebuffers
 	)
 
-// GL_APICALL void           GL_APIENTRY glGenRenderbuffers (GLsizei n, GLuint* renderbuffers);
+// void glGenRenderbuffers(GLsizei n, GLuint* renderbuffers)
 GD_DEFINE_OGL_METHOD_2(
 	void, GenRenderbuffers,
 	GLsizei const, n,
 	GLuint* const, renderbuffers
 	)
 
-// GL_APICALL void           GL_APIENTRY glGenTextures (GLsizei n, GLuint* textures);
+// void glGenTextures(GLsizei n, GLuint* textures)
 GD_DEFINE_OGL_METHOD_2(
 	void, GenTextures,
 	GLsizei const, n,
 	GLuint* const, textures
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetActiveAttrib (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
+// void glGetActiveAttrib(GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
 GD_DEFINE_OGL_METHOD_7(
 	void, GetActiveAttrib,
 	GLuint const, program,
@@ -533,7 +533,7 @@ GD_DEFINE_OGL_METHOD_7(
 	GLchar* const, name
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
+// void glGetActiveUniform(GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
 GD_DEFINE_OGL_METHOD_7(
 	void, GetActiveUniform,
 	GLuint const, program,
@@ -545,7 +545,7 @@ GD_DEFINE_OGL_METHOD_7(
 	GLchar* const, name
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetAttachedShaders (GLuint program, GLsizei maxcount, GLsizei* count, GLuint* shaders);
+// void glGetAttachedShaders(GLuint program, GLsizei maxcount, GLsizei* count, GLuint* shaders)
 GD_DEFINE_OGL_METHOD_4(
 	void, GetAttachedShaders,
 	GLuint const, program,
@@ -554,21 +554,21 @@ GD_DEFINE_OGL_METHOD_4(
 	GLuint* const, shaders
 	)
 
-// GL_APICALL GLint          GL_APIENTRY glGetAttribLocation (GLuint program, const GLchar* name);
+// GLint glGetAttribLocation(GLuint program, const GLchar* name)
 GD_DEFINE_OGL_METHOD_2(
 	GLint, GetAttribLocation,
 	GLuint const, program,
-	const const, GLchar*
+	const GLchar* const, name
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetBooleanv (GLenum pname, GLboolean* params);
+// void glGetBooleanv(GLenum pname, GLboolean* params)
 GD_DEFINE_OGL_METHOD_2(
 	void, GetBooleanv,
 	GLenum const, pname,
 	GLboolean* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetBufferParameteriv (GLenum target, GLenum pname, GLint* params);
+// void glGetBufferParameteriv(GLenum target, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetBufferParameteriv,
 	GLenum const, target,
@@ -576,19 +576,19 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, params
 	)
 
-// GL_APICALL GLenum         GL_APIENTRY glGetError (void);
+// GLenum glGetError(void)
 GD_DEFINE_OGL_METHOD_0(
-	GLenum, GetError,
+	GLenum, GetError
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetFloatv (GLenum pname, GLfloat* params);
+// void glGetFloatv(GLenum pname, GLfloat* params)
 GD_DEFINE_OGL_METHOD_2(
 	void, GetFloatv,
 	GLenum const, pname,
 	GLfloat* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetFramebufferAttachmentParameteriv (GLenum target, GLenum attachment, GLenum pname, GLint* params);
+// void glGetFramebufferAttachmentParameteriv(GLenum target, GLenum attachment, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_4(
 	void, GetFramebufferAttachmentParameteriv,
 	GLenum const, target,
@@ -597,14 +597,14 @@ GD_DEFINE_OGL_METHOD_4(
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetIntegerv (GLenum pname, GLint* params);
+// void glGetIntegerv(GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_2(
 	void, GetIntegerv,
 	GLenum const, pname,
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint* params);
+// void glGetProgramiv(GLuint program, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetProgramiv,
 	GLuint const, program,
@@ -612,7 +612,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetProgramInfoLog (GLuint program, GLsizei bufsize, GLsizei* length, GLchar* infolog);
+// void glGetProgramInfoLog(GLuint program, GLsizei bufsize, GLsizei* length, GLchar* infolog)
 GD_DEFINE_OGL_METHOD_4(
 	void, GetProgramInfoLog,
 	GLuint const, program,
@@ -621,7 +621,7 @@ GD_DEFINE_OGL_METHOD_4(
 	GLchar* const, infolog
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetRenderbufferParameteriv (GLenum target, GLenum pname, GLint* params);
+// void glGetRenderbufferParameteriv(GLenum target, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetRenderbufferParameteriv,
 	GLenum const, target,
@@ -629,7 +629,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* params);
+// void glGetShaderiv(GLuint shader, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetShaderiv,
 	GLuint const, shader,
@@ -637,7 +637,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetShaderInfoLog (GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* infolog);
+// void glGetShaderInfoLog(GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* infolog)
 GD_DEFINE_OGL_METHOD_4(
 	void, GetShaderInfoLog,
 	GLuint const, shader,
@@ -646,7 +646,7 @@ GD_DEFINE_OGL_METHOD_4(
 	GLchar* const, infolog
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetShaderPrecisionFormat (GLenum shadertype, GLenum precisiontype, GLint* range, GLint* precision);
+// void glGetShaderPrecisionFormat(GLenum shadertype, GLenum precisiontype, GLint* range, GLint* precision)
 GD_DEFINE_OGL_METHOD_4(
 	void, GetShaderPrecisionFormat,
 	GLenum const, shadertype,
@@ -655,7 +655,7 @@ GD_DEFINE_OGL_METHOD_4(
 	GLint* const, precision
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetShaderSource (GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* source);
+// void glGetShaderSource(GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* source)
 GD_DEFINE_OGL_METHOD_4(
 	void, GetShaderSource,
 	GLuint const, shader,
@@ -664,13 +664,13 @@ GD_DEFINE_OGL_METHOD_4(
 	GLchar* const, source
 	)
 
-// GL_APICALL const GLubyte* GL_APIENTRY glGetString (GLenum name);
+// const GLubyte* glGetString(GLenum name)
 GD_DEFINE_OGL_METHOD_1(
-	const, _APIENTRY,
+	const GLubyte*, GetString,
 	GLenum const, name
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetTexParameterfv (GLenum target, GLenum pname, GLfloat* params);
+// void glGetTexParameterfv(GLenum target, GLenum pname, GLfloat* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetTexParameterfv,
 	GLenum const, target,
@@ -678,7 +678,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLfloat* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetTexParameteriv (GLenum target, GLenum pname, GLint* params);
+// void glGetTexParameteriv(GLenum target, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetTexParameteriv,
 	GLenum const, target,
@@ -686,7 +686,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetUniformfv (GLuint program, GLint location, GLfloat* params);
+// void glGetUniformfv(GLuint program, GLint location, GLfloat* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetUniformfv,
 	GLuint const, program,
@@ -694,7 +694,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLfloat* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetUniformiv (GLuint program, GLint location, GLint* params);
+// void glGetUniformiv(GLuint program, GLint location, GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetUniformiv,
 	GLuint const, program,
@@ -702,14 +702,14 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, params
 	)
 
-// GL_APICALL GLint          GL_APIENTRY glGetUniformLocation (GLuint program, const GLchar* name);
+// GLint glGetUniformLocation(GLuint program, const GLchar* name)
 GD_DEFINE_OGL_METHOD_2(
 	GLint, GetUniformLocation,
 	GLuint const, program,
-	const const, GLchar*
+	const GLchar* const, name
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetVertexAttribfv (GLuint index, GLenum pname, GLfloat* params);
+// void glGetVertexAttribfv(GLuint index, GLenum pname, GLfloat* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetVertexAttribfv,
 	GLuint const, index,
@@ -717,7 +717,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLfloat* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetVertexAttribiv (GLuint index, GLenum pname, GLint* params);
+// void glGetVertexAttribiv(GLuint index, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetVertexAttribiv,
 	GLuint const, index,
@@ -725,7 +725,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetVertexAttribPointerv (GLuint index, GLenum pname, GLvoid** pointer);
+// void glGetVertexAttribPointerv(GLuint index, GLenum pname, GLvoid** pointer)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetVertexAttribPointerv,
 	GLuint const, index,
@@ -733,82 +733,82 @@ GD_DEFINE_OGL_METHOD_3(
 	GLvoid** const, pointer
 	)
 
-// GL_APICALL void           GL_APIENTRY glHint (GLenum target, GLenum mode);
+// void glHint(GLenum target, GLenum mode)
 GD_DEFINE_OGL_METHOD_2(
 	void, Hint,
 	GLenum const, target,
 	GLenum const, mode
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsBuffer (GLuint buffer);
+// GLboolean glIsBuffer(GLuint buffer)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsBuffer,
 	GLuint const, buffer
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsEnabled (GLenum cap);
+// GLboolean glIsEnabled(GLenum cap)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsEnabled,
 	GLenum const, cap
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsFramebuffer (GLuint framebuffer);
+// GLboolean glIsFramebuffer(GLuint framebuffer)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsFramebuffer,
 	GLuint const, framebuffer
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsProgram (GLuint program);
+// GLboolean glIsProgram(GLuint program)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsProgram,
 	GLuint const, program
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsRenderbuffer (GLuint renderbuffer);
+// GLboolean glIsRenderbuffer(GLuint renderbuffer)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsRenderbuffer,
 	GLuint const, renderbuffer
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsShader (GLuint shader);
+// GLboolean glIsShader(GLuint shader)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsShader,
 	GLuint const, shader
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsTexture (GLuint texture);
+// GLboolean glIsTexture(GLuint texture)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsTexture,
 	GLuint const, texture
 	)
 
-// GL_APICALL void           GL_APIENTRY glLineWidth (GLfloat width);
+// void glLineWidth(GLfloat width)
 GD_DEFINE_OGL_METHOD_1(
 	void, LineWidth,
 	GLfloat const, width
 	)
 
-// GL_APICALL void           GL_APIENTRY glLinkProgram (GLuint program);
+// void glLinkProgram(GLuint program)
 GD_DEFINE_OGL_METHOD_1(
 	void, LinkProgram,
 	GLuint const, program
 	)
 
-// GL_APICALL void           GL_APIENTRY glPixelStorei (GLenum pname, GLint param);
+// void glPixelStorei(GLenum pname, GLint param)
 GD_DEFINE_OGL_METHOD_2(
 	void, PixelStorei,
 	GLenum const, pname,
 	GLint const, param
 	)
 
-// GL_APICALL void           GL_APIENTRY glPolygonOffset (GLfloat factor, GLfloat units);
+// void glPolygonOffset(GLfloat factor, GLfloat units)
 GD_DEFINE_OGL_METHOD_2(
 	void, PolygonOffset,
 	GLfloat const, factor,
 	GLfloat const, units
 	)
 
-// GL_APICALL void           GL_APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels);
+// void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
 GD_DEFINE_OGL_METHOD_7(
 	void, ReadPixels,
 	GLint const, x,
@@ -820,12 +820,12 @@ GD_DEFINE_OGL_METHOD_7(
 	GLvoid* const, pixels
 	)
 
-// GL_APICALL void           GL_APIENTRY glReleaseShaderCompiler (void);
+// void glReleaseShaderCompiler(void)
 GD_DEFINE_OGL_METHOD_0(
-	void, ReleaseShaderCompiler,
+	void, ReleaseShaderCompiler
 	)
 
-// GL_APICALL void           GL_APIENTRY glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+// void glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 GD_DEFINE_OGL_METHOD_4(
 	void, RenderbufferStorage,
 	GLenum const, target,
@@ -834,14 +834,14 @@ GD_DEFINE_OGL_METHOD_4(
 	GLsizei const, height
 	)
 
-// GL_APICALL void           GL_APIENTRY glSampleCoverage (GLfloat value, GLboolean invert);
+// void glSampleCoverage(GLfloat value, GLboolean invert)
 GD_DEFINE_OGL_METHOD_2(
 	void, SampleCoverage,
 	GLfloat const, value,
 	GLboolean const, invert
 	)
 
-// GL_APICALL void           GL_APIENTRY glScissor (GLint x, GLint y, GLsizei width, GLsizei height);
+// void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
 GD_DEFINE_OGL_METHOD_4(
 	void, Scissor,
 	GLint const, x,
@@ -850,28 +850,26 @@ GD_DEFINE_OGL_METHOD_4(
 	GLsizei const, height
 	)
 
-// GL_APICALL void           GL_APIENTRY glShaderBinary (GLsizei n, const GLuint* shaders, GLenum binaryformat, const GLvoid* binary, GLsizei length);
-GD_DEFINE_OGL_METHOD_6(
+// void glShaderBinary(GLsizei n, const GLuint* shaders, GLenum binaryformat, const GLvoid* binary, GLsizei length)
+GD_DEFINE_OGL_METHOD_5(
 	void, ShaderBinary,
 	GLsizei const, n,
-	const const, GLuint*
-	shaders, const, GLenum
-	binaryformat, const, const
-	GLvoid* const, binary,
+	const GLuint* const, shaders,
+	GLenum const, binaryformat,
+	const GLvoid* const, binary,
 	GLsizei const, length
 	)
 
-// GL_APICALL void           GL_APIENTRY glShaderSource (GLuint shader, GLsizei count, const GLchar* const* string, const GLint* length);
-GD_DEFINE_OGL_METHOD_5(
+// void glShaderSource(GLuint shader, GLsizei count, const GLchar* const* string, const GLint* length)
+GD_DEFINE_OGL_METHOD_4(
 	void, ShaderSource,
 	GLuint const, shader,
 	GLsizei const, count,
-	const const, GLchar*
-	const* const, string,
-	const const, GLint*
+	const GLchar* const* const, string,
+	const GLint* const, length
 	)
 
-// GL_APICALL void           GL_APIENTRY glStencilFunc (GLenum func, GLint ref, GLuint mask);
+// void glStencilFunc(GLenum func, GLint ref, GLuint mask)
 GD_DEFINE_OGL_METHOD_3(
 	void, StencilFunc,
 	GLenum const, func,
@@ -879,7 +877,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLuint const, mask
 	)
 
-// GL_APICALL void           GL_APIENTRY glStencilFuncSeparate (GLenum face, GLenum func, GLint ref, GLuint mask);
+// void glStencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask)
 GD_DEFINE_OGL_METHOD_4(
 	void, StencilFuncSeparate,
 	GLenum const, face,
@@ -888,20 +886,20 @@ GD_DEFINE_OGL_METHOD_4(
 	GLuint const, mask
 	)
 
-// GL_APICALL void           GL_APIENTRY glStencilMask (GLuint mask);
+// void glStencilMask(GLuint mask)
 GD_DEFINE_OGL_METHOD_1(
 	void, StencilMask,
 	GLuint const, mask
 	)
 
-// GL_APICALL void           GL_APIENTRY glStencilMaskSeparate (GLenum face, GLuint mask);
+// void glStencilMaskSeparate(GLenum face, GLuint mask)
 GD_DEFINE_OGL_METHOD_2(
 	void, StencilMaskSeparate,
 	GLenum const, face,
 	GLuint const, mask
 	)
 
-// GL_APICALL void           GL_APIENTRY glStencilOp (GLenum fail, GLenum zfail, GLenum zpass);
+// void glStencilOp(GLenum fail, GLenum zfail, GLenum zpass)
 GD_DEFINE_OGL_METHOD_3(
 	void, StencilOp,
 	GLenum const, fail,
@@ -909,7 +907,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLenum const, zpass
 	)
 
-// GL_APICALL void           GL_APIENTRY glStencilOpSeparate (GLenum face, GLenum fail, GLenum zfail, GLenum zpass);
+// void glStencilOpSeparate(GLenum face, GLenum fail, GLenum zfail, GLenum zpass)
 GD_DEFINE_OGL_METHOD_4(
 	void, StencilOpSeparate,
 	GLenum const, face,
@@ -918,7 +916,7 @@ GD_DEFINE_OGL_METHOD_4(
 	GLenum const, zpass
 	)
 
-// GL_APICALL void           GL_APIENTRY glTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
+// void glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels)
 GD_DEFINE_OGL_METHOD_9(
 	void, TexImage2D,
 	GLenum const, target,
@@ -929,10 +927,10 @@ GD_DEFINE_OGL_METHOD_9(
 	GLint const, border,
 	GLenum const, format,
 	GLenum const, type,
-	const const, GLvoid*
+	const GLvoid* const, pixels
 	)
 
-// GL_APICALL void           GL_APIENTRY glTexParameterf (GLenum target, GLenum pname, GLfloat param);
+// void glTexParameterf(GLenum target, GLenum pname, GLfloat param)
 GD_DEFINE_OGL_METHOD_3(
 	void, TexParameterf,
 	GLenum const, target,
@@ -940,15 +938,15 @@ GD_DEFINE_OGL_METHOD_3(
 	GLfloat const, param
 	)
 
-// GL_APICALL void           GL_APIENTRY glTexParameterfv (GLenum target, GLenum pname, const GLfloat* params);
+// void glTexParameterfv(GLenum target, GLenum pname, const GLfloat* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, TexParameterfv,
 	GLenum const, target,
 	GLenum const, pname,
-	const const, GLfloat*
+	const GLfloat* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glTexParameteri (GLenum target, GLenum pname, GLint param);
+// void glTexParameteri(GLenum target, GLenum pname, GLint param)
 GD_DEFINE_OGL_METHOD_3(
 	void, TexParameteri,
 	GLenum const, target,
@@ -956,15 +954,15 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint const, param
 	)
 
-// GL_APICALL void           GL_APIENTRY glTexParameteriv (GLenum target, GLenum pname, const GLint* params);
+// void glTexParameteriv(GLenum target, GLenum pname, const GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, TexParameteriv,
 	GLenum const, target,
 	GLenum const, pname,
-	const const, GLint*
+	const GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels);
+// void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels)
 GD_DEFINE_OGL_METHOD_9(
 	void, TexSubImage2D,
 	GLenum const, target,
@@ -975,40 +973,40 @@ GD_DEFINE_OGL_METHOD_9(
 	GLsizei const, height,
 	GLenum const, format,
 	GLenum const, type,
-	const const, GLvoid*
+	const GLvoid* const, pixels
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform1f (GLint location, GLfloat x);
+// void glUniform1f(GLint location, GLfloat x)
 GD_DEFINE_OGL_METHOD_2(
 	void, Uniform1f,
 	GLint const, location,
 	GLfloat const, x
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform1fv (GLint location, GLsizei count, const GLfloat* v);
+// void glUniform1fv(GLint location, GLsizei count, const GLfloat* v)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform1fv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLfloat*
+	const GLfloat* const, v
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform1i (GLint location, GLint x);
+// void glUniform1i(GLint location, GLint x)
 GD_DEFINE_OGL_METHOD_2(
 	void, Uniform1i,
 	GLint const, location,
 	GLint const, x
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform1iv (GLint location, GLsizei count, const GLint* v);
+// void glUniform1iv(GLint location, GLsizei count, const GLint* v)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform1iv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLint*
+	const GLint* const, v
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform2f (GLint location, GLfloat x, GLfloat y);
+// void glUniform2f(GLint location, GLfloat x, GLfloat y)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform2f,
 	GLint const, location,
@@ -1016,15 +1014,15 @@ GD_DEFINE_OGL_METHOD_3(
 	GLfloat const, y
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform2fv (GLint location, GLsizei count, const GLfloat* v);
+// void glUniform2fv(GLint location, GLsizei count, const GLfloat* v)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform2fv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLfloat*
+	const GLfloat* const, v
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform2i (GLint location, GLint x, GLint y);
+// void glUniform2i(GLint location, GLint x, GLint y)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform2i,
 	GLint const, location,
@@ -1032,15 +1030,15 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint const, y
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform2iv (GLint location, GLsizei count, const GLint* v);
+// void glUniform2iv(GLint location, GLsizei count, const GLint* v)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform2iv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLint*
+	const GLint* const, v
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform3f (GLint location, GLfloat x, GLfloat y, GLfloat z);
+// void glUniform3f(GLint location, GLfloat x, GLfloat y, GLfloat z)
 GD_DEFINE_OGL_METHOD_4(
 	void, Uniform3f,
 	GLint const, location,
@@ -1049,15 +1047,15 @@ GD_DEFINE_OGL_METHOD_4(
 	GLfloat const, z
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform3fv (GLint location, GLsizei count, const GLfloat* v);
+// void glUniform3fv(GLint location, GLsizei count, const GLfloat* v)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform3fv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLfloat*
+	const GLfloat* const, v
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform3i (GLint location, GLint x, GLint y, GLint z);
+// void glUniform3i(GLint location, GLint x, GLint y, GLint z)
 GD_DEFINE_OGL_METHOD_4(
 	void, Uniform3i,
 	GLint const, location,
@@ -1066,15 +1064,15 @@ GD_DEFINE_OGL_METHOD_4(
 	GLint const, z
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform3iv (GLint location, GLsizei count, const GLint* v);
+// void glUniform3iv(GLint location, GLsizei count, const GLint* v)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform3iv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLint*
+	const GLint* const, v
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform4f (GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+// void glUniform4f(GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 GD_DEFINE_OGL_METHOD_5(
 	void, Uniform4f,
 	GLint const, location,
@@ -1084,15 +1082,15 @@ GD_DEFINE_OGL_METHOD_5(
 	GLfloat const, w
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform4fv (GLint location, GLsizei count, const GLfloat* v);
+// void glUniform4fv(GLint location, GLsizei count, const GLfloat* v)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform4fv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLfloat*
+	const GLfloat* const, v
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform4i (GLint location, GLint x, GLint y, GLint z, GLint w);
+// void glUniform4i(GLint location, GLint x, GLint y, GLint z, GLint w)
 GD_DEFINE_OGL_METHOD_5(
 	void, Uniform4i,
 	GLint const, location,
@@ -1102,68 +1100,68 @@ GD_DEFINE_OGL_METHOD_5(
 	GLint const, w
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform4iv (GLint location, GLsizei count, const GLint* v);
+// void glUniform4iv(GLint location, GLsizei count, const GLint* v)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform4iv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLint*
+	const GLint* const, v
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniformMatrix2fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+// void glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 GD_DEFINE_OGL_METHOD_4(
 	void, UniformMatrix2fv,
 	GLint const, location,
 	GLsizei const, count,
 	GLboolean const, transpose,
-	const const, GLfloat*
+	const GLfloat* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniformMatrix3fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+// void glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 GD_DEFINE_OGL_METHOD_4(
 	void, UniformMatrix3fv,
 	GLint const, location,
 	GLsizei const, count,
 	GLboolean const, transpose,
-	const const, GLfloat*
+	const GLfloat* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniformMatrix4fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+// void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 GD_DEFINE_OGL_METHOD_4(
 	void, UniformMatrix4fv,
 	GLint const, location,
 	GLsizei const, count,
 	GLboolean const, transpose,
-	const const, GLfloat*
+	const GLfloat* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUseProgram (GLuint program);
+// void glUseProgram(GLuint program)
 GD_DEFINE_OGL_METHOD_1(
 	void, UseProgram,
 	GLuint const, program
 	)
 
-// GL_APICALL void           GL_APIENTRY glValidateProgram (GLuint program);
+// void glValidateProgram(GLuint program)
 GD_DEFINE_OGL_METHOD_1(
 	void, ValidateProgram,
 	GLuint const, program
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttrib1f (GLuint indx, GLfloat x);
+// void glVertexAttrib1f(GLuint indx, GLfloat x)
 GD_DEFINE_OGL_METHOD_2(
 	void, VertexAttrib1f,
 	GLuint const, indx,
 	GLfloat const, x
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttrib1fv (GLuint indx, const GLfloat* values);
+// void glVertexAttrib1fv(GLuint indx, const GLfloat* values)
 GD_DEFINE_OGL_METHOD_2(
 	void, VertexAttrib1fv,
 	GLuint const, indx,
-	const const, GLfloat*
+	const GLfloat* const, values
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttrib2f (GLuint indx, GLfloat x, GLfloat y);
+// void glVertexAttrib2f(GLuint indx, GLfloat x, GLfloat y)
 GD_DEFINE_OGL_METHOD_3(
 	void, VertexAttrib2f,
 	GLuint const, indx,
@@ -1171,14 +1169,14 @@ GD_DEFINE_OGL_METHOD_3(
 	GLfloat const, y
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttrib2fv (GLuint indx, const GLfloat* values);
+// void glVertexAttrib2fv(GLuint indx, const GLfloat* values)
 GD_DEFINE_OGL_METHOD_2(
 	void, VertexAttrib2fv,
 	GLuint const, indx,
-	const const, GLfloat*
+	const GLfloat* const, values
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttrib3f (GLuint indx, GLfloat x, GLfloat y, GLfloat z);
+// void glVertexAttrib3f(GLuint indx, GLfloat x, GLfloat y, GLfloat z)
 GD_DEFINE_OGL_METHOD_4(
 	void, VertexAttrib3f,
 	GLuint const, indx,
@@ -1187,14 +1185,14 @@ GD_DEFINE_OGL_METHOD_4(
 	GLfloat const, z
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttrib3fv (GLuint indx, const GLfloat* values);
+// void glVertexAttrib3fv(GLuint indx, const GLfloat* values)
 GD_DEFINE_OGL_METHOD_2(
 	void, VertexAttrib3fv,
 	GLuint const, indx,
-	const const, GLfloat*
+	const GLfloat* const, values
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttrib4f (GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+// void glVertexAttrib4f(GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 GD_DEFINE_OGL_METHOD_5(
 	void, VertexAttrib4f,
 	GLuint const, indx,
@@ -1204,14 +1202,14 @@ GD_DEFINE_OGL_METHOD_5(
 	GLfloat const, w
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttrib4fv (GLuint indx, const GLfloat* values);
+// void glVertexAttrib4fv(GLuint indx, const GLfloat* values)
 GD_DEFINE_OGL_METHOD_2(
 	void, VertexAttrib4fv,
 	GLuint const, indx,
-	const const, GLfloat*
+	const GLfloat* const, values
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttribPointer (GLuint indx, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* ptr);
+// void glVertexAttribPointer(GLuint indx, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* ptr)
 GD_DEFINE_OGL_METHOD_6(
 	void, VertexAttribPointer,
 	GLuint const, indx,
@@ -1219,10 +1217,10 @@ GD_DEFINE_OGL_METHOD_6(
 	GLenum const, type,
 	GLboolean const, normalized,
 	GLsizei const, stride,
-	const const, GLvoid*
+	const GLvoid* const, ptr
 	)
 
-// GL_APICALL void           GL_APIENTRY glViewport (GLint x, GLint y, GLsizei width, GLsizei height);
+// void glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
 GD_DEFINE_OGL_METHOD_4(
 	void, Viewport,
 	GLint const, x,
@@ -1231,13 +1229,13 @@ GD_DEFINE_OGL_METHOD_4(
 	GLsizei const, height
 	)
 
-// GL_APICALL void           GL_APIENTRY glReadBuffer (GLenum mode);
+// void glReadBuffer(GLenum mode)
 GD_DEFINE_OGL_METHOD_1(
 	void, ReadBuffer,
 	GLenum const, mode
 	)
 
-// GL_APICALL void           GL_APIENTRY glDrawRangeElements (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid* indices);
+// void glDrawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid* indices)
 GD_DEFINE_OGL_METHOD_6(
 	void, DrawRangeElements,
 	GLenum const, mode,
@@ -1245,10 +1243,10 @@ GD_DEFINE_OGL_METHOD_6(
 	GLuint const, end,
 	GLsizei const, count,
 	GLenum const, type,
-	const const, GLvoid*
+	const GLvoid* const, indices
 	)
 
-// GL_APICALL void           GL_APIENTRY glTexImage3D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
+// void glTexImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid* pixels)
 GD_DEFINE_OGL_METHOD_10(
 	void, TexImage3D,
 	GLenum const, target,
@@ -1260,10 +1258,10 @@ GD_DEFINE_OGL_METHOD_10(
 	GLint const, border,
 	GLenum const, format,
 	GLenum const, type,
-	const const, GLvoid*
+	const GLvoid* const, pixels
 	)
 
-// GL_APICALL void           GL_APIENTRY glTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid* pixels);
+// void glTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid* pixels)
 GD_DEFINE_OGL_METHOD_11(
 	void, TexSubImage3D,
 	GLenum const, target,
@@ -1276,10 +1274,10 @@ GD_DEFINE_OGL_METHOD_11(
 	GLsizei const, depth,
 	GLenum const, format,
 	GLenum const, type,
-	const const, GLvoid*
+	const GLvoid* const, pixels
 	)
 
-// GL_APICALL void           GL_APIENTRY glCopyTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height);
+// void glCopyTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height)
 GD_DEFINE_OGL_METHOD_9(
 	void, CopyTexSubImage3D,
 	GLenum const, target,
@@ -1293,7 +1291,7 @@ GD_DEFINE_OGL_METHOD_9(
 	GLsizei const, height
 	)
 
-// GL_APICALL void           GL_APIENTRY glCompressedTexImage3D (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const GLvoid* data);
+// void glCompressedTexImage3D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const GLvoid* data)
 GD_DEFINE_OGL_METHOD_9(
 	void, CompressedTexImage3D,
 	GLenum const, target,
@@ -1304,10 +1302,10 @@ GD_DEFINE_OGL_METHOD_9(
 	GLsizei const, depth,
 	GLint const, border,
 	GLsizei const, imageSize,
-	const const, GLvoid*
+	const GLvoid* const, data
 	)
 
-// GL_APICALL void           GL_APIENTRY glCompressedTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const GLvoid* data);
+// void glCompressedTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const GLvoid* data)
 GD_DEFINE_OGL_METHOD_11(
 	void, CompressedTexSubImage3D,
 	GLenum const, target,
@@ -1320,43 +1318,43 @@ GD_DEFINE_OGL_METHOD_11(
 	GLsizei const, depth,
 	GLenum const, format,
 	GLsizei const, imageSize,
-	const const, GLvoid*
+	const GLvoid* const, data
 	)
 
-// GL_APICALL void           GL_APIENTRY glGenQueries (GLsizei n, GLuint* ids);
+// void glGenQueries(GLsizei n, GLuint* ids)
 GD_DEFINE_OGL_METHOD_2(
 	void, GenQueries,
 	GLsizei const, n,
 	GLuint* const, ids
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteQueries (GLsizei n, const GLuint* ids);
+// void glDeleteQueries(GLsizei n, const GLuint* ids)
 GD_DEFINE_OGL_METHOD_2(
 	void, DeleteQueries,
 	GLsizei const, n,
-	const const, GLuint*
+	const GLuint* const, ids
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsQuery (GLuint id);
+// GLboolean glIsQuery(GLuint id)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsQuery,
 	GLuint const, id
 	)
 
-// GL_APICALL void           GL_APIENTRY glBeginQuery (GLenum target, GLuint id);
+// void glBeginQuery(GLenum target, GLuint id)
 GD_DEFINE_OGL_METHOD_2(
 	void, BeginQuery,
 	GLenum const, target,
 	GLuint const, id
 	)
 
-// GL_APICALL void           GL_APIENTRY glEndQuery (GLenum target);
+// void glEndQuery(GLenum target)
 GD_DEFINE_OGL_METHOD_1(
 	void, EndQuery,
 	GLenum const, target
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetQueryiv (GLenum target, GLenum pname, GLint* params);
+// void glGetQueryiv(GLenum target, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetQueryiv,
 	GLenum const, target,
@@ -1364,7 +1362,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetQueryObjectuiv (GLuint id, GLenum pname, GLuint* params);
+// void glGetQueryObjectuiv(GLuint id, GLenum pname, GLuint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetQueryObjectuiv,
 	GLuint const, id,
@@ -1372,13 +1370,13 @@ GD_DEFINE_OGL_METHOD_3(
 	GLuint* const, params
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glUnmapBuffer (GLenum target);
+// GLboolean glUnmapBuffer(GLenum target)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, UnmapBuffer,
 	GLenum const, target
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetBufferPointerv (GLenum target, GLenum pname, GLvoid** params);
+// void glGetBufferPointerv(GLenum target, GLenum pname, GLvoid** params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetBufferPointerv,
 	GLenum const, target,
@@ -1386,68 +1384,68 @@ GD_DEFINE_OGL_METHOD_3(
 	GLvoid** const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glDrawBuffers (GLsizei n, const GLenum* bufs);
+// void glDrawBuffers(GLsizei n, const GLenum* bufs)
 GD_DEFINE_OGL_METHOD_2(
 	void, DrawBuffers,
 	GLsizei const, n,
-	const const, GLenum*
+	const GLenum* const, bufs
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniformMatrix2x3fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+// void glUniformMatrix2x3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 GD_DEFINE_OGL_METHOD_4(
 	void, UniformMatrix2x3fv,
 	GLint const, location,
 	GLsizei const, count,
 	GLboolean const, transpose,
-	const const, GLfloat*
+	const GLfloat* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniformMatrix3x2fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+// void glUniformMatrix3x2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 GD_DEFINE_OGL_METHOD_4(
 	void, UniformMatrix3x2fv,
 	GLint const, location,
 	GLsizei const, count,
 	GLboolean const, transpose,
-	const const, GLfloat*
+	const GLfloat* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniformMatrix2x4fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+// void glUniformMatrix2x4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 GD_DEFINE_OGL_METHOD_4(
 	void, UniformMatrix2x4fv,
 	GLint const, location,
 	GLsizei const, count,
 	GLboolean const, transpose,
-	const const, GLfloat*
+	const GLfloat* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniformMatrix4x2fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+// void glUniformMatrix4x2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 GD_DEFINE_OGL_METHOD_4(
 	void, UniformMatrix4x2fv,
 	GLint const, location,
 	GLsizei const, count,
 	GLboolean const, transpose,
-	const const, GLfloat*
+	const GLfloat* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniformMatrix3x4fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+// void glUniformMatrix3x4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 GD_DEFINE_OGL_METHOD_4(
 	void, UniformMatrix3x4fv,
 	GLint const, location,
 	GLsizei const, count,
 	GLboolean const, transpose,
-	const const, GLfloat*
+	const GLfloat* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniformMatrix4x3fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+// void glUniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 GD_DEFINE_OGL_METHOD_4(
 	void, UniformMatrix4x3fv,
 	GLint const, location,
 	GLsizei const, count,
 	GLboolean const, transpose,
-	const const, GLfloat*
+	const GLfloat* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glBlitFramebuffer (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+// void glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter)
 GD_DEFINE_OGL_METHOD_10(
 	void, BlitFramebuffer,
 	GLint const, srcX0,
@@ -1462,7 +1460,7 @@ GD_DEFINE_OGL_METHOD_10(
 	GLenum const, filter
 	)
 
-// GL_APICALL void           GL_APIENTRY glRenderbufferStorageMultisample (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
+// void glRenderbufferStorageMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height)
 GD_DEFINE_OGL_METHOD_5(
 	void, RenderbufferStorageMultisample,
 	GLenum const, target,
@@ -1472,7 +1470,7 @@ GD_DEFINE_OGL_METHOD_5(
 	GLsizei const, height
 	)
 
-// GL_APICALL void           GL_APIENTRY glFramebufferTextureLayer (GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer);
+// void glFramebufferTextureLayer(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer)
 GD_DEFINE_OGL_METHOD_5(
 	void, FramebufferTextureLayer,
 	GLenum const, target,
@@ -1482,7 +1480,7 @@ GD_DEFINE_OGL_METHOD_5(
 	GLint const, layer
 	)
 
-// GL_APICALL GLvoid*        GL_APIENTRY glMapBufferRange (GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
+// GLvoid* glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access)
 GD_DEFINE_OGL_METHOD_4(
 	GLvoid*, MapBufferRange,
 	GLenum const, target,
@@ -1491,7 +1489,7 @@ GD_DEFINE_OGL_METHOD_4(
 	GLbitfield const, access
 	)
 
-// GL_APICALL void           GL_APIENTRY glFlushMappedBufferRange (GLenum target, GLintptr offset, GLsizeiptr length);
+// void glFlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr length)
 GD_DEFINE_OGL_METHOD_3(
 	void, FlushMappedBufferRange,
 	GLenum const, target,
@@ -1499,33 +1497,33 @@ GD_DEFINE_OGL_METHOD_3(
 	GLsizeiptr const, length
 	)
 
-// GL_APICALL void           GL_APIENTRY glBindVertexArray (GLuint array);
+// void glBindVertexArray(GLuint array)
 GD_DEFINE_OGL_METHOD_1(
 	void, BindVertexArray,
 	GLuint const, array
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteVertexArrays (GLsizei n, const GLuint* arrays);
+// void glDeleteVertexArrays(GLsizei n, const GLuint* arrays)
 GD_DEFINE_OGL_METHOD_2(
 	void, DeleteVertexArrays,
 	GLsizei const, n,
-	const const, GLuint*
+	const GLuint* const, arrays
 	)
 
-// GL_APICALL void           GL_APIENTRY glGenVertexArrays (GLsizei n, GLuint* arrays);
+// void glGenVertexArrays(GLsizei n, GLuint* arrays)
 GD_DEFINE_OGL_METHOD_2(
 	void, GenVertexArrays,
 	GLsizei const, n,
 	GLuint* const, arrays
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsVertexArray (GLuint array);
+// GLboolean glIsVertexArray(GLuint array)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsVertexArray,
 	GLuint const, array
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetIntegeri_v (GLenum target, GLuint index, GLint* data);
+// void glGetIntegeri_v(GLenum target, GLuint index, GLint* data)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetIntegeri_v,
 	GLenum const, target,
@@ -1533,18 +1531,18 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, data
 	)
 
-// GL_APICALL void           GL_APIENTRY glBeginTransformFeedback (GLenum primitiveMode);
+// void glBeginTransformFeedback(GLenum primitiveMode)
 GD_DEFINE_OGL_METHOD_1(
 	void, BeginTransformFeedback,
 	GLenum const, primitiveMode
 	)
 
-// GL_APICALL void           GL_APIENTRY glEndTransformFeedback (void);
+// void glEndTransformFeedback(void)
 GD_DEFINE_OGL_METHOD_0(
-	void, EndTransformFeedback,
+	void, EndTransformFeedback
 	)
 
-// GL_APICALL void           GL_APIENTRY glBindBufferRange (GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size);
+// void glBindBufferRange(GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size)
 GD_DEFINE_OGL_METHOD_5(
 	void, BindBufferRange,
 	GLenum const, target,
@@ -1554,7 +1552,7 @@ GD_DEFINE_OGL_METHOD_5(
 	GLsizeiptr const, size
 	)
 
-// GL_APICALL void           GL_APIENTRY glBindBufferBase (GLenum target, GLuint index, GLuint buffer);
+// void glBindBufferBase(GLenum target, GLuint index, GLuint buffer)
 GD_DEFINE_OGL_METHOD_3(
 	void, BindBufferBase,
 	GLenum const, target,
@@ -1562,17 +1560,16 @@ GD_DEFINE_OGL_METHOD_3(
 	GLuint const, buffer
 	)
 
-// GL_APICALL void           GL_APIENTRY glTransformFeedbackVaryings (GLuint program, GLsizei count, const GLchar* const* varyings, GLenum bufferMode);
-GD_DEFINE_OGL_METHOD_5(
+// void glTransformFeedbackVaryings(GLuint program, GLsizei count, const GLchar* const* varyings, GLenum bufferMode)
+GD_DEFINE_OGL_METHOD_4(
 	void, TransformFeedbackVaryings,
 	GLuint const, program,
 	GLsizei const, count,
-	const const, GLchar*
-	const* const, varyings,
+	const GLchar* const* const, varyings,
 	GLenum const, bufferMode
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetTransformFeedbackVarying (GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLsizei* size, GLenum* type, GLchar* name);
+// void glGetTransformFeedbackVarying(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLsizei* size, GLenum* type, GLchar* name)
 GD_DEFINE_OGL_METHOD_7(
 	void, GetTransformFeedbackVarying,
 	GLuint const, program,
@@ -1584,17 +1581,17 @@ GD_DEFINE_OGL_METHOD_7(
 	GLchar* const, name
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttribIPointer (GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* pointer);
+// void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)
 GD_DEFINE_OGL_METHOD_5(
 	void, VertexAttribIPointer,
 	GLuint const, index,
 	GLint const, size,
 	GLenum const, type,
 	GLsizei const, stride,
-	const const, GLvoid*
+	const GLvoid* const, pointer
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetVertexAttribIiv (GLuint index, GLenum pname, GLint* params);
+// void glGetVertexAttribIiv(GLuint index, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetVertexAttribIiv,
 	GLuint const, index,
@@ -1602,7 +1599,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetVertexAttribIuiv (GLuint index, GLenum pname, GLuint* params);
+// void glGetVertexAttribIuiv(GLuint index, GLenum pname, GLuint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetVertexAttribIuiv,
 	GLuint const, index,
@@ -1610,7 +1607,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLuint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttribI4i (GLuint index, GLint x, GLint y, GLint z, GLint w);
+// void glVertexAttribI4i(GLuint index, GLint x, GLint y, GLint z, GLint w)
 GD_DEFINE_OGL_METHOD_5(
 	void, VertexAttribI4i,
 	GLuint const, index,
@@ -1620,7 +1617,7 @@ GD_DEFINE_OGL_METHOD_5(
 	GLint const, w
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttribI4ui (GLuint index, GLuint x, GLuint y, GLuint z, GLuint w);
+// void glVertexAttribI4ui(GLuint index, GLuint x, GLuint y, GLuint z, GLuint w)
 GD_DEFINE_OGL_METHOD_5(
 	void, VertexAttribI4ui,
 	GLuint const, index,
@@ -1630,21 +1627,21 @@ GD_DEFINE_OGL_METHOD_5(
 	GLuint const, w
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttribI4iv (GLuint index, const GLint* v);
+// void glVertexAttribI4iv(GLuint index, const GLint* v)
 GD_DEFINE_OGL_METHOD_2(
 	void, VertexAttribI4iv,
 	GLuint const, index,
-	const const, GLint*
+	const GLint* const, v
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttribI4uiv (GLuint index, const GLuint* v);
+// void glVertexAttribI4uiv(GLuint index, const GLuint* v)
 GD_DEFINE_OGL_METHOD_2(
 	void, VertexAttribI4uiv,
 	GLuint const, index,
-	const const, GLuint*
+	const GLuint* const, v
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetUniformuiv (GLuint program, GLint location, GLuint* params);
+// void glGetUniformuiv(GLuint program, GLint location, GLuint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetUniformuiv,
 	GLuint const, program,
@@ -1652,21 +1649,21 @@ GD_DEFINE_OGL_METHOD_3(
 	GLuint* const, params
 	)
 
-// GL_APICALL GLint          GL_APIENTRY glGetFragDataLocation (GLuint program, const GLchar *name);
+// GLint glGetFragDataLocation(GLuint program, const GLchar *name)
 GD_DEFINE_OGL_METHOD_2(
 	GLint, GetFragDataLocation,
 	GLuint const, program,
-	const const, GLchar
+	const GLchar* const, name
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform1ui (GLint location, GLuint v0);
+// void glUniform1ui(GLint location, GLuint v0)
 GD_DEFINE_OGL_METHOD_2(
 	void, Uniform1ui,
 	GLint const, location,
 	GLuint const, v0
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform2ui (GLint location, GLuint v0, GLuint v1);
+// void glUniform2ui(GLint location, GLuint v0, GLuint v1)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform2ui,
 	GLint const, location,
@@ -1674,7 +1671,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLuint const, v1
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform3ui (GLint location, GLuint v0, GLuint v1, GLuint v2);
+// void glUniform3ui(GLint location, GLuint v0, GLuint v1, GLuint v2)
 GD_DEFINE_OGL_METHOD_4(
 	void, Uniform3ui,
 	GLint const, location,
@@ -1683,7 +1680,7 @@ GD_DEFINE_OGL_METHOD_4(
 	GLuint const, v2
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform4ui (GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
+// void glUniform4ui(GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3)
 GD_DEFINE_OGL_METHOD_5(
 	void, Uniform4ui,
 	GLint const, location,
@@ -1693,63 +1690,63 @@ GD_DEFINE_OGL_METHOD_5(
 	GLuint const, v3
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform1uiv (GLint location, GLsizei count, const GLuint* value);
+// void glUniform1uiv(GLint location, GLsizei count, const GLuint* value)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform1uiv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLuint*
+	const GLuint* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform2uiv (GLint location, GLsizei count, const GLuint* value);
+// void glUniform2uiv(GLint location, GLsizei count, const GLuint* value)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform2uiv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLuint*
+	const GLuint* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform3uiv (GLint location, GLsizei count, const GLuint* value);
+// void glUniform3uiv(GLint location, GLsizei count, const GLuint* value)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform3uiv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLuint*
+	const GLuint* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniform4uiv (GLint location, GLsizei count, const GLuint* value);
+// void glUniform4uiv(GLint location, GLsizei count, const GLuint* value)
 GD_DEFINE_OGL_METHOD_3(
 	void, Uniform4uiv,
 	GLint const, location,
 	GLsizei const, count,
-	const const, GLuint*
+	const GLuint* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glClearBufferiv (GLenum buffer, GLint drawbuffer, const GLint* value);
+// void glClearBufferiv(GLenum buffer, GLint drawbuffer, const GLint* value)
 GD_DEFINE_OGL_METHOD_3(
 	void, ClearBufferiv,
 	GLenum const, buffer,
 	GLint const, drawbuffer,
-	const const, GLint*
+	const GLint* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glClearBufferuiv (GLenum buffer, GLint drawbuffer, const GLuint* value);
+// void glClearBufferuiv(GLenum buffer, GLint drawbuffer, const GLuint* value)
 GD_DEFINE_OGL_METHOD_3(
 	void, ClearBufferuiv,
 	GLenum const, buffer,
 	GLint const, drawbuffer,
-	const const, GLuint*
+	const GLuint* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glClearBufferfv (GLenum buffer, GLint drawbuffer, const GLfloat* value);
+// void glClearBufferfv(GLenum buffer, GLint drawbuffer, const GLfloat* value)
 GD_DEFINE_OGL_METHOD_3(
 	void, ClearBufferfv,
 	GLenum const, buffer,
 	GLint const, drawbuffer,
-	const const, GLfloat*
+	const GLfloat* const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glClearBufferfi (GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stencil);
+// void glClearBufferfi(GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stencil)
 GD_DEFINE_OGL_METHOD_4(
 	void, ClearBufferfi,
 	GLenum const, buffer,
@@ -1758,14 +1755,14 @@ GD_DEFINE_OGL_METHOD_4(
 	GLint const, stencil
 	)
 
-// GL_APICALL const GLubyte* GL_APIENTRY glGetStringi (GLenum name, GLuint index);
+// const GLubyte* glGetStringi(GLenum name, GLuint index)
 GD_DEFINE_OGL_METHOD_2(
-	const, _APIENTRY,
+	const GLubyte*, GetStringi,
 	GLenum const, name,
 	GLuint const, index
 	)
 
-// GL_APICALL void           GL_APIENTRY glCopyBufferSubData (GLenum readTarget, GLenum writeTarget, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+// void glCopyBufferSubData(GLenum readTarget, GLenum writeTarget, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size)
 GD_DEFINE_OGL_METHOD_5(
 	void, CopyBufferSubData,
 	GLenum const, readTarget,
@@ -1775,34 +1772,33 @@ GD_DEFINE_OGL_METHOD_5(
 	GLsizeiptr const, size
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetUniformIndices (GLuint program, GLsizei uniformCount, const GLchar* const* uniformNames, GLuint* uniformIndices);
-GD_DEFINE_OGL_METHOD_5(
+// void glGetUniformIndices(GLuint program, GLsizei uniformCount, const GLchar* const* uniformNames, GLuint* uniformIndices)
+GD_DEFINE_OGL_METHOD_4(
 	void, GetUniformIndices,
 	GLuint const, program,
 	GLsizei const, uniformCount,
-	const const, GLchar*
-	const* const, uniformNames,
+	const GLchar* const* const, uniformNames,
 	GLuint* const, uniformIndices
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetActiveUniformsiv (GLuint program, GLsizei uniformCount, const GLuint* uniformIndices, GLenum pname, GLint* params);
+// void glGetActiveUniformsiv(GLuint program, GLsizei uniformCount, const GLuint* uniformIndices, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_5(
 	void, GetActiveUniformsiv,
 	GLuint const, program,
 	GLsizei const, uniformCount,
-	const const, GLuint*
-	uniformIndices, const, GLenum
-	pname, const, GLint*
+	const GLuint* const, uniformIndices,
+	GLenum const, pname,
+	GLint* const, params
 	)
 
-// GL_APICALL GLuint         GL_APIENTRY glGetUniformBlockIndex (GLuint program, const GLchar* uniformBlockName);
+// GLuint glGetUniformBlockIndex(GLuint program, const GLchar* uniformBlockName)
 GD_DEFINE_OGL_METHOD_2(
 	GLuint, GetUniformBlockIndex,
 	GLuint const, program,
-	const const, GLchar*
+	const GLchar* const, uniformBlockName
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetActiveUniformBlockiv (GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint* params);
+// void glGetActiveUniformBlockiv(GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_4(
 	void, GetActiveUniformBlockiv,
 	GLuint const, program,
@@ -1811,7 +1807,7 @@ GD_DEFINE_OGL_METHOD_4(
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetActiveUniformBlockName (GLuint program, GLuint uniformBlockIndex, GLsizei bufSize, GLsizei* length, GLchar* uniformBlockName);
+// void glGetActiveUniformBlockName(GLuint program, GLuint uniformBlockIndex, GLsizei bufSize, GLsizei* length, GLchar* uniformBlockName)
 GD_DEFINE_OGL_METHOD_5(
 	void, GetActiveUniformBlockName,
 	GLuint const, program,
@@ -1821,7 +1817,7 @@ GD_DEFINE_OGL_METHOD_5(
 	GLchar* const, uniformBlockName
 	)
 
-// GL_APICALL void           GL_APIENTRY glUniformBlockBinding (GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
+// void glUniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding)
 GD_DEFINE_OGL_METHOD_3(
 	void, UniformBlockBinding,
 	GLuint const, program,
@@ -1829,7 +1825,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLuint const, uniformBlockBinding
 	)
 
-// GL_APICALL void           GL_APIENTRY glDrawArraysInstanced (GLenum mode, GLint first, GLsizei count, GLsizei instanceCount);
+// void glDrawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei instanceCount)
 GD_DEFINE_OGL_METHOD_4(
 	void, DrawArraysInstanced,
 	GLenum const, mode,
@@ -1838,36 +1834,36 @@ GD_DEFINE_OGL_METHOD_4(
 	GLsizei const, instanceCount
 	)
 
-// GL_APICALL void           GL_APIENTRY glDrawElementsInstanced (GLenum mode, GLsizei count, GLenum type, const GLvoid* indices, GLsizei instanceCount);
+// void glDrawElementsInstanced(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices, GLsizei instanceCount)
 GD_DEFINE_OGL_METHOD_5(
 	void, DrawElementsInstanced,
 	GLenum const, mode,
 	GLsizei const, count,
 	GLenum const, type,
-	const const, GLvoid*
-	indices, const, GLsizei
+	const GLvoid* const, indices,
+	GLsizei const, instanceCount
 	)
 
-// GL_APICALL GLsync         GL_APIENTRY glFenceSync (GLenum condition, GLbitfield flags);
+// GLsync glFenceSync(GLenum condition, GLbitfield flags)
 GD_DEFINE_OGL_METHOD_2(
 	GLsync, FenceSync,
 	GLenum const, condition,
 	GLbitfield const, flags
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsSync (GLsync sync);
+// GLboolean glIsSync(GLsync sync)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsSync,
 	GLsync const, sync
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteSync (GLsync sync);
+// void glDeleteSync(GLsync sync)
 GD_DEFINE_OGL_METHOD_1(
 	void, DeleteSync,
 	GLsync const, sync
 	)
 
-// GL_APICALL GLenum         GL_APIENTRY glClientWaitSync (GLsync sync, GLbitfield flags, GLuint64 timeout);
+// GLenum glClientWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout)
 GD_DEFINE_OGL_METHOD_3(
 	GLenum, ClientWaitSync,
 	GLsync const, sync,
@@ -1875,7 +1871,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLuint64 const, timeout
 	)
 
-// GL_APICALL void           GL_APIENTRY glWaitSync (GLsync sync, GLbitfield flags, GLuint64 timeout);
+// void glWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout)
 GD_DEFINE_OGL_METHOD_3(
 	void, WaitSync,
 	GLsync const, sync,
@@ -1883,14 +1879,14 @@ GD_DEFINE_OGL_METHOD_3(
 	GLuint64 const, timeout
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetInteger64v (GLenum pname, GLint64* params);
+// void glGetInteger64v(GLenum pname, GLint64* params)
 GD_DEFINE_OGL_METHOD_2(
 	void, GetInteger64v,
 	GLenum const, pname,
 	GLint64* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetSynciv (GLsync sync, GLenum pname, GLsizei bufSize, GLsizei* length, GLint* values);
+// void glGetSynciv(GLsync sync, GLenum pname, GLsizei bufSize, GLsizei* length, GLint* values)
 GD_DEFINE_OGL_METHOD_5(
 	void, GetSynciv,
 	GLsync const, sync,
@@ -1900,7 +1896,7 @@ GD_DEFINE_OGL_METHOD_5(
 	GLint* const, values
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetInteger64i_v (GLenum target, GLuint index, GLint64* data);
+// void glGetInteger64i_v(GLenum target, GLuint index, GLint64* data)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetInteger64i_v,
 	GLenum const, target,
@@ -1908,7 +1904,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint64* const, data
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetBufferParameteri64v (GLenum target, GLenum pname, GLint64* params);
+// void glGetBufferParameteri64v(GLenum target, GLenum pname, GLint64* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetBufferParameteri64v,
 	GLenum const, target,
@@ -1916,34 +1912,34 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint64* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGenSamplers (GLsizei count, GLuint* samplers);
+// void glGenSamplers(GLsizei count, GLuint* samplers)
 GD_DEFINE_OGL_METHOD_2(
 	void, GenSamplers,
 	GLsizei const, count,
 	GLuint* const, samplers
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteSamplers (GLsizei count, const GLuint* samplers);
+// void glDeleteSamplers(GLsizei count, const GLuint* samplers)
 GD_DEFINE_OGL_METHOD_2(
 	void, DeleteSamplers,
 	GLsizei const, count,
-	const const, GLuint*
+	const GLuint* const, samplers
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsSampler (GLuint sampler);
+// GLboolean glIsSampler(GLuint sampler)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsSampler,
 	GLuint const, sampler
 	)
 
-// GL_APICALL void           GL_APIENTRY glBindSampler (GLuint unit, GLuint sampler);
+// void glBindSampler(GLuint unit, GLuint sampler)
 GD_DEFINE_OGL_METHOD_2(
 	void, BindSampler,
 	GLuint const, unit,
 	GLuint const, sampler
 	)
 
-// GL_APICALL void           GL_APIENTRY glSamplerParameteri (GLuint sampler, GLenum pname, GLint param);
+// void glSamplerParameteri(GLuint sampler, GLenum pname, GLint param)
 GD_DEFINE_OGL_METHOD_3(
 	void, SamplerParameteri,
 	GLuint const, sampler,
@@ -1951,15 +1947,15 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint const, param
 	)
 
-// GL_APICALL void           GL_APIENTRY glSamplerParameteriv (GLuint sampler, GLenum pname, const GLint* param);
+// void glSamplerParameteriv(GLuint sampler, GLenum pname, const GLint* param)
 GD_DEFINE_OGL_METHOD_3(
 	void, SamplerParameteriv,
 	GLuint const, sampler,
 	GLenum const, pname,
-	const const, GLint*
+	const GLint* const, param
 	)
 
-// GL_APICALL void           GL_APIENTRY glSamplerParameterf (GLuint sampler, GLenum pname, GLfloat param);
+// void glSamplerParameterf(GLuint sampler, GLenum pname, GLfloat param)
 GD_DEFINE_OGL_METHOD_3(
 	void, SamplerParameterf,
 	GLuint const, sampler,
@@ -1967,15 +1963,15 @@ GD_DEFINE_OGL_METHOD_3(
 	GLfloat const, param
 	)
 
-// GL_APICALL void           GL_APIENTRY glSamplerParameterfv (GLuint sampler, GLenum pname, const GLfloat* param);
+// void glSamplerParameterfv(GLuint sampler, GLenum pname, const GLfloat* param)
 GD_DEFINE_OGL_METHOD_3(
 	void, SamplerParameterfv,
 	GLuint const, sampler,
 	GLenum const, pname,
-	const const, GLfloat*
+	const GLfloat* const, param
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetSamplerParameteriv (GLuint sampler, GLenum pname, GLint* params);
+// void glGetSamplerParameteriv(GLuint sampler, GLenum pname, GLint* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetSamplerParameteriv,
 	GLuint const, sampler,
@@ -1983,7 +1979,7 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetSamplerParameterfv (GLuint sampler, GLenum pname, GLfloat* params);
+// void glGetSamplerParameterfv(GLuint sampler, GLenum pname, GLfloat* params)
 GD_DEFINE_OGL_METHOD_3(
 	void, GetSamplerParameterfv,
 	GLuint const, sampler,
@@ -1991,51 +1987,51 @@ GD_DEFINE_OGL_METHOD_3(
 	GLfloat* const, params
 	)
 
-// GL_APICALL void           GL_APIENTRY glVertexAttribDivisor (GLuint index, GLuint divisor);
+// void glVertexAttribDivisor(GLuint index, GLuint divisor)
 GD_DEFINE_OGL_METHOD_2(
 	void, VertexAttribDivisor,
 	GLuint const, index,
 	GLuint const, divisor
 	)
 
-// GL_APICALL void           GL_APIENTRY glBindTransformFeedback (GLenum target, GLuint id);
+// void glBindTransformFeedback(GLenum target, GLuint id)
 GD_DEFINE_OGL_METHOD_2(
 	void, BindTransformFeedback,
 	GLenum const, target,
 	GLuint const, id
 	)
 
-// GL_APICALL void           GL_APIENTRY glDeleteTransformFeedbacks (GLsizei n, const GLuint* ids);
+// void glDeleteTransformFeedbacks(GLsizei n, const GLuint* ids)
 GD_DEFINE_OGL_METHOD_2(
 	void, DeleteTransformFeedbacks,
 	GLsizei const, n,
-	const const, GLuint*
+	const GLuint* const, ids
 	)
 
-// GL_APICALL void           GL_APIENTRY glGenTransformFeedbacks (GLsizei n, GLuint* ids);
+// void glGenTransformFeedbacks(GLsizei n, GLuint* ids)
 GD_DEFINE_OGL_METHOD_2(
 	void, GenTransformFeedbacks,
 	GLsizei const, n,
 	GLuint* const, ids
 	)
 
-// GL_APICALL GLboolean      GL_APIENTRY glIsTransformFeedback (GLuint id);
+// GLboolean glIsTransformFeedback(GLuint id)
 GD_DEFINE_OGL_METHOD_1(
 	GLboolean, IsTransformFeedback,
 	GLuint const, id
 	)
 
-// GL_APICALL void           GL_APIENTRY glPauseTransformFeedback (void);
+// void glPauseTransformFeedback(void)
 GD_DEFINE_OGL_METHOD_0(
-	void, PauseTransformFeedback,
+	void, PauseTransformFeedback
 	)
 
-// GL_APICALL void           GL_APIENTRY glResumeTransformFeedback (void);
+// void glResumeTransformFeedback(void)
 GD_DEFINE_OGL_METHOD_0(
-	void, ResumeTransformFeedback,
+	void, ResumeTransformFeedback
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetProgramBinary (GLuint program, GLsizei bufSize, GLsizei* length, GLenum* binaryFormat, GLvoid* binary);
+// void glGetProgramBinary(GLuint program, GLsizei bufSize, GLsizei* length, GLenum* binaryFormat, GLvoid* binary)
 GD_DEFINE_OGL_METHOD_5(
 	void, GetProgramBinary,
 	GLuint const, program,
@@ -2045,16 +2041,16 @@ GD_DEFINE_OGL_METHOD_5(
 	GLvoid* const, binary
 	)
 
-// GL_APICALL void           GL_APIENTRY glProgramBinary (GLuint program, GLenum binaryFormat, const GLvoid* binary, GLsizei length);
+// void glProgramBinary(GLuint program, GLenum binaryFormat, const GLvoid* binary, GLsizei length)
 GD_DEFINE_OGL_METHOD_4(
 	void, ProgramBinary,
 	GLuint const, program,
 	GLenum const, binaryFormat,
-	const const, GLvoid*
-	binary, const, GLsizei
+	const GLvoid* const, binary,
+	GLsizei const, length
 	)
 
-// GL_APICALL void           GL_APIENTRY glProgramParameteri (GLuint program, GLenum pname, GLint value);
+// void glProgramParameteri(GLuint program, GLenum pname, GLint value)
 GD_DEFINE_OGL_METHOD_3(
 	void, ProgramParameteri,
 	GLuint const, program,
@@ -2062,27 +2058,27 @@ GD_DEFINE_OGL_METHOD_3(
 	GLint const, value
 	)
 
-// GL_APICALL void           GL_APIENTRY glInvalidateFramebuffer (GLenum target, GLsizei numAttachments, const GLenum* attachments);
+// void glInvalidateFramebuffer(GLenum target, GLsizei numAttachments, const GLenum* attachments)
 GD_DEFINE_OGL_METHOD_3(
 	void, InvalidateFramebuffer,
 	GLenum const, target,
 	GLsizei const, numAttachments,
-	const const, GLenum*
+	const GLenum* const, attachments
 	)
 
-// GL_APICALL void           GL_APIENTRY glInvalidateSubFramebuffer (GLenum target, GLsizei numAttachments, const GLenum* attachments, GLint x, GLint y, GLsizei width, GLsizei height);
+// void glInvalidateSubFramebuffer(GLenum target, GLsizei numAttachments, const GLenum* attachments, GLint x, GLint y, GLsizei width, GLsizei height)
 GD_DEFINE_OGL_METHOD_7(
 	void, InvalidateSubFramebuffer,
 	GLenum const, target,
 	GLsizei const, numAttachments,
-	const const, GLenum*
-	attachments, const, GLint
-	x, const, GLint
-	y, const, GLsizei
-	width, const, GLsizei
+	const GLenum* const, attachments,
+	GLint const, x,
+	GLint const, y,
+	GLsizei const, width,
+	GLsizei const, height
 	)
 
-// GL_APICALL void           GL_APIENTRY glTexStorage2D (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+// void glTexStorage2D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height)
 GD_DEFINE_OGL_METHOD_5(
 	void, TexStorage2D,
 	GLenum const, target,
@@ -2092,7 +2088,7 @@ GD_DEFINE_OGL_METHOD_5(
 	GLsizei const, height
 	)
 
-// GL_APICALL void           GL_APIENTRY glTexStorage3D (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth);
+// void glTexStorage3D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth)
 GD_DEFINE_OGL_METHOD_6(
 	void, TexStorage3D,
 	GLenum const, target,
@@ -2103,7 +2099,7 @@ GD_DEFINE_OGL_METHOD_6(
 	GLsizei const, depth
 	)
 
-// GL_APICALL void           GL_APIENTRY glGetInternalformativ (GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint* params);
+// void glGetInternalformativ(GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint* params)
 GD_DEFINE_OGL_METHOD_5(
 	void, GetInternalformativ,
 	GLenum const, target,

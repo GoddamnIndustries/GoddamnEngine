@@ -10,8 +10,8 @@
 #ifndef GD_ENGINE_RENDERER_IMPL_OGL_RENDERER
 #define GD_ENGINE_RENDERER_IMPL_OGL_RENDERER
 
-#include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Engine/Renderer/Renderer.h>
+#include <GoddamnEngine/Include.hh>
+#include <GoddamnEngine/Engine/Renderer/Renderer.hh>
 
 /// Undefine this to focre use OpenGL ES on current platform.
 // #define GD_HRI_OGL_FORCE_ES
@@ -25,7 +25,7 @@
 #	include <GLES3/gl3.h>
 #else	// if (defined(GD_HRI_OGL_ES))
 #	include <GL/gl.h>
-#	include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererDefines.h>
+#	include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererDefines.hh>
 #endif	// if (defined(GD_HRI_OGL_ES))
 
 #define GD_HRI_OGLASSERT(Message) \
@@ -58,14 +58,14 @@ GD_NAMESPACE_BEGIN
 			GDINL ~OpenGLDriver() { }
 
 		public /*Class API*/:
-#include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
+#include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.hh>
 		};	// struct DriverMethodsType
 		
 		OpenGLDriver Driver;
 
 #define GD_HRI_API  GDINT virtual
 #define GD_HRI_SPEC       override final
-#include <GoddamnEngine/Engine/Renderer/RendererMethods.h>
+#include <GoddamnEngine/Engine/Renderer/RendererMethods.hh>
 	};	// class HROGLInterface
 
 GD_NAMESPACE_END
