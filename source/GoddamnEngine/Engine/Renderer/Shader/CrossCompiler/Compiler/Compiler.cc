@@ -8,8 +8,10 @@
 
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Compiler/Compiler.hh>
-#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Compiler/HLSL/HLSLCompiler.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Compiler/GLSL/GLSLCompiler.hh>
+#if (defined(GD_PLATFORM_WINDOWS))
+#	include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Compiler/HLSL/HLSLCompiler.hh>
+#endif	// if (defined(GD_PLATFORM_WINDOWS))
 #if (defined(GD_PLATFORM_OSX))
 #	include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Compiler/Metal/MetalCompiler.hh>
 #endif	// if (defined(GD_PLATFORM_OSX))
@@ -18,21 +20,25 @@ GD_NAMESPACE_BEGIN
 
 	typedef Str HRIShaderCrossCompilerCompilerErrorDesc;
 
-	bool HRIShaderCrossCompilerCompiler::GenerateAndCompileShader(OutputStream* const Output, HLSLScope const* const Input, HRIShaderCrossCompilerTarget const Target)
+	bool HRIShaderCrossCompilerCompiler::GenerateAndCompileShader(
+		OutputStream                      * const Output,
+		HLSLScope                    const* const Input,
+		HRIShaderCrossCompilerTarget const        Target,
+		HRIShaderType                const        Type,
+		String                       const&       EntryName
+	)
 	{
 		switch (Target)
 		{
+		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSL420:	
+		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2:	
+		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3:	
+			return GLSLCompiler(self->Toolchain).GenerateAndCompileShader(Output, Input, Target, Type, EntryName);
+
+#if (defined(GD_PLATFORM_WINDOWS))
 		case GD_HRI_SHADERCC_COMPILER_TARGET_HLSL:
-			return HLSLCompiler(self->Toolchain).GenerateAndCompileShader(Output, Input);
-
-		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSL410:	// No ES, with constant buffers.
-			return GLSLCompiler(self->Toolchain).GenerateAndCompileShader(Output, Input, false, true);
-
-		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2:	// ES, without constant buffers.
-			return GLSLCompiler(self->Toolchain).GenerateAndCompileShader(Output, Input, true, false);
-
-		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3:	// ES, with constant buffers.
-			return GLSLCompiler(self->Toolchain).GenerateAndCompileShader(Output, Input, true, true);
+			return HLSLCompiler(self->Toolchain).GenerateAndCompileShader(Output, Input, Type, EntryName);
+#endif	// if (defined(GD_PLATFORM_WINDOWS))
 
 #if (defined(GD_PLATFORM_OSX))
 		case GD_HRI_SHADERCC_COMPILER_TARGET_METAL:

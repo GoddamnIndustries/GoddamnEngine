@@ -149,40 +149,41 @@ GD_NAMESPACE_BEGIN
 	extern Str HLSLSemanticToStr(HLSLSemanticType const Semantic)
 	{
 		static Str const SemanticStrings[] = {
-			 "BINORMAL",
-			 "BLENDINDICES",
-			 "BLENDWEIGHT",
-			 "COLOR",
-			 "NORMAL",
-			 "POSITION",
-			 "POSITIONT",
-			 "PSIZE",
-			 "TANGENT",
-			 "TEXCOORD",
-			 "FOG",
-			 "TESSFACTOR",
-			 "SV_ClipDistance",
-			 "SV_CullDistance",
-			 "SV_Coverage",
-			 "SV_Depth",
-			 "SV_DispatchThreadID",
-			 "SV_DomainLocation",
-			 "SV_GroupID",
-			 "SV_GroupIndex",
-			 "SV_GroupThreadID",
-			 "SV_GSInstanceID",
-			 "SV_InsideTessFactor",
-			 "SV_IsFrontFace",
-			 "SV_OutputControlPointID",
-			 "SV_Position",
-			 "SV_RenderTargetArrayIndex",
-			 "SV_SampleIndex",
-			 "SV_Target",
-			 "SV_TessFactor",
-			 "SV_ViewportArrayIndex",
-			 "SV_InstanceID",
-			 "SV_PrimitiveID",
-			 "SV_VertexID",
+			nullptr,
+			"BINORMAL",
+			"BLENDINDICES",
+			"BLENDWEIGHT",
+			"COLOR",
+			"NORMAL",
+			"POSITION",
+			"POSITIONT",
+			"PSIZE",
+			"TANGENT",
+			"TEXCOORD",
+			"FOG",
+			"TESSFACTOR",
+			"SV_ClipDistance",
+			"SV_CullDistance",
+			"SV_Coverage",
+			"SV_Depth",
+			"SV_DispatchThreadID",
+			"SV_DomainLocation",
+			"SV_GroupID",
+			"SV_GroupIndex",
+			"SV_GroupThreadID",
+			"SV_GSInstanceID",
+			"SV_InsideTessFactor",
+			"SV_IsFrontFace",
+			"SV_OutputControlPointID",
+			"SV_Position",
+			"SV_RenderTargetArrayIndex",
+			"SV_SampleIndex",
+			"SV_Target",
+			"SV_TessFactor",
+			"SV_ViewportArrayIndex",
+			"SV_InstanceID",
+			"SV_PrimitiveID",
+			"SV_VertexID",
 		};
 
 		GD_ASSERT(Semantic < GD_HLSL_SEMANTICS_COUNT, "Invalid semantic specified");
@@ -236,7 +237,7 @@ GD_NAMESPACE_BEGIN
 
 	extern HRISemantic HLSLSemanticToHRI(HLSLSemanticType const Semantic)
 	{
-		static HRISemantic const HLSL2HRITrsnaltionsTable[] = {
+		static HRISemantic const HLSL2HRITranslationsTable[] = {
 			GD_HRI_SEMANTIC_UNKNOWN,    // GD_HLSL_SEMANTIC_UNKNOWN
 			GD_HRI_SEMANTIC_BINORMAL,
 			GD_HRI_SEMANTIC_BLENDINDICES,
@@ -266,7 +267,7 @@ GD_NAMESPACE_BEGIN
 			GD_HRI_SEMANTIC_UNKNOWN,	// GD_HRI_SEMANTIC_SV_Position,
 			GD_HRI_SEMANTIC_UNKNOWN,	// GD_HRI_SEMANTIC_SV_RenderTargetArrayIndex,
 			GD_HRI_SEMANTIC_UNKNOWN,	// GD_HRI_SEMANTIC_SV_SampleIndex,
-			GD_HRI_SEMANTIC_UNKNOWN,	// GD_HRI_SEMANTIC_SV_Target,
+			GD_HRI_SEMANTIC_UNKNOWN,	// GD_HRI_SEMANTIC_SV_Target
 			GD_HRI_SEMANTIC_UNKNOWN,	// GD_HRI_SEMANTIC_SV_TessFactor,
 			GD_HRI_SEMANTIC_UNKNOWN,	// GD_HRI_SEMANTIC_SV_ViewportArrayIndex,
 			GD_HRI_SEMANTIC_UNKNOWN,	// GD_HRI_SEMANTIC_SV_InstanceID,
@@ -275,12 +276,12 @@ GD_NAMESPACE_BEGIN
 		};
 
 		GD_ASSERT(Semantic < GD_HLSL_SEMANTICS_COUNT, "Invalid semantic specified");
-		return HLSL2HRITrsnaltionsTable[static_cast<size_t>(Semantic)];
+		return HLSL2HRITranslationsTable[static_cast<size_t>(Semantic)];
 	}
 
 	extern HLSLSemanticType HLSLSemanticFromHRI(HRISemantic const Semantic)
 	{
-		static HLSLSemanticType const HRI2HLSLTrsnaltionsTable[] = {
+		static HLSLSemanticType const HRI2HLSLTranslationsTable[] = {
 			GD_HLSL_SEMANTIC_POSITION,
 			GD_HLSL_SEMANTIC_NORMAL,
 			GD_HLSL_SEMANTIC_TANGENT,
@@ -292,7 +293,7 @@ GD_NAMESPACE_BEGIN
 		};
 
 		GD_ASSERT(Semantic < GD_HRI_SEMANTICS_COUNT, "Invalid semantic specified");
-		return HRI2HLSLTrsnaltionsTable[static_cast<size_t>(Semantic)];
+		return HRI2HLSLTranslationsTable[static_cast<size_t>(Semantic)];
 	}
 
 	GDINT static StreamedLexerOptions const& GetDefaultOptionsForHlsl()

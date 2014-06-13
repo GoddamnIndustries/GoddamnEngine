@@ -108,10 +108,10 @@ GD_NAMESPACE_BEGIN
 	/// Specifies stream with read-only support.
 	class InputStream : public Stream
 	{
-		GDINL virtual bool   CanWrite() const final { return false; }
-		GDINL virtual bool   CanRead () const final { return true;  } 
+		GDINL virtual bool CanWrite() const final { return false; }
+		GDINL virtual bool CanRead () const final { return true;  } 
 
-		GDINL virtual void   Flush   ()       final { GD_ASSERT_FALSE("Attempted flushing Read-Only stream"); }
+		GDINL virtual void Flush   ()       final { GD_ASSERT_FALSE("Attempted flushing Read-Only stream"); }
 
 		GDINL virtual size_t Write(chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count) final 
 		{
@@ -126,9 +126,9 @@ GD_NAMESPACE_BEGIN
 	/// Specifies stream with write-only support.
 	class OutputStream : public Stream
 	{
-		GDINL virtual bool   CanWrite() const final { return true;  }
-		GDINL virtual bool   CanRead () const final { return false; }
-		GDINL virtual bool   CanSeek () const final { return false; }
+		GDINL virtual bool CanWrite() const final { return true;  }
+		GDINL virtual bool CanRead () const final { return false; }
+		GDINL virtual bool CanSeek () const final { return false; }
 
 		GDINL virtual size_t Seek(ptrdiff_t const Offset, SeekOrigin const Origin) final 
 		{ 
@@ -201,6 +201,10 @@ GD_NAMESPACE_BEGIN
 			return 0;
 		}
 	};	// DataRefInputStream
+
+	class StringRefOutputStream final : public InputStream
+	{
+	};
 
 GD_NAMESPACE_END
 #include <GoddamnEngine/Core/IO/Stream/Stream.inl>

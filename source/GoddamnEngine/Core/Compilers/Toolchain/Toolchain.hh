@@ -88,6 +88,8 @@ GD_NAMESPACE_BEGIN
 		{ 
 			return (self->LastException != 0L); 
 		}
+
+		GDINL bool DoTreatWarningsAsError() const { return true; }
 	};	// class IToolchain
 
 	class IToolchainTool

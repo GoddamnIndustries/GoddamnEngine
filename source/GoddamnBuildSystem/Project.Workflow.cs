@@ -51,7 +51,7 @@ namespace GoddamnEngine.BuildSystem
                     {
                         case ".c":
                         case ".cc":
-                        case ".cc":
+                        case ".cpp":
                         case ".cxx":
                             Type = SourceFileType.SourceCode;
                             break;

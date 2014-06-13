@@ -228,6 +228,7 @@ GD_NAMESPACE_BEGIN
 		GDAPI void Resize(const size_t HeapSize);
 		GDINL void Emptify() { self->Resize(0); }
 
+		GDINL void SetLastElement(Char const C) { *(self->End() - 1) = C; }
 		GDINL Char const& GetLastElement() const { return (*(self->End() - 1)); }
 
 		/// @}

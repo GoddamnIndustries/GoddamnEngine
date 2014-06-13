@@ -27,9 +27,9 @@ GD_NAMESPACE_BEGIN
 		if (Scope != nullptr)
 		{
 			OutputShaderDescription = HLSLValidator(self->Toolchain).ValidateAndGenerateDescription(nullptr, Scope, EntryPointName);
+			HRIShaderCrossCompilerCompiler(self->Toolchain).GenerateAndCompileShader(nullptr, Scope, GD_HRI_SHADERCC_COMPILER_TARGET_GLSL420, GD_HRI_SHADER_TYPE_VERTEX, EntryPointName);
 			return true;
 		}
-
 		return false;
 	}
 

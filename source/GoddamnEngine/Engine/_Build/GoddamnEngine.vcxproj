@@ -82,6 +82,7 @@
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\Compiler.hh" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\GLSL\GLSLCompiler.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\GLSL\GLSLCompiler.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\GLSL\GLSLCompilerStuff.cc" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\HLSL\HLSLCompiler.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\HLSL\HLSLCompiler.hh" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\Metal\MetalCompiler.hh" />
@@ -156,12 +157,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>GoddamnEngine.Debug</TargetName>
     <OutDir>$(GODDAMN_SDK)bin\</OutDir>
-    <IncludePath>;D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\_Dependencies\Direct3D11\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\dirent\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\physx3\include;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
+    <IncludePath>;D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\_Dependencies\Direct3D11\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\dirent\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glsl_optimizer\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\physx3\include;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>GoddamnEngine</TargetName>
     <OutDir>$(GODDAMN_SDK)bin\</OutDir>
-    <IncludePath>;D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\_Dependencies\Direct3D11\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\dirent\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\physx3\include;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
+    <IncludePath>;D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Impl\Direct3D11\_Dependencies\Direct3D11\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\dirent\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glsl_optimizer\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\include;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\physx3\include;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -176,7 +177,7 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.Debug.lib;;;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\*Windows.Debug.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\*Windows.Debug.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.Debug.lib;;;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\*Windows.Debug.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glsl_optimizer\*Windows.Debug.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\*Windows.Debug.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>True</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -194,7 +195,7 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.lib;;;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\*Windows.Release.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\*Windows.Release.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.lib;;;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\*.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glsl_optimizer\*Windows.Release.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\*Windows.Release.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>False</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
     </Link>

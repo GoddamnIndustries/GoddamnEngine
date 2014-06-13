@@ -21,7 +21,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	typedef Str HLSLValidatorErrorDec;
+	typedef Str HLSLValidatorErrorDesc;
 	typedef Str HLSLValidatorWarningDec;
 
 	bool HLSLValidator::ValidateResourceParameters(HLSLScope const* const ParsedData, HRIShaderInstanceDesc* const ShaderInstanceDesc)
@@ -39,13 +39,26 @@ GD_NAMESPACE_BEGIN
 				TextureObjectType = GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D;
 			else if (TextureObject->Type->Class == GD_HLSL_TYPE_CLASS_TEXTURECUBE)
 				TextureObjectType = GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE;
-			else continue;
+			else if (TextureObject->Type->Class != GD_HLSL_TYPE_CLASS_SAMPLER)
+			{
+				HLSLVariable const* const StaticVariable = TextureObject;
+				if (StaticVariable->ExprColon != nullptr)
+				{	// Some static variable contains after-colon expression.
+					HLSLValidatorErrorDesc static const HasExprColonError("static variable '%s' cannot have after-colon-experssion.");
+					self->RaiseError(HasExprColonError, &TextureObject->Name[0]);
+					self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
+
+					return false;
+				}
+
+				continue;
+			}
 
 			// Lets check if this texture object also contains sampler.
 			HLSLVariable const* const TextureSampler = ParsedData->FindVariable(TextureObject->Name + "Sampler");
 			if (TextureSampler == nullptr)
 			{	// No sampler was found.
-				HLSLValidatorErrorDec static const NoSamplerWasFoundForTextureError("appropriate sampler for texture object named '%s' does not exists.");
+				HLSLValidatorErrorDesc static const NoSamplerWasFoundForTextureError("appropriate sampler for texture object named '%s' does not exists.");
 				self->RaiseError(NoSamplerWasFoundForTextureError, &TextureObject->Name[0]);
 				self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -56,7 +69,7 @@ GD_NAMESPACE_BEGIN
 			if (TextureObjectRegister != nullptr)
 			if (TextureObjectRegister->Register != GD_HLSL_REGISTER_T)
 			{	// Texture is located outside 'T' registers group
-				HLSLValidatorErrorDec static const InvalidTextureRegisterError("texture '%s' is located outside 'T' registers group.");
+				HLSLValidatorErrorDesc static const InvalidTextureRegisterError("texture '%s' is located outside 'T' registers group.");
 				self->RaiseError(InvalidTextureRegisterError, &TextureObject->Name[0]);
 				self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -67,7 +80,7 @@ GD_NAMESPACE_BEGIN
 			if (TextureSamplerRegister != nullptr)
 			if (TextureSamplerRegister->Register != GD_HLSL_REGISTER_S)
 			{	// Sampler is located outside 'S' registers group
-				HLSLValidatorErrorDec static const InvalidTextureRegisterError("sampler '%s' is located outside 'S' registers group.");
+				HLSLValidatorErrorDesc static const InvalidTextureRegisterError("sampler '%s' is located outside 'S' registers group.");
 				self->RaiseError(InvalidTextureRegisterError, &TextureSampler->Name[0]);
 				self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -79,7 +92,7 @@ GD_NAMESPACE_BEGIN
 			{	// Both texture object and sampler contain register information.
 				if (TextureObjectRegister->RegisterID != TextureSamplerRegister->RegisterID)
 				{	// Texture and it`s sampler should be located in same registers
-					HLSLValidatorErrorDec static const DifferentTextureSamplerRegistersError("texture '%s' and it`s sampler should be located in same registers");
+					HLSLValidatorErrorDesc static const DifferentTextureSamplerRegistersError("texture '%s' and it`s sampler should be located in same registers");
 					self->RaiseError(DifferentTextureSamplerRegistersError, &TextureObject->Name[0]);
 					self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -96,12 +109,14 @@ GD_NAMESPACE_BEGIN
 				TextureObjectUsedRegister = TextureSamplerRegister->RegisterID;
 				TextureObjectNewRegister = TextureObjectUsedRegister + 1;
 #if (defined(GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS))
-				HLSLVariable* const TextureObjectMut = const_cast<HLSLVariable*>(TextureObject);
-				HLSLRegister* const TextureObjectRegisterMut = new HLSLRegister();
-				TextureObjectRegisterMut->Register = GD_HLSL_REGISTER_T;
-				TextureObjectRegisterMut->RegisterID = TextureObjectUsedRegister;
-				delete TextureObjectMut->ExprColon;
-				TextureObjectMut->ExprColon = TextureObjectRegisterMut;
+#	 define  GD_SHADERCC_VALIDATOR_AUTOFIX_NULL_TEXTURE_OBJECT_REGISTER() \
+		HLSLVariable* const TextureObjectMut = const_cast<HLSLVariable*>(TextureObject); \
+		HLSLRegister* const TextureObjectRegisterMut = new HLSLRegister(); \
+		TextureObjectRegisterMut->Register = GD_HLSL_REGISTER_T; \
+		TextureObjectRegisterMut->RegisterID = TextureObjectUsedRegister; \
+		delete TextureObjectMut->ExprColon; \
+		TextureObjectMut->ExprColon = TextureObjectRegisterMut; 
+				GD_SHADERCC_VALIDATOR_AUTOFIX_NULL_TEXTURE_OBJECT_REGISTER();
 #endif	// if (defined(GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS))
 			}
 			else if ((TextureObjectRegister != nullptr) && (TextureSamplerRegister == nullptr))
@@ -111,12 +126,14 @@ GD_NAMESPACE_BEGIN
 				TextureObjectUsedRegister = TextureObjectRegister->RegisterID;
 				TextureObjectNewRegister = TextureObjectUsedRegister + 1;
 #if (defined(GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS))
-				HLSLVariable* const TextureSamplerMut = const_cast<HLSLVariable*>(TextureSampler);
-				HLSLRegister* const TextureSamplerRegisterMut = new HLSLRegister();
-				TextureSamplerRegisterMut->Register = GD_HLSL_REGISTER_S;
-				TextureSamplerRegisterMut->RegisterID = TextureObjectUsedRegister;
-				delete TextureSamplerMut->ExprColon;
-				TextureSamplerMut->ExprColon = TextureSamplerRegisterMut;
+#	 define  GD_SHADERCC_VALIDATOR_AUTOFIX_NULL_TEXTURE_SAMPLER_REGISTER() \
+		HLSLVariable* const TextureSamplerMut = const_cast<HLSLVariable*>(TextureSampler); \
+		HLSLRegister* const TextureSamplerRegisterMut = new HLSLRegister(); \
+		TextureSamplerRegisterMut->Register = GD_HLSL_REGISTER_S; \
+		TextureSamplerRegisterMut->RegisterID = TextureObjectUsedRegister; \
+		delete TextureSamplerMut->ExprColon; \
+		TextureSamplerMut->ExprColon = TextureSamplerRegisterMut;
+				GD_SHADERCC_VALIDATOR_AUTOFIX_NULL_TEXTURE_SAMPLER_REGISTER();
 #endif	// if (defined(GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS))
 			}
 			else
@@ -127,19 +144,10 @@ GD_NAMESPACE_BEGIN
 				TextureObjectNewRegister = TextureObjectUsedRegister + 1;
 
 #if (defined(GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS))
-				HLSLVariable* const TextureObjectMut = const_cast<HLSLVariable*>(TextureObject);
-				HLSLRegister* const TextureObjectRegisterMut = new HLSLRegister();
-				TextureObjectRegisterMut->Register = GD_HLSL_REGISTER_T;
-				TextureObjectRegisterMut->RegisterID = TextureObjectUsedRegister;
-				delete TextureObjectMut->ExprColon;
-				TextureObjectMut->ExprColon = TextureObjectRegisterMut;
-
-				HLSLVariable* const TextureSamplerMut = const_cast<HLSLVariable*>(TextureSampler);
-				HLSLRegister* const TextureSamplerRegisterMut = new HLSLRegister();
-				TextureSamplerRegisterMut->Register = GD_HLSL_REGISTER_S;
-				TextureSamplerRegisterMut->RegisterID = TextureObjectUsedRegister;
-				delete TextureSamplerMut->ExprColon;
-				TextureSamplerMut->ExprColon = TextureSamplerRegisterMut;
+				GD_SHADERCC_VALIDATOR_AUTOFIX_NULL_TEXTURE_OBJECT_REGISTER();
+				GD_SHADERCC_VALIDATOR_AUTOFIX_NULL_TEXTURE_SAMPLER_REGISTER();
+#	undef GD_SHADERCC_VALIDATOR_AUTOFIX_NULL_TEXTURE_OBJECT_REGISTER
+#	undef GD_SHADERCC_VALIDATOR_AUTOFIX_NULL_TEXTURE_SAMPLER_REGISTER
 #endif	// if (defined(GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS))
 			}
 
@@ -165,7 +173,7 @@ GD_NAMESPACE_BEGIN
 			{
 				if (ConstantBufferRegister->Register != GD_HLSL_REGISTER_B)
 				{	// Constant buffer is located outside 'B' registers group
-					HLSLValidatorErrorDec static const InvalidTextureRegisterError("constant buffer '%s' is located outside 'B' registers group.");
+					HLSLValidatorErrorDesc static const InvalidTextureRegisterError("constant buffer '%s' is located outside 'B' registers group.");
 					self->RaiseError(InvalidTextureRegisterError, &ConstantBuffer->Name[0]);
 					self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -203,9 +211,8 @@ GD_NAMESPACE_BEGIN
 				Format                 ParamFormat = GD_FORMAT_UNKNOWN;
 				/**/ if ((ConstantBufferParam->Type->Class == GD_HLSL_TYPE_CLASS_SCALAR) || (ConstantBufferParam->Type->Class == GD_HLSL_TYPE_CLASS_VECTOR))
 				{
-					HLSLVectorType   const* const VectorType                 = HLSLDynamicCast<HLSLVectorType const*>(ConstantBufferParam->Type);
-					HLSLTypeDataType        const DataType                   = ((VectorType != nullptr) ? VectorType->DataType         : static_cast<HLSLScalarType const*>(ConstantBufferParam->Type)->DataType);
-					size_t                  const ParamFormatComponentsCount = ((VectorType != nullptr) ? VectorType->ComponentsNumber : 1);
+					HLSLVectorType const* const VectorType = HLSLDynamicCast<HLSLVectorType const*>(ConstantBufferParam->Type);
+					HLSLTypeDataType      const DataType   = ((VectorType != nullptr) ? VectorType->DataType : static_cast<HLSLScalarType const*>(ConstantBufferParam->Type)->DataType);
 
 					size_t     ParamFormatSize = GD_FORMAT_SIZE_UNKNOWN;
 					FormatType ParamFormatType = GD_FORMAT_TYPE_UNKNOWN;
@@ -243,7 +250,7 @@ GD_NAMESPACE_BEGIN
 					}
 
 					ParamType = GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE;
-					ParamFormat = GD_FORMAT_MAKE(ParamFormatType, ParamFormatSize, ParamFormatComponentsCount);
+					ParamFormat = GD_FORMAT_MAKE(ParamFormatType, ParamFormatSize, ((VectorType != nullptr) ? VectorType->ComponentsNumber : 1));
 				}
 				else if (ConstantBufferParam->Type->Class == GD_HLSL_TYPE_CLASS_MATRIX)
 				{
@@ -267,7 +274,7 @@ GD_NAMESPACE_BEGIN
 		HLSLFunction const* const EntryPoint = ParsedData->FindFunction(EntryName);
 		if (EntryPoint == nullptr)
 		{	// No entry point was found.
-			HLSLValidatorErrorDec static const NoEntryFunctionError("entry point function named '%s' was not found.");
+			HLSLValidatorErrorDesc static const NoEntryFunctionError("entry point function named '%s' was not found.");
 			self->RaiseError(NoEntryFunctionError, &EntryName[0]);
 			self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -291,7 +298,7 @@ GD_NAMESPACE_BEGIN
 			HLSLSemantic const* const EntryPointSemantic = EntryPoint->Semantic;
 			if (EntryPointSemantic == nullptr)
 			{	// Entry point returns value that is not utilized with any semantic
-				HLSLValidatorErrorDec static const EntryReturnValueNotUtilizedError("entry point function '%s' returns value that is not utilized with any semantic.");
+				HLSLValidatorErrorDesc static const EntryReturnValueNotUtilizedError("entry point function '%s' returns value that is not utilized with any semantic.");
 				self->RaiseError(EntryReturnValueNotUtilizedError, &EntryName[0]);
 				self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -306,7 +313,7 @@ GD_NAMESPACE_BEGIN
 					HLSLVariable const* const EntryPointReturnStructField = static_cast<HLSLVariable const*>(Definition);
 					if (EntryPointReturnStructField->ExprColon == nullptr)
 					{
-						HLSLValidatorErrorDec static const EntryReturnValueNotUtilizedError("entry point function '%s' returns structure that contains unutilized field '%s'.");
+						HLSLValidatorErrorDesc static const EntryReturnValueNotUtilizedError("entry point function '%s' returns structure that contains unutilized field '%s'.");
 						self->RaiseError(EntryReturnValueNotUtilizedError, &EntryName[0], &EntryPointReturnStructField[0]);
 						self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -324,7 +331,7 @@ GD_NAMESPACE_BEGIN
 			}
 			else
 			{	// Entry point return something really strange.
-				HLSLValidatorErrorDec static const EntryReturnNotUtilizableValueError("entry point function '%s' returns value that cannot be utilized.");
+				HLSLValidatorErrorDesc static const EntryReturnNotUtilizableValueError("entry point function '%s' returns value that cannot be utilized.");
 				self->RaiseError(EntryReturnNotUtilizableValueError, &EntryName[0]);
 				self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -341,7 +348,7 @@ GD_NAMESPACE_BEGIN
 			else if (EntryPointArgument->AccsessType == GD_HLSL_ARGUMENT_OUT) CurrentShaderSemantics = &ShaderOutputSemantics;
 			else
 			{
-				HLSLValidatorErrorDec static const InvalidAccessTypeError("invalid access type of argument '%s'");
+				HLSLValidatorErrorDesc static const InvalidAccessTypeError("invalid access type of argument '%s'");
 				self->RaiseError(InvalidAccessTypeError, &EntryPointArgument->Name[0]);
 				self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -371,7 +378,7 @@ GD_NAMESPACE_BEGIN
 		HRISemantic const ArgumentSemanticHRI = HLSLSemanticToHRI(ArgumentSemanticHLSL->Semantic);
 		if (ArgumentSemanticHRI == GD_HRI_SEMANTIC_UNKNOWN)
 		{	/// @todo Do something here.
-	//		HLSLValidatorErrorDec static const UntranslatableSemanticError("Untranslatable semantic '%s' in argument '%s'");
+	//		HLSLValidatorErrorDesc static const UntranslatableSemanticError("Untranslatable semantic '%s' in argument '%s'");
 	//		self->RaiseError(UntranslatableSemanticError, HLSLSemanticToStr(ArgumentHLSLSemantic->Semantic), &Argument->Name[0]);
 	//		self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 	//	
@@ -381,7 +388,7 @@ GD_NAMESPACE_BEGIN
 
 	//	if ((ShaderSemanticsList & GD_BIT(UInt64(ArgumentSemanticHRI + 1))) != 0)
 	//	{
-	//		HLSLValidatorErrorDec static const InvalidAccessTypeError("entry point function already contains (in/out)put for '%s' semantic");
+	//		HLSLValidatorErrorDesc static const InvalidAccessTypeError("entry point function already contains (in/out)put for '%s' semantic");
 	//		self->RaiseError(InvalidAccessTypeError, HLSLSemanticToStr(ArgumentSemanticHLSL->Semantic));
 	//		self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 	//
@@ -394,7 +401,7 @@ GD_NAMESPACE_BEGIN
 
 	HRIShaderInstanceDesc* HLSLValidator::ValidateAndGenerateDescription(HRIShader* const Shader, HLSLScope const* const ParsedData, String const& EntryName)
 	{
-		RefPtr<HRIShaderInstanceDesc> ShaderInstanceDesc;
+		RefPtr<HRIShaderInstanceDesc> ShaderInstanceDesc(nullptr);
 		/**/ if (!self->ValidateEntryPoint(ParsedData, EntryName, Shader, ShaderInstanceDesc))
 			return nullptr;
 		else if (!self->ValidateConstantBuffersParameters(ParsedData, ShaderInstanceDesc.GetPointer()))

@@ -12,6 +12,8 @@
 
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/IO/Stream/Stream.hh>
+#include <GoddamnEngine/Core/Compilers/Toolchain/Toolchain.hh>
+#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Compiler/Compiler.hh>
 
 #if (!defined(GD_PLATFORM_DESKTOP))
 #	error "This API can be used on desktop platfroms only."
@@ -25,7 +27,12 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINL  HLSLCompiler(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
 		GDINL ~HLSLCompiler(                           ) { }
-		GDINT bool GenerateAndCompileShader(OutputStream* const Output, HLSLScope const* const Input);
+		GDINT bool GenerateAndCompileShader(
+			OutputStream                      * const Output,
+			HLSLScope                    const* const Input,
+			HRIShaderType                const        Type,
+			String                       const&       EntryName
+		);
 	};	// class HLSLCompiler
 
 GD_NAMESPACE_END
