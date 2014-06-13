@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// FieldInformation.h: Common interface for field information
+/// FieldInformation.hh: Common interface for field information
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

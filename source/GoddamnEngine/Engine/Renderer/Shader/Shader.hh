@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Shader.h: shaders common interface
+/// Shader.hh: shaders common interface
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
@@ -197,8 +197,8 @@ GD_NAMESPACE_BEGIN
 	public:
 		HRIShaderParamLocationDescType const LocationType = GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_UNKNOWN; ///< Type of this location
 
-		GDINL virtual ~HRIShaderParamLocationDesc(                                                                                                             ) { }
-		GDINL          HRIShaderParamLocationDesc(HRIShaderInstanceDesc* const LocationHRIShaderInstanceDesc, HRIShaderParamLocationDescType const LocationType);
+		GDINL virtual ~HRIShaderParamLocationDesc(                                                                                                          ) { }
+		GDINL          HRIShaderParamLocationDesc(HRIShaderInstanceDesc* const LocationShaderInstanceDesc, HRIShaderParamLocationDescType const LocationType);
 
 		/// Returns total number of location instances inside
 		GDINL size_t GetLocationInstancesCount() const { return self->LocationInstancesCount; }

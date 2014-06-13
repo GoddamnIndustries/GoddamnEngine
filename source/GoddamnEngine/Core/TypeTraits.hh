@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// TypeTraits.h: Compile-time types information and modifiers management.
+/// TypeTraits.hh: Compile-time types information and modifiers management.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

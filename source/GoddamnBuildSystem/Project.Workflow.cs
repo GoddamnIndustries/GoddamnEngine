@@ -51,7 +51,7 @@ namespace GoddamnEngine.BuildSystem
                     {
                         case ".c":
                         case ".cc":
-                        case ".cpp":
+                        case ".cc":
                         case ".cxx":
                             Type = SourceFileType.SourceCode;
                             break;
@@ -83,7 +83,8 @@ namespace GoddamnEngine.BuildSystem
                                 break;
                             }
 
-                            continue;
+                            Type = SourceFileType.SupportFile;
+                            break;
 
                         case ".m":
                         case ".mm":
@@ -94,7 +95,8 @@ namespace GoddamnEngine.BuildSystem
                                 break;
                             }
 
-                            continue;
+                            Type = SourceFileType.SupportFile;
+                            break;
 
                         default:
                             ConsoleOutput.WriteLine(SourceAbsoluteFilePath, "warning: skipping file '{0}' with unknown extension '{1}'", SourceAbsoluteFilePath, SourceFileExtension);

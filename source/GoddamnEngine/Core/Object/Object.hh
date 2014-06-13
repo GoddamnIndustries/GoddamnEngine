@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Object.h: basic object interface.
+/// Object.hh: basic object interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

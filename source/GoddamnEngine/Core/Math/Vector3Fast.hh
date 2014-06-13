@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Vector3Fast.h: Fast floating-point three-dimensional vector class.
+/// Vector3Fast.hh: Fast floating-point three-dimensional vector class.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// MemberInformation.h: Common interface for member information
+/// MemberInformation.hh: Common interface for member information
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Quaternion.h: quternion class.
+/// Quaternion.hh: quternion class.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

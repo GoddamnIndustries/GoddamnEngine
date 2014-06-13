@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// D3D11LinkagePoint.cpp: Linkage point D3D11 implementation.
+/// D3D11LinkagePoint.cc: Linkage point D3D11 implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

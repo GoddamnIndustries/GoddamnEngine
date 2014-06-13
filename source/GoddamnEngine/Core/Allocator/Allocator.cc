@@ -6,7 +6,6 @@
 ///		* 12.06.2014 - Created by James Jhuighuy
 //////////////////////////////////////////////////////////////////////////
 
-
 #include <GoddamnEngine/Core/Allocator/Allocator.hh>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
 
@@ -42,8 +41,8 @@ GD_NAMESPACE_BEGIN
 			::free(Memory);
 	}
 
-	// Code left here just for history purposes.
-#if 0
+	
+#if 0	// Code left here just for history purposes.
 	void Allocator::ShiftRight(handle _memory, const size_t memorySize, const size_t from, const size_t to, const size_t offset)
 	{
 		byte* memory = (byte*)_memory;

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Float32x4IntrinsicsSSE.h: x86 SSE4 Float32x4 vector intrinsics.
+/// Float32x4IntrinsicsSSE.hh: x86 SSE4 Float32x4 vector intrinsics.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

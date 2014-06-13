@@ -8,8 +8,8 @@
 
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>
-#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Generator/Generator.hh>
-#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Description/Description.hh>
+#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Compiler/Compiler.hh>
+#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Validator/Validator.hh>
 
 GD_NAMESPACE_BEGIN
 
@@ -23,11 +23,10 @@ GD_NAMESPACE_BEGIN
 		String                 const& EntryPointName
 	)
 	{
-		GD_UNUSED(OutputShaderDescription);
 		HLSLScope const* const Scope = HLSLParser(self->Toolchain).ParseShader(ShaderSourceInputStream);
 		if (Scope != nullptr)
 		{
-			OutputShaderDescription = HRIShaderInstanceDescGenerator(self->Toolchain).GenerateDescription(nullptr, Scope, EntryPointName);
+			OutputShaderDescription = HLSLValidator(self->Toolchain).ValidateAndGenerateDescription(nullptr, Scope, EntryPointName);
 			return true;
 		}
 

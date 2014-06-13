@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// HRIShader.cpp: shader implementation
+/// HRIShader.cc: shader implementation
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

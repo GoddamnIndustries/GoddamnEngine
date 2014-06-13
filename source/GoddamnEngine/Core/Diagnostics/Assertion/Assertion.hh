@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Assertion.h: Assertation mechanism definition
+/// Assertion.hh: Assertation mechanism definition
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

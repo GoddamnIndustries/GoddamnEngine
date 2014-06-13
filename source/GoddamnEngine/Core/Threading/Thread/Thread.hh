@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Thread.h: basic thread interface.
+/// Thread.hh: basic thread interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

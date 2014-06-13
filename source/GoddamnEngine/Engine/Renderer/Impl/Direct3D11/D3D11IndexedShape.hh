@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// D3D11IndexedShape.h: Renderable shape D3D11 implementation interface.
+/// D3D11IndexedShape.hh: Renderable shape D3D11 implementation interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

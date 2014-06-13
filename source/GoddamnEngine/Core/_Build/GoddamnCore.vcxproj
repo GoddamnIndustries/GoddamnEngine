@@ -26,8 +26,6 @@
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Utility.hh" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\Allocator.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\Allocator.hh" />
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\Allocator.inl" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Allocator\OperatorNewDelete.hh" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\CompilerBase.hh" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\StreamedLexer\StreamedLexer.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Compilers\StreamedLexer\StreamedLexer.hh" />
@@ -61,6 +59,7 @@
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Format\FormatValue.inl" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.cc" />
+    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.Cocoa.mm" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.SDL2.inl" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Framework\Framework.WinApi.inl" />
@@ -175,10 +174,9 @@
       <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\jemalloc\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\*Windows.lib;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\jemalloc\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\*Windows.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>True</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
-      <IgnoreSpecificDefaultLibraries>Nafxcwd.lib;Libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

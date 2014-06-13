@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// D3D11Shader.cpp: Direct3D 11 shaders implementation. 
+/// D3D11Shader.cc: Direct3D 11 shaders implementation. 
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
@@ -72,7 +72,7 @@ GD_NAMESPACE_BEGIN
 		D3D11_INPUT_ELEMENT_DESC InputLayoutElements[15];
 		for (size_t SemanticIter = GD_HRI_SEMANTIC_FIRST; SemanticIter < GD_HRI_SEMANTIC_UNKNOWN; SemanticIter += 1)
 		{	// Setting up all upcoming semantic from shader.
-			if ((self->ShaderDesc->InstanceInputFormat & GD_BIT(UInt64(SemanticIter))) == 0)
+			if ((self->ShaderDesc->InstanceInputFormat & GD_BIT(UInt64(SemanticIter + 1))) == 0)
 			{	// This semantic is not used, we not need to mention it in layout.
 				continue;
 			}

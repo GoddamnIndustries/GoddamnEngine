@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// D3D11IndexedShape.cpp: Renderable shape D3D11 implementation.
+/// D3D11IndexedShape.cc: Renderable shape D3D11 implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// D3D11Shader.h: Direct3D 11 shaders implementation interface. 
+/// D3D11Shader.hh: Direct3D 11 shaders implementation interface. 
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

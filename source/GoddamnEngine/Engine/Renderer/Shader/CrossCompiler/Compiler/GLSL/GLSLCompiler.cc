@@ -1,16 +1,4 @@
-//////////////////////////////////////////////////////////////////////////
-/// Generator.cpp: shader cross compiler GLSL generator implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-/// 
-/// History:
-///		* 17.05.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
-
-#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Generator/Generator.hh>
-
-GD_NAMESPACE_BEGIN	
-
-	static const Str GLSLInsertation = R"(
+static const Str GLSLInsertation = R"(
 //////////////////////////////////////////////////////////////////////////
 /// This file was automatically translated from HLSL by Goddamn Engine.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
@@ -42,5 +30,3 @@ GD_NAMESPACE_BEGIN
 #define double2 dvec2
 #define double3 dvec3
 #define double4 dvec4)";
-
-GD_NAMESPACE_END

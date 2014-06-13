@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Math.h: includes all math functionality.
+/// Math.hh: includes all math functionality.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

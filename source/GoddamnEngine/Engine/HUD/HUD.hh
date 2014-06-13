@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// HUD.h: In-game UI elements 
+/// HUD.hh: In-game UI elements 
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

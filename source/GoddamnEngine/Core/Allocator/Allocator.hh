@@ -31,34 +31,13 @@ GD_NAMESPACE_BEGIN
 		/// This function never returns nullptr except specified size is 0.
 		GDAPI static handle AllocateMemory(size_t const AllocationSize);
 
-		/*
-		/// Allocates block of memory with specified block type and number of elements and returns pointer to it.
-		/// @note This function never returns nullptr except specified count is 0.
-		template<typename BlockType>
-		inline static BlockType* AllocateMemory(size_t const ElementsCount);
-		*/
-
 		/// Reallocates block of memory to specified size.
 		/// This function never returns nullptr except specified size is 0.
 		GDAPI static handle ReallocateMemory(handle const Memory, size_t const AllocationSize);
 
-		/*
-		/// Reallocates block of memory with specified block type to specified elements count.
-		/// This function never returns nullptr except specified count is 0.
-		template<typename BlockType>
-		inline static BlockType* ReallocateMemory(BlockType* const Memory, size_t const OldElementsCount, size_t const NewElementsCount);
-		*/
-
 		/// Deallocates block of memory.
 		/// If specified block is nullptr then does nothing.
 		GDAPI static void DeallocateMemory(handle const Memory);
-
-		/*
-		/// Deallocates block of memory with specified block type
-		/// If specified block is nullptr then does nothing
-		template<typename BlockType>
-		inline static void DeallocateMemory(BlockType* const Memory, size_t const NewElementsCount);
-		*/
 	};	// class Allocator
 
 GD_NAMESPACE_END

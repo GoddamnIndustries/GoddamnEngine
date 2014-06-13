@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// HRIRenderTarget.h: Frame-buffer Direct3D11 interface
+/// HRIRenderTarget.hh: Frame-buffer Direct3D11 interface
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

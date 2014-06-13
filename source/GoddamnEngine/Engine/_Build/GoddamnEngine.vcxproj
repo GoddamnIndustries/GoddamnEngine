@@ -78,15 +78,18 @@
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\CrossCompiler.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.cc" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.hh" />
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Description\Description.inl" />
-    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.cc" />
-    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.hh" />
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Generator\Generator.inl" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\Compiler.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\Compiler.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\GLSL\GLSLCompiler.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\GLSL\GLSLCompiler.hh" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\HLSL\HLSLCompiler.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\HLSL\HLSLCompiler.hh" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\Metal\MetalCompiler.hh" />
+    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Compiler\Metal\MetalCompiler.mm" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.hh" />
-    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Parser\Parser.inl" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Validator\Validator.cc" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\CrossCompiler\Validator\Validator.hh" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\Resource.inl" />
@@ -99,6 +102,8 @@
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\ResourceLoader.inl" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile.inl" />
+    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile_iOS.mm" />
+    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile_OSX.mm" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromFile\ResourceLoaderFromFile_STD.cc" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Engine\Resource\ResourceLoader\FromMemory\ResourceLoaderFromMemory.hh" />
@@ -174,7 +179,6 @@
       <AdditionalDependencies>D:\GoddamnEngine\lib\GoddamnCore.Debug.lib;;;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\glslang\*Windows.Debug.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\libtiff\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Engine\_Dependencies\mxml\*Windows.Debug.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>True</GenerateDebugInformation>
       <ImportLibrary>$(GODDAMN_SDK)lib\$(TargetName).lib</ImportLibrary>
-      <IgnoreSpecificDefaultLibraries>Nafxcwd.lib;Libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

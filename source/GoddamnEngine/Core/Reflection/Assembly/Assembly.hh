@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Assembly.h: Common interface for assembly definition.
+/// Assembly.hh: Common interface for assembly definition.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

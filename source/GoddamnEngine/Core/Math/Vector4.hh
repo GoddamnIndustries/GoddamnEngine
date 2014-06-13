@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Vector4.h: Four-dimensional vector class
+/// Vector4.hh: Four-dimensional vector class
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

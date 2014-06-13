@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// D3D11LinkagePoint.h: Linkage point D3D11 implementation interface.
+/// D3D11LinkagePoint.hh: Linkage point D3D11 implementation interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
