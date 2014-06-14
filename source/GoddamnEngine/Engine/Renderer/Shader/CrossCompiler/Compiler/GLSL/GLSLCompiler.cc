@@ -146,7 +146,7 @@ GD_NAMESPACE_BEGIN
 			if (SupportsConstantBuffers)
 				Output += String::Format("\n\t%s %s;", &Field->Type->Name[0], &Field->Name[0]);
 			else
-				Output += String::Format("\nuniform %s %s;", &Field->Type->Name[0], &Field->Name[0]);
+				Output += String::Format("\nlayout(row_major) uniform %s %s;", &Field->Type->Name[0], &Field->Name[0]);
 		}
 
 		if (SupportsConstantBuffers)
@@ -397,16 +397,14 @@ GD_NAMESPACE_BEGIN
 			struct glslangInitializerType final
 			{	// glslang is thread safe. We can statically initialize it.
 				TBuiltInResource glslangDefaultResources;
-				GDINT  glslangInitializerType() 
+
+				GDINT ~glslangInitializerType() { glslang::FinalizeProcess(); }
+				GDINT  glslangInitializerType()
 				{ 
 					GD_ASSERT(glslang::InitializeProcess(), "Failed to initialize glslang."); 
 					memset(&glslangDefaultResources, 0x01, sizeof(glslangDefaultResources));
 				}
 
-				GDINT ~glslangInitializerType() 
-				{ 
-					glslang::FinalizeProcess(); 
-				}
 			} static const glslangInitializer;
 
 			static EShLanguage const HRI2GLSLangShaderType[] = {
@@ -417,8 +415,8 @@ GD_NAMESPACE_BEGIN
 				EShLangTessEvaluation, // = GD_HRI_SHADER_TYPE_TESSELLATION_EVALUATION,
 				EShLangFragment,       // = GD_HRI_SHADER_TYPE_FRAGMENT,
 			};
-			char const* GLSLOptmizerOutputPtr = &GLSLOptmizerOutput[0];
 
+			char const* const GLSLOptmizerOutputPtr = &GLSLOptmizerOutput[0];
 			glslang::TShader glslangShader(HRI2GLSLangShaderType[Type]);
 			glslangShader.setStrings(&GLSLOptmizerOutputPtr, 1);
 			if (!glslangShader.parse(&glslangInitializer.glslangDefaultResources, 0, true, EShMsgDefault))
