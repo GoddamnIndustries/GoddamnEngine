@@ -25,10 +25,10 @@ GD_NAMESPACE_BEGIN
 		GDINT pD3DCompileLoader()
 		{
 			RefPtr<Assembly const> const D3DCompilerAssembly(Assembly::LoadAssemblyFromPath(D3DCOMPILER_DLL));
-			GD_ASSERT(D3DCompilerAssembly != nullptr, "Failed to loaded '"D3DCOMPILER_DLL"' assembly.");
+			GD_ASSERT(D3DCompilerAssembly != nullptr, "Failed to load '"D3DCOMPILER_DLL"' assembly.");
 			
 			D3DCompile = reinterpret_cast<pD3DCompile>(D3DCompilerAssembly->GetNativeMethod("D3DCompile"));
-			GD_ASSERT(D3DCompile != nullptr, "Failed to loaded 'D3DCompile' funation from '"D3DCOMPILER_DLL"' assembly.");
+			GD_ASSERT(D3DCompile != nullptr, "Failed to load 'D3DCompile' funation from '"D3DCOMPILER_DLL"' assembly.");
 		}
 	} static const D3DCompileLoader;
 #endif	// if (!defined(GD_D3D_LINKED))
