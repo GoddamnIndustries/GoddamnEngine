@@ -39,17 +39,20 @@ GD_NAMESPACE_BEGIN
 				TextureObjectType = GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D;
 			else if (TextureObject->Type->Class == GD_HLSL_TYPE_CLASS_TEXTURECUBE)
 				TextureObjectType = GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE;
-			else if (TextureObject->Type->Class != GD_HLSL_TYPE_CLASS_SAMPLER)
+			else
 			{
-				HLSLVariable const* const StaticVariable = TextureObject;
-				if (StaticVariable->ExprColon != nullptr)
-				{	// Some static variable contains after-colon expression.
-					HLSLValidatorErrorDesc static const HasExprColonError("static variable '%s' cannot have after-colon-experssion.");
-					self->RaiseError(HasExprColonError, &TextureObject->Name[0]);
-					self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
+                if (TextureObject->Type->Class != GD_HLSL_TYPE_CLASS_SAMPLER)
+                {
+                    HLSLVariable const* const StaticVariable = TextureObject;
+                    if (StaticVariable->ExprColon != nullptr)
+                    {	// Some static variable contains after-colon expression.
+                        HLSLValidatorErrorDesc static const HasExprColonError("static variable '%s' cannot have after-colon-experssion.");
+                        self->RaiseError(HasExprColonError, &TextureObject->Name[0]);
+                        self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
-					return false;
-				}
+                        return false;
+                    }
+                }
 
 				continue;
 			}
@@ -69,7 +72,7 @@ GD_NAMESPACE_BEGIN
 			if (TextureObjectRegister != nullptr)
 			if (TextureObjectRegister->Register != GD_HLSL_REGISTER_T)
 			{	// Texture is located outside 'T' registers group
-				HLSLValidatorErrorDesc static const InvalidTextureRegisterError("texture '%s' is located outside 'T' registers group.");
+				HLSLValidatorErrorDesc static const InvalidTextureRegisterError("texture '%s' is located outside of 'T' registers group.");
 				self->RaiseError(InvalidTextureRegisterError, &TextureObject->Name[0]);
 				self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -80,7 +83,7 @@ GD_NAMESPACE_BEGIN
 			if (TextureSamplerRegister != nullptr)
 			if (TextureSamplerRegister->Register != GD_HLSL_REGISTER_S)
 			{	// Sampler is located outside 'S' registers group
-				HLSLValidatorErrorDesc static const InvalidTextureRegisterError("sampler '%s' is located outside 'S' registers group.");
+				HLSLValidatorErrorDesc static const InvalidTextureRegisterError("sampler '%s' is located outside of 'S' registers group.");
 				self->RaiseError(InvalidTextureRegisterError, &TextureSampler->Name[0]);
 				self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -92,7 +95,7 @@ GD_NAMESPACE_BEGIN
 			{	// Both texture object and sampler contain register information.
 				if (TextureObjectRegister->RegisterID != TextureSamplerRegister->RegisterID)
 				{	// Texture and it`s sampler should be located in same registers
-					HLSLValidatorErrorDesc static const DifferentTextureSamplerRegistersError("texture '%s' and it`s sampler should be located in same registers");
+					HLSLValidatorErrorDesc static const DifferentTextureSamplerRegistersError("texture '%s' and appropriate sampler should be located in same registers");
 					self->RaiseError(DifferentTextureSamplerRegistersError, &TextureObject->Name[0]);
 					self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -141,7 +144,7 @@ GD_NAMESPACE_BEGIN
 				HLSLValidatorWarningDec static const NoExplicitRegisterInformationWarning("texture object '%s' and appropriate sampler does not contain explicit register information. Consider adding it.");
 				self->RaiseWarning(NoExplicitRegisterInformationWarning, &TextureObject->Name[0]);
 				TextureObjectUsedRegister = TextureObjectNewRegister;
-				TextureObjectNewRegister = TextureObjectUsedRegister + 1;
+				TextureObjectNewRegister += 1;
 
 #if (defined(GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS))
 				GD_SHADERCC_VALIDATOR_AUTOFIX_NULL_TEXTURE_OBJECT_REGISTER();
@@ -173,7 +176,7 @@ GD_NAMESPACE_BEGIN
 			{
 				if (ConstantBufferRegister->Register != GD_HLSL_REGISTER_B)
 				{	// Constant buffer is located outside 'B' registers group
-					HLSLValidatorErrorDesc static const InvalidTextureRegisterError("constant buffer '%s' is located outside 'B' registers group.");
+					HLSLValidatorErrorDesc static const InvalidTextureRegisterError("constant buffer '%s' is located outside of 'B' registers group.");
 					self->RaiseError(InvalidTextureRegisterError, &ConstantBuffer->Name[0]);
 					self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
@@ -188,7 +191,7 @@ GD_NAMESPACE_BEGIN
 				HLSLValidatorWarningDec static const NoExplicitRegisterInformationWarning("constant buffer '%s' does not contain explicit register information. Consider adding it.");
 				self->RaiseWarning(NoExplicitRegisterInformationWarning, &ConstantBuffer->Name[0]);
 				ConstantBufferUsedRegister = ConstantBufferNewRegister;
-				ConstantBufferNewRegister = ConstantBufferUsedRegister + 1;
+				ConstantBufferNewRegister += 1;
 
 #if (defined(GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS))
 				HLSLCBuffer* const ConstantBufferMut = const_cast<HLSLCBuffer*>(ConstantBuffer);
