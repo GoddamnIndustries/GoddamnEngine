@@ -8,7 +8,7 @@
 # augmented to provide output around 'GODDAMN_SDK' directory.
 ##########################################################################
 -->
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -87,7 +87,6 @@
     <Compile Include="Target\QMakeTarget.cs" />
     <Compile Include="Target\_Target.cs" />
     <Compile Include="Target\VisualStudioTarget.cs" />
-    <Compile Include="Target\XCodeTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\App.config" />

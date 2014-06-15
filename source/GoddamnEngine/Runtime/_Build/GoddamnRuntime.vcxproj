@@ -8,7 +8,7 @@
 # Please, do not edit it manually.
 ##########################################################################
 -->
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -19,30 +19,24 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Runtime\.gdproj.cs" />
+    <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Runtime\Runtime.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D7E95C33-5B6C-4AF3-845F-B1977935C7E8}</ProjectGuid>
     <RootNamespace>GoddamnRuntime</RootNamespace>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>CTP_Nov2013</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <OutputPath>.\</OutputPath>
-    <TargetName>GoddamnRuntime.Debug</TargetName>
-    <OutDir>$(GODDAMN_SDK)bin\</OutDir>
-    <IncludePath>;;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>CTP_Nov2013</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <OutputPath>.\</OutputPath>
-    <TargetName>GoddamnRuntime</TargetName>
-    <OutDir>$(GODDAMN_SDK)bin\</OutDir>
-    <IncludePath>;;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
@@ -52,6 +46,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>GoddamnRuntime.Debug</TargetName>
+    <OutDir>$(GODDAMN_SDK)bin\</OutDir>
+    <IncludePath>;;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>GoddamnRuntime</TargetName>
+    <OutDir>$(GODDAMN_SDK)bin\</OutDir>
+    <IncludePath>;;D:\GoddamnEngine\source;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinition)</PreprocessorDefinitions>
