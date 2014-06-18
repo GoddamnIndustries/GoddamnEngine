@@ -36,6 +36,7 @@ dlldata.c
 *.ilk
 *.meta
 *.obj
+*.exp
 *.pch
 *.pdb
 *.pgc
