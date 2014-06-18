@@ -311,7 +311,7 @@ R"(
 
 	bool GLSLGenerator::GenerateShader(StringBuilder& Builder, HLSLScope const* const Input, String const& EntryName, HRIShaderCrossCompilerTarget const Target)
 	{
-		Builder.Append(GLSLInsertations::GLSLInsertation, GD_ARRAY_SIZE(GLSLInsertations::GLSLInsertation));
+		Builder.Append(GLSLInsertations::GLSLInsertation, GD_ARRAY_SIZE(GLSLInsertations::GLSLInsertation) - 1);
 
 		for (auto const Definition : Input->InnerDefinitions)
 		{
@@ -368,17 +368,19 @@ R"(
 
 		// Now we need just preprocess generated code to reduñe loading time.
 		StringBuilder GLSLPreprocessedBuilder;
-		GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLCopyright, GD_ARRAY_SIZE(GLSLInsertations::GLSLCopyright));
+		GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLCopyright, GD_ARRAY_SIZE(GLSLInsertations::GLSLCopyright) - 1);
 		switch (Target)
 		{
 		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430:
-			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSL430Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSL430Preambule));
+			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSL430Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSL430Preambule) - 1);
 			break;
+
 		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3:
-			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLES3Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSLES3Preambule));
+			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLES3Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSLES3Preambule) - 1);
 			break;
+
 		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2:
-			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLES2Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSLES2Preambule));
+			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLES2Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSLES2Preambule) - 1);
 			break;
 		}
 
@@ -466,12 +468,12 @@ R"(
 			} static const glslangInitializer;
 
 			static EShLanguage const HRI2GLSLangShaderType[] = {
-				EShLangCompute,        // = GD_HRI_SHADER_TYPE_COMPUTE
-				EShLangGeometry,       // = GD_HRI_SHADER_TYPE_GEOMETRY,
-				EShLangVertex,         // = GD_HRI_SHADER_TYPE_VERTEX,
-				EShLangTessControl,    // = GD_HRI_SHADER_TYPE_TESSELLATION_CONTROL,
-				EShLangTessEvaluation, // = GD_HRI_SHADER_TYPE_TESSELLATION_EVALUATION,
-				EShLangFragment,       // = GD_HRI_SHADER_TYPE_FRAGMENT,
+				/* GD_HRI_SHADER_TYPE_COMPUTE                 = */ EShLangCompute,        
+				/* GD_HRI_SHADER_TYPE_GEOMETRY                = */ EShLangGeometry,       
+				/* GD_HRI_SHADER_TYPE_VERTEX                  = */ EShLangVertex,         
+				/* GD_HRI_SHADER_TYPE_TESSELLATION_CONTROL    = */ EShLangTessControl,    
+				/* GD_HRI_SHADER_TYPE_TESSELLATION_EVALUATION = */ EShLangTessEvaluation, 
+				/* GD_HRI_SHADER_TYPE_FRAGMENT                = */ EShLangFragment,
 			};
 
 			char const* const GLSLOptmizerBuilderPtr = GLSLOptmizerBuilder.GetPointer();

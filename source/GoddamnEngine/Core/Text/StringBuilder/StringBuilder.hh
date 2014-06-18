@@ -57,7 +57,7 @@ GD_NAMESPACE_BEGIN
 		inline BaseStringBuilder& Append(String const& TheString);
 		inline BaseStringBuilder& Append(CharType const Character);
 		template <size_t const Count>
-		inline BaseStringBuilder& Append(CharType(&Array)[Count]);
+		inline BaseStringBuilder& Append(CharType const(&Array)[Count]);
 		
 		/// Converts this builder to normal string.
 		GDINL String&& ToString() const;

@@ -8,6 +8,10 @@
 
 #include <GoddamnEngine/Core/IO/Path/Path.hh>
 
+#if (defined(GD_PLATFORM_WINDOWS))
+#	define WIN32_LEAN_AND_MEAN
+#	include <Windows.h>
+#endif	// if (defined(GD_PLATFORM_WINDOWS))
 #include <utility>	// For Move
 #include <cstdio>
 
@@ -27,10 +31,27 @@ GD_NAMESPACE_BEGIN
 		{
 			String TemporaryFileName(nullptr, L_tmpnam);
 			GD_ASSERT(tmpnam(TemporaryFileName.CStr()) != nullptr, "Failed to create temporary file name.");
-			return TemporaryFileName;
+			return Path::GetTemporaryPath() + TemporaryFileName;
 		}
 		
-		extern String const& GetTemporaryPath();
+		extern String const& GetTemporaryPath()
+		{
+			String static const TemporaryPath([]() -> Char const* {
+#if (defined(GD_PLATFORM_WINDOWS))
+				char static TemporaryPath[MAX_PATH];
+				DWORD const static Result = GetTempPathA(MAX_PATH, &TemporaryPath[0]);
+				GD_ASSERT(Result != 0, "Failed to get temporary dir path");
+				return TemporaryPath;
+#else	// if (defined(GD_PLATFORM_WINDOWS))
+				char const* const TemporaryPath = getenv("TMPDIR");
+				if (TemporaryPath == 0)
+					return "/tmp";
+				return TemporaryPath;
+#endif	// if (defined(GD_PLATFORM_WINDOWS))
+			}());
+
+			return TemporaryPath;
+		}
 	};	// namespace Path
 
 GD_NAMESPACE_END

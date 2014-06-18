@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 		{
 			OutputShaderDescription = HLSLValidator(self->Toolchain).ValidateAndGenerateDescription(nullptr, Scope, EntryPointName);
 			
-			FileOutputStream ShaderOutput("shaderoutput.glsl.c");
+			FileOutputStream ShaderOutput("/shaderoutput.glsl.c");
 			HRIShaderCrossCompilerCompiler(self->Toolchain).GenerateAndCompileShader(&ShaderOutput, Scope, GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430, GD_HRI_SHADER_TYPE_VERTEX, EntryPointName);
 			ShaderOutput.Dispose();
 			return true;

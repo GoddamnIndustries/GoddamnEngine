@@ -37,7 +37,7 @@ GD_NAMESPACE_BEGIN
 	}
 
 	template<typename CharType> template<size_t const Count>
-	inline BaseStringBuilder<CharType>& BaseStringBuilder<CharType>::Append(CharType(&Array)[Count])
+	inline BaseStringBuilder<CharType>& BaseStringBuilder<CharType>::Append(CharType const (&Array)[Count])
 	{
 		return self->Append(&Array[0], Count);
 	}
