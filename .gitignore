@@ -25,7 +25,7 @@ _Build/
 x64/
 build/
 bld/
-[Bb]in/
+[Bb]in/*.*
 [Oo]bj/
 [Dd]ebugPS/
 [Rr]eleasePS/
@@ -48,6 +48,9 @@ dlldata.c
 *.tmp
 *.tmp_proj
 *.log
+*.lastcodeanalysissucceeded
+*.exe.*
+*.vshost*
 *.vspscc
 *.vssscc
 .builds
