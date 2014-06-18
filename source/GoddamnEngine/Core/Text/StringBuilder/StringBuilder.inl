@@ -36,6 +36,12 @@ GD_NAMESPACE_BEGIN
 		return self->Append(TheString.CStr(), TheString.GetSize());
 	}
 
+	template<typename CharType> template<size_t const Count>
+	inline BaseStringBuilder<CharType>& BaseStringBuilder<CharType>::Append(CharType(&Array)[Count])
+	{
+		return self->Append(&Array[0], Count);
+	}
+
 	template<typename CharType>
 	inline BaseStringBuilder<CharType>& BaseStringBuilder<CharType>::AppendFormat(CharType const* const Format, ...)
 	{

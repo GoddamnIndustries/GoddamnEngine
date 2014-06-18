@@ -45,14 +45,14 @@ GD_NAMESPACE_BEGIN
 
 	namespace GLSLInsertations
 	{
-		static Char const* const GLSLCopyright = 
+		static Char const GLSLCopyright[] = 
 R"(//////////////////////////////////////////////////////////////////////////
 /// This file was automatically translated from HLSL by Goddamn Engine.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 //////////////////////////////////////////////////////////////////////////
 )";
 
-		static Char const* const GLSL430Preambule = 
+		static Char const GLSL430Preambule[] =
 R"(
 #version 430
 #extension GL_ARB_explicit_uniform_location : enable
@@ -60,16 +60,16 @@ R"(
 #extension GL_ARB_separate_shader_objects   : enable
 )";
 
-		static Char const* const GLSLES3Preambule = 
+		static Char const GLSLES3Preambule[] =
 R"(
 #version 300 es
 )";
-		static Char const* const GLSLES2Preambule = 
+		static Char const GLSLES2Preambule[] =
 R"(
 #version 200 es
 )";
 
-		static Char const* const GLSLInsertation = 
+		static Char const GLSLInsertation[] =
 R"(
 #define static
 #define inline
@@ -311,7 +311,7 @@ R"(
 
 	bool GLSLGenerator::GenerateShader(StringBuilder& Builder, HLSLScope const* const Input, String const& EntryName, HRIShaderCrossCompilerTarget const Target)
 	{
-		Builder.Append(GLSLInsertations::GLSLInsertation);
+		Builder.Append(GLSLInsertations::GLSLInsertation, GD_ARRAY_SIZE(GLSLInsertations::GLSLInsertation));
 
 		for (auto const Definition : Input->InnerDefinitions)
 		{
@@ -368,17 +368,17 @@ R"(
 
 		// Now we need just preprocess generated code to reduñe loading time.
 		StringBuilder GLSLPreprocessedBuilder;
-		GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLCopyright);
+		GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLCopyright, GD_ARRAY_SIZE(GLSLInsertations::GLSLCopyright));
 		switch (Target)
 		{
 		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430:
-			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSL430Preambule);
+			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSL430Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSL430Preambule));
 			break;
 		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3:
-			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLES3Preambule);
+			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLES3Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSLES3Preambule));
 			break;
 		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2:
-			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLES2Preambule);
+			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLES2Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSLES2Preambule));
 			break;
 		}
 
