@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 	{
 		switch (Target)
 		{
-		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSL420:	
+		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430:	
 		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2:	
 		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3:	
 			return GLSLCompiler(self->Toolchain).GenerateAndCompileShader(Output, Input, Target, Type, EntryName);

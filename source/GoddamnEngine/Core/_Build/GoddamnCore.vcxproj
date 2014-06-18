@@ -68,6 +68,8 @@
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\Stream.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\Stream.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\Stream.inl" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\FileStream\FileStream.hh" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\IO\Stream\StringStream\StringStream.hh" />
     <ClCompile Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystem.cc" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystem.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\LowLevelSystem\LowLevelSystem.inl" />
@@ -121,6 +123,8 @@
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\String\String.hh" />
     <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\String\String.inl" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\String\StringEx.hh" />
+    <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\StringBuilder\StringBuilder.hh" />
+    <None Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Text\StringBuilder\StringBuilder.inl" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\Atomic\Atomic.hh" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\CriticalSection\CriticalSection.hh" />
     <ClInclude Include="D:\GoddamnEngine\source\GoddamnEngine\Core\Threading\SimpleThread\SimpleThread.hh" />
@@ -171,7 +175,7 @@
       <CallingConvention>FastCall</CallingConvention>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4127;4189;4201;4301;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\jemalloc\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\*Windows.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -189,7 +193,7 @@
       <CallingConvention>FastCall</CallingConvention>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <DisableSpecificWarnings>4100;4127;4189;4201;4458;4456;4505;4714</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4127;4189;4201;4301;4458;4456;4505;4714</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\jemalloc\*Windows.lib;D:\GoddamnEngine\source\GoddamnEngine\Core\_Dependencies\sdl2\*Windows.lib;;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>

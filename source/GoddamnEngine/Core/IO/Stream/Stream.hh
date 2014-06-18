@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 
 	/// Specifies the position in a stream to use for seeking.
 	/// Streams are divided into Read-Only and Write-Only streams.
-	enum SeekOrigin : UInt8
+	enum SeekOrigin : size_t
 	{
 		GD_SEEK_ORIGIN_BEGIN,	///< Specifies beginning of stream.
 		GD_SEEK_ORIGIN_CURRENT,	///< Specifies current position of stream.
@@ -57,7 +57,7 @@ GD_NAMESPACE_BEGIN
 		/// Returns current position in stream.
 		GDAPI virtual      size_t    GetPosition() const abstract;
 		/// Returns current length of stream.
-		GDAPI virtual      size_t    GetLength  () const abstract;
+		GDAPI virtual      size_t    GetLength() const abstract;
 	
 		/// Releases all resources used by this stream.
 		GDAPI virtual      void      Dispose() abstract;
@@ -69,6 +69,7 @@ GD_NAMESPACE_BEGIN
 		/// Reads sequence of bytes from current stream and advances reading position.
 		/// @returns Total number of read bytes.
 		GDAPI virtual      size_t    Read     (handle const OutputBuffer, ptrdiff_t const Offset, size_t const Count) abstract;
+		GDINL              size_t    ReadCheck(handle const OutputBuffer, ptrdiff_t const Offset, size_t const Count);
 		/// Asynchronously reads sequence of bytes from current stream and advances reading position.
 		/// @returns Task that represents asynchronous read operation.
 		GDAPI         Task<size_t>&& ReadAsync(handle const OutputBuffer, ptrdiff_t const Offset, size_t const Count);
@@ -79,24 +80,25 @@ GD_NAMESPACE_BEGIN
 		/// Writes sequence of bytes into current stream and advances writing position.
 		/// @returns Total number of written bytes.
 		GDAPI virtual      size_t    Write     (chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count) abstract;
+		GDINL              size_t    WriteCheck(chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count);
 		/// Writes into specified stream some object.
 		template<typename WritingElementType>
-		GDINL void                   Write     (WritingElementType const& Element);
+		GDINL void                   Write(WritingElementType const& Element);
 		/// Asynchronously writes sequence of bytes into current stream and advances writing position.
 		/// @returns Task that represents asynchronous write operation.
 		GDAPI         Task<size_t>&& WriteAsync(chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count);
 
 		/// Writes all unwritten data into underlying device and clears stream.
 		/// This method is invocable for Write-Only streams.
-		GDAPI virtual      void      Flush     () abstract;
+		GDAPI virtual      void      Flush() abstract;
 		/// Asynchronously writes all unwritten data into underlying device and clears stream.
 		/// @returns Task that represents flushing operation.
 	 	GDAPI         Task<void>&&   FlushAsync();
 
 		/// Copies content of this stream into specified one with specified length.
-		GDAPI              void      CopyTo     (Stream* OtherStream, size_t const BufferSize);
+		GDAPI              void      CopyTo(Stream* OtherStream, size_t const BufferSize);
 		/// Copies content of this stream into specified one.
-		GDINL              void      CopyTo     (Stream* OtherStream) { self->CopyTo(OtherStream, self->GetLength()); }
+		GDINL              void      CopyTo(Stream* OtherStream) { self->CopyTo(OtherStream, self->GetLength()); }
 		/// Asynchronously copies content of this stream into specified one with specified length.
 		/// @returns Task that represents copying operation.
 		GDAPI         Task<void>&&   CopyToAsync(Stream* OtherStream, size_t const BufferSize);
@@ -108,6 +110,9 @@ GD_NAMESPACE_BEGIN
 	/// Specifies stream with read-only support.
 	class InputStream : public Stream
 	{
+	public:
+		GDINL virtual ~InputStream() { }
+
 		GDINL virtual bool CanWrite() const final { return false; }
 		GDINL virtual bool CanRead () const final { return true;  } 
 
@@ -126,6 +131,9 @@ GD_NAMESPACE_BEGIN
 	/// Specifies stream with write-only support.
 	class OutputStream : public Stream
 	{
+	public:
+		GDINL virtual ~OutputStream() { }
+
 		GDINL virtual bool CanWrite() const final { return true;  }
 		GDINL virtual bool CanRead () const final { return false; }
 		GDINL virtual bool CanSeek () const final { return false; }
@@ -147,64 +155,6 @@ GD_NAMESPACE_BEGIN
 			return 0; 
 		}
 	};	// class OutputStream
-
-	/// Specifies read-only stream that provides data from reference on data.
-	class DataRefInputStream : public InputStream
-	{
-	private:
-		UInt8 const* DataReference = nullptr;
-		size_t const DataReferenceLength = 0;
-		size_t DataReferencePosition = 0;
-
-	public:
-		template<typename SomeElementType>
-		GDINL DataRefInputStream(Vector<SomeElementType> const& SomeVector) :
-			DataReference(reinterpret_cast<UInt8 const*>(&SomeVector[0])),
-			DataReferenceLength(sizeof(SomeElementType) * SomeVector.GetSize()) { }
-		template<typename SomeElementType>
-		GDINL DataRefInputStream(SomeElementType const* SomeMemory, size_t const SomeMemoryLength) :
-			DataReference(reinterpret_cast<UInt8 const*>(SomeMemory)),
-			DataReferenceLength(sizeof(SomeElementType) * SomeMemoryLength) { }
-		GDINL DataRefInputStream(String const& SomeString) :
-			DataReference(reinterpret_cast<UInt8 const*>(&SomeString[0])),
-			DataReferenceLength(sizeof(DeclValue<String>()[0]) * SomeString.GetSize()) { }
-
-		GDINL virtual bool   CanSeek() const final { return true; }
-
-		GDINL virtual size_t GetPosition() const final { return self->DataReferencePosition; }
-		GDINL virtual size_t GetLength() const final { return self->DataReferenceLength; }
-
-		GDINL virtual void   Dispose() final { }
-		GDINL virtual size_t Seek(ptrdiff_t const Offset, SeekOrigin const Origin) final
-		{
-			switch (Origin)
-			{
-			case GD_SEEK_ORIGIN_BEGIN  : return self->DataReferencePosition  = Offset; 
-			case GD_SEEK_ORIGIN_CURRENT: return self->DataReferencePosition += Offset;
-			case GD_SEEK_ORIGIN_END	   : return self->DataReferencePosition  = self->DataReferenceLength + Offset;
-			default: GD_ASSERT_FALSE("Invalid origin specified");
-			}
-
-			return 0;
-		}
-
-		GDINL virtual size_t Read(handle const OutputBuffer, ptrdiff_t const Offset, size_t const Count) final
-		{ 
-			if (self->Seek(Offset, GD_SEEK_ORIGIN_CURRENT) < self->GetLength())
-			{	// Seeking this position on offset
-				size_t const NumElmentsRead = (self->GetPosition() + Count) <= self->GetLength() ? Count : (self->GetLength() - self->GetPosition());
-				memcpy(OutputBuffer, self->DataReference + self->GetPosition(), NumElmentsRead);
-				self->Seek(NumElmentsRead, GD_SEEK_ORIGIN_CURRENT);
-				return NumElmentsRead;
-			}
-
-			return 0;
-		}
-	};	// DataRefInputStream
-
-	class StringRefOutputStream final : public InputStream
-	{
-	};
 
 GD_NAMESPACE_END
 #include <GoddamnEngine/Core/IO/Stream/Stream.inl>

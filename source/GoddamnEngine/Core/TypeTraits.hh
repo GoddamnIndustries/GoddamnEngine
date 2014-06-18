@@ -87,10 +87,21 @@ GD_NAMESPACE_BEGIN
 #endif	// if (!defined(GD_DOCUMENTATION))
 
 #if (!defined(GD_DOCUMENTATION))
-		template<typename Type> struct IsFloatingPoint final : public TypeTraitsBase<std::is_floating_point<Type>::value> { };
+		template<typename Type> struct IsFloatingPoint          final : public TypeTraitsBase<false> { };
+		template<             > struct IsFloatingPoint<Float32> final : public TypeTraitsBase<true > { };
+		template<             > struct IsFloatingPoint<Float64> final : public TypeTraitsBase<true > { };
 #else	// if (!defined(GD_DOCUMENTATION))
 		/// Checks if specified type is floating point.
 		template<typename Type> struct IsFloatingPoint final { };
+#endif	// if (!defined(GD_DOCUMENTATION))
+
+#if (!defined(GD_DOCUMENTATION))
+		template<typename Type> struct IsCharacter          final : public TypeTraitsBase<false> { };
+		template<             > struct IsCharacter<char   > final : public TypeTraitsBase<true > { };
+		template<             > struct IsCharacter<wchar_t> final : public TypeTraitsBase<true > { };
+#else	// if (!defined(GD_DOCUMENTATION))
+		/// Checks if specified type is character type.
+		template<typename Type> struct IsCharacter final { };
 #endif	// if (!defined(GD_DOCUMENTATION))
 
 #if (!defined(GD_DOCUMENTATION))

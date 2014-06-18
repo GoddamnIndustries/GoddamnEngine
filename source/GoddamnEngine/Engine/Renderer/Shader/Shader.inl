@@ -22,11 +22,13 @@ GD_NAMESPACE_BEGIN
 		HRIShaderParamLocationDesc* const  ParamLocationDesc,
 		String                      const& ParamName,
 		HRIShaderParamDescType      const  ParamType,
-		Format                      const  ParamFormat /* = GD_FORMAT_UNKNOWN                   */,
-		HRIShaderParamID            const  ParamID     /* = GD_HRI_SHADER_PARAM_DESC_ID_UNKNOWN */)
+		Format                      const  ParamFormat      /* = GD_FORMAT_UNKNOWN                   */,
+		size_t                      const  ParamArrayLength /* = 1                                   */,
+		HRIShaderParamID            const  ParamID          /* = GD_HRI_SHADER_PARAM_DESC_ID_UNKNOWN */)
 		: HRIObject(HRIObject::TreeLockingFlagsAll, ParamLocationDesc)
 		, ParamName(ParamName), ParamHash  (ParamName.GetHashSumm())
-		, ParamType(ParamType), ParamFormat(ParamFormat), ParamID(ParamID)
+		, ParamType(ParamType), ParamFormat(ParamFormat), ParamArrayLength(ParamArrayLength)
+		, ParamID(ParamID)
 	{
 		GD_DEBUG_ASSERT(  (self->GetParentObject() != nullptr), "Invalid instance desc specified");
 		GD_DEBUG_ASSERT(  (self->ParamType  < GD_HRI_SHADER_PARAM_DESC_TYPE_UNKNOWN), "Invalid type specified");

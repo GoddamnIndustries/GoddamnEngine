@@ -10,6 +10,7 @@
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
 
+#include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.hh>
 #include <GoddamnEngine/Core/Reflection/Assembly/Assembly.hh>
 #include <GoddamnEngine/Core/Object/RefPtr/RefPtr.hh>
 #include <d3dcompiler.h>
@@ -18,7 +19,8 @@ GD_NAMESPACE_BEGIN
 
 	typedef Str HLSLCompilerErrorDesc;
 
-#if (!defined(GD_D3D_LINKED))
+#define GD_D3D_LINKED
+
 	static pD3DCompile D3DCompile;
 	struct pD3DCompileLoader final 
 	{
@@ -31,126 +33,131 @@ GD_NAMESPACE_BEGIN
 			GD_ASSERT(D3DCompile != nullptr, "Failed to load 'D3DCompile' function from '"D3DCOMPILER_DLL"' assembly.");
 		}
 	} static const D3DCompileLoader;
-#endif	// if (!defined(GD_D3D_LINKED))
 
 	class HLSLGenerator final : public IToolchainTool
 	{
 	public:
 		GDINL  HLSLGenerator(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
 		GDINL ~HLSLGenerator(                           ) { }
-		GDINT bool GenerateShader(String& Output, HLSLScope const* const Input);
+		GDINT bool GenerateShader(StringBuilder& Builder, HLSLScope const* const Input);
 	private:
-		GDINT void GenerateShaderStruct(HLSLStruct const* const Struct, String& Output);
-		GDINT void GenerateShaderConstantBuffer(HLSLCBuffer const* const ConstantBuffer, String& Output);
-		GDINT void GenerateShaderStaticVariable(HLSLVariable const* const StaticVariable, String& Output);
-		GDINT void GenerateShaderStaticFunction(HLSLFunction const* const StaticFunction, String& Output);
+		GDINT void GenerateShaderStruct(HLSLStruct const* const Struct, StringBuilder& Builder);
+		GDINT void GenerateShaderConstantBuffer(HLSLCBuffer const* const ConstantBuffer, StringBuilder& Builder);
+		GDINT void GenerateShaderStaticVariable(HLSLVariable const* const StaticVariable, StringBuilder& Builder);
+		GDINT void GenerateShaderStaticFunction(HLSLFunction const* const StaticFunction, StringBuilder& Builder);
 	};	// class HLSLGenerator
 
-	void HLSLGenerator::GenerateShaderStruct(HLSLStruct const* const Struct, String& Output)
+	void HLSLGenerator::GenerateShaderStruct(HLSLStruct const* const Struct, StringBuilder& Builder)
 	{
-		Output += String::Format("\n\nstruct %s\n{", &Struct->Name[0]);
+		Builder.AppendFormat("\n\nstruct %s\n{", Struct->Name.CStr());
 		
 		for (auto const Definition : Struct->InnerDefinitions)
 		{
-			HLSLVariable const* const Field = static_cast<HLSLVariable const*>(Definition);
-			Output += String::Format("\n\t%s %s", &Field->Type->Name[0], &Field->Name[0]);
-			if (Field->ExprColon != nullptr)
+			HLSLVariable const* const StructField = static_cast<HLSLVariable const*>(Definition);
+			Builder.AppendFormat("\n\t%s %s", StructField->Type->Name.CStr(), StructField->Name.CStr());
+			/**/ if (StructField->ExprColon != nullptr)
 			{
-				HLSLSemantic const* const FieldSemantic = static_cast<HLSLSemantic const*>(Field->ExprColon);
-				Output += String::Format(" : %s%d;", HLSLSemanticToStr(FieldSemantic->Semantic), static_cast<int>(FieldSemantic->SemanticID));
+				HLSLSemantic const* const StructFieldSemantic = static_cast<HLSLSemantic const*>(StructField->ExprColon);
+				Builder.AppendFormat(" : %s%d", HLSLSemanticToStr(StructFieldSemantic->Semantic), static_cast<int>(StructFieldSemantic->SemanticID));
 			}
-			else
-				Output += ';';
+			else if (StructField->ArrayIndex != 0)
+				Builder.AppendFormat("[%d]", static_cast<int>(StructField->ArrayIndex));
+
+			Builder.Append(';');
 		}
 
-		Output += '}';
+		Builder.Append("\n};");
 	}
 
-	void HLSLGenerator::GenerateShaderConstantBuffer(HLSLCBuffer const* const ConstantBuffer, String& Output)
+	void HLSLGenerator::GenerateShaderConstantBuffer(HLSLCBuffer const* const ConstantBuffer, StringBuilder& Builder)
 	{
-		Output += String::Format("\n\ncbuffer %s", &ConstantBuffer->Name[0]);
-
+		Builder.AppendFormat("\n\ncbuffer %s", ConstantBuffer->Name.CStr());
 		if (ConstantBuffer->Register != nullptr)
-			Output += String::Format(" : register(b%d)\n{", static_cast<int>(ConstantBuffer->Register->RegisterID));
-		else
-			Output += "\n{";
+			Builder.Append(" : register(b%d)", static_cast<int>(ConstantBuffer->Register->RegisterID));
+			
+		Builder.Append("\n{");
 
 		for (auto const Definition : ConstantBuffer->InnerDefinitions)
 		{
-			HLSLVariable const* const Field = static_cast<HLSLVariable const*>(Definition);
-			Output += String::Format("\n\t%s %s", &Field->Type->Name[0], &Field->Name[0]);
-			if (Field->ExprColon != nullptr)
+			HLSLVariable const* const ConstantBufferField = static_cast<HLSLVariable const*>(Definition);
+			Builder.AppendFormat("\n\t%s %s", ConstantBufferField->Type->Name.CStr(), ConstantBufferField->Name.CStr());
+			
+			if (ConstantBufferField->ArrayIndex != 0)
+				Builder.AppendFormat("[%d]", static_cast<int>(ConstantBufferField->ArrayIndex));
+
+			if (ConstantBufferField->ExprColon != nullptr)
 			{
 				//	HLSLPackOffset const* const FieldPackOffset = static_cast<HLSLPackOffset const*>(Field->ExprColon);
-				//	Output += String::Format(" : packoffset(c%s%d;)", HLSLSemanticToStr(FieldSemantic->Semantic), static_cast<int>(FieldSemantic->SemanticID));
+				//	Builder.Append(" : packoffset(c%s%d;)", HLSLSemanticToStr(FieldSemantic->Semantic), static_cast<int>(FieldSemantic->SemanticID));
 				GD_NOT_IMPLEMENTED();
 			}
-			else
-				Output += ';';
+
+			Builder.Append(';');
 		}
 
-		Output += '}';
+		Builder.Append("\n}");
 	}
 
-	void HLSLGenerator::GenerateShaderStaticVariable(HLSLVariable const* const StaticVariable, String& Output)
+	void HLSLGenerator::GenerateShaderStaticVariable(HLSLVariable const* const StaticVariable, StringBuilder& Builder)
 	{
-		Output += String::Format("\n\n%s %s", &StaticVariable->Type->Name[0], &StaticVariable->Name[0]);
-		if (StaticVariable->ExprColon != nullptr)
+		Builder.AppendFormat("\n\n%s %s", StaticVariable->Type->Name.CStr(), StaticVariable->Name.CStr());
+		/**/ if (StaticVariable->ArrayIndex != 0)
+			Builder.AppendFormat("[%d]", static_cast<int>(StaticVariable->ArrayIndex));
+		else if (StaticVariable->ExprColon != nullptr)
 		{
 			HLSLRegister const* const StaticVariableRegister = static_cast<HLSLRegister const*>(StaticVariable->ExprColon);
-			Output += String::Format(" : register(%c%d);", 
-				((StaticVariableRegister->Register == GD_HLSL_REGISTER_T) ? 't' : 's'),	// Only 't'/'s' registers can be located here. 
-				static_cast<int>(StaticVariableRegister->RegisterID));
+			Builder.AppendFormat(" : register(%c%d);", ((StaticVariableRegister->Register == GD_HLSL_REGISTER_T) ? 't' : 's'),	// Only 't'/'s' registers can be located here. 
+										static_cast<int>(StaticVariableRegister->RegisterID));
 		}
-		else
-			Output += ';';
+
+		Builder.Append(';');
 	}
 
-	void HLSLGenerator::GenerateShaderStaticFunction(HLSLFunction const* const StaticFunction, String& Output)
+	void HLSLGenerator::GenerateShaderStaticFunction(HLSLFunction const* const StaticFunction, StringBuilder& Builder)
 	{
-		Output += String::Format("\n\n%s %s(", &StaticFunction->Type->Name[0], &StaticFunction->Name[0]);
+		Builder.AppendFormat("\n\n%s %s(", StaticFunction->Type->Name.CStr(), StaticFunction->Name.CStr());
 		for (auto const Argument : StaticFunction->Arguments)
-			Output += String::Format("%s%s %s %s, ", 
+			Builder.AppendFormat("%s%s %s %s, ",
 				(((Argument->AccsessType & GD_HLSL_ARGUMENT_IN ) != 0) ? "in"  : ""),
 				(((Argument->AccsessType & GD_HLSL_ARGUMENT_OUT) != 0) ? "out" : ""),
-				&Argument->Type->Name[0], &Argument->Name[0]);
-		Output.PopLast();
-		Output.SetLastElement(')');
+				Argument->Type->Name.CStr(), Argument->Name.CStr());
+		*(Builder.GetPointer() + Builder.GetSize() - 2) = ')';
+		*(Builder.GetPointer() + Builder.GetSize() - 1) = ' ';
 
 		if (StaticFunction->Semantic != nullptr)
-			Output += String::Format(" : %s%d", HLSLSemanticToStr(StaticFunction->Semantic->Semantic), static_cast<int>(StaticFunction->Semantic->SemanticID));
-		Output += String::Format("\n%s", &StaticFunction->Body[0]);
+			Builder.AppendFormat(": %s%d", HLSLSemanticToStr(StaticFunction->Semantic->Semantic), static_cast<int>(StaticFunction->Semantic->SemanticID));
+		Builder.AppendFormat("\n%s", StaticFunction->Body.CStr());
 	}
 
-	bool HLSLGenerator::GenerateShader(String& Output, HLSLScope const* const Input)
+	bool HLSLGenerator::GenerateShader(StringBuilder& Builder, HLSLScope const* const Input)
 	{
 		for (auto const Definition : Input->InnerDefinitions)
 		{
 			HLSLType const* const Type = HLSLDynamicCast<HLSLType const*>(Definition);
 			if (Type != nullptr)
 			{
-				self->GenerateShaderStruct(static_cast<HLSLStruct const*>(Type), Output);
+				self->GenerateShaderStruct(static_cast<HLSLStruct const*>(Type), Builder);
 				continue;
 			}
 
 			HLSLCBuffer const* const ConstantBuffer = HLSLDynamicCast<HLSLCBuffer const*>(Definition);
 			if (ConstantBuffer != nullptr)
 			{
-				self->GenerateShaderConstantBuffer(ConstantBuffer, Output);
+				self->GenerateShaderConstantBuffer(ConstantBuffer, Builder);
 				continue;
 			}
 
 			HLSLVariable const* const StaticVariable = HLSLDynamicCast<HLSLVariable const*>(Definition);
 			if (StaticVariable != nullptr)
 			{
-				self->GenerateShaderStaticVariable(StaticVariable, Output);
+				self->GenerateShaderStaticVariable(StaticVariable, Builder);
 				continue;
 			}
 
 			HLSLFunction const* const StaticFunction = HLSLDynamicCast<HLSLFunction const*>(Definition);
 			if (StaticFunction != nullptr)
 			{
-				self->GenerateShaderStaticFunction(StaticFunction, Output);
+				self->GenerateShaderStaticFunction(StaticFunction, Builder);
 				continue;
 			}
 		}
@@ -159,13 +166,13 @@ GD_NAMESPACE_BEGIN
 	}
 
 	bool HLSLCompiler::GenerateAndCompileShader(
-		OutputStream                      * const Output,
+		OutputStream                      * const Builder,
 		HLSLScope                    const* const Input,
 		HRIShaderType                const        Type,
 		String                       const&       EntryName
 	)
 	{
-		String HLSLGeneratorOutput;
+		StringBuilder HLSLGeneratorOutput;
 		if (!HLSLGenerator(self->Toolchain).GenerateShader(HLSLGeneratorOutput, Input))
 			return false;
 
@@ -178,41 +185,20 @@ GD_NAMESPACE_BEGIN
 		if (self->Toolchain->DoTreatWarningsAsError())
 			D3DCompileFlags |= D3DCOMPILE_WARNINGS_ARE_ERRORS;
 
-		LPCSTR D3DCompileProfile = nullptr;
-		switch (Type)
-		{
-		case GD_HRI_SHADER_TYPE_COMPUTE:
-			D3DCompileProfile = "cs_5_0";
-			break;
-
-		case GD_HRI_SHADER_TYPE_GEOMETRY:
-			D3DCompileProfile = "gs_5_0";
-			break;
-
-		case GD_HRI_SHADER_TYPE_VERTEX:
-			D3DCompileProfile = "vs_5_0";
-			break;
-
-		case GD_HRI_SHADER_TYPE_HULL:
-			D3DCompileProfile = "hs_5_0";
-			break;
-
-		case GD_HRI_SHADER_TYPE_DOMAIN:
-			D3DCompileProfile = "ds_5_0";
-			break;
-
-		case GD_HRI_SHADER_TYPE_PIXEL:
-			D3DCompileProfile = "ps_5_0";
-			break;
-
-		default:
-			GD_ASSERT_FALSE("Invalid shader type specified");
-			return false;
-		}
+		LPCSTR static const D3DCompileProfiles[] = {
+			/* GD_HRI_SHADER_TYPE_COMPUTE  = */ "cs_5_0",
+			/* GD_HRI_SHADER_TYPE_GEOMETRY = */ "gs_5_0",
+			/* GD_HRI_SHADER_TYPE_VERTEX   = */ "vs_5_0",
+			/* GD_HRI_SHADER_TYPE_HULL     = */ "hs_5_0",
+			/* GD_HRI_SHADER_TYPE_DOMAIN   = */ "ds_5_0",
+			/* GD_HRI_SHADER_TYPE_PIXEL    = */ "ps_5_0",
+		};
+		GD_DEBUG_ASSERT(Type < GD_HRI_SHADER_TYPE_UNKNOWN, "Invalid shader type specified.");
+		LPCSTR const D3DCompileProfile = D3DCompileProfiles[Type];
 
 		ID3DBlob *OutputBlob = nullptr, *ErrorBlob = nullptr;	// Note: D3DCompile is thread-safe.
-		HRESULT const Result = D3DCompile(&HLSLGeneratorOutput[0], HLSLGeneratorOutput.GetSize(), 
-			nullptr,  nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, &EntryName[0],
+		HRESULT const Result = D3DCompile(HLSLGeneratorOutput.GetPointer(), HLSLGeneratorOutput.GetSize(),
+			nullptr,  nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, EntryName.CStr(),
 			D3DCompileProfile, D3DCompileFlags, 0, &OutputBlob, &ErrorBlob
 		);
 
@@ -221,7 +207,7 @@ GD_NAMESPACE_BEGIN
 			if (ErrorBlob != nullptr)
 			{
 				String const CompilationErrorsList = reinterpret_cast<Str>(ErrorBlob->GetBufferPointer());
-				size_t CompilationErrorIndex = strstr(&CompilationErrorsList[0], "(") - (&CompilationErrorsList[0]);
+				size_t CompilationErrorIndex = strstr(CompilationErrorsList.CStr(), "(") - (CompilationErrorsList.CStr());
 				for (auto const& CompilationError : CompilationErrorsList.Split('\n'))
 				{
 					Str const CompilationErrorWithoutFile = CompilationError.Begin() + CompilationErrorIndex;
@@ -240,7 +226,7 @@ GD_NAMESPACE_BEGIN
 			return false;
 		}
 
-		size_t const TotalShaderBytecodeSizeWritten = Output->Write(OutputBlob->GetBufferPointer(), 0, OutputBlob->GetBufferSize());
+		size_t const TotalShaderBytecodeSizeWritten = Builder->Write(OutputBlob->GetBufferPointer(), 0, OutputBlob->GetBufferSize());
 		GD_ASSERT(TotalShaderBytecodeSizeWritten == OutputBlob->GetBufferSize(), "Failed to write shader to output");
 		return true;
 	}

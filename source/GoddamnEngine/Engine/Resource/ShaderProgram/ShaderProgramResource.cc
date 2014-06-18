@@ -4,7 +4,7 @@
 #include <GoddamnEngine/Engine/Renderer/Shader/Shader.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
 
-#include <GoddamnEngine/Core/IO/Stream/Stream.hh>
+#include <GoddamnEngine/Core/IO/Stream/StringStream/StringStream.hh>
 #include <mxml.h>
 
 GD_NAMESPACE_BEGIN
@@ -29,7 +29,7 @@ GD_NAMESPACE_BEGIN
 		GD_MXML_FOREACH_CHILD(shaderDescNode, shaderProgramDescNode)
 		{
 			BinaryResource* const ShaderResource = ResourceStreamer::GetInstance().LoadImmediately<BinaryResource>(mxmlElementGetAttr(shaderDescNode, "Id"));
-			DataRefInputStream    ShaderInputStream(ShaderResource->BinaryData);
+			StringInputStream    ShaderInputStream((char*) &ShaderResource->BinaryData[0]);
 
 			IToolchain Toolchain;
 			HRIShaderInstanceDesc* ShaderInstanceDesc = nullptr;

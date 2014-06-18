@@ -265,20 +265,20 @@ GD_NAMESPACE_BEGIN
 					else GD_NOT_IMPLEMENTED();
 				}
 
-				RefPtr<HRIShaderParamDesc>(new HRIShaderParamDesc(ShaderParamConstantBuffersLocationDesc.GetPointer(), ConstantBufferParam->Name, ParamType, ParamFormat));
+				RefPtr<HRIShaderParamDesc>(new HRIShaderParamDesc(ShaderParamConstantBuffersLocationDesc.GetPointer(), ConstantBufferParam->Name, ParamType, ParamFormat, ConstantBufferParam->ArrayIndex));
 			}
 		}
 
 		return true;
 	}
 
-	bool HLSLValidator::ValidateEntryPoint(HLSLScope const* const ParsedData, String const& EntryName, HRIShader* const Shader, RefPtr<HRIShaderInstanceDesc>& ShaderInstanceDesc)
+	bool HLSLValidator::ValidateEntryPoint(HLSLScope const* const ParsedData, String const& EntryPointName, HRIShader* const Shader, RefPtr<HRIShaderInstanceDesc>& ShaderInstanceDesc)
 	{
-		HLSLFunction const* const EntryPoint = ParsedData->FindFunction(EntryName);
+		HLSLFunction const* const EntryPoint = ParsedData->FindFunction(EntryPointName);
 		if (EntryPoint == nullptr)
 		{	// No entry point was found.
 			HLSLValidatorErrorDesc static const NoEntryFunctionError("entry point function named '%s' was not found.");
-			self->RaiseError(NoEntryFunctionError, &EntryName[0]);
+			self->RaiseError(NoEntryFunctionError, &EntryPointName[0]);
 			self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
 			return false;
@@ -292,21 +292,12 @@ GD_NAMESPACE_BEGIN
 		{
 #if (defined(GD_SHADERCC_VALIDATOR_VALIDATE_STYLE))
 			HLSLValidatorWarningDec static const EntryReturnsNonVoidStyleWarning("style warning: entry point function '%s' should return void.");
-			self->RaiseWarning(EntryReturnsNonVoidStyleWarning, &EntryName[0]);
+			self->RaiseWarning(EntryReturnsNonVoidStyleWarning, &EntryPointName[0]);
 #endif	// if (defined(GD_SHADERCC_VALIDATOR_VALIDATE_STYLE))
 
 #if ((defined(GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS)) && (defined(GD_SHADERCC_VALIDATOR_VALIDATE_STYLE)))
 #	error 'Both 'GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS' and 'GD_SHADERCC_VALIDATOR_VALIDATE_STYLE' but fix for 'EntryReturnsNonVoidStyleWarning' is not implemented.' 
 #else	// if ((defined(GD_SHADERCC_VALIDATOR_AUTOFIX_WARNINGS)) && (defined(GD_SHADERCC_VALIDATOR_VALIDATE_STYLE)))
-			HLSLSemantic const* const EntryPointSemantic = EntryPoint->Semantic;
-			if (EntryPointSemantic == nullptr)
-			{	// Entry point returns value that is not utilized with any semantic
-				HLSLValidatorErrorDesc static const EntryReturnValueNotUtilizedError("entry point function '%s' returns value that is not utilized with any semantic.");
-				self->RaiseError(EntryReturnValueNotUtilizedError, &EntryName[0]);
-				self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
-
-				return false;
-			}
 
 			/**/ if (EntryPoint->Type->Class == GD_HLSL_TYPE_CLASS_STRUCT)
 			{	// Return value of entry point is structure that may contain some semantics.
@@ -317,7 +308,7 @@ GD_NAMESPACE_BEGIN
 					if (EntryPointReturnStructField->ExprColon == nullptr)
 					{
 						HLSLValidatorErrorDesc static const EntryReturnValueNotUtilizedError("entry point function '%s' returns structure that contains unutilized field '%s'.");
-						self->RaiseError(EntryReturnValueNotUtilizedError, &EntryName[0], &EntryPointReturnStructField[0]);
+						self->RaiseError(EntryReturnValueNotUtilizedError, &EntryPointName[0], &EntryPointReturnStructField[0]);
 						self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
 						return false;
@@ -328,14 +319,24 @@ GD_NAMESPACE_BEGIN
 				}
 			}
 			else if ((EntryPoint->Type->Class == GD_HLSL_TYPE_CLASS_SCALAR) || (EntryPoint->Type->Class == GD_HLSL_TYPE_CLASS_VECTOR))
-			{	// Entry point returns scalar or vector value
+			{	// Entry point returns scalar or vector value.
+				HLSLSemantic const* const EntryPointSemantic = EntryPoint->Semantic;
+				if (EntryPointSemantic == nullptr)
+				{	// Entry point returns value that is not utilized with any semantic
+					HLSLValidatorErrorDesc static const EntryReturnValueNotUtilizedError("entry point function '%s' returns value that is not utilized with any semantic.");
+					self->RaiseError(EntryReturnValueNotUtilizedError, &EntryPointName[0]);
+					self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
+
+					return false;
+				}
+
 				if (!self->ValidateEntryPointArgumentExprColon(EntryPointSemantic, ShaderOutputSemantics)) 
 					return false;
 			}
 			else
 			{	// Entry point return something really strange.
 				HLSLValidatorErrorDesc static const EntryReturnNotUtilizableValueError("entry point function '%s' returns value that cannot be utilized.");
-				self->RaiseError(EntryReturnNotUtilizableValueError, &EntryName[0]);
+				self->RaiseError(EntryReturnNotUtilizableValueError, &EntryPointName[0]);
 				self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 
 				return false;
@@ -359,7 +360,7 @@ GD_NAMESPACE_BEGIN
 			}
 
 			HLSLStruct const* const EntryPointArgumentStruct = HLSLDynamicCast<HLSLStruct const*>(EntryPointArgument->Type);
-			if (EntryPointArgument != nullptr)
+			if (EntryPointArgumentStruct != nullptr)
 				for (auto const Definition : EntryPointArgumentStruct->InnerDefinitions)
 				{
 					HLSLVariable const* const EntryPointArgumentStructField = static_cast<HLSLVariable const*>(Definition);
@@ -402,10 +403,10 @@ GD_NAMESPACE_BEGIN
 		return true;
 	}
 
-	HRIShaderInstanceDesc* HLSLValidator::ValidateAndGenerateDescription(HRIShader* const Shader, HLSLScope const* const ParsedData, String const& EntryName)
+	HRIShaderInstanceDesc* HLSLValidator::ValidateAndGenerateDescription(HRIShader* const Shader, HLSLScope const* const ParsedData, String const& EntryPointName)
 	{
 		RefPtr<HRIShaderInstanceDesc> ShaderInstanceDesc(nullptr);
-		/**/ if (!self->ValidateEntryPoint(ParsedData, EntryName, Shader, ShaderInstanceDesc))
+		/**/ if (!self->ValidateEntryPoint(ParsedData, EntryPointName, Shader, ShaderInstanceDesc))
 			return nullptr;
 		else if (!self->ValidateConstantBuffersParameters(ParsedData, ShaderInstanceDesc.GetPointer()))
 			return nullptr;

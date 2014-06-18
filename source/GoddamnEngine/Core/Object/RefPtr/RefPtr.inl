@@ -56,7 +56,10 @@ GD_NAMESPACE_BEGIN
 	GDINL RefPtr<ObjectType>& RefPtr<ObjectType>::operator= (ObjectType* const ptr)
 	{
 		SafeRelease(self->object);
-		SafeObtain (self->object = ptr);
+		if (self->object != nullptr)
+			SafeObtain(self->object = ptr);
+		else
+			self->object = ptr;
 		return *self;
 	}
 

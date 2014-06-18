@@ -28,7 +28,7 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_HRI_SHADERCC_COMPILER_TARGET_UNKNOWN = 0,///< Unknown shading language (internal usage only). 
 		GD_HRI_SHADERCC_COMPILER_TARGET_HLSL,		///< HLSL Shading language (Microsoft-specific plaftorms).
-		GD_HRI_SHADERCC_COMPILER_TARGET_GLSL420,	///< GLSL Shading language, version 4.1 (OpenGL desktop).
+		GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430,	///< GLSL Shading language, version 4.1 (OpenGL desktop).
 		GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3,	///< GLSL(ES) 3.0 Shading language (OpenGL embedded, with constant buffers).
 		GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2,	///< GLSL(ES) 2.0 Shading language (OpenGL embedded, without constant buffers).
 		GD_HRI_SHADERCC_COMPILER_TARGET_METAL,		///< Metal Shading language (Apple plaforms).

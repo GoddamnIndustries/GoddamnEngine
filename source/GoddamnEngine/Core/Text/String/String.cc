@@ -34,74 +34,51 @@ GD_NAMESPACE_BEGIN
 	// Formatting constructors
 	//////////////////////////////////////////////////////////////////////////
 
-	String String::Format(const String& format, va_list list)
+	String String::FormatVa(Str const Format, va_list const List)
 	{
-		String result;
+		Char Buffer0[1024];
+		memset(&Buffer0[0], 0, sizeof(Buffer0));
+		int const Result0 = vsnprintf(&Buffer0[0], GD_ARRAY_SIZE(Buffer0), Format, List);
+		///**/ if (Result0 < 0)
+		//{
+		//	GD_ASSERT_FALSE("String formatting failed due format error.");
+		//	return String();
+		//}
+		/*else*/ if ((Result0 > 0) && (Result0 < GD_ARRAY_SIZE(Buffer0)))
+			return String(&Buffer0[0]);
 
-		enum class StateMachine
-		{
-			ReadingPlainData,
-			ReadingFormat
-		} state = StateMachine::ReadingPlainData;
+		Char Buffer1[2048];
+		memset(&Buffer1[0], 0, sizeof(Buffer1));
+		int const Result1 = vsnprintf(&Buffer1[0], GD_ARRAY_SIZE(Buffer1), Format, List);
+		///**/ if (Result1 < 0)
+		//{
+		//	GD_ASSERT_FALSE("String formatting failed due format error.");
+		//	return String();
+		//}
+		/*else*/ if ((Result1 > 0) && (Result1 < GD_ARRAY_SIZE(Buffer1)))
+			return String(&Buffer1[0]);
 
-		for (size_t cnt = 0; cnt < format.GetSize(); cnt += 1)
-		{
-			const Char character = format[cnt];
-			switch (state)
-			{
-			case StateMachine::ReadingPlainData: 
-				{
-					if (character == '%')
-					{
-						state = StateMachine::ReadingFormat;
-						continue;
-					}
-
-					result.PushLast(character);
-				} break;
-			case StateMachine::ReadingFormat:
-				{
-					switch (character)
-					{
-                    //case '^':	{ result += String(va_arg(list, String const*)); } break;
-					case 's':	{ result += String(va_arg(list, CharAnsi*)); } break;
-					case 'w':	{ result += String(va_arg(list, CharUtf16*)); } break;
-					case 'f':	{ result += String(va_arg(list, float)); } break;
-					case 'd':	{ result += String(va_arg(list, int)); } break;
-					case 'x':	{ result += String(va_arg(list, handle)); } break;
-					case 'c':	{ result += String(va_arg(list, CharAnsi)); } break;
-					case 'u':	{ result += String(va_arg(list, CharUtf16)); } break;
-					case 'U':	{ result += String(va_arg(list, CharUtf32)); } break;
-					case '%':	{ result.PushLast('%'); } break;
-                    default:	{ GD_ASSERT_FALSE("'String::Format' error: Unknown character type after '%%'"); } break;
-					}
-
-					state = StateMachine::ReadingPlainData;
-				} break;
-			}
-		}
-
-		result[result.GetSize()] = '\0';
-		return result;
+		GD_ASSERT_FALSE("String formatting failed buffers error.");
+		return String();
 	}
 
 	String String::Format(const CharAnsi* format, ...)
 	{
 		va_list list; va_start(list, format);
-		return String::Format(String(format), list);
+		return Forward<String>(String::FormatVa(format, list));
 	}
 
-	String String::Format(const CharUtf16* format, ...)
+	/*String&& String::Format(const CharUtf16* format, ...)
 	{
 		va_list list; va_start(list, format);
-		return String::Format(String(format), list);
+		return String::FormatVa(format, list);
 	}
 
-	String String::Format(const CharUtf32* format, ...)
+	String&& String::Format(const CharUtf32* format, ...)
 	{
 		va_list list; va_start(list, format); 
-		return String::Format(String(format), list);
-	}
+		return String::FormatVa(format, list);
+	}*/
 
 	//////////////////////////////////////////////////////////////////////////
 	// BASE-64 encoding and decoding

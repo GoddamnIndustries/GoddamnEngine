@@ -658,7 +658,7 @@ GD_NAMESPACE_BEGIN
 	HLSLVariable const* HLSLParserImpl::ParseVariable(HLSLDefinition const* const PrependingDefinition, bool const DoExpectSemicolon /* = true */)
 	{
 		UniquePtr<HLSLVariable> Variable(new HLSLVariable(*PrependingDefinition));
-		if ((self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_INDEX_BEGIN) && (Variable != nullptr))
+		/**/ if (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_INDEX_BEGIN)
 		{	// Parsing array definitions.
 			if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_CONSTANT_INTEGER)) return nullptr;
 			if ((Variable->ArrayIndex = self->CurrentLexem.GetProcessedDataInt()) == 0)
@@ -673,8 +673,7 @@ GD_NAMESPACE_BEGIN
 			if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_INDEX_END)) return nullptr;
 			if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR                            )) return nullptr;
 		}
-		
-		if (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_COLON)
+		else if (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_COLON)
 		{	    // Pasring variable semantic, register and pack offset here.
 			HLSLExprColonType ExpectedColonExprs = HLSLExprColonType(GD_HLSL_EXPRCOLON_TYPE_REGISTER | GD_HLSL_EXPRCOLON_TYPE_PACKOFFSET);
 			if ((Variable->Type->Class == GD_HLSL_TYPE_CLASS_SCALAR) || (Variable->Type->Class == GD_HLSL_TYPE_CLASS_VECTOR))
@@ -767,12 +766,25 @@ GD_NAMESPACE_BEGIN
 		for (size_t BracesBalance = 1; BracesBalance != 0; )
 		{	
 			CharAnsi Character = self->ShaderSourceInputStream->Read<CharAnsi>();
-			Function->Body += Character;
 			switch (Character)
 			{
 			case CharAnsi('{'): BracesBalance += 1; break;
 			case CharAnsi('}'): BracesBalance -= 1; break;
+			case CharAnsi('\n'): 
+				if (Function->Body.GetLastElement() == CharAnsi('\r'))
+				{
+					Function->Body.SetLastElement(CharAnsi('\n'));
+					continue;
+				}
+				break;
+
+			case CharAnsi('\r'): 
+				if (Function->Body.GetLastElement() == CharAnsi('\n'))
+					continue;
+				break;
 			}
+
+			Function->Body += Character;
 		};
 		
 		if (!self->ExpectNextLexem()) return nullptr;

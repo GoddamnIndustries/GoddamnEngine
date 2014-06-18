@@ -11,6 +11,8 @@
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Compiler/Compiler.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Validator/Validator.hh>
 
+#include <GoddamnEngine/Core/IO/Stream/FileStream/FileStream.hh>
+
 GD_NAMESPACE_BEGIN
 
 	////////////////////////////////////////////////////////////////////////////
@@ -27,7 +29,10 @@ GD_NAMESPACE_BEGIN
 		if (Scope != nullptr)
 		{
 			OutputShaderDescription = HLSLValidator(self->Toolchain).ValidateAndGenerateDescription(nullptr, Scope, EntryPointName);
-			HRIShaderCrossCompilerCompiler(self->Toolchain).GenerateAndCompileShader(nullptr, Scope, GD_HRI_SHADERCC_COMPILER_TARGET_GLSL420, GD_HRI_SHADER_TYPE_VERTEX, EntryPointName);
+			
+			FileOutputStream ShaderOutput("shaderoutput.glsl.c");
+			HRIShaderCrossCompilerCompiler(self->Toolchain).GenerateAndCompileShader(&ShaderOutput, Scope, GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430, GD_HRI_SHADER_TYPE_VERTEX, EntryPointName);
+			ShaderOutput.Dispose();
 			return true;
 		}
 		return false;

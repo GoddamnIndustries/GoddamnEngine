@@ -116,18 +116,20 @@ GD_NAMESPACE_BEGIN
 		mutable size_t                     ParamCachedSize = SIZE_MAX;
 
 	public:
-		String                 const ParamName;   ///< Name of this parameter.
-		HashSumm               const ParamHash;   ///< Hash of parameter`s name.
-		HRIShaderParamDescType const ParamType;   ///< Type of this parameter.
-		Format                 const ParamFormat; ///< Format of this parameter. Unknown if type is not GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE.
-		
+		String                 const ParamName;        ///< Name of this parameter.
+		HashSumm               const ParamHash;        ///< Hash of parameter`s name.
+		HRIShaderParamDescType const ParamType;        ///< Type of this parameter.
+		Format                 const ParamFormat;      ///< Format of this parameter. Unknown if type is not GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE.
+		size_t                 const ParamArrayLength; ///< If this variable was defined as a array, array length.
+
 		GDINL virtual ~HRIShaderParamDesc();
 		GDINL          HRIShaderParamDesc(
 			HRIShaderParamLocationDesc* const  ParamLocationDesc,
 			String                      const& ParamName,
 			HRIShaderParamDescType      const  ParamType,
-			Format                      const  ParamFormat = GD_FORMAT_UNKNOWN,
-			HRIShaderParamID            const  ParamID     = GD_HRI_SHADER_PARAM_DESC_ID_UNKNOWN
+			Format                      const  ParamFormat      = GD_FORMAT_UNKNOWN,
+			size_t                      const  ParamArrayLength = 1,
+			HRIShaderParamID            const  ParamID          = GD_HRI_SHADER_PARAM_DESC_ID_UNKNOWN
 		);
 		
 		/// Returns instance description this param description uses/

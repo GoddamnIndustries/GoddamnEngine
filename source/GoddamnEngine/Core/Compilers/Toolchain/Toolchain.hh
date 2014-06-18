@@ -103,6 +103,10 @@ GD_NAMESPACE_BEGIN
 	protected:
 		IToolchain* const Toolchain;
 		GDINL IToolchainTool(IToolchain* const Toolchain) : Toolchain(Toolchain) { }
+		inline void RaiseMessage(ToolchainMessage const* const Message, ...)
+		{
+			GD_UNUSED(Message);
+		}
 		inline void RaiseWarning(ToolchainMessage const* const Warning, ...)
 		{
 			GD_UNUSED(Warning);

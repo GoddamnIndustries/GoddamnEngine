@@ -20,28 +20,28 @@ GD_NAMESPACE_BEGIN
 	namespace Path
 	{
 		/// Changes extension of path string into new one or appends it if no extension specified.
-		GDAPI extern String&& ChangeExtension(String const& SomePath, String const& NewExtension);
+		GDAPI extern String ChangeExtension(String const& SomePath, String const& NewExtension);
 
 		/// Combines list of paths into one.
-		GDAPI extern String&& Combine(Vector<String> const& Paths);
+		GDAPI extern String Combine(Vector<String> const& Paths);
 
 		/// Returns true if specified path contains extension.
 		GDAPI extern bool HasExtension(String const& SomePath);
 
 		/// Returns directory information for specified path string.
-		GDAPI extern String&& GetDirectoryName(String const& SomePath);
+		GDAPI extern String GetDirectoryName(String const& SomePath);
 
 		/// Returns extension information for specified path string.
-		GDAPI extern String&& GetExtension(String const& SomePath);
+		GDAPI extern String GetExtension(String const& SomePath);
 
 		/// Returns file and extension information for specified path string.
-		GDAPI extern String&& GetFileName(String const& SomePath);
+		GDAPI extern String GetFileName(String const& SomePath);
 
 		/// Returns file information for specified path string (without extension).
-		GDAPI extern String&& GetFileNameWithoutExtension(String const& SomePath);
+		GDAPI extern String GetFileNameWithoutExtension(String const& SomePath);
 
 		/// Creates a uniquely named, zero-byte temporary file on disk and returns the full path of that file.
-		GDAPI extern String&& GetTemporaryFileName();
+		GDAPI extern String GetTemporaryFileName();
 
 		/// Returns path to system`s temporary folder.
 		GDAPI extern String const& GetTemporaryPath();

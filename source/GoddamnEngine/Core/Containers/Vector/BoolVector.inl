@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #if (!defined(GD_CORE_CONTAINERS_BOOL_VECTOR))
-#	error "Attempting to include 'BoolVector.inl' file. Please, use 'BoolVector.h' instead.""
+#	error "Attempting to include 'BoolVector.inl' file. Please, use 'BoolVector.hh' instead.""
 #endif	// if (!defined(GD_CORE_CONTAINERS_VECTOR))
 
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #if (!defined(GD_CORE_CONTAINERS_VECTOR))
-#	error "Attempting to include 'Vector.inl' file. Please, use 'Vector.h' instead.""
+#	error "Attempting to include 'Vector.inl' file. Please, use 'Vector.hh' instead.""
 #endif	// if (!defined(GD_CORE_CONTAINERS_VECTOR))
 
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>

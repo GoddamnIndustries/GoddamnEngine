@@ -113,14 +113,14 @@ GD_NAMESPACE_BEGIN
 		///		@endcode
 		GDAPI static String Format(const CharAnsi* format, ...);
 
-		/// @see Format(const CharAnsi* format, ...)
-		GDAPI static String Format(const CharUtf16* format, ...);
+		/*/// @see Format(const CharAnsi* format, ...)
+		GDAPI static String&& Format(const CharUtf16* format, ...);
 
 		/// @see Format(const CharAnsi* format, ...)
-		GDAPI static String Format(const CharUtf32* format, ...);
+		GDAPI static String&& Format(const CharUtf32* format, ...);*/
 
 		/// @see Format(const CharAnsi* format, ...)
-		GDAPI static String Format(const String& format, va_list list);
+		GDAPI static String FormatVa(Str const Format, va_list const List);
 
 		/// @}
 
@@ -210,6 +210,9 @@ GD_NAMESPACE_BEGIN
 		GDAPI ~String();
 
 		/// @}
+
+		GDINL Char const* CStr() const { return &(*self)[0]; }
+		GDINL Char      * CStr()       { return &(*self)[0]; }
 
 		GDINL Char*       Begin() { return &(*self)[0]; }
 		GDINL Char const* Begin() const { return &(*self)[0]; }

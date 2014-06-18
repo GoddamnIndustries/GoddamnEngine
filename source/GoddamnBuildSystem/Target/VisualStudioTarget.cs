@@ -220,7 +220,7 @@ namespace GoddamnEngine.BuildSystem
                 //  ProjectConfig.WriteElementString("ExceptionHandling", "false");
                     ProjectConfig.WriteElementString("RuntimeTypeInfo", "false");
                     ProjectConfig.WriteElementString("FavorSizeOrSpeed", "Speed");
-                    ProjectConfig.WriteElementString("DisableSpecificWarnings", "4100;4127;4189;4201;4458;4456;4505;4714"); 
+                    ProjectConfig.WriteElementString("DisableSpecificWarnings", "4100;4127;4189;4201;4301;4458;4456;4505;4714"); 
                     ProjectConfig.WriteEndElement();
 
                     ProjectConfig.WriteStartElement("Link");

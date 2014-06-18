@@ -17,22 +17,34 @@
 
 GD_NAMESPACE_BEGIN
 
+	GDINL size_t Stream::ReadCheck(handle const OutputBuffer, ptrdiff_t const Offset, size_t const Count)
+	{
+		size_t const NumElementRead = self->Read(OutputBuffer, Offset, Count);
+		GD_ASSERT(NumElementRead == Count, "Failed to read all data");
+		return NumElementRead;
+	}
+
 	template<typename ReadingElementType>
 	GDINL ReadingElementType&& Stream::Read()
 	{	// We should check if we are reading into POD type to prevent memory leaks.
 		static_assert(TypeTraits::IsPodType<ReadingElementType>::Value, "ReadingElementType should be POD.");
 		ReadingElementType ReadingElement = ReadingElementType();
-		size_t const NumElementsRead = self->Read(&ReadingElement, 0, sizeof(ReadingElement));
-		GD_ASSERT((sizeof(ReadingElement) == NumElementsRead), "Reading failed.");
+		self->ReadCheck(&ReadingElement, 0, sizeof(ReadingElement));
 		return Move(ReadingElement);
+	}
+
+	GDINL size_t Stream::WriteCheck(chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count)
+	{
+		size_t const NumElementsWritten = self->Write(InputBuffer, Offset, Count);
+		GD_ASSERT(NumElementsWritten == Count, "Failed to write all data");
+		return NumElementsWritten;
 	}
 
 	template<typename WritingElementType>
 	GDINL void Stream::Write(WritingElementType const& Element)
 	{	// We should check if we are writing a POD type to prevent memory leaks.
         static_assert(TypeTraits::IsPodType<WritingElementType>::Value, "WritingElementType should be POD.");
-		size_t const NumElementsWritten = self->Write(&Element, 0, sizeof(Element));
-        GD_ASSERT((sizeof(WritingElementType) == NumElementsWritten), "Writing failed.");
+		self->WriteCheck(&Element, 0, sizeof(Element));
 	}
 
 GD_NAMESPACE_END
