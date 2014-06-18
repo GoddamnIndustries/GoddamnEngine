@@ -1,6 +1,7 @@
 GoddamnEngine
 =============
 [GoddamnEngine] is cross-platform next-generation ready realtime game engine.
+Goddamn, work is in progress now.
 
 Features
 --------
@@ -21,6 +22,7 @@ Installation
  - Linux - [Mono runtime], [QtCreator] 3 and later, CLang/LLVM compiler recommened.
 Work in progress here..
 
+[Created with]:http://dillinger.io
 [GoddamnEngine]:http://goddamnengine.com
 [Visual Studio]:http://visualstudio.com
 [Visual C++ Compiler November 2013 CTP]:http://www.microsoft.com/en-us/download/details.aspx?id=41151
