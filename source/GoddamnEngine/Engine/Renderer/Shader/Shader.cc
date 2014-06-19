@@ -12,6 +12,39 @@
 
 GD_NAMESPACE_BEGIN
 	
+	extern Str HRIShaderTypeToStr(HRIShaderType const ShaderType)
+	{
+		Str static const HRIShaderTypeToStrTable[] = {
+			/* GD_HRI_SHADER_TYPE_COMPUTE  = */ "compute",
+			/* GD_HRI_SHADER_TYPE_GEOMETRY = */ "geometry",
+			/* GD_HRI_SHADER_TYPE_VERTEX   = */ "vertex",
+			/* GD_HRI_SHADER_TYPE_HULL     = */ "hull",
+			/* GD_HRI_SHADER_TYPE_DOMAIN   = */ "domain",
+			/* GD_HRI_SHADER_TYPE_PIXEL    = */ "pixel",
+		};
+
+		GD_DEBUG_ASSERT(ShaderType < GD_HRI_SHADER_TYPES_COUNT, "Invalid shader type specified");
+		return HRIShaderTypeToStrTable[ShaderType];
+	}
+
+	extern HRIShaderType HRIShaderTypeFromString(String const& ShaderType)
+	{
+		if (strncmp(ShaderType.CStr(), "compute",   sizeof("compute")  ) == 0) return GD_HRI_SHADER_TYPE_COMPUTE;
+		if (strncmp(ShaderType.CStr(), "geometry",  sizeof("geometry") ) == 0) return GD_HRI_SHADER_TYPE_GEOMETRY;
+		if (strncmp(ShaderType.CStr(), "vertex",    sizeof("vertex")   ) == 0) return GD_HRI_SHADER_TYPE_VERTEX;
+		if (strncmp(ShaderType.CStr(), "hull",      sizeof("hull")     ) == 0) return GD_HRI_SHADER_TYPE_HULL;
+		if (strncmp(ShaderType.CStr(), "domain",    sizeof("domain")   ) == 0) return GD_HRI_SHADER_TYPE_DOMAIN;
+		if (strncmp(ShaderType.CStr(), "pixel",     sizeof("pixel")    ) == 0) return GD_HRI_SHADER_TYPE_PIXEL;
+#if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
+		if (strncmp(ShaderType.CStr(), "tess_ctrl", sizeof("tess_ctrl")) == 0) return GD_HRI_SHADER_TYPE_HULL;
+		if (strncmp(ShaderType.CStr(), "tess_eval", sizeof("tess_eval")) == 0) return GD_HRI_SHADER_TYPE_DOMAIN;
+		if (strncmp(ShaderType.CStr(), "fragment",  sizeof("fragment") ) == 0) return GD_HRI_SHADER_TYPE_PIXEL;
+#endif	// if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
+
+		GD_ASSERT_FALSE("Invalid shader type string specified");
+		return GD_HRI_SHADER_TYPE_UNKNOWN;
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	/// HRIShaderParamDesc
 	//////////////////////////////////////////////////////////////////////////

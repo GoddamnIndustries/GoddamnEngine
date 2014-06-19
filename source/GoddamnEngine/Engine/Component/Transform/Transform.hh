@@ -10,7 +10,7 @@
 #include <GoddamnEngine/Core/Math/Vector4.hh>
 #include <GoddamnEngine/Core/Math/Matrix4x4.hh>
 #include <GoddamnEngine/Core/Math/Quaternion.hh>
-#include <GoddamnEngine/Core/Object/RefPtr/RefPtr.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/RefPtr.hh>
 
 #define GD_COMPARE_FLOATS(a, b) (fabs(a - b) < (1e-6f)) 
 

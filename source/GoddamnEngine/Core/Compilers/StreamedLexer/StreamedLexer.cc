@@ -21,7 +21,7 @@ GD_NAMESPACE_BEGIN
 	extern Str LexemContentTypeToString(LexemContentType const ContentType)
 	{
 		static Str const LexemContentTypeStrings[] = {
-			/* GD_LEXEM_CONTENT_TYPE_IDENTIFGDR			= */ "identifier",
+			/* GD_LEXEM_CONTENT_TYPE_IDENTIFIER			= */ "identifier",
 			/* GD_LEXEM_CONTENT_TYPE_KEYWORD			= */ "keyword",
 			/* GD_LEXEM_CONTENT_TYPE_OPERATOR			= */ "operator",
 			/* GD_LEXEM_CONTENT_TYPE_COMMENT			= */ "comment",
@@ -52,7 +52,7 @@ GD_NAMESPACE_BEGIN
 			GD_LEXER_STATE_READING_COMMENT_OR_OPERATOR,
 			GD_LEXER_STATE_READING_COMMENT_SINGLELINE,
 			GD_LEXER_STATE_READING_COMMENT_MULTIPLELINE,
-			GD_LEXER_STATE_READING_IDENTIFGDR_OR_KEYWORD,
+			GD_LEXER_STATE_READING_IDENTIFIER_OR_KEYWORD,
 			GD_LEXER_STATE_UNKNOWN,
 			GD_LEXER_STATES_COUNT = GD_LEXER_STATE_UNKNOWN
 		};	// enum StreamedLexerState
@@ -141,7 +141,7 @@ GD_NAMESPACE_BEGIN
 			// or ignore switching in several cases. Building a translation table: 
 			struct TestCharacterTypesSwitchingTable final { bool DoTestCharacterTypeSwitch; StreamedLexerCharType NotCommitOnSwitchingTo[GD_CHARACTER_TYPE_UNKNOWN + 1]; };
 			static TestCharacterTypesSwitchingTable const TestCharacterTypeSwitchingTable[GD_LEXEM_CONTENT_TYPES_COUNT + 1] = {
-				/* GD_LEXEM_CONTENT_TYPE_IDENTIFGDR			*/ { true,  { GD_CHARACTER_TYPE_ALPHABETIC, GD_CHARACTER_TYPE_DIGIT, GD_CHARACTER_TYPE_UNKNOWN } },
+				/* GD_LEXEM_CONTENT_TYPE_IDENTIFIER			*/ { true,  { GD_CHARACTER_TYPE_ALPHABETIC, GD_CHARACTER_TYPE_DIGIT, GD_CHARACTER_TYPE_UNKNOWN } },
 				/* GD_LEXEM_CONTENT_TYPE_KEYWORD			*/ { true,  { GD_CHARACTER_TYPE_ALPHABETIC, GD_CHARACTER_TYPE_DIGIT, GD_CHARACTER_TYPE_UNKNOWN } },
 				/* GD_LEXEM_CONTENT_TYPE_OPERATOR			*/ { true,	{ GD_CHARACTER_TYPE_SPECIAL, GD_CHARACTER_TYPE_UNKNOWN } },
 				/* GD_LEXEM_CONTENT_TYPE_COMMENT			*/ { false, { GD_CHARACTER_TYPE_UNKNOWN } },
@@ -220,7 +220,7 @@ GD_NAMESPACE_BEGIN
 			/* GD_LEXER_STATE_READING_COMMENT_OR_OPERATOR   */ { false, &StreamedLexerImpl::ProcessOperatorOrComment },
 			/* GD_LEXER_STATE_READING_COMMENT_SINGLELINE    */ { false, &StreamedLexerImpl::ProcessSingleLineComment },
 			/* GD_LEXER_STATE_READING_COMMENT_MULTIPLELINE  */ {  true, &StreamedLexerImpl::ProcessMultipleLineComment },
-			/* GD_LEXER_STATE_READING_IDENTIFGDR_OR_KEYWORD */ { false, &StreamedLexerImpl::ProcessIdentifierOrKeyword },
+			/* GD_LEXER_STATE_READING_IDENTIFIER_OR_KEYWORD */ { false, &StreamedLexerImpl::ProcessIdentifierOrKeyword },
 		};
 
 		/**/ if ((self->CurrentCharacter != CharAnsi('\0')) && (self->CurrentState == GD_LEXER_STATE_UNKNOWN))
@@ -246,8 +246,8 @@ GD_NAMESPACE_BEGIN
 					self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_CONSTANT_INTEGER;
 					break;
 				case GD_CHARACTER_TYPE_ALPHABETIC: 
-					self->CurrentState = GD_LEXER_STATE_READING_IDENTIFGDR_OR_KEYWORD;
-					self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_IDENTIFGDR;
+					self->CurrentState = GD_LEXER_STATE_READING_IDENTIFIER_OR_KEYWORD;
+					self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_IDENTIFIER;
 					break;
 				case GD_CHARACTER_TYPE_SPECIAL: 
 					self->CurrentState = GD_LEXER_STATE_READING_COMMENT_OR_OPERATOR;
@@ -444,7 +444,7 @@ GD_NAMESPACE_BEGIN
 		{	// We are heving next chracter that makes this lexem valid identifier.
 			// Restoring identifer content type.
 			self->CurrentLexem->ProcessedDataId = 0;
-			self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_IDENTIFGDR;
+			self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_IDENTIFIER;
 		}
 
 		self->CurrentMatches = Move(CurrentMatches);

@@ -114,7 +114,7 @@ R"(
 	public:
 		GDINL  GLSLGenerator(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
 		GDINL ~GLSLGenerator() { }
-		GDINT bool GenerateShader(StringBuilder& Builder, HLSLScope const* const Input, String const& EntryName, HRIShaderCrossCompilerTarget const Target);
+		GDINT bool GenerateShader(StringBuilder& Builder, HLSLScope const* const ShaderParsedData, String const& ShaderEntryName, HRIShaderCrossCompilerTarget const ShaderTargetPlatform);
 	private:
 		GDINT bool GenerateShaderStruct(HLSLStruct const* const Struct, StringBuilder& Builder);
 		GDINT bool GenerateShaderConstantBuffer(HLSLCBuffer const* const ConstantBuffer, StringBuilder& Builder, bool const SupportsConstantBuffers);
@@ -309,11 +309,10 @@ R"(
 		return true;
 	}
 
-	bool GLSLGenerator::GenerateShader(StringBuilder& Builder, HLSLScope const* const Input, String const& EntryName, HRIShaderCrossCompilerTarget const Target)
+	bool GLSLGenerator::GenerateShader(StringBuilder& Builder, HLSLScope const* const ShaderParsedData, String const& ShaderEntryName, HRIShaderCrossCompilerTarget const ShaderTargetPlatform)
 	{
 		Builder.Append(GLSLInsertations::GLSLInsertation, GD_ARRAY_SIZE(GLSLInsertations::GLSLInsertation) - 1);
-
-		for (auto const Definition : Input->InnerDefinitions)
+		for (auto const Definition : ShaderParsedData->InnerDefinitions)
 		{
 			HLSLType const* const Type = HLSLDynamicCast<HLSLType const*>(Definition);
 			if (Type != nullptr)
@@ -326,7 +325,7 @@ R"(
 			HLSLCBuffer const* const ConstantBuffer = HLSLDynamicCast<HLSLCBuffer const*>(Definition);
 			if (ConstantBuffer != nullptr)
 			{
-				if (!self->GenerateShaderConstantBuffer(ConstantBuffer, Builder, Target != GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2))
+				if (!self->GenerateShaderConstantBuffer(ConstantBuffer, Builder, ShaderTargetPlatform != GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2))
 					return false;
 				continue;
 			}
@@ -348,28 +347,28 @@ R"(
 			}
 		}
 
-		if (!self->GenerateShaderEntry(Input->FindFunction(EntryName), Builder))
+		if (!self->GenerateShaderEntry(ShaderParsedData->FindFunction(ShaderEntryName), Builder))
 			return false;
 
 		return true;
 	}
 
 	bool GLSLCompiler::GenerateAndCompileShader(
-		OutputStream                      * const Builder,
-		HLSLScope                    const* const Input,
-		HRIShaderCrossCompilerTarget const        Target,
-		HRIShaderType                const        Type,
-		String                       const&       EntryName
+		OutputStream                      * const ShaderByteCodeOutputStream,
+		HLSLScope                    const* const ShaderParsedData,
+		HRIShaderType                const        ShaderType,
+		String                       const&       ShaderEntryName,
+		HRIShaderCrossCompilerTarget const        ShaderTargetPlatform
 	)
 	{
 		StringBuilder GLSLGeneratorBuilder;
-		if (!GLSLGenerator(self->Toolchain).GenerateShader(GLSLGeneratorBuilder, Input, EntryName, Target))
+		if (!GLSLGenerator(self->Toolchain).GenerateShader(GLSLGeneratorBuilder, ShaderParsedData, ShaderEntryName, ShaderTargetPlatform))
 			return false;
 
 		// Now we need just preprocess generated code to reduñe loading time.
 		StringBuilder GLSLPreprocessedBuilder;
 		GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLCopyright, GD_ARRAY_SIZE(GLSLInsertations::GLSLCopyright) - 1);
-		switch (Target)
+		switch (ShaderTargetPlatform)
 		{
 		case GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430:
 			GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSL430Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSL430Preambule) - 1);
@@ -415,10 +414,10 @@ R"(
 #if (!defined(GD_HRI_SHADERCC_GLSL_COMPILER_DUAL_CHECK))
 		bool WasOptimized = false;	// Trying to optimize out shader using glsl_optimizer by aras-p.
 #endif	// if (!defined(GD_HRI_SHADERCC_GLSL_COMPILER_DUAL_CHECK))
-		if (Target != GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430)
+		if (ShaderTargetPlatform != GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430)
 		{	// glsl_optimizer supports only desktop GLSL 140 version. We are using 430...
 			// glsl_optimizer requires context for each thread.
-			if ((Type != GD_HRI_SHADER_TYPE_VERTEX) && (Type != GD_HRI_SHADER_TYPE_FRAGMENT))
+			if ((ShaderTargetPlatform != GD_HRI_SHADER_TYPE_VERTEX) && (ShaderTargetPlatform != GD_HRI_SHADER_TYPE_FRAGMENT))
 			{
 				GLSLCompilerErrorDesc static const InvalidShaderTypeError("GLSL(ES) supports only Vertex and Fragment shaders.");
 				self->RaiseError(InvalidShaderTypeError);
@@ -427,8 +426,8 @@ R"(
 				return false;
 			}
 
-			glslopt_ctx   * const OptimizerContext = glslopt_initialize(((Target == GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3) ? kGlslTargetOpenGLES30 : kGlslTargetOpenGLES20));
-			glslopt_shader* const OptimizedShader  = glslopt_optimize(OptimizerContext, ((Type == GD_HRI_SHADER_TYPE_VERTEX) ? kGlslOptShaderVertex : kGlslOptShaderFragment), GLSLPreprocessedBuilder.GetPointer(), 0);
+			glslopt_ctx   * const OptimizerContext = glslopt_initialize(((ShaderTargetPlatform == GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3) ? kGlslTargetOpenGLES30 : kGlslTargetOpenGLES20));
+			glslopt_shader* const OptimizedShader  = glslopt_optimize(OptimizerContext, ((ShaderTargetPlatform == GD_HRI_SHADER_TYPE_VERTEX) ? kGlslOptShaderVertex : kGlslOptShaderFragment), GLSLPreprocessedBuilder.GetPointer(), 0);
 			if (!glslopt_get_status(OptimizedShader))
 			{
 				Str const ShaderOptimizationLog = glslopt_get_log(OptimizedShader);
@@ -477,7 +476,7 @@ R"(
 			};
 
 			char const* const GLSLOptmizerBuilderPtr = GLSLOptmizerBuilder.GetPointer();
-			glslang::TShader glslangShader(HRI2GLSLangShaderType[Type]);
+			glslang::TShader glslangShader(HRI2GLSLangShaderType[ShaderType]);
 			glslangShader.setStrings(&GLSLOptmizerBuilderPtr, 1);
 			if (!glslangShader.parse(&glslangInitializer.glslangDefaultResources, 100, true, EShMsgDefault))
 			{	// Failed to compile our shader.
@@ -505,7 +504,7 @@ R"(
 		}
 
 		size_t const TotalShaderBytecodeSizePredicted = GLSLOptmizerBuilder.GetSize() * sizeof(GLSLOptmizerBuilder.GetPointer()[0]);
-		size_t const TotalShaderBytecodeSizeWritten = Builder->Write(GLSLOptmizerBuilder.GetPointer(), 0, TotalShaderBytecodeSizePredicted);
+		size_t const TotalShaderBytecodeSizeWritten = ShaderByteCodeOutputStream->Write(GLSLOptmizerBuilder.GetPointer(), 0, TotalShaderBytecodeSizePredicted);
 		GD_ASSERT(TotalShaderBytecodeSizeWritten == TotalShaderBytecodeSizePredicted, "Failed to write shader to output");
 		return true;
 	}

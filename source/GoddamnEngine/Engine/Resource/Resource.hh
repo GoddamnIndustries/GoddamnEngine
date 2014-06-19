@@ -85,8 +85,9 @@ GD_NAMESPACE_BEGIN
 		//////////////////////////////////////////////////////////////////////////
 		GDINL virtual void OnResourceLoad(ResourceLoader* const resourceLoader)
 		{
-			self->BinaryData.Resize(resourceLoader->GetResourceDataSize());
-			resourceLoader->Read(&self->BinaryData[0], self->BinaryData.GetSize());
+			self->BinaryData.Resize(resourceLoader->GetResourceDataSize() + 1);
+			resourceLoader->Read(&self->BinaryData[0], self->BinaryData.GetSize() - 1);
+			self->BinaryData.GetLastElement() = '\0';
 		}
 
 		//////////////////////////////////////////////////////////////////////////

@@ -13,6 +13,8 @@
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
 
+#include <cstdarg>
+
 GD_NAMESPACE_BEGIN
 
 	class Stream;
@@ -105,21 +107,29 @@ GD_NAMESPACE_BEGIN
 		GDINL IToolchainTool(IToolchain* const Toolchain) : Toolchain(Toolchain) { }
 		inline void RaiseMessage(ToolchainMessage const* const Message, ...)
 		{
-			GD_UNUSED(Message);
+			va_list List = va_list(); va_start(List, Message);
+			vprintf(Message, List);
+			va_end(List);
 		}
 		inline void RaiseWarning(ToolchainMessage const* const Warning, ...)
 		{
-			GD_UNUSED(Warning);
+			va_list List = va_list(); va_start(List, Warning);
+			vprintf(Warning, List);
+			va_end(List);
 		}
 		inline void RaiseError(ToolchainMessage const* const Error, ...)
 		{ 
+			va_list List = va_list(); va_start(List, Error);
+			vprintf(Error, List);
+			va_end(List);
 			self->RaiseExceptionWithCode(1l); 
-			GD_UNUSED(Error);
 		}
 		inline void RaiseFatalError(ToolchainMessage const* const Error, ...) 
 		{
+			va_list List = va_list(); va_start(List, Error);
+			vprintf(Error, List);
+			va_end(List);
 			self->RaiseExceptionWithCode(1l);
-			GD_UNUSED(Error);
 		}
 		inline void RaiseExceptionWithCode(long const ExceptionCode) 
 		{ 

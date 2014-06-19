@@ -28,10 +28,10 @@ GD_NAMESPACE_BEGIN
 		GDINL  HLSLCompiler(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
 		GDINL ~HLSLCompiler(                           ) { }
 		GDINT bool GenerateAndCompileShader(
-			OutputStream                      * const Output,
-			HLSLScope                    const* const Input,
-			HRIShaderType                const        Type,
-			String                       const&       EntryName
+			OutputStream                      * const ShaderByteCodeOutputStream,
+			HLSLScope                    const* const ShaderParsedData,
+			HRIShaderType                const        ShaderType,
+			String                       const&       ShaderEntryName
 		);
 	};	// class HLSLCompiler
 

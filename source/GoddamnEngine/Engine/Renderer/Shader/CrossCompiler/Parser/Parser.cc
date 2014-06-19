@@ -8,7 +8,7 @@
 
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
-#include <GoddamnEngine/Core/Containers/Pointer/Pointer.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.hh>
 #include <GoddamnEngine/Core/Containers/Containers.hh>
 #include <GoddamnEngine/Core/Containers/Map/Map.hh>
 #include <GoddamnEngine/Core/IO/Stream/Stream.hh>
@@ -45,6 +45,11 @@ GD_NAMESPACE_BEGIN
 			GD_HLSL_KEYWORD_CBUFFER,
 			GD_HLSL_KEYWORD_TYPEDEF,
 		GD_HLSL_KEYWORD_DEFINING_END__,
+		GD_HLSL_KEYWORD_TYPE_MODIFIER_BEGIN__,
+			GD_HLSL_KEYWORD_TYPE_MODIFIER_CONST,
+			GD_HLSL_KEYWORD_TYPE_MODIFIER_ROW_MAJOR,
+			GD_HLSL_KEYWORD_TYPE_MODIFIER_COLUMN_MAJOR,
+		GD_HLSL_KEYWORD_TYPE_MODIFIER_END__,
 		GD_HLSL_KEYWORD_ARGUMENTS_BEGIN__,
 			GD_HLSL_KEYWORD_IN,
 			GD_HLSL_KEYWORD_OUT,
@@ -301,14 +306,17 @@ GD_NAMESPACE_BEGIN
 #if (!defined(__INTELLISENSE__)) // IntelliSence marks following code with errors. Just let in not parse it.
 		static StreamedLexerOptions const HlslLexerOptions(
 			StreamedLexerKeywordsList({
-				{ GD_HLSL_KEYWORD_STRUCT,          "struct" },
-				{ GD_HLSL_KEYWORD_TYPEDEF,         "typedef" },
-				{ GD_HLSL_KEYWORD_CBUFFER,         "cbuffer" },
-				{ GD_HLSL_KEYWORD_IN,              "in" },
-				{ GD_HLSL_KEYWORD_OUT,             "out" },
-				{ GD_HLSL_KEYWORD_INOUT,           "inout" },
-				{ GD_HLSL_KEYWORD_REGISTER,        "register" },
-				{ GD_HLSL_KEYWORD_PACKOFFSET,      "packoffset" },
+				{ GD_HLSL_KEYWORD_STRUCT,                     "struct" },
+				{ GD_HLSL_KEYWORD_TYPEDEF,                    "typedef" },
+				{ GD_HLSL_KEYWORD_CBUFFER,                    "cbuffer" },
+				{ GD_HLSL_KEYWORD_TYPE_MODIFIER_CONST,        "const" },
+				{ GD_HLSL_KEYWORD_TYPE_MODIFIER_ROW_MAJOR,    "row_major" },
+				{ GD_HLSL_KEYWORD_TYPE_MODIFIER_COLUMN_MAJOR, "column_major" },
+				{ GD_HLSL_KEYWORD_IN,                         "in" },
+				{ GD_HLSL_KEYWORD_OUT,                        "out" },
+				{ GD_HLSL_KEYWORD_INOUT,                      "inout" },
+				{ GD_HLSL_KEYWORD_REGISTER,                   "register" },
+				{ GD_HLSL_KEYWORD_PACKOFFSET,                 "packoffset" },
 			}),
 			StreamedLexerOperatorsList({
 				{ GD_HLSL_OPERATOR_INDEX_BEGIN,    "[" },
@@ -404,11 +412,11 @@ GD_NAMESPACE_BEGIN
 		while (!self->Toolchain->WasExceptionRaised())
 		{
 			if (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_EOS) break;
-			UniquePtr<HLSLDefinition const> Definition = self->ParseDefinition(HLSLDefinitionType(0
+			UniquePtr<HLSLDefinition const> Definition(self->ParseDefinition(HLSLDefinitionType(0
 				| GD_HLSL_DEFINITION_TYPE
 				| GD_HLSL_DEFINITION_VARIABLE
 				| GD_HLSL_DEFINITION_FUNCTION 
-				| GD_HLSL_DEFINITION_CONSTANTBUFFER));
+				| GD_HLSL_DEFINITION_CONSTANTBUFFER)));
 			if (Definition.GetPointer() == nullptr) return nullptr;
 			self->GlobalScopesStack.GetLastElement()->InnerDefinitions.PushLast(Definition.Release());
 		}
@@ -452,7 +460,7 @@ GD_NAMESPACE_BEGIN
 
 		if (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_KEYWORD)
 		{	// Lets determine what definition we have here.
-			/**/ if (!GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataId(), DEFINING))
+			/**/ if ((!GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataId(), DEFINING)) && (!GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataId(), TYPE_MODIFIER)))
 			{	// This keyword contains something else..
 				static HRIShaderCrossCompilerErrorDesc const UnexpectedKeywordError("unexpected keyword '%s'");
 				self->RaiseError(UnexpectedKeywordError, &self->CurrentLexem.GetRawData()[0]);
@@ -490,12 +498,21 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
+		// Parsing definition type modifier, if it exists,
+		HLSLTypeModifier TypeModifier = GD_HLSL_TYPE_MODIFIER_UNKNOWN;
+		if (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_KEYWORD)
+			while (GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataId(), TYPE_MODIFIER))
+			{
+				TypeModifier = HLSLTypeModifier(TypeModifier | GD_BIT(self->CurrentLexem.GetProcessedDataId() - GD_HLSL_KEYWORD_TYPE_MODIFIER_BEGIN__ - 1));
+				if (!self->ExpectNextLexem()) return nullptr;
+			}
+
 		// Here we have a variable, function or struct definition.
 		bool IsTypeDefinition = false;
 		UniquePtr<HLSLType const> Type(self->ParseType(HLSLDefinitionType(ExpectedDefinitions & GD_HLSL_DEFINITION_TYPE), &IsTypeDefinition));
 		UniquePtr<HLSLDefinition> Definition;
 		if (Type.GetPointer() == nullptr) return nullptr;
-		if (self->CurrentLexem.GetContentType() != GD_LEXEM_CONTENT_TYPE_IDENTIFGDR)
+		if (self->CurrentLexem.GetContentType() != GD_LEXEM_CONTENT_TYPE_IDENTIFIER)
 		{	// Was defined a structure so it is non required declare a instance.
 			if ((!IsTypeDefinition) || (!self->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_SEMICOLON)))
 			{	// Something strange happened..
@@ -515,6 +532,7 @@ GD_NAMESPACE_BEGIN
 			Definition.Reset(new HLSLDefinition());
 			Definition->Name = self->CurrentLexem.GetRawData();
 			Definition->Type = Type.Release();
+			Definition->TypeModifier = TypeModifier;
 		}
 
 		if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR)) return nullptr;
@@ -569,7 +587,7 @@ GD_NAMESPACE_BEGIN
 			// First variant is valid only if struct declaration is expected.
 			UniquePtr<HLSLStruct> Struct;
 			if (!self->ExpectNextLexem()) return nullptr;
-			if ( self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_IDENTIFGDR)
+			if ( self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_IDENTIFIER)
 			{	// We have named structure declaration C-style struct instance:
 				String const TypeName = self->CurrentLexem.GetRawData();
 				HLSLType const* const AlreadyDefinedType = self->ParseTypeName(true);
@@ -638,7 +656,7 @@ GD_NAMESPACE_BEGIN
 	HLSLType const* HLSLParserImpl::ParseTypeName(bool const DoIgnoreUndefinedType /* = false */)
 	{
 		HLSLType const* HLSLDefinitionType = nullptr;
-		if (!self->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFGDR)) return nullptr;
+		if (!self->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) return nullptr;
 		if (((HLSLDefinitionType = self->FindType(self->CurrentLexem.GetRawData())) == nullptr) && (!DoIgnoreUndefinedType))
 		{	// Type was not declared declared.
 			static HRIShaderCrossCompilerErrorDesc const TypeNotFoundError("type '%s' was not defined.");
@@ -797,7 +815,7 @@ GD_NAMESPACE_BEGIN
 	// Output lexer position: first lexem after constant buffer definition.
 	HLSLCBuffer const* HLSLParserImpl::ParseCBuffer()
 	{
-		if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFGDR  )) return nullptr;
+		if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER  )) return nullptr;
 		if (!self->ValidateIdentifier(self->CurrentLexem.GetRawData())) return nullptr;
 
 		UniquePtr<HLSLCBuffer> ConstantBuffer(new HLSLCBuffer());
@@ -847,7 +865,7 @@ GD_NAMESPACE_BEGIN
 				}
 
 				if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_PARAMS_BEGIN)) return nullptr;
-				if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFGDR                             )) return nullptr;
+				if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER                             )) return nullptr;
 				
 				static StackUnorderedMap<CharAnsi, HLSLRegisterType, 4> const RegistersTranslationTable = {
 					{ 'b', GD_HLSL_REGISTER_B },
@@ -889,7 +907,7 @@ GD_NAMESPACE_BEGIN
 				return nullptr;
 			}
 		}
-		else if (self->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFGDR))
+		else if (self->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER))
 		{	// Here comes semantic. 
 			/// @todo Rewrite semantic name and ID extraction after 'String' class refactoring
 			UniquePtr<HLSLSemantic> Semantic(new HLSLSemantic());

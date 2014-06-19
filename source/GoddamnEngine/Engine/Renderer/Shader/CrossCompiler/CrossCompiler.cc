@@ -28,12 +28,12 @@ GD_NAMESPACE_BEGIN
 	)
 	{	// Parsing shader source.
 		GD_DEBUG_ASSERT(ShaderSourceInputStream != nullptr, "Nullptr input stream specified");
-		UniquePtr<HLSLScope const> const ParsedData = HLSLParser(self->Toolchain).ParseShader(ShaderSourceInputStream);
+		UniquePtr<HLSLScope const> const ParsedData(HLSLParser(self->Toolchain).ParseShader(ShaderSourceInputStream));
 		if (ParsedData == nullptr)
 			return nullptr;
 
 		// Validating shader source.
-		RefPtr<HRIShaderInstanceDesc> ShaderInstanceDesc = HLSLValidator(self->Toolchain).ValidateAndGenerateDescription(ParsedData.GetPointer(), ShaderEntryPointName);
+		RefPtr<HRIShaderInstanceDesc> ShaderInstanceDesc(HLSLValidator(self->Toolchain).ValidateAndGenerateDescription(ParsedData.GetPointer(), ShaderEntryPointName));
 		if (ShaderInstanceDesc == nullptr)
 			return nullptr;
 
@@ -44,7 +44,7 @@ GD_NAMESPACE_BEGIN
 			case GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430:
 			case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2:
 			case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3:
-				if (!GLSLCompiler(self->Toolchain).GenerateAndCompileShader(ShaderByteCodeOutputStream, ParsedData.GetPointer(), ShaderTargetPlatform, ShaderType, ShaderEntryPointName))
+				if (!GLSLCompiler(self->Toolchain).GenerateAndCompileShader(ShaderByteCodeOutputStream, ParsedData.GetPointer(), ShaderType, ShaderEntryPointName, ShaderTargetPlatform))
 					return nullptr;
 				break;
 

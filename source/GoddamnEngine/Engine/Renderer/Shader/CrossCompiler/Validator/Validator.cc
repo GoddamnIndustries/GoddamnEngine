@@ -9,7 +9,7 @@
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Validator/Validator.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
-#include <GoddamnEngine/Core/Containers/Pointer/Pointer.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.hh>
 
 /// Define this to make validator throw warnings on stuff unrecommended to
 /// used in GoddamnEngine coding standarts.

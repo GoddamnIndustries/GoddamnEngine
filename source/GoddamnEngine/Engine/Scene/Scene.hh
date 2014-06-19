@@ -2,7 +2,7 @@
 #define GD_COMPONENTS_SCENE
 
 #include <GoddamnEngine/Include.hh>
-#include <GoddamnEngine/Core/Object/RefPtr/RefPtr.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/RefPtr.hh>
 #include <GoddamnEngine/Core/Object/Singleton/Singleton.hh>
 
 #include <GoddamnEngine/Engine/Component/Component.hh>

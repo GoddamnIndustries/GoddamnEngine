@@ -84,9 +84,10 @@ GD_NAMESPACE_BEGIN
 
 	enum HLSLTypeModifier : UInt8
 	{
-		GD_HLSL_TYPE_MODIFGDR_UNKNOWN = 0,
-		GD_HLSL_TYPE_MODIFGDR_STATIC,
-		GD_HLSL_TYPE_MODIFGDR_CONST,
+		GD_HLSL_TYPE_MODIFIER_UNKNOWN      = 0,
+		GD_HLSL_TYPE_MODIFIER_CONST        = GD_BIT(0),
+		GD_HLSL_TYPE_MODIFIER_ROW_MAJOR    = GD_BIT(1),
+		GD_HLSL_TYPE_MODIFIER_COLUMN_MAJOR = GD_BIT(2),
 	};	// enum HLSLTypeModifier
 
 	enum HLSLExprColonType : UInt8
@@ -169,7 +170,7 @@ GD_NAMESPACE_BEGIN
 	{
 		HLSLDefinitionType const  DefinitionType;
 		HLSLType           const* Type         = nullptr;
-		HLSLTypeModifier          TypeModifier = GD_HLSL_TYPE_MODIFGDR_UNKNOWN;
+		HLSLTypeModifier          TypeModifier = GD_HLSL_TYPE_MODIFIER_UNKNOWN;
 		String                    Name;
 		GDINL virtual ~HLSLDefinition() { }
 		GDINL explicit HLSLDefinition(                                  HLSLDefinitionType const DefinitionType = GD_HLSL_DEFINITION_UNKNOWN) : HLSLExpression(GD_HLSL_EXPRESSION_DEFINITION), DefinitionType(DefinitionType) { }

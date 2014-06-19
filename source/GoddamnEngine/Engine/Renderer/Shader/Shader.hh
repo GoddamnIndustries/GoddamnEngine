@@ -17,9 +17,9 @@
 #include <GoddamnEngine/Core/Math/Math.hh>
 #include <GoddamnEngine/Core/Format/Format.hh>
 #include <GoddamnEngine/Core/Object/Object.hh>
-#include <GoddamnEngine/Core/Object/RefPtr/RefPtr.hh>
 #include <GoddamnEngine/Core/Text/String/String.hh>
-#include <GoddamnEngine/Core/Containers/Pointer/Pointer.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/RefPtr.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.hh>
 
 // Define this to get OpenGL-style name aliases.
 #if (defined(GD_DOCUMENTATION) || ((!defined(GD_PLATFORM_XBOX_ONE)) || (!defined(GD_PLATFORM_WINPNONE8))))
@@ -72,13 +72,19 @@ GD_NAMESPACE_BEGIN
 		GD_HRI_SHADER_TYPE_DOMAIN,							///< Domain shader type.
 		GD_HRI_SHADER_TYPE_PIXEL,							///< Pixel shader type.
 		GD_HRI_SHADER_TYPE_UNKNOWN,							///< Unknown shader type (internal usage only).
+		GD_HRI_SHADER_TYPES_COUNT							= GD_HRI_SHADER_TYPE_UNKNOWN,
 #if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 		GD_HRI_SHADER_TYPE_TESSELLATION_CONTROL				= GD_HRI_SHADER_TYPE_HULL,	 ///< Alias to hull shader (for OpenGL).
 		GD_HRI_SHADER_TYPE_TESSELLATION_EVALUATION			= GD_HRI_SHADER_TYPE_DOMAIN, ///< Alias to domain shader (for OpenGL).
 		GD_HRI_SHADER_TYPE_FRAGMENT							= GD_HRI_SHADER_TYPE_PIXEL,	 ///< Alias to pixel shader (for OpenGL).
-		GD_HRI_SHADER_TYPES_COUNT							= GD_HRI_SHADER_TYPE_UNKNOWN,
 #endif	// if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 	};	// enum HRIShaderType
+
+	/// Translates HRIShaderType to string.
+	GDAPI extern Str HRIShaderTypeToStr(HRIShaderType const ShaderType);
+	
+	/// Translates string into HRIShaderType.
+	GDAPI extern HRIShaderType HRIShaderTypeFromString(String const& ShaderType);
 
 	/// Describes type of shader parameter
 	enum HRIShaderParamDescType : size_t

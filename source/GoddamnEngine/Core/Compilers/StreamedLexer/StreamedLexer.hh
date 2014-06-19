@@ -25,7 +25,7 @@ GD_NAMESPACE_BEGIN
 	/// Describes all supported lexem types.
 	enum LexemContentType : UInt8
 	{
-		GD_LEXEM_CONTENT_TYPE_IDENTIFGDR,			///< Lexem contains identifier data (string data type).
+		GD_LEXEM_CONTENT_TYPE_IDENTIFIER,			///< Lexem contains identifier data (string data type).
 		GD_LEXEM_CONTENT_TYPE_KEYWORD,			    ///< Lexem contains keyword data (string data type, has ID).
 		GD_LEXEM_CONTENT_TYPE_OPERATOR,				///< Lexem contains operator data (string data type, has ID).
 		GD_LEXEM_CONTENT_TYPE_COMMENT,				///< Lexem contains comment data (string data type).

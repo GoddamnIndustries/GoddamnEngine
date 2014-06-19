@@ -136,7 +136,7 @@
 #endif
 
 /// @todo Check CPU endianity here
-#define GD_BIT(Bit) (TypeTraits::RemoveAllModifiers<decltype(Bit)>::Type(1) << Bit)
+#define GD_BIT(Bit) (TypeTraits::RemoveAllModifiers<decltype((Bit))>::Type(1) << (Bit))
 
 #if defined(__cplusplus)
 #	define GD_PLATFORM_HAS_MOVE_SUPPORT		(true)

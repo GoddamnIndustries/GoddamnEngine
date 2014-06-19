@@ -11,7 +11,6 @@
 
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/Events/Event.hh>
-#include <GoddamnEngine/Core/Object/RefPtr/RefPtr.hh>
 #include <GoddamnEngine/Engine/Renderer/Renderer.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/Shader.hh>
 

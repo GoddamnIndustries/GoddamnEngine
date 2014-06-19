@@ -15,7 +15,7 @@
 
 #include <GoddamnEngine/Core/Math/Math.hh>
 #include <GoddamnEngine/Core/Format/Format.hh>
-#include <GoddamnEngine/Core/Object/RefPtr/RefPtr.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/RefPtr.hh>
 #include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.hh>
 
 #include <GoddamnEngine/Engine/Plugin/Plugin.hh>
