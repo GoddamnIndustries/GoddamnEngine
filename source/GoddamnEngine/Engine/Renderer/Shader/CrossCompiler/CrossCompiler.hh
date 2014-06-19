@@ -21,6 +21,9 @@
 
 GD_NAMESPACE_BEGIN
 
+	class InputStream;
+	class OutputStream;
+
 	/// Contains codes of exceptions that streamed lexer throws.
 	enum HRIShaderCrossCompilerExceptionCodes : ToolchainException
 	{
@@ -28,14 +31,18 @@ GD_NAMESPACE_BEGIN
 		GD_HRI_SHADERCC_EXCEPTION_SYNTAX = +GD_HRI_SHADERCC_EXCEPTION_MODULE + 1L,  ///< Syntax error.
 	};	// enum StreamedLexerExceptionCodes
 
-	/// Describes list of supported profiles that HRIShader Cross-Compiler may generate code for.
-	enum HRIShaderCrossCompilerProfile : UInt8
+	/// Describes list of shader generation-compilation targets.
+	enum HRIShaderCrossCompilerTarget : UInt8
 	{
-		GD_HRI_SHADERCC_PROFILE_NONE,  ///< Shader Cross-Compiler does not translates but just generates meta-data.
-		GD_HRI_SHADERCC_PROFILE_GLSL,  ///< Shader would be translated into OpenGL Shading language (version 4.10).
-		GD_HRI_SHADERCC_PROFILE_PSSL,  ///< Shader would be translated into PlayStation4 Shading language.
-		GD_HRI_SHADERCC_PROFILE_METAL, ///< Shader would be translated into Apple Metal Shading language.
-	};	// enum HRIShaderCrossCompilerProfile
+		GD_HRI_SHADERCC_COMPILER_TARGET_HLSL,		///< HLSL Shading language (Microsoft-specific plaftorms).
+		GD_HRI_SHADERCC_COMPILER_TARGET_PLSL,		///< PLSL Shading language (PlayStation4).
+		GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430,	///< GLSL Shading language, version 4.3 (OpenGL desktop).
+		GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3,	///< GLSL(ES) 3.0 Shading language (OpenGL embedded, with constant buffers).
+		GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2,	///< GLSL(ES) 2.0 Shading language (OpenGL embedded, without constant buffers).
+		GD_HRI_SHADERCC_COMPILER_TARGET_METAL,		///< Metal Shading language (Apple plaforms).
+		GD_HRI_SHADERCC_COMPILER_TARGET_UNKNOWN,    ///< Unknown shading language (internal usage only). 
+		GD_HRI_SHADERCC_COMPILER_TARGETS_COUNT = GD_HRI_SHADERCC_COMPILER_TARGET_UNKNOWN,
+	};	// enum HRIShaderCrossCompilerTarget
 
 	class HRIShaderCrossCompilerMetaData;
 
@@ -60,32 +67,19 @@ GD_NAMESPACE_BEGIN
 		GDINL  HRIShaderCrossCompiler(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
 		GDINL ~HRIShaderCrossCompiler(                           ) { }
 
-		/// Parses shader infrastructure.
-		/// @param ShaderSourceInputStream		Input stream that contains shader source.
-		/// @param OutputShaderDescription		Pointer to output HLSL shader infrastructure.
-		/// @param Type							Specifies type of HLSL shader.
-		/// @param EntryPointName				Specifies name of that entry point inside HLSL shader.
-		/// @returns True if operation succeded.
-		GDAPI bool ParseShader(
-			Stream*                const  ShaderSourceInputStream, 
-			HRIShaderInstanceDesc      *& OutputShaderDescription,
-			String                 const& EntryPointName
-		);
-
-		/// Translates HLSL shader into other language.
-		/// @param ShaderSourceInputStream		Input stream that contains shader source.
-		/// @param ShaderTranslatedOutputStream Output stream to write generated code to. May be nullptr if Profile is none.
-		/// @param OutputShaderDescription		Pointer to output HLSL shader infrastructure.
-		/// @param ShaderTargetProfile			Specifies target shader language.
-		/// @param Type							Specifies type of HLSL shader.
-		/// @param EntryPointName				Specifies name of that entry point inside HLSL shader.
-		/// @returns True if operation succeded.
-		GDAPI bool TranslateShader(
-			Stream*                       const  ShaderSourceInputStream, 
-			Stream*                       const  ShaderTranslatedOutputStream,
-			HRIShaderInstanceDesc*        const  OutputShaderDescription,
-			HRIShaderCrossCompilerProfile const  ShaderTargetProfile,
-			String                        const& EntryPointName
+		/// Compiles HLSL shader into some specific platform implementation bytecode.
+		/// @param ShaderSourceInputStream    Input stream that contains shader source code.
+		/// @param ShaderByteCodeOutputStream Output stream that would contain shader compiled bytecode. If specified as null then no code is generated/compiled.
+		/// @param ShaderType                 Type of shader. Vertex, pixel, etc.
+		/// @param ShaderTargetPlatform       Target platfrom for which shader would be generated.
+		/// @param ShaderEntryPointName       Name of shader entry point.
+		/// @returns Shader instance decription, genereated using provided data on success, or nullptr on fail.
+		GDAPI HRIShaderInstanceDesc* CrossCompileShader(
+			InputStream                * const  ShaderSourceInputStream, 
+			OutputStream               * const  ShaderByteCodeOutputStream,
+			HRIShaderType                const  ShaderType,
+			HRIShaderCrossCompilerTarget const  ShaderTargetPlatform,
+			String                       const& ShaderEntryPointName
 		);
 	};	// class HRIShaderCrossCompiler
 

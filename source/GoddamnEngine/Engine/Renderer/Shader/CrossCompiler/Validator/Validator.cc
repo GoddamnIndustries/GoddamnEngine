@@ -272,7 +272,7 @@ GD_NAMESPACE_BEGIN
 		return true;
 	}
 
-	bool HLSLValidator::ValidateEntryPoint(HLSLScope const* const ParsedData, String const& EntryPointName, HRIShader* const Shader, RefPtr<HRIShaderInstanceDesc>& ShaderInstanceDesc)
+	bool HLSLValidator::ValidateEntryPoint(HLSLScope const* const ParsedData, String const& EntryPointName, RefPtr<HRIShaderInstanceDesc>& ShaderInstanceDesc)
 	{
 		HLSLFunction const* const EntryPoint = ParsedData->FindFunction(EntryPointName);
 		if (EntryPoint == nullptr)
@@ -372,7 +372,7 @@ GD_NAMESPACE_BEGIN
 					return false;
 		}
 
-		ShaderInstanceDesc = new HRIShaderInstanceDesc(Shader, ShaderInputSemantics, ShaderOutputSemantics);
+		ShaderInstanceDesc = new HRIShaderInstanceDesc(ShaderInputSemantics, ShaderOutputSemantics);
 		return true;
 	}
 
@@ -403,14 +403,16 @@ GD_NAMESPACE_BEGIN
 		return true;
 	}
 
-	HRIShaderInstanceDesc* HLSLValidator::ValidateAndGenerateDescription(HRIShader* const Shader, HLSLScope const* const ParsedData, String const& EntryPointName)
+	HRIShaderInstanceDesc* HLSLValidator::ValidateAndGenerateDescription(HLSLScope const* const ParsedData, String const& EntryPointName)
 	{
 		RefPtr<HRIShaderInstanceDesc> ShaderInstanceDesc(nullptr);
-		/**/ if (!self->ValidateEntryPoint(ParsedData, EntryPointName, Shader, ShaderInstanceDesc))
+		if (!self->ValidateEntryPoint(ParsedData, EntryPointName, ShaderInstanceDesc))
 			return nullptr;
-		else if (!self->ValidateConstantBuffersParameters(ParsedData, ShaderInstanceDesc.GetPointer()))
+
+		if (!self->ValidateConstantBuffersParameters(ParsedData, ShaderInstanceDesc.GetPointer()))
 			return nullptr;
-		else if (!self->ValidateResourceParameters(ParsedData, ShaderInstanceDesc.GetPointer()))
+
+		if (!self->ValidateResourceParameters(ParsedData, ShaderInstanceDesc.GetPointer()))
 			return nullptr;
 
 		return ShaderInstanceDesc.Release();

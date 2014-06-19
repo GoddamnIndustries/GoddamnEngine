@@ -26,7 +26,7 @@ extern "C"
 #	pragma warning(pop)
 #endif	// if (defined(_MSC_VER))
 
-#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Compiler/GLSL/GLSLCompiler.hh>
+#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Impl/GLSL/GLSLCompiler.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
 

@@ -6,7 +6,7 @@
 ///		* 13.06.2014 - Created by James Jhuighuy.
 //////////////////////////////////////////////////////////////////////////
 
-#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Compiler/HLSL/HLSLCompiler.hh>
+#include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Impl/HLSL/HLSLCompiler.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
 
@@ -21,6 +21,7 @@ GD_NAMESPACE_BEGIN
 
 #define GD_D3D_LINKED
 
+#if (!defined(GD_D3D_LINKED))
 	static pD3DCompile D3DCompile;
 	struct pD3DCompileLoader final 
 	{
@@ -33,6 +34,7 @@ GD_NAMESPACE_BEGIN
 			GD_ASSERT(D3DCompile != nullptr, "Failed to load 'D3DCompile' function from '"D3DCOMPILER_DLL"' assembly.");
 		}
 	} static const D3DCompileLoader;
+#endif	// if (!defined(GD_D3D_LINKED))
 
 	class HLSLGenerator final : public IToolchainTool
 	{

@@ -35,12 +35,12 @@ GD_NAMESPACE_BEGIN
 		/// @param ParsedData Parsed data of specifed shader.
 		/// @param EntryName  Name of entry point function
 		/// @returns Generated decription from parsed shader data or nullptr if error occures.
-		GDAPI HRIShaderInstanceDesc* ValidateAndGenerateDescription(HRIShader* const Shader, HLSLScope const* const ParsedData, String const& EntryName);
+		GDAPI HRIShaderInstanceDesc* ValidateAndGenerateDescription(HLSLScope const* const ParsedData, String const& EntryName);
 
 	private:
 		GDINT bool ValidateResourceParameters(HLSLScope const* const ParsedData, HRIShaderInstanceDesc* const ShaderInstanceDesc);
 		GDINT bool ValidateConstantBuffersParameters(HLSLScope const* const ParsedData, HRIShaderInstanceDesc* const ShaderInstanceDesc);
-		GDINT bool ValidateEntryPoint(HLSLScope const* const ParsedData, String const& EntryName, HRIShader* const Shader, RefPtr<HRIShaderInstanceDesc>& ShaderInstanceDesc);
+		GDINT bool ValidateEntryPoint(HLSLScope const* const ParsedData, String const& EntryName, RefPtr<HRIShaderInstanceDesc>& ShaderInstanceDesc);
 		GDINT bool ValidateEntryPointArgumentExprColon(HLSLExprColon const* const ExprColon, UInt64& ShaderSemanticsList);
 	};	// class HRIShaderInstanceDescGenerator
 

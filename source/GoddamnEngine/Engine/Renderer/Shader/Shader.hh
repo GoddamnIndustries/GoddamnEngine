@@ -330,7 +330,7 @@ GD_NAMESPACE_BEGIN
 		UInt64 const InstanceOutputFormat; ///< Semantic list that describes output list of primitives of shader.
 
 		GDINL virtual ~HRIShaderInstanceDesc() { }
-		GDINL          HRIShaderInstanceDesc(HRIShader* const InstanceShader, UInt64 const InstanceInputFormat, UInt64 const InstanceOutputFormat);
+		GDINL          HRIShaderInstanceDesc(UInt64 const InstanceInputFormat, UInt64 const InstanceOutputFormat);
 	
 		/// Returns shader that this description is contained with
 		GDINL HRIShader const* GetInstanceShader() const;

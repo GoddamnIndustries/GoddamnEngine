@@ -29,15 +29,17 @@ GD_NAMESPACE_BEGIN
 		GD_MXML_FOREACH_CHILD(shaderDescNode, shaderProgramDescNode)
 		{
 			BinaryResource* const ShaderResource = ResourceStreamer::GetInstance().LoadImmediately<BinaryResource>(mxmlElementGetAttr(shaderDescNode, "Id"));
-			StringInputStream    ShaderInputStream((char*) &ShaderResource->BinaryData[0]);
+			StringInputStream ShaderInputStream((char*) &ShaderResource->BinaryData[0]);
+			StringBuilder ShaderOutput;
+			StringOutputStream ShaderOutputStream(ShaderOutput);
 
 			IToolchain Toolchain;
 			HRIShaderInstanceDesc* ShaderInstanceDesc = nullptr;
-			HRIShaderCrossCompiler(&Toolchain).ParseShader(&ShaderInputStream, ShaderInstanceDesc, "Main");
+			ShaderInstanceDesc = HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(&ShaderInputStream, &ShaderOutputStream, GD_HRI_SHADER_TYPE_VERTEX, GD_HRI_SHADERCC_COMPILER_TARGET_HLSL, "Main");
 			HRIShaderCtorInfo const CtorInfo(
 				self->Program,
-				&ShaderResource->BinaryData[0],
-				ShaderResource->BinaryData.GetSize(),
+				ShaderOutput.GetPointer(),
+				ShaderOutput.GetSize(),
 				ShaderInstanceDesc
 			);
 

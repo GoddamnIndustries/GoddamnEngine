@@ -174,12 +174,8 @@ GD_NAMESPACE_BEGIN
 	/// HRIShaderInstanceDesc
 	//////////////////////////////////////////////////////////////////////////
 
-	GDINL HRIShaderInstanceDesc::HRIShaderInstanceDesc(
-		HRIShader* const InstanceShader,
-		UInt64     const InstanceInputFormat,
-		UInt64     const InstanceOutputFormat) 
-		: HRIObject(HRIObject::TreeLockingFlagsAll, InstanceShader)
-		, InstanceInputFormat (InstanceInputFormat )
+	GDINL HRIShaderInstanceDesc::HRIShaderInstanceDesc(UInt64 const InstanceInputFormat, UInt64 const InstanceOutputFormat) 
+		: InstanceInputFormat (InstanceInputFormat )
 		, InstanceOutputFormat(InstanceOutputFormat)
 	{
 		// GD_DEBUG_ASSERT((self->GetInstanceShader() != nullptr), "Invalid instance shader specified");

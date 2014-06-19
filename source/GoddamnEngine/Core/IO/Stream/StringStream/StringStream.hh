@@ -106,15 +106,15 @@ GD_NAMESPACE_BEGIN
 	class BaseStringOutputStream final : public OutputStream
 	{
 	private /* Class members. */:
-		BaseStringBuilder<CharacterType>* const Builder = nullptr;
+		BaseStringBuilder<CharacterType>* Builder = nullptr;
 
 	public /* Constructor / Destructor */:
 		GDINL explicit BaseStringOutputStream(BaseStringBuilder<CharacterType>& Builder) : Builder(&Builder) { }
 		GDINL virtual ~BaseStringOutputStream(                                         )                     { self->Dispose(); }
 
 	public /* Class implemented API */:
-		GDINL virtual size_t GetLength  () const final { return self->Builder.GetSize(); }
-		GDINL virtual size_t GetPosition() const final { return self->Builder.GetSize(); }
+		GDINL virtual size_t GetLength  () const final { return self->Builder->GetSize(); }
+		GDINL virtual size_t GetPosition() const final { return self->Builder->GetSize(); }
 
 		GDINL virtual void Flush  () final { }
 		GDINL virtual void Dispose() final { self->Builder = nullptr; }
