@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##########################################################################
+# GoddamnTemplateLibrary.natvis Visual Studio native visualizer helper.
+# Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+#
+# History:
+#	* 12.06.2014
+##########################################################################
+-->
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+	<!-- String class -->
+	<Type Name="gd::String">
+		<DisplayString>{HeapMemory, s}</DisplayString>
+		<!--<DisplayString Condition="IsOnHeap">{HeapMemory, s}</DisplayString>-->
+		<!--<DisplayString Condition="IsOnHeap == false">{&amp;StackMemory[0], s}</DisplayString>-->
+		<StringView>HeapMemory, s</StringView> 
+		<!--<StringView Condition="IsOnHeap">HeapMemory, s</StringView>-->
+		<!--<StringView Condition="IsOnHeap == false">StackMemory, s</StringView>-->
+		<Expand>
+			<Item Name="Length">HeapSize</Item>
+			<!--<Item Condition="IsOnHeap" Name="Length">HeapSize</Item>-->
+			<!--<Item Condition="IsOnHeap == false" Name="Length">StackSize</Item>-->
+      <Item Name="Capacity">HeapCapacity</Item>
+      <!--<Item Condition="IsOnHeap" Name="Capacity">HeapCapacity</Item>-->
+			<!--<Item Condition="IsOnHeap == false" Name="Capacity">StackCapacity</Item> -->
+			<ArrayItems>
+        <Size>HeapSize</Size>
+        <!--<Size Condition="IsOnHeap">HeapSize</Size>-->
+				<!--<Size Condition="IsOnHeap == false">StackSize</Size> -->
+        <ValuePointer>HeapMemory</ValuePointer>
+        <!--<ValuePointer Condition="IsOnHeap">HeapMemory</ValuePointer>-->
+				<!-- <ValuePointer Condition="IsOnHeap == false">&amp;StackMemory[0]</ValuePointer> -->
+			</ArrayItems>
+		</Expand>
+	</Type>
+	
+	<!-- Vector class -->
+	<Type Name="gd::Vector&lt;*&gt;">
+		<DisplayString>{{ Count = {Count} }}</DisplayString>
+		<Expand>
+			<Item Name="Size">Count</Item>
+			<Item Name="Capacity">MemoryProviderInstance.Capacity</Item>
+			<ArrayItems>
+				<Size>Count</Size>
+				<ValuePointer>MemoryProviderInstance.Memory</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+</AutoVisualizer>
