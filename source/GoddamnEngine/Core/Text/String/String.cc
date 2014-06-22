@@ -84,18 +84,18 @@ GD_NAMESPACE_BEGIN
 	// BASE-64 encoding and decoding
 	//////////////////////////////////////////////////////////////////////////
 
-	//void String::EncodeBase64(const Vector<byte>& data, String& output)
+	//void String::EncodeBase64(const Vector<UInt8>& data, String& output)
 	//{
-	//	/*const auto IsBase64Character = [](byte b) { return (isalnum(b) || (b == '+') || (b == '/')); };
+	//	/*const auto IsBase64Character = [](UInt8 b) { return (isalnum(b) || (b == '+') || (b == '/')); };
 	//	const String base64Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 	//	size_t i = 0;
 	//	size_t j = 0;
-	//	byte char3[3] = { '\0' };
-	//	byte char4[4] = { '\0' };
+	//	UInt8 char3[3] = { '\0' };
+	//	UInt8 char4[4] = { '\0' };
 
 	//	output.Resize(0);
-	//	const byte* dataPointer = &data[0];
+	//	const UInt8* dataPointer = &data[0];
 	//	for (GDInt64 cnt = (GDInt64)data.GetSize(); cnt >= 0; cnt -= 1)
 	//	{
 	//	char3[i++] = *(dataPointer++);
@@ -139,7 +139,7 @@ GD_NAMESPACE_BEGIN
 	//	}*/
 	//}
 
-	//void String::DecodeBase64(Vector<byte>& output, const String& base64)
+	//void String::DecodeBase64(Vector<UInt8>& output, const String& base64)
 	//{
 	//}
 

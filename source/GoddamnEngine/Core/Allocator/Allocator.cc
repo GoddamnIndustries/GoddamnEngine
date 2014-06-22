@@ -45,8 +45,8 @@ GD_NAMESPACE_BEGIN
 #if 0	// Code left here just for history purposes.
 	void Allocator::ShiftRight(handle _memory, const size_t memorySize, const size_t from, const size_t to, const size_t offset)
 	{
-		byte* memory = (byte*)_memory;
-		byte* result = (byte*)Allocator::Allocate(memorySize);
+		UInt8* memory = (UInt8*)_memory;
+		UInt8* result = (UInt8*)Allocator::Allocate(memorySize);
 
 		// Copying front non-shifted data
 		memcpy(result, memory, from);	
@@ -69,8 +69,8 @@ GD_NAMESPACE_BEGIN
 
 	void Allocator::ShiftLeft(handle _memory, const size_t memorySize, const size_t from, const size_t to, const size_t offset)
 	{
-		byte* memory = (byte*)_memory;
-		byte* result = (byte*)Allocator::Allocate(memorySize);
+		UInt8* memory = (UInt8*)_memory;
+		UInt8* result = (UInt8*)Allocator::Allocate(memorySize);
 
 		// Copying front non-shifted data
 		memcpy(result, memory, from - offset);	

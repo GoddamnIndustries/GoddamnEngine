@@ -16,7 +16,7 @@
 GD_NAMESPACE_BEGIN
 
 	/// @brief			Flags for thread creation
-	enum class ThreadFlags : byte
+	enum class ThreadFlags : UInt8
 	{
 		None			= 0,
 		UsingRenderer	= 1 << 0,		///< Thread uses renderer. So it creates shared context, etc

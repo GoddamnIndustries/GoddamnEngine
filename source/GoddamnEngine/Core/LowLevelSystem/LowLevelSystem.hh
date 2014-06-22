@@ -14,7 +14,7 @@ GD_NAMESPACE_BEGIN
 	//////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////
 	/// Enumeration describing keyboard keys
-	enum class KeyCode : byte
+	enum class KeyCode : UInt8
 	{
 		Backspace = 0x08,
 		Tab = 0x09,
@@ -176,7 +176,7 @@ GD_NAMESPACE_BEGIN
 
 	//////////////////////////////////////////////////////////////////////////
 	/// Enumeration describing buttons on mouse 
-	enum class MouseButton : byte
+	enum class MouseButton : UInt8
 	{
 		Left,
 		Right,
@@ -187,7 +187,7 @@ GD_NAMESPACE_BEGIN
 	//////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////
 	/// Enumeration describing how button is been pressed
-	enum class KeyState : byte
+	enum class KeyState : UInt8
 	{
 		None,		///< Key is not pressed
 		Down,		///< Key has been pressed and being holden

@@ -130,12 +130,12 @@ GD_NAMESPACE_BEGIN
 		/// @brief				Encodes HeapMemory in BASE-64
 		/// @param data			Data to encode
 		/// @param output		Reference to resulting HeapMemory
-		GDAPI static void EncodeBase64(const Vector<byte>& data, String& output);
+		GDAPI static void EncodeBase64(const Vector<UInt8>& data, String& output);
 
 		/// @brief				Decodes HeapMemory in BASE-64
 		/// @param base64		Encoded HeapMemory
 		/// @param output		Reference to resulting data vector
-		GDAPI static void DecodeBase64(Vector<byte>& output, const String& base64);
+		GDAPI static void DecodeBase64(Vector<UInt8>& output, const String& base64);
 
 		/// @}
 

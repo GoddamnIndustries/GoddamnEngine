@@ -105,6 +105,9 @@ GD_NAMESPACE_BEGIN
 		/// Asynchronously copies content of this stream into specified one.
 		/// @returns Task that represents copying operation.
 		GDAPI         Task<void>&&   CopyToAsync(Stream* OtherStream);
+
+		/// Returns true if stream ended.
+		GDINL              bool     IsEndOfStream() const { return (self->GetLength() == self->GetPosition()); }
 	};	// class Stream
 
 	/// Specifies stream with read-only support.
