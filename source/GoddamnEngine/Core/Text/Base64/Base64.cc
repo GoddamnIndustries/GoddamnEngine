@@ -14,15 +14,14 @@
 GD_NAMESPACE_BEGIN
 
 	static String const Base64Chars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
-
-	GDINL static bool IsBase64Character(unsigned char c) 
+	GDINL static bool IsBase64Char(unsigned char c) 
 	{
 		return (std::isalnum(c) || (c == '+') || (c == '/'));
 	}
 
 	extern void Base64::Encode(InputStream* const Input, OutputStream* const Output)
 	{
-		int I = 0, J = 0;
+		size_t I = 0;
 		UInt8 CharArray3[3], CharArray4[4];
 
 		while (!Input->IsEndOfStream())
@@ -44,7 +43,7 @@ GD_NAMESPACE_BEGIN
 
 		if (I != 0)
 		{
-			for (J = I; J < 3; J++)
+			for (size_t J = I; J < 3; J++)
 				CharArray3[J] = '\0';
 
 			CharArray4[0] =  (CharArray3[0] & 0xFC) >> 2;
@@ -52,7 +51,7 @@ GD_NAMESPACE_BEGIN
 			CharArray4[2] = ((CharArray3[1] & 0x0F) << 2) + ((CharArray3[2] & 0xC0) >> 6);
 			CharArray4[3] =   CharArray3[2] & 0x3F;
 
-			for (J = 0; (J < I + 1); J++)
+			for (size_t J = 0; (J < I + 1); J++)
 				Output->Write(Base64Chars[CharArray4[J]]);
 
 			while ((I++ < 3))
@@ -62,13 +61,13 @@ GD_NAMESPACE_BEGIN
 
 	extern void Base64::Decode(InputStream* const Input, OutputStream* const Output)
 	{
-		int I = 0, J = 0;
+		size_t I = 0;
 		UInt8 CharArray4[4], CharArray3[3];
 
 		while (!Input->IsEndOfStream())
 		{
 			CharArray4[I++] = Input->Read<UInt8>(); 
-			if ((CharArray4[I] == '=') || (!IsBase64Character(CharArray4[I])))
+			if ((CharArray4[I] == '=') || (!IsBase64Char(CharArray4[I])))
 				break;
 
 			if (I == 4)
@@ -89,17 +88,17 @@ GD_NAMESPACE_BEGIN
 
 		if (I != 0) 
 		{
-			for (J = I; J < 4; J++)
+			for (size_t J = I; J < 4; J++)
 				CharArray4[J] = 0;
 
-			for (J = 0; J < 4; J++)
+			for (size_t J = 0; J < 4; J++)
 				CharArray4[J] = Base64Chars[Base64Chars.Find(CharArray4[J])];
 
 			CharArray3[0] = ((CharArray4[1] & 0x30) >> 4) +  (CharArray4[0] << 2);
 			CharArray3[1] = ((CharArray4[1] & 0x0f) << 4) + ((CharArray4[2] & 0x3C) >> 2);
 			CharArray3[2] = ((CharArray4[2] & 0x03) << 6) +   CharArray4[3];
 
-			for (J = 0; (J < I - 1); J++) 
+			for (size_t J = 0; (J < I - 1); J++)
 				Output->Write(CharArray3[J]);
 		}
 	}
