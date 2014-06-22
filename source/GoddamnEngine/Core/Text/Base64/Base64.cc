@@ -7,7 +7,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include <GoddamnEngine/Core/Text/Base64/Base64.hh>
-#include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.hh>
 #include <GoddamnEngine/Core/IO/Stream/Stream.hh>
 #include <cctype>
 
