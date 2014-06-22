@@ -14,9 +14,9 @@
 GD_NAMESPACE_BEGIN
 
 	static String const Base64Chars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
-	GDINL static bool IsBase64Char(unsigned char c) 
+	GDINL static bool IsBase64Char(char const Char) 
 	{
-		return (std::isalnum(c) || (c == '+') || (c == '/'));
+		return (std::isalnum(Char) || (Char == '+') || (Char == '/'));
 	}
 
 	extern void Base64::Encode(InputStream* const Input, OutputStream* const Output)
