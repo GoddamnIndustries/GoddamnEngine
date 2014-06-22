@@ -39,6 +39,14 @@ namespace GoddamnEngine.BuildSystem
                     }
                 }
 
+                if (File.Exists(Path.Combine(CurrentSourceFilesDirectory, ".gdexclude")))
+                {   // This directory is excluded from build.
+                    string ExcludeMarkAbsoluteFilePath = Path.Combine(CurrentSourceFilesDirectory, ".gdexclude");
+                    TheProject._SourceFiles.Add(new SourceFile(SourceFileType.SupportFile, ExcludeMarkAbsoluteFilePath, FolderRelativePath));
+                    TheProject._Checksumm += ExcludeMarkAbsoluteFilePath.GetHashCode();
+                    return;
+                }
+
                 foreach (var SourceAbsoluteFilePath in Directory.EnumerateFiles(CurrentSourceFilesDirectory))
                 {
                     string SourceFileName = Path.GetFileNameWithoutExtension(SourceAbsoluteFilePath);
@@ -119,10 +127,6 @@ namespace GoddamnEngine.BuildSystem
                     /**/ if (File.Exists(Path.Combine(CurrentSubdirectory, ".gdproj.cs")) && (!Target.IsMonolithicBuild()))
                     {   // This directory contains separate project.
                         ProcessProjectDirectory(CurrentSourceFilesDirectory);
-                        continue;
-                    }
-                    else if (File.Exists(Path.Combine(CurrentSubdirectory, ".gdexclude")))
-                    {   // This directory is excluded from build.
                         continue;
                     }
 
