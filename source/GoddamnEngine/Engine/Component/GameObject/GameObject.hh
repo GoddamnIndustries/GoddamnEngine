@@ -16,7 +16,7 @@ GD_NAMESPACE_BEGIN
 		friend class Application;
 		friend class Scene;
 
-		typedef byte GameObjectState;
+		typedef UInt8 GameObjectState;
 
 	private:
 		GD_SERIALIZABLE_DEFINITION(GameObject, Component, GDAPI);

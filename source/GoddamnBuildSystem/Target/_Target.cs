@@ -162,7 +162,7 @@ namespace GoddamnEngine.BuildSystem
                 case TargetPlatform.Windows: return "Win64";
                 case TargetPlatform.OSX: return "OSX";
                 case TargetPlatform.Linux: return "Linux";
-                case TargetPlatform.WindowsPhone: return "WP";
+                case TargetPlatform.WindowsPhone: return "WP8";
                 case TargetPlatform.iOS: return "iOS";
                 case TargetPlatform.Android: return "Android";
                 case TargetPlatform.HTML5: return "js";

@@ -26,10 +26,9 @@
 #		define  GD_ASSERT(Expression, Message, ...) \
 			do { \
 				if (!(Expression)) \
-					if (Assert( __FILE__ , __FUNCTION__, __LINE__ , #Expression, Message)) _CrtDbgBreak(); \
+					if (Assert(__FILE__ , __FUNCTION__, __LINE__ , #Expression, Message)) _CrtDbgBreak(); \
 			} while (false)
-
-#	else	// We do not need to store debug information in release executables
+#	else	// if (defined(GD_DEBUG))	// We do not need to store debug information in release executables
 #		define  GD_ASSERT(Expression, Message, ...) \
 			do { \
 				if (!(Expression)) \

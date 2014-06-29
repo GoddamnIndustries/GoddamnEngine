@@ -13,7 +13,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	enum class StaticComponentPriority : byte
+	enum class StaticComponentPriority : UInt8
 	{
 		Highest,
 		High,

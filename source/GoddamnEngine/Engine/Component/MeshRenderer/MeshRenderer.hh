@@ -4,8 +4,8 @@
 #include <GoddamnEngine/Include.hh>
 
 #include <GoddamnEngine/Engine/Resource/Resource.hh>
-#include <GoddamnEngine/Engine/Resource/StaticMesh/StaticMesh.hh>
-#include <GoddamnEngine/Engine/Resource/Material/Material.hh>
+#include <GoddamnEngine/Engine/Resource/Impl/StaticMesh/StaticMesh.hh>
+#include <GoddamnEngine/Engine/Resource/Impl/Material/Material.hh>
 
 #include <GoddamnEngine/Engine/Component/Component.hh>
 #include <GoddamnEngine/Engine/Component/Camera/Camera.hh>

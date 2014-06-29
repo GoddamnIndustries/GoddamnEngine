@@ -60,7 +60,7 @@ GD_NAMESPACE_BEGIN
 		inline BaseStringBuilder& Append(CharType const(&Array)[Count]);
 		
 		/// Converts this builder to normal string.
-		GDINL String&& ToString() const;
+		GDINL String ToString() const;
 
 		GDINL BaseStringBuilder& operator= (BaseStringBuilder&& Other) 
 		{ 

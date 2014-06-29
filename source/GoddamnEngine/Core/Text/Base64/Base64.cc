@@ -53,7 +53,7 @@ GD_NAMESPACE_BEGIN
 			for (size_t J = 0; (J < I + 1); J++)
 				Output->Write(Base64Chars[CharArray4[J]]);
 
-			while ((I++ < 3))
+			while (I++ < 3)
 				Output->Write('=');
 		}
 	}
@@ -87,11 +87,8 @@ GD_NAMESPACE_BEGIN
 
 		if (I != 0) 
 		{
-			for (size_t J = I; J < 4; J++)
-				CharArray4[J] = 0;
-
-			for (size_t J = 0; J < 4; J++)
-				CharArray4[J] = Base64Chars[Base64Chars.Find(CharArray4[J])];
+			for (size_t J = I; J < 4; J++) CharArray4[J] = 0;
+			for (size_t J = 0; J < 4; J++) CharArray4[J] = Base64Chars[Base64Chars.Find(CharArray4[J])];
 
 			CharArray3[0] = ((CharArray4[1] & 0x30) >> 4) +  (CharArray4[0] << 2);
 			CharArray3[1] = ((CharArray4[1] & 0x0f) << 4) + ((CharArray4[2] & 0x3C) >> 2);

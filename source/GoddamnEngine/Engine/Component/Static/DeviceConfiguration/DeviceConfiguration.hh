@@ -6,7 +6,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	enum class CpuArchitecture : byte
+	enum class CpuArchitecture : UInt8
 	{
 		Intel,		///< Intel x86 arch
 		Amd64,		///< AMD64 arch

@@ -3,7 +3,6 @@
 #include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.hh>
 
 #if (defined(GD_USE_CUSTOM_ASSERTS) && (defined(GD_PLATFORM_WINDOWS) || defined(GD_PLATFORM_XBOX_ONE))) 
-#	define WIN32_LEAN_AND_MEAN
 #	include <Windows.h>
 
 GD_NAMESPACE_BEGIN

@@ -1,8 +1,8 @@
 
 GD_NAMESPACE_BEGIN
 
-	GDINL ResourceStreamer::ResourceStreamer() :
-		resourceStreamerMode(ResourceStreamerMode::NotLaunched)
+	GDINL ResourceStreamer::ResourceStreamer() 
+		: resourceStreamerMode(ResourceStreamerMode::NotLaunched)
 	{
 	}
 
@@ -10,24 +10,18 @@ GD_NAMESPACE_BEGIN
 	{
 	}
 
-	template<class ResourceType>
-	GDINL ResourceType* ResourceStreamer::LoadImmediately(String const& identifier)
+	template<typename ResourceType>
+	GDINL ResourceType* ResourceStreamer::LoadImmediately(String const& ID)
 	{
-		static_assert((TypeTraits::IsBaseType<Resource, ResourceType>::Value),
-			"Type 'ResourceType' should be derived from 'Resource'");
-
-		return ((ResourceType*)ResourceStreamer::GetInstance().LoadImmediately(identifier, 
-			ResourceType::GetClassTypeInformation()));
+		static_assert((TypeTraits::IsBaseType<Resource, ResourceType>::Value), "Type 'ResourceType' should be derived from 'Resource'");
+		return (object_cast<ResourceType*>(ResourceStreamer::GetInstance().LoadImmediately(ID, ResourceType::GetClassTypeInformation())));
 	}
 
-	template<class ResourceType>
-	GDINL ResourceType* ResourceStreamer::ProcessStreaming(String const& identifier)
+	template<typename ResourceType>
+	GDINL ResourceType* ResourceStreamer::ProcessStreaming(String const& ID)
 	{
-		static_assert((TypeTraits::IsBaseType<Resource, ResourceType>::Value),
-			"Type 'ResourceType' should be derived from 'Resource'");
-
-		return ((ResourceType*)ResourceStreamer::GetInstance().ProcessStreaming(identifier, 
-			ResourceType::GetClassTypeInformation()));
+		static_assert((TypeTraits::IsBaseType<Resource, ResourceType>::Value), "Type 'ResourceType' should be derived from 'Resource'");
+		return (object_cast<ResourceType*>(ResourceStreamer::GetInstance().ProcessStreaming(ID, ResourceType::GetClassTypeInformation())));
 	}
 
 GD_NAMESPACE_END

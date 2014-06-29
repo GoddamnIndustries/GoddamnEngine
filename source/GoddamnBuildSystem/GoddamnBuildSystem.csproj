@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildSystem.cs" />
+    <Compile Include="CommandLineArguments.cs" />
     <Compile Include="Compiler.cs" />
     <Compile Include="ConsoleOutput.cs" />
     <Compile Include="Dependency.cs" />

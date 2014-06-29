@@ -38,16 +38,16 @@ GD_NAMESPACE_BEGIN
 			GDINL ReverseIterator(ReverseIterator const& Other   ) : Iterator(Other.Iterator       ) { }
 
 			/// Increases/decreases iterator.
-			GDINL ReverseIterator& operator++ (int const) { ++self->Iterator; return (*self); }
-			GDINL ReverseIterator& operator++ (         ) { ++self->Iterator; return (*self); }
-			GDINL ReverseIterator& operator-- (int const) { --self->Iterator; return (*self); }
-			GDINL ReverseIterator& operator-- (         ) { --self->Iterator; return (*self); }
+			GDINL ReverseIterator& operator++ (int const) { --self->Iterator; return (*self); }
+			GDINL ReverseIterator& operator++ (         ) { --self->Iterator; return (*self); }
+			GDINL ReverseIterator& operator-- (int const) { ++self->Iterator; return (*self); }
+			GDINL ReverseIterator& operator-- (         ) { ++self->Iterator; return (*self); }
 
 			/// Increases/decreases iterator on specified value.
-			GDINL ReverseIterator& operator+= (ptrdiff_t const Offset)	     { self->Iterator += Offset; return (*self); }
-			GDINL ReverseIterator& operator-= (ptrdiff_t const Offset)       { self->Iterator -= Offset; return (*self); }
-			GDINL ReverseIterator  operator+  (ptrdiff_t const Offset) const { return ReverseContainerIterator(self->Iterator + Offset); }
-			GDINL ReverseIterator  operator-  (ptrdiff_t const Offset) const { return ReverseContainerIterator(self->Iterator - Offset); }
+			GDINL ReverseIterator& operator+= (ptrdiff_t const Offset)	     { self->Iterator -= Offset; return (*self); }
+			GDINL ReverseIterator& operator-= (ptrdiff_t const Offset)       { self->Iterator += Offset; return (*self); }
+			GDINL ReverseIterator  operator+  (ptrdiff_t const Offset) const { return ReverseContainerIterator(self->Iterator - Offset); }
+			GDINL ReverseIterator  operator-  (ptrdiff_t const Offset) const { return ReverseContainerIterator(self->Iterator + Offset); }
 
 			/// Computes difference between iterators.
 			GDINL ptrdiff_t operator- (ThisPtrType     const  Pointer ) const { return (self->Iterator - Pointer); }
@@ -98,12 +98,12 @@ GD_NAMESPACE_BEGIN
 			GDINL ~ReverseContainerAdapter(                                        ) { }
 
 			/// Returns iterator that points to first child object.
-			GDINL  DirectIterator        Begin() const { return self->Container.Begin(); }
-			GDINL  DirectIterator        End  () const { return self->Container.End(); }
+			GDINL  DirectIterator        Begin() const { return self->Container.ReverseBegin(); }
+			GDINL  DirectIterator        End  () const { return self->Container.ReverseEnd(); }
 		
 			/// Returns iterator that points to last child object.
-			GDINL ReverseIterator ReverseBegin() const { return self->TheBaseObject.Begin(); }
-			GDINL ReverseIterator ReverseEnd  () const { return self->TheBaseObject.End  (); }
+			GDINL ReverseIterator ReverseBegin() const { return self->Container.Begin(); }
+			GDINL ReverseIterator ReverseEnd  () const { return self->Container.End  (); }
 
 #if (!defined(GD_DOCUMENTATION))
 		private /* STL compatibility */:	

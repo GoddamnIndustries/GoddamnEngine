@@ -1,8 +1,4 @@
 #include <GoddamnEngine/Engine/Resource/ResourceStreamer/ResourceStreamer.hh>
-#include <GoddamnEngine/Engine/Resource/ResourceLoader/FromFile/ResourceLoaderFromFile.hh>
-#include <GoddamnEngine/Engine/Resource/ResourceLoader/FromPackage/ResourceLoaderFromPackage.hh>
-#include <GoddamnEngine/Engine/Resource/ResourceLoader/FromMemory/ResourceLoaderFromMemory.hh>
-#include <GoddamnEngine/Engine/Resource/ResourceLoader/FromServer/ResourceLoaderFromServer.hh>
 
 GD_NAMESPACE_BEGIN
 	
@@ -80,13 +76,12 @@ GD_NAMESPACE_BEGIN
 
 		/*GD_ASSERT((resource->State == ResourceState::Requested),
 			"Resource passed is already loaded");*/
-		if (!(resource->State == ResourceState::Requested)) return resource;
-
+		if (!(resource->State == ResourceState::Requested)) 
+			return resource;
+		else
 		{
-			ResourceLoaderFromFile resourceLoaderFromFile(
-				resource->Identifier.GetPathToFile(), ResourceLoader::ResourceLoaderFlagsReadingEnabled);
-
-			resource->OnResourceLoad(&resourceLoaderFromFile);
+			UniquePtr<InputStream> Stream = resource->Identifier.OpenInputStream();
+			resource->OnResourceLoad(Stream.GetPointer());
 			resource->State = ResourceState::Loaded;
 		}
 		

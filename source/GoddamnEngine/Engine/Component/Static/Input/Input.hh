@@ -11,7 +11,7 @@
 GD_NAMESPACE_BEGIN
 
 	/// @brief			Enumeration describing state of touch on touch screen
-	enum class TouchState : byte
+	enum class TouchState : UInt8
 	{
 		None,		///< Not touched
 		Pressed,	///< Screen is just touched and finger is holden steel

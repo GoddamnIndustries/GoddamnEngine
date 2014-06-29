@@ -6,25 +6,8 @@
 ///		* 13.06.2014 - Created by James Jhuighuy.
 //////////////////////////////////////////////////////////////////////////
 
-// We have Warning 4 level (Wx), but glslang has W3 -Wx.
-#if (defined(_MSC_VER))
-#	define _CRT_SECURE_NO_WARNINGS
-#	define _USE_MATH_DEFINES
-#	pragma warning(push, 0)
-#endif	// if (defined(_MSC_VER))
-#include <glsl_optimizer.h>
-#include <glslang.h>
-
-extern "C"
-{
-#include <mcpp_lib.h>
-}
-
-#if (defined(_MSC_VER))
-#	undef _CRT_SECURE_NO_WARNINGS
-#	undef _USE_MATH_DEFINES
-#	pragma warning(pop)
-#endif	// if (defined(_MSC_VER))
+#include <GoddamnEngine/Include.hh>
+#if (defined(GD_PLATFORM_DESKTOP))
 
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Impl/GLSL/GLSLCompiler.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>
@@ -35,8 +18,35 @@ extern "C"
 #include <GoddamnEngine/Core/IO/Stream/FileStream/FileStream.hh>
 #include <GoddamnEngine/Core/IO/Path/Path.hh>
 
+// We have Warning 4 level (with Wx), but glslang has warning level 3 without Wx.
+#if (defined(GD_COMPILER_MSC))
+#	define _CRT_SECURE_NO_WARNINGS
+#	define _USE_MATH_DEFINES
+#	pragma warning(push, 0)
+#endif	// if (defined(GD_COMPILER_MSC))
+#include <glsl_optimizer.h>
+#include <glslang.h>
+
+extern "C"
+{
+#if (defined(GD_COMPILER_MSC))
+#	pragma push_macro("OUT")
+#	undef OUT
+#endif	// if (defined(GD_COMPILER_MSC))
+#include <mcpp_lib.h>
+#if (defined(GD_COMPILER_MSC))
+#	pragma pop_macro("OUT")
+#endif	// if (defined(GD_COMPILER_MSC))
+}
+
+#if (defined(GD_COMPILER_MSC))
+#	undef _CRT_SECURE_NO_WARNINGS
+#	undef _USE_MATH_DEFINES
+#	pragma warning(pop)
+#endif	// if (defined(GD_COMPILER_MSC))
+
 /// Define this to perform dual check of shaders using both glsl_optimizer and glslang.
-#define GD_HRI_SHADERCC_GLSL_COMPILER_DUAL_CHECK
+#define GD_HRI_SHADERCC_GLSL_COMPILER_DUAL_CHECK 1
 
 GD_NAMESPACE_BEGIN
 
@@ -510,3 +520,5 @@ R"(
 	}
 
 GD_NAMESPACE_END
+
+#endif

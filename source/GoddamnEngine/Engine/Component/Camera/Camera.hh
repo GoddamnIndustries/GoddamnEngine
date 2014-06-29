@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 	//////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////
 	/// Enumeration describing camera projection mode
-	enum CameraProjection : byte
+	enum CameraProjection : UInt8
 	{
 		GD_CAMERA_PROJECTION_PERSPECTIVE,		///< This camera renders in perspective projection
 		GD_CAMERA_PROJECTION_ORTHOGRAPHIC,		///< This camera renders in orthographic projection

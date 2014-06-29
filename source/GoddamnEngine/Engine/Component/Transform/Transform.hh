@@ -16,7 +16,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	enum class Space : byte
+	enum class Space : UInt8
 	{
 		Self,
 		World
@@ -41,7 +41,7 @@ GD_NAMESPACE_BEGIN
 	class Transform final : public Component,
 							private IOnTransformedListener
 	{
-		typedef byte LockingFlags;
+		typedef UInt8 LockingFlags;
 
 	private:
 		GD_SERIALIZABLE_DEFINITION(Transform, Component, GDAPI);

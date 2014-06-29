@@ -19,7 +19,7 @@
 GD_NAMESPACE_BEGIN
 
 	/// Describes application state
-	enum class ApplicationState : byte
+	enum class ApplicationState : UInt8
 	{
 		Starting,	///< The 'Application' is starting now (before 'OnInit' and 'OnStart')
 		Running,	///< The 'Application' is running now (invoking 'OnUpdate' and 'OnRender')

@@ -15,7 +15,7 @@ GD_NAMESPACE_BEGIN
 	class Scene : public Object, public Singleton<Scene>
 	{
 		friend class Application;
-		typedef byte SceneFlags;
+		typedef UInt8 SceneFlags;
 
 	private:
 		GD_TYPEINFORMATION_DEFINITION(Scene, Object, GDAPI);

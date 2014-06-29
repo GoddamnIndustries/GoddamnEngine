@@ -23,11 +23,9 @@ namespace GoddamnEngine.BuildSystem
 
         static void Main(string[] args)
         {
+        //  CommandLineArguments.PrintHelp();
             string SolutionLocation = @"D:\GoddamnEngine\source";
             Project.ProcessProjectsInDirectory(SolutionLocation);
-
-        //  foreach (var ProjectFile in Directory.EnumerateFiles(BuildSystem.SDKPath, "*.gdproj.cs", SearchOption.AllDirectories))
-        //      new Thread(() => new VisualStudioTarget().GenerateProject(SolutionProject.CreateProjectFromSource(ProjectFile))).Start();
         }
     }   // class BuildSystem
 }   // namespace GoddamnEngine.BuildSystem

@@ -11,7 +11,7 @@
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
 	<!-- String class -->
-	<Type Name="gd::String">
+	<Type Name="goddamn::String">
 		<DisplayString>{HeapMemory, s}</DisplayString>
 		<!--<DisplayString Condition="IsOnHeap">{HeapMemory, s}</DisplayString>-->
 		<!--<DisplayString Condition="IsOnHeap == false">{&amp;StackMemory[0], s}</DisplayString>-->
@@ -37,7 +37,7 @@
 	</Type>
 	
 	<!-- Vector class -->
-	<Type Name="gd::Vector&lt;*&gt;">
+	<Type Name="goddamn::Vector&lt;*&gt;">
 		<DisplayString>{{ Count = {Count} }}</DisplayString>
 		<Expand>
 			<Item Name="Size">Count</Item>

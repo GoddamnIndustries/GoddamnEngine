@@ -6,6 +6,9 @@
 ///		* 27.03.2014 - Created by James Jhuighuy
 //////////////////////////////////////////////////////////////////////////
 
+#include <GoddamnEngine/Include.hh>
+#if (defined(GD_PLATFORM_DESKTOP))
+
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Validator/Validator.hh>
@@ -73,3 +76,5 @@ GD_NAMESPACE_BEGIN
 	}
 
 GD_NAMESPACE_END
+
+#endif

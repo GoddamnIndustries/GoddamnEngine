@@ -7,8 +7,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#ifndef INCREDIBLE_ENGINE_INCLUDE
-#define INCREDIBLE_ENGINE_INCLUDE
+#ifndef GODDAMN_ENGINE_INCLUDE
+#define GODDAMN_ENGINE_INCLUDE
 
 //////////////////////////////////////////////////////////////////////////
 /// Version definitions
@@ -37,49 +37,89 @@
 /// Consoles :	PlayStation 4, XBox One, No SteamBox
 /// Mobile	 :	iOS (iPhone 5S, iPad Air / Mini Retina and further generations - TBA), 
 ///				Windows Phone 8 (after first x64 devices - TBA)
-#if defined(_WIN32)
-#	include <sal.h>
-#	define GD_PLATFORM_NAME				("Windows")				///< Building for Windows-Powered machine
-#	define GD_PLATFORM_WINDOWS			(GD_PLATFORM_NAME)		///< Macro to detect Windows-specific code
-#	define GD_PLATFORM_DESKTOP			(GD_PLATFORM_WINDOWS)	///< Building for desktop platform 
-#	if (defined(_WIN64))
-#		define GD_PLATFORM_ARCH  ("64")							///< 64-bit platform 
-#		define GD_PLATFORM_64BIT (GD_PLATFORM_ARCH)
-#	else	// if (defined(_WIN64))
-#		define GD_PLATFORM_ARCH  ("32")
-#		define GD_PLATFORM_32BIT (GD_PLATFORM_ARCH)
-#	endif	// if (defined(_WIN64))
-#	if defined(_DEBUG)
-#		define GD_DEBUG _DEBUG
+#if (defined(_WIN32))
+#	define _USE_MATH_DEFINES       
+#	define _CRT_SECURE_NO_WARNINGS 
+#	define  WIN32_LEAN_AND_MEAN    
+#	define  VC_EXTRALEAN           
+#	include <Windows.h>
+//	Platform arch, name, desktop/mobile type.
+#	if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))	//   Windows Desktop application.
+#		define GD_PLATFORM_ARCH			("x86")									///< x86 platform 
+#		define GD_PLATFORM_NAME			("Windows")								///< Building for Windows-Powered machine
+#		define GD_PLATFORM_WINDOWS		(GD_PLATFORM_NAME)						///< Macro to detect Windows-specific code
+#		define GD_PLATFORM_DESKTOP		(GD_PLATFORM_WINDOWS)					///< Building for desktop platform 
+//  endif	// if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
+#	elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP))	//   Windows Phone 8 application.
+#		define GD_PLATFORM_ARCH			("ARM")									///< ARM Platform.
+#		define GD_PLATFORM_NAME			("WindowsPhone8")						///< Building for WindowsPhone 8 smartphone.
+#		define GD_PLATFORM_WP8			(GD_PLATFORM_NAME)						///< Macro to detect WindowsPhone 8-specific code
+#		define GD_PLATFORM_MOBILE		(GD_PLATFORM_WP8)						///< Building for mobile platform 
+//	endif	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP))
+#	elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PC_APP))	//   Windows Store application (Windows Desktop or Windows RT)
+#		if (defined(__WRL_WINRT_STRICT__))										//   Windows RT application.
+#			define GD_PLATFORM_ARCH		("ARM")									///< ARM Platform.
+#			define GD_PLATFORM_NAME		("WindowsRT")							///< Building for WindowsPhone 8 smartphone.
+#			define GD_PLATFORM_WINRT	(GD_PLATFORM_NAME)						///< Macro to detect Windows RT-specific code
+#			define GD_PLATFORM_MOBILE	(GD_PLATFORM_WINRT)						///< Building for mobile platform 
+#		else	// if (defined(__WRL_WINRT_STRICT__))							//   Windows Desktop application.
+#			define GD_PLATFORM_ARCH		("x86")									///< x86 Platform.
+#			define GD_PLATFORM_NAME		("Windows")								///< Building for Windows-Powered machine
+#			define GD_PLATFORM_WINDOWS	(GD_PLATFORM_NAME)						///< Macro to detect Windows-specific code
+#			define GD_PLATFORM_MOBILE	(GD_PLATFORM_WINDOWS)					///< Building for mobile platform 
+#		endif	// if (defined(__WRL_WINRT_STRICT__))
+//	endif	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
+#	else	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_***))
+#		error 'Unsupported Windows platform.'
+#	endif	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_***))
+//	Debug/Release builds.
+#	if (defined(_DEBUG))
+#		define GD_DEBUG 1
 #	endif	// if defined(_DEBUG)
+//	Bit depth of processor.
+#	if (defined(_M_AMD64))
+#		define GD_PLATFORM_64BIT (GD_PLATFORM_ARCH)
+#	else	// if (defined(_M_AMD64))
+#		define GD_PLATFORM_32BIT (GD_PLATFORM_ARCH)
+#	endif	// if (defined(_M_AMD64))
+//endif	// #if (defined(_WIN32))
+
 #elif defined(__APPLE__)
 #	include "TargetConditionals.h"
-#	if (defined(__APPLE__) && defined(TARGET_OS_MAC))
-#		define GD_PLATFORM_NAME			"OS X"
-#		define GD_PLATFORM_OSX			GD_PLATFORM_NAME
-#		define GD_PLATFORM_DESKTOP		GD_PLATFORM_OSX
-#	elif (defined(__APPLE__) && (defined(TARGET_OS_IPHONE) || defined(TARGET_IPAD_SIMULATOR) \
-	|| defined(TARGET_OS_IPAD) || defined(TARGET_IPHONE_SIMULATOR)))
-#		define GD_PLATFORM_NAME			"iOS"
-#		define GD_PLATFORM_IOS			GD_PLATFORM_NAME
-#		define GD_PLATFORM_MOBILE		GD_PLATFORM_IOS
-#	else
-#		error Unsupported Apple device!
+#	  if (defined(__APPLE__) && defined(TARGET_OS_MAC))
+#		define GD_PLATFORM_ARCH			("x86")
+#		define GD_PLATFORM_NAME			("OS X")
+#		define GD_PLATFORM_OSX			(GD_PLATFORM_NAME)
+#		define GD_PLATFORM_DESKTOP		(GD_PLATFORM_OSX)
+//	elif	// if (defined(__APPLE__) && defined(TARGET_OS_MAC))
+#	elif (defined(__APPLE__) && (defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR)))
+#		define GD_PLATFORM_ARCH			("x86")
+#		define GD_PLATFORM_NAME			("iOS")
+#		define GD_PLATFORM_IOS			(GD_PLATFORM_NAME)
+#		define GD_PLATFORM_MOBILE		(GD_PLATFORM_IOS)
+//	elif	// elif (defined(__APPLE__) && (defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR)))
+#	elif (defined(__APPLE__) && (defined(TARGET_OS_IPHONE) defined(TARGET_OS_IPAD)))
+#		define GD_PLATFORM_ARCH			("ARM")
+#		define GD_PLATFORM_NAME			("iOS")
+#		define GD_PLATFORM_IOS			(GD_PLATFORM_NAME)
+#		define GD_PLATFORM_MOBILE		(GD_PLATFORM_IOS)
+//	elif	// elif (defined(__APPLE__) && (defined(TARGET_OS_IPHONE) || defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_OS_IPAD) || defined(TARGET_IPHONE_SIMULATOR)))
+#	else	// elif (defined(__APPLE__) && (defined(TARGET_***) ... ))
+#		error 'Unsupported Apple device!'
 #	endif
 #	if (defined(__LP64__))
-#		define GD_PLATFORM_ARCH			"64"
 #		define GD_PLATFORM_64BIT		GD_PLATFORM_ARCH
-#	else
-#		define GD_PLATFORM_ARCH			"32"
+#	else	// if (defined(__LP64__))
 #		define GD_PLATFORM_32BIT		GD_PLATFORM_ARCH
-#	endif
+#	endif	// if (defined(__LP64__))
 #elif defined(GD_DOCUMENTATION)
 #	define GD_PLATFORM_DESKTOP	GD_DOCUMENTATION
 #	define GD_PLATFORM_MOBILE	GD_DOCUMENTATION
 #	define GD_PLATFORM_CONSOLE	GD_DOCUMENTATION
 #else
-#	error Unsupported platform
+#	error 'Unsupported platform''
 #endif
+
 #if defined(GD_PLATFORM_32BIT)
 #	pragma warning("Deprecated 32-bit build")
 #endif
@@ -140,7 +180,7 @@
 
 #if defined(__cplusplus)
 #	define GD_PLATFORM_HAS_MOVE_SUPPORT		(true)
-#	define GD_NAMESPACE						gd 
+#	define GD_NAMESPACE						goddamn 
 #	if(defined(GD_NAMESPACE))
 #		define GD_NAMESPACE_BEGIN				namespace GD_NAMESPACE { 
 #		define GD_NAMESPACE_END					} // namespace GD_NAMESPACE { 

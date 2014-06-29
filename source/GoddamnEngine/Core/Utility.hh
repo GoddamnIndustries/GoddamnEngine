@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 	template<typename SignatureType> 
 	GDINL typename TypeTraits::RemoveReference<SignatureType>::Type&& Move(SignatureType&& Instance)
 	{
-		return static_cast<typename TypeTraits::RemoveReference<SignatureType>::Type&&>(Instance);
+		return (static_cast<typename TypeTraits::RemoveReference<SignatureType>::Type&&>(Instance));
 	}
 
 	/// Returns an RValue reference to specified object if it is not an LValue reference.

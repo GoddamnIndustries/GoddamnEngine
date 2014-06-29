@@ -3,16 +3,15 @@
 #include <GoddamnEngine/Engine/Component/MeshRenderer/MeshRenderer.hh>
 #include <GoddamnEngine/Engine/Component/GameObject/GameObject.hh>
 #include <GoddamnEngine/Engine/Component/Transform/Transform.hh>
+#include <GoddamnEngine/Engine/Component/Static/Input/Input.hh>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
 
 #include <GoddamnEngine/Engine/Renderer/Renderer.hh>
 #include <GoddamnEngine/Engine/Scene/Scene.hh>
 
 #include <GoddamnEngine/Engine/Resource/ResourceStreamer/ResourceStreamer.hh>
-#include <GoddamnEngine/Engine/Resource/ShaderProgram/ShaderProgramResource.hh>
-#include <GoddamnEngine/Engine/Resource/Texture2D/Texture2DResource.hh>
-
-#include <GoddamnEngine/Engine/Component/Static/Input/Input.hh>
+#include <GoddamnEngine/Engine/Resource/Impl/ShaderProgram/ShaderProgramResource.hh>
+#include <GoddamnEngine/Engine/Resource/Impl/Texture2D/Texture2DResource.hh>
 
 #include <GoddamnEngine/Engine/HUD/HUD.hh>
 // #include <GoddamnEngine/Engine/Resource/StaticMesh/StaticMeshVertexBufferObject/StaticMeshVertexBufferObject.hh>

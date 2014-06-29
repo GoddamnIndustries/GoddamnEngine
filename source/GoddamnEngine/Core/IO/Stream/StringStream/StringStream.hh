@@ -35,6 +35,12 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
+		GDINL explicit BaseStringInputStream(BaseStringBuilder<CharacterType> const& SomeStringBuilder)
+			: DataReference(reinterpret_cast<UInt8 const*>(SomeStringBuilder.GetPointer()))
+			, DataReferenceLength(sizeof(CharacterType) *  SomeStringBuilder.GetSize())
+		{
+		}
+
 		GDINL explicit BaseStringInputStream(Vector<CharacterType> const& SomeVector)
 			: DataReference      (reinterpret_cast<UInt8 const*>(SomeVector.CStr()))
 			, DataReferenceLength(sizeof(CharacterType)       *  SomeVector.GetSize())

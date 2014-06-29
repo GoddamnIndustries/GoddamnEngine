@@ -75,15 +75,6 @@ namespace GoddamnEngine.BuildSystem
                             Type = SourceFileType.InlineImpl;
                             break;
 
-                        case ".natvis":
-                            if (Target.IsWinAPIPlatform())
-                            {   // NATive VISualizer Visual Studio file.
-                                Type = SourceFileType.SupportFile;
-                                break;
-                            }
-
-                            continue;
-
                         case ".rc":
                             if (Target.IsWinAPIPlatform())
                             {   // We support .RC files only on windows platforms.
@@ -103,6 +94,12 @@ namespace GoddamnEngine.BuildSystem
                                 break;
                             }
 
+                            Type = SourceFileType.SupportFile;
+                            break;
+
+                        case ".xml":
+                        case ".plist":
+                        case ".natvis":
                             Type = SourceFileType.SupportFile;
                             break;
 

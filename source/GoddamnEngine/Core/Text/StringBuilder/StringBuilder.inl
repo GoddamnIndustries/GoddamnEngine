@@ -65,7 +65,7 @@ GD_NAMESPACE_BEGIN
 	}
 
 	template<typename CharType>
-	GDINL String&& BaseStringBuilder<CharType>::ToString() const
+	GDINL String BaseStringBuilder<CharType>::ToString() const
 	{
 		return String(&self->MutableString[0]);
 	}

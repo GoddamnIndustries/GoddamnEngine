@@ -7,12 +7,11 @@
 #include <GoddamnEngine/Engine/Renderer/Renderer.hh>
 // #include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRenderer.hh>
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11Renderer.hh>
-#include <GoddamnEngine/Engine/Resource/ShaderProgram/ShaderProgramResource.hh>
+#include <GoddamnEngine/Engine/Resource/Impl/ShaderProgram/ShaderProgramResource.hh>
 
 #include <conio.h>
 
-#include <GoddamnEngine/Engine/Resource/StaticMesh/StaticMesh.hh>
-#include <GoddamnEngine/Engine/Resource/ResourceLoader/FromFile/ResourceLoaderFromFile.hh>
+#include <GoddamnEngine/Engine/Resource/Impl/StaticMesh/StaticMesh.hh>
 
 GD_NAMESPACE_BEGIN
 

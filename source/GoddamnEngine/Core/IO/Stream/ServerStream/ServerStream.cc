@@ -1,11 +1,13 @@
 //////////////////////////////////////////////////////////////////////////
-/// MathCompilerSetupEnd.hh - restores compiler from MathCompilerSetupStart state.
+/// ServerStream.hh - Server IO stream implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
-///		* 10.06.2014  - Rewritten from scratch by James Jhuighuy,
+///		* 22.06.2014 - Created by James Jhuighuy
 //////////////////////////////////////////////////////////////////////////
 
-#if (defined(GD_COMPILER_MSC))
-#	pragma warning(pop)
-#endif	// if (defined(GD_COMPILER_MSC))
+#include <GoddamnEngine/Core/IO/Stream/ServerStream/ServerStream.hh>
+#include <curl/curl.h>
+
+GD_NAMESPACE_BEGIN
+GD_NAMESPACE_END

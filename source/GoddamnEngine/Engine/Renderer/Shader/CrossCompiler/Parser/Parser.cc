@@ -6,6 +6,9 @@
 ///		* 14.05.2014 - Created by James Jhuighuy
 //////////////////////////////////////////////////////////////////////////
 
+#include <GoddamnEngine/Include.hh>
+#if (defined(GD_PLATFORM_DESKTOP))
+
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
 #include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.hh>
@@ -14,7 +17,7 @@
 #include <GoddamnEngine/Core/IO/Stream/Stream.hh>
 
 /// Define this to make our parser parse things that cannot be translated into GLSL
-// #define GD_HRI_SHADERCC_PARSE_UNTRANSLATABLE
+// #define GD_HRI_SHADERCC_PARSE_UNTRANSLATABLE 1
 
 GD_NAMESPACE_BEGIN
 	
@@ -1130,3 +1133,5 @@ GD_NAMESPACE_BEGIN
 	}
 
 GD_NAMESPACE_END
+
+#endif

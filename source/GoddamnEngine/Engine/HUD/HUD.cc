@@ -1,6 +1,6 @@
 #include <GoddamnEngine/Engine/HUD/HUD.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
-#include <GoddamnEngine/Engine/Resource/ShaderProgram/ShaderProgramResource.hh>
+#include <GoddamnEngine/Engine/Resource/Impl/ShaderProgram/ShaderProgramResource.hh>
 #include <GoddamnEngine/Engine/Resource/ResourceStreamer/ResourceStreamer.hh>
 
 // Cool precision, yeah?

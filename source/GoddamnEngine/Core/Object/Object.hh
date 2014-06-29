@@ -13,7 +13,7 @@
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/Reflection/Reflectable.hh>
 #include <GoddamnEngine/Core/Reflection/TypeInformation/TypeInformation.hh>
-#include <GoddamnEngine/Core/Containers/LockFreeList/LockFreeList.hh>
+#include <GoddamnEngine/Core/Containers/LockFree/LockFreeList.hh>
 #include <GoddamnEngine/Core/Threading/Atomic/Atomic.hh>
 
 GD_NAMESPACE_BEGIN

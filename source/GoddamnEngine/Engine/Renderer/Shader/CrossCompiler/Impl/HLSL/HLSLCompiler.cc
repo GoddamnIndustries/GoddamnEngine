@@ -6,6 +6,9 @@
 ///		* 13.06.2014 - Created by James Jhuighuy.
 //////////////////////////////////////////////////////////////////////////
 
+#include <GoddamnEngine/Include.hh>
+#if (defined(GD_PLATFORM_WINDOWS))
+
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Impl/HLSL/HLSLCompiler.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.hh>
@@ -19,7 +22,6 @@ GD_NAMESPACE_BEGIN
 	typedef Str HLSLCompilerErrorDesc;
 
 #define GD_D3D_LINKED
-
 #if (!defined(GD_D3D_LINKED))
 	static pD3DCompile D3DCompile;
 	struct pD3DCompileLoader final 
@@ -239,3 +241,4 @@ GD_NAMESPACE_BEGIN
 	}
 
 GD_NAMESPACE_END
+#endif	// #if (defined(GD_PLATFORM_WINDOWS))

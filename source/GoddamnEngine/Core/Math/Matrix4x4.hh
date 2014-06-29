@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 
 	/// 4 x 4 Row-major matrix representation.
 	template<typename ElementType, typename = typename EnableIf<TypeTraits::IsFloatingPoint<ElementType>::Value>::Type>
-	struct Matrix4x4t
+	struct Matrix4x4t final
 	{
 		typedef typename Conditional<TypeTraits::IsPodType<ElementType>::Value, ElementType, ElementType const&>::Type ElementTypeConstRef;
 		enum : size_t { ThisRowsCount = 4, ThisColumnsCount = 4 };
@@ -40,11 +40,13 @@ GD_NAMESPACE_BEGIN
 		};	// anonymous union
 
 	public /* Constructors */:
-		GDINL Matrix4x4t(ElementTypeConstRef const ElementTypeDef = ElementType(1))
-			: _00(ElementTypeDef), _01(ElementType(0)), _02(ElementType(0)), _03(ElementType(0))
-			, _10(ElementType(0)), _11(ElementTypeDef), _12(ElementType(0)), _13(ElementType(0))
-			, _20(ElementType(0)), _21(ElementType(0)), _22(ElementTypeDef), _23(ElementType(0))
-			, _30(ElementType(0)), _31(ElementType(0)), _32(ElementType(0)), _33(ElementTypeDef)
+		/// Initializes identity matrix with speficied diagonal value.
+		/// @param ElementDiagVal Diagonal matrix value. 1 by default.
+		GDINL Matrix4x4t(ElementTypeConstRef const ElementDiagVal = ElementType(1))
+			: _00(ElementDiagVal), _01(ElementType(0)), _02(ElementType(0)), _03(ElementType(0))
+			, _10(ElementType(0)), _11(ElementDiagVal), _12(ElementType(0)), _13(ElementType(0))
+			, _20(ElementType(0)), _21(ElementType(0)), _22(ElementDiagVal), _23(ElementType(0))
+			, _30(ElementType(0)), _31(ElementType(0)), _32(ElementType(0)), _33(ElementDiagVal)
 		{
 		}
 
@@ -71,24 +73,24 @@ GD_NAMESPACE_BEGIN
 
 		/// Initializes specified matrix to identity.
 		/// @param Matrix         Matrix to perform initialization on.
-		/// @param ElementTypeDef Matrix diagonal initial value.
-		static inline void MakeIdentity(Matrix4x4t& Matrix, ElementTypeConstRef const ElementTypeDef = ElementType(1))
+		/// @param ElementDiagVal Matrix diagonal initial value.
+		static inline void MakeIdentity(Matrix4x4t& Matrix, ElementTypeConstRef const ElementDiagVal = ElementType(1))
 		{
 			memset(&Matrix, 0, sizeof(Matrix));
-			Matrix._00 = Matrix._11 = Matrix._22 = Matrix._33 = ElementTypeDef;
+			Matrix._00 = Matrix._11 = Matrix._22 = Matrix._33 = ElementDiagVal;
 		}
 
 		/// Initializes this matrix to identity.
 		/// @returns Self.
 		/// @see Matrix4x4t::MakeIdentity
-		GDINL Matrix4x4t& Identity(ElementTypeConstRef const ElementTypeDef = ElementType(1))
+		GDINL Matrix4x4t& Identity(ElementTypeConstRef const ElementDiagVal = ElementType(1))
 		{
-			Matrix4x4t::MakeIdentity((*self), ElementTypeDef);
+			Matrix4x4t::MakeIdentity((*self), ElementDiagVal);
 			return (*self);
 		}
 
 		/// Inverses specified matrix.
-		/// @param Input  Initial matrix that requires to be inversed.
+		/// @param Input  Initial matrix that requires to be inverted.
 		/// @param Matrix Matrix to perform inversion on.
 		static inline void MakeInverse(Matrix4x4t& Matrix, Matrix4x4t const& Input)
 		{
@@ -181,7 +183,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Rotates specified matrix on specified quaternion.
 		/// @param Matrix   Matrix to perform transformations on.
-		/// @param Rotation Value on whitch matrix would be rotated. 
+		/// @param Rotation Value on which matrix would be rotated. 
 		static inline void MakeRotation(Matrix4x4t& Matrix, Quaternion_t<ElementType> const& Rotation)
 		{
 			Matrix4x4t::MakeIdentity(Matrix);
@@ -209,7 +211,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Scales specified matrix on specified vector.
 		/// @param Matrix Matrix to perform transformations on.
-		/// @param Scale  Value on whitch matrix would be scaled. 
+		/// @param Scale  Value on which matrix would be scaled. 
 		static inline void MakeScale(Matrix4x4t& Matrix, Vector3t<ElementType> const& Scale)
 		{
 			Matrix4x4t::MakeIdentity(Matrix);
@@ -233,7 +235,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Translates specified matrix on specified vector.
 		/// @param Matrix       Matrix to perform transformations on.
-		/// @param Translation  Value on whitch matrix would be translated. 
+		/// @param Translation  Value on which matrix would be translated. 
 		static inline void MakeTranslation(Matrix4x4t& Matrix, Vector3t<ElementType> const& Translation)
 		{
 			Matrix4x4t::MakeIdentity(Matrix);
@@ -305,7 +307,7 @@ GD_NAMESPACE_BEGIN
 			Matrix._30 = ElementType(0); Matrix._31 = ElementType(0); Matrix._32 = ZNear * ZFar / (ZNear - ZFar); Matrix._33 = ElementType(0);
 		}
 
-		/// Makes perspecitive matrix from this one.
+		/// Makes perspective matrix from this one.
 		/// @returns Self.
 		/// @see Matrix4x4t::MakePerspectiveLh
 		GDINL Matrix4x4t& PerspectiveLh(ElementTypeConstRef const FOVDegrees, ElementTypeConstRef const Aspect, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
@@ -462,6 +464,12 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public /* Class API */:
+		/// @name Common initializations.
+		/// @{
+
+		/// Initializes specified matrix to identity.
+		/// @param Matrix         Matrix to perform initialization on.
+		/// @param ElementDiagVal Matrix diagonal initial value.
 		static inline void MakeIdentity(Matrix4x4t& Matrix, Float32 const Float32Def = 1.0f)
 		{
 			Float32 const Init = Float32Def;
@@ -471,23 +479,35 @@ GD_NAMESPACE_BEGIN
 			Matrix._R3 = Float32x4Intrinsics::VectorMake(0.0f, 0.0f, 0.0f, Init);
 		}
 
+		/// Initializes this matrix to identity.
+		/// @returns Self.
+		/// @see Matrix4x4t::MakeIdentity
 		GDINL Matrix4x4t& Identity(Float32 const Float32Def = 1.0f)
 		{
 			Matrix4x4t::MakeIdentity((*self), Float32Def);
 			return (*self);
 		}
 
+		/// Inverses specified matrix.
+		/// @param Input  Initial matrix that requires to be inverted.
+		/// @param Matrix Matrix to perform inversion on.
 		GDINL static void MakeInverse(Matrix4x4t& Matrix, Matrix4x4t const& Input)
 		{
 			Float32x4Intrinsics::MatrixInverse(&Matrix._R0, &Input._R0);
 		}
 
+		/// Inverses this matrix.
+		/// @returns Self.
+		/// @see Matrix4x4t::MakeInverse
 		GDINL Matrix4x4t& Inverse()
 		{
 			Matrix4x4t::MakeInverse((*self), (*self));
 			return (*self);
 		}
 
+		/// Transposes specified matrix.
+		/// @param Input  Initial matrix that requires to be transposed.
+		/// @param Matrix Matrix to perform transposion on.
 		static inline void MakeTranspose(Matrix4x4t& Matrix, Matrix4x4t const& Input)
 		{
 			Float32x4Intrinsics::VectorRegisterType const Temp0 = Float32x4Intrinsics::VectorShuffle(Input._R0, Input._R1, 0, 1, 0, 1);
@@ -500,12 +520,23 @@ GD_NAMESPACE_BEGIN
 			Matrix._R3 = Float32x4Intrinsics::VectorShuffle(Temp2, Temp3, 1, 3, 1, 3);
 		}
 
+		/// Transposes this matrix.
+		/// @returns Self.
+		/// @see Matrix4x4t::MakeTranspose
 		Matrix4x4t& Transpose()
 		{
 			Matrix4x4t::MakeTranspose((*self), (*self));
 			return (*self);
 		}
 
+		/// @}
+
+		/// @name Matrix transformations.
+		/// @{
+
+		/// Rotates specified matrix on specified quaternion.
+		/// @param Matrix   Matrix to perform transformations on.
+		/// @param Rotation Value on which matrix would be rotated. 
 		static inline void MakeRotation(Matrix4x4t& Matrix, Quaternion_t<Float32> const& Rotation)
 		{
 			Matrix._R0 = Float32x4Intrinsics::VectorMake(
@@ -523,6 +554,9 @@ GD_NAMESPACE_BEGIN
 			Matrix._R3 = Float32x4Intrinsics::VectorMake(0.0f, 0.0f, 0.0f, 1.0f);
 		}
 
+		/// Rotates this matrix on specified quaternion.
+		/// @returns Self.
+		/// @see Matrix4x4t::MakeRotation
 		GDINL Matrix4x4t& Rotate(Quaternion_t<Float32> const& Rotation)
 		{
 			/// @todo Write optimized code here instead of matrix multiplication.
@@ -531,6 +565,9 @@ GD_NAMESPACE_BEGIN
 			return ((*self) *= RotationMatrix);
 		}
 
+		/// Scales specified matrix on specified vector.
+		/// @param Matrix Matrix to perform transformations on.
+		/// @param Scale  Value on which matrix would be scaled. 
 		static inline void MakeScale(Matrix4x4t& Matrix, Vector3Fast const& Scale)
 		{
 			Matrix4x4t::MakeIdentity(Matrix);
@@ -540,6 +577,9 @@ GD_NAMESPACE_BEGIN
 			Matrix._33 = 1.0f;
 		}
 
+		/// Scales this matrix on specified vector.
+		/// @returns Self.
+		/// @see Matrix4x4t::MakeScale
 		GDINL Matrix4x4t& Scale(Vector3Fast const& Scale)
 		{
 			self->_0 *= Scale._0;
@@ -549,12 +589,18 @@ GD_NAMESPACE_BEGIN
 			return (*self);
 		}
 
+		/// Translates specified matrix on specified vector.
+		/// @param Matrix       Matrix to perform transformations on.
+		/// @param Translation  Value on whitch matrix would be translated. 
 		static inline void MakeTranslation(Matrix4x4t& Matrix, Vector3Fast const& Translation)
 		{
 			Matrix4x4t::MakeIdentity(Matrix);
 			Matrix._3 = Vector4t<Float32>(Translation, 1.0f);
 		}
 
+		/// Translates this matrix on specified vector.
+		/// @returns Self.
+		/// @see Matrix4x4t::MakeTranslation
 		GDINL Matrix4x4t& Translate(Vector3Fast const& Translation)
 		{
 			self->_3 += self->_0 * Translation._0
@@ -563,6 +609,16 @@ GD_NAMESPACE_BEGIN
 			return (*self);
 		}
 
+		/// @}
+
+		/// @name View matrix computing
+		/// @{
+
+		/// Builds a look-at matrix (Left-Handed coordinate system)
+		/// @param Matrix Matrix to perform transformations on.
+		/// @param Eye    Position of camera
+		/// @param At     Point we are looking at
+		/// @param Up     Camera up vector
 		static inline void MakeLookAtLh(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& At, Vector3Fast const& Up)
 		{
 			Vector3Fast const ZAxis = (At - Eye).Normalize();
@@ -575,12 +631,26 @@ GD_NAMESPACE_BEGIN
 			Matrix._30 = -XAxis.Dot(Eye); Matrix._31 = -YAxis.Dot(Eye); Matrix._32 = -ZAxis.Dot(Eye); Matrix._33 = 1.0f;
 		}
 
+		/// Makes view matrix from this one.
+		/// @returns Self.
+		/// @see Matrix4x4t::MakeLookAtLh
 		GDINL Matrix4x4t& LookAtLh(Vector3Fast const& Eye, Vector3Fast const& At, Vector3Fast const& Up)
 		{
 			Matrix4x4t::MakeLookAtLh((*self), Eye, At, Up);
 			return (*self);
 		}
 
+		/// @}
+
+		/// @name Projection matrix computing
+		/// @{
+
+		/// Builds perspective-projection matrix (Left-Handed coordinate system)
+		/// @param Matrix     Matrix to perform transformations on.
+		/// @param FOVDegrees Field of view
+		/// @param Aspect     Screen aspect ration
+		/// @param ZNear      Near clipping plane
+		/// @param ZFar       Far clipping plane
 		static inline void MakePerspectiveLh(Matrix4x4t& Matrix, Float32 const FOVDegrees, Float32 const Aspect, Float32 const ZNear, Float32 const ZFar)
 		{
 			Float32 const FOV = Float32(M_PI / 180) * FOVDegrees;
@@ -593,12 +663,23 @@ GD_NAMESPACE_BEGIN
 			Matrix._30 = 0.0f;   Matrix._31 = 0.0f;   Matrix._32 = ZNear * ZFar / (ZNear - ZFar); Matrix._33 = 0.0f;
 		}
 
+		/// Makes perspecitive matrix from this one.
+		/// @returns Self.
+		/// @see Matrix4x4t::MakePerspectiveLh
 		GDINL Matrix4x4t& PerspectiveLh(Float32 const FOVDegrees, Float32 const Aspect, Float32 const ZNear, Float32 const ZFar)
 		{
 			Matrix4x4t::MakePerspectiveLh((*self), FOVDegrees, Aspect, ZNear, ZFar);
 			return (*self);
 		}
 
+		/// Builds orthographic-projection matrix (Left-Handed coordinate system)
+		/// @param Matrix Matrix to perform transformations on.
+		/// @param Left   Minimum x-value of view volume
+		/// @param Right  Maximum x-value of view volume
+		/// @param Bottom Minimum y-value of view volume
+		/// @param Top    Maximum y-value of view volume
+		/// @param ZNear  Near clipping plane
+		/// @param ZFar   Far clipping plane
 		static inline void MakeOrthoLh(Matrix4x4t& Matrix, Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{
 			Matrix._00 = 2.0f / (Right - Left);           Matrix._01 = 0.0f;                            Matrix._02 = 0.0f;                   Matrix._03 = 0.0f;
@@ -607,6 +688,9 @@ GD_NAMESPACE_BEGIN
 			Matrix._30 = (Left + Right) / (Left - Right); Matrix._31 = (Top + Bottom) / (Bottom - Top); Matrix._32 = ZNear / (ZNear - ZFar); Matrix._33 = 1.0f;
 		}
 
+		/// Makes ortho matrix from this one.
+		/// @returns Self.
+		/// @see Matrix4x4t::MakeOrthoLh
 		GDINL Matrix4x4t<Float32>& OrthoLh(Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{
 			Matrix4x4t::MakeOrthoLh((*self), Left, Right, Bottom, Top, ZNear, ZFar);
