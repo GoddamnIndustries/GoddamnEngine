@@ -21,10 +21,10 @@ GD_NAMESPACE_BEGIN
 		GD_SERIALIZABLE_DEFINITION(MeshRenderer, Component, GDAPI);
 
 		GD_SERIALIZATION_BEGIN(MeshRenderer, Component);
-			GD_FGDLD(StaticMesh*,	mesh);			
-			GD_FGDLD(Material*,		material);
-			GD_FGDLD(bool,			castShadows); 
-			GD_FGDLD(bool,			recieveShadows); 
+			GD_FIELD(StaticMesh*,	mesh);			
+			GD_FIELD(Material*,		material);
+			GD_FIELD(bool,			castShadows); 
+			GD_FIELD(bool,			recieveShadows); 
 		GD_SERIALIZATION_END();
 
 	protected:

@@ -21,9 +21,9 @@ GD_NAMESPACE_BEGIN
 		GD_SERIALIZABLE_DEFINITION(Screen, StaticComponent, GDAPI);
 
 		GD_SERIALIZATION_BEGIN(Screen, StaticComponent);
-			GD_FGDLD(Resolution,	screenResolution);
-			GD_FGDLD(bool,			isFullscreen);
-			GD_FGDLD(bool,			isVsyncEnabled);
+			GD_FIELD(Resolution,	screenResolution);
+			GD_FIELD(bool,			isFullscreen);
+			GD_FIELD(bool,			isVsyncEnabled);
 		GD_SERIALIZATION_END();
 
 	protected:

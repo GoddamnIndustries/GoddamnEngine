@@ -47,10 +47,10 @@ GD_NAMESPACE_BEGIN
 		GD_SERIALIZABLE_DEFINITION(Transform, Component, GDAPI);
 
 		GD_SERIALIZATION_BEGIN(Transform, Component);
-			GD_FGDLD(Quaternion     	,	rotation);
-			GD_FGDLD(Vector3Fast	,	position);
-			GD_FGDLD(Vector3Fast ,   scale);
-			GD_FGDLD(Transform*	        ,	parent);
+			GD_FIELD(Quaternion     	,	rotation);
+			GD_FIELD(Vector3Fast	,	position);
+			GD_FIELD(Vector3Fast ,   scale);
+			GD_FIELD(Transform*	        ,	parent);
 		GD_SERIALIZATION_END();
 
 		LockingFlags lockingFlags;

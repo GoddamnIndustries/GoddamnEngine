@@ -44,14 +44,10 @@ GD_NAMESPACE_BEGIN
 				return;
 			}
 			else
-			{
 				self->VertexBuffers[static_cast<size_t>(Semantic)] = nullptr;
-			}
 		}
 		else
-		{
 			self->VertexBuffers[static_cast<size_t>(Semantic)] = HRInterface::GetInstance().CreateVertexBuffer(Data, Size);
-		}
 	}
 
 	void HRIIndexedShape::SetIndexData(chandle const Data, size_t const Size, size_t const Stride)
@@ -63,7 +59,7 @@ GD_NAMESPACE_BEGIN
 	}
 
 	HRIRenderTargetCtorInfo::HRIRenderTargetCtorInfo(Resolution const& RenderTargetResolution, HRITexture2D const* const FirstTexture /* = nullptr */, ...) 
-	 : RenderTargetResolution(RenderTargetResolution)
+		: RenderTargetResolution(RenderTargetResolution)
 	{
 		va_list TexturesList = va_list();
 		va_start(TexturesList, FirstTexture);
@@ -81,7 +77,7 @@ GD_NAMESPACE_BEGIN
 	}
 
 	HRIRenderTargetCtorInfo::HRIRenderTargetCtorInfo(HRIRenderTargetCtorInfo const& CtorInfo) 
-	 : RenderTargetTextures(CtorInfo.RenderTargetTextures)
+		: RenderTargetTextures(CtorInfo.RenderTargetTextures)
 	{
 		for (size_t cnt = 0; cnt < self->RenderTargetTextures.GetSize(); cnt += 1)
 			self->RenderTargetTextures[cnt]->AddReference();

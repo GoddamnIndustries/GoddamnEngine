@@ -87,13 +87,13 @@ GD_NAMESPACE_BEGIN
 		GD_SERIALIZABLE_DEFINITION(Camera, Component, GDAPI);
 
 		GD_SERIALIZATION_BEGIN(Camera, Component);
-			GD_FGDLD(CameraClippingPlanes, ClippingPlanes);
-			GD_FGDLD(CameraProjection, Projection);
-			GD_FGDLD(CameraClearType, ClearType);
-			GD_FGDLD(Rectangle, Viewport);
-			GD_FGDLD(Float32, FieldOfView);
-			GD_FGDLD(Float32, AspectRatio);
-			GD_FGDLD(Color, ClearColor);
+			GD_FIELD(CameraClippingPlanes, ClippingPlanes);
+			GD_FIELD(CameraProjection, Projection);
+			GD_FIELD(CameraClearType, ClearType);
+			GD_FIELD(Rectangle, Viewport);
+			GD_FIELD(Float32, FieldOfView);
+			GD_FIELD(Float32, AspectRatio);
+			GD_FIELD(Color, ClearColor);
 		GD_SERIALIZATION_END();
 
 		//StackVector<RenderTexture*, (size_t)/*RenderTargetTexture::Unknown*/1> RenderTextures;

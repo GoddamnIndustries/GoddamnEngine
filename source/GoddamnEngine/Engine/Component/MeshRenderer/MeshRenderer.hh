@@ -41,10 +41,10 @@ GD_NAMESPACE_BEGIN
 		GD_SERIALIZABLE_DEFINITION(MeshRenderer, Component, GDAPI);
 
 		GD_SERIALIZATION_BEGIN(MeshRenderer, Component);
-			GD_FGDLD(StaticMesh*,	RendererMesh);			
-			GD_FGDLD(Material*,		RendererMaterial);
-			GD_FGDLD(bool,			RendererCastShadows); 
-			GD_FGDLD(bool,			RendererRecieveShadows); 
+			GD_FIELD(StaticMesh*,	RendererMesh);			
+			GD_FIELD(Material*,		RendererMaterial);
+			GD_FIELD(bool,			RendererCastShadows); 
+			GD_FIELD(bool,			RendererRecieveShadows); 
 		GD_SERIALIZATION_END();
 
 		HRILinkagePoint  * RendererLinkagePoint         = nullptr;

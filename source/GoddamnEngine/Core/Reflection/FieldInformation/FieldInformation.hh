@@ -7,8 +7,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#ifndef GD_CORE_REFLECTION_FGDLDINFORMATION
-#define GD_CORE_REFLECTION_FGDLDINFORMATION
+#ifndef GD_CORE_REFLECTION_FIELDINFORMATION
+#define GD_CORE_REFLECTION_FIELDINFORMATION
 
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/Text/String/String.hh>
@@ -99,7 +99,7 @@ GD_NAMESPACE_BEGIN
 
 		template<typename FieldSignatureType> class FieldInformationWriteble;
 
-		/// STATIC FGDLD READ/WRITE Specialization
+		/// STATIC FIELD READ/WRITE Specialization
 		template<typename FieldValueType>
 		class FieldInformationWriteble<FieldValueType*> : public FieldInformationReadable<FieldValueType*>
 		{
@@ -114,7 +114,7 @@ GD_NAMESPACE_BEGIN
 			}
 		};	// class FieldInformationWriteble<FieldValueType*>
 
-		/// STATIC FGDLD READ/ONLY Specialization
+		/// STATIC FIELD READ/ONLY Specialization
 		template<typename FieldValueType>
 		class FieldInformationWriteble<FieldValueType const*> : public FieldInformationReadable<FieldValueType const*>
 		{
@@ -125,7 +125,7 @@ GD_NAMESPACE_BEGIN
 			GDINL virtual bool IsReadOnly() const final { return true; }
 		};	// class FieldInformationWriteble<FieldValueType const*>
 
-		/// MEMBER FGDLD READ/WRITE Specialization
+		/// MEMBER FIELD READ/WRITE Specialization
 		template<typename FieldOwnerClass, typename FieldValueType>
 		class FieldInformationWriteble<FieldValueType FieldOwnerClass::*> : public FieldInformationReadable<FieldValueType FieldOwnerClass::*>
 		{
@@ -140,7 +140,7 @@ GD_NAMESPACE_BEGIN
 			}
 		};	// class FieldInformationWriteble<FieldValueType FieldValueType::*>
 
-		/// MEMBER FGDLD READ/ONLY Specialization
+		/// MEMBER FIELD READ/ONLY Specialization
 		template<typename FieldOwnerClass, typename FieldValueType>
 		class FieldInformationWriteble<FieldValueType const FieldOwnerClass::*> : public FieldInformationReadable<FieldValueType const FieldOwnerClass::*>
 		{

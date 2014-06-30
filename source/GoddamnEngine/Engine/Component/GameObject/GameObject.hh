@@ -22,8 +22,8 @@ GD_NAMESPACE_BEGIN
 		GD_SERIALIZABLE_DEFINITION(GameObject, Component, GDAPI);
 
 		GD_SERIALIZATION_BEGIN(GameObject, Component);
-			GD_FGDLD(String, name);
-			GD_FGDLD(String, tag);
+			GD_FIELD(String, name);
+			GD_FIELD(String, tag);
 		GD_SERIALIZATION_END();
 
 		GameObjectState state;

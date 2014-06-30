@@ -40,6 +40,9 @@ GD_NAMESPACE_BEGIN
 		/// Returns file information for specified path string (without extension).
 		GDAPI extern String GetFileNameWithoutExtension(String const& SomePath);
 
+		/// Returns directory file information for specified path string (without extension).
+		GDAPI extern String GetDirectoryAndFileNameWithoutExtension(String const& SomePath);
+
 		/// Creates a uniquely named, zero-UInt8 temporary file on disk and returns the full path of that file.
 		GDAPI extern String GetTemporaryFileName();
 

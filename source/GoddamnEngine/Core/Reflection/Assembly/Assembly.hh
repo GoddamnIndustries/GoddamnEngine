@@ -6,21 +6,22 @@
 ///		* 07.04.2014 - Created by James Jhuighuy
 //////////////////////////////////////////////////////////////////////////
 
+#pragma once
 #ifndef GD_CORE_REFLECTION_ASSEMBLY
 #define GD_CORE_REFLECTION_ASSEMBLY
 
 #include <GoddamnEngine/Include.hh>
-#include <GoddamnEngine/Core/Object/Object.hh>
 #include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
 
 GD_NAMESPACE_BEGIN
 
+	class ITypeInformation;
 	class AssemblyManifest final
 	{};
 
 	/// Representation of compiled separately block of code, either executable or dynamically linked library.
-	class Assembly final : public Object
+	class Assembly final
 	{
 	private:
 		GD_CLASS_UNASSIGNABLE(Assembly);

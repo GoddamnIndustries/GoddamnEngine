@@ -24,9 +24,35 @@ GD_NAMESPACE_BEGIN
 		extern bool HasExtension(String const& SomePath);
 		extern String GetDirectoryName(String const& SomePath);
 		extern String GetExtension(String const& SomePath);
-		extern String GetFileName(String const& SomePath);
-		extern String GetFileNameWithoutExtension(String const& SomePath);
 		
+		extern size_t GetLastSlashLocation(String const& SomePath)
+		{
+			for (auto const& Character : Reverse(SomePath))
+				if ((Character == Char('\\')) || (Character == Char('/')))
+					return (&Character - &(*SomePath.Begin()) + 1);
+			return SIZE_MAX;
+		}
+
+		extern String GetFileName(String const& SomePath)
+		{
+			size_t const LastSlashLocation = Path::GetLastSlashLocation(SomePath);
+			return ((LastSlashLocation != SIZE_MAX) ? SomePath.GetSubstring(LastSlashLocation) : SomePath);
+		}
+
+		extern String GetDirectoryAndFileNameWithoutExtension(String const& SomePath)
+		{
+			size_t const Index = SomePath.ReverseFind('.');
+			if (Index == SIZE_MAX)
+				return SomePath;
+
+			return SomePath.GetSubstring(0, Index - 1);
+		}
+
+		extern String GetFileNameWithoutExtension(String const& SomePath)
+		{
+			return Path::GetDirectoryAndFileNameWithoutExtension(Path::GetFileName(SomePath));
+		}
+
 		extern String GetTemporaryFileName()
 		{
 			String TemporaryFileName(nullptr, L_tmpnam);

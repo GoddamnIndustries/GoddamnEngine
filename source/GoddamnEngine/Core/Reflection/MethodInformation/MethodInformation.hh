@@ -13,10 +13,10 @@
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
-#include <GoddamnEngine/Core/Containers/Pointer/Pointer.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.hh>
 #include <GoddamnEngine/Core/Reflection/MemberInformation.hh>
 
-#include <stdarg.hh> // For variadic arguments
+#include <cstdarg>  // For variadic arguments
 #include <tuple>    // For std::tuple
 
 GD_NAMESPACE_BEGIN
@@ -67,9 +67,9 @@ GD_NAMESPACE_BEGIN
 		template<typename MethodSignatureType> struct MethodBase;
 #endif // if (!defined(GD_DOCUMENTATION))
 
-#define GD_METHOD_CTORS(ThisClass, BaseClass)																			\
-		template<typename MethodSignature>																				\
-		GDINL ThisClass(MethodSignature const Method) : BaseClass(Method) { }											\
+#define GD_METHOD_CTORS(ThisClass, BaseClass) \
+		template<typename MethodSignature> \
+		GDINL ThisClass(MethodSignature const Method) : BaseClass(Method) { } \
 		GDINL ThisClass(ThisClass const& ThisClass##Ref) : BaseClass(ThisClass##Ref) { }
 
 		/// Basic template wrapper on method pointers. This class is same to @c std::function class with some differences (for member functions).
@@ -153,7 +153,7 @@ GD_NAMESPACE_BEGIN
 		public:
 			/// @todo Rewrite this stuff without using any STL code
 			template<size_t const Index> using ThisArgumentType = typename std::tuple_element<Index, std::tuple<ArgumentTypes...>>::type;
-			template<size_t const Index> using ThisUsedArgumentType = typename TypeTraits::RemoveReference<ThisArgumentType<Index>>::Type*;
+			template<size_t const Index> using ThisUsedArgumentType = typename TypeTraits::RemoveReference<typename std::tuple_element<Index, std::tuple<ArgumentTypes...>>::type>::Type*;
 			
 			template<typename MethodSignature>
 			GDINL MethodBase(MethodSignature const Method) : MethodTraitsPtr(new MethodTraits<MethodSignature>(Method)) { }

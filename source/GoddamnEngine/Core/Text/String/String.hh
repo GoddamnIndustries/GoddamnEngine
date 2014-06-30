@@ -12,6 +12,7 @@
 #define GD_CORE_CONTAINERS_STRING
 
 #include <GoddamnEngine/Include.hh>
+#include <GoddamnEngine/Core/Containers/Containers.hh>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
 
@@ -86,6 +87,59 @@ GD_NAMESPACE_BEGIN
 		};	// anonymous union
 
 	public:
+		template<typename Tag>
+		struct Iterator final
+		{
+			typedef Char ThisElementType;
+			typedef typename Conditional<Tag::IsConst, Char const*, Char*>::Type ThisPtrType;
+			typedef typename Conditional<Tag::IsConst, Char const&, Char&>::Type ThisRefType;
+
+		private:
+			ThisPtrType Pointer = nullptr;
+
+		public:
+			GDINL  Iterator(ThisPtrType const  Pointer) : Pointer(Pointer) { }
+			GDINL  Iterator(Iterator    const& Iterator) : Pointer(Iterator.Pointer) { }
+			GDINL ~Iterator() { }
+
+			/// Increases/decreases iterator.
+			GDINL Iterator& operator++ (int const) { ++self->Pointer; return (*self); }
+			GDINL Iterator& operator++ () { ++self->Pointer; return (*self); }
+			GDINL Iterator& operator-- (int const) { --self->Pointer; return (*self); }
+			GDINL Iterator& operator-- () { --self->Pointer; return (*self); }
+
+			/// Increases/decreases iterator on specified value.
+			inline Iterator& operator+= (ptrdiff_t const Offset)	      { self->Pointer += Offset; return (*self); }
+			inline Iterator& operator-= (ptrdiff_t const Offset)       { self->Pointer -= Offset; return (*self); }
+			inline Iterator  operator+  (ptrdiff_t const Offset) const { return Iterator(self->Pointer + Offset); }
+			inline Iterator  operator-  (ptrdiff_t const Offset) const { return Iterator(self->Pointer - Offset); }
+
+			/// Computes difference between iterators.
+			inline ptrdiff_t operator- (Iterator const& Iterator) const { return (self->Pointer - Iterator.Pointer); }
+			inline ptrdiff_t operator- (Char     const* const  Pointer) const { return (self->Pointer - Pointer); }
+
+			/// Compares iterators.
+			GDINL bool operator== (Iterator const&       Other) const { return (self->Pointer == Other.Pointer); }
+			GDINL bool operator!= (Iterator const&       Other) const { return (self->Pointer != Other.Pointer); }
+			GDINL bool operator== (Char     const* const Pointer) const { return (self->Pointer == Pointer); }
+			GDINL bool operator!= (Char     const* const Pointer) const { return (self->Pointer != Pointer); }
+
+			/// Assigns this iterator other value.
+			GDINL Iterator& operator= (ThisPtrType const  Pointer) { self->Pointer = Pointer; return (*self); }
+			GDINL Iterator& operator= (Iterator    const& Iterator) { self->Pointer = Iterator->Pointer; return (*self); }
+
+			/// (De)referensing iterator.
+			GDINL ThisRefType operator*  () const { return (*self->Pointer); }
+			GDINL ThisPtrType operator-> () const { return (self->Pointer); }
+		};	// struct Iterator
+
+		/// Iterator type this container uses.
+		typedef Iterator<ContainerDetails::IteratorTagConst  >   ConstIterator;
+		typedef Iterator<ContainerDetails::IteratorTagMutable> MutableIterator;
+
+		/// Reverse iterator type this container uses.
+		typedef ContainerDetails::ReverseIterator<MutableIterator> ReverseMutableIterator;
+		typedef ContainerDetails::ReverseIterator<ConstIterator  > ReverseConstIterator;
 
 		/// @name String Format
 		/// @{
@@ -214,10 +268,18 @@ GD_NAMESPACE_BEGIN
 		GDINL Char const* CStr() const { return &(*self)[0]; }
 		GDINL Char      * CStr()       { return &(*self)[0]; }
 
-		GDINL Char*       Begin() { return &(*self)[0]; }
-		GDINL Char const* Begin() const { return &(*self)[0]; }
-		GDINL Char*       End() { return &(*self)[0] + self->GetSize(); }
-		GDINL Char const* End() const { return &(*self)[0] + self->GetSize(); }
+		GDINL MutableIterator Begin()       { return MutableIterator(&(*self)[0]); }
+		GDINL ConstIterator   Begin() const { return ConstIterator(&(*self)[0]); }
+		GDINL MutableIterator End()       { return MutableIterator(&(*self)[0] + self->GetSize()); }
+		GDINL ConstIterator   End() const { return ConstIterator(&(*self)[0] + self->GetSize()); }
+
+		/// Returns iterator that points to last container element.
+		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(&(*self)[0] + (self->GetSize() - 1))); }
+		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(&(*self)[0] + (self->GetSize() - 1))); }
+
+		/// Returns iterator that points to preceding the first container element
+		GDINL ReverseMutableIterator ReverseEnd()       { return ReverseMutableIterator(MutableIterator(&(*self)[0] - 1)); }
+		GDINL   ReverseConstIterator ReverseEnd() const { return   ReverseConstIterator(ConstIterator(&(*self)[0] - 1)); }
 
 		/// @name 'String'`s HeapSize
 		/// @{
@@ -360,6 +422,10 @@ GD_NAMESPACE_BEGIN
 		/// @returns			Upper-cased HeapMemory
 		GDAPI String ToUpper() const;
 
+		/// @brief				Converts HeapMemory to lower-case
+		/// @returns			Upper-cased HeapMemory
+		GDAPI String ToLower() const;
+
 		/// @}
 
 		/// @brief				Computes 'String'`s 'HashSumm'
@@ -413,10 +479,10 @@ GD_NAMESPACE_BEGIN
 		/// @}
 
 	private:
-		GDINL friend Char*       begin(String      & SomeVector) { return &SomeVector[0]; }
-		GDINL friend Char const* begin(String const& SomeVector) { return &SomeVector[0]; }
-		GDINL friend Char*       end  (String      & SomeVector) { return &SomeVector[0] + SomeVector.GetSize(); }
-		GDINL friend Char const* end  (String const& SomeVector) { return &SomeVector[0] + SomeVector.GetSize(); }
+		GDINL friend MutableIterator begin(String      & some_string) { return some_string.Begin(); }
+		GDINL friend   ConstIterator begin(String const& some_string) { return some_string.Begin(); }
+		GDINL friend MutableIterator end  (String      & some_string) { return some_string.End(); }
+		GDINL friend   ConstIterator end  (String const& some_string) { return some_string.End(); }
 	};
 
 	/// Provides helper functions for processing ANSI characters.
@@ -437,10 +503,10 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Returns true if this character a valid latin letter.
-		/// Full list of supported characters: @c QqWwEeRrTtYyUuIiOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm
+		/// Full list of supported characters: @c _$QqWwEeRrTtYyUuIiOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm
 		GDINL static bool IsAlphabetic(CharAnsi const Character)
 		{
-			static String const ValidLatinLetters("QqWwEeRrTtYyUuIiOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm");
+			static String const ValidLatinLetters("_$QqWwEeRrTtYyUuIiOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm");
 			return (ValidLatinLetters.Find(Character) != -1);
 		}
 
@@ -448,7 +514,7 @@ GD_NAMESPACE_BEGIN
 		/// Full list of supported characters: @c ~`!@#$%^&*()-_+={}[]:;"'|\<>,.?/
 		GDINL static bool IsSpecialCharacter(CharAnsi const Character)
 		{
-			static String const ValidSpecialCharacters(R"(~`!@#$%^&*()-_+={}[]:;"'|\<>,.?/)");
+			static String const ValidSpecialCharacters(R"(~`!@#%^&*()-+={}[]:;"'|\<>,.?/)");
 			return (ValidSpecialCharacters.Find(Character) != -1);
 		}
 

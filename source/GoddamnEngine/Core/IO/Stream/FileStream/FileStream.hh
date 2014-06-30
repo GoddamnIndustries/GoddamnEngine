@@ -36,8 +36,6 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		GDINL virtual bool CanSeek() const final { return true; }
-
 	public /* Class implemented API */:
 		GDINL virtual size_t GetLength  () const final { return   self->FileLength; }
 		GDINL virtual size_t GetPosition() const final { return ((self->FileHandle != nullptr) ? size_t(ftell(self->FileHandle)) : SIZE_MAX); }
@@ -50,6 +48,14 @@ GD_NAMESPACE_BEGIN
 			self->FileLength = 0;
 		}
 
+		GDINL virtual bool CanSeek() const
+		{
+			if (!self->InputStream::CanSeek())
+				return false;
+
+			return (self->FileHandle != nullptr);
+		}
+
 		inline virtual size_t Seek(ptrdiff_t const Offset, SeekOrigin const Origin) final
 		{
 			int static const GD2STDOrigin[] = {
@@ -59,6 +65,14 @@ GD_NAMESPACE_BEGIN
 			};
 
 			return ((self->FileHandle != nullptr) ? fseek(self->FileHandle, static_cast<long>(Offset), GD2STDOrigin[Origin]) : SIZE_MAX);
+		}
+
+		GDINL virtual bool CanRead() const 
+		{ 
+			if (!self->InputStream::CanRead())
+				return false;
+
+			return (self->FileHandle != nullptr); 
 		}
 
 		inline virtual size_t Read(handle const OutputBuffer, ptrdiff_t const Offset, size_t const Count) final
@@ -93,6 +107,14 @@ GD_NAMESPACE_BEGIN
 		{
 			self->Dispose();
 			self->FileHandle = fopen(self->FilePath.CStr(), "wb");
+		}
+
+		GDINL virtual bool CanWrite() const
+		{
+			if (!self->OutputStream::CanWrite())
+				return false;
+
+			return (self->FileHandle != nullptr);
 		}
 
 		inline virtual size_t Write(chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count) final

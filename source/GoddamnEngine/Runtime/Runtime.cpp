@@ -14,9 +14,9 @@ private:
 	GD_SERIALIZABLE_DEFINITION(TestController, Component, GDINT);
 
 	GD_SERIALIZATION_BEGIN(TestController, Component);
-	GD_FGDLD(float, s);
-	//GD_FGDLD(Light*, l);
-	//GD_FGDLD_ARRAY(String, j);
+	GD_FIELD(float, s);
+	//GD_FIELD(Light*, l);
+	//GD_FIELD_ARRAY(String, j);
 	GD_SERIALIZATION_END();
 
 	bool b;

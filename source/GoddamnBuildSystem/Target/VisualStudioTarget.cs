@@ -183,7 +183,7 @@ namespace GoddamnEngine.BuildSystem
                     ProjectConfig.WriteStartElement("PropertyGroup");
                     ProjectConfig.WriteAttributeString("Condition", GenerateCondition(Configuration));
                     ProjectConfig.WriteElementString("TargetName", TheProject.Name + ((Configuration == TargetConfiguration.Debug) ? ".Debug" : ""));
-                    ProjectConfig.WriteElementString("OutDir", TheProject.BuildType == ProjectBuildType.StaticLibrary ? @"$(GODDAMN_SDK)lib\" : @"$(GODDAMN_SDK)bin\");
+                    ProjectConfig.WriteElementString("OutDir", TheProject.BuildType == ProjectBuildType.StaticLibrary ? @"$(GODDAMN_SDK)lib\" : Path.Combine(@"$(GODDAMN_SDK)bin\", TheProject.RelativeOutputPath));
 
                     StringBuilder IncludePathes = new StringBuilder();
                     foreach (var Dependency in TheProject.Dependencies)

@@ -153,15 +153,15 @@ GD_NAMESPACE_BEGIN
 	struct SharedPtr<PointerType, GD_SHARED_PTR_THREAD_SAFE> final
 	{
 	private:
-		PointerType* Pointer = nullptr;
-		UInt32     * ReferenceCount = nullptr;
+		PointerType   * Pointer = nullptr;
+		Int32 volatile* ReferenceCount = nullptr;
 
 	public /*Constructors/Destructor*/:
 		/// Initializes shared pointer with raw pointer value.
 		/// Initial reference count is 1.
-		GDINL explicit SharedPtr(PointerType* const Pointer)
+		GDINL explicit SharedPtr(PointerType* const Pointer = nullptr)
 			: Pointer(Pointer)
-			, ReferenceCount(new UInt32(1))
+			, ReferenceCount(new Int32(1))
 		{
 		}
 
@@ -181,8 +181,8 @@ GD_NAMESPACE_BEGIN
 			: Pointer(Other.Pointer)
 			, ReferenceCount(Other.ReferenceCount)
 		{
-			Other->Pointer = nullptr;
-			Other->ReferenceCount = nullptr;
+			Other.Pointer = nullptr;
+			Other.ReferenceCount = nullptr;
 		}
 
 		/// Deinitializes this shared pointer.

@@ -49,13 +49,13 @@ GD_NAMESPACE_BEGIN
 	/// HRIShaderParamDesc
 	//////////////////////////////////////////////////////////////////////////
 	
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamDesc, HRIObject, GDAPI, nullptr);
+//	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamDesc, HRIObject, GDAPI, nullptr);
 
 	//////////////////////////////////////////////////////////////////////////
 	/// HRIShaderParam
 	//////////////////////////////////////////////////////////////////////////
 	
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParam, HRIObject, GDAPI, nullptr);
+//	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParam, HRIObject, GDAPI, nullptr);
 
 	//////////////////////////////////////////////////////////////////////////
 	HRIShaderParam::HRIShaderParam(HRIShaderParamLocation* const ParamLocation, HRIShaderParamDesc const* const ParamDesc)
@@ -124,13 +124,13 @@ GD_NAMESPACE_BEGIN
 	/// HRIShaderParamLocationDesc
 	//////////////////////////////////////////////////////////////////////////
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamLocationDesc, HRIObject, GDAPI, nullptr);
+//	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamLocationDesc, HRIObject, GDAPI, nullptr);
 
 	//////////////////////////////////////////////////////////////////////////
 	/// HRIShaderParamLocation
 	//////////////////////////////////////////////////////////////////////////
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamLocation, HRIObject, GDAPI, nullptr);
+//	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamLocation, HRIObject, GDAPI, nullptr);
 
 	HRIShaderParamLocation::HRIShaderParamLocation(
 		HRIShaderInstance               * const HRIShaderInstance,
@@ -172,7 +172,7 @@ GD_NAMESPACE_BEGIN
 		size_t Offset = 0;
 		for (auto const ShaderParam : IterateChildObjects<HRIShaderParam>(self))
 		{	// Pointing all params's memory to allocated block.
-			ShaderParam->ParamPointer = self->LocationStorage.GetPointer() + Offset;
+			HRIShaderParamLocation::SetParamPointer(ShaderParam, self->LocationStorage.GetPointer() + Offset);
 			Offset += ShaderParam->ParamDesc->GetParamSize();
 		}
 	}

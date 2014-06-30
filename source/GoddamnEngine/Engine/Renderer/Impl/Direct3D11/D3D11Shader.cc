@@ -108,7 +108,7 @@ GD_NAMESPACE_BEGIN
 			Context->VSSetConstantBuffers(0, static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize()), const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
 			if (ShaderResources != nullptr)
 			{	// Our shader also cointains resources.
-				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->LocationInstancesCount);
+				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
 				Context->VSSetShaderResources(0, LocationInstancesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
 				Context->VSSetSamplers       (0, LocationInstancesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
 			}
@@ -147,7 +147,7 @@ GD_NAMESPACE_BEGIN
 			Context->HSSetConstantBuffers(0, static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize()), const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
 			if (ShaderResources != nullptr)
 			{	// Our shader also cointains resources.
-				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->LocationInstancesCount);
+				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
 				Context->HSSetShaderResources(0, LocationInstancesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
 				Context->HSSetSamplers       (0, LocationInstancesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
 			}
@@ -185,7 +185,7 @@ GD_NAMESPACE_BEGIN
 			Context->DSSetConstantBuffers(0, static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize()), const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
 			if (ShaderResources != nullptr)
 			{	// Our shader also cointains resources.
-				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->LocationInstancesCount);
+				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
 				Context->DSSetShaderResources(0, LocationInstancesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
 				Context->DSSetSamplers       (0, LocationInstancesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
 			}
@@ -223,7 +223,7 @@ GD_NAMESPACE_BEGIN
 			Context->PSSetConstantBuffers(0, static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize()), const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
 			if (ShaderResources != nullptr)
 			{	// Our shader also cointains shader resources.
-				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->LocationInstancesCount);
+				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
 				Context->PSSetShaderResources(0, LocationInstancesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
 				Context->PSSetSamplers       (0, LocationInstancesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
 			}

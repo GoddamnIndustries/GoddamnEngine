@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 			case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE:	return (self->ParamCachedSize = self->ParamArrayLength * sizeof(HRIObject const*));
 			case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX4X4:	return (self->ParamCachedSize = self->ParamArrayLength * sizeof(Matrix4x4));
 			case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX3X3:	return (self->ParamCachedSize = self->ParamArrayLength * sizeof(Matrix3));
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_STRING:		return (self->ParamCachedSize = self->ParamArrayLength * sizeof(HRIShaderParam::HRIShaderChar) * GD_HRI_SHADER_PARAM_MAX_STRING_LENGTH);
+			case GD_HRI_SHADER_PARAM_DESC_TYPE_STRING:		return (self->ParamCachedSize = self->ParamArrayLength * sizeof(HRIShaderChar) * GD_HRI_SHADER_PARAM_MAX_STRING_LENGTH);
 			case GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE:	return (self->ParamCachedSize = self->ParamArrayLength * GD_FORMAT_SIZEOF(self->ParamFormat));
 			}
 

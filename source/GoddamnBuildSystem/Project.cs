@@ -61,6 +61,8 @@ namespace GoddamnEngine.BuildSystem
         public abstract bool IsPlugin { get; }
         public abstract ProjectBuildType BuildType { get; }
 
+        public virtual string RelativeOutputPath { get { return ""; } }
+
         protected virtual void InitializeSelf()
         {
         }

@@ -117,9 +117,10 @@ GD_NAMESPACE_BEGIN
 		GDINL virtual ~InputStream() { }
 
 		GDINL virtual bool CanWrite() const final { return false; }
-		GDINL virtual bool CanRead () const final { return true;  } 
+		GDINL virtual bool CanSeek () const       { return true;  } 
+		GDINL virtual bool CanRead () const       { return true;  } 
 
-		GDINL virtual void Flush   ()       final { GD_ASSERT_FALSE("Attempted flushing Read-Only stream"); }
+		GDINL virtual void Flush   ()       { GD_ASSERT_FALSE("Attempted flushing Read-Only stream"); }
 
 		GDINL virtual size_t Write(chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count) final 
 		{
@@ -137,7 +138,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINL virtual ~OutputStream() { }
 
-		GDINL virtual bool CanWrite() const final { return true;  }
+		GDINL virtual bool CanWrite() const       { return true;  }
 		GDINL virtual bool CanRead () const final { return false; }
 		GDINL virtual bool CanSeek () const final { return false; }
 

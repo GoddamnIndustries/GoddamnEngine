@@ -11,7 +11,7 @@
 #define GD_SERIALIZATION_END(...)
 #define GD_EXTENDS_SERIALIZABLE_LIST(Serializable, ...) Serializable(__VA_ARGS__)
 #define GD_EXTENDS_SERIALIZABLE(Serializable) GD_EXTENDS_SERIALIZABLE_LIST(Serializable)
-#define GD_FGDLD(Type, Name) Type Name
+#define GD_FIELD(Type, Name) Type Name
 
 #define GD_SERIALIZABLE_DEFINITION			GD_TYPEINFORMATION_DEFINITION
 #define GD_SERIALIZABLE_IMPLEMENTATION		GD_TYPEINFORMATION_IMPLEMENTATION
@@ -52,7 +52,7 @@ GD_NAMESPACE_BEGIN
 		GD_SERIALIZABLE_DEFINITION(Component, Serializable, GDAPI);
 
 		GD_SERIALIZATION_BEGIN(Component, Serializable);
-			GD_FGDLD(bool, enabled);
+			GD_FIELD(bool, enabled);
 		GD_SERIALIZATION_END();
 
 		Transform* transform;	

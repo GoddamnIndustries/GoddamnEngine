@@ -21,6 +21,14 @@ namespace GoddamnEngine.BuildSystem
             { "monolithic", new CommandLineArgument { Description = "Generate single static library for entire engine. All subprojects would be linked into it.", Value = false  } },
         };
 
+        public static object GetCommandLineArgument(string CommandLineArgumentName)
+        {
+            if(CommandLineArguments._Arguments.ContainsKey(CommandLineArgumentName))
+                return CommandLineArguments._Arguments[CommandLineArgumentName];
+
+            return null;
+        }
+
         public static void PrintHelp()
         {
             Console.Write("\nGoddamnBuildSystem");
