@@ -341,6 +341,7 @@ GD_NAMESPACE_BEGIN
 
 	/// Spawns new specialized annotation parser.
 	/// @param Name Name of annotaion idenitifier of required parser.
+	/// @param Args Packed constructor params May be null pointer.
 	/// @returns Pointer to parser if it was succesfullt created.
 	SharedPtr<CPPAnnotationParser> CPPAnnotationParserSpawner::SpawnAnnotationParser(String const& Name, CPPAnnotationCtorArgs const* const Args)
 	{
@@ -349,6 +350,42 @@ GD_NAMESPACE_BEGIN
 		if (FoundIndex != SIZE_MAX)
 			return CPPAnnotationParserSpawner::AnnotationParsersRegistry.GetElementAt(FoundIndex).Value(Args);
 		return SharedPtr<CPPAnnotationParser>(nullptr);
+	}
+
+	/// ==========================================================================================
+	/// CPPAnnotationParamParserSpawner class.
+	/// Provides registering all annotation-params-parser-derived classes and spawning them while 
+	/// parsing.
+	/// ==========================================================================================
+
+	/// ------------------------------------------------------------------------------------------
+	/// Public class API:
+	/// ------------------------------------------------------------------------------------------
+
+	/// Registers new specialized annotation param parser in registry.
+	/// @param Name Name of annotaion param this parser processes.
+	/// @param Ctor Procedure that constructs instance of this annotation param parser.
+	/// @note It is not recommended to use this method directly: use RAI CPPAnnotationParserParamSpawner::Node<T> class instead.
+	void CPPAnnotationParamParserSpawner::RegisterAnnotationParamParser(String const& Name, CtorProc const Ctor)
+	{
+		HashSumm const NameHash = Name.GetHashSumm();
+		if (self->AnnotationParamParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX)
+			GD_ASSERT_FALSE("Parser for paremeter of an annotation '%s' was already defined.", Name.CStr());
+
+		self->AnnotationParamParsersRegistry.PushLast(NameHash, Ctor);
+	}
+
+	/// Spawns new specialized annotation param parser.
+	/// @param Name Name of annotaion idenitifier of required parser.
+	/// @param Args Packed constructor params May be null pointer.
+	/// @returns Pointer to parser if it was succesfullt created.
+	UniquePtr<CPPAnnotationParamParser> CPPAnnotationParamParserSpawner::SpawnAnnotationParamParser(String const& Name, CPPAnnotationCtorArgs const* const Args) const
+	{
+		HashSumm const NameHash = Name.GetHashSumm();
+		size_t const FoundIndex = self->AnnotationParamParsersRegistry.FindFirstElement(NameHash);
+		if (FoundIndex != SIZE_MAX)
+			return self->AnnotationParamParsersRegistry.GetElementAt(FoundIndex).Value(Args);
+		return UniquePtr<CPPAnnotationParamParser>(nullptr);
 	}
 
 #if 0
@@ -778,9 +815,11 @@ int main(int const ArgumensCount, char const* const* const ParamsList)
 	char const* const HeaderPath = ParamsList[1];
 #endif	// if (defined(GD_DEBUG))
 
-	/*IToolchain Toolchain;
-	if (!CPPHeaderReflectorImpl(&Toolchain, HeaderPath).ReflectHeader())
-		return 1;*/
+	IToolchain static Toolchain;
+	SharedPtr<InputStream> static HeaderInputStream(new FileInputStream(HeaderPath));
+
+	CPPBaseParser static BaseParser(&Toolchain, HeaderInputStream);
+	BaseParser.ProcessNextAnnotation();
 
 	return 0;
 }

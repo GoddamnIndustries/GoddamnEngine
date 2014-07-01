@@ -154,7 +154,9 @@ GD_NAMESPACE_BEGIN
 	/// Abstract interface for GoddamnC++ annotation parser.
 	class CPPAnnotationParser 
 	{
-	protected /*Constructor / Destrutor*/:
+		friend bool CPPBaseParser::ProcessNextAnnotation(String const& ExpectedAnnotationPrefix /* = "$GD_" */);
+
+	public /*Constructor / Destrutor*/:
 		/// Initializes specialized annotation parser.
 		/// @param Args Packed constructor params May be null pointer.
 		GDINL explicit CPPAnnotationParser(CPPAnnotationCtorArgs const* const Args) { }
@@ -172,28 +174,11 @@ GD_NAMESPACE_BEGIN
 		/// @returns Pointer to parser on success, or nullptr on fail.
 		GDINT virtual UniquePtr<CPPAnnotationParamParser> SpawnParamParser(String const& ParamName) abstract;
 
-	public /*Class API*/:
 		/// Parses upcoming annotation.
 		/// @param BaseParser Parser that provides low lever source parsing.
 		/// @returns True if annotation was succesfully parsed.
 		GDINT virtual bool ParseAnnotation(CPPBaseParser* const BaseParser) impl_abstract;
 	};	// class CPPAnnotationParser
-
-	/// Abstract interface for GoddamnC++ annotation param parser.
-	class CPPAnnotationParamParser
-	{
-	protected /*Constructor / Destrutor*/:
-		/// Initializes specialized annotation param parser.
-		GDINL explicit CPPAnnotationParamParser() { }
-		GDINL virtual ~CPPAnnotationParamParser() { }
-
-	public /*Class API*/:
-		/// Parses upcoming annotation param.
-		/// @param AnnotationParser Parser, that currently works on upcoming annotation.
-		/// @param ParamValue       String value of annotation paramater or it`s part.
-		/// @returns True if annotation param was succesfully parsed.
-		GDINT virtual bool ParseArgument(CPPAnnotationParser* const AnnotationParser, String const& ParamValue) abstract;
-	};	// class CPPAnnotationParamParser
 
 	/// Provides registering all annotation-parser-derived classes and spawning them while parsing.
 	/// To create some specific annotation parser follow this example:
@@ -210,7 +195,7 @@ GD_NAMESPACE_BEGIN
 	{
 	private /*Class Types*/:
 		/// Pointer to function that creates new specialized annotation parser.
-		/// @param Args Packed constructor params May be null pointer.
+		/// @param Args Packed constructor params. May be null pointer.
 		/// @returns Shared pointer on newly created specialized annotation parser.
 		typedef SharedPtr<CPPAnnotationParser>(*CtorProc)(CPPAnnotationCtorArgs const* const Args);
 
@@ -230,7 +215,7 @@ GD_NAMESPACE_BEGIN
 			/// @param Name Name of annotaion idenitifier this parser processes.
 			GDINL explicit Node(String const& Name)
 			{
-				CPPAnnotationParserSpawner::RegisterAnnotationParser(Name.GetHashSumm(), [](CPPAnnotationCtorArgs const* const Args) {
+				CPPAnnotationParserSpawner::RegisterAnnotationParser(Name, [](CPPAnnotationCtorArgs const* const Args) {
 					return SharedPtr<CPPAnnotationParser>(new CPPAnnotationParserType(Args));
 				});
 			}
@@ -254,7 +239,83 @@ GD_NAMESPACE_BEGIN
 		GDINT static SharedPtr<CPPAnnotationParser> SpawnAnnotationParser(String const& Name, CPPAnnotationCtorArgs const* const Args);
 	};	// class CPPAnnotationParserSpawner
 
-	/// List contains all registered parsers for Goddamn annotations.
-	Vector<CPPAnnotationParser*> extern const& CPPAnnotationParsersList;
+	/// Abstract interface for GoddamnC++ annotation param parser.
+	class CPPAnnotationParamParser
+	{
+	public /*Constructor / Destrutor*/:
+		/// Initializes specialized annotation param parser.
+		GDINL explicit CPPAnnotationParamParser(CPPAnnotationCtorArgs const* const Args) { }
+		GDINL virtual ~CPPAnnotationParamParser() { }
+
+	public /*Class API*/:
+		/// Parses upcoming annotation param.
+		/// @param AnnotationParser Parser, that currently works on upcoming annotation.
+		/// @param ParamValue       String value of annotation paramater or it`s part.
+		/// @returns True if annotation param was succesfully parsed.
+		GDINT virtual bool ParseArgument(CPPAnnotationParser* const AnnotationParser, String const& ParamValue) abstract;
+	};	// class CPPAnnotationParamParser
+
+	/// Provides registering all annotation-params-parser-derived classes and spawning them while parsing.
+	/// To create some specific annotation params parser follow this example:
+	/// @code
+	///		class CPPMyAnnotationParamParser final : public CPPAnnotationParamParser {
+	///			...	// Implement all abstract methods here.
+	///     };	// class CPPMyAnnotationParamParser
+	///
+	///		UniquePtr<CPPAnnotationParamParser> CPPMyAnnotationParser::SpawnParamParser(String const& ParamName) {
+	///			CPPAnnotationParamParserSpawner static const Spawner; {
+	///				CPPAnnotationParamParserSpawner::Node<CPPMyAnnotationParser> static const ParamAaSpawnerNode(Spawner, "AaaaAa");
+	///				CPPAnnotationParamParserSpawner::Node<CPPMyAnnotationParser> static const ParamBbSpawnerNode(Spawner, "BbBBbb");
+	///			}
+	///			return Spawner.SpawnParamParser(ParamName, SomeCtorParams);
+	///		}
+	/// @endcode
+	/// You can create your own implementation of spawning if you like it.
+	class CPPAnnotationParamParserSpawner final
+	{
+	private /*Class types and members.*/:
+		/// Pointer to function that creates new specialized annotation param parser.
+		/// @param Args Packed constructor params. May be null pointer.
+		/// @returns Unique pointer on newly created specialized annotation param parser.
+		typedef UniquePtr<CPPAnnotationParamParser>(*CtorProc)(CPPAnnotationCtorArgs const* const Args);
+
+		/// Contains specialized annotation params parser registry.
+		Map<HashSumm, CtorProc> AnnotationParamParsersRegistry;
+
+	public /*Class Types and API*/:
+		/// Provides registering all annotation-parser-derived classes.
+		/// @param CPPAnnotationParserType CPPAnnotationParser-derived non-abstract type that would be registered.
+		template<typename CPPAnnotationParamParserType>
+		struct Node final
+		{
+			static_assert(TypeTraits::IsBaseType<CPPAnnotationParamParser, CPPAnnotationParamParserType>::Value, "'CPPAnnotationParamParserSpawner::Node<T>' error: T should inherit from CPPAnnotationParamParser.");
+			static_assert(!TypeTraits::IsAbstractType<CPPAnnotationParamParserType>::Value, "'CPPAnnotationParamParserSpawner::Node<T>' error: T should not be abstract.");
+
+			/// Registers specialized annotation parser in global registry.
+			/// @param Name Name of annotaion idenitifier this parser processes.
+			GDINL explicit Node(CPPAnnotationParamParserSpawner& Spawner, String const& Name)
+			{
+				Spawner.RegisterAnnotationParamParser(Name, [](CPPAnnotationCtorArgs const* const Args) {
+					return SharedPtr<CPPAnnotationParser>(new CPPAnnotationParserType(Args));
+				});
+			}
+		};	// struct CPPAnnotationParserSpawner::Node
+
+		/// Initializes new annotation param parser spawner.
+		GDINL  CPPAnnotationParamParserSpawner() { }
+		GDINL ~CPPAnnotationParamParserSpawner() { }
+
+		/// Registers new specialized annotation param parser in registry.
+		/// @param Name Name of annotaion param this parser processes.
+		/// @param Ctor Procedure that constructs instance of this annotation param parser.
+		/// @note It is not recommended to use this method directly: use RAI CPPAnnotationParserParamSpawner::Node<T> class instead.
+		GDINT void RegisterAnnotationParamParser(String const& Name, CtorProc const Ctor);
+
+		/// Spawns new specialized annotation param parser.
+		/// @param Name Name of annotaion idenitifier of required parser.
+		/// @param Args Packed constructor params May be null pointer.
+		/// @returns Pointer to parser if it was succesfullt created.
+		GDINT UniquePtr<CPPAnnotationParamParser> SpawnAnnotationParamParser(String const& Name, CPPAnnotationCtorArgs const* const Args) const;
+	};	// class CPPAnnotationParamParserSpawner
 
 GD_NAMESPACE_END

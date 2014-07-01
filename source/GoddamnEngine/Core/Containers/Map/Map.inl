@@ -72,7 +72,7 @@ GD_NAMESPACE_BEGIN
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL void GD_UNORDERED_MAP_CLASS()::PushLast(KeyType const& Key, ValueType const& Value)
 	{
-		self->PushLast(ThisPairType(Key, Value));
+		self->GD_UNORDERED_MAP_BASE()::PushLast(ThisPairType(Key, Value));
 	}
 
 	GD_UNORDERED_MAP_TEMPLATE()

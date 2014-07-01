@@ -15,6 +15,58 @@ GD_NAMESPACE_BEGIN
 	LockFreeList<SharedPtr<CPPEnumeration const>> static CPPEnumerationsListImpl;
 	LockFreeList<SharedPtr<CPPEnumeration const>> const& CPPEnumerationsList = CPPEnumerationsListImpl;
 
+	class CPPEnumerationParamTypeParser final : public CPPAnnotationParamParser
+	{
+	};	// class CPPEnumerationParamTypeParser
+
+	class CPPEnumerationParamStrinigificationParser final : public CPPAnnotationParamParser
+	{
+	};	// class CPPEnumerationParamStrinigificationParser
+
+	/// ==========================================================================================
+	/// CPPEnumerationParser class.
+	/// Parses "$GD_ENUMERATION(...)" annotation.
+	/// ==========================================================================================
+
+	class CPPEnumerationParser final : public CPPAnnotationParser
+	{
+	public /*Constructor / Destructor*/:
+		GDINL explicit CPPEnumerationParser(CPPAnnotationCtorArgs const* const Args) : CPPAnnotationParser(Args) { }
+		GDINL virtual ~CPPEnumerationParser() { }
+
+	protected /*Class API*/:
+		/// @see CPPAnnotationParser::SpawnParamParser
+		GDINT virtual UniquePtr<CPPAnnotationParamParser> SpawnParamParser(String const& ParamName) override final;
+		/// @see CPPAnnotationParser::ParseAnnotation
+		GDINT virtual bool ParseAnnotation(CPPBaseParser* const BaseParser) override final;
+	};	// class CPPEnumerationParser  
+
+	/// Spanwer node for this type.
+	CPPAnnotationParserSpawner::Node<CPPEnumerationParser> static const CPPEnumerationParserSpawnerNode("$GD_ENUMERATION");
+
+	/// ------------------------------------------------------------------------------------------
+	/// Protected class API (Constructors / Destructor):
+	/// ------------------------------------------------------------------------------------------
+
+	/// @see CPPAnnotationParser::SpawnParamParser
+	UniquePtr<CPPAnnotationParamParser> CPPEnumerationParser::SpawnParamParser(String const& ParamName)
+	{
+		CPPAnnotationParamParserSpawner static Spawner; {
+			CPPAnnotationParamParserSpawner::Node<CPPEnumerationParamTypeParser> static const TypeParamSpawner(Spawner, "Type");
+			CPPAnnotationParamParserSpawner::Node<CPPEnumerationParamStrinigificationParser> static const StringificationParamSpawner(Spawner, "Stringification");
+		}
+
+		return Spawner.SpawnAnnotationParamParser(ParamName, nullptr);
+	}
+
+	/// @see CPPAnnotationParser::ParseAnnotation
+	bool CPPEnumerationParser::ParseAnnotation(CPPBaseParser* const BaseParser)
+	{
+		if (!self->CPPAnnotationParser::ParseAnnotation(BaseParser))
+			return false;
+		return true;
+	}
+
 	/// Fills the array with default enumeration values names.
 	/// @param Enumeration Pointer on enumeration description.
 	/// @param OutputNames List of generated output names.

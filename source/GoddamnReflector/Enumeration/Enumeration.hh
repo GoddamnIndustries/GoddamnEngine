@@ -81,16 +81,6 @@ GD_NAMESPACE_BEGIN
 		} EnumerationStringification;	                                                                                             ///< Describes enumeration values strinigfication policy.
 	};	// struct CPPEnumeration
 
-	/// Parses "$GD_ENUMERATION(...)" annotation.
-	class CPPEnumerationParser final : public CPPAnnotationParser
-	{
-	public:
-		GDINT explicit CPPEnumerationParser(IToolchain* const Toolchain) : CPPAnnotationParser("$GD_ENUMERATION", Toolchain) { }
-		GDINT virtual ~CPPEnumerationParser() { }
-
-		GDAPI SharedPtr<CPPEnumeration const> ParseEnumerationDefinition();
-	};	// class CPPEnumerationParser
-
 	/// Contains a whole list of enumerations that were parsed in this header.
 	LockFreeList<SharedPtr<CPPEnumeration const>> extern const& CPPEnumerationsList;
 

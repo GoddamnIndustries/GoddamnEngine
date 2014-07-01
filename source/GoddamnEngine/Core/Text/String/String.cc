@@ -402,6 +402,17 @@ GD_NAMESPACE_BEGIN
 		return output;
 	}
 
+	String String::ToLower() const
+	{
+		String output(*self);
+		for (Char* character = output.HeapMemory; *character != '\0'; character += sizeof(Char))
+		{
+			*character = (Char)tolower(*character);
+		}
+
+		return output;
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	// Operators
 	//////////////////////////////////////////////////////////////////////////
