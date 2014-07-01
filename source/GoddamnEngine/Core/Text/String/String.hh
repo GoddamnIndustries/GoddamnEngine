@@ -288,6 +288,8 @@ GD_NAMESPACE_BEGIN
 		/// @returns			'String'`s length
 		GDINL size_t GetSize() const;
 
+		GDINL bool IsEmpty() const { return self->GetSize() == 0; }
+
 		/// @brief				Resizes a 'String'
 		/// @param HeapSize			New HeapSize
 		GDAPI void Resize(const size_t HeapSize);

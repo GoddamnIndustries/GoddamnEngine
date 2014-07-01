@@ -81,6 +81,8 @@ GD_NAMESPACE_BEGIN
 		/// @returns Total number of written bytes.
 		GDAPI virtual      size_t    Write     (chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count) abstract;
 		GDINL              size_t    WriteCheck(chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count);
+		/// Writes characters sequence to stream.
+		GDINL void                   WriteString(String const& TheString, bool const WriteNullTerminator = false);
 		/// Writes into specified stream some object.
 		template<typename WritingElementType>
 		GDINL void                   Write(WritingElementType const& Element);

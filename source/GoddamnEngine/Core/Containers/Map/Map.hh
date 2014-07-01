@@ -40,6 +40,9 @@ GD_NAMESPACE_BEGIN
 		GDINL UnorderedMap(array<ThisPairType>^ CliArray);
 #endif	// if (defined(__cplusplus_cli))
 
+		/// Adds new pair to end of list.
+		GDINL void PushLast(KeyType const& Key, ValueType const& Value);
+
 		/// Searches for first element in container by checking equality.
 		/// @returns Index of found element or @c SIZE_MAX if nothing was found.
 		GDINL size_t FindFirstElement(KeyType const& Key) const;

@@ -7,11 +7,254 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include <GoddamnEngine/Include.hh>
+#include <GoddamnEngine/Core/TypeTraits.hh>
+#include <GoddamnEngine/Core/Containers/Map/Map.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/SharedPtr.hh>
+#include <GoddamnEngine/Core/Compilers/Toolchain/Toolchain.hh>
+#include <GoddamnEngine/Core/Compilers/StreamedLexer/StreamedLexer.hh>
 
 GD_NAMESPACE_BEGIN
+
+	typedef Str CPPBaseParserErrorDesc;
+	class InputStream;
 
 	struct CPPDefinition
 	{
 	};	// struct CPPDefinition
+
+	enum CPPHeaderReflectorExceptionCodes : ToolchainException
+	{
+		GD_CPP_REFLECTOR_EXCEPTION_MODULE = 1000L,
+		GD_CPP_REFLECTOR_EXCEPTION_SYNTAX = +GD_CPP_REFLECTOR_EXCEPTION_MODULE + 1L,
+	};	// enum StreamedLexerExceptionCodes
+
+	/// Contains useful methods for basic GoddamnC++ headers parsing.
+	class CPPBaseParser : public IToolchainTool
+	{
+	private:
+		SharedPtr<InputStream  > const Input;
+		UniquePtr<StreamedLexer> const Lexer;
+		Lexem CurrentLexem;
+
+	private /*Class API helpers*/:
+		/// Attempts to read next lexem from input stream.
+		/// @returns True if lexem was succesfully read.
+		GDINT bool TryReadNextLexem();
+	
+	public /*Class API*/:
+		/// Initializes new basic GoddamnC++ parser.
+		/// @param Toolchain Corrseponding toolchain.
+		/// @param Input     Shared pointer on input stream that contains GoddamnC++ data.
+		GDINT CPPBaseParser(IToolchain* const Toolchain, SharedPtr<InputStream> const& Input);
+		GDINL virtual ~CPPBaseParser() { }
+
+		/// @name Getters / Setters
+		/// @{
+
+		/// Returns reference on last parsed lexem.
+		/// @returns Reference on last parsed lexem.
+		Lexem const& GetCurrentLexem() const { return self->CurrentLexem; }
+
+		/// @}
+
+		/// @name Basic lexem pipeline and expectings.
+		/// @{
+
+		/// Expects a match of current lexem content type with specified one.
+		/// @param ContentType The expected lexem content type.
+		/// @returns True if current lexem content type mathes with specified one.
+		GDINT bool TryExpectLexem(LexemContentType const ContentType);
+
+		/// Expects a match of current lexem content type with specified one.
+		/// If lexem does not matches with content type, then raises 'unexpected Existing-Content-Type. Expected-Content-Type expected' error.
+		/// @param ContentType The expected lexem content type.
+		/// @returns True if current lexem content type mathes with specified one.
+		GDINT bool ExpectLexem(LexemContentType const ContentType);
+
+		/// Expects a match of current lexem content type and parsed data ID (PDID) with specified ones.
+		/// @param ContentType The expected lexem content type.
+		/// @param ID          The expected lexem parsed data ID (PDID).
+		/// @returns True if current lexem content type and parsed data ID mathes with specified one.
+		GDINT bool TryExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID);
+		
+		/// Expects a match of current lexem content type and parsed data ID (PDID) with specified ones.
+		/// If lexem does not matches with content type, then raises 'unexpected Existing-Content-Type. Expected-Content-Type expected' error.
+		/// If lexem matches with content type, but does not matches with parsed data ID (PDID), then raises 'unexpected Existing-PDID. Expected-PDID expected' error.
+		/// @param ContentType The expected lexem content type.
+		/// @param ID          The expected lexem parsed data ID (PDID).
+		/// @returns True if current lexem content type and parsed data ID mathes with specified one.
+		GDINT bool ExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID);
+
+		/// Expects next lexem from input stream.
+		/// @returns True if lexem was succesfully read.
+		GDINT bool TryExpectNextLexem();
+
+		/// Expects next lexem from input stream. 
+		/// If lexem does not exists then raises 'unexpected End-Of-Stream' error.
+		/// @returns True if lexem was succesfully read.
+		GDINT bool ExpectNextLexem();
+
+		/// Expects next lexem from input stream and a match of lexem content type with specified one.
+		/// @param ContentType The expected lexem content type.
+		/// @returns True if lexem was succesfully read and mathes with specified content type.
+		GDINT bool TryExpectNextLexem(LexemContentType const ContentType);
+
+		/// Expects next lexem from input stream and a match of lexem content type with specified one.
+		/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
+		/// If lexem exists, but does not matches with content type, then raises 'unexpected Existing-Content-Type. Expected-Content-Type expected' error.
+		/// @param ContentType The expected lexem content type.
+		/// @returns True if lexem was succesfully read and mathes with specified content type.
+		GDINT bool ExpectNextLexem(LexemContentType const ContentType);
+
+		/// Expects next lexem from input stream, and a match of lexem content type with specified one, and a match of lexem parsed data ID with specified one.
+		/// @param ContentType The expected lexem content type.
+		/// @param ID          The expected lexem parsed data ID (PDID).
+		/// @returns True if lexem was succesfully read and mathes with specified content type and specified parsed data ID.
+		GDINT bool TryExpectNextLexem(LexemContentType ContentType, StreamedLexerID const ID);
+
+		/// Expects next lexem from input stream, and a match of lexem content type with specified one, and a match of lexem parsed data ID (PDID) with specified one.
+		/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
+		/// If lexem exists, but does not matches with content type, then raises 'unexpected Existing-Content-Type. Expected-Content-Type expected' error.
+		/// If lexem exists, matches with content type, but does not matches with parsed data ID, then raises 'unexpected Existing-PDID. Expected-PDID expected' error.
+		/// @param ContentType The expected lexem content type.
+		/// @param ID          The expected lexem parsed data ID (PDID).
+		/// @returns True if lexem was succesfully read and mathes with specified content type and specified parsed data ID.
+		GDINT bool ExpectNextLexem(LexemContentType ContentType, StreamedLexerID const ID);
+
+		/// @}
+
+		/// @name Annotations parsing.
+		/// @{
+
+		/// Reads data from input stream until comes up with annotation - idenitifier starting with specified prefix.
+		/// @param ExpectedAnnotationPrefix Prefix of expected annotation idenitifier.
+		/// @return True if skipped to next annotation otherwise false if next annotation was not found.
+		GDINT bool TrySkipToNextAnnotation(String const& ExpectedAnnotationPrefix = "$GD_");
+
+		/// Processes next found annotation in input stream.
+		/// @param ExpectedAnnotationPrefix Prefix of expected annotation idenitifier.
+		/// @return True if annotation was succesfully processed.
+		GDINT bool ProcessNextAnnotation(String const& ExpectedAnnotationPrefix = "$GD_");
+
+		/// @}
+	};	// class CPPBaseParser
+	
+	class CPPAnnotationParamParser;
+
+	/// Provides passing params into specializes annotation parser constructor.
+	class CPPAnnotationCtorArgs
+	{
+	public /*Class API*/:
+		/// Creates empty packed params list.
+		GDINL explicit CPPAnnotationCtorArgs() { }
+		GDINL virtual ~CPPAnnotationCtorArgs() { }
+	};	// class CPPAnnotationCtorArgs
+
+	/// Abstract interface for GoddamnC++ annotation parser.
+	class CPPAnnotationParser 
+	{
+	protected /*Constructor / Destrutor*/:
+		/// Initializes specialized annotation parser.
+		/// @param Args Packed constructor params May be null pointer.
+		GDINL explicit CPPAnnotationParser(CPPAnnotationCtorArgs const* const Args) { }
+		GDINL virtual ~CPPAnnotationParser() { }
+	
+	private /*Class API*/:
+		/// Parses annotation params.
+		/// @param BaseParser Parser that provides low lever source parsing.
+		/// @returns True if annotation argumnts were succesfully parsed.
+		GDINT bool ParseAnnotationParams(CPPBaseParser* const BaseParser);
+
+	protected /*Class API*/:
+		/// Spawns new parser of annotaion param value.
+		/// @param ParamName Name of param that would be parsed.
+		/// @returns Pointer to parser on success, or nullptr on fail.
+		GDINT virtual UniquePtr<CPPAnnotationParamParser> SpawnParamParser(String const& ParamName) abstract;
+
+	public /*Class API*/:
+		/// Parses upcoming annotation.
+		/// @param BaseParser Parser that provides low lever source parsing.
+		/// @returns True if annotation was succesfully parsed.
+		GDINT virtual bool ParseAnnotation(CPPBaseParser* const BaseParser) impl_abstract;
+	};	// class CPPAnnotationParser
+
+	/// Abstract interface for GoddamnC++ annotation param parser.
+	class CPPAnnotationParamParser
+	{
+	protected /*Constructor / Destrutor*/:
+		/// Initializes specialized annotation param parser.
+		GDINL explicit CPPAnnotationParamParser() { }
+		GDINL virtual ~CPPAnnotationParamParser() { }
+
+	public /*Class API*/:
+		/// Parses upcoming annotation param.
+		/// @param AnnotationParser Parser, that currently works on upcoming annotation.
+		/// @param ParamValue       String value of annotation paramater or it`s part.
+		/// @returns True if annotation param was succesfully parsed.
+		GDINT virtual bool ParseArgument(CPPAnnotationParser* const AnnotationParser, String const& ParamValue) abstract;
+	};	// class CPPAnnotationParamParser
+
+	/// Provides registering all annotation-parser-derived classes and spawning them while parsing.
+	/// To create some specific annotation parser follow this example:
+	/// @code
+	///		// Header file:
+	///		class CPPMyAnnotationParser final : public CPPAnnotationParser {
+	///			...	// Implement all abstract methods here.
+	///     };	// class CPPMyAnnotationParser
+	///
+	///		// Source file:
+	///		CPPAnnotationParserSpawner::Node<CPPMyAnnotationParser> static const CPPMyAnnotationParserSpawnerNode("$GD_MY_ANNOTATION");
+	/// @endcode
+	class CPPAnnotationParserSpawner final
+	{
+	private /*Class Types*/:
+		/// Pointer to function that creates new specialized annotation parser.
+		/// @param Args Packed constructor params May be null pointer.
+		/// @returns Shared pointer on newly created specialized annotation parser.
+		typedef SharedPtr<CPPAnnotationParser>(*CtorProc)(CPPAnnotationCtorArgs const* const Args);
+
+	public /*Class Types*/:
+		GDINL  CPPAnnotationParserSpawner() = delete;
+		GDINL ~CPPAnnotationParserSpawner() = delete;
+
+		/// Provides registering all annotation-parser-derived classes.
+		/// @param CPPAnnotationParserType CPPAnnotationParser-derived non-abstract type that would be registered.
+		template<typename CPPAnnotationParserType>
+		struct Node final
+		{
+			static_assert( TypeTraits::IsBaseType<CPPAnnotationParser, CPPAnnotationParserType>::Value, "'CPPAnnotationParserSpawner::Node<T>' error: T should inherit from CPPAnnotationParser.");
+			static_assert(!TypeTraits::IsAbstractType<CPPAnnotationParserType>::Value, "'CPPAnnotationParserSpawner::Node<T>' error: T should not be abstract.");
+
+			/// Registers specialized annotation parser in global registry.
+			/// @param Name Name of annotaion idenitifier this parser processes.
+			GDINL explicit Node(String const& Name)
+			{
+				CPPAnnotationParserSpawner::RegisterAnnotationParser(Name.GetHashSumm(), [](CPPAnnotationCtorArgs const* const Args) {
+					return SharedPtr<CPPAnnotationParser>(new CPPAnnotationParserType(Args));
+				});
+			}
+		};	// struct CPPAnnotationParserSpawner::Node
+
+	private /*Class Members*/:
+		/// Contains specialized annotation parser registry.
+		Map<HashSumm, CtorProc> static AnnotationParsersRegistry;
+
+	public /*Class API*/:
+		/// Registers new specialized annotation parser in registry.
+		/// @param Name Name of annotaion idenitifier this parser processes.
+		/// @param Ctor Procedure that constructs instance of this annotation parser.
+		/// @note It is not recommended to use this method directly: use RAI CPPAnnotationParserSpawner::Node<T> class instead.
+		GDINT static void RegisterAnnotationParser(String const& Name, CtorProc const Ctor);
+
+		/// Spawns new specialized annotation parser.
+		/// @param Name Name of annotaion idenitifier of required parser.
+		/// @param Args Packed constructor params May be null pointer.
+		/// @returns Pointer to parser if it was succesfullt created.
+		GDINT static SharedPtr<CPPAnnotationParser> SpawnAnnotationParser(String const& Name, CPPAnnotationCtorArgs const* const Args);
+	};	// class CPPAnnotationParserSpawner
+
+	/// List contains all registered parsers for Goddamn annotations.
+	Vector<CPPAnnotationParser*> extern const& CPPAnnotationParsersList;
 
 GD_NAMESPACE_END

@@ -70,6 +70,12 @@ GD_NAMESPACE_BEGIN
 #endif	// if (defined(__cplusplus_cli))
 
 	GD_UNORDERED_MAP_TEMPLATE()
+	GDINL void GD_UNORDERED_MAP_CLASS()::PushLast(KeyType const& Key, ValueType const& Value)
+	{
+		self->PushLast(ThisPairType(Key, Value));
+	}
+
+	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL size_t GD_UNORDERED_MAP_CLASS()::FindFirstElement(KeyType const& Key) const
 	{	// We have a predicate to make search by comparing all pairs by keys.
 		return self->GD_UNORDERED_MAP_BASE()::FindFirstElement(UnorderedMapPrivate::ByKeySearchingPredicateType<KeyType, ValueType>(Key));

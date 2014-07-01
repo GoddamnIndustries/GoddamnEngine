@@ -105,6 +105,7 @@ GD_NAMESPACE_BEGIN
 	protected:
 		IToolchain* const Toolchain;
 		GDINL IToolchainTool(IToolchain* const Toolchain) : Toolchain(Toolchain) { }
+	public:
 		inline void RaiseMessage(ToolchainMessage const* const Message, ...)
 		{
 			va_list List = va_list(); va_start(List, Message);

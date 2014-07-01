@@ -371,9 +371,9 @@ GD_NAMESPACE_BEGIN
 		GDINT bool TryReadNextLexem(                                                      );
 		GDINT bool  ExpectNextLexem(                                                      );
 		GDINT bool  ExpectNextLexem(LexemContentType ContentType                          );
-		GDINT bool  ExpectNextLexem(LexemContentType ContentType, StreamedLexerId const Id);
+		GDINT bool  ExpectNextLexem(LexemContentType ContentType, StreamedLexerID const Id);
 		GDINT bool      ExpectLexem(LexemContentType ContentType                          );
-		GDINT bool      ExpectLexem(LexemContentType ContentType, StreamedLexerId const Id);
+		GDINT bool      ExpectLexem(LexemContentType ContentType, StreamedLexerID const Id);
 
 		// Scope management:
 		GDINL void EnterScope(HLSLScope* const CurrentScope) { self->GlobalScopesStack.PushLast(CurrentScope); }
@@ -1012,7 +1012,7 @@ GD_NAMESPACE_BEGIN
 		return false;
 	}
 
-	bool HLSLParserImpl::ExpectLexem(LexemContentType ExpectedContentType, StreamedLexerId const ID)
+	bool HLSLParserImpl::ExpectLexem(LexemContentType ExpectedContentType, StreamedLexerID const ID)
 	{
 		if (self->ExpectLexem(ExpectedContentType))
 		{	// Next lexem exists and has expected content type.
@@ -1031,7 +1031,7 @@ GD_NAMESPACE_BEGIN
 		return false;
 	}
 
-	bool HLSLParserImpl::ExpectNextLexem(LexemContentType ExpectedContentType, StreamedLexerId const ID)
+	bool HLSLParserImpl::ExpectNextLexem(LexemContentType ExpectedContentType, StreamedLexerID const ID)
 	{
 		if (self->ExpectNextLexem())
 		{	// Next lexem exists and has expected content type.

@@ -51,8 +51,8 @@
 #	define GD_DEBUG_ASSERT(...) 
 #endif
 
-#define GD_ASSERT_FALSE(Message)		GD_ASSERT(false, Message)
-#define GD_DEBUG_ASSERT_FALSE(Message)	GD_DEBUG_ASSERT(false, Message)
+#define GD_ASSERT_FALSE(Message, ...)		GD_ASSERT(false, Message, __VA_ARGS__)
+#define GD_DEBUG_ASSERT_FALSE(Message, ...)	GD_DEBUG_ASSERT(false, Message, __VA_ARGS__)
 #if (defined(GD_COMPILER_MSC))
 #   define GD_NOT_IMPLEMENTED()           GD_ASSERT_FALSE(__FUNCTION__ " is not implemented.")
 #else   // if (defined(GD_COMPILER_MSC))

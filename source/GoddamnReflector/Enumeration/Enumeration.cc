@@ -8,6 +8,7 @@
 
 #include <GoddamnReflector/Enumeration/Enumeration.hh>
 #include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.hh>
+#include <GoddamnEngine/Core/IO/Stream/Stream.hh>
 
 GD_NAMESPACE_BEGIN
 
@@ -15,15 +16,19 @@ GD_NAMESPACE_BEGIN
 	LockFreeList<SharedPtr<CPPEnumeration const>> const& CPPEnumerationsList = CPPEnumerationsListImpl;
 
 	/// Fills the array with default enumeration values names.
-	static void CPPEnumerationFillNames(SharedPtr<CPPEnumeration const> const& Enumeration, Vector<String>& OutputNames)
+	/// @param Enumeration Pointer on enumeration description.
+	/// @param OutputNames List of generated output names.
+	extern void CPPEnumerationFillNames(SharedPtr<CPPEnumeration const> const& Enumeration, Vector<String>& OutputNames)
 	{
 		OutputNames.Emptify();
 		for (auto const& EnumerationValue : Enumeration->EnumerationValues)
 			OutputNames.PushLast(EnumerationValue.Key);
 	}
 
-	/// Stubs enumeration values common parts E.g. (MY_ENUM_E1RT_A, MY_ENUM_E2RT_A) would be stringified as ("E1RT_A", "E2RT_A").
-	static void CPPEnumerationChopNames(SharedPtr<CPPEnumeration const> const& Enumeration, Vector<String>& OutputNames)
+	/// Chops enumeration values common parts E.g. (MY_ENUM_E1RT_A, MY_ENUM_E2RT_A) would be stringified as ("E1RT_A", "E2RT_A").
+	/// @param Enumeration Pointer on enumeration description.
+	/// @param OutputNames List of generated output names.
+	extern void CPPEnumerationChopNames(SharedPtr<CPPEnumeration const> const& Enumeration, Vector<String>& OutputNames)
 	{
 		if (Enumeration->EnumerationValues.GetSize() != OutputNames.GetSize())
 			CPPEnumerationFillNames(Enumeration, OutputNames);
@@ -61,7 +66,9 @@ GD_NAMESPACE_BEGIN
 	}
 
 	/// Translates enumeration values capicalization styles.
-	static void CPPEnumerationTranslateCasePolicy(SharedPtr<CPPEnumeration const> const& Enumeration, Vector<String>& OutputNames)
+	/// @param Enumeration Pointer on enumeration description.
+	/// @param OutputNames List of generated output names.
+	extern void CPPEnumerationTranslateCasePolicy(SharedPtr<CPPEnumeration const> const& Enumeration, Vector<String>& OutputNames)
 	{
 		if (Enumeration->EnumerationValues.GetSize() != OutputNames.GetSize())
 			CPPEnumerationFillNames(Enumeration, OutputNames);
@@ -104,6 +111,53 @@ GD_NAMESPACE_BEGIN
 				EnumerationValue = EnumerationValueBuilder.ToString();
 			}
 		}
+	}
+
+	/// Generates stringiciators methods for specified enumeration.
+	/// @param Enumeration                 Pointer on enumeration description.
+	/// @param OutputGeneratedHeaderStream Stream to which stringiciators interfaces would be written.
+	/// @param OutputGeneratedSourceStream Stream to which stringiciators implementations would be written.
+	extern void CPPEnumerationWriteStringificators(SharedPtr<CPPEnumeration const> const& Enumeration, OutputStream* const OutputGeneratedHeaderStream, OutputStream* const OutputGeneratedSourceStream)
+	{
+		GD_DEBUG_ASSERT((OutputGeneratedHeaderStream != nullptr) || (Enumeration->EnumerationStringification.ExportPolicy == GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_INTERNAL), "No header output specified.");
+		GD_DEBUG_ASSERT((OutputGeneratedHeaderStream != nullptr), "No source output specified.");
+
+		String const EnumerationToStrInterface   = String::Format("extern Str %sToStr(%s const Value)",   Enumeration->EnumerationName.CStr(), Enumeration->EnumerationName.CStr());
+		String const EnumerationFromStrInterface = String::Format("extern %s %sFromStr(Str const Value)", Enumeration->EnumerationName.CStr(), Enumeration->EnumerationName.CStr());
+
+		if (Enumeration->EnumerationStringification.ExportPolicy == GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_PUBLIC)
+		{	// We need to write prototypes into header file.
+			OutputGeneratedHeaderStream->WriteString(String::Format("\n\n\tenum %s : %s;", Enumeration->EnumerationName.CStr(), Enumeration->EnumerationBaseTypeName.CStr()));
+			OutputGeneratedHeaderStream->WriteString(String::Format("\n\n\t/// Converts %s to string.\n\tGDAPI %s;", Enumeration->EnumerationName.CStr(), EnumerationToStrInterface.CStr()));
+			OutputGeneratedHeaderStream->WriteString(String::Format("\n\n\t/// Converts string to %s.\n\tGDAPI %s;", Enumeration->EnumerationName.CStr(), EnumerationFromStrInterface.CStr()));
+		}
+
+		/// Writing stringificators bodies.
+		Vector<String> EnumerationNames;
+		CPPEnumerationChopNames(Enumeration, EnumerationNames);
+		CPPEnumerationTranslateCasePolicy(Enumeration, EnumerationNames);
+		
+		// Writing ToString function.
+		OutputGeneratedSourceStream->WriteString(String("\n\n\t") + EnumerationToStrInterface);
+		OutputGeneratedSourceStream->WriteString("\n\t{\n\t\tswitch(Value)\n\t\t{");
+		for (size_t Cnt = 0; Cnt < EnumerationNames.GetSize(); ++Cnt)
+		{	// Writing stringified values.
+			OutputGeneratedSourceStream->WriteString(String::Format("\n\t\t\tcase %s: return \"%s\";"
+				, Enumeration->EnumerationValues.GetElementAt(Cnt).Key.CStr()
+				, EnumerationNames.GetElementAt(Cnt).CStr()));
+		}
+		OutputGeneratedSourceStream->WriteString("\n\t\t}\n\t\treturn nullptr;\n\t}");
+		
+		// Writing FromString function.
+		OutputGeneratedSourceStream->WriteString(String("\n\n\t") + EnumerationFromStrInterface);
+		OutputGeneratedSourceStream->WriteString("\n\t{\n\t\tUInt32 const HashCode = String(Value).GetHashSumm();\n\t\tswitch(HashCode) {");
+		for (size_t Cnt = 0; Cnt < EnumerationNames.GetSize(); ++Cnt)
+		{	// Writing prehashed values.
+			OutputGeneratedSourceStream->WriteString(String::Format("\n\t\t\tcase %d: return %s;"
+				, static_cast<Int32>(EnumerationNames.GetElementAt(Cnt).GetHashSumm().GetValue())
+				, Enumeration->EnumerationValues.GetElementAt(Cnt).Key.CStr()));
+		}
+		OutputGeneratedSourceStream->WriteString("\n\t\t}\n\t\treturn ???Something???;\n\t}");
 	}
 
 GD_NAMESPACE_END

@@ -162,6 +162,7 @@
 //////////////////////////////////////////////////////////////////////////
 /// Code re-usage
 #define abstract		= 0
+#define impl_abstract	abstract
 #define throws			throw
 #define throws_nothing	throws()
 #define self			this

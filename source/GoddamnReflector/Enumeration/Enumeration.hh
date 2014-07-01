@@ -22,6 +22,8 @@
 
 GD_NAMESPACE_BEGIN
 
+	class OutputStream;
+
 	/// Describes enumeration types.
 	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | Goddamn)
 	enum CPPEnumerationType : UInt8
@@ -68,7 +70,7 @@ GD_NAMESPACE_BEGIN
 	struct CPPEnumeration final : public CPPDefinition
 	{
 		String EnumerationName;                                                                                                      ///< Name of this enumeration.
-		String EnumerationBaseTypeName;                                                                                              ///< Name of enumeration base type name (if does not inherits from other enum).
+		String EnumerationBaseTypeName = "int";                                                                                      ///< Name of enumeration base type name (if does not inherits from other enum).
 		UnorderedMap<String, UInt64> EnumerationValues;                                                                              ///< List of enumeration definition names and values.
 		SharedPtr<CPPEnumeration const> EnumerationBaseEnumeration;                                                                  ///< Pointer to base enum of this.
 		CPPEnumerationType EnumerationType = GD_CPP_ENUMERATION_TYPE_DEFAULT;                                                        ///< Describes enumeration types.
@@ -79,11 +81,11 @@ GD_NAMESPACE_BEGIN
 		} EnumerationStringification;	                                                                                             ///< Describes enumeration values strinigfication policy.
 	};	// struct CPPEnumeration
 
-	/// Parses 
-	class CPPEnumerationParser final : public IToolchainTool
+	/// Parses "$GD_ENUMERATION(...)" annotation.
+	class CPPEnumerationParser final : public CPPAnnotationParser
 	{
 	public:
-		GDINT explicit CPPEnumerationParser(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
+		GDINT explicit CPPEnumerationParser(IToolchain* const Toolchain) : CPPAnnotationParser("$GD_ENUMERATION", Toolchain) { }
 		GDINT virtual ~CPPEnumerationParser() { }
 
 		GDAPI SharedPtr<CPPEnumeration const> ParseEnumerationDefinition();
@@ -91,6 +93,27 @@ GD_NAMESPACE_BEGIN
 
 	/// Contains a whole list of enumerations that were parsed in this header.
 	LockFreeList<SharedPtr<CPPEnumeration const>> extern const& CPPEnumerationsList;
+
+	/// Fills the array with default enumeration values names.
+	/// @param Enumeration Pointer on enumeration description.
+	/// @param OutputNames List of generated output names.
+	extern void CPPEnumerationFillNames(SharedPtr<CPPEnumeration const> const& Enumeration, Vector<String>& OutputNames);
+
+	/// Chops enumeration values common parts E.g. (MY_ENUM_E1RT_A, MY_ENUM_E2RT_A) would be stringified as ("E1RT_A", "E2RT_A").
+	/// @param Enumeration Pointer on enumeration description.
+	/// @param OutputNames List of generated output names.
+	extern void CPPEnumerationChopNames(SharedPtr<CPPEnumeration const> const& Enumeration, Vector<String>& OutputNames);
+
+	/// Translates enumeration values capicalization styles.
+	/// @param Enumeration Pointer on enumeration description.
+	/// @param OutputNames List of generated output names.
+	extern void CPPEnumerationTranslateCasePolicy(SharedPtr<CPPEnumeration const> const& Enumeration, Vector<String>& OutputNames);
+
+	/// Generates stringiciators methods for specified enumeration.
+	/// @param Enumeration                 Pointer on enumeration description.
+	/// @param OutputGeneratedHeaderStream Stream to which stringiciators interfaces would be written.
+	/// @param OutputGeneratedSourceStream Stream to which stringiciators implementations would be written.
+	extern void CPPEnumerationWriteStringificators(SharedPtr<CPPEnumeration const> const& Enumeration, OutputStream* const OutputGeneratedHeaderStream, OutputStream* const OutputGeneratedSourceStream);
 
 GD_NAMESPACE_END
 

@@ -40,6 +40,12 @@ GD_NAMESPACE_BEGIN
 		return NumElementsWritten;
 	}
 
+	GDINL void Stream::WriteString(String const& TheString, bool const WriteNullTerminator /* = false */)
+	{
+		size_t const StringSize = (TheString.GetSize() + (WriteNullTerminator ? 1 : 0)) * sizeof(Char);
+		self->WriteCheck(TheString.CStr(), 0, StringSize);
+	}
+
 	template<typename WritingElementType>
 	GDINL void Stream::Write(WritingElementType const& Element)
 	{	// We should check if we are writing a POD type to prevent memory leaks.

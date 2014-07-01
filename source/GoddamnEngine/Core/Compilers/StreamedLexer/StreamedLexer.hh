@@ -41,9 +41,9 @@ GD_NAMESPACE_BEGIN
 	/// Returns numan readable string for lexem content type
 	GDAPI extern Str LexemContentTypeToString(LexemContentType const ContentType);
 	
-	typedef UInt16 StreamedLexerId;
-	typedef StreamedLexerId StreamedLexerKeyword;
-	typedef StreamedLexerId StreamedLexerOperator;
+	typedef UInt16 StreamedLexerID;
+	typedef StreamedLexerID StreamedLexerKeyword;
+	typedef StreamedLexerID StreamedLexerOperator;
 	typedef Pair<StreamedLexerKeyword, String> StreamedLexerKeywordDecl;
 	typedef Pair<StreamedLexerOperator, String> StreamedLexerOperatorDecl;
 	typedef Vector<StreamedLexerKeywordDecl> StreamedLexerKeywordsList;
@@ -63,12 +63,11 @@ GD_NAMESPACE_BEGIN
 		size_t              Symbol = 0;
 		LexemContentType    ContentType = GD_LEXEM_CONTENT_TYPE_UNKNOWN;
 		String              RawData;
-		union
-		{
+		union {
 			CharAnsi        ProcessedDataCharacter;
 			UInt64          ProcessedDataInteger;
 			Float64         ProcessedDataFloat;
-			StreamedLexerId ProcessedDataId;
+			StreamedLexerID ProcessedDataId;
 			UInt8           Padding[8];
 		};	
 
@@ -117,7 +116,7 @@ GD_NAMESPACE_BEGIN
 		}
 		
 		/// Returns some ID data, located inside this lexem if this lexem can has ID.
-		GDINL StreamedLexerId  GetProcessedDataId()    const 
+		GDINL StreamedLexerID  GetProcessedDataId()    const 
 		{ 
 			if ((self->GetContentType() != GD_LEXEM_CONTENT_TYPE_KEYWORD) && (self->GetContentType() != GD_LEXEM_CONTENT_TYPE_OPERATOR)) return 0;
 			return self->ProcessedDataId;
