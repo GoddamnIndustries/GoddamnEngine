@@ -34,11 +34,11 @@ GD_NAMESPACE_BEGIN
 	{
 		if (self->Lexer->GetNextLexem(self->Input.GetPointer(), &self->CurrentLexem))
 		{	// Reading succeded, we need to skip comments comments until read token.
-			if (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_COMMENT)
+			if (self->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_COMMENT))
 			{	// Comment coming. Maybe we need to store it somewhere or ... 
 				return self->TryReadNextLexem();
 			}
-			else if (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_EOS)
+			else if (self->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_EOS))
 			{	// End-Of-Stream coming.
 				return false;
 			}
@@ -118,7 +118,7 @@ GD_NAMESPACE_BEGIN
 			if (self->CurrentLexem.GetProcessedDataId() != ID)
 			{	// Unexpected lexem value.
 				CPPBaseParserErrorDesc static const UnexpectedLexemValueError("unexpected '%s'.");
-				self->RaiseError(UnexpectedLexemValueError, &self->CurrentLexem.GetRawData()[0]);
+				self->RaiseError(UnexpectedLexemValueError, self->CurrentLexem.GetRawData().CStr());
 				self->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
 
 				return false;
@@ -215,7 +215,6 @@ GD_NAMESPACE_BEGIN
 		{
 			if (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_IDENTIFIER) // This is idenitifier lexem.
 				if (strncmp(self->CurrentLexem.GetRawData().CStr(), ExpectedAnnotationPrefix.CStr(), ExpectedAnnotationPrefix.GetSize()) == 0) // This lexem matches with prefix.
-					// This is Goddamn annotation mark.
 					return true;
 		} while (self->TryReadNextLexem());
 		return false;
@@ -270,7 +269,7 @@ GD_NAMESPACE_BEGIN
 					for (;;)
 					{	// Loop made to parse multiple paramaters with '|' operator.
 						if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) return false;
-						if (!AnnotationParamParser->ParseArgument(self, BaseParser->GetCurrentLexem().GetRawData()))
+						if (!AnnotationParamParser->ParseArgument(BaseParser, self, BaseParser->GetCurrentLexem().GetRawData()))
 						{	// Failed to create argument parser.
 							CPPBaseParserErrorDesc static const InvalidAnnotationParameterValueSpecifiedError("invalid annotation parameter`s value '%s' specified.");
 							BaseParser->RaiseError(InvalidAnnotationParameterValueSpecifiedError, BaseParser->GetCurrentLexem().GetRawData().CStr());
@@ -575,7 +574,7 @@ GD_NAMESPACE_BEGIN
 			if (!self->TryReadNextLexem()) return false;
 			if  (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_EOS) break;
 			if ((self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_IDENTIFIER) && (self->CurrentLexem.GetRawData()[0] == Char('$')))
-			{	// This is Goddamn annotation mark.
+			{	// This is GoddamnCase annotation mark.
 				if (!self->ProcessAnnotation())
 					return false;
 			}

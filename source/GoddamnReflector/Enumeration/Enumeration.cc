@@ -15,22 +15,12 @@ GD_NAMESPACE_BEGIN
 	LockFreeList<SharedPtr<CPPEnumeration const>> static CPPEnumerationsListImpl;
 	LockFreeList<SharedPtr<CPPEnumeration const>> const& CPPEnumerationsList = CPPEnumerationsListImpl;
 
-	class CPPEnumerationParamTypeParser final : public CPPAnnotationParamParser
-	{
-	};	// class CPPEnumerationParamTypeParser
-
-	class CPPEnumerationParamStrinigificationParser final : public CPPAnnotationParamParser
-	{
-	};	// class CPPEnumerationParamStrinigificationParser
-
-	/// ==========================================================================================
-	/// CPPEnumerationParser class.
 	/// Parses "$GD_ENUMERATION(...)" annotation.
-	/// ==========================================================================================
-
 	class CPPEnumerationParser final : public CPPAnnotationParser
 	{
-	public /*Constructor / Destructor*/:
+	public /*Class members & constructor / destructor*/:
+		SharedPtr<CPPEnumeration> CurrentEnumeration;
+
 		GDINL explicit CPPEnumerationParser(CPPAnnotationCtorArgs const* const Args) : CPPAnnotationParser(Args) { }
 		GDINL virtual ~CPPEnumerationParser() { }
 
@@ -40,6 +30,31 @@ GD_NAMESPACE_BEGIN
 		/// @see CPPAnnotationParser::ParseAnnotation
 		GDINT virtual bool ParseAnnotation(CPPBaseParser* const BaseParser) override final;
 	};	// class CPPEnumerationParser  
+
+	/// Parses "$GD_ENUMERATION(...)" annotation`s "Type" argument.
+	class CPPEnumerationParamTypeParser final : public CPPAnnotationParamParser
+	{
+	public /*Class API*/:
+		GDINL explicit CPPEnumerationParamTypeParser(CPPAnnotationCtorArgs const* const Args) : CPPAnnotationParamParser(Args) { }
+		GDINL virtual ~CPPEnumerationParamTypeParser() { }
+		/// @see CPPAnnotationParamParser::ParseArgument
+		GDINT virtual bool ParseArgument(CPPBaseParser* const BaseParser, CPPAnnotationParser* const AnnotationParser, String const& ParamValue) override final;
+	};	// class CPPEnumerationParamTypeParser
+
+	/// Parses "$GD_ENUMERATION(...)" annotation`s "Stringification" argument.
+	class CPPEnumerationParamStrinigificationParser final : public CPPAnnotationParamParser
+	{
+	public /*Class API*/:
+		GDINL explicit CPPEnumerationParamStrinigificationParser(CPPAnnotationCtorArgs const* const Args) : CPPAnnotationParamParser(Args) { }
+		GDINL virtual ~CPPEnumerationParamStrinigificationParser() { }
+		/// @see CPPAnnotationParamParser::ParseArgument
+		GDINT virtual bool ParseArgument(CPPBaseParser* const BaseParser, CPPAnnotationParser* const AnnotationParser, String const& ParamValue) override final;
+	};	// class CPPEnumerationParamStrinigificationParser
+
+	/// ==========================================================================================
+	/// CPPEnumerationParser class.
+	/// Parses "$GD_ENUMERATION(...)" annotation.
+	/// ==========================================================================================
 
 	/// Spanwer node for this type.
 	CPPAnnotationParserSpawner::Node<CPPEnumerationParser> static const CPPEnumerationParserSpawnerNode("$GD_ENUMERATION");
@@ -62,11 +77,188 @@ GD_NAMESPACE_BEGIN
 	/// @see CPPAnnotationParser::ParseAnnotation
 	bool CPPEnumerationParser::ParseAnnotation(CPPBaseParser* const BaseParser)
 	{
-		if (!self->CPPAnnotationParser::ParseAnnotation(BaseParser))
-			return false;
+		/// Initialization.
+		self->CurrentEnumeration = new CPPEnumeration();
+		if (!self->CPPAnnotationParser::ParseAnnotation(BaseParser)) return false;
+		self->CurrentEnumeration->SetDefaultsForUnknowns();
+
+		/// Expecting 'enum' keyword.
+		using namespace StreamedLexerDefaultOptions;
+		if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_KEYWORD, GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_ENUM)) return false;
+
+		// Parsing enumeration identifier name.
+		if (!BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) return false;
+		self->CurrentEnumeration->EnumerationName = BaseParser->GetCurrentLexem().GetRawData();
+
+		// Parsing enumeration base type (if it was specified).
+		if (!BaseParser->ExpectNextLexem()) return false;
+		if ( BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COLON))
+		{	// Enumeration has it`s own base type.
+			if (!BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) return false;
+			self->CurrentEnumeration->EnumerationBaseTypeName = BaseParser->GetCurrentLexem().GetRawData();
+			if (!BaseParser->ExpectNextLexem()) return false;
+		}
+
+		// Parsing enumeration body.
+		if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN)) return false;
+		if (!BaseParser->ExpectNextLexem()) return false;
+		for (;;)
+		{	// Expecting '};' as enumeration body end.
+			self->CurrentEnumeration->EnumerationElements.ÑonsiderPreprocessorDirective(BaseParser);
+
+			if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END)))
+			{	// Found '}' mark. Now expecting ';'
+				if (!BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SEMICOLON))
+					return false;
+				break;
+			}
+
+			CPPEnumerationElement* EnumerationElement = new CPPEnumerationElement();
+
+			if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) return false;
+			EnumerationElement->EnumerationElementName = BaseParser->GetCurrentLexem().GetRawData();
+			self->CurrentEnumeration->EnumerationElements.AppendDefinition(SharedPtr<CPPDefinition>(EnumerationElement));
+
+			if (!BaseParser->ExpectNextLexem()) return false;
+			//if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN)))
+			//{	// Enum element default value specified.
+			//	GD_NOT_IMPLEMENTED();
+			//}
+			//else
+			//{	// No enum element default value specified -> using generated.
+			//	if (self->CurrentEnumeration->EnumerationValues.IsEmpty())
+			//		self->CurrentEnumeration->EnumerationValues.PushLast(EnumerationValueName, 0);
+			//	else
+			//		self->CurrentEnumeration->EnumerationValues.PushLast(EnumerationValueName, self->CurrentEnumeration->EnumerationValues.GetLastElement().Value + 1);
+			//}
+
+			//self->CurrentEnumeration->EnumerationElements.ÑonsiderPostPreprocessorDirective(BaseParser);
+			if (!BaseParser->ExpectNextLexem()) return false;
+		}
+
+		self->CurrentEnumeration = nullptr;
 		return true;
 	}
 
+	/// ==========================================================================================
+	/// CPPEnumerationParamTypeParser class.
+	/// Parses "$GD_ENUMERATION(...)" annotation`s "Type" argument.
+	/// ==========================================================================================
+
+	/// ------------------------------------------------------------------------------------------
+	/// Public class API (Constructors / Destructor):
+	/// ------------------------------------------------------------------------------------------
+
+	bool CPPEnumerationParamTypeParser::ParseArgument(CPPBaseParser* const BaseParser, CPPAnnotationParser* const SomeAnnotationParser, String const& ParamValue)
+	{
+		CPPEnumerationParser* const AnnotationParser = static_cast<CPPEnumerationParser*>(SomeAnnotationParser);
+		if (AnnotationParser->CurrentEnumeration->EnumerationType == GD_CPP_ENUMERATION_TYPE_UNKNOWN)
+		{
+			if (ParamValue == "Enumeration")
+				AnnotationParser->CurrentEnumeration->EnumerationType = GD_CPP_ENUMERATION_TYPE_ENUMERATION;
+			else if (ParamValue == "Bitset")
+				AnnotationParser->CurrentEnumeration->EnumerationType = GD_CPP_ENUMERATION_TYPE_BITSET;
+			else
+			{
+				CPPBaseParserErrorDesc static const MultipleEnumTypesSpecifiedError("invalid parameter Type value '%s' specified.");
+				BaseParser->RaiseError(MultipleEnumTypesSpecifiedError, ParamValue.CStr());
+				BaseParser->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
+				return false;
+			}
+		}
+		else
+		{	
+			CPPBaseParserErrorDesc static const MultipleEnumTypesSpecifiedError("multiple enumeration Type parameters specified.");
+			BaseParser->RaiseError(MultipleEnumTypesSpecifiedError);
+			BaseParser->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
+			return false;
+		}
+
+		return true;
+	}
+
+	/// ==========================================================================================
+	/// CPPEnumerationParamStrinigificationParser class.
+	/// Parses "$GD_ENUMERATION(...)" annotation`s "Stringification" argument.
+	/// ==========================================================================================
+
+	/// ------------------------------------------------------------------------------------------
+	/// Public class API (Constructors / Destructor):
+	/// ------------------------------------------------------------------------------------------
+
+	bool CPPEnumerationParamStrinigificationParser::ParseArgument(CPPBaseParser* const BaseParser, CPPAnnotationParser* const SomeAnnotationParser, String const& ParamValue)
+	{
+		CPPEnumerationParser* const AnnotationParser = static_cast<CPPEnumerationParser*>(SomeAnnotationParser);
+		auto& Stringification = AnnotationParser->CurrentEnumeration->EnumerationStringification;
+
+		if (Stringification.ChoppingPolicy == GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_UNKNOWN)
+		{	// This params could be here.
+			if (ParamValue == "Chopped")
+				Stringification.ChoppingPolicy = GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_CHOPPING;
+			if (ParamValue == "Full")
+				Stringification.ChoppingPolicy = GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_FULL;
+
+			// Value modified.
+			if (Stringification.ChoppingPolicy != GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_UNKNOWN)
+				return true;
+		}
+		else if ((ParamValue == "Chopped") || (ParamValue == "Full"))
+		{	// Validating multilple redifinition error.
+			CPPBaseParserErrorDesc static const MultipleEnumChoppingSpecifiedError("multiple enumeration Stringification chopping policy parameters specified.");
+			BaseParser->RaiseError(MultipleEnumChoppingSpecifiedError);
+			BaseParser->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
+			return false;
+		}
+
+		if (Stringification.CasePolicy == GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_UNKNOWN)
+		{	// This params could be here.
+			if (ParamValue == "GoddamnCase")
+				Stringification.CasePolicy = GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_GODDAMN;
+			if (ParamValue == "AsIs")
+				Stringification.CasePolicy = GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_AS_IS;
+			if (ParamValue == "UpperCase")
+				Stringification.CasePolicy = GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_UPPER_CASE;
+			if (ParamValue == "LowerCase")
+				Stringification.CasePolicy = GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_LOWER_CASE;
+
+			// Value modified.
+			if (Stringification.CasePolicy != GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_UNKNOWN)
+				return true;
+		}
+		else if ((ParamValue == "GoddamnCase") || (ParamValue == "AsIs") || (ParamValue == "UpperCase") || (ParamValue == "LowerCase"))
+		{	// Validating multilple redifinition error.
+			CPPBaseParserErrorDesc static const MultipleEnumCaseSpecifiedError("multiple enumeration Stringification case policy parameters specified.");
+			BaseParser->RaiseError(MultipleEnumCaseSpecifiedError);
+			BaseParser->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
+			return false;
+		}
+
+		if (Stringification.ExportPolicy == GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_UNKNOWN)
+		{	// This params could be here.
+			if (ParamValue == "Internal")
+				Stringification.ExportPolicy = GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_INTERNAL;
+			if (ParamValue == "Public")
+				Stringification.ExportPolicy = GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_PUBLIC;
+
+			// Value modified.
+			if (Stringification.ExportPolicy != GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_UNKNOWN)
+				return true;
+		}
+		else if ((ParamValue == "Internal") || (ParamValue == "Public"))
+		{	// Validating multilple redifinition error.
+			CPPBaseParserErrorDesc static const MultipleEnumExportSpecifiedError("multiple enumeration Stringification export policy parameters specified.");
+			BaseParser->RaiseError(MultipleEnumExportSpecifiedError);
+			BaseParser->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
+			return false;
+		}
+
+		CPPBaseParserErrorDesc static const InvalidStringificationParamSpecified("invalid Stringification parameter '%s' specified.");
+		BaseParser->RaiseError(InvalidStringificationParamSpecified, ParamValue.CStr());
+		BaseParser->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
+		return false;
+	}
+
+#if 0
 	/// Fills the array with default enumeration values names.
 	/// @param Enumeration Pointer on enumeration description.
 	/// @param OutputNames List of generated output names.
@@ -211,5 +403,6 @@ GD_NAMESPACE_BEGIN
 		}
 		OutputGeneratedSourceStream->WriteString("\n\t\t}\n\t\treturn ???Something???;\n\t}");
 	}
+#endif	// if 0
 
 GD_NAMESPACE_END

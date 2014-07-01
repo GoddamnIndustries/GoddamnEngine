@@ -64,8 +64,27 @@ GD_NAMESPACE_BEGIN
 		GD_HRI_SHADER_PARAM_MAX_STRING_LENGTH = 64,
 	};	// enum HRIShaderLimits
 
+	$GD_ENUMERATION()
+	enum MyEnum : size_t
+	{
+		MY_ENUM_VALUE_0,
+		MY_ENUM_VALUE_1,
+		MY_ENUM_VALUE_2,
+#if SOME_MACRO == 0
+		MY_ENUM_VALUE_3,
+#elif SOME_MACRO == 01.07.2014
+		MY_ENUM_VALUE_3,
+		MY_ENUM_VALUE_4,
+#else	// if SOME_MACRO
+		MY_ENUM_VALUE_3,
+#	if SOME__OTHER_MACRO
+		MY_ENUM_VALUE_4,
+#	endif	// if SOME__OTHER_MACRO
+#endif	// if SOME_MACRO	
+	};	// enum MyEnum
+
 	/// Describes types of shaders.
-	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | LowerCase | Public)
+	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | GoddamnCase | Public)
 	enum HRIShaderType : size_t
 	{
 		GD_HRI_SHADER_TYPE_COMPUTE,							///< Computing shader type.

@@ -6,6 +6,10 @@
 ///		* 30.06.2014 - Created by James Jhuighuy
 //////////////////////////////////////////////////////////////////////////
 
+#pragma once
+#ifndef GD_REFLECLECTOR_REFLECLECTOR
+#define GD_REFLECLECTOR_REFLECLECTOR
+
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/TypeTraits.hh>
 #include <GoddamnEngine/Core/Containers/Map/Map.hh>
@@ -54,7 +58,15 @@ GD_NAMESPACE_BEGIN
 
 		/// Returns reference on last parsed lexem.
 		/// @returns Reference on last parsed lexem.
-		Lexem const& GetCurrentLexem() const { return self->CurrentLexem; }
+		GDINL Lexem const& GetCurrentLexem() const { return self->CurrentLexem; }
+
+		/// Returns reference on input stream this parser reads from.
+		/// @returns Reference on input stream this parser reads from.
+		GDINL InputStream* GetInputStream() { return self->Input.GetPointer(); }
+
+		/// Returns reference on lexer this parser ususes.
+		/// @returns Reference on lexer this parser ususes.
+		GDINL StreamedLexer* GetLexer() { return self->Lexer.GetPointer(); }
 
 		/// @}
 
@@ -249,10 +261,11 @@ GD_NAMESPACE_BEGIN
 
 	public /*Class API*/:
 		/// Parses upcoming annotation param.
+		/// @param BaseParser       Parser that provides low lever source parsing.
 		/// @param AnnotationParser Parser, that currently works on upcoming annotation.
 		/// @param ParamValue       String value of annotation paramater or it`s part.
 		/// @returns True if annotation param was succesfully parsed.
-		GDINT virtual bool ParseArgument(CPPAnnotationParser* const AnnotationParser, String const& ParamValue) abstract;
+		GDINT virtual bool ParseArgument(CPPBaseParser* const BaseParser, CPPAnnotationParser* const AnnotationParser, String const& ParamValue) abstract;
 	};	// class CPPAnnotationParamParser
 
 	/// Provides registering all annotation-params-parser-derived classes and spawning them while parsing.
@@ -296,7 +309,7 @@ GD_NAMESPACE_BEGIN
 			GDINL explicit Node(CPPAnnotationParamParserSpawner& Spawner, String const& Name)
 			{
 				Spawner.RegisterAnnotationParamParser(Name, [](CPPAnnotationCtorArgs const* const Args) {
-					return SharedPtr<CPPAnnotationParser>(new CPPAnnotationParserType(Args));
+					return UniquePtr<CPPAnnotationParamParser>(new CPPAnnotationParamParserType(Args));
 				});
 			}
 		};	// struct CPPAnnotationParserSpawner::Node
@@ -319,3 +332,5 @@ GD_NAMESPACE_BEGIN
 	};	// class CPPAnnotationParamParserSpawner
 
 GD_NAMESPACE_END
+
+#endif

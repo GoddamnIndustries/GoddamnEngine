@@ -256,8 +256,8 @@ GD_NAMESPACE_BEGIN
 			if (self->Pointer != Other)
 			{
 				self->~SharedPtr();
-				self->Pointer = Pointer;
-				self->ReferenceCount = new UInt32(1);
+				self->Pointer = Other;
+				self->ReferenceCount = new Int32(1);
 			}
 
 			return (*self);

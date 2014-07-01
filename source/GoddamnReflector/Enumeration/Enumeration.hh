@@ -16,7 +16,9 @@
 #include <GoddamnEngine/Core/Containers/Pointer/SharedPtr.hh>
 #include <GoddamnEngine/Core/Reflection/Reflectable.hh>
 #include <GoddamnEngine/Core/Compilers/Toolchain/Toolchain.hh>
+
 #include <GoddamnReflector/Reflector.hh>
+#include <GoddamnReflector/RePreprocessor/RePreprocessor.hh>
 
 #define LockFreeList Vector
 
@@ -25,60 +27,83 @@ GD_NAMESPACE_BEGIN
 	class OutputStream;
 
 	/// Describes enumeration types.
-	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | Goddamn)
+	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | GoddamnCase)
 	enum CPPEnumerationType : UInt8
 	{
 		GD_CPP_ENUMERATION_TYPE_UNKNOWN                             = 0, ///< Unknown (internal usage only).
-		GD_CPP_ENUMERATION_TYPE_DEFAULT                             = 1, ///< Default enumeration type (enumeration).
 		GD_CPP_ENUMERATION_TYPE_ENUMERATION                         = 1, ///< This enumeration contains values that can be represented as Bitset (array of booleans).
 		GD_CPP_ENUMERATION_TYPE_BITSET                              = 2, ///< This enumeration contains values that can be represented as List.
 	};	// enum CPPEnumerationType
 
 	/// Describes enumeration values strinigfication Chopped policy.
-	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | Goddamn)
+	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | GoddamnCase)
 	enum CPPEnumerationStringificationChoppingPolicy : UInt8
 	{
 		GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_UNKNOWN  = 0, ///< Unknown (internal usage only).
-		GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_DEFAULT  = 1, ///< Default stringification choppping policy (stubbed).
 		GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_CHOPPING = 1, ///< Enumeration values common parts would be stubbed when stringified. E.g. (MY_ENUM_A, MY_ENUM_B) would be stringified as ("A", "B").
 		GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_FULL     = 2, ///< Enumeration values would be strinigfied fully. E.g. (MY_ENUM_A, MY_ENUM_B) would be stringified as ("MY_ENUM_A", "MY_ENUM_B").
 	};	// enum CPPEnumerationStringificationChoppingPolicy
 
 	/// Describes enumeration values strinigfication case policy.
-	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | Goddamn)
+	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | GoddamnCase)
 	enum CPPEnumerationStringificationCasePolicy : UInt8
 	{
 		GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_UNKNOWN      = 0, ///< Unknown (internal usage only).
-		GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_DEFAULT      = 1, ///< Default stringification case policy (Goddamn casing policy).
-		GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_GODDAMN      = 1, ///< Enumeration values would be strinigfied using Goddamn casing policy (PascalCase like).
+		GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_GODDAMN      = 1, ///< Enumeration values would be strinigfied using GoddamnCase casing policy (PascalCase like).
 		GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_AS_IS        = 2, ///< Enumeration values would be strinigfied as is.
 		GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_LOWER_CASE   = 3, ///< Enumeration values would be strinigfied in lower case.
 		GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_UPPER_CASE   = 4, ///< Enumeration values would be strinigfied in upper case.
 	};	// enum CPPEnumerationStringificationCasePolicy
 
 	/// Describes enumeration stringiciation methods export policy.
-	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | Goddamn)
+	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | GoddamnCase)
 	enum CPPEnumerationStringificationExportPolicy : UInt8
 	{
 		GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_UNKNOWN    = 0,	///< Unknown (internal usage only).
-		GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_DEFAULT    = 1, ///< Default stringiciation methods export policy (public).
 		GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_PUBLIC     = 1, ///< '*ToStr' and '*FromStr' methods would be publically exported from generated code.
 		GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_INTERNAL   = 2, ///< '*ToStr' and '*FromStr' methods stay internal for generated code.
 	};	// enum CPPEnumerationStringificationExportPolicy
+
+	/// Describes GoddamnC++ enumeration element definition.
+	struct CPPEnumerationElement final : CPPDefinition
+	{
+		String EnumerationElementName;
+		UInt64 EnumerationElementValue = 0;
+	};	// struct CPPEnumerationElement
 
 	/// Describes GoddamnC++ enumeration definition.
 	struct CPPEnumeration final : public CPPDefinition
 	{
 		String EnumerationName;                                                                                                      ///< Name of this enumeration.
 		String EnumerationBaseTypeName = "int";                                                                                      ///< Name of enumeration base type name (if does not inherits from other enum).
-		UnorderedMap<String, UInt64> EnumerationValues;                                                                              ///< List of enumeration definition names and values.
+		CPPRePreprocessorDefinitions EnumerationElements;                                                                            ///< List of enumeration definition names and values.
 		SharedPtr<CPPEnumeration const> EnumerationBaseEnumeration;                                                                  ///< Pointer to base enum of this.
-		CPPEnumerationType EnumerationType = GD_CPP_ENUMERATION_TYPE_DEFAULT;                                                        ///< Describes enumeration types.
+		CPPEnumerationType EnumerationType = GD_CPP_ENUMERATION_TYPE_UNKNOWN;                                                        ///< Describes enumeration types.
 		struct {
-			CPPEnumerationStringificationChoppingPolicy ChoppingPolicy = GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_DEFAULT; ///< Describes enumeration values strinigfication Chopped policy.
-			CPPEnumerationStringificationCasePolicy     CasePolicy     = GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_DEFAULT;     ///< Describes enumeration values strinigfication case policy.
-			CPPEnumerationStringificationExportPolicy   ExportPolicy   = GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_DEFAULT;   ///< Describes enumeration stringiciation methods export policy.
+			CPPEnumerationStringificationChoppingPolicy ChoppingPolicy = GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_UNKNOWN; ///< Describes enumeration values strinigfication Chopped policy.
+			CPPEnumerationStringificationCasePolicy     CasePolicy     = GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_UNKNOWN;     ///< Describes enumeration values strinigfication case policy.
+			CPPEnumerationStringificationExportPolicy   ExportPolicy   = GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_UNKNOWN;   ///< Describes enumeration stringiciation methods export policy.
 		} EnumerationStringification;	                                                                                             ///< Describes enumeration values strinigfication policy.
+
+		/// Sets default values for fiels that were not set.
+		/// EnumerationType is set to GD_CPP_ENUMERATION_TYPE_ENUMERATION.
+		/// EnumerationStringification.ChoppingPolicy is set to GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_CHOPPING.
+		/// EnumerationStringification.CasePolicy is set to GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_GODDAMN.
+		/// EnumerationStringification.ExportPolicy is set to GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_PUBLIC.
+		inline void SetDefaultsForUnknowns()
+		{
+			if (self->EnumerationType == GD_CPP_ENUMERATION_TYPE_UNKNOWN)
+				self->EnumerationType  = GD_CPP_ENUMERATION_TYPE_ENUMERATION;
+			
+			if (self->EnumerationStringification.ChoppingPolicy == GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_UNKNOWN)
+				self->EnumerationStringification.ChoppingPolicy  = GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_CHOPPING;
+			
+			if (self->EnumerationStringification.CasePolicy == GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_UNKNOWN)
+				self->EnumerationStringification.CasePolicy  = GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_GODDAMN;
+			
+			if (self->EnumerationStringification.ExportPolicy == GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_UNKNOWN)
+				self->EnumerationStringification.ExportPolicy  = GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_PUBLIC;
+		}
 	};	// struct CPPEnumeration
 
 	/// Contains a whole list of enumerations that were parsed in this header.

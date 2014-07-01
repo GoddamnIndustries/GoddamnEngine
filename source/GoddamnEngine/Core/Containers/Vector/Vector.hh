@@ -281,6 +281,9 @@ GD_NAMESPACE_BEGIN
 		/// Returns number of elements that can be placed into vector without reallocation.
 		GDINL size_t GetCapacity() const;
 
+		/// Returns true it this container is empty.
+		GDINL bool IsEmpty() const { return self->GetSize() == 0; }
+
 		/// Resizes vector to make it contain specified number of elements.
 		inline void Resize(size_t const NewElementsCount, ElementType const& InitialElement = ElementType());
 		/// Reserves memory for vector to make it contain specified number of elements without reallocation when calling Resize method.
