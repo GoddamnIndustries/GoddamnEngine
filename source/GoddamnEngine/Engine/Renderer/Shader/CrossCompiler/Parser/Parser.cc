@@ -359,7 +359,7 @@ GD_NAMESPACE_BEGIN
 	public /*Class API*/:
 		GDINT ~HLSLParserImpl()	{ }
 		GDINT  HLSLParserImpl(IToolchain* const  Toolchain, Stream* const  ShaderSourceInputStream)
-			: IToolchainTool(Toolchain), ShaderSourceInputStream(ShaderSourceInputStream), Lexer(Toolchain, GetDefaultOptionsForHlsl())
+			: IToolchainTool(Toolchain), ShaderSourceInputStream(ShaderSourceInputStream), Lexer(Toolchain, ShaderSourceInputStream, GetDefaultOptionsForHlsl())
 		{	// Registering default types.
 			self->EnterScope(&HLSLSuperGlobalScope);
 			self->EnterScope(self->GlobalScope = new HLSLScope());
@@ -965,7 +965,7 @@ GD_NAMESPACE_BEGIN
 
 	bool HLSLParserImpl::TryReadNextLexem()
 	{
-		if (self->Lexer.GetNextLexem(self->ShaderSourceInputStream, &self->CurrentLexem))
+		if (self->Lexer.GetNextLexem(&self->CurrentLexem))
 		{	// Reading succeded, we need to skip comments comments until read token.
 			if (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_COMMENT)
 				return self->TryReadNextLexem();

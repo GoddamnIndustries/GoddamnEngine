@@ -14,6 +14,7 @@
 #include <GoddamnEngine/Core/Containers/Pair/Pair.hh>
 #include <GoddamnEngine/Core/Text/String/String.hh>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
+#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.hh>
 #include <GoddamnEngine/Core/Compilers/Toolchain/Toolchain.hh>
 
 #include <string.h>
@@ -53,7 +54,8 @@ GD_NAMESPACE_BEGIN
 	struct Lexem final
 	{
 	private:
-		friend class StreamedLexerImpl;
+		friend class      StreamedLexerImpl;
+		friend class BasicStreamedLexerImpl;
 		GD_CLASS_UNASSIGNABLE(Lexem);
 		GD_CLASS_UNSWAPPABLE (Lexem);
 		GD_CLASS_UNCOPIABLE  (Lexem);
@@ -195,17 +197,23 @@ GD_NAMESPACE_BEGIN
 		GD_CLASS_UNCOPIABLE  (StreamedLexer);
 		GD_CLASS_UNMOVABLE   (StreamedLexer);
 
+		Int8 PreviousImplementationState = -1;
+		UniquePtr<class BasicStreamedLexerImpl> Implementation;
 		StreamedLexerOptions const& Options;
-		size_t CurrentLine = 1;
-		size_t CurrentSymbol = 0;
 
 	public:
-		GDINL  StreamedLexer(IToolchain* const Toolchain, StreamedLexerOptions const& Options) : IToolchainTool(Toolchain), Options(Options) { }
-		GDINL ~StreamedLexer() { }
+		/// Initializes new streamed lexer.
+		/// @param Toolchain   Corresponding toolchain.
+		/// @param InputStream Stream on which lexer would work.
+		/// @param Options     Packed lexing options list.
+		GDAPI  StreamedLexer(IToolchain* const Toolchain, Stream* const InputStream, StreamedLexerOptions const& Options);
+		GDAPI ~StreamedLexer();
 
 		/// Extracts next lexem from input stream into output. Throws an exception into toolchain if error accures. 
+		/// @param OutputLexem Pointer to output lexem variable.
+		/// @param ProvideSimpleParsing If specified as true, then only simle tokenization is provided: no real parsed operators, keyword and etc.
 		/// @returns True if lexem was successfully extracted. If operation fails (except cases of expected End-Of-Stream) than exception is raised to that toolchain.
-		GDAPI bool GetNextLexem(Stream* const InputStream, Lexem* const OutputLexem);
+		GDAPI bool GetNextLexem(Lexem* const OutputLexem, bool const ProvideSimpleParsing = false);
 	};	// class StreamedLexer
 
 	/// Contains some predefined options for streamed lexer.

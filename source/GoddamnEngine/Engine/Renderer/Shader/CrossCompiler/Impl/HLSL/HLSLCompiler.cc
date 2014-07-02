@@ -219,7 +219,7 @@ GD_NAMESPACE_BEGIN
 				size_t CompilationErrorIndex = strstr(CompilationErrorsList.CStr(), "(") - (CompilationErrorsList.CStr());
 				for (auto const& CompilationError : CompilationErrorsList.Split('\n'))
 				{
-					Str const CompilationErrorWithoutFile = CompilationError.Begin() + CompilationErrorIndex;
+					Str const CompilationErrorWithoutFile = CompilationError.CStr() + CompilationErrorIndex;
 					HLSLCompilerErrorDesc static const D3DCompilerError("D3DCompile returned error: \n%s");
 					self->RaiseError(D3DCompilerError, CompilationErrorWithoutFile);
 					self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
