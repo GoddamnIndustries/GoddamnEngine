@@ -286,10 +286,12 @@ GD_NAMESPACE_BEGIN
 		{
 		case GD_CHARACTER_TYPE_DIGIT:
 			{	// Processing characters: may just append it or switch into octal notation.
+#if 0
 				if ((self->CurrentLexemIntegerNotation == StreamedLexerImpl::DefaultLexemIntegerNotation) && (self->CurrentLexem->ProcessedDataInteger == 0) && (self->CurrentCharacter != CharAnsi('0')))
 				{	// Force switching into octal notation like in C++-like languages syntax. E.g. 074 = 60
 					self->CurrentLexemIntegerNotation = 8;
 				}
+#endif	// if 0
 				
 				// Processing character if it is digit in current notation
 				UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(self->CurrentCharacter);

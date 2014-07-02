@@ -64,25 +64,6 @@ GD_NAMESPACE_BEGIN
 		GD_HRI_SHADER_PARAM_MAX_STRING_LENGTH = 64,
 	};	// enum HRIShaderLimits
 
-	$GD_ENUMERATION()
-	enum MyEnum : size_t
-	{
-		MY_ENUM_VALUE_0,
-		MY_ENUM_VALUE_1,
-		MY_ENUM_VALUE_2,
-#if SOME_MACRO == 0
-		MY_ENUM_VALUE_3 = 3,
-#elif SOME_MACRO == 01.07.2014
-		MY_ENUM_VALUE_3 = 4,
-		MY_ENUM_VALUE_4,
-#else	// if SOME_MACRO
-		MY_ENUM_VALUE_3 = 5,
-#	if SOME__OTHER_MACRO
-		MY_ENUM_VALUE_4 = 69,
-#	endif	// if SOME__OTHER_MACRO
-#endif	// if SOME_MACRO	
-	};	// enum MyEnum
-
 	/// Describes types of shaders.
 	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | GoddamnCase | Public)
 	enum HRIShaderType : size_t
@@ -103,7 +84,7 @@ GD_NAMESPACE_BEGIN
 	};	// enum HRIShaderType
 
 	/// Describes type of shader parameter
-	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | AsIs)
+	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | AsIs | Internal)
 	enum HRIShaderParamDescType : size_t
 	{
 		GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE,			///< Type of parameter can be represented as Format.
@@ -117,7 +98,7 @@ GD_NAMESPACE_BEGIN
 	};	// enum HRIShaderParamDescType
 
 	/// Describing types of location of shader parameter
-	$GD_ENUMERATION(Type = Enumeration, Stringification = None)
+	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | AsIs | Internal)
 	enum HRIShaderParamLocationDescType : size_t
 	{
 		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES,      ///< Parameter is resource.

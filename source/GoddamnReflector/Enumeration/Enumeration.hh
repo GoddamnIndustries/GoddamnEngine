@@ -106,7 +106,7 @@ GD_NAMESPACE_BEGIN
 	};	// struct CPPEnumeration
 
 	/// Contains a whole list of enumerations that were parsed in this header.
-	LockFreeList<SharedPtr<CPPEnumeration const>> extern const& CPPEnumerationsList;
+	LockFreeList<SharedPtr<CPPEnumeration>> extern const& CPPEnumerationsList;
 
 	/// Fills the array with default enumeration values names.
 	/// @param Enumeration Pointer on enumeration description.

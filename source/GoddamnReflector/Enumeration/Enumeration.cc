@@ -12,8 +12,8 @@
 
 GD_NAMESPACE_BEGIN
 
-	LockFreeList<SharedPtr<CPPEnumeration const>> static CPPEnumerationsListImpl;
-	LockFreeList<SharedPtr<CPPEnumeration const>> const& CPPEnumerationsList = CPPEnumerationsListImpl;
+	LockFreeList<SharedPtr<CPPEnumeration>> static CPPEnumerationsListImpl;
+	LockFreeList<SharedPtr<CPPEnumeration>> const& CPPEnumerationsList = CPPEnumerationsListImpl;
 
 	/// Parses "$GD_ENUMERATION(...)" annotation.
 	class CPPEnumerationParser final : public CPPAnnotationParser
@@ -102,33 +102,34 @@ GD_NAMESPACE_BEGIN
 		// Parsing enumeration body.
 		if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN)) return false;
 		if (!BaseParser->ExpectNextLexem()) return false;
-		for (;;)
-		{	// Expecting '};' as enumeration body end.
-			while (self->CurrentEnumeration->EnumerationElements.ÑonsiderPreprocessorDirective(BaseParser));
-			if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END)))
-			{	// Found '}' mark. Now expecting ';'
-				if (!BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SEMICOLON))
-					return false;
-				break;
+		if (!BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END))
+		{	// We are having non-empty enumeration here.
+			for (;;)
+			{	// Considering all preprocessor directives we met while parsing.
+				while (self->CurrentEnumeration->EnumerationElements.ÑonsiderPreprocessorDirective(BaseParser));
+				if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END))) break;
+
+				// Parsing enumeration element name.
+				if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) return false;
+				CPPEnumerationElement* const EnumerationElement = new CPPEnumerationElement();
+				EnumerationElement->Name = BaseParser->GetCurrentLexem().GetRawData();
+				self->CurrentEnumeration->EnumerationElements.AppendElement(SharedPtr<CPPDefinition>(EnumerationElement));
+				if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END))) break;
+				
+				if (!BaseParser->ExpectNextLexem()) return false;
+				if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN)))
+				{	// Here we have explicit enum value specified.
+					if (!BaseParser->ExpectNextLexem()) return false;
+					if (!BaseParser->ExpectNextLexem()) return false;
+				}
+				
+				if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END))) break;
+				if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA)) return false;
+				if (!BaseParser->ExpectNextLexem()) return false;
 			}
-
-			CPPEnumerationElement* const EnumerationElement = new CPPEnumerationElement();
-
-			if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) return false;
-			
-			EnumerationElement->Name = BaseParser->GetCurrentLexem().GetRawData();
-			self->CurrentEnumeration->EnumerationElements.AppendElement(SharedPtr<CPPDefinition>(EnumerationElement));
-
-			if (!BaseParser->ExpectNextLexem()) return false;
-			if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN)))
-			{	// Enum element default value specified.
-				GD_NOT_IMPLEMENTED();
-			}
-
-			//self->CurrentEnumeration->EnumerationElements.ÑonsiderPostPreprocessorDirective(BaseParser);
-			if (!BaseParser->ExpectNextLexem()) return false;
 		}
 
+		CPPEnumerationsListImpl.PushLast(self->CurrentEnumeration);
 		self->CurrentEnumeration = nullptr;
 		return true;
 	}

@@ -818,7 +818,7 @@ int main(int const ArgumensCount, char const* const* const ParamsList)
 	SharedPtr<InputStream> static HeaderInputStream(new FileInputStream(HeaderPath));
 
 	CPPBaseParser static BaseParser(&Toolchain, HeaderInputStream);
-	BaseParser.ProcessNextAnnotation();
+	while(BaseParser.ProcessNextAnnotation());
 
 	return 0;
 }
