@@ -7,8 +7,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#ifndef GD_REFLECLECTOR_REFLECLECTOR
-#define GD_REFLECLECTOR_REFLECLECTOR
+#ifndef GD_REFLECTOR_REFLECTOR
+#define GD_REFLECTOR_REFLECTOR
 
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/TypeTraits.hh>
@@ -108,6 +108,7 @@ GD_NAMESPACE_BEGIN
 		GDINT bool ExpectNextLexem();
 
 		/// Expects next lexem from input stream and a match of lexem content type with specified one.
+		/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
 		/// @param ContentType The expected lexem content type.
 		/// @returns True if lexem was succesfully read and mathes with specified content type.
 		GDINT bool TryExpectNextLexem(LexemContentType const ContentType);
@@ -120,6 +121,7 @@ GD_NAMESPACE_BEGIN
 		GDINT bool ExpectNextLexem(LexemContentType const ContentType);
 
 		/// Expects next lexem from input stream, and a match of lexem content type with specified one, and a match of lexem parsed data ID with specified one.
+		/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
 		/// @param ContentType The expected lexem content type.
 		/// @param ID          The expected lexem parsed data ID (PDID).
 		/// @returns True if lexem was succesfully read and mathes with specified content type and specified parsed data ID.
@@ -166,8 +168,6 @@ GD_NAMESPACE_BEGIN
 	/// Abstract interface for GoddamnC++ annotation parser.
 	class CPPAnnotationParser 
 	{
-		friend bool CPPBaseParser::ProcessNextAnnotation(String const& ExpectedAnnotationPrefix /* = "$GD_" */);
-
 	public /*Constructor / Destrutor*/:
 		/// Initializes specialized annotation parser.
 		/// @param Args Packed constructor params May be null pointer.
@@ -180,7 +180,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns True if annotation argumnts were succesfully parsed.
 		GDINT bool ParseAnnotationParams(CPPBaseParser* const BaseParser);
 
-	protected /*Class API*/:
+	public /*Class API*/:
 		/// Spawns new parser of annotaion param value.
 		/// @param ParamName Name of param that would be parsed.
 		/// @returns Pointer to parser on success, or nullptr on fail.
@@ -271,14 +271,14 @@ GD_NAMESPACE_BEGIN
 	/// Provides registering all annotation-params-parser-derived classes and spawning them while parsing.
 	/// To create some specific annotation params parser follow this example:
 	/// @code
-	///		class CPPMyAnnotationParamParser final : public CPPAnnotationParamParser {
+	///		class CPPMyAnnotationAaParamParser final : public CPPAnnotationParamParser {
 	///			...	// Implement all abstract methods here.
 	///     };	// class CPPMyAnnotationParamParser
-	///
+	///		...
 	///		UniquePtr<CPPAnnotationParamParser> CPPMyAnnotationParser::SpawnParamParser(String const& ParamName) {
-	///			CPPAnnotationParamParserSpawner static const Spawner; {
-	///				CPPAnnotationParamParserSpawner::Node<CPPMyAnnotationParser> static const ParamAaSpawnerNode(Spawner, "AaaaAa");
-	///				CPPAnnotationParamParserSpawner::Node<CPPMyAnnotationParser> static const ParamBbSpawnerNode(Spawner, "BbBBbb");
+	///				CPPAnnotationParamParserSpawner static const Spawner; {
+	///				CPPAnnotationParamParserSpawner::Node<CPPMyAnnotationAaParamParser> static const ParamAaSpawnerNode(Spawner, "AaaaAa");
+	///				CPPAnnotationParamParserSpawner::Node<CPPMyAnnotationBbParamParser> static const ParamBbSpawnerNode(Spawner, "BbBBbb");
 	///			}
 	///			return Spawner.SpawnParamParser(ParamName, SomeCtorParams);
 	///		}

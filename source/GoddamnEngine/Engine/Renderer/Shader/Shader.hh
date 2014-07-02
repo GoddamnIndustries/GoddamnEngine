@@ -68,18 +68,18 @@ GD_NAMESPACE_BEGIN
 	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | GoddamnCase | Public)
 	enum HRIShaderType : size_t
 	{
-		GD_HRI_SHADER_TYPE_COMPUTE,							///< Computing shader type.
-		GD_HRI_SHADER_TYPE_GEOMETRY,						///< Geometry shader type.
-		GD_HRI_SHADER_TYPE_VERTEX,							///< Vertex shader type.
-		GD_HRI_SHADER_TYPE_HULL,							///< Hull shader type.
-		GD_HRI_SHADER_TYPE_DOMAIN,							///< Domain shader type.
-		GD_HRI_SHADER_TYPE_PIXEL,							///< Pixel shader type.
-		GD_HRI_SHADER_TYPE_UNKNOWN,							///< Unknown shader type (internal usage only).
-		GD_HRI_SHADER_TYPES_COUNT							= GD_HRI_SHADER_TYPE_UNKNOWN,
+		GD_HRI_SHADER_TYPE_COMPUTE,								///< Computing shader type.
+		GD_HRI_SHADER_TYPE_GEOMETRY,							///< Geometry shader type.
+		GD_HRI_SHADER_TYPE_VERTEX,								///< Vertex shader type.
+		GD_HRI_SHADER_TYPE_HULL,								///< Hull shader type.
+		GD_HRI_SHADER_TYPE_DOMAIN,								///< Domain shader type.
+		GD_HRI_SHADER_TYPE_PIXEL,								///< Pixel shader type.
+		GD_HRI_SHADER_TYPE_UNKNOWN,								///< Unknown shader type (internal usage only).
+		GD_HRI_SHADER_TYPES_COUNT								= GD_HRI_SHADER_TYPE_UNKNOWN,
 #if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
-		GD_HRI_SHADER_TYPE_TESSELLATION_CONTROL				= GD_HRI_SHADER_TYPE_HULL,	 ///< Alias to hull shader (for OpenGL).
-		GD_HRI_SHADER_TYPE_TESSELLATION_EVALUATION			= GD_HRI_SHADER_TYPE_DOMAIN, ///< Alias to domain shader (for OpenGL).
-		GD_HRI_SHADER_TYPE_FRAGMENT							= GD_HRI_SHADER_TYPE_PIXEL,	 ///< Alias to pixel shader (for OpenGL).
+		GD_HRI_SHADER_TYPE_TESSELLATION_CONTROL					= GD_HRI_SHADER_TYPE_HULL,	 ///< Alias to hull shader (for OpenGL).
+		GD_HRI_SHADER_TYPE_TESSELLATION_EVALUATION				= GD_HRI_SHADER_TYPE_DOMAIN, ///< Alias to domain shader (for OpenGL).
+		GD_HRI_SHADER_TYPE_FRAGMENT								= GD_HRI_SHADER_TYPE_PIXEL,	 ///< Alias to pixel shader (for OpenGL).
 #endif	// if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 	};	// enum HRIShaderType
 
@@ -87,29 +87,29 @@ GD_NAMESPACE_BEGIN
 	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | AsIs | Internal)
 	enum HRIShaderParamDescType : size_t
 	{
-		GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE,			///< Type of parameter can be represented as Format.
-		GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX4X4,			///< Float32x4x4 (float32) parameter.
-		GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX3X3,			///< float32x3x3 (float32) parameter.
-		GD_HRI_SHADER_PARAM_DESC_TYPE_STRING,				///< String (ANSI Character set, length - 64 symbols) parameter.
-		GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D,			///< 2D texture parameter.
-		GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE,			///< Cube texture parameter.
-		GD_HRI_SHADER_PARAM_DESC_TYPE_UNKNOWN,				///< Unknown parameter type (internal usage only).
-		GD_HRI_SHADER_PARAM_DESC_TYPES_COUNT				= GD_HRI_SHADER_PARAM_DESC_TYPE_UNKNOWN,
+		GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE,				///< Type of parameter can be represented as Format.
+		GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX4X4,				///< Float32x4x4 (float32) parameter.
+		GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX3X3,				///< float32x3x3 (float32) parameter.
+		GD_HRI_SHADER_PARAM_DESC_TYPE_STRING,					///< String (ANSI Character set, length - 64 symbols) parameter.
+		GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D,				///< 2D texture parameter.
+		GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE,				///< Cube texture parameter.
+		GD_HRI_SHADER_PARAM_DESC_TYPE_UNKNOWN,					///< Unknown parameter type (internal usage only).
+		GD_HRI_SHADER_PARAM_DESC_TYPES_COUNT					= GD_HRI_SHADER_PARAM_DESC_TYPE_UNKNOWN,
 	};	// enum HRIShaderParamDescType
 
 	/// Describing types of location of shader parameter
 	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | AsIs | Internal)
 	enum HRIShaderParamLocationDescType : size_t
 	{
-		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES,      ///< Parameter is resource.
-		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_CONSTANTBUFFER, ///< Parameter is located in constant buffer. On platforms without support of constant buffers they are emulated using uniforms.
-		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_UNKNOWN,		   ///< Unknown parameter location (internal usage only).
-		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPES_COUNT	       = GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_UNKNOWN,
-		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_FIRST	       = 0
+		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES,		///< Parameter is resource.
+		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_CONSTANTBUFFER,	///< Parameter is located in constant buffer. On platforms without support of constant buffers they are emulated using uniforms.
+		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_UNKNOWN,			///< Unknown parameter location (internal usage only).
+		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPES_COUNT			= GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_UNKNOWN,
+		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_FIRST			= 0
 	};	// enum HRIShaderParamLocationDescType
 
 	/// Describes shader public parameter
-	$GD_REFLECTABLE(Serializable, Deserializable)
+	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParamDesc final : public HRIObject
 	{
 		$GD_REFLECTABLE_BODY_GENERATED_CRAP(HRIShaderParamDesc);
@@ -176,7 +176,7 @@ GD_NAMESPACE_BEGIN
 	typedef Float32 HRIShaderChar;	
 
 	/// Instance of single parameter in shader
-	$GD_REFLECTABLE(Serializable, Deserializable)
+	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParam final : public HRIObject
 	{
 		$GD_REFLECTABLE_BODY_GENERATED_CRAP(HRIShaderParam);
@@ -217,7 +217,7 @@ GD_NAMESPACE_BEGIN
 	};	// class HRIShaderParam
 	
 	/// Description of single location type in shader instance desc.
-	$GD_REFLECTABLE(Serializable, Deserializable)
+	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParamLocationDesc final : public HRIObject
 	{
 		$GD_REFLECTABLE_BODY_GENERATED_CRAP(HRIShaderParamLocationDesc);
@@ -245,7 +245,7 @@ GD_NAMESPACE_BEGIN
 	};	// class HRIShaderParamLocationDesc
 
 	/// Description of single location in shader instance
-	$GD_REFLECTABLE(Serializable, Deserializable)
+	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParamLocation : public HRIObject
 	{
 		$GD_REFLECTABLE_BODY_GENERATED_CRAP(HRIShaderParamLocationDesc);

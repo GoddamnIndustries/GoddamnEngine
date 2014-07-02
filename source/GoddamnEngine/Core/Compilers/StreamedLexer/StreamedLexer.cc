@@ -369,49 +369,44 @@ GD_NAMESPACE_BEGIN
 		for (auto const CurrentOperatorOrCommentMatch : self->CurrentMatches)
 		{	
 			if ((*CurrentOperatorOrCommentMatch)[self->CurrentMatchingIndex] == self->CurrentCharacter)
-			{	// Character matches some declaration at current index
-				CurrentMatches.PushLast(CurrentOperatorOrCommentMatch);
-				if ((*CurrentOperatorOrCommentMatch).GetSize() == (1 + self->CurrentMatchingIndex))
+			{	// Character matches some declaration at current index.
+				if (CurrentOperatorOrCommentMatch->GetSize() == (1 + self->CurrentMatchingIndex))
 				{	// We are having a full match with some operator, so lets identify it now
-					/**/ if (CurrentMatches[0] == &self->Options.SingleLineCommentDeclaration)
+					/**/ if (CurrentOperatorOrCommentMatch == &self->Options.SingleLineCommentDeclaration)
 					{	// Declaration matches single line comment declaration.
+						self->CurrentMatchingIndex = 0;
 						self->CurrentState = GD_LEXER_STATE_READING_COMMENT_SINGLELINE;
 						self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_COMMENT;
-						self->CurrentMatchingIndex = 0;
+						self->CurrentLexem->ProcessedDataID = 0;
+						return;
 					}
-					else if (CurrentMatches[0] == &self->Options.MultipleLineCommentBeginning)
+					else if (CurrentOperatorOrCommentMatch == &self->Options.MultipleLineCommentBeginning)
 					{	// Declaration matches multiple line comment declaration.
+						self->CurrentMatchingIndex = 0;
 						self->CurrentState = GD_LEXER_STATE_READING_COMMENT_MULTIPLELINE;
 						self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_COMMENT;
-						self->CurrentMatchingIndex = 0;
+						self->CurrentLexem->ProcessedDataID = 0;
+						return;
 					}
-					else
-					{	// Declaration matches operator declaration.
-						size_t const Index = reinterpret_cast<StreamedLexerOperatorDecl const*>(CurrentMatches[0]) - &self->Options.OperatorDeclarations[0];
-						self->CurrentLexem->ProcessedDataId = self->Options.OperatorDeclarations[Index].First;
-					}
+
+					// Declaration matches operator declaration.
+					size_t const Index = self->Options.OperatorDeclarations.FindFirstElement([&](StreamedLexerOperatorDecl const& OperatorDecl) -> bool {
+						return ((&OperatorDecl.Second) == CurrentOperatorOrCommentMatch);
+					});
+					self->CurrentLexem->ProcessedDataID = self->Options.OperatorDeclarations[Index].First;
+					break;
 				}
+				
+				CurrentMatches.PushLast(CurrentOperatorOrCommentMatch);
 			}
 		}
 
-		/**/ if (CurrentMatches.GetSize() == 1)
-		{	// Seams we have a match here. 
-			if ((CurrentMatches[0]->GetSize() == (self->CurrentMatchingIndex + 1)) && (self->CurrentLexem->GetContentType() == GD_LEXEM_CONTENT_TYPE_OPERATOR))
-			{	// Lets check if this is a full match and skip to full if not.
-				self->CurrentMatchingIndex = 0;
-				self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_COMMIT);
-				return;
-			}
+		if (CurrentMatches.GetSize() == 0)
+		{	// No matches in this iteration. That means that currect operator ID was set in previos. Just committing.
+			self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_COMMIT);
+			return;
 		}
-		else if (CurrentMatches.GetSize() == 0)
-		{	// Just throwing an error for now. For C++-like languages this branch of code is never executed
-			// because they have a ladder of of operators: <, <<, <<=. There are no multiple characters operators
-			// that do not have matching operator that is equal to this without last character.
-			static ParsingErrorDesc const UnexpectedSpecialCharacter("unexpected special character while parsing operator");
-			self->RaiseFatalError(UnexpectedSpecialCharacter);
-			self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_SYNTAX);
-		}
-		
+
 		self->CurrentMatches = Move(CurrentMatches);
 		self->CurrentMatchingIndex += 1;
 	}
@@ -428,16 +423,20 @@ GD_NAMESPACE_BEGIN
 		}
 
 		Vector<String const*> CurrentMatches(0, nullptr, self->CurrentMatches.GetSize());
-		for (auto const CurrentOperatorOrCommentMatch : self->CurrentMatches)
-		{	/// @todo Rewrite this code using CopyIf
-			if ((*CurrentOperatorOrCommentMatch)[self->CurrentMatchingIndex] == self->CurrentCharacter)
+		for (auto const CurrentIdentifierMatch : self->CurrentMatches)
+		{	
+			if ((*CurrentIdentifierMatch)[self->CurrentMatchingIndex] == self->CurrentCharacter)
 			{	// Character matches some declaration at current index
-				CurrentMatches.PushLast(CurrentOperatorOrCommentMatch);
-				if ((*CurrentOperatorOrCommentMatch).GetSize() == (1 + self->CurrentMatchingIndex))
+				CurrentMatches.PushLast(CurrentIdentifierMatch);
+				if (CurrentIdentifierMatch->GetSize() == (1 + self->CurrentMatchingIndex))
 				{	// We are having a full match with some operator, so lets identify it now
-					size_t const Index = reinterpret_cast<StreamedLexerKeywordDecl const*>(CurrentMatches[0]) - &self->Options.KeywordsDeclarations[0];
-					self->CurrentLexem->ProcessedDataId = self->Options.KeywordsDeclarations[Index].First;
+					size_t const Index = self->Options.KeywordsDeclarations.FindFirstElement([&](StreamedLexerKeywordDecl const& KeywordDecl) -> bool {
+						return ((&KeywordDecl.Second) == CurrentIdentifierMatch);
+					});
+
 					self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_KEYWORD;
+					self->CurrentLexem->ProcessedDataID = self->Options.KeywordsDeclarations[Index].First;
+					break;
 				}
 			}
 		}
@@ -445,7 +444,7 @@ GD_NAMESPACE_BEGIN
 		if (CurrentMatches.GetSize() == 0)
 		{	// We are heving next chracter that makes this lexem valid identifier.
 			// Restoring identifer content type.
-			self->CurrentLexem->ProcessedDataId = 0;
+			self->CurrentLexem->ProcessedDataID = 0;
 			self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_IDENTIFIER;
 		}
 

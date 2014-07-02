@@ -67,7 +67,7 @@ GD_NAMESPACE_BEGIN
 			CharAnsi        ProcessedDataCharacter;
 			UInt64          ProcessedDataInteger;
 			Float64         ProcessedDataFloat;
-			StreamedLexerID ProcessedDataId;
+			StreamedLexerID ProcessedDataID;
 			UInt8           Padding[8];
 		};	
 
@@ -116,10 +116,10 @@ GD_NAMESPACE_BEGIN
 		}
 		
 		/// Returns some ID data, located inside this lexem if this lexem can has ID.
-		GDINL StreamedLexerID  GetProcessedDataId()    const 
+		GDINL StreamedLexerID  GetProcessedDataID()    const 
 		{ 
 			if ((self->GetContentType() != GD_LEXEM_CONTENT_TYPE_KEYWORD) && (self->GetContentType() != GD_LEXEM_CONTENT_TYPE_OPERATOR)) return 0;
-			return self->ProcessedDataId;
+			return self->ProcessedDataID;
 		}
 	};	// struct Lexem
 

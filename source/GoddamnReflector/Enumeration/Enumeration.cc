@@ -60,13 +60,13 @@ GD_NAMESPACE_BEGIN
 	CPPAnnotationParserSpawner::Node<CPPEnumerationParser> static const CPPEnumerationParserSpawnerNode("$GD_ENUMERATION");
 
 	/// ------------------------------------------------------------------------------------------
-	/// Protected class API (Constructors / Destructor):
+	/// Public class API (Implemetations):
 	/// ------------------------------------------------------------------------------------------
 
 	/// @see CPPAnnotationParser::SpawnParamParser
 	UniquePtr<CPPAnnotationParamParser> CPPEnumerationParser::SpawnParamParser(String const& ParamName)
 	{
-		CPPAnnotationParamParserSpawner static Spawner; {
+			CPPAnnotationParamParserSpawner static Spawner; {
 			CPPAnnotationParamParserSpawner::Node<CPPEnumerationParamTypeParser> static const TypeParamSpawner(Spawner, "Type");
 			CPPAnnotationParamParserSpawner::Node<CPPEnumerationParamStrinigificationParser> static const StringificationParamSpawner(Spawner, "Stringification");
 		}
@@ -101,8 +101,7 @@ GD_NAMESPACE_BEGIN
 
 		// Parsing enumeration body.
 		if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN)) return false;
-		if (!BaseParser->ExpectNextLexem()) return false;
-		if (!BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END))
+		if (!BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END))
 		{	// We are having non-empty enumeration here.
 			for (;;)
 			{	// Considering all preprocessor directives we met while parsing.
@@ -116,8 +115,7 @@ GD_NAMESPACE_BEGIN
 				self->CurrentEnumeration->EnumerationElements.AppendElement(SharedPtr<CPPDefinition>(EnumerationElement));
 				if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END))) break;
 				
-				if (!BaseParser->ExpectNextLexem()) return false;
-				if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN)))
+				if ((BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN)))
 				{	// Here we have explicit enum value specified.
 					if (!BaseParser->ExpectNextLexem()) return false;
 					if (!BaseParser->ExpectNextLexem()) return false;

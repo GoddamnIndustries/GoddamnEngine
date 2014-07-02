@@ -439,7 +439,7 @@ GD_NAMESPACE_BEGIN
 		{	// Scanning our definition
 			UniquePtr<HLSLDefinition const> Definition;
 			/**/ if ((self->CurrentLexem.GetContentType()     == GD_LEXEM_CONTENT_TYPE_OPERATOR)
-				  && (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_SCOPE_END))    return true;
+				  && (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_SCOPE_END))    return true;
 			else if ((Definition.Reset(self->ParseDefinition(ExpectedDefinitions))) == nullptr)  return false;
 			
 			// Placing it into scope
@@ -463,7 +463,7 @@ GD_NAMESPACE_BEGIN
 
 		if (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_KEYWORD)
 		{	// Lets determine what definition we have here.
-			/**/ if ((!GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataId(), DEFINING)) && (!GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataId(), TYPE_MODIFIER)))
+			/**/ if ((!GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataID(), DEFINING)) && (!GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataID(), TYPE_MODIFIER)))
 			{	// This keyword contains something else..
 				static HRIShaderCrossCompilerErrorDesc const UnexpectedKeywordError("unexpected keyword '%s'");
 				self->RaiseError(UnexpectedKeywordError, &self->CurrentLexem.GetRawData()[0]);
@@ -471,7 +471,7 @@ GD_NAMESPACE_BEGIN
 
 				return nullptr;
 			}
-			else if (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_KEYWORD_TYPEDEF)
+			else if (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_KEYWORD_TYPEDEF)
 			{	// We are having a typedef here:
 				if ((ExpectedDefinitions & GD_HLSL_DEFINITION_TYPEDEF) == 0)
 				{	// Unexpected type definition.
@@ -486,7 +486,7 @@ GD_NAMESPACE_BEGIN
 				return nullptr;
 				// return self->ParseTypedef();
 			}
-			else if (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_KEYWORD_CBUFFER)
+			else if (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_KEYWORD_CBUFFER)
 			{	// We are having a constant buffer here:
 				if ((ExpectedDefinitions & GD_HLSL_DEFINITION_CONSTANTBUFFER) == 0)
 				{	// Unexpected constant buffer definition.
@@ -504,9 +504,9 @@ GD_NAMESPACE_BEGIN
 		// Parsing definition type modifier, if it exists,
 		HLSLTypeModifier TypeModifier = GD_HLSL_TYPE_MODIFIER_UNKNOWN;
 		if (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_KEYWORD)
-			while (GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataId(), TYPE_MODIFIER))
+			while (GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataID(), TYPE_MODIFIER))
 			{
-				TypeModifier = HLSLTypeModifier(TypeModifier | GD_BIT(self->CurrentLexem.GetProcessedDataId() - GD_HLSL_KEYWORD_TYPE_MODIFIER_BEGIN__ - 1));
+				TypeModifier = HLSLTypeModifier(TypeModifier | GD_BIT(self->CurrentLexem.GetProcessedDataID() - GD_HLSL_KEYWORD_TYPE_MODIFIER_BEGIN__ - 1));
 				if (!self->ExpectNextLexem()) return nullptr;
 			}
 
@@ -539,7 +539,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR)) return nullptr;
-		if ( self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_PARAMS_BEGIN)
+		if ( self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_PARAMS_BEGIN)
 		{	// Parsing function declaration here? which start with '(' operator.
 			if ((ExpectedDefinitions & GD_HLSL_DEFINITION_FUNCTION) == 0)
 			{	// Unexpected function definition.
@@ -583,7 +583,7 @@ GD_NAMESPACE_BEGIN
 	HLSLType const* HLSLParserImpl::ParseType(HLSLDefinitionType const ExpectedDefinitions, bool* const IsDefinition /* = nullptr */)
 	{	// Lets test if our type is something that touches structures or classes:
 		if (   (self->CurrentLexem.GetContentType    () == GD_LEXEM_CONTENT_TYPE_KEYWORD)
-			&& (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_KEYWORD_STRUCT))
+			&& (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_KEYWORD_STRUCT))
 		{	// Type if structure or class. Lets check what is it:
 			// 1) A structure declaration:   struct [ StructName ] [ : BaseClass ] { } [ InstanceDecl ] 
 			// 2) A C-style struct instance: struct   StructName
@@ -624,7 +624,7 @@ GD_NAMESPACE_BEGIN
 				Struct->Name = TypeName;
 			}
 			else if ((self->CurrentLexem.GetContentType()     == GD_LEXEM_CONTENT_TYPE_OPERATOR) 
-				  && (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_SCOPE_BEGIN))
+				  && (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_SCOPE_BEGIN))
 			{	// We have anonymous structure declaration.
 				Struct.Reset(new HLSLStruct());
 				Struct->Name = String::Format("__AnonymousStruct_%d", ++self->AnonymousIdentifiersCount);
@@ -679,7 +679,7 @@ GD_NAMESPACE_BEGIN
 	HLSLVariable const* HLSLParserImpl::ParseVariable(HLSLDefinition const* const PrependingDefinition, bool const DoExpectSemicolon /* = true */)
 	{
 		UniquePtr<HLSLVariable> Variable(new HLSLVariable(*PrependingDefinition));
-		/**/ if (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_INDEX_BEGIN)
+		/**/ if (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_INDEX_BEGIN)
 		{	// Parsing array definitions.
 			if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_CONSTANT_INTEGER)) return nullptr;
 			if ((Variable->ArrayIndex = self->CurrentLexem.GetProcessedDataInt()) == 0)
@@ -694,7 +694,7 @@ GD_NAMESPACE_BEGIN
 			if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_INDEX_END)) return nullptr;
 			if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR                            )) return nullptr;
 		}
-		else if (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_COLON)
+		else if (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_COLON)
 		{	    // Pasring variable semantic, register and pack offset here.
 			HLSLExprColonType ExpectedColonExprs = HLSLExprColonType(GD_HLSL_EXPRCOLON_TYPE_REGISTER | GD_HLSL_EXPRCOLON_TYPE_PACKOFFSET);
 			if ((Variable->Type->Class == GD_HLSL_TYPE_CLASS_SCALAR) || (Variable->Type->Class == GD_HLSL_TYPE_CLASS_VECTOR))
@@ -740,8 +740,8 @@ GD_NAMESPACE_BEGIN
 		{	// Parsing function arguments here:
 			HLSLArgumentAccessType ArgumentAccessType = GD_HLSL_ARGUMENT_IN;
 			if (!self->ExpectNextLexem()) return nullptr;
-			if ((self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_OPERATOR) && (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_PARAMS_END)) break;
-			if ((self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_KEYWORD ) && (GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataId(), ARGUMENTS)))
+			if ((self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_OPERATOR) && (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_PARAMS_END)) break;
+			if ((self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_KEYWORD ) && (GD_HLSL_IS_KEYWORD_OF_TYPE(self->CurrentLexem.GetProcessedDataID(), ARGUMENTS)))
 			{	// Here we have a keyword that describes argument access type: 
 				StackUnorderedMap<StreamedLexerKeyword, HLSLArgumentAccessType, 3> AccessTypeTranslationTable = {
 					{ GD_HLSL_KEYWORD_IN   , GD_HLSL_ARGUMENT_IN    },
@@ -749,7 +749,7 @@ GD_NAMESPACE_BEGIN
 					{ GD_HLSL_KEYWORD_INOUT, GD_HLSL_ARGUMENT_INOUT },
 				};
 
-				size_t const ArgumentAccessTypeIndex = AccessTypeTranslationTable.FindFirstElement(self->CurrentLexem.GetProcessedDataId());
+				size_t const ArgumentAccessTypeIndex = AccessTypeTranslationTable.FindFirstElement(self->CurrentLexem.GetProcessedDataID());
 				ArgumentAccessType = AccessTypeTranslationTable.GetElementAt(ArgumentAccessTypeIndex).Second;
 				if (!self->ExpectNextLexem()) return nullptr;
 			}
@@ -760,12 +760,12 @@ GD_NAMESPACE_BEGIN
 			HLSLArgument* Argument = new HLSLArgument(Move(*ArgumentDefinition.GetPointer()));
 			Argument->AccsessType = ArgumentAccessType;
 			Function->Arguments.PushLast(Argument);
-			if ((self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_OPERATOR) && (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_PARAMS_END)) break;
+			if ((self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_OPERATOR) && (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_PARAMS_END)) break;
 			if (!self->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_COMMA)) return nullptr;
 		}
 
 		/**/ if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR)) return nullptr;
-		/**/ if ( self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_COLON)
+		/**/ if ( self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_COLON)
 		{	// Pasring function semantic here.
 			if (Function->Type == &HLSLVoid)
 			{	// 'void' functions cannot have semantics.
@@ -825,7 +825,7 @@ GD_NAMESPACE_BEGIN
 		ConstantBuffer->Name = self->CurrentLexem.GetRawData();
 
 		if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR)) return nullptr;
-		if ( self->CurrentLexem.GetProcessedDataId() == GD_HLSL_OPERATOR_COLON)
+		if ( self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_COLON)
 		{	    // Pasring constant buffer registerhere.
 			    ConstantBuffer->Register = static_cast<HLSLRegister const*>(self->ParseExprColon(GD_HLSL_EXPRCOLON_TYPE_REGISTER));
 			if (ConstantBuffer->Register == nullptr)                return nullptr;
@@ -856,7 +856,7 @@ GD_NAMESPACE_BEGIN
 		else if (!self->ExpectNextLexem()) return false;
 		else if ( self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_KEYWORD)
 		{	// Here comes the 'register' or 'packoffset'
-			/**/ if (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_KEYWORD_REGISTER)
+			/**/ if (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_KEYWORD_REGISTER)
 			{	// Here is register. Lets check if it was expected and parse it.
 				if ((ExpectedExprColons & GD_HLSL_EXPRCOLON_TYPE_REGISTER) == 0)
 				{	// Registers are not allowed here.
@@ -895,7 +895,7 @@ GD_NAMESPACE_BEGIN
 				if (!self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR                             )) return nullptr;
 				return Register.Release();
 			}
-			else if (self->CurrentLexem.GetProcessedDataId() == GD_HLSL_KEYWORD_PACKOFFSET)
+			else if (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_KEYWORD_PACKOFFSET)
 			{	// Here is register. Lets check if it was expected and parse it.
 				if ((ExpectedExprColons & GD_HLSL_EXPRCOLON_TYPE_PACKOFFSET) == 0)
 				{	// Registers are not allowed here.
@@ -1016,7 +1016,7 @@ GD_NAMESPACE_BEGIN
 	{
 		if (self->ExpectLexem(ExpectedContentType))
 		{	// Next lexem exists and has expected content type.
-			if (self->CurrentLexem.GetProcessedDataId() != ID)
+			if (self->CurrentLexem.GetProcessedDataID() != ID)
 			{	// Unexpected lexem value.
 				static HRIShaderCrossCompilerErrorDesc const UnexpectedLexemValueError("unexpected '%s'.");
 				self->RaiseError(UnexpectedLexemValueError, &self->CurrentLexem.GetRawData()[0]);
