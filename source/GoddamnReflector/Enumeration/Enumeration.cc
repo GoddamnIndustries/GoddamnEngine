@@ -104,8 +104,7 @@ GD_NAMESPACE_BEGIN
 		if (!BaseParser->ExpectNextLexem()) return false;
 		for (;;)
 		{	// Expecting '};' as enumeration body end.
-			self->CurrentEnumeration->EnumerationElements.ÑonsiderPreprocessorDirective(BaseParser);
-
+			while (self->CurrentEnumeration->EnumerationElements.ÑonsiderPreprocessorDirective(BaseParser));
 			if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END)))
 			{	// Found '}' mark. Now expecting ';'
 				if (!BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SEMICOLON))
@@ -113,24 +112,18 @@ GD_NAMESPACE_BEGIN
 				break;
 			}
 
-			CPPEnumerationElement* EnumerationElement = new CPPEnumerationElement();
+			CPPEnumerationElement* const EnumerationElement = new CPPEnumerationElement();
 
 			if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) return false;
-			EnumerationElement->EnumerationElementName = BaseParser->GetCurrentLexem().GetRawData();
-			self->CurrentEnumeration->EnumerationElements.AppendDefinition(SharedPtr<CPPDefinition>(EnumerationElement));
+			
+			EnumerationElement->Name = BaseParser->GetCurrentLexem().GetRawData();
+			self->CurrentEnumeration->EnumerationElements.AppendElement(SharedPtr<CPPDefinition>(EnumerationElement));
 
 			if (!BaseParser->ExpectNextLexem()) return false;
-			//if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN)))
-			//{	// Enum element default value specified.
-			//	GD_NOT_IMPLEMENTED();
-			//}
-			//else
-			//{	// No enum element default value specified -> using generated.
-			//	if (self->CurrentEnumeration->EnumerationValues.IsEmpty())
-			//		self->CurrentEnumeration->EnumerationValues.PushLast(EnumerationValueName, 0);
-			//	else
-			//		self->CurrentEnumeration->EnumerationValues.PushLast(EnumerationValueName, self->CurrentEnumeration->EnumerationValues.GetLastElement().Value + 1);
-			//}
+			if ((BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN)))
+			{	// Enum element default value specified.
+				GD_NOT_IMPLEMENTED();
+			}
 
 			//self->CurrentEnumeration->EnumerationElements.ÑonsiderPostPreprocessorDirective(BaseParser);
 			if (!BaseParser->ExpectNextLexem()) return false;

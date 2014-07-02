@@ -43,6 +43,23 @@ GD_NAMESPACE_BEGIN
 		GDINT ~CPPRePreprocessorDefinitions() { }
 		GDINL  CPPRePreprocessorDefinitions() : TopBlock(new Block()), CurrentBlock(self->TopBlock.GetPointer()) { }
 
+		/// @name Preprocessor directoves parsing.
+		/// @{
+
+		/// Forces block to consider some prepending preprocessor directive.
+		/// @param BaseParser Parser that provides low lever source parsing.
+		GDINT bool ÑonsiderPreprocessorDirective(CPPBaseParser* const BaseParser);
+
+#if (defined(GD_DEBUG))
+		/// Prints parsed stuff to output.
+		GDINT void DebugVislualizeBlock();
+#endif	// if (defined(GD_DEBUG))
+
+		/// @}
+
+		/// @name Elements management.
+		/// @{
+
 		/// Enumerates all definitions inside containter.
 		/// @param IterationPredicate iteration element callback predicate.
 		template<typename IterationPredicateType>
@@ -54,21 +71,14 @@ GD_NAMESPACE_BEGIN
 				InnerBlocks->ForEach(IterationPredicate);
 		}
 
-		/// Forces block to consider some prepending preprocessor directive.
-		/// @param BaseParser Parser that provides low lever source parsing.
-		GDINT bool ÑonsiderPreprocessorDirective(CPPBaseParser* const BaseParser);
-
 		/// Appends definition to this block.
 		/// @param Definition Definition that would be appended.
-		GDINL void AppendDefinition(SharedPtr<CPPDefinition> const& Definition)
+		GDINL void AppendElement(SharedPtr<CPPDefinition> const& Definition)
 		{
 			self->CurrentBlock->Elements.PushLast(Definition);
 		}
 
-#if (defined(GD_DEBUG))
-		/// Prints parsed stuff to output.
-		GDINT void DebugVislualizeBlock();
-#endif	// if (defined(GD_DEBUG))
+		/// @}
 	};	// class CPPRePreprocessorDefinitions
 
 GD_NAMESPACE_END

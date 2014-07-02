@@ -8,6 +8,10 @@
 
 #include <GoddamnReflector/RePreprocessor/RePreprocessor.hh>
 
+#if (defined(GD_DEBUG))
+#	include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.hh>
+#endif	// if (defined(GD_DEBUG))
+
 GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
@@ -24,10 +28,11 @@ GD_NAMESPACE_BEGIN
 	bool CPPRePreprocessorDefinitions::ÑonsiderPreprocessorDirective(CPPBaseParser* const BaseParser)
 	{	// Checking if this actually is a directive.
 		if (!BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, StreamedLexerDefaultOptions::GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PREPROCESSOR))
-			return true;
+			return false;
 
 		// Reading all directive into a string.
-		String PreprocessorDirective;
+		if (!BaseParser->ExpectNextLexem()) return false;
+		String PreprocessorDirective = BaseParser->GetCurrentLexem().GetRawData();
 		for (;;)
 		{	
 			Char const Character = BaseParser->GetInputStream()->Read<Char>();
@@ -115,6 +120,34 @@ GD_NAMESPACE_BEGIN
 	/// Prints parsed stuff to output.
 	void CPPRePreprocessorDefinitions::DebugVislualizeBlock()
 	{
+		class CPPRePreprocessorDefinitionsWriter final
+		{
+		private:
+			size_t IdentsCount = SIZE_MAX;
+		public:
+			StringBuilder Builder;
+
+		public:
+			GDINT StringBuilder& WriteBlock(Block const* SomeBlock)
+			{
+				++self->IdentsCount;
+				String const Idents(nullptr, self->IdentsCount, Char('\t'));
+				Builder.AppendFormat("\n%sBlock <Level %u> {", Idents.CStr(), self->IdentsCount);
+				Builder.AppendFormat("\n%s\tPreCondition : %s", Idents.CStr(), (!SomeBlock->PreCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PreCondition.CStr()).CStr() : "None"));
+				Builder.AppendFormat("\n%s\tPostCondition : %s", Idents.CStr(), (!SomeBlock->PostCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PostCondition.CStr()).CStr() : "None"));
+				Builder.AppendFormat("\n%s\tElements <Count %u> [", Idents.CStr(), SomeBlock->Elements.GetSize());
+				for (auto const Element : SomeBlock->Elements)
+					Builder.AppendFormat("\n%s\t\t\"(0x%x)\",", Idents.CStr(), Element.GetPointer());
+				Builder.AppendFormat("\n%s\t]", Idents.CStr());
+				for (auto const InnerBlock : SomeBlock->InnerBlocks)
+					self->WriteBlock(InnerBlock.GetPointer());
+				Builder.AppendFormat("\n%s}", Idents.CStr());
+				--self->IdentsCount;
+
+				return self->Builder;
+			}
+		};	// class CPPRePreprocessorDefinitionsWriter
+		printf("%s", CPPRePreprocessorDefinitionsWriter().WriteBlock(self->TopBlock.GetPointer()).GetPointer());
 	}
 #endif	// if (defined(GD_DEBUG))
 

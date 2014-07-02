@@ -48,4 +48,24 @@
 			</ArrayItems>
 		</Expand>
 	</Type>
+	
+	<!-- UniquePtr class -->
+	<Type Name="goddamn::UniquePtr&lt;*&gt;">
+    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
+    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
+    <Expand>
+      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
+    </Expand>
+	</Type>
+
+  <!-- SharedPtr class -->
+  <Type Name="goddamn::SharedPtr&lt;*&gt;">
+    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
+    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
+    <Expand>
+      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
+      <Item Condition="Pointer != 0" Name="Reference counter">*ReferenceCount</Item>
+    </Expand>
+  </Type>
+	
 </AutoVisualizer>

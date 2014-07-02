@@ -154,7 +154,8 @@ GD_NAMESPACE_BEGIN
 		self->HeapSize		= HeapSize;
 		self->HeapMemory	= (Char*)Allocator::AllocateMemory((self->GetSize() + 1) * sizeof(Char));
 
-		memset(self->HeapMemory, (int)fillWith, (self->GetSize() + 1) * sizeof(Char));
+		memset(self->HeapMemory, (int)fillWith, (self->GetSize()) * sizeof(Char));
+		*self->End() = '\0';
 	}
 
 	String::String(const CharAnsi* HeapMemory)

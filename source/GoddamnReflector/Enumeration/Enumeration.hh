@@ -67,8 +67,7 @@ GD_NAMESPACE_BEGIN
 	/// Describes GoddamnC++ enumeration element definition.
 	struct CPPEnumerationElement final : CPPDefinition
 	{
-		String EnumerationElementName;
-		UInt64 EnumerationElementValue = 0;
+		String Name;
 	};	// struct CPPEnumerationElement
 
 	/// Describes GoddamnC++ enumeration definition.
