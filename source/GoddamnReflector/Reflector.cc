@@ -503,12 +503,12 @@ int main(int const ArgumensCount, char const* const* const ParamsList)
 	using namespace GD_NAMESPACE;
 #endif	// if (defined(GD_NAMESPACE))
 
-#if (defined(GD_DEBUG))
+//#if (defined(GD_DEBUG))
 	static char const* const HeaderPath = R"(D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.hh)";
-#else
-	GD_ASSERT(ArgumensCount >= 2);
-	char const* const HeaderPath = ParamsList[1];
-#endif	// if (defined(GD_DEBUG))
+//#else
+//	GD_ASSERT(ArgumensCount >= 2);
+//	char const* const HeaderPath = ParamsList[1];
+//#endif	// if (defined(GD_DEBUG))
 
 	clock_t const StartTime = clock();
 

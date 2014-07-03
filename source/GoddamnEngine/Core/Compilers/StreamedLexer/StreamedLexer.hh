@@ -227,8 +227,8 @@ GD_NAMESPACE_BEGIN
 		/// @param InputStream Stream on which lexer would work.
 		/// @param Options     Packed lexing options list.
 		/// @param LexerMode Describes avaliable feature set of Streamed Lexer.
-		GDAPI  StreamedLexer(IToolchain* const Toolchain, Stream* const InputStream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode = GD_LEXER_MODE_DEFAULT);
-		GDAPI ~StreamedLexer();
+		GDAPI          StreamedLexer(IToolchain* const Toolchain, Stream* const InputStream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode = GD_LEXER_MODE_DEFAULT);
+		GDAPI virtual ~StreamedLexer();
 
 		/// Switches lexer features set.
 		/// @param LexerMode Describes avaliable feature set of Streamed Lexer.

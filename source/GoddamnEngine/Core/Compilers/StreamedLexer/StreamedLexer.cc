@@ -124,7 +124,6 @@ GD_NAMESPACE_BEGIN
 	private /*Class members*/:
 		size_t                      CurrentLexemFloatExponent   = 1;
 		Vector<String const*>       CurrentMatches              ;
-		bool                        WasMatchingTested           = false;
 
 	public /*CLass API*/:
 		GDINL StreamedLexerImpl(IToolchain* const Toolchain, StreamedLexerOptions const& Options, Stream* const InputStream)
@@ -369,7 +368,8 @@ GD_NAMESPACE_BEGIN
 		// self->CurrentState cannot be greater equal to unknown state
 		GD_WARNING_SUPPRESS(6385);
 		(self->*(LexemStatesDescTable[size_t(self->CurrentState)].SpecialProcessorPtr))();
-		 self->CurrentLexem->RawData += self->CurrentCharacter;
+		if (self->RewindedCharacter == CharAnsi('\0'))
+			self->CurrentLexem->RawData += self->CurrentCharacter;
 	}
 
 	/// Processes integer constants inside input stream.
@@ -505,7 +505,6 @@ GD_NAMESPACE_BEGIN
 		self->BasicStreamedLexerImpl::Reset();
 		self->CurrentLexemFloatExponent = 1;
 		self->CurrentMatches.Emptify();
-		self->WasMatchingTested = false;
 	}
 
 	/// Processes integer constants inside input stream.
@@ -542,6 +541,7 @@ GD_NAMESPACE_BEGIN
 				self->CurrentMatches.PushLast(&OperatorDeclaration.Second);
 		}
 
+		bool HasAnyFullMatch = false;
 		Vector<String const*> CurrentMatches(0, nullptr, self->CurrentMatches.GetSize());
 		for (auto const CurrentOperatorOrCommentMatch : self->CurrentMatches)
 		{	
@@ -571,7 +571,9 @@ GD_NAMESPACE_BEGIN
 						return ((&OperatorDecl.Second) == CurrentOperatorOrCommentMatch);
 					});
 					self->CurrentLexem->ProcessedDataID = self->Options.OperatorDeclarations[Index].First;
-					break;
+
+					HasAnyFullMatch = true;
+					continue;
 				}
 				
 				CurrentMatches.PushLast(CurrentOperatorOrCommentMatch);
@@ -579,7 +581,13 @@ GD_NAMESPACE_BEGIN
 		}
 
 		if (CurrentMatches.GetSize() == 0)
-		{	// No matches in this iteration. That means that currect operator ID was set in previos. Just committing.
+		{	// No matches in this iteration. That means that currect operator ID was set in previos. 
+			if (!HasAnyFullMatch)
+			{	// If there is not full math then some character is breaking the sequence breaking. Rewinding it to handle later.
+				self->RewindedCharacter = self->CurrentCharacter;
+			}
+
+			// Committing.
 			self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_COMMIT);
 			return;
 		}
@@ -591,35 +599,37 @@ GD_NAMESPACE_BEGIN
 	/// Processes identifiers and keywords inside input stream.
 	void StreamedLexerImpl::ProcessIdentifierOrKeyword()
 	{
-		if ((self->CurrentMatches.GetSize() == 0) && (!self->WasMatchingTested))
+		if ((self->CurrentMatches.GetSize() == 0) && (self->CurrentMatchingIndex == 0))
 		{	// Filling CurrentMatches with pointers on operators and comments declarations
-			self->WasMatchingTested = true;
-			self->CurrentMatchingIndex = 0;
 			self->CurrentMatches.Reserve(self->Options.KeywordsDeclarations.GetSize());
 			for (auto const& KeywordsDeclarations : self->Options.KeywordsDeclarations)
 				self->CurrentMatches.PushLast(&KeywordsDeclarations.Second);
 		}
 
+		bool HasAnyFullMatch = false;
 		Vector<String const*> CurrentMatches(0, nullptr, self->CurrentMatches.GetSize());
 		for (auto const CurrentIdentifierMatch : self->CurrentMatches)
 		{	
 			if ((*CurrentIdentifierMatch)[self->CurrentMatchingIndex] == self->CurrentCharacter)
 			{	// Character matches some declaration at current index
-				CurrentMatches.PushLast(CurrentIdentifierMatch);
 				if (CurrentIdentifierMatch->GetSize() == (1 + self->CurrentMatchingIndex))
-				{	// We are having a full match with some operator, so lets identify it now
+				{	// We are having a full match with some keyword, so lets identify it now.
 					size_t const Index = self->Options.KeywordsDeclarations.FindFirstElement([&](StreamedLexerKeywordDecl const& KeywordDecl) -> bool {
 						return ((&KeywordDecl.Second) == CurrentIdentifierMatch);
 					});
 
 					self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_KEYWORD;
 					self->CurrentLexem->ProcessedDataID = self->Options.KeywordsDeclarations[Index].First;
-					break;
+					
+					HasAnyFullMatch = true;
+					continue;
 				}
+
+				CurrentMatches.PushLast(CurrentIdentifierMatch);
 			}
 		}
 
-		if (CurrentMatches.GetSize() == 0)
+		if (!HasAnyFullMatch)
 		{	// We are heving next chracter that makes this lexem valid identifier.
 			// Restoring identifer content type.
 			self->CurrentLexem->ProcessedDataID = 0;
