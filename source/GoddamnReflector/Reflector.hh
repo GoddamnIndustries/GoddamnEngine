@@ -37,7 +37,6 @@ GD_NAMESPACE_BEGIN
 	class CPPBaseParser : public IToolchainTool
 	{
 	private:
-		bool ProvideSimpleParsing = true;
 		SharedPtr<InputStream  > const Input;
 		UniquePtr<StreamedLexer> const Lexer;
 		Lexem CurrentLexem;

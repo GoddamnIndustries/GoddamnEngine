@@ -358,7 +358,6 @@ GD_NAMESPACE_BEGIN
 		 self->CurrentLexem->RawData += self->CurrentCharacter;
 	}
 
-
 	/// Processes integer constants inside input stream.
 	void BasicStreamedLexerImpl::ProcessInteger()
 	{
@@ -630,26 +629,39 @@ GD_NAMESPACE_BEGIN
 	/// @param Toolchain   Corresponding toolchain.
 	/// @param InputStream Stream on which lexer would work.
 	/// @param Options     Packed lexing options list.
-	StreamedLexer::StreamedLexer(IToolchain* const Toolchain, Stream* const InputStream, StreamedLexerOptions const& Options)
+	StreamedLexer::StreamedLexer(IToolchain* const Toolchain, Stream* const InputStream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode /* = GD_STREAMED_LEXER_MODE_DEFAULT */)
 		: IToolchainTool(Toolchain)
-		, Implementation(new StreamedLexerImpl(Toolchain, Options, InputStream))
+		, ImplementationMode(LexerMode)
 		, Options(Options)
 	{
+		self->Implementation = ((self->ImplementationMode == GD_STREAMED_LEXER_MODE_BASIC) 
+			? new BasicStreamedLexerImpl(Toolchain, Options, InputStream)
+			: new      StreamedLexerImpl(Toolchain, Options, InputStream));
 	}
 
 	StreamedLexer::~StreamedLexer()
 	{
 	}
 
-	bool StreamedLexer::GetNextLexem(Lexem* const OutputLexem, bool const ProvideSimpleParsing /* = false */)
-	{	// We are using implementation class to prevent dozens of private fields in class.
-		Int8 CurrentImplementationState = static_cast<Int8>(ProvideSimpleParsing);
-		if  (CurrentImplementationState != self->PreviousImplementationState)
-		{
-			self->PreviousImplementationState = CurrentImplementationState;
-			self->Implementation = (ProvideSimpleParsing ? new BasicStreamedLexerImpl(*self->Implementation) : new StreamedLexerImpl(*self->Implementation));
+	/// Switches lexer features set.
+	/// @param LexerMode Describes avaliable feature set of Streamed Lexer.
+	void StreamedLexer::SwitchMode(StreamedLexerMode const LexerMode /* = GD_STREAMED_LEXER_MODE_DEFAULT */)
+	{
+		if (LexerMode != self->ImplementationMode)
+		{	// Lexer mode chagned, we need to switch used implementation.
+			GD_DEBUG_ASSERT(LexerMode < GD_STREAMED_LEXER_MODES_COUNT, "Invalid lexer mode specfied");
+			self->ImplementationMode = LexerMode;
+			self->Implementation = ((LexerMode == GD_STREAMED_LEXER_MODE_BASIC) ? new BasicStreamedLexerImpl(*self->Implementation) : new StreamedLexerImpl(*self->Implementation));
 		}
+	}
 
+	/// Extracts next lexem from input stream into output. Throws an exception into toolchain if error accures. Can be ran in simple and advanced mode.
+	/// More about modes: 
+	/// @param OutputLexem Pointer to output lexem variable.
+	/// @param LexerMode   Describes avaliable feature set of Streamed Lexer.
+	/// @returns True if lexem was successfully extracted. If operation fails (except cases of expected End-Of-Stream) than exception is raised to that toolchain.
+	bool StreamedLexer::GetNextLexem(Lexem* const OutputLexem)
+	{	// We are using implementation class to prevent dozens of private fields in class.
 		return self->Implementation->GetNextLexem(OutputLexem);
 	}
 

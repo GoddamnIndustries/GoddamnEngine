@@ -32,7 +32,7 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if lexem was succesfully read.
 	bool CPPBaseParser::TryReadNextLexem()
 	{
-		if (self->Lexer->GetNextLexem(&self->CurrentLexem, self->ProvideSimpleParsing))
+		if (self->Lexer->GetNextLexem(&self->CurrentLexem))
 		{	// Reading succeded, we need to skip comments comments until read token.
 			if (self->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_COMMENT))
 			{	// Comment coming. Maybe we need to store it somewhere or ... 
@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 	/// @param Input     Shared pointer on input stream that contains GoddamnC++ data.
 	CPPBaseParser::CPPBaseParser(IToolchain* const Toolchain, SharedPtr<InputStream> const& Input)
 		: IToolchainTool(Toolchain)
-		, Lexer(new StreamedLexer(Toolchain, Input.GetPointer(), StreamedLexerDefaultOptions::GetDefaultOptionsForCpp()))
+		, Lexer(new StreamedLexer(Toolchain, Input.GetPointer(), StreamedLexerDefaultOptions::GetDefaultOptionsForCpp(), GD_STREAMED_LEXER_MODE_BASIC))
 		, Input(Input)
 	{
 	}
@@ -233,9 +233,11 @@ GD_NAMESPACE_BEGIN
 		SharedPtr<CPPAnnotationParser> AnnotationParser = CPPAnnotationParserSpawner::SpawnAnnotationParser(self->CurrentLexem.GetRawData(), nullptr);
 		if (AnnotationParser.GetPointer() != nullptr)
 		{	// Enabling full-featured parser.
-			self->ProvideSimpleParsing = false;
+			self->Lexer->SwitchMode(GD_STREAMED_LEXER_MODE_ADVANCED);
 			bool const AnnotationParsingResult = AnnotationParser->ParseAnnotation(self);
-			self->ProvideSimpleParsing = true;
+
+			// Switching back to simple one.
+			self->Lexer->SwitchMode(GD_STREAMED_LEXER_MODE_BASIC);
 			return AnnotationParsingResult;
 		}
 	

@@ -187,6 +187,26 @@ GD_NAMESPACE_BEGIN
 		}
 	};	// struct StreamedLexerOptions
 
+	/// Describes avaliable feature set of Streamed Lexer.
+	enum StreamedLexerMode : UInt8
+	{
+		/// Lexer runs in basic mode. 
+		/// Limitations:
+		/// @li Does not determines keyword. They all are treated a identifiers.
+		/// @li Does not parser numberic constants, operators in to processed data - only raw data presented.
+		/// @li Broken operators parsing: e.g. "+=(" and "})]" would be treated as single operator.
+		GD_STREAMED_LEXER_MODE_BASIC,
+
+		/// Lexer runs in full-featured mode. Is is slower then basic, but does not includes
+		/// basic lexer limitation.
+		GD_STREAMED_LEXER_MODE_ADVANCED,
+
+		/// Unknown mode (internal usage only).
+		GD_STREAMED_LEXER_MODE_UNKNOWN,
+		GD_STREAMED_LEXER_MODE_DEFAULT = GD_STREAMED_LEXER_MODE_ADVANCED,
+		GD_STREAMED_LEXER_MODES_COUNT = GD_STREAMED_LEXER_MODE_UNKNOWN,
+	};	// enum StreamedLexerMode
+
 	/// Class provides streamable tokenization for input stream.
 	/// @note Instance of this class is quiet a "heavy" object, so it is recommended to make a static object. 
 	class StreamedLexer final : public IToolchainTool
@@ -197,8 +217,8 @@ GD_NAMESPACE_BEGIN
 		GD_CLASS_UNCOPIABLE  (StreamedLexer);
 		GD_CLASS_UNMOVABLE   (StreamedLexer);
 
-		Int8 PreviousImplementationState = -1;
 		UniquePtr<class BasicStreamedLexerImpl> Implementation;
+		StreamedLexerMode ImplementationMode = GD_STREAMED_LEXER_MODE_UNKNOWN;
 		StreamedLexerOptions const& Options;
 
 	public:
@@ -206,14 +226,19 @@ GD_NAMESPACE_BEGIN
 		/// @param Toolchain   Corresponding toolchain.
 		/// @param InputStream Stream on which lexer would work.
 		/// @param Options     Packed lexing options list.
-		GDAPI  StreamedLexer(IToolchain* const Toolchain, Stream* const InputStream, StreamedLexerOptions const& Options);
+		/// @param LexerMode Describes avaliable feature set of Streamed Lexer.
+		GDAPI  StreamedLexer(IToolchain* const Toolchain, Stream* const InputStream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode = GD_STREAMED_LEXER_MODE_DEFAULT);
 		GDAPI ~StreamedLexer();
 
-		/// Extracts next lexem from input stream into output. Throws an exception into toolchain if error accures. 
+		/// Switches lexer features set.
+		/// @param LexerMode Describes avaliable feature set of Streamed Lexer.
+		GDAPI void SwitchMode(StreamedLexerMode const LexerMode = GD_STREAMED_LEXER_MODE_DEFAULT);
+
+		/// Extracts next lexem from input stream into output. Throws an exception into toolchain if error accures. Can be ran in simple and advanced mode.
+		/// More about modes: 
 		/// @param OutputLexem Pointer to output lexem variable.
-		/// @param ProvideSimpleParsing If specified as true, then only simle tokenization is provided: no real parsed operators, keyword and etc.
 		/// @returns True if lexem was successfully extracted. If operation fails (except cases of expected End-Of-Stream) than exception is raised to that toolchain.
-		GDAPI bool GetNextLexem(Lexem* const OutputLexem, bool const ProvideSimpleParsing = false);
+		GDAPI bool GetNextLexem(Lexem* const OutputLexem);
 	};	// class StreamedLexer
 
 	/// Contains some predefined options for streamed lexer.
