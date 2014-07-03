@@ -46,7 +46,8 @@ GD_NAMESPACE_BEGIN
 
 		Lexem*                      CurrentLexem                = nullptr;						// Lexem state & info
 		size_t                      CurrentLine                 = 1;					    	// Lexem location
-		size_t                      CurrentSymbol               = 1;
+		size_t                      CurrentSymbol               = 0;
+		CharAnsi                    RewindedCharacter			= CharAnsi('\0');	
 
 		StreamedLexerState          CurrentState                = GD_LEXER_STATE_UNKNOWN;
 		CharAnsi                    CurrentCharacter            = CharAnsi('\0');				// Character meta
@@ -60,8 +61,6 @@ GD_NAMESPACE_BEGIN
 			: IToolchainTool(Toolchain)
 			, Options(Options)
 			, InputStream(InputStream)
-			, CurrentLine(CurrentLine)
-			, CurrentSymbol(CurrentSymbol)
 		{
 		}
 
@@ -71,6 +70,7 @@ GD_NAMESPACE_BEGIN
 			, InputStream(Other.InputStream)
 			, CurrentLine(Other.CurrentLine)
 			, CurrentSymbol(Other.CurrentSymbol)
+			, RewindedCharacter(Other.RewindedCharacter)
 		{
 		}
 
@@ -87,8 +87,7 @@ GD_NAMESPACE_BEGIN
 		GDINT void ProcessUpcomingCharacter();
 
 		/// Reads next character from input stream. If stream ends, that returns '\0'. Also handles '\n' and '\r' sequences.
-		/// @returns Read character from input stream.
-		GDINT CharAnsi ReadCharacterFromStream();
+		GDINT void ReadCharacterFromStream();
 
 	protected /*Internal class API*/:
 		/// Resets lexer implementation.
@@ -171,8 +170,6 @@ GD_NAMESPACE_BEGIN
 		self->Reset();
 		self->CurrentLexem = OutputLexem;
 		self->CurrentLexem->ResetLexem();
-		self->CurrentLexem->Line = self->CurrentLine;
-		self->CurrentLexem->Symbol = self->CurrentSymbol;
 		while (!self->Toolchain->WasExceptionRaised())
 		{	// Now all commit conditions checked, no commit required, processing current character.
 			self->ProcessUpcomingCharacter();
@@ -205,30 +202,43 @@ GD_NAMESPACE_BEGIN
 	}
 
 	/// Reads next character from input stream. If stream ends, that returns '\0'. Also handles '\n' and '\r' sequences.
-	/// @returns Read character from input stream.
-	CharAnsi BasicStreamedLexerImpl::ReadCharacterFromStream()
-	{
-		CharAnsi Character = CharAnsi('\0');
-		/**/ if (self->InputStream->Read(&Character, 0, sizeof(Character)) != sizeof(Character))
-		{	// Here comes the end of stream.
-			return (self->CurrentCharacter = CharAnsi('\0'));
-		}
-		else if ((Character == CharAnsi('\n')) || (Character == CharAnsi('\r')))
-		{	// Handing line termination characters.
-			/// @warning Here are parsed both "\r\n" and "\n\r" escapes. If it is not correct that fix it here or remove this warning.
-			CharAnsi const NextCharacter = self->ReadCharacterFromStream();
-			if ( ! ((Character == CharAnsi('\n')) && (NextCharacter == CharAnsi('\r'))) 
-				|| ((Character == CharAnsi('\r')) && (NextCharacter == CharAnsi('\n')))) self->InputStream->Seek(-1, GD_SEEK_ORIGIN_CURRENT);
-			
-			// New line here.
-			self->CurrentSymbol = 0;
-			self->CurrentLine  += 1;
-			return (self->CurrentCharacter = CharAnsi('\n'));
-		}
+	void BasicStreamedLexerImpl::ReadCharacterFromStream()
+	{	// Testing if we have rewinded character.
+		if (self->RewindedCharacter == CharAnsi('\0'))
+		{	// Trying to read next character:
+			/**/ if (self->InputStream->Read(&self->CurrentCharacter, 0, sizeof(self->CurrentCharacter)) != sizeof(self->CurrentCharacter))
+			{	// Here comes the end of stream.
+				self->CurrentCharacter = CharAnsi('\0');
+			}
+			else if (self->CurrentCharacter == CharAnsi('\r'))
+			{	// Trying to handle '\r\n' sequence.
+				CharAnsi NextCharacter = CharAnsi('\0');
+				if (self->InputStream->Read(&NextCharacter, 0, sizeof(NextCharacter)) == sizeof(NextCharacter))
+				{	// Next character exists. Checking sequence:
+					if (NextCharacter != CharAnsi('\n'))
+						self->RewindedCharacter = NextCharacter;
+				}
 
-		// Next character on current line.
-		self->CurrentSymbol += 1;
-		return (self->CurrentCharacter = Character);
+				// New line here.
+				self->CurrentCharacter = CharAnsi('\n');
+				self->CurrentSymbol = 0;
+				self->CurrentLine += 1;
+			}
+			else if (self->CurrentCharacter == CharAnsi('\n'))
+			{	// Handing line termination characters.
+				self->CurrentSymbol = 0;
+				self->CurrentLine += 1;
+			}
+			else
+			{	// Next character on current line.
+				self->CurrentSymbol += 1;
+			}
+		}
+		else
+		{
+			self->CurrentCharacter = self->RewindedCharacter;
+			self->RewindedCharacter = CharAnsi('\0');
+		}
 	}
 
 	/// Processes single character from input stream.
@@ -283,7 +293,7 @@ GD_NAMESPACE_BEGIN
 
 			if ((*NotSwitchOnTypePtr) == GD_CHARACTER_TYPE_UNKNOWN)
 			{	// Rewinding character that caused character type switching and committing current character
-				self->InputStream->Seek(-1, GD_SEEK_ORIGIN_CURRENT);
+				self->RewindedCharacter = self->CurrentCharacter;
 				self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_COMMIT);
 				return;
 			}
@@ -302,7 +312,11 @@ GD_NAMESPACE_BEGIN
 		};
 
 		/**/ if ((self->CurrentCharacter != CharAnsi('\0')) && (self->CurrentState == GD_LEXER_STATE_UNKNOWN))
-		{	// Attempting to detect new state after previous commit 
+		{	// Here is first real character of lexem.
+			self->CurrentLexem->Line = self->CurrentLine;
+			self->CurrentLexem->Symbol = self->CurrentSymbol;
+
+			// Attempting to detect new state after previous commit 
 			switch (self->CurrentCharacter)
 			{	// Detecting opening quote types:
 			case CharAnsi('\"'): 
@@ -380,7 +394,7 @@ GD_NAMESPACE_BEGIN
 
 			if (!WasNotationSwitched)
 			{	// Found, that prefix does not matches template or it does not follows '0' character
-				self->InputStream->Seek(-1, GD_SEEK_ORIGIN_CURRENT);
+				self->RewindedCharacter = self->CurrentCharacter;
 				self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_COMMIT);
 			}
 		}	break;
@@ -394,7 +408,7 @@ GD_NAMESPACE_BEGIN
 			}
 			else
 			{	// Some other special character upcoming, commiting token.
-				self->InputStream->Seek(-1, GD_SEEK_ORIGIN_CURRENT);
+				self->RewindedCharacter = self->CurrentCharacter;
 				self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_COMMIT);
 			}
 		}	break;
@@ -629,12 +643,12 @@ GD_NAMESPACE_BEGIN
 	/// @param Toolchain   Corresponding toolchain.
 	/// @param InputStream Stream on which lexer would work.
 	/// @param Options     Packed lexing options list.
-	StreamedLexer::StreamedLexer(IToolchain* const Toolchain, Stream* const InputStream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode /* = GD_STREAMED_LEXER_MODE_DEFAULT */)
+	StreamedLexer::StreamedLexer(IToolchain* const Toolchain, Stream* const InputStream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode /* = GD_LEXER_MODE_DEFAULT */)
 		: IToolchainTool(Toolchain)
 		, ImplementationMode(LexerMode)
 		, Options(Options)
 	{
-		self->Implementation = ((self->ImplementationMode == GD_STREAMED_LEXER_MODE_BASIC) 
+		self->Implementation = ((self->ImplementationMode == GD_LEXER_MODE_BASIC) 
 			? new BasicStreamedLexerImpl(Toolchain, Options, InputStream)
 			: new      StreamedLexerImpl(Toolchain, Options, InputStream));
 	}
@@ -645,13 +659,13 @@ GD_NAMESPACE_BEGIN
 
 	/// Switches lexer features set.
 	/// @param LexerMode Describes avaliable feature set of Streamed Lexer.
-	void StreamedLexer::SwitchMode(StreamedLexerMode const LexerMode /* = GD_STREAMED_LEXER_MODE_DEFAULT */)
+	void StreamedLexer::SwitchMode(StreamedLexerMode const LexerMode /* = GD_LEXER_MODE_DEFAULT */)
 	{
 		if (LexerMode != self->ImplementationMode)
 		{	// Lexer mode chagned, we need to switch used implementation.
-			GD_DEBUG_ASSERT(LexerMode < GD_STREAMED_LEXER_MODES_COUNT, "Invalid lexer mode specfied");
+			GD_DEBUG_ASSERT(LexerMode < GD_LEXER_MODES_COUNT, "Invalid lexer mode specfied");
 			self->ImplementationMode = LexerMode;
-			self->Implementation = ((LexerMode == GD_STREAMED_LEXER_MODE_BASIC) ? new BasicStreamedLexerImpl(*self->Implementation) : new StreamedLexerImpl(*self->Implementation));
+			self->Implementation = ((LexerMode == GD_LEXER_MODE_BASIC) ? new BasicStreamedLexerImpl(*self->Implementation) : new StreamedLexerImpl(*self->Implementation));
 		}
 	}
 
@@ -684,15 +698,15 @@ GD_NAMESPACE_BEGIN
 		_In_ CharAnsi const                IntegerOctalNotationDelimiter,
 		_In_ CharAnsi const                IntegerBinaryNotationDelimiter,
 		_In_ CharAnsi const                FloatingPointDelimiter
-	) : KeywordsDeclarations(Forward<StreamedLexerKeywordsList>(KeywordsDeclarations)),
-		OperatorDeclarations(Forward<StreamedLexerOperatorsList>(OperatorDeclarations)),
-		SingleLineCommentDeclaration(Forward<String>(SingleLineCommentDeclaration)),
-		MultipleLineCommentBeginning(Forward<String>(MultipleLineCommentBeginning)),
-		MultipleLineCommentEnding(Forward<String>(MultipleLineCommentEnding)),
-		IntegerHexadecimalNotationDelimiter(CharAnsiHelpers::ToUpperCase(IntegerHexadecimalNotationDelimiter)),
-		IntegerOctalNotationDelimiter(CharAnsiHelpers::ToUpperCase(IntegerOctalNotationDelimiter)),
-		IntegerBinaryNotationDelimiter(CharAnsiHelpers::ToUpperCase(IntegerBinaryNotationDelimiter)),
-		FloatingPointDelimiter(FloatingPointDelimiter)
+	)	: KeywordsDeclarations(Forward<StreamedLexerKeywordsList>(KeywordsDeclarations))
+		, OperatorDeclarations(Forward<StreamedLexerOperatorsList>(OperatorDeclarations))
+		, SingleLineCommentDeclaration(Forward<String>(SingleLineCommentDeclaration))
+		, MultipleLineCommentBeginning(Forward<String>(MultipleLineCommentBeginning))
+		, MultipleLineCommentEnding(Forward<String>(MultipleLineCommentEnding))
+		, IntegerHexadecimalNotationDelimiter(CharAnsiHelpers::ToUpperCase(IntegerHexadecimalNotationDelimiter))
+		, IntegerOctalNotationDelimiter(CharAnsiHelpers::ToUpperCase(IntegerOctalNotationDelimiter))
+		, IntegerBinaryNotationDelimiter(CharAnsiHelpers::ToUpperCase(IntegerBinaryNotationDelimiter))
+		, FloatingPointDelimiter(FloatingPointDelimiter)
 	{
 		// Checking if all delimiters are alphabetic characters.
 		/// @todo Add check for all notation switching characters have unique or \0 values.

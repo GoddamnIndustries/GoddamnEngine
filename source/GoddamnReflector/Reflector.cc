@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 	/// @param Input     Shared pointer on input stream that contains GoddamnC++ data.
 	CPPBaseParser::CPPBaseParser(IToolchain* const Toolchain, SharedPtr<InputStream> const& Input)
 		: IToolchainTool(Toolchain)
-		, Lexer(new StreamedLexer(Toolchain, Input.GetPointer(), StreamedLexerDefaultOptions::GetDefaultOptionsForCpp(), GD_STREAMED_LEXER_MODE_BASIC))
+		, Lexer(new StreamedLexer(Toolchain, Input.GetPointer(), StreamedLexerDefaultOptions::GetDefaultOptionsForCpp(), GD_LEXER_MODE_BASIC))
 		, Input(Input)
 	{
 	}
@@ -233,11 +233,11 @@ GD_NAMESPACE_BEGIN
 		SharedPtr<CPPAnnotationParser> AnnotationParser = CPPAnnotationParserSpawner::SpawnAnnotationParser(self->CurrentLexem.GetRawData(), nullptr);
 		if (AnnotationParser.GetPointer() != nullptr)
 		{	// Enabling full-featured parser.
-			self->Lexer->SwitchMode(GD_STREAMED_LEXER_MODE_ADVANCED);
+			self->Lexer->SwitchMode(GD_LEXER_MODE_ADVANCED);
 			bool const AnnotationParsingResult = AnnotationParser->ParseAnnotation(self);
 
 			// Switching back to simple one.
-			self->Lexer->SwitchMode(GD_STREAMED_LEXER_MODE_BASIC);
+			self->Lexer->SwitchMode(GD_LEXER_MODE_BASIC);
 			return AnnotationParsingResult;
 		}
 	
@@ -496,7 +496,6 @@ GD_NAMESPACE_BEGIN
 GD_NAMESPACE_END
 
 #include <ctime>
-#include <GoddamnReflector/Enumeration/Enumeration.hh>
 
 int main(int const ArgumensCount, char const* const* const ParamsList)
 {
