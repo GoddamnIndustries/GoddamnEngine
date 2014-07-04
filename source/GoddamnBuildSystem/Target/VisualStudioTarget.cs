@@ -61,6 +61,7 @@ namespace GoddamnEngine.BuildSystem
 
         private static void GeneratesFiltersFile(Project TheProject)
         {
+            Directory.CreateDirectory(Path.Combine(TheProject.Location, "_Build"));
             using (XmlTextWriter FiltersConfig = new XmlTextWriter(string.Format("{0}/_Build/{1}.vcxproj.filters", TheProject.Location, TheProject.Name), null))
             {
                 FiltersConfig.Formatting = Formatting.Indented;

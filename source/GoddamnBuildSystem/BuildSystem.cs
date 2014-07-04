@@ -24,7 +24,7 @@ namespace GoddamnEngine.BuildSystem
         static void Main(string[] args)
         {
         //  CommandLineArguments.PrintHelp();
-            string SolutionLocation = @"D:\GoddamnEngine\source";
+            string SolutionLocation = @"../../";
             Project.ProcessProjectsInDirectory(SolutionLocation);
         }
     }   // class BuildSystem
