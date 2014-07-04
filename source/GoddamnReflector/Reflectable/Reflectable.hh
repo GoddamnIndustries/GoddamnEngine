@@ -28,6 +28,8 @@ GD_NAMESPACE_BEGIN
 
 	struct CPPReflectable final : public CPPDefinition
 	{
+		String ReflectableName;
+
 		/// Sets default values for fiels that were not set.
 		inline void SetDefaultsForUnknowns()
 		{

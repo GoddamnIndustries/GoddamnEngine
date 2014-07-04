@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 	/// @param Input     Shared pointer on input stream that contains GoddamnC++ data.
 	CPPBaseParser::CPPBaseParser(IToolchain* const Toolchain, SharedPtr<InputStream> const& Input)
 		: IToolchainTool(Toolchain)
-		, Lexer(new StreamedLexer(Toolchain, Input.GetPointer(), StreamedLexerDefaultOptions::GetDefaultOptionsForCpp(), GD_LEXER_MODE_BASIC))
+		, Lexer(new StreamedLexer(Toolchain, Input.GetPointer(), StreamedLexerDefaultOptions::GetDefaultOptionsForCpp()/*, GD_LEXER_MODE_BASIC*/))
 		, Input(Input)
 	{
 	}
@@ -78,19 +78,14 @@ GD_NAMESPACE_BEGIN
 	/// Expects a match of current lexem content type with specified one.
 	/// If lexem does not matches with content type, then raises 'unexpected Existing-Content-Type. Expected-Content-Type expected' error.
 	/// @param ContentType The expected lexem content type.
-	/// @returns True if current lexem content type mathes with specified one.
-	bool CPPBaseParser::ExpectLexem(LexemContentType const ContentType)
+	void CPPBaseParser::ExpectLexem(LexemContentType const ContentType)
 	{
 		if (!self->TryExpectLexem(ContentType))
 		{	// Unexpected lexem type.
 			CPPBaseParserErrorDesc static const UnexpectedLexemError("unexpected %s. Expected %s.");
 			self->RaiseError(UnexpectedLexemError, LexemContentTypeToString(self->CurrentLexem.GetContentType()), LexemContentTypeToString(ContentType));
 			self->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
-
-			return false;
 		}
-
-		return true;
 	}
 
 	/// Expects a match of current lexem content type and parsed data ID (PDID) with specified ones.
@@ -110,24 +105,17 @@ GD_NAMESPACE_BEGIN
 	/// If lexem matches with content type, but does not matches with parsed data ID (PDID), then raises 'unexpected Existing-PDID. Expected-PDID expected' error.
 	/// @param ContentType The expected lexem content type.
 	/// @param ID          The expected lexem parsed data ID (PDID).
-	/// @returns True if current lexem content type and parsed data ID mathes with specified one.
-	bool CPPBaseParser::ExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID)
+	void CPPBaseParser::ExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID)
 	{
-		if (self->ExpectLexem(ContentType))
-		{	// Next lexem exists and has expected content type.
-			if (self->CurrentLexem.GetProcessedDataID() != ID)
-			{	// Unexpected lexem value.
-				CPPBaseParserErrorDesc static const UnexpectedLexemValueError("unexpected '%s'.");
-				self->RaiseError(UnexpectedLexemValueError, self->CurrentLexem.GetRawData().CStr());
-				self->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
+		self->ExpectLexem(ContentType);
 
-				return false;
-			}
-
-			return true;
+		// Next lexem exists and has expected content type.
+		if (self->CurrentLexem.GetProcessedDataID() != ID)
+		{	// Unexpected lexem value.
+			CPPBaseParserErrorDesc static const UnexpectedLexemValueError("unexpected '%s'.");
+			self->RaiseError(UnexpectedLexemValueError, self->CurrentLexem.GetRawData().CStr());
+			self->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
 		}
-
-		return false;
 	}
 
 	/// Expects next lexem from input stream.
@@ -139,19 +127,14 @@ GD_NAMESPACE_BEGIN
 
 	/// Expects next lexem from input stream. 
 	/// If lexem does not exists then raises 'unexpected End-Of-Stream' error.
-	/// @returns True if lexem was succesfully read.
-	bool CPPBaseParser::ExpectNextLexem()
+	void CPPBaseParser::ExpectNextLexem()
 	{
 		if (!self->TryExpectNextLexem())
 		{	// Unexpected end of stream while reading lexem.
 			CPPBaseParserErrorDesc static const EndOfStreamInVariableDeclError("unexpected End-Of-Stream.");
 			self->RaiseError(EndOfStreamInVariableDeclError);
 			self->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
-
-			return false;
 		}
-
-		return true;
 	}
 
 	/// Expects next lexem from input stream and a match of lexem content type with specified one.
@@ -160,21 +143,18 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if lexem was succesfully read and mathes with specified content type.
 	bool CPPBaseParser::TryExpectNextLexem(LexemContentType const ContentType)
 	{
-		if (self->ExpectNextLexem())
-			return self->TryExpectLexem(ContentType);
-		return false;
+		self->ExpectNextLexem();
+		return self->TryExpectLexem(ContentType);
 	}
 
 	/// Expects next lexem from input stream and a match of lexem content type with specified one.
 	/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
 	/// If lexem exists, but does not matches with content type, then raises 'unexpected Existing-Content-Type. Expected-Content-Type expected' error.
 	/// @param ContentType The expected lexem content type.
-	/// @returns True if lexem was succesfully read and mathes with specified content type.
-	bool CPPBaseParser::ExpectNextLexem(LexemContentType const ContentType)
+	void CPPBaseParser::ExpectNextLexem(LexemContentType const ContentType)
 	{
-		if (self->ExpectNextLexem())
-			return self->ExpectLexem(ContentType);
-		return false;
+		self->ExpectNextLexem();
+		self->ExpectLexem(ContentType);
 	}
 
 	/// Expects next lexem from input stream, and a match of lexem content type with specified one, and a match of lexem parsed data ID with specified one.
@@ -196,12 +176,10 @@ GD_NAMESPACE_BEGIN
 	/// If lexem exists, matches with content type, but does not matches with parsed data ID, then raises 'unexpected Existing-PDID. Expected-PDID expected' error.
 	/// @param ContentType The expected lexem content type.
 	/// @param ID          The expected lexem parsed data ID (PDID).
-	/// @returns True if lexem was succesfully read and mathes with specified content type and specified parsed data ID.
-	bool CPPBaseParser::ExpectNextLexem(LexemContentType const ContentType, StreamedLexerID const ID)
+	void CPPBaseParser::ExpectNextLexem(LexemContentType const ContentType, StreamedLexerID const ID)
 	{
-		if (self->ExpectNextLexem())
-			return self->ExpectLexem(ContentType, ID);
-		return false;
+		self->ExpectNextLexem();
+		self->ExpectLexem(ContentType, ID);
 	}
 
 	/// ------------------------------------------------------------------------------------------
@@ -216,32 +194,35 @@ GD_NAMESPACE_BEGIN
 		do
 		{
 			if (self->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_IDENTIFIER) // This is idenitifier lexem.
-				if (strncmp(self->CurrentLexem.GetRawData().CStr(), ExpectedAnnotationPrefix.CStr(), ExpectedAnnotationPrefix.GetSize()) == 0) // This lexem matches with prefix.
+				if (strncmp(self->CurrentLexem.GetRawData().CStr(), ExpectedAnnotationPrefix.CStr(), ExpectedAnnotationPrefix.GetSize()) == 0)
+				{	// This lexem matches with prefix.
+					GD_REFLECTOR_VERBOSE_LOG("Found annotation: '%s'", self->CurrentLexem.GetRawData().CStr());
 					return true;
+				}
 		} while (self->TryReadNextLexem());
 		return false;
 	}
 
 	/// Processes next found annotation in input stream.
 	/// @param ExpectedAnnotationPrefix Prefix of expected annotation idenitifier.
-	/// @return True if annotation was succesfully processed.
-	bool CPPBaseParser::ProcessNextAnnotation(String const& ExpectedAnnotationPrefix /* = "$GD_" */)
+	void CPPBaseParser::ProcessNextAnnotation(String const& ExpectedAnnotationPrefix /* = "$GD_" */)
 	{
-		if (!self->TrySkipToNextAnnotation(ExpectedAnnotationPrefix))
-			return false;
-
+		// Next annotation was located.
 		SharedPtr<CPPAnnotationParser> AnnotationParser = CPPAnnotationParserSpawner::SpawnAnnotationParser(self->CurrentLexem.GetRawData(), nullptr);
 		if (AnnotationParser.GetPointer() != nullptr)
 		{	// Enabling full-featured parser.
 			self->Lexer->SwitchMode(GD_LEXER_MODE_ADVANCED);
-			bool const AnnotationParsingResult = AnnotationParser->ParseAnnotation(self);
+			AnnotationParser->ParseAnnotation(self);
 
-			// Switching back to simple one.
+			// Switching back to basic.
 			self->Lexer->SwitchMode(GD_LEXER_MODE_BASIC);
-			return AnnotationParsingResult;
+			return;
 		}
-	
-		return false;
+		else
+			GD_REFLECTOR_VERBOSE_LOG("\tNo parser was registered");
+
+		// Skipping to next lexem not stuck our TrySkipToNextAnnotation in current lexem.
+		self->TryExpectNextLexem();
 	}
 
 	/// ==========================================================================================
@@ -251,12 +232,11 @@ GD_NAMESPACE_BEGIN
 
 	/// Parses annotation params.
 	/// @param BaseParser Parser that provides low lever source parsing.
-	/// @returns True if annotation argumnts were succesfully parsed.
-	bool CPPAnnotationParser::ParseAnnotationParams(CPPBaseParser* const BaseParser)
+	void CPPAnnotationParser::ParseAnnotationParams(CPPBaseParser* const BaseParser)
 	{
 		using namespace StreamedLexerDefaultOptions;
 
-		if (!BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_BEGIN)) return false;
+		BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_BEGIN);
 		if (!BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END))
 		{	// Annotation contains parameters
 			for (;;)
@@ -267,56 +247,46 @@ GD_NAMESPACE_BEGIN
 					CPPBaseParserErrorDesc static const InvalidAnnotationParameterSpecified("invalid annotation parameter '%s' specified.");
 					BaseParser->RaiseError(InvalidAnnotationParameterSpecified, BaseParser->GetCurrentLexem().GetRawData().CStr());
 					BaseParser->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
-					return false;
 				}
 
+				GD_REFLECTOR_VERBOSE_LOG("\tAnnotation argument named: '%s'", BaseParser->GetCurrentLexem().GetRawData().CStr());
 				if ((BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN)))
 				{	// Found assigment expression.
-					if (!BaseParser->ExpectNextLexem()) return false;
+					BaseParser->ExpectNextLexem();
 					for (;;)
 					{	// Loop made to parse multiple paramaters with '|' operator.
-						if (!BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) return false;
-						if (!AnnotationParamParser->ParseArgument(BaseParser, self, BaseParser->GetCurrentLexem().GetRawData()))
-						{	// Failed to create argument parser.
-							CPPBaseParserErrorDesc static const InvalidAnnotationParameterValueSpecifiedError("invalid annotation parameter`s value '%s' specified.");
-							BaseParser->RaiseError(InvalidAnnotationParameterValueSpecifiedError, BaseParser->GetCurrentLexem().GetRawData().CStr());
-							BaseParser->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
-							return false;
-						}
-
+						BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
+						GD_REFLECTOR_VERBOSE_LOG("\t\tAnnotation argument named: '%s'", BaseParser->GetCurrentLexem().GetRawData().CStr());
+						AnnotationParamParser->ParseArgument(BaseParser, self, BaseParser->GetCurrentLexem().GetRawData());
 						if (!BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_OR)) break;
-						if (!BaseParser->ExpectNextLexem()) return false;
+						BaseParser->ExpectNextLexem();
 					}
 				}
 				
 				if (BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END))
 				{	// Annotation parametrs end here.
-					if (!BaseParser->ExpectNextLexem()) return false;
-					return true;
+					BaseParser->ExpectNextLexem();
+					return;
 				}
 				else
 				{	// Comma parameters separator (for values without assigment expression).
-					if (!(BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA))) return false;
-					if (!BaseParser->ExpectNextLexem()) return false;
+					BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA);
+					BaseParser->ExpectNextLexem();
 				}
 			}
 		}
 		else
 		{	// Annotation does not contains parameters.
-			if (!BaseParser->ExpectNextLexem()) return false;
-			return true;
+			GD_REFLECTOR_VERBOSE_LOG("\tEmpty annotation arguments");
+			BaseParser->ExpectNextLexem();
 		}
 	}
 
 	/// Parses upcoming annotation.
 	/// @param BaseParser Parser that provides low lever source parsing.
-	/// @returns True if annotation was succesfully parsed.
-	bool CPPAnnotationParser::ParseAnnotation(CPPBaseParser* const BaseParser)
+	void CPPAnnotationParser::ParseAnnotation(CPPBaseParser* const BaseParser)
 	{
-		if (!self->ParseAnnotationParams(BaseParser))
-			return false;
-
-		return true;
+		self->ParseAnnotationParams(BaseParser);
 	}
 
 	/// ==========================================================================================
@@ -516,10 +486,11 @@ int main(int const ArgumensCount, char const* const* const ParamsList)
 	SharedPtr<InputStream> static HeaderInputStream(new FileInputStream(HeaderPath));
 
 	CPPBaseParser static BaseParser(&Toolchain, HeaderInputStream);
-	while(BaseParser.ProcessNextAnnotation());
+	while (BaseParser.TrySkipToNextAnnotation())
+		BaseParser.ProcessNextAnnotation();
 
 	clock_t const TotalTime = clock() - StartTime;
-	printf("\nGeneration took %f seconds.", static_cast<float>(TotalTime) / 1000.0f);
+	/*GD_REFLECTOR_VERBOSE_LOG*/printf("Generation took %f seconds.", static_cast<float>(TotalTime) / 1000.0f);
 
 	return 0;
 }

@@ -52,15 +52,15 @@ GD_NAMESPACE_BEGIN
 		StreamedLexerState          CurrentState                = GD_LEXER_STATE_UNKNOWN;
 		CharAnsi                    CurrentCharacter            = CharAnsi('\0');				// Character meta
 		StreamedLexerCharType       CurrentCharacterType        = GD_CHARACTER_TYPE_UNKNOWN;
-		size_t static const         DefaultLexemIntegerNotation = 10;							// Numeric meta
+		size_t static constexpr     DefaultLexemIntegerNotation = 10;							// Numeric meta
 		size_t                      CurrentLexemIntegerNotation = DefaultLexemIntegerNotation;
 		size_t                      CurrentMatchingIndex        = 0;				 			// Operators and comments meta
 
 	public:
 		GDINL BasicStreamedLexerImpl(IToolchain* const Toolchain, StreamedLexerOptions const& Options, Stream* const InputStream)
 			: IToolchainTool(Toolchain)
-			, Options(Options)
 			, InputStream(InputStream)
+			, Options(Options)
 		{
 		}
 
@@ -94,16 +94,16 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual void Reset();
 
 		/// Processes integer constants inside input stream.
-		GDINT virtual void ProcessInteger();
+		GDINT virtual void ProcessIntegerConstant();
 
 		/// Processes floating-point constants inside input stream.
-		GDINT virtual void ProcessFloat();
+		GDINT virtual void ProcessFloatConstant();
 
 		/// Processes string constants inside input stream.
-		GDINT virtual void ProcessString();
+		GDINT virtual void ProcessStringConstant();
 
 		/// Processes character constants inside input stream.
-		GDINT virtual void ProcessCharacter();
+		GDINT virtual void ProcessCharacterConstant();
 
 		/// Processes operators inside input stream and handles switching to multiple line comment parsing.
 		GDINT virtual void ProcessOperatorOrComment();
@@ -121,9 +121,21 @@ GD_NAMESPACE_BEGIN
 	/// Implementation of a full-featured streaming lexer. 
 	class StreamedLexerImpl final : public BasicStreamedLexerImpl
 	{
-	private /*Class members*/:
+	private /*Class Types and Members*/:
+		enum StreamedLexerESMode : UInt8
+		{
+			GD_LEXER_ESCAPE_SEQUENCE_MODE_WAITING,
+			GD_LEXER_ESCAPE_SEQUENCE_MODE_OCTAL_CHARACTER,
+			GD_LEXER_ESCAPE_SEQUENCE_MODE_HEXADECIMAL_CHARACTER,
+			GD_LEXER_ESCAPE_SEQUENCE_MODE_UNICODE8,
+			GD_LEXER_ESCAPE_SEQUENCE_MODE_UNICODE16,
+			GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN,
+		};	// enum StreamedLexerEscapeSequenceMode
+
 		size_t                      CurrentLexemFloatExponent   = 1;
 		Vector<String const*>       CurrentMatches              ;
+		StreamedLexerESMode			CurrentESMode				= GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN;
+		bool						CurrentlyWasCharWritten		= false;
 
 	public /*CLass API*/:
 		GDINL StreamedLexerImpl(IToolchain* const Toolchain, StreamedLexerOptions const& Options, Stream* const InputStream)
@@ -145,11 +157,20 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual void Reset() final override;
 
 		/// Processes integer constants inside input stream.
-		GDINT virtual void ProcessInteger() final override;
+		GDINT virtual void ProcessIntegerConstant() final override;
 		
 		/// Processes floating-point constants inside input stream.
-		GDINT virtual void ProcessFloat() final override;
-		
+		GDINT virtual void ProcessFloatConstant() final override;
+
+		/// Processes escape sequence in string or character constant.
+		GDINT void ProcessEscapeSequenceInStringOrCharacterConstant();
+
+		/// Processes string constants inside input stream.
+		GDINT virtual void ProcessStringConstant() final override;
+
+		/// Processes character constants inside input stream.
+		GDINT virtual void ProcessCharacterConstant() final override;
+
 		/// Processes operators inside input stream and handles switching to multiple line comment parsing.
 		GDINT virtual void ProcessOperatorOrComment() final override;
 		
@@ -161,30 +182,6 @@ GD_NAMESPACE_BEGIN
 	/// BasicStreamedLexerImpl class.
 	/// Implementation of a basic streaming lexer. 
 	/// ==========================================================================================
-
-	/// Reads next lexem from Input stream.
-	/// @returns True if lexem was extracted succesfully.
-	bool BasicStreamedLexerImpl::GetNextLexem(Lexem* const OutputLexem)
-	{	// Restoring default tokenizer values
-		self->Reset();
-		self->CurrentLexem = OutputLexem;
-		self->CurrentLexem->ResetLexem();
-		while (!self->Toolchain->WasExceptionRaised())
-		{	// Now all commit conditions checked, no commit required, processing current character.
-			self->ProcessUpcomingCharacter();
-		}
-
-		ToolchainException const Exception = self->Toolchain->CatchException();
-		if ((!IsMyToolchainException(Exception, GD_LEXER_EXCEPTION_MODULE)) || (Exception > 0))
-		{	// This is fatal exception or it is not thrown by us.
-			self->RaiseExceptionWithCode(Exception);
-			return false;
-		}
-
-		/// We should return false on End-Of-Stream.
-		if (Exception == GD_LEXER_EXCEPTION_EOS) self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_EOS;
-		return true;
-	}
 
 	/// ------------------------------------------------------------------------------------------
 	/// Internal class API:
@@ -275,6 +272,7 @@ GD_NAMESPACE_BEGIN
 			static ParsingErrorDesc const InvalidCharacterParsingError("invalid character with code 0x%x was read from input stream.");
 			self->RaiseFatalError(InvalidCharacterParsingError, size_t(self->CurrentCharacter));
 			self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_SYNTAX);
+			return;
 		}
 
 		TestCharacterTypesSwitchingTable const& CurrentTypeSwitchingTable = TestCharacterTypeSwitchingTable[size_t(self->CurrentLexem->ContentType)];
@@ -300,10 +298,10 @@ GD_NAMESPACE_BEGIN
 
 		struct LexemStatesDesc final { bool RequiresClosingStatement; void (BasicStreamedLexerImpl::* SpecialProcessorPtr)(); };
 		static LexemStatesDesc const LexemStatesDescTable[GD_LEXER_STATES_COUNT] = {
-			/* GD_LEXER_STATE_READING_CONSTANT_STRING	    */ {  true, &BasicStreamedLexerImpl::ProcessString },
-			/* GD_LEXER_STATE_READING_CONSTANT_CHARACTER    */ {  true, &BasicStreamedLexerImpl::ProcessCharacter },
-			/* GD_LEXER_STATE_READING_CONSTANT_INTEGER	    */ { false, &BasicStreamedLexerImpl::ProcessInteger },
-			/* GD_LEXER_STATE_READING_CONSTANT_FLOAT	    */ { false, &BasicStreamedLexerImpl::ProcessFloat },
+			/* GD_LEXER_STATE_READING_CONSTANT_STRING	    */ {  true, &BasicStreamedLexerImpl::ProcessStringConstant },
+			/* GD_LEXER_STATE_READING_CONSTANT_CHARACTER    */ {  true, &BasicStreamedLexerImpl::ProcessCharacterConstant },
+			/* GD_LEXER_STATE_READING_CONSTANT_INTEGER	    */ { false, &BasicStreamedLexerImpl::ProcessIntegerConstant },
+			/* GD_LEXER_STATE_READING_CONSTANT_FLOAT	    */ { false, &BasicStreamedLexerImpl::ProcessFloatConstant },
 			/* GD_LEXER_STATE_READING_COMMENT_OR_OPERATOR   */ { false, &BasicStreamedLexerImpl::ProcessOperatorOrComment },
 			/* GD_LEXER_STATE_READING_COMMENT_SINGLELINE    */ { false, &BasicStreamedLexerImpl::ProcessSingleLineComment },
 			/* GD_LEXER_STATE_READING_COMMENT_MULTIPLELINE  */ {  true, &BasicStreamedLexerImpl::ProcessMultipleLineComment },
@@ -373,7 +371,7 @@ GD_NAMESPACE_BEGIN
 	}
 
 	/// Processes integer constants inside input stream.
-	void BasicStreamedLexerImpl::ProcessInteger()
+	void BasicStreamedLexerImpl::ProcessIntegerConstant()
 	{
 		switch (self->CurrentCharacterType)
 		{
@@ -413,26 +411,28 @@ GD_NAMESPACE_BEGIN
 			}
 		}	break;
 		default: // OR Throwing debug Assertation if internal error exists
-			GD_DEBUG_ASSERT_FALSE("Some strange things happened, unknown condition for ProcessInteger");
+			GD_DEBUG_ASSERT_FALSE("Some strange things happened, unknown condition for ProcessIntegerConstant");
 			break;
 		}
 	}
 
 	/// Processes floating-point constants inside input stream.
-	void BasicStreamedLexerImpl::ProcessFloat()
+	void BasicStreamedLexerImpl::ProcessFloatConstant()
 	{	// Nothing to do here.
 	}
 
 	/// Processes string constants inside input stream.
-	void BasicStreamedLexerImpl::ProcessString()
-	{
-		GD_NOT_IMPLEMENTED();
+	void BasicStreamedLexerImpl::ProcessStringConstant()
+	{	// Parsing string contants in basics mode: so no espace sequences.
+		if (self->CurrentCharacter == Char('\"'))
+			self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_COMMIT);
 	}
 
 	/// Processes character constants inside input stream.
-	void BasicStreamedLexerImpl::ProcessCharacter()
-	{
-		GD_NOT_IMPLEMENTED();
+	void BasicStreamedLexerImpl::ProcessCharacterConstant()
+	{	// Parsing character contants in basics mode: so no espace sequences.
+		if (self->CurrentCharacter == Char('\''))
+			self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_COMMIT);
 	}
 
 	/// Processes operators inside input stream and handles switching to multiple line comment parsing.
@@ -490,6 +490,35 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
+	/// ------------------------------------------------------------------------------------------
+	/// Public class API:
+	/// ------------------------------------------------------------------------------------------
+
+	/// Reads next lexem from Input stream.
+	/// @returns True if lexem was extracted succesfully.
+	bool BasicStreamedLexerImpl::GetNextLexem(Lexem* const OutputLexem)
+	{	// Restoring default tokenizer values
+		self->Reset();
+		self->CurrentLexem = OutputLexem;
+		self->CurrentLexem->ResetLexem();
+		while (!self->Toolchain->WasExceptionRaised())
+		{	// Now all commit conditions checked, no commit required, processing current character.
+			self->ProcessUpcomingCharacter();
+		}
+
+		ToolchainException const Exception = self->Toolchain->CatchException();
+		if ((!IsMyToolchainException(Exception, GD_LEXER_EXCEPTION_MODULE)) || (Exception > 0))
+		{	// This is fatal exception or it is not thrown by us.
+			self->RaiseExceptionWithCode(Exception);
+			return false;
+		}
+
+		/// We should return false on End-Of-Stream.
+		if (Exception == GD_LEXER_EXCEPTION_EOS) self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_EOS;
+		return true;
+	}
+
+
 	/// ==========================================================================================
 	/// StreamedLexerImpl class.
 	/// Implementation of a full-featured streaming lexer. 
@@ -503,14 +532,16 @@ GD_NAMESPACE_BEGIN
 	void StreamedLexerImpl::Reset()
 	{
 		self->BasicStreamedLexerImpl::Reset();
-		self->CurrentLexemFloatExponent = 1;
-		self->CurrentMatches.Emptify();
+		self->CurrentMatches			.Emptify();
+		self->CurrentLexemFloatExponent	= 1;
+		self->CurrentESMode				= GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN;
+		self->CurrentlyWasCharWritten	= false;
 	}
 
 	/// Processes integer constants inside input stream.
-	void StreamedLexerImpl::ProcessInteger()
+	void StreamedLexerImpl::ProcessIntegerConstant()
 	{
-		self->BasicStreamedLexerImpl::ProcessInteger();
+		self->BasicStreamedLexerImpl::ProcessIntegerConstant();
 		if (self->CurrentState == GD_LEXER_STATE_READING_CONSTANT_INTEGER)
 		{	// Processing character if it is digit in current notation.
 			UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(self->CurrentCharacter);
@@ -520,12 +551,169 @@ GD_NAMESPACE_BEGIN
 	}
 
 	/// Processes floating-point constants inside input stream.
-	void StreamedLexerImpl::ProcessFloat()
+	void StreamedLexerImpl::ProcessFloatConstant()
 	{	
-		self->BasicStreamedLexerImpl::ProcessFloat();
+		self->BasicStreamedLexerImpl::ProcessFloatConstant();
 		UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(self->CurrentCharacter);
 		self->CurrentLexem->ProcessedDataFloat += (static_cast<Float64>(CurrentDigit) / static_cast<Float64>(self->CurrentLexemFloatExponent));
 		self->CurrentLexemFloatExponent += 1;
+	}
+
+	/// Processes escape sequence in string or character constant.
+	void StreamedLexerImpl::ProcessEscapeSequenceInStringOrCharacterConstant()
+	{
+		switch (self->CurrentESMode)
+		{
+		case GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN:
+			if (self->CurrentCharacter == CharAnsi('\\'))
+				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_WAITING;
+			break;
+
+		case GD_LEXER_ESCAPE_SEQUENCE_MODE_WAITING:
+			self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN;
+			self->CurrentlyWasCharWritten = true;
+			switch (self->CurrentCharacter)
+			{	// For more details read here: http://en.wikipedia.org/wiki/Escape_sequences_in_C
+			case CharAnsi('a'):		// Alarm (Beep, Bell)
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\a');
+				return;
+			case CharAnsi('b'):		// Backspace
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\b');
+				return;
+			case CharAnsi('f'):		// Formfeed
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\f');
+				return;
+			case CharAnsi('n'):		// Newline (Line Feed)
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\n');
+				return;
+			case CharAnsi('r'):		// Carriage Return
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\r');
+				return;
+			case CharAnsi('t'):		// Horizontal Tab
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\t');
+				return;
+			case CharAnsi('v'):		// Vertical Tab
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\v');
+				return;
+			case CharAnsi('\\'):	// Vertical Tab
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\\');
+				return;
+			case CharAnsi('\''):	// Single quotation mark
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\'');
+				return;
+			case CharAnsi('\"'):	// Double quotation mark
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\"');
+				return;
+			case CharAnsi('\?'):	// Question mark
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\?');
+				return;
+			case CharAnsi('x'):		// The character whose numerical value is given by hh interpreted as a hexadecimal number
+				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_HEXADECIMAL_CHARACTER;
+				self->CurrentlyWasCharWritten = false;
+				return;
+			case CharAnsi('u'):		// Unicode characters in string literals (UTF8)
+				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNICODE8;
+				self->CurrentlyWasCharWritten = false;
+				return;
+			case CharAnsi('U'):		// Unicode characters in string literals (UTF16)
+				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNICODE16;
+				self->CurrentlyWasCharWritten = false;
+				return;
+			default:
+				if (!CharAnsiHelpers::IsDigit(self->CurrentCharacter, 8))
+				{	// Unrecognized character escape sequence.
+					static ParsingErrorDesc const UnrecognizedCharacterEscapeSequenceError("unrecognized character escape sequence '\\%c' in string/character constant.");
+					self->RaiseFatalError(UnrecognizedCharacterEscapeSequenceError, self->CurrentCharacter);
+					self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_SYNTAX);
+					return;
+				}
+
+				// The character whose numerical value is given by nnn interpreted as an octal number
+				self->CurrentlyWasCharWritten = false;
+				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_OCTAL_CHARACTER;
+				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\0');
+				goto ProcessOctalDigitNow;
+			}	
+
+		case GD_LEXER_ESCAPE_SEQUENCE_MODE_OCTAL_CHARACTER:
+		case GD_LEXER_ESCAPE_SEQUENCE_MODE_HEXADECIMAL_CHARACTER:
+		{	
+		ProcessOctalDigitNow:;
+			UInt8 const CurrentNotation = ((self->CurrentESMode == GD_LEXER_ESCAPE_SEQUENCE_MODE_OCTAL_CHARACTER) ? 8 : 16);
+			if (!CharAnsiHelpers::IsDigit(self->CurrentCharacter, CurrentNotation))
+			{	// Here is not a not a digit character.
+				if ((self->CurrentLexem->GetRawData().GetSize() < 2) && (CurrentNotation == 16))
+				{	// Hex constants must have at least one hex digit (now raw data contains string "'\").
+					static ParsingErrorDesc const EmptyHexadecimalCharacterError("empty string/character constant with '\\x'");
+					self->RaiseFatalError(EmptyHexadecimalCharacterError);
+					self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_SYNTAX);
+					return;
+				}
+
+				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN;
+				self->CurrentlyWasCharWritten = true;
+				return;
+			}
+
+			// Processing next character
+			UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(self->CurrentCharacter);
+			if ((static_cast<size_t>(self->CurrentLexem->ProcessedDataCharacter) * CurrentNotation + CurrentDigit) > UCHAR_MAX)
+			{	// Too big for character error.
+				static ParsingErrorDesc const TooBigHexadecimalOctalCharacter("too big number for character.");
+				self->RaiseFatalError(TooBigHexadecimalOctalCharacter);
+				self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_SYNTAX);
+				return;
+			}
+
+			self->CurrentLexem->ProcessedDataCharacter *= CurrentNotation;
+			self->CurrentLexem->ProcessedDataCharacter += CurrentDigit;
+			return;
+		}
+		
+		default:
+			GD_NOT_IMPLEMENTED();
+			return;
+		}
+	}
+
+	/// Processes string constants inside input stream.
+	void StreamedLexerImpl::ProcessStringConstant()
+	{
+		GD_NOT_IMPLEMENTED();
+	}
+
+	/// Processes character constants inside input stream.
+	void StreamedLexerImpl::ProcessCharacterConstant()
+	{	
+		self->ProcessEscapeSequenceInStringOrCharacterConstant();
+		if (self->CurrentESMode == GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN)
+		{	// We are sure that escape sequence does not exists or was succesfully parsed.
+			if (self->CurrentCharacter == CharAnsi('\''))
+			{	// Here is unescaped "'" character.
+				if (!self->CurrentlyWasCharWritten)
+				{	// Empty character constant error. (now raw data contains quote mark ("'") and parsed ).
+					static ParsingErrorDesc const EmptyCharacterConstantError("empty character constant");
+					self->RaiseFatalError(EmptyCharacterConstantError);
+					self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_SYNTAX);
+					return;
+				}
+				
+				self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_COMMIT);
+				return;
+			}
+			
+			if (self->CurrentlyWasCharWritten)
+			{	// Multiple characters inside character constant.
+				static ParsingErrorDesc const MultiCharacterCharacterConstantError("multiple characters in character constant %s%c'");
+				self->RaiseFatalError(MultiCharacterCharacterConstantError, self->CurrentLexem->GetRawData().CStr(), self->CurrentCharacter);
+				self->RaiseExceptionWithCode(GD_LEXER_EXCEPTION_SYNTAX);
+				return;
+			}
+
+			// Here is our character.
+			self->CurrentLexem->ProcessedDataCharacter = self->CurrentCharacter;
+			self->CurrentlyWasCharWritten = true;
+		}
 	}
 
 	/// Processes operators inside input stream and handles switching to multiple line comment parsing.
@@ -713,9 +901,9 @@ GD_NAMESPACE_BEGIN
 		, SingleLineCommentDeclaration(Forward<String>(SingleLineCommentDeclaration))
 		, MultipleLineCommentBeginning(Forward<String>(MultipleLineCommentBeginning))
 		, MultipleLineCommentEnding(Forward<String>(MultipleLineCommentEnding))
-		, IntegerHexadecimalNotationDelimiter(CharAnsiHelpers::ToUpperCase(IntegerHexadecimalNotationDelimiter))
-		, IntegerOctalNotationDelimiter(CharAnsiHelpers::ToUpperCase(IntegerOctalNotationDelimiter))
-		, IntegerBinaryNotationDelimiter(CharAnsiHelpers::ToUpperCase(IntegerBinaryNotationDelimiter))
+		, IntegerHexadecimalNotationDelimiter((IntegerHexadecimalNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerHexadecimalNotationDelimiter) : CharAnsi('\0'))
+		, IntegerOctalNotationDelimiter((IntegerOctalNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerOctalNotationDelimiter) : CharAnsi('\0'))
+		, IntegerBinaryNotationDelimiter((IntegerBinaryNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerBinaryNotationDelimiter) : CharAnsi('\0'))
 		, FloatingPointDelimiter(FloatingPointDelimiter)
 	{
 		// Checking if all delimiters are alphabetic characters.

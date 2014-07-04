@@ -18,6 +18,13 @@
 #include <GoddamnEngine/Core/Compilers/Toolchain/Toolchain.hh>
 #include <GoddamnEngine/Core/Compilers/StreamedLexer/StreamedLexer.hh>
 
+#if (defined(GD_DEBUG)) && 0
+	/// Prints log message to output on the new line in debug mode.
+#	define GD_REFLECTOR_VERBOSE_LOG(Format, ...) printf("\n"Format, __VA_ARGS__);
+#else	// if (defined(GD_DEBUG))
+#	define GD_REFLECTOR_VERBOSE_LOG(...)
+#endif	// if (defined(GD_DEBUG))
+
 GD_NAMESPACE_BEGIN
 
 	typedef Str CPPBaseParserErrorDesc;
@@ -81,8 +88,7 @@ GD_NAMESPACE_BEGIN
 		/// Expects a match of current lexem content type with specified one.
 		/// If lexem does not matches with content type, then raises 'unexpected Existing-Content-Type. Expected-Content-Type expected' error.
 		/// @param ContentType The expected lexem content type.
-		/// @returns True if current lexem content type mathes with specified one.
-		GDINT bool ExpectLexem(LexemContentType const ContentType);
+		GDINT void ExpectLexem(LexemContentType const ContentType);
 
 		/// Expects a match of current lexem content type and parsed data ID (PDID) with specified ones.
 		/// @param ContentType The expected lexem content type.
@@ -95,8 +101,7 @@ GD_NAMESPACE_BEGIN
 		/// If lexem matches with content type, but does not matches with parsed data ID (PDID), then raises 'unexpected Existing-PDID. Expected-PDID expected' error.
 		/// @param ContentType The expected lexem content type.
 		/// @param ID          The expected lexem parsed data ID (PDID).
-		/// @returns True if current lexem content type and parsed data ID mathes with specified one.
-		GDINT bool ExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID);
+		GDINT void ExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID);
 
 		/// Expects next lexem from input stream.
 		/// @returns True if lexem was succesfully read.
@@ -104,8 +109,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Expects next lexem from input stream. 
 		/// If lexem does not exists then raises 'unexpected End-Of-Stream' error.
-		/// @returns True if lexem was succesfully read.
-		GDINT bool ExpectNextLexem();
+		GDINT void ExpectNextLexem();
 
 		/// Expects next lexem from input stream and a match of lexem content type with specified one.
 		/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
@@ -117,8 +121,7 @@ GD_NAMESPACE_BEGIN
 		/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
 		/// If lexem exists, but does not matches with content type, then raises 'unexpected Existing-Content-Type. Expected-Content-Type expected' error.
 		/// @param ContentType The expected lexem content type.
-		/// @returns True if lexem was succesfully read and mathes with specified content type.
-		GDINT bool ExpectNextLexem(LexemContentType const ContentType);
+		GDINT void ExpectNextLexem(LexemContentType const ContentType);
 
 		/// Expects next lexem from input stream, and a match of lexem content type with specified one, and a match of lexem parsed data ID with specified one.
 		/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
@@ -133,8 +136,7 @@ GD_NAMESPACE_BEGIN
 		/// If lexem exists, matches with content type, but does not matches with parsed data ID, then raises 'unexpected Existing-PDID. Expected-PDID expected' error.
 		/// @param ContentType The expected lexem content type.
 		/// @param ID          The expected lexem parsed data ID (PDID).
-		/// @returns True if lexem was succesfully read and mathes with specified content type and specified parsed data ID.
-		GDINT bool ExpectNextLexem(LexemContentType ContentType, StreamedLexerID const ID);
+		GDINT void ExpectNextLexem(LexemContentType ContentType, StreamedLexerID const ID);
 
 		/// @}
 
@@ -148,8 +150,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Processes next found annotation in input stream.
 		/// @param ExpectedAnnotationPrefix Prefix of expected annotation idenitifier.
-		/// @return True if annotation was succesfully processed.
-		GDINT bool ProcessNextAnnotation(String const& ExpectedAnnotationPrefix = "$GD_");
+		GDINT void ProcessNextAnnotation(String const& ExpectedAnnotationPrefix = "$GD_");
 
 		/// @}
 	};	// class CPPBaseParser
@@ -177,8 +178,7 @@ GD_NAMESPACE_BEGIN
 	private /*Class API*/:
 		/// Parses annotation params.
 		/// @param BaseParser Parser that provides low lever source parsing.
-		/// @returns True if annotation argumnts were succesfully parsed.
-		GDINT bool ParseAnnotationParams(CPPBaseParser* const BaseParser);
+		GDINT void ParseAnnotationParams(CPPBaseParser* const BaseParser);
 
 	public /*Class API*/:
 		/// Spawns new parser of annotaion param value.
@@ -188,8 +188,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Parses upcoming annotation.
 		/// @param BaseParser Parser that provides low lever source parsing.
-		/// @returns True if annotation was succesfully parsed.
-		GDINT virtual bool ParseAnnotation(CPPBaseParser* const BaseParser) impl_abstract;
+		GDINT virtual void ParseAnnotation(CPPBaseParser* const BaseParser) impl_abstract;
 	};	// class CPPAnnotationParser
 
 	/// Provides registering all annotation-parser-derived classes and spawning them while parsing.
@@ -264,8 +263,7 @@ GD_NAMESPACE_BEGIN
 		/// @param BaseParser       Parser that provides low lever source parsing.
 		/// @param AnnotationParser Parser, that currently works on upcoming annotation.
 		/// @param ParamValue       String value of annotation paramater or it`s part.
-		/// @returns True if annotation param was succesfully parsed.
-		GDINT virtual bool ParseArgument(CPPBaseParser* const BaseParser, CPPAnnotationParser* const AnnotationParser, String const& ParamValue) abstract;
+		GDINT virtual void ParseArgument(CPPBaseParser* const BaseParser, CPPAnnotationParser* const AnnotationParser, String const& ParamValue) abstract;
 	};	// class CPPAnnotationParamParser
 
 	/// Provides registering all annotation-params-parser-derived classes and spawning them while parsing.

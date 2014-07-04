@@ -27,7 +27,7 @@ GD_NAMESPACE_BEGIN
 		/// @see CPPAnnotationParser::SpawnParamParser
 		GDINT virtual UniquePtr<CPPAnnotationParamParser> SpawnParamParser(String const& ParamName) override final;
 		/// @see CPPAnnotationParser::ParseAnnotation
-		GDINT virtual bool ParseAnnotation(CPPBaseParser* const BaseParser) override final;
+		GDINT virtual void ParseAnnotation(CPPBaseParser* const BaseParser) override final;
 	};	// class CPPEnumerationParser  
 
 	/// ==========================================================================================
@@ -49,15 +49,25 @@ GD_NAMESPACE_BEGIN
 	}
 
 	/// @see CPPAnnotationParser::ParseAnnotation
-	bool CPPReflectableParser::ParseAnnotation(CPPBaseParser* const BaseParser)
+	void CPPReflectableParser::ParseAnnotation(CPPBaseParser* const BaseParser)
 	{
 		self->CurrentReflectable = new CPPReflectable();
-		if (!self->CPPAnnotationParser::ParseAnnotation(BaseParser)) return false;
+		self->CPPAnnotationParser::ParseAnnotation(BaseParser);
 		self->CurrentReflectable->SetDefaultsForUnknowns();
+
+		/// Expecting 'class'/'struct' keyword.
+		using namespace StreamedLexerDefaultOptions;
+		if (!BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_KEYWORD, GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_STRUCT))
+			 BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_KEYWORD, GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CLASS);
+
+		// Parsing reflectable identifier name.
+		BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
+		self->CurrentReflectable->ReflectableName = BaseParser->GetCurrentLexem().GetRawData();
+
+		BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COLON);
 
 		CPPReflectablesListImpl.PushLast(self->CurrentReflectable);
 		self->CurrentReflectable = nullptr;
-		return true;
 	}
 
 GD_NAMESPACE_END

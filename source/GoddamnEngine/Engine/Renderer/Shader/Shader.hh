@@ -534,7 +534,7 @@ GD_NAMESPACE_BEGIN
 #	if (!defined(GetProgramTessellationControlShader))
 #	     define  GetProgramTessellationControlShader GetProgramHullShader
 #	else	// if (!defined(GetProgramTessellationControlShader))
-#		 error '"GetProgramTessellationControlShader" Identifier was already defined, please remove if or disable OpenGL naming aliasing.'
+#		 error "'GetProgramTessellationControlShader' Identifier was already defined, please remove if or disable OpenGL naming aliasing."
 #	endif	// if (!defined(GetProgramTessellationControlShader))
 #endif	// if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 
@@ -556,7 +556,7 @@ GD_NAMESPACE_BEGIN
 #	if (!defined(GetProgramFragmentShader))
 #	     define  GetProgramFragmentShader GetProgramHullShader
 #	else	// if (!defined(GetProgramFragmentShader))
-#		 error '"GetProgramFragmentShader" Identifier was already defined, please remove if or disable OpenGL naming aliasing.'
+#		 error "'GetProgramFragmentShader' Identifier was already defined, please remove if or disable OpenGL naming aliasing."
 #	endif	// if (!defined(GetProgramFragmentShader))
 #endif	// if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 	};	// class HRIShaderProgram

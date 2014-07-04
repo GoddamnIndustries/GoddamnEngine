@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 			return false;
 
 		// Reading all directive into a string.
-		if (!BaseParser->ExpectNextLexem()) return false;
+		BaseParser->ExpectNextLexem();
 		String PreprocessorDirective = BaseParser->GetCurrentLexem().GetRawData();
 		for (;;)
 		{	
@@ -40,8 +40,7 @@ GD_NAMESPACE_BEGIN
 				break;
 			PreprocessorDirective.PushLast(Character);
 		};
-
-		if (!BaseParser->ExpectNextLexem()) return false;
+		BaseParser->ExpectNextLexem();
 
 		// '#endif' directive parsing.
 		if (strncmp(PreprocessorDirective.CStr(), "endif", sizeof("endif") - 1) == 0)

@@ -493,23 +493,35 @@ GD_NAMESPACE_BEGIN
 		/// Returns true if this character is valid digit in specified notation.
 		/// Currently supports notations range between 2 and 36.
 		/// Full list of supported characters: @c 0123456789
-		GDINL static bool IsDigit(CharAnsi const Character, size_t const Notation = 10)
+		inline static bool IsDigit(CharAnsi const Character, size_t const Notation = 10)
 		{
 			GD_ASSERT((Notation >= 2) && (Notation <= static_cast<size_t>(('9' - '0') + ('Z' - 'A') + 2)), "This notation is invalid or not supported");
-			static String const DigitCharacters("0123456789");
-			return (DigitCharacters.Find(Character) == -1) ? false
-				: ((Notation <= 10) ? ((Character >= CharAnsi('0')) && (Character <= (CharAnsi('0') + Notation)))
-				: (((Character >= CharAnsi('0')) && (Character <= (CharAnsi('0') + Notation)))
-				|| ((Character >= CharAnsi('A')) && (Character <= (CharAnsi('A') + Notation)))
-				|| ((Character >= CharAnsi('a')) && (Character <= (CharAnsi('a') + Notation)))));
+			if (Notation > 10)
+			{
+				if ((Character >= CharAnsi('0')) && (Character <= CharAnsi('9')))
+					return true;
+				if (Character >= CharAnsi('A') && (Character <= (CharAnsi('A') + Notation - 10)))
+					return true;
+				if (Character >= CharAnsi('a') && (Character <= (CharAnsi('z') + Notation - 10)))
+					return true;
+
+				return false;
+			}
+			else
+				return (Character >= CharAnsi('0')) && (Character <= (CharAnsi('0') + Notation));
 		}
 
-		/// Returns true if this character a valid latin letter.
+		/// Returns true if this character can be used in identifier name.
 		/// Full list of supported characters: @c _$QqWwEeRrTtYyUuIiOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm
-		GDINL static bool IsAlphabetic(CharAnsi const Character)
+		inline static bool IsAlphabetic(CharAnsi const Character)
 		{
-			static String const ValidLatinLetters("_$QqWwEeRrTtYyUuIiOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm");
-			return (ValidLatinLetters.Find(Character) != -1);
+			if ((Character == CharAnsi('_')) || (Character == CharAnsi('$')))
+				return true;
+			if (Character >= CharAnsi('A') && (Character <= CharAnsi('Z')))
+				return true;
+			if (Character >= CharAnsi('a') && (Character <= CharAnsi('z')))
+				return true;
+			return false;
 		}
 
 		/// Returns true if this character is valid special character

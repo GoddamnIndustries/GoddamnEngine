@@ -194,6 +194,7 @@ GD_NAMESPACE_BEGIN
 		/// Limitations:
 		/// @li Does not determines keyword. They all are treated a identifiers.
 		/// @li Does not parser numberic constants, operators in to processed data - only raw data presented.
+		/// @li Does not parses escape sequences in string and character constants, also does not checks if character constant length.
 		/// @li Broken operators parsing: e.g. "+=(" and "})]" would be treated as single operator.
 		GD_LEXER_MODE_BASIC,
 
