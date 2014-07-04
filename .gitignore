@@ -3,7 +3,7 @@
 
 ###########################################################################
 ## Custom:
-utilities/*.*
+utilities/ThirdPartyExecutables/
 _Dependencies/
 _Build/
 *.lib
