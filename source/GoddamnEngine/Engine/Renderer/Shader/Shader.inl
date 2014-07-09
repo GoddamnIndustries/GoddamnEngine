@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// HRIShader.inl: shader inline implementation
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
@@ -6,7 +6,7 @@
 ///		* --.01.2014 - Created by James Jhuighuy
 ///		* 06.02.2014 - Rewritten from scratch by James Jhuighuy
 ///     * 05.05.2014 - Rewritten to match cross compiler
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #include <GoddamnEngine/Core/IO/Stream/Stream.hh>
 #include <GoddamnEngine/Core/Format/FormatFromString.hh>
@@ -14,9 +14,9 @@
 
 GD_NAMESPACE_BEGIN
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRIShaderParamDesc
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GDINL HRIShaderParamDesc::HRIShaderParamDesc(
 		HRIShaderParamLocationDesc* const  ParamLocationDesc,
@@ -78,9 +78,9 @@ GD_NAMESPACE_BEGIN
 		return object_cast<HRIShaderParamLocationDesc*>(self->GetParentObject());
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRIShaderParam
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GDINL HRIShaderParamLocation const* HRIShaderParam::GetShaderParamLocation() const
 	{
@@ -109,9 +109,9 @@ GD_NAMESPACE_BEGIN
 		self->SetValue(chandle(&ParamValue));
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRIShaderParamLocationDesc
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GDINL HRIShaderParamLocationDesc::HRIShaderParamLocationDesc(HRIShaderInstanceDesc* const LocationShaderInstanceDesc, HRIShaderParamLocationDescType const LocationType)
 		: HRIObject(HRIObject::TreeLockingFlagsAll, LocationShaderInstanceDesc), LocationType(LocationType)
@@ -120,9 +120,9 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT((self->LocationType < GD_HRI_SHADER_PARAM_DESC_TYPES_COUNT), "Invalid location type specified");
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRIShaderParamLocation
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GDINL HRIShaderInstance const* HRIShaderParamLocation::GetLocationInstance() const
 	{
@@ -170,9 +170,9 @@ GD_NAMESPACE_BEGIN
 	}
 
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRIShaderInstanceDesc
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GDINL HRIShaderInstanceDesc::HRIShaderInstanceDesc(UInt64 const InstanceInputFormat, UInt64 const InstanceOutputFormat) 
 		: InstanceInputFormat (InstanceInputFormat )
@@ -214,9 +214,9 @@ GD_NAMESPACE_BEGIN
 		return nullptr;
 	}*/
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRIShaderInstance
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GDINL HRIShaderParam const* HRIShaderInstance::GetParamByName(String const& ParamName) const
 	{
@@ -233,9 +233,9 @@ GD_NAMESPACE_BEGIN
 		return const_cast<HRIShaderParam*>(const_cast<HRIShaderInstance const*>(self)->GetParamByName(ParamName));
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRIShaderCtorInfo
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GDINL HRIShaderCtorInfo::HRIShaderCtorInfo(
 		HRIShaderProgram*     const  CreationShaderProgram,
@@ -257,9 +257,9 @@ GD_NAMESPACE_BEGIN
 	{
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRIShader
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GDINL HRIShader::HRIShader(HRIShaderCtorInfo const& CtorInfo, HRIShaderType const HRIShaderType)
 		: HRIObject(HRIObject::TreeLockingFlagsAll, CtorInfo.CreationShaderProgram)
@@ -288,9 +288,9 @@ GD_NAMESPACE_BEGIN
 		return object_cast<HRIShaderProgram*>(self->GetParentObject());
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRIShaderProgram
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GDINL HRIShaderProgram::HRIShaderProgram()
 	{

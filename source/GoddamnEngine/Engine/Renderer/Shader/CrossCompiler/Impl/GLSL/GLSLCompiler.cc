@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// GLSLCompiler.hh: GLSL compiler generator and compiler implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 13.06.2014 - Created by James Jhuighuy.
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #include <GoddamnEngine/Include.hh>
 #if (defined(GD_PLATFORM_DESKTOP))
@@ -56,10 +56,10 @@ GD_NAMESPACE_BEGIN
 	namespace GLSLInsertations
 	{
 		static Char const GLSLCopyright[] = 
-R"(//////////////////////////////////////////////////////////////////////////
+R"(/// ==========================================================================================
 /// This file was automatically translated from HLSL by Goddamn Engine.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 )";
 
 		static Char const GLSL430Preambule[] =

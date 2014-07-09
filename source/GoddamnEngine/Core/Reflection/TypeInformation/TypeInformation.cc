@@ -5,14 +5,14 @@
 
 GD_NAMESPACE_BEGIN
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	TypeInformation const* TypeInformation::lastRegisteredType = nullptr;
 	TypeInformation const* TypeInformation::GetLastRegistered()
 	{
 		return TypeInformation::lastRegisteredType;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	TypeInformation::TypeInformation(TypeInformationClassInfo const& typeInformationClassInfo):
 		TypeInformationClassInfo(typeInformationClassInfo),
 		PreviousType(TypeInformation::GetLastRegistered())
@@ -47,7 +47,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	TypeInformation const* TypeInformation::SearchForType(const String& typeName)
 	{
 		for (TypeInformation const* 
@@ -63,7 +63,7 @@ GD_NAMESPACE_BEGIN
 		return nullptr;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	bool TypeInformation::IsDerivedFrom(TypeInformation const* const typeInformation) const
 	{
 		for (TypeInformation const* 

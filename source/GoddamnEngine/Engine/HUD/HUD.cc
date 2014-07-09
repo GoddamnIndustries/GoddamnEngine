@@ -24,11 +24,11 @@ GD_NAMESPACE_BEGIN
 		};	// struct RequiredPixelParam
 	}	// namespace HUDElementPanelShaderValidation
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HUDElementPanel, HRIObject, GDAPI, nullptr);
 	
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	HUDElementPanel::HUDElementPanel(
 		_In_opt_ HUDElementPanel*		   const ElementBasePanel,
 		_In_opt_ HUDTextureAtlas	const* const ElementTextureAtlas,
@@ -80,7 +80,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	HUDElementPanel::~HUDElementPanel()
 	{
 		auto ElementBasePanel  = const_cast<HUDElementPanel*>(self->ElementBasePanel.GetPointer());
@@ -92,7 +92,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	static String const ElementRectangleName("HUDElementRectangle");
 	void HUDElementPanel::SetElementRectangle(Rectangle const& ElementRectangle)
 	{
@@ -113,7 +113,7 @@ GD_NAMESPACE_BEGIN
 		self->OnRectangleParamChangedEvent.TriggerAndLaunchEvent();
 	}
 	
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	static String const ElementRotationRadiansName("HUDElementRotationRadians");
 	GDAPI void HUDElementPanel::SetElementRotationDegrees(Float32 const ElementRotationDegrees)
 	{
@@ -129,7 +129,7 @@ GD_NAMESPACE_BEGIN
 		self->OnRotationParamChangedEvent.TriggerAndLaunchEvent();
 	}
 	
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	static String const ElementDepthName("HUDElementDepth");
 	GDAPI void HUDElementPanel::SetElementDepth(Int32 const ElementDepth)
 	{
@@ -145,7 +145,7 @@ GD_NAMESPACE_BEGIN
 		self->OnDepthParamChangedEvent.TriggerAndLaunchEvent();
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	static String const ElementTextureAtlasName("HUDElementTextureAtlas");
 	static String const ElementTextureAtlasDimensionsName("HUDElementTextureAtlasDimensions");
 	static String const ElementTextureAtlasFixedZoneName("HUDElementTextureAtlasFixedZone");
@@ -158,7 +158,7 @@ GD_NAMESPACE_BEGIN
 		self->ElementPixelShaderInstance->GetParamByName(ElementTextureAtlasFixedZoneName)->SetValue<Vector2>(self->ElementTextureAtlas->AtlasFixedZone);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	static String const ElementTextureIndexName("HUDElementTextureIndexName");
 	void HUDElementPanel::SetElementTextureIndex(_In_ UInt32 const ElementTextureIndex)
 	{
@@ -168,7 +168,7 @@ GD_NAMESPACE_BEGIN
 		self->ElementPixelShaderInstance->GetParamByName(ElementTextureIndexName)->SetValue<UInt32>(ElementTextureIndex);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	static String const ElementCharactersAtlasName("HUDElementCharactersAtlass");
 	static String const ElementCharactersAtlasDimensionsName("HUDElementCharactersAtlasDimensions");
 	void HUDElementPanel::SetElementCharactersAtlas()
@@ -179,7 +179,7 @@ GD_NAMESPACE_BEGIN
 		self->ElementPixelShaderInstance->GetParamByName(ElementCharactersAtlasDimensionsName)->SetValue<UInt32x2>(UInt32x2(self->ElementCharactersAtlas->AtlasDimensions));
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	static String const ElementCharactersStringName("HUDElementCharactersString");
 	static String const ElementCharactersStringLengthName("HUDElementCharactersStringLength");
 	void HUDElementPanel::SetElementCharactersString(_In_ String const& ElementCharactersString)
@@ -191,7 +191,7 @@ GD_NAMESPACE_BEGIN
 		self->ElementPixelShaderInstance->GetParamByName(ElementCharactersStringLengthName)->SetValue<UInt32>(static_cast<UInt32>(ElementCharactersString.GetSize()));
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	static String const HUDElementCharactersSizeName("HUDElementCharactersSize");
 	void HUDElementPanel::SetElementCharactersFontSize(_In_ Float32 const ElementCharactersFontSize)
 	{
@@ -204,7 +204,7 @@ GD_NAMESPACE_BEGIN
 		self->ElementPixelShaderInstance->GetParamByName(HUDElementCharactersSizeName)->SetValue<Vector2>(ElementCharactersSize);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	static String const HUDElementCharactersColorName("HUDElementCharactersColor");
 	void HUDElementPanel::SetElementCharactersColor(_In_ Color const& ElementCharactersColor)
 	{
@@ -214,7 +214,7 @@ GD_NAMESPACE_BEGIN
 		self->ElementPixelShaderInstance->GetParamByName(HUDElementCharactersColorName)->SetValue<Color>(ElementCharactersColor);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	static String const ElementCharactersPaddingName("HUDElementCharactersPadding");
 	void HUDElementPanel::SetElementCharactersPadding(_In_ Vector2 const& ElementCharactersPadding)
 	{
@@ -224,17 +224,17 @@ GD_NAMESPACE_BEGIN
 		self->ElementPixelShaderInstance->GetParamByName(ElementCharactersPaddingName)->SetValue<Vector2>(ElementCharactersPadding);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
+	/// ==========================================================================================
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	GD_TYPEINFORMATION_IMPLEMENTATION(HUDResources, Object, GDAPI);
 	GD_SINGLETON_IMPLEMENTATION(HUDResources);
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	HUDResources::HUDResources()
 	{
 		self->HUDMountingPoint = HRInterface::GetInstance().CreateLinkagePoint();
@@ -242,16 +242,16 @@ GD_NAMESPACE_BEGIN
 		self->LoadHUDElementShader();
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	HUDResources::~HUDResources()
 	{
 		///!!! self->HUDElementMesh->RemoveReference();
 		self->HUDMountingPoint->RemoveReference();
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	void HUDResources::LoadHUDElementMesh()
 	{
 		static Float32 const HUDElementMeshVertices[] = {
@@ -269,8 +269,8 @@ GD_NAMESPACE_BEGIN
 		self->HUDMountingPoint->SetIndexedShape(Shape);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	void HUDResources::LoadHUDElementShader()
 	{
 		auto const HUDShader = ResourceStreamer::GetInstance().LoadImmediately<ShaderProgramResource>("file://CommonResources/Shaders/HUDShader.hlsl.xml")->GetProgram();
@@ -287,8 +287,8 @@ GD_NAMESPACE_BEGIN
 		self->HUDMountingPoint->SetShaderProgram(HUDShader);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	void HUDResources::RenderPanel(HUDElementPanel* const ElementPanel)
 	{
 		ElementPanel->ElementVertexShaderInstance->GetInstanceFirstConstantBuffersLocation()->UploadAllParameters();

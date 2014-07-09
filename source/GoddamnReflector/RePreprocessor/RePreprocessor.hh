@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// RePreprocessor.hh: GoddamnC++ preprocessor directives (re)parser interface. 
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 01.07.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/IO/Stream/Stream.hh>

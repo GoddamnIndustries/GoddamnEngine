@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// D3D11Renderer.hh - Direct3D 11 Hardware renderer implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 05.06.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #pragma once
 #ifndef GD_ENGINE_RENDERER_IMPL_D3D11_RENDERER
@@ -93,81 +93,81 @@ GD_NAMESPACE_BEGIN
 #include <GoddamnEngine/Engine/Renderer/RendererMethods.hh>
 	};
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	GDINL static DXGI_FORMAT ToDxgiFormat(Format const format)
 	{
 		switch (format)
 		{
-			//////////////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
+			/// ==========================================================================================
 		case GD_FORMAT_R8_UINT:				return DXGI_FORMAT_R8_UINT;
 		case GD_FORMAT_R16_UINT:			return DXGI_FORMAT_R16_UINT;
 		case GD_FORMAT_R32_UINT:			return DXGI_FORMAT_R32_UINT;
 		//case GD_FORMAT_R64_UINT:			return DXGI_FORMAT_R64_UINT;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		case GD_FORMAT_R8G8_UINT:			return DXGI_FORMAT_R8G8_UINT;
 		case GD_FORMAT_R16G16_UINT:			return DXGI_FORMAT_R16G16_UINT;
 		case GD_FORMAT_R32G32_UINT:			return DXGI_FORMAT_R32G32_UINT;
 		//case GD_FORMAT_R64G64_UINT:		return DXGI_FORMAT_R64G64_UINT;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		//case GD_FORMAT_R8G8B8_UINT:		return DXGI_FORMAT_R8G8B8_UINT;
 		//case GD_FORMAT_R16G16B16_UINT:	return DXGI_FORMAT_R16G16B16_UINT;
 		case GD_FORMAT_R32G32B32_UINT:		return DXGI_FORMAT_R32G32B32_UINT;
 		//case GD_FORMAT_R64G64B64_UINT:	return DXGI_FORMAT_R64G64B64_UINT;
 			
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		case GD_FORMAT_R8G8B8A8_UINT:		return DXGI_FORMAT_R8G8B8A8_UINT;
 		case GD_FORMAT_R16G16B16A16_UINT:	return DXGI_FORMAT_R16G16B16A16_UINT;
 		case GD_FORMAT_R32G32B32A32_UINT:	return DXGI_FORMAT_R32G32B32A32_UINT;
 		//case GD_FORMAT_R64G64B64A64_UINT: return DXGI_FORMAT_R64G64B64A64_UINT;
 
-			//////////////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
+			/// ==========================================================================================
 		case GD_FORMAT_R8_SINT:				return DXGI_FORMAT_R8_SINT;
 		case GD_FORMAT_R16_SINT:			return DXGI_FORMAT_R16_SINT;
 		case GD_FORMAT_R32_SINT:			return DXGI_FORMAT_R32_SINT;
 		//case GD_FORMAT_R64_SINT:			return DXGI_FORMAT_R64_SINT;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		case GD_FORMAT_R8G8_SINT:			return DXGI_FORMAT_R8G8_SINT;
 		case GD_FORMAT_R16G16_SINT:			return DXGI_FORMAT_R16G16_SINT;
 		case GD_FORMAT_R32G32_SINT:			return DXGI_FORMAT_R32G32_SINT;
 		//case GD_FORMAT_R64G64_SINT:		return DXGI_FORMAT_R64G64_SINT;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		//case GD_FORMAT_R8G8B8_SINT:		return DXGI_FORMAT_R8G8B8_SINT;
 		//case GD_FORMAT_R16G16B16_SINT:	return DXGI_FORMAT_R16G16B16_SINT;
 		case GD_FORMAT_R32G32B32_SINT:		return DXGI_FORMAT_R32G32B32_SINT;
 		//case GD_FORMAT_R64G64B64_SINT:	return DXGI_FORMAT_R64G64B64_SINT;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		case GD_FORMAT_R8G8B8A8_SINT:		return DXGI_FORMAT_R8G8B8A8_SINT;
 		case GD_FORMAT_R16G16B16A16_SINT:	return DXGI_FORMAT_R16G16B16A16_SINT;
 		case GD_FORMAT_R32G32B32A32_SINT:	return DXGI_FORMAT_R32G32B32A32_SINT;
 		//case GD_FORMAT_R64G64B64A64_SINT: return DXGI_FORMAT_R64G64B64A64_SINT;
 
-			//////////////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
+			/// ==========================================================================================
 		//case GD_FORMAT_R8_FLOAT:			return DXGI_FORMAT_R8_FLOAT;
 		case GD_FORMAT_R16_FLOAT:			return DXGI_FORMAT_R16_FLOAT;
 		case GD_FORMAT_R32_FLOAT:			return DXGI_FORMAT_R32_FLOAT;
 		//case GD_FORMAT_R64_FLOAT:			return DXGI_FORMAT_R64_FLOAT;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		//case GD_FORMAT_R8G8_FLOAT:		return DXGI_FORMAT_R8G8_FLOAT;
 		case GD_FORMAT_R16G16_FLOAT:		return DXGI_FORMAT_R16G16_FLOAT;
 		case GD_FORMAT_R32G32_FLOAT:		return DXGI_FORMAT_R32G32_FLOAT;
 		//case GD_FORMAT_R64G64_FLOAT:		return DXGI_FORMAT_R64G64_FLOAT;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		//case GD_FORMAT_R8G8B8_FLOAT:		return DXGI_FORMAT_R8G8B8_FLOAT;
 		//case GD_FORMAT_R16G16B16_FLOAT:	return DXGI_FORMAT_R16G16B16_FLOAT;
 		case GD_FORMAT_R32G32B32_FLOAT:		return DXGI_FORMAT_R32G32B32_FLOAT;
 		//case GD_FORMAT_R64G64B64_FLOAT:	return DXGI_FORMAT_R64G64B64_FLOAT;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		//case GD_FORMAT_R8G8B8A8_FLOAT:	return DXGI_FORMAT_R8G8B8A8_FLOAT;
 		case GD_FORMAT_R16G16B16A16_FLOAT:	return DXGI_FORMAT_R16G16B16A16_FLOAT;
 		case GD_FORMAT_R32G32B32A32_FLOAT:	return DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -177,34 +177,34 @@ GD_NAMESPACE_BEGIN
 		return DXGI_FORMAT_UNKNOWN;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	GDINL static DXGI_FORMAT ToDxgiFormatUnorm(Format const format)
 	{
 		switch (format)
 		{
-			//////////////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
+			/// ==========================================================================================
 		case GD_FORMAT_R8_UINT:				return DXGI_FORMAT_R8_UNORM;
 		case GD_FORMAT_R16_UINT:			return DXGI_FORMAT_R16_UNORM;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		case GD_FORMAT_R8G8_UINT:			return DXGI_FORMAT_R8G8_UNORM;
 		case GD_FORMAT_R16G16_UINT:			return DXGI_FORMAT_R16G16_UNORM;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		case GD_FORMAT_R8G8B8A8_UINT:		return DXGI_FORMAT_R8G8B8A8_UNORM;
 		case GD_FORMAT_R16G16B16A16_UINT:	return DXGI_FORMAT_R16G16B16A16_UNORM;
 
-			//////////////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
+			/// ==========================================================================================
 		case GD_FORMAT_R8_SINT:				return DXGI_FORMAT_R8_SNORM;
 		case GD_FORMAT_R16_SINT:			return DXGI_FORMAT_R16_SNORM;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		case GD_FORMAT_R8G8_SINT:			return DXGI_FORMAT_R8G8_SNORM;
 		case GD_FORMAT_R16G16_SINT:			return DXGI_FORMAT_R16G16_SNORM;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 		case GD_FORMAT_R8G8B8A8_SINT:		return DXGI_FORMAT_R8G8B8A8_SNORM;
 		case GD_FORMAT_R16G16B16A16_SINT:	return DXGI_FORMAT_R16G16B16A16_SNORM;
 

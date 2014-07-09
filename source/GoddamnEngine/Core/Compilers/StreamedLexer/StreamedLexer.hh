@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// StreamedLexer.hh - lexer interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 27.03.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_COMPILERS_STREAMED_LEXER
@@ -21,7 +21,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	class Stream;
+	class InputStream;
 
 	/// Describes all supported lexem types.
 	enum LexemContentType : UInt8
@@ -128,10 +128,10 @@ GD_NAMESPACE_BEGIN
 	/// Contains codes of exceptions that streamed lexer throws.
 	enum StreamedLexerExceptionCodes : ToolchainException
 	{
-		GD_LEXER_EXCEPTION_MODULE =  10L,							 ///< Streamed lexer module.
-		GD_LEXER_EXCEPTION_EOS	  = -GD_LEXER_EXCEPTION_MODULE - 1L, ///< End-Of-Stream.
-		GD_LEXER_EXCEPTION_COMMIT = -GD_LEXER_EXCEPTION_MODULE - 2L, ///< Token was commited.
-		GD_LEXER_EXCEPTION_SYNTAX = +GD_LEXER_EXCEPTION_MODULE + 1L, ///< Syntax error.
+		GD_STREAMED_LEXER_EXCEPTION_MODULE =  10L,							 ///< Streamed lexer module.
+		GD_STREAMED_LEXER_EXCEPTION_EOS	  = -GD_STREAMED_LEXER_EXCEPTION_MODULE - 1L, ///< End-Of-Stream.
+		GD_STREAMED_LEXER_EXCEPTION_COMMIT = -GD_STREAMED_LEXER_EXCEPTION_MODULE - 2L, ///< Token was commited.
+		GD_STREAMED_LEXER_EXCEPTION_SYNTAX = +GD_STREAMED_LEXER_EXCEPTION_MODULE + 1L, ///< Syntax error.
 	};	// enum StreamedLexerExceptionCodes
 
 	/// Provides lexer information about syntax in compilable data.
@@ -196,16 +196,16 @@ GD_NAMESPACE_BEGIN
 		/// @li Does not parser numberic constants, operators in to processed data - only raw data presented.
 		/// @li Does not parses escape sequences in string and character constants, also does not checks if character constant length.
 		/// @li Broken operators parsing: e.g. "+=(" and "})]" would be treated as single operator.
-		GD_LEXER_MODE_BASIC,
+		GD_STREAMED_LEXER_MODE_BASIC,
 
 		/// Lexer runs in full-featured mode. Is is slower then basic, but does not includes
 		/// basic lexer limitation.
-		GD_LEXER_MODE_ADVANCED,
+		GD_STREAMED_LEXER_MODE_ADVANCED,
 
 		/// Unknown mode (internal usage only).
-		GD_LEXER_MODE_UNKNOWN,
-		GD_LEXER_MODE_DEFAULT = GD_LEXER_MODE_ADVANCED,
-		GD_LEXER_MODES_COUNT  = GD_LEXER_MODE_UNKNOWN,
+		GD_STREAMED_LEXER_MODE_UNKNOWN,
+		GD_STREAMED_LEXER_MODE_DEFAULT = GD_STREAMED_LEXER_MODE_ADVANCED,
+		GD_STREAMED_LEXER_MODES_COUNT  = GD_STREAMED_LEXER_MODE_UNKNOWN,
 	};	// enum StreamedLexerMode
 
 	/// Class provides streamable tokenization for input stream.
@@ -219,7 +219,7 @@ GD_NAMESPACE_BEGIN
 		GD_CLASS_UNMOVABLE   (StreamedLexer);
 
 		UniquePtr<class BasicStreamedLexerImpl> Implementation;
-		StreamedLexerMode ImplementationMode = GD_LEXER_MODE_UNKNOWN;
+		StreamedLexerMode ImplementationMode = GD_STREAMED_LEXER_MODE_UNKNOWN;
 		StreamedLexerOptions const& Options;
 
 	public:
@@ -228,18 +228,26 @@ GD_NAMESPACE_BEGIN
 		/// @param InputStream Stream on which lexer would work.
 		/// @param Options     Packed lexing options list.
 		/// @param LexerMode Describes avaliable feature set of Streamed Lexer.
-		GDAPI          StreamedLexer(IToolchain* const Toolchain, Stream* const InputStream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode = GD_LEXER_MODE_DEFAULT);
+		GDAPI          StreamedLexer(IToolchain* const Toolchain, UniquePtr<InputStream>&& Stream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode = GD_STREAMED_LEXER_MODE_DEFAULT);
 		GDAPI virtual ~StreamedLexer();
 
 		/// Switches lexer features set.
 		/// @param LexerMode Describes avaliable feature set of Streamed Lexer.
-		GDAPI void SwitchMode(StreamedLexerMode const LexerMode = GD_LEXER_MODE_DEFAULT);
+		GDAPI void SwitchMode(StreamedLexerMode const LexerMode = GD_STREAMED_LEXER_MODE_DEFAULT);
 
 		/// Extracts next lexem from input stream into output. Throws an exception into toolchain if error accures. Can be ran in simple and advanced mode.
 		/// More about modes: 
 		/// @param OutputLexem Pointer to output lexem variable.
 		/// @returns True if lexem was successfully extracted. If operation fails (except cases of expected End-Of-Stream) than exception is raised to that toolchain.
 		GDAPI bool GetNextLexem(Lexem* const OutputLexem);
+
+		/// Exctracts next character from input stream and wraps line breaks, etc.
+		/// @returns Exctracted character.
+		GDAPI CharAnsi GetNextCharacter();
+
+		/// Pushes specified character back to lexer and make it parsable.
+		/// @param Character Character that would be reverted.
+		GDAPI void RevertCharacter(CharAnsi const Character);
 	};	// class StreamedLexer
 
 	/// Contains some predefined options for streamed lexer.
@@ -273,9 +281,11 @@ GD_NAMESPACE_BEGIN
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_EXPORT,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_EXTERN,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FALSE,
+			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FINAL,
+			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FINALLAY,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FLOAT,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FOR,
-			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FRGDND,
+			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FRIEND,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_GOTO,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_IF,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_INLINE,

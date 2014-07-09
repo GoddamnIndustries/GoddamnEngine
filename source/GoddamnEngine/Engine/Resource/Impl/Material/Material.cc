@@ -13,7 +13,7 @@ GD_NAMESPACE_BEGIN
 
 	GD_TYPEINFORMATION_IMPLEMENTATION(Material, Resource, GDAPI, GD_RESOURCE_ARGS);
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void Material::SetShaderProgram(
 		_In_ HRIShaderProgram* const shaderProgram
 	) 
@@ -39,7 +39,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void Material::CopyPropertiesFrom(
 		_In_ Material* const material, 
 		_In_ bool const swapShader /* = true */)
@@ -47,7 +47,7 @@ GD_NAMESPACE_BEGIN
 		GD_NOT_IMPLEMENTED();
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void Material::BindMaterial(
 	) const
 	{
@@ -59,7 +59,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void Material::UnbindMaterial() const
 	{
 		HRIPixelShader* const pixelShader = self->MaterialProgram->GetProgramPixelShader();
@@ -131,7 +131,7 @@ GD_NAMESPACE_BEGIN
 		mxmlDelete(materialXml);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void Material::OnResourceUnload()
 	{
 		SafeRelease(self->MaterialInstance);

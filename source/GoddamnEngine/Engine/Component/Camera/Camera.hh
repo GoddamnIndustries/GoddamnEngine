@@ -11,20 +11,20 @@
 
 GD_NAMESPACE_BEGIN
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	class Camera;
 	class HRIRenderTarget;
 	class RenderTexture;
 	typedef size_t RenderTargetTexture;
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	/// Interface that describes listener to
 	///	'OnTransformed' event by 'Transform' objects
 	class IOnProjectionMatrixChangedListener
 	{
 	public:
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// @brief	Method would be invoked when projection parameters of
 		///			corresponding camera would be changed 
 		/// @param	param Unused parameter
@@ -33,20 +33,20 @@ GD_NAMESPACE_BEGIN
 		) abstract;
 	};
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// Structure describes clipping planes of camera
 	struct CameraClippingPlanes
 	{
 		Float32 ZNear = 0.3f;					///< Z Coordinate of near clipping plane
 		Float32 ZFar = 1000.0f;					///< Z Coordinate of far clipping plane
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		GDINL explicit CameraClippingPlanes() { }
 		GDINL  CameraClippingPlanes(Float32 const zNear, Float32 const zFar) : ZNear(zNear), ZFar(zFar) { }
 		GDINL  CameraClippingPlanes(CameraClippingPlanes const& clippingPlanes) : ZNear(clippingPlanes.ZNear), ZFar(clippingPlanes.ZFar) { }
 		GDINL ~CameraClippingPlanes() { }
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		GDINL CameraClippingPlanes& operator= (CameraClippingPlanes const& clippingPlanes)
 		{ 
 			self->ZNear = clippingPlanes.ZNear;
@@ -55,8 +55,8 @@ GD_NAMESPACE_BEGIN
 		}
 	};
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	/// Enumeration describing camera projection mode
 	enum CameraProjection : UInt8
 	{
@@ -65,8 +65,8 @@ GD_NAMESPACE_BEGIN
 	};
 
 	typedef UInt8 CameraClearType;
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	/// Enumeration describing camera clearing type
 	enum CameraClearTypeEnumration : CameraClearType
 	{
@@ -76,8 +76,8 @@ GD_NAMESPACE_BEGIN
 		GD_CAMERA_CLEAR_TYPE_NONE  = (0),		///< This camera does not clear screen before rendering
 	};
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	/// Camera class
 	class Camera final : public  Component,
 						 private IOnTransformedListener,
@@ -108,12 +108,12 @@ GD_NAMESPACE_BEGIN
 	public:
 		EventQueue<IOnProjectionMatrixChangedListener, Camera const*> OnProjectionMatrixChangedEvent;
 
-		//////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
+		/// ==========================================================================================
 		/// @name Getters/Setters
 		/// @{
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Returns projection mode of this camera
 		GDINL CameraProjection GetProjection(
 		) const
@@ -121,7 +121,7 @@ GD_NAMESPACE_BEGIN
 			return self->Projection;
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Changes projection mode of this camera
 		GDINL void SetProjection(
 			_In_ CameraProjection const projection
@@ -131,7 +131,7 @@ GD_NAMESPACE_BEGIN
 			self->OnProjectionMatrixChangedEvent.TriggerEvent();
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Returns viewport this camera is rendering to
 		GDINL Rectangle const& GetViewport(
 		) const
@@ -139,7 +139,7 @@ GD_NAMESPACE_BEGIN
 			return self->Viewport; 
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Changes viewport rectangle this camera is rendering to
 		GDINL void SetViewport(
 			_In_ Rectangle const& viewport
@@ -149,7 +149,7 @@ GD_NAMESPACE_BEGIN
 			self->OnProjectionMatrixChangedEvent.TriggerEvent();
 		}
 		
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Returns color this camera is clearing screen to
 		GDINL Color const& GetClearColor(
 		) const
@@ -157,7 +157,7 @@ GD_NAMESPACE_BEGIN
 			return self->ClearColor; 
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Changes color this camera is clearing screen to
 		GDINL void SetClearColor(
 			_In_ Color const& clearColor
@@ -166,14 +166,14 @@ GD_NAMESPACE_BEGIN
 			self->ClearColor = clearColor; 
 		}
 		
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Returns clipping planes of this camera
 		GDINL CameraClippingPlanes const& GetClippingPlanes() const
 		{ 
 			return self->ClippingPlanes; 
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Changes clipping planes of this camera
 		GDINL void SetClippingPlanes(const CameraClippingPlanes& clippingPlanes)
 		{ 
@@ -181,14 +181,14 @@ GD_NAMESPACE_BEGIN
 			self->OnProjectionMatrixChangedEvent.TriggerEvent();
 		}
 		
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Returns field of view of this camera
 		GDINL float GetFieldOFView() const 
 		{ 
 			return self->FieldOfView; 
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Changes field of view of this camera
 		GDINL void SetFieldOFView(
 			_In_ float const fieldOfView
@@ -198,7 +198,7 @@ GD_NAMESPACE_BEGIN
 			self->OnProjectionMatrixChangedEvent.TriggerEvent();
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Returns type how camera is clearing the screen
 		GDINL CameraClearType GetClearType(
 		) const 
@@ -206,7 +206,7 @@ GD_NAMESPACE_BEGIN
 			return self->ClearType; 
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Changes type how camera is clearing the screen
 		GDINL void SetClearType(
 			_In_ CameraClearType const clearType
@@ -216,7 +216,7 @@ GD_NAMESPACE_BEGIN
 			self->OnProjectionMatrixChangedEvent.TriggerEvent();
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Returns projection matrix of this camera
 		GDINL Matrix4x4 const& GetProjectionMatrix(
 		) const
@@ -224,7 +224,7 @@ GD_NAMESPACE_BEGIN
 			return self->ProjectionMatrix; 
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Returns view matrix of this camera
 		GDINL Matrix4x4 const& GetViewMatrix(
 		) const 
@@ -233,11 +233,11 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// @}
-		//////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
+		/// ==========================================================================================
 
-		//////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
+		/// ==========================================================================================
 		/// @name Render targets management
 		/// @{
 
@@ -251,8 +251,8 @@ GD_NAMESPACE_BEGIN
 		GDAPI RenderTexture* GetRenderTargetTexture(const RenderTargetTexture renderTargetTexture) const;
 
 		/// @}
-		//////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
+		/// ==========================================================================================
 
 	private:
 		// Events

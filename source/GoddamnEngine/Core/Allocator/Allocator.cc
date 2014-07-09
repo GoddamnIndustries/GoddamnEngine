@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Allocator.cc: memory allocator implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 12.06.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #include <GoddamnEngine/Core/Allocator/Allocator.hh>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>

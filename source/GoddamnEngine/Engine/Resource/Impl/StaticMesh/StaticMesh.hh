@@ -13,8 +13,8 @@ GD_NAMESPACE_BEGIN
 	class HRIBuffer;
 	class HRIIndexedShape;
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	/// Enumeration describing versions of Shekel(C) model version
 	enum class ShekelVersion : UInt16
 	{
@@ -23,8 +23,8 @@ GD_NAMESPACE_BEGIN
 		Unknown = 0											///< Unknown version.
 	};
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
+	/// ==========================================================================================
 	/// Loads supported 3D-model formats into engine and
 	///	manages different levels of details	
 	class StaticMesh final : public Resource
@@ -40,36 +40,36 @@ GD_NAMESPACE_BEGIN
 		GDAPI virtual ~StaticMesh();
 
 	public:
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Returns number of LODs mesh contains
 		GDAPI size_t GetNumberOfLods() const;
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Changes number of LODs mesh contains
 		GDAPI void SetNumberOfLods(size_t const numberOfLods);
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Destroys LOD at specified level
 		GDAPI void DestroyLodAt(size_t const lod);
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Returns LOD containing in mesh
 		GDAPI const HRIIndexedShape* GetLodAt(size_t const lod) const;
 		GDAPI       HRIIndexedShape* GetLodAt(size_t const lod)      ;
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Copies data to LOD at specified level. LOD at level may not exist.
 		GDAPI void SetLodAt(size_t const lod, HRIIndexedShape const* const submesh);
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Switches to LOD that would be used while binding
 		GDAPI void SwitchToLod(size_t const lod);
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Checks if two meshes have similar buffers.
 		GDAPI bool CompareSignature(StaticMesh const* const staticMesh) const;
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		/// Merges two meshes
 		GDAPI void CombineWithMesh(StaticMesh const* staticMesh);
 

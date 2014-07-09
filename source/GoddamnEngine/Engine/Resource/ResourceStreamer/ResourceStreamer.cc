@@ -4,7 +4,7 @@ GD_NAMESPACE_BEGIN
 	
 	GD_SINGLETON_IMPLEMENTATION(ResourceStreamer);
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void ResourceStreamer::LockResourceStreamer() const
 	{
 		if (self->resourceStreamerMode != ResourceStreamerMode::LaunchedStreaming)
@@ -15,7 +15,7 @@ GD_NAMESPACE_BEGIN
 		//!
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void ResourceStreamer::UnlockResourceStreamer() const 
 	{
 		if (self->resourceStreamerMode != ResourceStreamerMode::LaunchedStreaming)
@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 		//!
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	Resource* ResourceStreamer::CreateResource(String const& identifier, TypeInformation const* const typeInformation)
 	{
 		GD_ASSERT((typeInformation->VirtualConstructor != nullptr),
@@ -43,7 +43,7 @@ GD_NAMESPACE_BEGIN
 		return resource;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	Resource* ResourceStreamer::SearchForResource(String const& identifier, const bool searchInRequests /* = true */) const
 	{
 		self->LockResourceStreamer();
@@ -68,7 +68,7 @@ GD_NAMESPACE_BEGIN
 		return ((Resource*)nullptr);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	Resource* ResourceStreamer::LoadImmediately(Resource* const resource)
 	{
 		GD_ASSERT((resource != nullptr), 
@@ -88,13 +88,13 @@ GD_NAMESPACE_BEGIN
 		return resource;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	Resource* ResourceStreamer::LoadImmediately(String const& identifier, TypeInformation const* const typeInformation)
 	{
 		return self->LoadImmediately(self->ProcessStreaming(identifier, typeInformation));
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	Resource* ResourceStreamer::ProcessStreaming(String const& identifier, TypeInformation const* const typeInformation)
 	{
 		Resource* resource = self->SearchForResource(identifier);

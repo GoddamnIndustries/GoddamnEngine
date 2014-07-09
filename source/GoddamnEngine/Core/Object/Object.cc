@@ -3,15 +3,15 @@
 
 GD_NAMESPACE_BEGIN
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Object class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(Object, NoBaseClass, GDAPI, nullptr);
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Constructor / Destructor
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	Object::Object(ObjectTreeLockingFlags const TreeLockingFlags /* = SomeLongValue */, Object* const ParentObject /* = nullptr */) : TreeLockingFlags(TreeLockingFlags)
 	{	// If child object specified, attaching to it.
@@ -37,9 +37,9 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Reference Counting
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	ObjectRefenceCount Object::AddReference() const
 	{
@@ -58,9 +58,9 @@ GD_NAMESPACE_BEGIN
 		return (self->RefenceCount);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Object tree management
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	void Object::AttachToObject(Object* const ParentObject, ObjectTreeLockingFlags const CustomTreeLockingFlags)
 	{
@@ -119,7 +119,7 @@ GD_NAMESPACE_BEGIN
 		self->ParentObject          = nullptr;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void Object::SwapToSiblingObject(
 		_In_ Object* const SiblingObject, 
 		_In_ ObjectTreeLockingFlags const CustomTreeLockingFlags
@@ -162,7 +162,7 @@ GD_NAMESPACE_BEGIN
 		SiblingObject->NextSiblingObject = SelfNextSiblingObject;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void Object::MoveToSiblingObject(
 		_In_ Object* const SiblingObject,
 		_In_ ObjectTreeLockingFlags const CustomTreeLockingFlags

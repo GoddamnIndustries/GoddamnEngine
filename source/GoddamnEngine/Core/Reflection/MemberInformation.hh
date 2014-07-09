@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// MemberInformation.hh: Common interface for member information
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 07.04.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #ifndef GD_CORE_REFLECTION_MEMBERINFORMATION
 #define GD_CORE_REFLECTION_MEMBERINFORMATION

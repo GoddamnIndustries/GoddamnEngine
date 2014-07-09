@@ -195,7 +195,7 @@ GD_NAMESPACE_BEGIN
 		return true;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	bool HRD3D11Interface::DestroyContext()
 	{
 		self->SwapChain->SetFullscreenState(FALSE, nullptr);
@@ -227,7 +227,7 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 GDEXP extern bool EnginePluginEntry(GD PluginDescription* const Description)
 {
 #if (defined(GD_NAMESPACE))

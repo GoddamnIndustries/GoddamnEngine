@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Pair.hh - pair structure class implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.06.2013 - Created by James Jhuighuy
 ///		* 05.05.2014 - Rewritten from scratch by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #if (!defined(GD_CORE_CONTAINERS_PAIR))
 #	error "Attempting to include 'Pair.inl' file. Please, use 'Pair.h' instead."

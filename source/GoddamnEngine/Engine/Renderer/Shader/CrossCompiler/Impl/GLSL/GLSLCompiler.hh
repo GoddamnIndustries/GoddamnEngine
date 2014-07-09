@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// GLSLCompiler.hh: GLSL compiler generator and compiler interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 13.06.2014 - Created by James Jhuighuy.
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #pragma once
 #ifndef GD_ENGINE_RENDERER_SHADER_CROSS_COMPILER_COMPILER_GLSLCOMPILER

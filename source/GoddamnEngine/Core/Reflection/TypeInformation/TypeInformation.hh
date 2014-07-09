@@ -122,7 +122,7 @@
 
 #define TypeInformation ITypeInformation
 
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 #pragma region GD_TYPEINFORMATION_DEFINITION
 #define GD_TYPEINFORMATION_DEFINITION(Type, BaseType, ExpSpec)												\
 	static_assert((TypeTraits::IsBaseType<Object, Type>::Value),											\
@@ -139,9 +139,9 @@ public:																										\
 	ExpSpec static TypeInformation const* GetClassTypeInformation();										\
 	GDINL virtual TypeInformation const* GetTypeInformation() const	{ return Type::GetClassTypeInformation(); }
 #pragma endregion
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 #pragma region GD_TYPEINFORMATION_IMPLEMENTATION_GC
 #define GD_TYPEINFORMATION_IMPLEMENTATION_GC(Type, BaseType, ExpSpec, TypeInformationClass, Ctor)			\
 	static_assert(((TypeTraits::IsBaseType<BaseType, Type>::Value)											\
@@ -151,16 +151,16 @@ public:																										\
 		BaseType::GetClassTypeInformation(), Ctor));														\
 	TypeInformation const* Type::GetClassTypeInformation() { return &__typeInformation_##Type; }
 #pragma endregion
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 #pragma region GD_TYPEINFORMATION_IMPLEMENTATION_C
 #define GD_TYPEINFORMATION_IMPLEMENTATION_C(Type, BaseType, ExpSpec, Ctor)									\
 	GD_TYPEINFORMATION_IMPLEMENTATION_GC(Type, BaseType, ExpSpec, TypeInformation, Ctor)
 #pragma endregion
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 #pragma region GD_TYPEINFORMATION_IMPLEMENTATION_G
 #define GD_TYPEINFORMATION_IMPLEMENTATION_G(Type, BaseType, ExpSpec, TypeInformationClass, ...)				\
 	static_assert((!TypeTraits::IsAbstractType<Type>::Value),												\
@@ -171,9 +171,9 @@ public:																										\
 	GD_TYPEINFORMATION_IMPLEMENTATION_GC(Type, BaseType, ExpSpec, TypeInformationClass,						\
 		(TypeVirtualConstructor)(&__VirtualConstructor_##Type))
 #pragma endregion
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 #pragma region GD_TYPEINFORMATION_IMPLEMENTATION
 #define GD_TYPEINFORMATION_IMPLEMENTATION(Type, BaseType, ExpSpec, ...)										\
 	static_assert((!TypeTraits::IsAbstractType<Type>::Value),												\
@@ -184,7 +184,7 @@ public:																										\
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(Type, BaseType, ExpSpec,											\
 		(TypeVirtualConstructor)(&__VirtualConstructor_##Type))
 #pragma endregion
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 GD_NAMESPACE_BEGIN
 

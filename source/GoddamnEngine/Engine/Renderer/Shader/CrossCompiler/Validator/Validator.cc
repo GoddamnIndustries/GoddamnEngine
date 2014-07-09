@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Description.cc: shader instance description generator implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 17.05.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Validator/Validator.hh>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.hh>

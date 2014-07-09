@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Vector.inl - Dynamically sized array implementation
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.11.2013 - Created by James Jhuighuy
 ///		* 24.04.2014 - Rewritten from scratch by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #if (!defined(GD_CORE_CONTAINERS_VECTOR))
 #	error "Attempting to include 'Vector.inl' file. Please, use 'Vector.hh' instead.""
@@ -18,9 +18,9 @@
 
 GD_NAMESPACE_BEGIN
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// StackMemoryProvider class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	// To prevent a lot of copy-pastes in code.
 #define GD_STACK_MEMORY_PROVIDER_TEMPLATE() template<typename ElementType, size_t const _Capacity>
@@ -31,9 +31,9 @@ GD_NAMESPACE_BEGIN
 #undef GD_STACK_MEMORY_PROVIDER_TEMPLATE
 #undef GD_STACK_MEMORY_PROVIDER_CLASS
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HeapMemoryProvider class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	// To prevent a lot of copy-pastes in code.
 #define GD_HEAP_MEMORY_PROVIDER_TEMPLATE() template<typename ElementType>
@@ -44,9 +44,9 @@ GD_NAMESPACE_BEGIN
 #undef GD_HEAP_MEMORY_PROVIDER_TEMPLATE
 #undef GD_HEAP_MEMORY_PROVIDER_CLASS
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// Vector class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	// To prevent a lot of copy-pastes in code.
 #define GD_VECTOR_TEMPLATE() template<typename ElementType, typename MemoryProviderType /*= VectorMemoryProviders::HeapMemoryProvider<ElementType>*/>

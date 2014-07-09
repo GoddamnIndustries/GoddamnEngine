@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Parser.hh - HLSL parser implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 14.05.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #include <GoddamnEngine/Include.hh>
 #if (defined(GD_PLATFORM_DESKTOP))
@@ -341,9 +341,9 @@ GD_NAMESPACE_BEGIN
 #endif	// if (!defined(__INTELLISENSE__))
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================//
 	/// HLSLParserImpl class
-	////////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================//
 
 	class HLSLParserImpl final : public IToolchainTool
 	{
@@ -401,11 +401,11 @@ GD_NAMESPACE_BEGIN
 		GDINT HLSLExprColon  const* ParseExprColon (HLSLExprColonType const ExpectedExprColons);
 	};	// class HLSLParserImpl
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HLSL** const* HLSLParserImpl::Parse***
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Parses all shader content.
 	// Input lexer position:  first lexem of shader.
 	// Output lexer position: End-Of-Stream.
@@ -427,7 +427,7 @@ GD_NAMESPACE_BEGIN
 		return self->GlobalScope;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Parses all content inside scope.
 	// Input lexer position:  first lexem of shader.
 	// Output lexer position: End-Of-Stream.
@@ -447,7 +447,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Parses variable, function or structure definition.
 	// Input lexer position:  first lexem of definition.
 	// Output lexer position: first lexem after definition.
@@ -576,7 +576,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 	
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Parses type that is defined in current lexem.
 	// Input lexer position: first lexem of type. 
 	// Output lexer position: last lexem of type.
@@ -652,7 +652,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Parses name of used type.
 	// Input lexer position: first lexem of type name. 
 	// Output lexer position: first lexem after type name. 
@@ -672,7 +672,7 @@ GD_NAMESPACE_BEGIN
 		return (self->ExpectNextLexem() ? HLSLDefinitionType : nullptr);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Parses variable that is defined in current lexem.
 	// Input lexer position: first lexem after variable name. 
 	// Output lexer position: first lexem after variable definition. 
@@ -728,7 +728,7 @@ GD_NAMESPACE_BEGIN
 		return Variable.Release();
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Parses function that is defined in current lexem.
 	// Input lexer position: first lexem after function name ('(' lexem). 
 	// Output lexer position: first lexem after function definition. 
@@ -806,13 +806,13 @@ GD_NAMESPACE_BEGIN
 			}
 
 			Function->Body += Character;
-		};
+		}
 		
 		if (!self->ExpectNextLexem()) return nullptr;
 		return Function.Release();
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Parses constant buffer definition.
 	// Input lexer position: 'cbuffer' lexem. 
 	// Output lexer position: first lexem after constant buffer definition.
@@ -846,7 +846,7 @@ GD_NAMESPACE_BEGIN
 		return ConstantBuffer.Release();
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// Parses expresseion after ':' operator.
 	// Input lexer position: ':' lexem. 
 	// Output lexer position: first lexem after parsed expression.
@@ -941,9 +941,9 @@ GD_NAMESPACE_BEGIN
 		return nullptr;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// bool HLSLParserImpl::Validate***(String const& ***)
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	bool HLSLParserImpl::ValidateIdentifier(String const& Identifier)
 	{
@@ -959,9 +959,9 @@ GD_NAMESPACE_BEGIN
 		return true;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// bool HLSLParserImpl::[Try]Expect[Next]Lexem([LexemType], [ID])
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	bool HLSLParserImpl::TryReadNextLexem()
 	{
@@ -1041,9 +1041,9 @@ GD_NAMESPACE_BEGIN
 		return false;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// HLSL*** const* HLSLScope::Find***
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	HLSLDefinition const* HLSLScope::FindDefinition(String const& DefinitionName) const
 	{	// Searching in specified scope.
@@ -1069,9 +1069,9 @@ GD_NAMESPACE_BEGIN
 		return HLSLDynamicCast<HLSLFunction const*>(self->FindDefinition(FunctionName));
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// HLSL*** const* HLSLParserImpl::Find***[InScope]
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	HLSLDefinition const* HLSLParserImpl::FindDefinition(String const& DefinitionName) const
 	{	// Searching in all stack of our declarations.
@@ -1123,9 +1123,9 @@ GD_NAMESPACE_BEGIN
 		return TopFunctionScope->FindFunction(FunctionName);
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================//
 	/// HLSLParser class
-	////////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================//
 
 	HLSLScope const* HLSLParser::ParseShader(Stream* const InputStream)
 	{

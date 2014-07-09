@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Vector.hh - Dynamically sized array interface
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.06.2013 - Created by James Jhuighuy
 ///		* 24.04.2014 - Rewritten from scratch by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_CONTAINERS_VECTOR

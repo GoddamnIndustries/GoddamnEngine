@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Map.hh - Dynamically sized associative vectors interfacs.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.06.2013 - Created by James Jhuighuy
 ///		* 05.05.2014 - Rewritten from scratch by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #if (!defined(GD_CORE_CONTAINERS_MAP))
 #	error "Attempting to include 'UnorderedMap.inl' file. Please, use 'UnorderedMap.h' instead."
@@ -33,9 +33,9 @@ GD_NAMESPACE_BEGIN
 	}	// namespace UnorderedMapPrivate
 #endif	// if (!defined(GD_DOCUMENTATION))
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// UnorderedMap class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 #define GD_UNORDERED_MAP_TEMPLATE() template<typename KeyType, typename ValueType, typename MemoryProviderType /* = VectorMemoryProviders::HeapMemoryProvider<Pair<KeyType, ValueType>> */>
 #define GD_UNORDERED_MAP_CLASS()    UnorderedMap<KeyType, ValueType,  MemoryProviderType>

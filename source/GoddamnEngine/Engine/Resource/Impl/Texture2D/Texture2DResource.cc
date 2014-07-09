@@ -7,7 +7,7 @@ GD_NAMESPACE_BEGIN
 
 	GD_TYPEINFORMATION_IMPLEMENTATION(Texture2DResource, Resource, GDAPI, GD_RESOURCE_ARGS);
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void Texture2DResource::OnResourceLoad(
 		_In_ InputStream* const InputResourceData
 	)
@@ -40,7 +40,7 @@ GD_NAMESPACE_BEGIN
 		);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void Texture2DResource::OnResourceUnload(
 	)
 	{

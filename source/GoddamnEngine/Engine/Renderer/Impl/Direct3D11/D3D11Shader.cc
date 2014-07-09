@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// D3D11Shader.cc: Direct3D 11 shaders implementation. 
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.02.2014  - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11Shader.hh>
 
@@ -39,9 +39,9 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRID3D11ShaderInstance class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11ShaderInstance, HRIShaderInstance, GDINT, nullptr);
 
@@ -55,9 +55,9 @@ GD_NAMESPACE_BEGIN
 			}
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRID3D11VertexShader class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11VertexShader, HRIVertexShader, GDINT, nullptr);
 	HRID3D11VertexShader::HRID3D11VertexShader(HRIShaderCtorInfo const& CtorInfo) : HRIVertexShader(CtorInfo)
@@ -125,9 +125,9 @@ GD_NAMESPACE_BEGIN
 		Context->VSSetShader         (      nullptr, nullptr, 0);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRID3D11HullShader class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11HullShader, HRIHullShader, GDINT, nullptr);
 	HRID3D11HullShader::HRID3D11HullShader(HRIShaderCtorInfo const& CtorInfo) : HRIHullShader(CtorInfo)
@@ -163,9 +163,9 @@ GD_NAMESPACE_BEGIN
 		Context->HSSetShader         (      nullptr, nullptr, 0);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRID3D11DomainShader class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11DomainShader, HRIDomainShader, GDINT, nullptr);
 	HRID3D11DomainShader::HRID3D11DomainShader(HRIShaderCtorInfo const& CtorInfo) : HRIDomainShader(CtorInfo)
@@ -201,9 +201,9 @@ GD_NAMESPACE_BEGIN
 		Context->DSSetShader         (      nullptr, nullptr, 0);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRID3D11PixelShader class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11PixelShader, HRIPixelShader, GDINT, nullptr);
 	HRID3D11PixelShader::HRID3D11PixelShader(HRIShaderCtorInfo const& CtorInfo) : HRIPixelShader(CtorInfo)
@@ -239,9 +239,9 @@ GD_NAMESPACE_BEGIN
 		Context->PSSetShader         (      nullptr, nullptr, 0);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// HRD3D11Interface class
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	HRIShaderParamLocation* HRD3D11Interface::CreateShaderParamLocationConstantBuffer(HRIShaderInstance* const ShaderInstance, HRIShaderParamLocationDesc const* const LocationDesc)
 	{

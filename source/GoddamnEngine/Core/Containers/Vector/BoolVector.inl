@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// BoolVector.inl - Dynamic bitset implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 10.05.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #if (!defined(GD_CORE_CONTAINERS_BOOL_VECTOR))
 #	error "Attempting to include 'BoolVector.inl' file. Please, use 'BoolVector.hh' instead.""
@@ -15,9 +15,9 @@
 
 GD_NAMESPACE_BEGIN
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// Vector<bool> class
-	//////////////////////////////////////////////////////////////////////////	
+	/// ==========================================================================================	
 
 #define GD_BVECTOR_TEMPLATE() template<typename MemoryProviderType /*= VectorMemoryProviders::HeapMemoryProvider<bool>*/>
 #define GD_BVECTOR_CLASS()    Vector<bool, MemoryProviderType>

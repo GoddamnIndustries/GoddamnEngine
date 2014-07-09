@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// RePreprocessor.hh: GoddamnC++ preprocessor directives (re)parser implementation. 
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 01.07.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #include <GoddamnReflector/RePreprocessor/RePreprocessor.hh>
 
@@ -35,7 +35,7 @@ GD_NAMESPACE_BEGIN
 		String PreprocessorDirective = BaseParser->GetCurrentLexem().GetRawData();
 		for (;;)
 		{	
-			Char const Character = BaseParser->GetInputStream()->Read<Char>();
+			Char const Character = BaseParser->GetLexer()->GetNextCharacter();
 			if ((Character == Char('\n')) || (Character == Char('\r')))
 				break;
 			PreprocessorDirective.PushLast(Character);
@@ -111,7 +111,8 @@ GD_NAMESPACE_BEGIN
 		}
 
 		// Pushing unkown directive back.
-		BaseParser->GetInputStream()->Seek(-static_cast<ptrdiff_t>(PreprocessorDirective.GetSize()), GD_SEEK_ORIGIN_CURRENT);
+		for (auto const Character : PreprocessorDirective)
+			BaseParser->GetLexer()->RevertCharacter(Character);
 		return true;
 	}
 

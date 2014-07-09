@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// String.hh - Dynamically sized HeapMemory interface
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.06.2013 - Created by James Jhuighuy
 ///		* 13.05.2014 - Rewritten from scratch by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_CONTAINERS_STRING
@@ -41,7 +41,7 @@ GD_NAMESPACE_BEGIN
 	typedef struct { }* HashSumm;
 #endif
 	
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// Hash representation
 	class HashSumm final
 	{

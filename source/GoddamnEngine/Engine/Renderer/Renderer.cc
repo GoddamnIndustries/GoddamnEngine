@@ -12,9 +12,9 @@ GD_NAMESPACE_BEGIN
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRInterface,       HRIObject, GDAPI, nullptr);
 	GD_SINGLETON_IMPLEMENTATION(HRInterface);
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	/// Semantics
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	extern HRISemanticDesc const& HRISemanticGetDesc(HRISemantic const Semantic)
 	{

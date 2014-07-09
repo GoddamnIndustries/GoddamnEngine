@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Shader.hh - shaders common interface
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
@@ -7,7 +7,7 @@
 ///		* 06.02.2014 - Rewritten from scratch by James Jhuighuy,
 ///					   Functionality splitted to Shader and ShaderEx
 ///     * 05.05.2014 - Rewritten to match cross compiler
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #pragma once
 #ifndef GD_ENGINE_RENDERER_ASSET_HRI_SHADER

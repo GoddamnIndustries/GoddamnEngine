@@ -1,7 +1,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	GDINL void FormatValueFromString(
 		_In_ String const& valueString,
 		_In_ Format const valueFormat,
@@ -17,7 +17,7 @@ GD_NAMESPACE_BEGIN
 		);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	GDINL String FormatValueToString(
 		_In_ Format const valueFormat,
 		_In_ chandle const value

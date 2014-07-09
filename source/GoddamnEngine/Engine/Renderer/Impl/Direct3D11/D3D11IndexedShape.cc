@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// D3D11IndexedShape.cc: Renderable shape D3D11 implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 22.05.2014  - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11IndexedShape.hh>
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11Buffer.hh>

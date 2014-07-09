@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Reflectable.hh: GoddamnC++ reflectable type interface. 
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 02.07.2014 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #pragma once
 #ifndef GD_REFLECTOR_REFLECTABLE
@@ -29,6 +29,9 @@ GD_NAMESPACE_BEGIN
 	struct CPPReflectable final : public CPPDefinition
 	{
 		String ReflectableName;
+		String ReflectableBaseTypeName;
+		CPPRePreprocessorDefinitions ReflectableElements;
+		bool ReflectableIsFinal = false;
 
 		/// Sets default values for fiels that were not set.
 		inline void SetDefaultsForUnknowns()

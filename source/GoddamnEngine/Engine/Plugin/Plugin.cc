@@ -42,10 +42,10 @@ GD_NAMESPACE_BEGIN
 						pluginDescription.PluginTypeInformation->VirtualConstructor(nullptr, nullptr);
 
 					self->pluginLoadingFlags |= GD_BIT(pluginDescription.Type);
-					const_cast<Assembly*>(plugin)->AttachToObject(self);
+				//	const_cast<Assembly*>(plugin)->AttachToObject(self);
 				}
 			} while (false);
-			plugin->RemoveReference();
+		//	plugin->RemoveReference();
 		}
 
 		closedir(pluginDirectory);

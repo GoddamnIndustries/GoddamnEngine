@@ -16,21 +16,21 @@ GD_NAMESPACE_BEGIN
 	struct HWindowDef		 : public HWND__ { };
 	struct HDeviceContextDef : public HDC__ { };
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	GDINT LRESULT static LowLevelSystemWindowProcedure(HWND hWND, UINT message, 
 		WPARAM wParameter, LPARAM lParameter)
 	{
 		LowLevelSystem const& lowLevelSystem = LowLevelSystem::GetInstance();
 		switch (message)
 		{
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 			// GD_LL_EVENT_ON_WINDOW_CLOSED
 		case WM_CLOSE: 
 			{ 
 				lowLevelSystem.GetEventCallBack(GD_LL_EVENT_ON_WINDOW_CLOSED)(nullptr);
 			} return false;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 			// GD_LL_EVENT_ON_KEY_DOWN & GD_LL_EVENT_ON_KEY_UP
 		case WM_KEYDOWN:
 			{
@@ -43,7 +43,7 @@ GD_NAMESPACE_BEGIN
 				lowLevelSystem.GetEventCallBack(GD_LL_EVENT_ON_KEY_UP)(&keyCode);
 			} return false;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 			// GD_LL_EVENT_ON_MOUSEBUTTON_DOWN
 		case WM_LBUTTONDOWN:
 			{
@@ -61,7 +61,7 @@ GD_NAMESPACE_BEGIN
 				lowLevelSystem.GetEventCallBack(GD_LL_EVENT_ON_MOUSEBUTTON_DOWN)(&mouseButton);
 			} return false;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 			// GD_LL_EVENT_ON_MOUSEBUTTON_UP
 		case WM_LBUTTONUP:
 			{
@@ -79,7 +79,7 @@ GD_NAMESPACE_BEGIN
 				lowLevelSystem.GetEventCallBack(GD_LL_EVENT_ON_MOUSEBUTTON_UP)(&mouseButton);
 			} return false;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 			// GD_LL_EVENT_ON_MOUSEWHEEL_ROTATED
 		case WM_MOUSEWHEEL:
 			{
@@ -87,7 +87,7 @@ GD_NAMESPACE_BEGIN
 				lowLevelSystem.GetEventCallBack(GD_LL_EVENT_ON_MOUSEWHEEL_ROTATED)(&rotation);
 			} return false;
 
-			//////////////////////////////////////////////////////////////////////////
+			/// ==========================================================================================
 			// GD_LL_EVENT_ON_MOUSEWHEEL_ROTATED
 		case WM_MOUSEMOVE:
 			{
@@ -99,7 +99,7 @@ GD_NAMESPACE_BEGIN
 		return (DefWindowProc(hWND, message, wParameter, lParameter));
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	LowLevelSystem::LowLevelSystem() :
 		IsFullscreen(false), 
 		WindowResolution((Min(LowLevelSystem::GetScreenWidth(), Dimension(GD_RESOLUTION_DEFAULT_WIDTH))),
@@ -113,11 +113,11 @@ GD_NAMESPACE_BEGIN
 			self->eventListeners[cnt] = (&LowLevelSystem::WindowWrapperEventListenerDummpyProc);
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		GD_ASSERT(((self->hInstance = ((HInstance)GetModuleHandleA(nullptr))) != nullptr),
 				  "Failed to obtain hInstance." GD_LL_OSX_FIX);
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		WNDCLASSEXA wndClassEx		= { 0 };
 		wndClassEx.cbSize			= sizeof(wndClassEx);
 		wndClassEx.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -130,22 +130,22 @@ GD_NAMESPACE_BEGIN
 		GD_ASSERT(((RegisterClassExA(&wndClassEx) != 0) || (GetLastError() == ERROR_CLASS_ALREADY_EXISTS)), 
 				  "'RegisterClassExA' failed." GD_LL_OSX_FIX);
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		GD_ASSERT(((self->hWindow = ((HWindow)CreateWindowExA(WS_EX_APPWINDOW, GD_LL_CLASSNAME,
 				  "GoddamnCore Window",
 				  WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 				  0, 0, 1280, 720, nullptr, nullptr, hInstance, self))) != nullptr),
 				  "'CreateWindowExA' failed." GD_LL_OSX_FIX);
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		GD_ASSERT(((self->hDeviceContext = ((HDeviceContext)GetDC(self->hWindow))) != nullptr),
 				  "'GetDC' failed." GD_LL_OSX_FIX);
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		self->UpdateWindowParameters();
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	LowLevelSystem::~LowLevelSystem()
 	{
 		ChangeDisplaySettings(nullptr, CDS_RESET);
@@ -163,13 +163,13 @@ GD_NAMESPACE_BEGIN
 	Dimension LowLevelSystem::GetScreenWidth() { return ((Dimension)GetSystemMetrics(SM_CXSCREEN)); }
 	Dimension LowLevelSystem::GetScreenHeight() { return ((Dimension)GetSystemMetrics(SM_CYSCREEN)); }
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void LowLevelSystem::UpdateWindowParameters() const
 	{
 		DWORD windowStyle = 0;
 		DWORD windowStyleEx = 0;
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		if (self->IsFullscreen)
 		{
 			windowStyle = WS_POPUP;
@@ -194,12 +194,12 @@ GD_NAMESPACE_BEGIN
 					  "'ChangeDisplaySettingsA' failed." GD_LL_OSX_FIX);
 		}
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		GD_ASSERT(((SetWindowLongPtrA(self->hWindow, GWL_STYLE, static_cast<LONG_PTR>(windowStyle)) != 0)
 				  && (SetWindowLongPtrA(self->hWindow, GWL_EXSTYLE, static_cast<LONG_PTR>(windowStyleEx)) != 0)),
 				  "'SetWindowLongA' failed." GD_LL_OSX_FIX);
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		RECT windowRectangle	 = { 0 };
 		windowRectangle.left	 = ((self->IsFullscreen) ? 0l : self->WindowPosition.x);
 		windowRectangle.top	 = ((self->IsFullscreen) ? 0l : self->WindowPosition.y);
@@ -212,13 +212,13 @@ GD_NAMESPACE_BEGIN
 				  (windowRectangle.bottom - windowRectangle.top), SWP_FRAMECHANGED)), 
 				  "'SetWindowPos' failed." GD_LL_OSX_FIX);
 
-		//////////////////////////////////////////////////////////////////////////
+		/// ==========================================================================================
 		ShowWindow(self->hWindow, SW_SHOW);
 		SetForegroundWindow(self->hWindow);
 		SetFocus(self->hWindow);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void LowLevelSystem::UpdateWindow() const
 	{
 		for (MSG message = { 0 }; PeekMessageA(&message, self->hWindow, 0, 0, PM_REMOVE);)

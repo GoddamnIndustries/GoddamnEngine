@@ -11,9 +11,9 @@ GD_NAMESPACE_BEGIN
 
 	GD_SERIALIZABLE_IMPLEMENTATION_C(Component, Serializable, GDAPI, nullptr);
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	// 'Component's searchers
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 
 	Component::Component(ComponentAbilitiesFlags const abilitiesFlags /* = GD_COMPONENT_ABILITGDS_UNKNOWN */, 
 		ObjectTreeLockingFlags const treeLockingFlags /* = Object::TreeLockingFlagsDefaultComponent */) :

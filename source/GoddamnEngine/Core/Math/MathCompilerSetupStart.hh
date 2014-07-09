@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// MathCompilerSetupStart.hh - disables useless warnings in vector and matrix headers.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 10.06.2014  - Rewritten from scratch by James Jhuighuy,
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 // This warnings needs to be disabled to make correct vector swizzling.
 #if (defined(GD_COMPILER_MSC))

@@ -11,7 +11,7 @@ GD_NAMESPACE_BEGIN
 
 	GD_TYPEINFORMATION_IMPLEMENTATION(ShaderProgramResource, Resource, GDAPI, GD_RESOURCE_ARGS);
 	
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void ShaderProgramResource::OnResourceLoad(
 		_In_ InputStream* const InputResourceData
 	)
@@ -70,7 +70,7 @@ GD_NAMESPACE_BEGIN
 		mxmlDelete(shaderProgramDescXml);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	/// ==========================================================================================
 	void ShaderProgramResource::OnResourceUnload(
 	)
 	{
