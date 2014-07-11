@@ -24,7 +24,7 @@ GD_NAMESPACE_BEGIN
 		PointerType* Pointer = nullptr;
 
 	public /*Constructors / destructor.*/:
-		GDINL explicit UniquePtr(PointerType* const Pointer = nullptr) 
+		GDINL UniquePtr(PointerType* const Pointer = nullptr) 
 			: Pointer(Pointer)
 		{
 		}

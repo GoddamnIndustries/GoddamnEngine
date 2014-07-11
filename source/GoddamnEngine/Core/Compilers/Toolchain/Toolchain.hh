@@ -11,8 +11,7 @@
 #define GD_CORE_COMPILERS_TOOLCHAIN
 
 #include <GoddamnEngine/Include.hh>
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
-
+#include <GoddamnEngine/Core/Compilers/CompilerBase.hh>
 #include <cstdarg>
 
 GD_NAMESPACE_BEGIN
@@ -20,6 +19,33 @@ GD_NAMESPACE_BEGIN
 	class Stream;
 	class IToolchainTool;
 	typedef char ToolchainMessage;
+
+	/// Runtime error that caused be some tool of toolchain.
+	class ToolchainException : public Exception
+	{
+	public /*Public API*/:
+		GDINL explicit ToolchainException(Str const ErrorMessage) : Exception(ErrorMessage) { }
+		GDINL virtual ~ToolchainException() { }
+	};	// class ToolchainException
+
+	struct ToolchainMessageDesc
+	{
+	protected /*Class members and API*/:
+		Str const Message;
+		GDAPI size_t static GlobalID;
+		size_t const ID;
+		GDINL explicit ToolchainMessageDesc(Str const Message) : Message(Message), ID(++GlobalID) { }
+		GDINT ToolchainMessageDesc& operator= (ToolchainMessageDesc const& Other) = delete;
+	public:
+		GDINL String ToString(Lexem const* const CurrentLexem, ...) const
+		{
+			va_list List = va_list(); va_start(List, CurrentLexem);
+			String FormattedMessage = String::FormatVa(self->Message, List);
+			va_end(List);
+
+			return String::Format("~~SomeFile~~(%u, %u): error GD%u: %s", CurrentLexem->GetLine(), CurrentLexem->GetSymbol(), self->ID, FormattedMessage.CStr());
+		}
+	};	// struct ToolchainMessageDesc
 
 	/// Information about source code provider.
 	struct ToolchainSourceProvider final
@@ -47,17 +73,6 @@ GD_NAMESPACE_BEGIN
 	public:
 	};
 
-	/// Integer values that provides exception for toolchain.
-	/// Each toolchain exception is computed using @c "(is_fatal ? 1 : -1)  * exc_abs + exc_code".
-	/// Each toolchain tool has it`s own module value and set of exceptions.
-	typedef long ToolchainException;
-
-	/// Returns true if this exception is in this module.
-	GDINL bool IsMyToolchainException(ToolchainException const Exception, ToolchainException const Module)
-	{	
-		return (labs(Exception / Module) == 1L);
-	}
-
 	class IToolchain
 	{
 	private:
@@ -70,26 +85,6 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		GDINL IToolchain() { }
-
-		GDINL void RaiseException(ToolchainException const Exception) 
-		{
-			if (Exception == 1L)
-				GD_ASSERT(true, "");
-			GD_ASSERT((self->LastException == 0L), "Toolchain already contains uncaught exception");
-			self->LastException = Exception;
-		}
-		
-		GDINL ToolchainException CatchException()
-		{
-			ToolchainException LastException = self->LastException;
-			self->LastException = 0L;
-			return LastException;
-		}
-
-		GDAPI bool WasExceptionRaised() const 
-		{ 
-			return (self->LastException != 0L); 
-		}
 
 		GDINL bool DoTreatWarningsAsError() const { return true; }
 	};	// class IToolchain
@@ -106,7 +101,7 @@ GD_NAMESPACE_BEGIN
 		IToolchain* const Toolchain;
 		GDINL IToolchainTool(IToolchain* const Toolchain) : Toolchain(Toolchain) { }
 	public:
-		inline void RaiseMessage(ToolchainMessage const* const Message, ...)
+		/*inline void RaiseMessage(ToolchainMessage const* const Message, ...)
 		{
 			va_list List = va_list(); va_start(List, Message);
 			vprintf(Message, List);
@@ -131,11 +126,11 @@ GD_NAMESPACE_BEGIN
 			vprintf(Error, List);
 			va_end(List);
 			self->RaiseExceptionWithCode(1l);
-		}
-		inline void RaiseExceptionWithCode(long const ExceptionCode) 
+		}*/
+		/*inline void RaiseExceptionWithCode(long const ExceptionCode) 
 		{ 
 			self->Toolchain->RaiseException(ToolchainException(ExceptionCode)); 
-		}
+		}*/
 	};	// class IToolchainTool
 
 GD_NAMESPACE_END

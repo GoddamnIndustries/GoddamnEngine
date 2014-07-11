@@ -24,13 +24,6 @@ GD_NAMESPACE_BEGIN
 	class InputStream;
 	class OutputStream;
 
-	/// Contains codes of exceptions that streamed lexer throws.
-	enum HRIShaderCrossCompilerExceptionCodes : ToolchainException
-	{
-		GD_HRI_SHADERCC_EXCEPTION_MODULE =  1000L,					     			///< HRIShader cross compiler module.
-		GD_HRI_SHADERCC_EXCEPTION_SYNTAX = +GD_HRI_SHADERCC_EXCEPTION_MODULE + 1L,  ///< Syntax error.
-	};	// enum StreamedLexerExceptionCodes
-
 	/// Describes list of shader generation-compilation targets.
 	enum HRIShaderCrossCompilerTarget : UInt8
 	{

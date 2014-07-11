@@ -112,7 +112,7 @@ GD_NAMESPACE_BEGIN
 	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParamDesc final : public HRIObject
 	{
-		$GD_REFLECTABLE_BODY_GENERATED_CRAP(HRIShaderParamDesc);
+		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
 
 	private:
 #if (defined(GD_HRI_SHADER_D3D11_EMULATING))
@@ -179,7 +179,7 @@ GD_NAMESPACE_BEGIN
 	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParam final : public HRIObject
 	{
-		$GD_REFLECTABLE_BODY_GENERATED_CRAP(HRIShaderParam);
+		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
 
 	private:
 		friend  class HRIShaderParamLocation;
@@ -220,7 +220,7 @@ GD_NAMESPACE_BEGIN
 	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParamLocationDesc final : public HRIObject
 	{
-		$GD_REFLECTABLE_BODY_GENERATED_CRAP(HRIShaderParamLocationDesc);
+		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
 
 	private:
 		friend class HRIShaderParamDesc;
@@ -248,7 +248,7 @@ GD_NAMESPACE_BEGIN
 	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParamLocation : public HRIObject
 	{
-		$GD_REFLECTABLE_BODY_GENERATED_CRAP(HRIShaderParamLocationDesc);
+		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
 	
 	private:
 		friend class HRIShaderParam;

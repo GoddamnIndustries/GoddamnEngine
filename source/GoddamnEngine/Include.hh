@@ -43,6 +43,7 @@
 #	define  WIN32_LEAN_AND_MEAN    
 #	define  VC_EXTRALEAN           
 #	include <Windows.h>
+#	define GD_PLATFORM_WINAPI			(1)
 //	Platform arch, name, desktop/mobile type.
 #	if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))	//   Windows Desktop application.
 #		define GD_PLATFORM_ARCH			("x86")									///< x86 platform 

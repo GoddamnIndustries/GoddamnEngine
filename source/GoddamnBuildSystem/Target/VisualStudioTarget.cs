@@ -206,7 +206,7 @@ namespace GoddamnEngine.BuildSystem
                     foreach (var PreprocessorDefinition in TheProject.PreprocessorDefinitions)
                         PreprocessorDefinitions.Append(PreprocessorDefinition).Append(Path.PathSeparator);
                     PreprocessorDefinitions.Append(IsDebugConfiguration ? "_DEBUG" : "NDEBUG").Append(Path.PathSeparator);
-                    PreprocessorDefinitions.Append("_HAS_EXCEPTIONS=0").Append(Path.PathSeparator);
+                //  PreprocessorDefinitions.Append("_HAS_EXCEPTIONS=0").Append(Path.PathSeparator);
                     if (TheProject.BuildType == ProjectBuildType.DynamicLibrary)
                         PreprocessorDefinitions.Append("_WINDLL").Append(Path.PathSeparator);
 
@@ -218,7 +218,7 @@ namespace GoddamnEngine.BuildSystem
                     ProjectConfig.WriteElementString("TreatWarningAsError", "true");
                     ProjectConfig.WriteElementString("PrecompiledHeader", "NotUsing");
                     ProjectConfig.WriteElementString("CallingConvention", "FastCall");
-                    ProjectConfig.WriteElementString("ExceptionHandling", "false");
+                //  ProjectConfig.WriteElementString("ExceptionHandling", "false");
                     ProjectConfig.WriteElementString("RuntimeTypeInfo", "false");
                     ProjectConfig.WriteElementString("FavorSizeOrSpeed", "Speed");
                     ProjectConfig.WriteElementString("DisableSpecificWarnings", "4100;4127;4189;4201;4301;4458;4456;4505;4714"); 

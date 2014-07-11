@@ -13,44 +13,45 @@
 
 #include <GoddamnEngine/Core/Utility.hh>
 #include <GoddamnEngine/Core/TypeTraits.hh>
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
 
 GD_NAMESPACE_BEGIN
 
-	GDINL size_t Stream::ReadCheck(handle const OutputBuffer, ptrdiff_t const Offset, size_t const Count)
+	/// ==========================================================================================
+	/// InputStream class.
+	/// Base class for all classes representing an input stream of some element type.
+	/// ==========================================================================================
+
+	/// ------------------------------------------------------------------------------------------
+	/// Public API.
+	/// ------------------------------------------------------------------------------------------
+
+	/// Reads several elements from input stream.
+	/// @param Array  Output memory to which data would be written.
+	/// @param Count  Length of one element
+	/// @param Length Length of memory in elements.
+	GDINL void InputStream::Read(UInt8* const Array, size_t const Count, size_t const Length)
 	{
-		size_t const NumElementRead = self->Read(OutputBuffer, Offset, Count);
-		GD_ASSERT(NumElementRead == Count, "Failed to read all data");
-		return NumElementRead;
+		for (UInt8* Byte = Array; Byte < (Array + (Count * Length)); ++Byte)
+			*Byte = self->Read();
 	}
 
-	template<typename ReadingElementType>
-	GDINL ReadingElementType&& Stream::Read()
-	{	// We should check if we are reading into POD type to prevent memory leaks.
-		static_assert(TypeTraits::IsPodType<ReadingElementType>::Value, "ReadingElementType should be POD.");
-		ReadingElementType ReadingElement = ReadingElementType();
-		self->ReadCheck(&ReadingElement, 0, sizeof(ReadingElement));
-		return Move(ReadingElement);
-	}
+	/// ==========================================================================================
+	/// OutputStream class.
+	/// Base class for all classes representing an output stream stream of bytes.
+	/// ==========================================================================================
 
-	GDINL size_t Stream::WriteCheck(chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count)
+	/// ------------------------------------------------------------------------------------------
+	/// Public API.
+	/// ------------------------------------------------------------------------------------------
+
+	/// Writes several elements to output.
+	/// @param Array  Input elements that would be written.
+	/// @param Count  Length of one element
+	/// @param Length Length of memory in elements.
+	GDINL void OutputStream::Write(UInt8 const* const Array, size_t const Count, size_t const Length)
 	{
-		size_t const NumElementsWritten = self->Write(InputBuffer, Offset, Count);
-		GD_ASSERT(NumElementsWritten == Count, "Failed to write all data");
-		return NumElementsWritten;
-	}
-
-	GDINL void Stream::WriteString(String const& TheString, bool const WriteNullTerminator /* = false */)
-	{
-		size_t const StringSize = (TheString.GetSize() + (WriteNullTerminator ? 1 : 0)) * sizeof(Char);
-		self->WriteCheck(TheString.CStr(), 0, StringSize);
-	}
-
-	template<typename WritingElementType>
-	GDINL void Stream::Write(WritingElementType const& Element)
-	{	// We should check if we are writing a POD type to prevent memory leaks.
-        static_assert(TypeTraits::IsPodType<WritingElementType>::Value, "WritingElementType should be POD.");
-		self->WriteCheck(&Element, 0, sizeof(Element));
+		for (UInt8 const* Byte = Array; Byte < (Array + (Count * Length)); ++Byte)
+			self->Write(*Byte);
 	}
 
 GD_NAMESPACE_END

@@ -16,16 +16,15 @@
 #include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.hh>
 #include <GoddamnEngine/Core/Containers/Pointer/SharedPtr.hh>
 #include <GoddamnEngine/Core/Compilers/Toolchain/Toolchain.hh>
+#include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.hh>
 #include <GoddamnEngine/Core/Compilers/StreamedLexer/StreamedLexer.hh>
+
+#define GD_STRINGIFY(What) #What
 
 GD_NAMESPACE_BEGIN
 
-	typedef Str CPPBaseParserErrorDesc;
 	class InputStream;
-
-	struct CPPDefinition
-	{
-	};	// struct CPPDefinition
+	class CPPCodeGenerator;
 
 	enum CPPResult : UInt8
 	{
@@ -34,11 +33,24 @@ GD_NAMESPACE_BEGIN
 		GD_CPP_RESULT_EMPTY,
 	};	// enum CPPResult
 
-	enum CPPHeaderReflectorExceptionCodes : ToolchainException
+	/// Represents lexer error description.
+	struct CPPBaseParserErrorDesc final : public ToolchainMessageDesc
 	{
-		GD_CPP_REFLECTOR_EXCEPTION_MODULE = 1000L,
-		GD_CPP_REFLECTOR_EXCEPTION_SYNTAX = +GD_CPP_REFLECTOR_EXCEPTION_MODULE + 1L,
-	};	// enum StreamedLexerExceptionCodes
+	public:
+		GDINL explicit CPPBaseParserErrorDesc(Str const Message) : ToolchainMessageDesc(Message) { }
+	};	// struct StreamedLexerErrorDesc
+
+	/// Fatal parsing error exception
+	class CPPParsingException : public ToolchainException
+	{
+	public /*Public API*/:
+		GDINL explicit CPPParsingException(String const Message) : ToolchainException(Message.CStr()) { }
+		GDINL virtual ~CPPParsingException() { }
+	};	// class ToolchainException
+
+	struct CPPDefinition
+	{
+	};	// struct CPPDefinition
 
 	/// Contains useful methods for basic GoddamnC++ headers parsing.
 	class CPPBaseParser : public IToolchainTool
@@ -87,8 +99,7 @@ GD_NAMESPACE_BEGIN
 		/// Expects a match of current lexem content type with specified one.
 		/// If lexem does not matches with content type, then raises 'unexpected Existing-Content-Type. Expected-Content-Type expected' error.
 		/// @param ContentType The expected lexem content type.
-		/// @returns True if current lexem content type mathes with specified one.
-		GDINT bool ExpectLexem(LexemContentType const ContentType);
+		GDINT void ExpectLexem(LexemContentType const ContentType);
 
 		/// Expects a match of current lexem content type and parsed data ID (PDID) with specified ones.
 		/// @param ContentType The expected lexem content type.
@@ -101,8 +112,7 @@ GD_NAMESPACE_BEGIN
 		/// If lexem matches with content type, but does not matches with parsed data ID (PDID), then raises 'unexpected Existing-PDID. Expected-PDID expected' error.
 		/// @param ContentType The expected lexem content type.
 		/// @param ID          The expected lexem parsed data ID (PDID).
-		/// @returns True if current lexem content type and parsed data ID mathes with specified one.
-		GDINT bool ExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID);
+		GDINT void ExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID);
 
 		/// Expects next lexem from input stream.
 		/// @returns True if lexem was succesfully read.
@@ -110,8 +120,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Expects next lexem from input stream. 
 		/// If lexem does not exists then raises 'unexpected End-Of-Stream' error.
-		/// @returns True if lexem was succesfully read.
-		GDINT bool ExpectNextLexem();
+		GDINT void ExpectNextLexem();
 
 		/// Expects next lexem from input stream and a match of lexem content type with specified one.
 		/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
@@ -123,8 +132,7 @@ GD_NAMESPACE_BEGIN
 		/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
 		/// If lexem exists, but does not matches with content type, then raises 'unexpected Existing-Content-Type. Expected-Content-Type expected' error.
 		/// @param ContentType The expected lexem content type.
-		/// @returns True if lexem was succesfully read and mathes with specified content type.
-		GDINT bool ExpectNextLexem(LexemContentType const ContentType);
+		GDINT void ExpectNextLexem(LexemContentType const ContentType);
 
 		/// Expects next lexem from input stream, and a match of lexem content type with specified one, and a match of lexem parsed data ID with specified one.
 		/// If lexem does not exists, then raises 'unexpected End-Of-Stream' error.
@@ -139,8 +147,7 @@ GD_NAMESPACE_BEGIN
 		/// If lexem exists, matches with content type, but does not matches with parsed data ID, then raises 'unexpected Existing-PDID. Expected-PDID expected' error.
 		/// @param ContentType The expected lexem content type.
 		/// @param ID          The expected lexem parsed data ID (PDID).
-		/// @returns True if lexem was succesfully read and mathes with specified content type and specified parsed data ID.
-		GDINT bool ExpectNextLexem(LexemContentType ContentType, StreamedLexerID const ID);
+		GDINT void ExpectNextLexem(LexemContentType ContentType, StreamedLexerID const ID);
 
 		/// @}
 
@@ -150,16 +157,21 @@ GD_NAMESPACE_BEGIN
 		/// Parses complex expression. Complex expression can be referenced with something like normal C++ expression.
 		/// @param Output Output string to which complex expression would be written. May be nullptr.
 		/// @returns True if complex type name was successfully parsed.
-		GDINT bool ParseComplexExpression(String* Output = nullptr);
+		GDINT void ParseComplexExpression(UniquePtr<CPPCodeGenerator> const& CodeGenerator = nullptr);
 
-		/// Parses complex type name. Complex type name can be referenced with as type names with const/volatile cvs, references, pointers, template arguments.
-		/// Here is only limitation: type names should be written in GoddamnCoding standart. Here comes limitations: 
+		/// Parses complex type name. Complex type names are ones with namespace definitions and template parameters. Limitations: 
+		/// @li Template parameters are not really parsed, analyzer just finds where they begin/end. So something like right shift operator could break everything.
+		/// @param Output Output string to which complex type name would be written. May be nullptr.
+		/// @returns True if complex type name was successfully parsed.
+		GDINT bool ParseComplexTypename(UniquePtr<CPPCodeGenerator> const& CodeGenerator = nullptr);
+
+		/// Parses complex type name. Complex type name can be referenced with as type names with const/volatile cvs, references, pointers, template arguments. Limitations: 
 		/// @li Type modifiers should follow type names. As sequence, type names could not be defined with struct/class keyword.
 		/// @li Type modifiers cannot be wrapped with macroes. That means that analyzer could not determine that MY_CONST, defined as '#define MY_CONST const' is real 'const' and deside end of type name.
 		/// @li Template parameters are not really parsed, analyzer just finds where they begin/end. So something like right shift operator could break everything.
 		/// @param Output Output string to which complex type name would be written. May be nullptr.
 		/// @returns True if complex type name was successfully parsed.
-		GDINT bool ParseComplexTypename(String* Output = nullptr);
+		GDINT bool ParseComplexTypenameWithCVs(UniquePtr<CPPCodeGenerator> const& CodeGenerator = nullptr);
 
 		/// @}
 
@@ -174,21 +186,12 @@ GD_NAMESPACE_BEGIN
 		/// Processes next found annotation in input stream.
 		/// @param ExpectedAnnotationPrefix Prefix of expected annotation idenitifier.
 		/// @return Success if annotation was succesfully processed, Failed if falied, Empty if no processor/annotation was found.
-		GDINT CPPResult ProcessNextAnnotation(String const& ExpectedAnnotationPrefix = "$GD_");
+		GDINT CPPResult ParseAnnotation(chandle const Args = nullptr, String const& ExpectedAnnotationPrefix = "$GD_");
 
 		/// @}
 	};	// class CPPBaseParser
 
 	class CPPAnnotationParamParser;
-
-	/// Provides passing params into specializes annotation parser constructor.
-	class CPPAnnotationCtorArgs
-	{
-	public /*Class API*/:
-		/// Creates empty packed params list.
-		GDINL explicit CPPAnnotationCtorArgs() { }
-		GDINL virtual ~CPPAnnotationCtorArgs() { }
-	};	// class CPPAnnotationCtorArgs
 
 	/// Abstract interface for GoddamnC++ annotation parser.
 	class CPPAnnotationParser 
@@ -196,14 +199,14 @@ GD_NAMESPACE_BEGIN
 	public /*Constructor / Destrutor*/:
 		/// Initializes specialized annotation parser.
 		/// @param Args Packed constructor params May be null pointer.
-		GDINL explicit CPPAnnotationParser(CPPAnnotationCtorArgs const* const Args) { }
+		GDINL explicit CPPAnnotationParser(chandle const Args) { }
 		GDINL virtual ~CPPAnnotationParser() { }
 
 	private /*Class API*/:
 		/// Parses annotation params.
 		/// @param BaseParser Parser that provides low lever source parsing.
 		/// @returns True if annotation argumnts were succesfully parsed.
-		GDINT bool ParseAnnotationParams(CPPBaseParser* const BaseParser);
+		GDINT void ParseAnnotationParams(CPPBaseParser* const BaseParser);
 
 	public /*Class API*/:
 		/// Spawns new parser of annotaion param value.
@@ -214,7 +217,7 @@ GD_NAMESPACE_BEGIN
 		/// Parses upcoming annotation.
 		/// @param BaseParser Parser that provides low lever source parsing.
 		/// @returns True if annotation was succesfully parsed.
-		GDINT virtual bool ParseAnnotation(CPPBaseParser* const BaseParser) impl_abstract;
+		GDINT virtual void ParseAnnotation(CPPBaseParser* const BaseParser) impl_abstract;
 	};	// class CPPAnnotationParser
 
 	/// Provides registering all annotation-parser-derived classes and spawning them while parsing.
@@ -234,7 +237,7 @@ GD_NAMESPACE_BEGIN
 		/// Pointer to function that creates new specialized annotation parser.
 		/// @param Args Packed constructor params. May be null pointer.
 		/// @returns Shared pointer on newly created specialized annotation parser.
-		typedef SharedPtr<CPPAnnotationParser>(*CtorProc)(CPPAnnotationCtorArgs const* const Args);
+		typedef SharedPtr<CPPAnnotationParser>(*CtorProc)(chandle const Args);
 
 	public /*Class Types*/:
 		GDINL  CPPAnnotationParserSpawner() = delete;
@@ -252,7 +255,7 @@ GD_NAMESPACE_BEGIN
 			/// @param Name Name of annotaion idenitifier this parser processes.
 			GDINL explicit Node(String const& Name)
 			{
-				CPPAnnotationParserSpawner::RegisterAnnotationParser(Name, [](CPPAnnotationCtorArgs const* const Args) {
+				CPPAnnotationParserSpawner::RegisterAnnotationParser(Name, [](chandle const Args) {
 					return SharedPtr<CPPAnnotationParser>(new CPPAnnotationParserType(Args));
 				});
 			}
@@ -273,7 +276,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Name Name of annotaion idenitifier of required parser.
 		/// @param Args Packed constructor params May be null pointer.
 		/// @returns Pointer to parser if it was succesfullt created.
-		GDINT static SharedPtr<CPPAnnotationParser> SpawnAnnotationParser(String const& Name, CPPAnnotationCtorArgs const* const Args);
+		GDINT static SharedPtr<CPPAnnotationParser> SpawnAnnotationParser(String const& Name, chandle const Args);
 	};	// class CPPAnnotationParserSpawner
 
 	/// Abstract interface for GoddamnC++ annotation param parser.
@@ -281,7 +284,7 @@ GD_NAMESPACE_BEGIN
 	{
 	public /*Constructor / Destrutor*/:
 		/// Initializes specialized annotation param parser.
-		GDINL explicit CPPAnnotationParamParser(CPPAnnotationCtorArgs const* const Args) { }
+		GDINL explicit CPPAnnotationParamParser(chandle const Args) { }
 		GDINL virtual ~CPPAnnotationParamParser() { }
 
 	public /*Class API*/:
@@ -290,7 +293,7 @@ GD_NAMESPACE_BEGIN
 		/// @param AnnotationParser Parser, that currently works on upcoming annotation.
 		/// @param ParamValue       String value of annotation paramater or it`s part.
 		/// @returns True if annotation param was succesfully parsed.
-		GDINT virtual bool ParseArgument(CPPBaseParser* const BaseParser, CPPAnnotationParser* const AnnotationParser, String const& ParamValue) abstract;
+		GDINT virtual void ParseArgument(CPPBaseParser* const BaseParser, CPPAnnotationParser* const AnnotationParser, String const& ParamValue) abstract;
 	};	// class CPPAnnotationParamParser
 
 	/// Provides registering all annotation-params-parser-derived classes and spawning them while parsing.
@@ -315,7 +318,7 @@ GD_NAMESPACE_BEGIN
 		/// Pointer to function that creates new specialized annotation param parser.
 		/// @param Args Packed constructor params. May be null pointer.
 		/// @returns Unique pointer on newly created specialized annotation param parser.
-		typedef UniquePtr<CPPAnnotationParamParser>(*CtorProc)(CPPAnnotationCtorArgs const* const Args);
+		typedef UniquePtr<CPPAnnotationParamParser>(*CtorProc)(chandle const Args);
 
 		/// Contains specialized annotation params parser registry.
 		Map<HashSumm, CtorProc> AnnotationParamParsersRegistry;
@@ -333,7 +336,7 @@ GD_NAMESPACE_BEGIN
 			/// @param Name Name of annotaion idenitifier this parser processes.
 			GDINL explicit Node(CPPAnnotationParamParserSpawner& Spawner, String const& Name)
 			{
-				Spawner.RegisterAnnotationParamParser(Name, [](CPPAnnotationCtorArgs const* const Args) {
+				Spawner.RegisterAnnotationParamParser(Name, [](chandle const Args) {
 					return UniquePtr<CPPAnnotationParamParser>(new CPPAnnotationParamParserType(Args));
 				});
 			}
@@ -353,7 +356,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Name Name of annotaion idenitifier of required parser.
 		/// @param Args Packed constructor params May be null pointer.
 		/// @returns Pointer to parser if it was succesfullt created.
-		GDINT UniquePtr<CPPAnnotationParamParser> SpawnAnnotationParamParser(String const& Name, CPPAnnotationCtorArgs const* const Args) const;
+		GDINT UniquePtr<CPPAnnotationParamParser> SpawnAnnotationParamParser(String const& Name, chandle const Args) const;
 	};	// class CPPAnnotationParamParserSpawner
 
 GD_NAMESPACE_END

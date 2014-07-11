@@ -15,132 +15,101 @@
 #include <GoddamnEngine/Core/IO/Stream/Stream.hh>
 #include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.hh>
 
-#include <cstdio>
 
 GD_NAMESPACE_BEGIN
 
 	/// Specifies read-only stream that provides reading from reference on data.
-	template<typename CharacterType, typename = typename EnableIf<TypeTraits::IsCharacter<CharacterType>::Value>::Type>
+	template<typename CharacterType>
 	class BaseStringInputStream final : public InputStream
 	{
+		static_assert(TypeTraits::IsCharacter<CharacterType>::Value, "'BaseStringInputStream<T>' error: T should be character type.");
+
 	private /* Class members. */:
 		UInt8 const* DataReference = nullptr;
 		size_t       DataReferenceLength = 0;
 		size_t       DataReferencePosition = 0;
 
-	public /* Constructors / Destructor */:
-		GDINL explicit BaseStringInputStream(BaseString<CharacterType> const& SomeString)
-			: DataReference      (reinterpret_cast<UInt8 const*>(SomeString.CStr()))
-			, DataReferenceLength(sizeof(CharacterType)       *  SomeString.GetSize())
-		{
-		}
+	public /*Implemented interface API*/:
+		/// Initializes StringInputStream using pointer to some memory.
+		/// @param SomeMemory       Pointer to input stream initial memory.
+		/// @param SomeMemoryLength Length of specified data memory length.
+		GDINL BaseStringInputStream(CharacterType const* SomeMemory, size_t const SomeMemoryLength);
 
-		GDINL explicit BaseStringInputStream(BaseStringBuilder<CharacterType> const& SomeStringBuilder)
-			: DataReference(reinterpret_cast<UInt8 const*>(SomeStringBuilder.GetPointer()))
-			, DataReferenceLength(sizeof(CharacterType) *  SomeStringBuilder.GetSize())
-		{
-		}
+		/// Initializes StringInputStream using some String class instance.
+		/// @param SomeString InputStream data.
+		GDINL explicit BaseStringInputStream(BaseString<CharacterType> const& SomeString);
 
-		GDINL explicit BaseStringInputStream(Vector<CharacterType> const& SomeVector)
-			: DataReference      (reinterpret_cast<UInt8 const*>(SomeVector.CStr()))
-			, DataReferenceLength(sizeof(CharacterType)       *  SomeVector.GetSize())
-		{
-		}
+		/// Initializes StringInputStream using some StringBuilder class instance.
+		/// @param SomeStringBuilder InputStream data.
+		GDINL explicit BaseStringInputStream(BaseStringBuilder<CharacterType> const& SomeStringBuilder);
 
-		GDINL explicit BaseStringInputStream(CharacterType const* SomeMemory, size_t const SomeMemoryLength)
-			: DataReference      (reinterpret_cast<UInt8 const*>(SomeMemory))
-			, DataReferenceLength(sizeof(CharacterType)       *  SomeMemoryLength)
-		{
-		}
+		/// Initializes StringInputStream using some Vector of characters class instance.
+		/// @param SomeVector InputStream data.
+		GDINL explicit BaseStringInputStream(Vector<CharacterType> const& SomeVector);
 
-		GDINL virtual ~BaseStringInputStream()
-		{
-			self->Dispose();
-		}
+		GDINL virtual ~BaseStringInputStream();
+		
+		/// @see BaseStream::GetPosition()
+		GDINL virtual size_t GetPosition() const override final;
 
-	public /* Class implemented API */:
-		GDINL virtual bool CanSeek() const final { return true; }
+		/// @see BaseStream::GetSize()
+		GDINL virtual size_t GetSize() const override final;
 
-		GDINL virtual size_t GetPosition() const final { return self->DataReferencePosition; }
-		GDINL virtual size_t GetLength  () const final { return self->DataReferenceLength; }
+		/// @see InputStream::Close()
+		GDINL virtual void Close() override final;
 
-		GDINL virtual void Dispose() final 
-		{
-			self->DataReference         = nullptr;
-			self->DataReferenceLength   = 0;
-			self->DataReferencePosition = 0;
-		}
+		/// @see InputStream::Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current)
+		GDINL virtual void Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current) override final;
 
-		inline virtual size_t Seek(ptrdiff_t const Offset, SeekOrigin const Origin) final
-		{
-			switch (Origin)
-			{
-			case GD_SEEK_ORIGIN_BEGIN: 
-				return self->DataReferencePosition = Offset;
+		/// @see InputStream::Read()
+		GDINL virtual UInt8 Read() override final;
 
-			case GD_SEEK_ORIGIN_CURRENT: 
-				return self->DataReferencePosition += Offset;
-
-			case GD_SEEK_ORIGIN_END: 
-				return self->DataReferencePosition = self->DataReferenceLength + Offset;
-
-			default: GD_ASSERT_FALSE("Invalid origin specified");
-			}
-
-			return 0;
-		}
-
-		inline virtual size_t Read(handle const OutputBuffer, ptrdiff_t const Offset, size_t const Count) final
-		{
-			if (self->DataReference != nullptr)
-			if (self->Seek(Offset, GD_SEEK_ORIGIN_CURRENT) < self->GetLength())
-			{	// Seeking this position on offset
-				size_t const NumCharactersRead = (self->GetPosition() + Count) <= self->GetLength() ? Count : (self->GetLength() - self->GetPosition());
-				memcpy(OutputBuffer, self->DataReference + self->GetPosition(), NumCharactersRead);
-				self->Seek(NumCharactersRead, GD_SEEK_ORIGIN_CURRENT);
-
-				return NumCharactersRead;
-			}
-
-			return 0;
-		}
+		/// @see InputStream::Read(UInt8* const Array, size_t const Count, size_t const Length)
+		GDINL virtual void Read(UInt8* const Array, size_t const Count, size_t const Length) override final;
 	};	// class BaseStringInputStream
+	
+	/// Shortcut for StringInputStream for Char type.
 	typedef BaseStringInputStream<Char> StringInputStream;
 
 	/// Specifies write-only stream that provides writing to reference on data (BaseStringBuilder).
-	template<typename CharacterType, typename = typename EnableIf<TypeTraits::IsCharacter<CharacterType>::Value>::Type>
+	template<typename CharacterType>
 	class BaseStringOutputStream final : public OutputStream
 	{
-	private /* Class members. */:
+		static_assert(TypeTraits::IsCharacter<CharacterType>::Value, "'BaseStringOutputStream<T>' error: T should be character type.");
+
+	private /*Class members*/:
 		BaseStringBuilder<CharacterType>* Builder = nullptr;
 
-	public /* Constructor / Destructor */:
-		GDINL explicit BaseStringOutputStream(BaseStringBuilder<CharacterType>& Builder) : Builder(&Builder) { }
-		GDINL virtual ~BaseStringOutputStream(                                         )                     { self->Dispose(); }
-
-	public /* Class implemented API */:
-		GDINL virtual size_t GetLength  () const final { return self->Builder->GetSize(); }
-		GDINL virtual size_t GetPosition() const final { return self->Builder->GetSize(); }
-
-		GDINL virtual void Flush  () final { }
-		GDINL virtual void Dispose() final { self->Builder = nullptr; }
+	public /*Implemented interface API*/:
+		/// Initializes new string output stream that points to some string builder.
+		/// @param Builder Builder in which output would be stored.
+		GDINL explicit BaseStringOutputStream(BaseStringBuilder<CharacterType>& Builder);
+		GDINL virtual ~BaseStringOutputStream();
 		
-		inline virtual size_t Write(chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count) final
-		{
-			if (self->Builder != nullptr)
-			{
-				CharacterType const* String = reinterpret_cast<CharacterType const*>(InputBuffer) + Offset;
-				self->Builder->Append(String, Count);
+		/// @see BaseStream::GetPosition()
+		GDINL virtual size_t GetPosition() const override final;
 
-				return Count;
-			}
+		/// @see BaseStream::GetSize()
+		GDINL virtual size_t GetSize() const override final;
 
-			return 0;
-		}
+		/// @see OutputStream::Close()
+		GDINL virtual void Close() override final;
 
+		/// @see OutputStream::Flush()
+		GDINL virtual void Flush() override final;
+
+		/// @see OutputStream::Write(UInt8 const Byte)
+		GDINL virtual void Write(UInt8 const Byte) override final;
+
+		/// @see OutputStream::Write(UInt8 const* const Array, size_t const Count, size_t const Length)
+		GDINL virtual void Write(UInt8 const* const Array, size_t const Count, size_t const Length) override final;
 	};	// class StringOutputStream
+	
+	/// Shortcut for StringOutputStream for Char type.
 	typedef BaseStringOutputStream<Char> StringOutputStream;
 
 GD_NAMESPACE_END
+
+#include <GoddamnEngine/Core/IO/Stream/StringStream/StringStream.inl>
 
 #endif

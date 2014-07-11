@@ -15,7 +15,7 @@ GD_NAMESPACE_BEGIN
 	static String const Base64Chars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 	GDINL static bool IsBase64Char(char const Char) 
 	{
-		return (std::isalnum(Char) || (Char == '+') || (Char == '/'));
+		return (::isalnum(Char) || (Char == '+') || (Char == '/'));
 	}
 
 	extern void Base64::Encode(InputStream* const Input, OutputStream* const Output)
@@ -23,9 +23,9 @@ GD_NAMESPACE_BEGIN
 		size_t I = 0;
 		UInt8 CharArray3[3], CharArray4[4];
 
-		while (!Input->IsEndOfStream())
+		while (Input->GetPosition() != Input->GetSize())
 		{
-			CharArray3[I++] = Input->Read<UInt8>();
+			CharArray3[I++] = Input->Read();
 			if (I == 3)
 			{
 				CharArray4[0] =  (CharArray3[0] & 0xFC) >> 2;
@@ -63,9 +63,9 @@ GD_NAMESPACE_BEGIN
 		size_t I = 0;
 		UInt8 CharArray4[4], CharArray3[3];
 
-		while (!Input->IsEndOfStream())
+		while (Input->GetPosition() != Input->GetSize())
 		{
-			CharArray4[I++] = Input->Read<UInt8>(); 
+			CharArray4[I++] = Input->Read();
 			if ((CharArray4[I] == '=') || (!IsBase64Char(CharArray4[I])))
 				break;
 

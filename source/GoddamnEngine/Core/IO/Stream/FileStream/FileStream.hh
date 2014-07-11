@@ -12,124 +12,84 @@
 
 #include <GoddamnEngine/Include.hh>
 #include <GoddamnEngine/Core/IO/Stream/Stream.hh>
+#include <GoddamnEngine/Core/Text/String/String.hh>
 
 #include <cstdio>
 
 GD_NAMESPACE_BEGIN
 
+	/// Represents runtime error that indicates that file with specified path does not exists.
+	class FileNotFoundException : public IOException
+	{
+	public /*Public API*/:
+		GDINL explicit FileNotFoundException(String const Message) : IOException(Message.CStr()) { }
+		GDINL virtual ~FileNotFoundException() { }
+	};	// class IOException
+
 	/// Specifies read-only stream that provides reading from file.
 	class FileInputStream final : public InputStream
 	{
 	private /* Class members. */:
+		String FilePath;
 		FILE*  FileHandle = nullptr;
-		size_t FileLength = 0;
+		size_t FileLength = SIZE_MAX;
 
-	public /* Constructor / Destructor */:
-		GDINL virtual ~FileInputStream(                      )                                            { self->Dispose(); }
-		GDINL explicit FileInputStream(String const& FilePath) : FileHandle(fopen(FilePath.CStr(), "rb")) 
-		{
-			if (self->FileHandle != nullptr)
-			{
-				fseek(self->FileHandle, 0, GD_SEEK_ORIGIN_END);
-				self->FileLength = size_t(ftell(self->FileHandle));
-				fseek(self->FileHandle, 0, SEEK_SET);
-			}
-		}
+	public /*Class implementation API*/:
+		/// Opens input stream on file with specifed file path.
+		/// @param FilePath Path to file that is required to be read.
+		GDAPI explicit FileInputStream(String const& FilePath);
+		GDAPI virtual ~FileInputStream();
 
-	public /* Class implemented API */:
-		GDINL virtual size_t GetLength  () const final { return   self->FileLength; }
-		GDINL virtual size_t GetPosition() const final { return ((self->FileHandle != nullptr) ? size_t(ftell(self->FileHandle)) : SIZE_MAX); }
+		/// @see BaseStream::GetPosition()
+		GDAPI virtual size_t GetPosition() const override final;
 
-		GDINL virtual void Dispose() final
-		{
-			if (self->FileHandle != nullptr)
-				fclose(self->FileHandle);
-			self->FileHandle = nullptr;
-			self->FileLength = 0;
-		}
+		/// @see BaseStream::GetSize()
+		GDAPI virtual size_t GetSize() const override final;
 
-		GDINL virtual bool CanSeek() const
-		{
-			if (!self->InputStream::CanSeek())
-				return false;
+		/// @see InputStream::Close()
+		GDAPI virtual void Close() override final;
 
-			return (self->FileHandle != nullptr);
-		}
+		/// @see InputStream::Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current)
+		GDAPI virtual void Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current) override final;
 
-		inline virtual size_t Seek(ptrdiff_t const Offset, SeekOrigin const Origin) final
-		{
-			int static const GD2STDOrigin[] = {
-				/*GD_SEEK_ORIGIN_BEGIN   */ SEEK_SET,
-				/*GD_SEEK_ORIGIN_CURRENT */ SEEK_CUR,
-				/*GD_SEEK_ORIGIN_END     */ SEEK_END,
-			};
+		/// @see InputStream::Read()
+		GDAPI virtual UInt8 Read() override final;
 
-			return ((self->FileHandle != nullptr) ? fseek(self->FileHandle, static_cast<long>(Offset), GD2STDOrigin[Origin]) : SIZE_MAX);
-		}
-
-		GDINL virtual bool CanRead() const 
-		{ 
-			if (!self->InputStream::CanRead())
-				return false;
-
-			return (self->FileHandle != nullptr); 
-		}
-
-		inline virtual size_t Read(handle const OutputBuffer, ptrdiff_t const Offset, size_t const Count) final
-		{
-			return ((self->FileHandle != nullptr) ? fread(OutputBuffer, 1, Count, self->FileHandle) : 0);
-		}
+		/// @see InputStream::Read(UInt8* const Array, size_t const Count, size_t const Length)
+		GDAPI virtual void Read(UInt8* const Array, size_t const Count, size_t const Length) override final;
 	};	// class FileInputStream
 
 	/// Specifies write-only stream that provides writing to file.
 	class FileOutputStream final : public OutputStream
 	{
 	private /* Class members. */:
-		String const FilePath;
+		String FilePath;
 		FILE*  FileHandle = nullptr;
 		size_t FileLength = 0;
 
-	public /* Constructor / Destructor */:
-		GDINL explicit FileOutputStream(String const& FilePath) : FilePath(FilePath) { self->Flush(); }
-		GDINL virtual ~FileOutputStream(                      )                      { self->Dispose(); }
+	public /*Class implementation API*/:
+		/// Opens output stream on file with specifed file path.
+		/// @param FilePath Path to file that is required to be written.
+		GDAPI explicit FileOutputStream(String const& FilePath);
+		GDAPI virtual ~FileOutputStream();
 
-	public /* Class implemented API */:
-		GDINL virtual size_t GetLength  () const final { return   self->FileLength; }
-		GDINL virtual size_t GetPosition() const final { return ((self->FileHandle != nullptr) ? size_t(ftell(self->FileHandle)) : SIZE_MAX); }
+		/// @see BaseStream::GetPosition()
+		GDAPI virtual size_t GetPosition() const override final;
 
-		GDINL virtual void Dispose() final
-		{
-			if (self->FileHandle != nullptr)
-				fclose(self->FileHandle);
-		}
+		/// @see BaseStream::GetSize()
+		GDAPI virtual size_t GetSize() const override final;
 
-		inline virtual void Flush() final
-		{
-			self->Dispose();
-			self->FileHandle = fopen(self->FilePath.CStr(), "wb");
-		}
+		/// @see OutputStream::Close()
+		GDAPI virtual void Close() override final;
 
-		GDINL virtual bool CanWrite() const
-		{
-			if (!self->OutputStream::CanWrite())
-				return false;
+		/// @see OutputStream::Flush()
+		GDAPI virtual void Flush() override final;
 
-			return (self->FileHandle != nullptr);
-		}
+		/// @see OutputStream::Write(UInt8 const Byte)
+		GDAPI virtual void Write(UInt8 const Byte) override final;
 
-		inline virtual size_t Write(chandle const InputBuffer, ptrdiff_t const Offset, size_t const Count) final
-		{
-			if (self->FileHandle != nullptr)
-			{
-				UInt8  const* String = reinterpret_cast<UInt8 const*>(InputBuffer) + Offset;
-				size_t const NumElementsWritten = fwrite(String, 1, Count, self->FileHandle);
-				self->FileLength += NumElementsWritten;
-				return NumElementsWritten;
-			}
-
-			return 0;
-		}
-
+		/// @see OutputStream::Write(UInt8 const* const Array, size_t const Count, size_t const Length)
+		GDINL virtual void Write(UInt8 const* const Array, size_t const Count, size_t const Length) override final;
 	};	// class FileOutputStream
 
 GD_NAMESPACE_END

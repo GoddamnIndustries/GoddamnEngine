@@ -49,17 +49,14 @@ GD_NAMESPACE_BEGIN
 			if ((self->CurrentBlock = self->CurrentBlock->ParentBlock) == nullptr)
 			{	// Unexpected '#endif' directive. No corresponding '#if' was not found.
 				CPPBaseParserErrorDesc static const UnexpectedEndifDirectiveError("unexpected '#endif' directive. No corresponding '#if' was not found.");
-				BaseParser->RaiseError(UnexpectedEndifDirectiveError);
-				BaseParser->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
-
-				return false;
+				throw CPPParsingException(UnexpectedEndifDirectiveError.ToString(&BaseParser->GetCurrentLexem()));
 			}
 
 			return true;
 		} 
 
 		// '#if*', '#elif*' and '#else' directive parsing.
-		else if ((!self->CurrentBlock->Elements.IsEmpty()) || (!self->CurrentBlock->PreCondition.IsEmpty()))
+		else if ((!self->CurrentBlock->Elements.IsEmpty()) || (!self->CurrentBlock->PreCondition.IsEmpty()) || (self->TopBlock == self->CurrentBlock))
 		{	// This block already has condition. Now lets see what we can do:
 			if (strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0)
 			{	// Creating a new block (in scope of current).
@@ -98,10 +95,7 @@ GD_NAMESPACE_BEGIN
 			if ((strncmp(PreprocessorDirective.CStr(), "else", sizeof("else") - 1) == 0) || (strncmp(PreprocessorDirective.CStr(), "elif", sizeof("elif") - 1) == 0))
 			{	// Unexpected '#***' directive. No corresponding '#if' was not found.
 				CPPBaseParserErrorDesc static const UnexpectedDirectiveError("unexpected '#%s' directive. No corresponding '#if' was not found.");
-				BaseParser->RaiseError(UnexpectedDirectiveError, PreprocessorDirective.CStr());
-				BaseParser->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
-
-				return false;
+				throw CPPParsingException(UnexpectedDirectiveError.ToString(&BaseParser->GetCurrentLexem()));
 			}
 			else if (strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0)
 			{

@@ -11,128 +11,13 @@
 #define GD_CORE_COMPILERS_STREAMED_LEXER
 
 #include <GoddamnEngine/Include.hh>
-#include <GoddamnEngine/Core/Containers/Pair/Pair.hh>
-#include <GoddamnEngine/Core/Text/String/String.hh>
-#include <GoddamnEngine/Core/Containers/Vector/Vector.hh>
-#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.hh>
+#include <GoddamnEngine/Core/Compilers/CompilerBase.hh>
 #include <GoddamnEngine/Core/Compilers/Toolchain/Toolchain.hh>
-
-#include <string.h>
+#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.hh>
 
 GD_NAMESPACE_BEGIN
 
 	class InputStream;
-
-	/// Describes all supported lexem types.
-	enum LexemContentType : UInt8
-	{
-		GD_LEXEM_CONTENT_TYPE_IDENTIFIER,			///< Lexem contains identifier data (string data type).
-		GD_LEXEM_CONTENT_TYPE_KEYWORD,			    ///< Lexem contains keyword data (string data type, has ID).
-		GD_LEXEM_CONTENT_TYPE_OPERATOR,				///< Lexem contains operator data (string data type, has ID).
-		GD_LEXEM_CONTENT_TYPE_COMMENT,				///< Lexem contains comment data (string data type).
-		GD_LEXEM_CONTENT_TYPE_CONSTANT_STRING,		///< Lexem contains string constant (string data type).
-		GD_LEXEM_CONTENT_TYPE_CONSTANT_CHARACTER,	///< Lexem contains character constant (character data type).
-		GD_LEXEM_CONTENT_TYPE_CONSTANT_INTEGER,		///< Lexem contains integer constant (integer data type).
-		GD_LEXEM_CONTENT_TYPE_CONSTANT_FLOAT,		///< Lexem contains floating-point constant (float data type).
-		GD_LEXEM_CONTENT_TYPE_UNKNOWN,				///< Lexem contains unknown data. (Internal usage only).
-		GD_LEXEM_CONTENT_TYPES_COUNT				= GD_LEXEM_CONTENT_TYPE_UNKNOWN,
-		GD_LEXEM_CONTENT_TYPE_EOS
-	};	// enum LexemContentType
-
-	/// Returns numan readable string for lexem content type
-	GDAPI extern Str LexemContentTypeToString(LexemContentType const ContentType);
-	
-	typedef UInt16 StreamedLexerID;
-	typedef StreamedLexerID StreamedLexerKeyword;
-	typedef StreamedLexerID StreamedLexerOperator;
-	typedef Pair<StreamedLexerKeyword, String> StreamedLexerKeywordDecl;
-	typedef Pair<StreamedLexerOperator, String> StreamedLexerOperatorDecl;
-	typedef Vector<StreamedLexerKeywordDecl> StreamedLexerKeywordsList;
-	typedef Vector<StreamedLexerOperatorDecl> StreamedLexerOperatorsList;
-
-	/// Describes information about one lexem.
-	struct Lexem final
-	{
-	private:
-		friend class      StreamedLexerImpl;
-		friend class BasicStreamedLexerImpl;
-		GD_CLASS_UNASSIGNABLE(Lexem);
-		GD_CLASS_UNSWAPPABLE (Lexem);
-		GD_CLASS_UNCOPIABLE  (Lexem);
-		GD_CLASS_UNMOVABLE   (Lexem);
-
-		size_t              Line = 0;
-		size_t              Symbol = 0;
-		LexemContentType    ContentType = GD_LEXEM_CONTENT_TYPE_UNKNOWN;
-		String              RawData;
-		union {
-			CharAnsi        ProcessedDataCharacter;
-			UInt64          ProcessedDataInteger;
-			Float64         ProcessedDataFloat;
-			StreamedLexerID ProcessedDataID;
-			UInt8           Padding[8];
-		};	
-
-		GDINL void ResetLexem()
-		{
-			self->Line = 0;
-			self->Symbol = 0;
-			self->ContentType = GD_LEXEM_CONTENT_TYPE_UNKNOWN;
-			self->RawData.Emptify();
-			memset(&self->Padding[0], 0, sizeof(self->Padding));
-		}
-
-	public:
-		GDINL  Lexem() { }
-		GDINL ~Lexem() { self->ResetLexem(); }
-		
-		/// Returns position of this lexem in input stream.
-		GDINL size_t           GetLine()               const { return self->Line; }
-		GDINL size_t           GetSymbol()             const { return self->Symbol; }
-
-		/// Returns type of content that is located inside lexem.
-		GDINL LexemContentType GetContentType()        const { return self->ContentType; }
-
-		/// Returns raw lexem data that is presented as string.
-		GDINL String const&    GetRawData()            const { return self->RawData; }
-
-		/// Returns character data, located inside this lexem if this lexem is character contant.
-		GDINL CharAnsi         GetProcessedDataChar()  const 
-		{
-			GD_DEBUG_ASSERT((self->GetContentType() == GD_LEXEM_CONTENT_TYPE_CONSTANT_CHARACTER), "Lexem`s content type is not character constant");
-			return self->ProcessedDataCharacter; 
-		}
-		
-		/// Returns integer data, located inside this lexem if this lexem is integer contant.
-		GDINL UInt64           GetProcessedDataInt()   const 
-		{ 
-			GD_DEBUG_ASSERT((self->GetContentType() == GD_LEXEM_CONTENT_TYPE_CONSTANT_INTEGER), "Lexem`s content type is not integer constant");
-			return self->ProcessedDataInteger; 
-		}
-		
-		/// Returns float data, located inside this lexem if this lexem is float contant.
-		GDINL Float64          GetProcessedDataFloat() const 
-		{ 
-			GD_DEBUG_ASSERT((self->GetContentType() == GD_LEXEM_CONTENT_TYPE_CONSTANT_FLOAT), "Lexem`s content type is not float constant");
-			return self->ProcessedDataFloat; 
-		}
-		
-		/// Returns some ID data, located inside this lexem if this lexem can has ID.
-		GDINL StreamedLexerID  GetProcessedDataID()    const 
-		{ 
-			if ((self->GetContentType() != GD_LEXEM_CONTENT_TYPE_KEYWORD) && (self->GetContentType() != GD_LEXEM_CONTENT_TYPE_OPERATOR)) return 0;
-			return self->ProcessedDataID;
-		}
-	};	// struct Lexem
-
-	/// Contains codes of exceptions that streamed lexer throws.
-	enum StreamedLexerExceptionCodes : ToolchainException
-	{
-		GD_STREAMED_LEXER_EXCEPTION_MODULE =  10L,							 ///< Streamed lexer module.
-		GD_STREAMED_LEXER_EXCEPTION_EOS	  = -GD_STREAMED_LEXER_EXCEPTION_MODULE - 1L, ///< End-Of-Stream.
-		GD_STREAMED_LEXER_EXCEPTION_COMMIT = -GD_STREAMED_LEXER_EXCEPTION_MODULE - 2L, ///< Token was commited.
-		GD_STREAMED_LEXER_EXCEPTION_SYNTAX = +GD_STREAMED_LEXER_EXCEPTION_MODULE + 1L, ///< Syntax error.
-	};	// enum StreamedLexerExceptionCodes
 
 	/// Provides lexer information about syntax in compilable data.
 	/// @note Instance of this class is quiet a "heavy" object, so it is recommended to make a static object. 
@@ -188,7 +73,7 @@ GD_NAMESPACE_BEGIN
 	};	// struct StreamedLexerOptions
 
 	/// Describes avaliable feature set of Streamed Lexer.
-	enum StreamedLexerMode : UInt8
+	enum class StreamedLexerMode : UInt8
 	{
 		/// Lexer runs in basic mode. 
 		/// Limitations:
@@ -196,16 +81,16 @@ GD_NAMESPACE_BEGIN
 		/// @li Does not parser numberic constants, operators in to processed data - only raw data presented.
 		/// @li Does not parses escape sequences in string and character constants, also does not checks if character constant length.
 		/// @li Broken operators parsing: e.g. "+=(" and "})]" would be treated as single operator.
-		GD_STREAMED_LEXER_MODE_BASIC,
+		Basic,
 
 		/// Lexer runs in full-featured mode. Is is slower then basic, but does not includes
 		/// basic lexer limitation.
-		GD_STREAMED_LEXER_MODE_ADVANCED,
+		Advanced,
 
 		/// Unknown mode (internal usage only).
-		GD_STREAMED_LEXER_MODE_UNKNOWN,
-		GD_STREAMED_LEXER_MODE_DEFAULT = GD_STREAMED_LEXER_MODE_ADVANCED,
-		GD_STREAMED_LEXER_MODES_COUNT  = GD_STREAMED_LEXER_MODE_UNKNOWN,
+		Unknown,
+		Default = Advanced,
+		Count = Unknown,
 	};	// enum StreamedLexerMode
 
 	/// Class provides streamable tokenization for input stream.
@@ -219,21 +104,21 @@ GD_NAMESPACE_BEGIN
 		GD_CLASS_UNMOVABLE   (StreamedLexer);
 
 		UniquePtr<class BasicStreamedLexerImpl> Implementation;
-		StreamedLexerMode ImplementationMode = GD_STREAMED_LEXER_MODE_UNKNOWN;
+		StreamedLexerMode ImplementationMode = StreamedLexerMode::Unknown;
 		StreamedLexerOptions const& Options;
 
 	public:
 		/// Initializes new streamed lexer.
 		/// @param Toolchain   Corresponding toolchain.
-		/// @param InputStream Stream on which lexer would work.
+		/// @param Stream      Input stream on which lexer would work.
 		/// @param Options     Packed lexing options list.
 		/// @param LexerMode Describes avaliable feature set of Streamed Lexer.
-		GDAPI          StreamedLexer(IToolchain* const Toolchain, UniquePtr<InputStream>&& Stream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode = GD_STREAMED_LEXER_MODE_DEFAULT);
+		GDAPI          StreamedLexer(IToolchain* const Toolchain, UniquePtr<InputStream>&& Stream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode = StreamedLexerMode::Default);
 		GDAPI virtual ~StreamedLexer();
 
 		/// Switches lexer features set.
 		/// @param LexerMode Describes avaliable feature set of Streamed Lexer.
-		GDAPI void SwitchMode(StreamedLexerMode const LexerMode = GD_STREAMED_LEXER_MODE_DEFAULT);
+		GDAPI void SwitchMode(StreamedLexerMode const LexerMode = StreamedLexerMode::Default);
 
 		/// Extracts next lexem from input stream into output. Throws an exception into toolchain if error accures. Can be ran in simple and advanced mode.
 		/// More about modes: 
@@ -282,10 +167,10 @@ GD_NAMESPACE_BEGIN
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_EXTERN,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FALSE,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FINAL,
-			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FINALLAY,
+			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FINALLY,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FLOAT,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FOR,
-			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FRIEND,
+			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FRGDND,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_GOTO,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_IF,
 			GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_INLINE,
