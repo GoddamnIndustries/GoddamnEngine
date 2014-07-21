@@ -1,5 +1,5 @@
 /// ==========================================================================================
-/// LockFree.hh - Lock-free container implementation.
+/// LockFree.h - Lock-free container implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

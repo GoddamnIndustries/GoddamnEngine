@@ -1,5 +1,5 @@
 /// ==========================================================================================
-/// Float32x4IntrinsicsNeon.hh: ARM Neon Float32x4 vector intrinsics.
+/// Float32x4IntrinsicsNeon.h: ARM Neon Float32x4 vector intrinsics.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:

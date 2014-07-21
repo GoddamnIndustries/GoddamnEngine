@@ -1,5 +1,5 @@
 /// ==========================================================================================
-/// Pair.hh - pair structure class implementation.
+/// Pair.h - pair structure class implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
@@ -11,7 +11,7 @@
 #	error "Attempting to include 'Pair.inl' file. Please, use 'Pair.h' instead."
 #endif	// if (!defined(GD_CORE_CONTAINERS_PAIR))
 
-#include <GoddamnEngine/Core/Utility.hh>
+#include <GoddamnEngine/Core/Utility.h>
 
 GD_NAMESPACE_BEGIN
 

@@ -1,5 +1,5 @@
 /// ==========================================================================================
-/// Map.hh - Dynamically sized associative vectors interfacs.
+/// Map.h - Dynamically sized associative vectors interfacs.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
@@ -42,8 +42,8 @@ GD_NAMESPACE_BEGIN
 #define GD_UNORDERED_MAP_BASE()     Vector<Pair <KeyType, ValueType>, MemoryProviderType>
 	
 	GD_UNORDERED_MAP_TEMPLATE()
-	GDINL GD_UNORDERED_MAP_CLASS()::UnorderedMap(size_t const InitialElemntsCount /* = 0 */, ThisPairType const& InitialPair /* = ThisPairType() */, size_t const Capacity /* = -1 */)
-		: GD_UNORDERED_MAP_BASE ()(InitialElemntsCount, InitialPair, Capacity) { }
+	GDINL GD_UNORDERED_MAP_CLASS()::UnorderedMap(size_t const InitialElemntsCount /* = 0 */, size_t const Capacity /* = SIZE_MAX */)
+		: GD_UNORDERED_MAP_BASE ()(InitialElemntsCount, Capacity) { }
 
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL GD_UNORDERED_MAP_CLASS()::UnorderedMap(ConstIterator const StartIterator, ConstIterator const EndIterator)

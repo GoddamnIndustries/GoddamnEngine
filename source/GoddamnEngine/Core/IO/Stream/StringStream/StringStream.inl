@@ -32,7 +32,7 @@ GD_NAMESPACE_BEGIN
 	/// @param SomeString InputStream data.
 	template<typename CharacterType>
 	GDINL BaseStringInputStream<CharacterType>::BaseStringInputStream(BaseString<CharacterType> const& SomeString)
-		: BaseStringInputStream(reinterpret_cast<UInt8 const*>(SomeString.CStr())
+		: BaseStringInputStream(reinterpret_cast<CharacterType const*>(SomeString.CStr())
 		, sizeof(CharacterType) * SomeString.GetSize())
 	{
 	}
@@ -41,7 +41,7 @@ GD_NAMESPACE_BEGIN
 	/// @param SomeStringBuilder InputStream data.
 	template<typename CharacterType>
 	GDINL BaseStringInputStream<CharacterType>::BaseStringInputStream(BaseStringBuilder<CharacterType> const& SomeStringBuilder)
-		: BaseStringInputStream(reinterpret_cast<UInt8 const*>(SomeStringBuilder.GetPointer())
+		: BaseStringInputStream(reinterpret_cast<CharacterType const*>(SomeStringBuilder.GetPointer())
 		, sizeof(CharacterType) * SomeStringBuilder.GetSize())
 	{
 	}
@@ -50,7 +50,7 @@ GD_NAMESPACE_BEGIN
 	/// @param SomeVector InputStream data.
 	template<typename CharacterType>
 	GDINL BaseStringInputStream<CharacterType>::BaseStringInputStream(Vector<CharacterType> const& SomeVector)
-		: BaseStringInputStream(reinterpret_cast<UInt8 const*>(&SomeVector.GetFirstElement())
+		: BaseStringInputStream(reinterpret_cast<CharacterType const*>(&SomeVector.GetFirstElement())
 		, sizeof(CharacterType) * SomeVector.GetSize())
 	{
 	}
@@ -117,13 +117,14 @@ GD_NAMESPACE_BEGIN
 		if (self->DataReferencePosition >= self->DataReferenceLength)
 			throw IOException("Failed to read from data reference (position is out of bounds).");
 
-		UInt8 Result = (*self->DataReference);
+		UInt8 Result = (*(self->DataReference + self->DataReferencePosition));
 		++self->DataReferencePosition;
+		return Result;
 	}
 
-	/// @see InputStream::Read(UInt8* const Array, size_t const Count, size_t const Length)
+	/// @see InputStream::Read(handle const Array, size_t const Count, size_t const Length)
 	template<typename CharacterType>
-	GDINL void BaseStringInputStream<CharacterType>::Read(UInt8* const Array, size_t const Count, size_t const Length)
+	GDINL void BaseStringInputStream<CharacterType>::Read(handle const Array, size_t const Count, size_t const Length)
 	{
 		GD_DEBUG_ASSERT(self->DataReference != nullptr, "Nullptr data reference.");
 		if (self->DataReferencePosition + (Count * Length) >= self->DataReferenceLength)
@@ -191,9 +192,9 @@ GD_NAMESPACE_BEGIN
 		self->Builder->Append(*reinterpret_cast<CharacterType const*>(&Byte));
 	}
 
-	/// @see OutputStream::Write(UInt8 const* const Array, size_t const Count, size_t const Length)
+	/// @see OutputStream::Write(chandle const Array, size_t const Count, size_t const Length)
 	template<typename CharacterType>
-	GDINL void BaseStringOutputStream<CharacterType>::Write(UInt8 const* const Array, size_t const Count, size_t const Length)
+	GDINL void BaseStringOutputStream<CharacterType>::Write(chandle const Array, size_t const Count, size_t const Length)
 	{
 		GD_DEBUG_ASSERT((Length % sizeof(CharacterType)) == 0, "Length of single element is not multiple of character type.");
 		self->Builder->Append(reinterpret_cast<CharacterType const*>(Array), Count * Length);

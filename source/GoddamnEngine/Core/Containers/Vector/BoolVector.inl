@@ -7,11 +7,11 @@
 /// ==========================================================================================
 
 #if (!defined(GD_CORE_CONTAINERS_BOOL_VECTOR))
-#	error "Attempting to include 'BoolVector.inl' file. Please, use 'BoolVector.hh' instead.""
+#	error "Attempting to include 'BoolVector.inl' file. Please, use 'BoolVector.h' instead.""
 #endif	// if (!defined(GD_CORE_CONTAINERS_VECTOR))
 
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
-#include <GoddamnEngine/Core/Utility.hh>
+#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
+#include <GoddamnEngine/Core/Utility.h>
 
 GD_NAMESPACE_BEGIN
 

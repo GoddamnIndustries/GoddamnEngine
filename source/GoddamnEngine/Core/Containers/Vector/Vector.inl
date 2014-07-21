@@ -8,12 +8,12 @@
 /// ==========================================================================================
 
 #if (!defined(GD_CORE_CONTAINERS_VECTOR))
-#	error "Attempting to include 'Vector.inl' file. Please, use 'Vector.hh' instead.""
+#	error "Attempting to include 'Vector.inl' file. Please, use 'Vector.h' instead.""
 #endif	// if (!defined(GD_CORE_CONTAINERS_VECTOR))
 
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.hh>
-#include <GoddamnEngine/Core/Math/FastMath/FastMath.hh>
-#include <GoddamnEngine/Core/Utility.hh>
+#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
+#include <GoddamnEngine/Core/Math/FastMath/FastMath.h>
+#include <GoddamnEngine/Core/Utility.h>
 #include <new>			// For placement new
 
 GD_NAMESPACE_BEGIN
@@ -53,12 +53,12 @@ GD_NAMESPACE_BEGIN
 #define GD_VECTOR_CLASS()	 Vector<ElementType, MemoryProviderType>
 
 	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()::Vector(size_t const InitialElemntsCount /* = 0 */, ElementType const& InitialElement /* = ElementType() */, size_t const Capacity /* = -1 */)
-		: MemoryProviderInstance((Capacity != -1) ? Capacity : InitialElemntsCount) 
+	inline GD_VECTOR_CLASS()::Vector(size_t const InitialElemntsCount /* = 0 */, size_t const Capacity /* = SIZE_MAX */)
+		: MemoryProviderInstance((Capacity != SIZE_MAX) ? Capacity : InitialElemntsCount) 
 	{
 		self->Count = InitialElemntsCount;
 		for (MutableIterator Iterator = self->Begin(); Iterator != self->End(); Iterator += 1)
-			new (&*Iterator) ElementType(InitialElement);
+			new (&*Iterator) ElementType(/*InitialElement*/);
 	}
 
 	GD_VECTOR_TEMPLATE()
@@ -127,7 +127,7 @@ GD_NAMESPACE_BEGIN
 	}
 
 	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::Resize(size_t const NewSize, ElementType const& InitialElement /* = ElementType() */)
+	inline void GD_VECTOR_CLASS()::Resize(size_t const NewSize)
 	{
 		if (self->GetSize() != NewSize)
 		{	// We do not need to resize our element with same size.
@@ -135,7 +135,7 @@ GD_NAMESPACE_BEGIN
 			{	// Increasing size of container, we need to initialize new elements with template value.
 				self->ReserveToSize(NewSize);
 				for (MutableIterator Iterator = self->End(); Iterator != (self->Begin() + NewSize); Iterator += 1)
-					new (&*Iterator) ElementType(InitialElement);
+					new (&*Iterator) ElementType();
 			}
 			else
 			{	// Decreasing size of container, we need to destroy last elements there.

@@ -1,19 +1,19 @@
 /// ==========================================================================================
-/// Atomic.WinApi.hh - AtomicsIntrinsics basics implementations for WinApi.
+/// Atomic.WinApi.h - AtomicsIntrinsics basics implementations for WinApi.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 29.04.2014 - Created by James Jhuighuy
 /// ==========================================================================================
 
-#include <GoddamnEngine/Include.hh>
+#include <GoddamnEngine/Include.h>
 
 #pragma once 
 #ifndef GD_CORE_THREADING_ATOMIC_WINAPI
 #define GD_CORE_THREADING_ATOMIC_WINAPI
 
 #if (!defined(GD_CORE_THREADING_ATOMIC))
-#	error 'Please, do not include 'Atomic.WinApi.inl' directly, use 'Atomic.hh' instead.'
+#	error 'Please, do not include 'Atomic.WinApi.inl' directly, use 'Atomic.h' instead.'
 #endif	// if (!defined(GD_CORE_THREADING_ATOMIC))
 
 GD_NAMESPACE_BEGIN

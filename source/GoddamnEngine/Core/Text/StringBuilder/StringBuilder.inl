@@ -1,5 +1,5 @@
 /// ==========================================================================================
-/// StringBuilder.hh: Mutable string implementation.
+/// StringBuilder.h: Mutable string implementation.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
@@ -7,7 +7,7 @@
 /// ==========================================================================================
 
 #if (!defined(GD_CORE_TEXT_STRINGBUILDER_STRINGBUILDER))
-#	error "Attempting to include 'StringBuilder.inl' file. Please, use 'StringBuilder.hh' instead.""
+#	error "Attempting to include 'StringBuilder.inl' file. Please, use 'StringBuilder.h' instead.""
 #endif	// if (!defined(GD_CORE_CONTAINERS_VECTOR))
 
 #include <cstdarg>

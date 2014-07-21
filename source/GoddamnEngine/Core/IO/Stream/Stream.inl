@@ -11,8 +11,8 @@
 #	error("Please, include Stream.h instead of Stream.inl")
 #endif
 
-#include <GoddamnEngine/Core/Utility.hh>
-#include <GoddamnEngine/Core/TypeTraits.hh>
+#include <GoddamnEngine/Core/Utility.h>
+#include <GoddamnEngine/Core/TypeTraits.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -29,8 +29,9 @@ GD_NAMESPACE_BEGIN
 	/// @param Array  Output memory to which data would be written.
 	/// @param Count  Length of one element
 	/// @param Length Length of memory in elements.
-	GDINL void InputStream::Read(UInt8* const Array, size_t const Count, size_t const Length)
+	GDINL void InputStream::Read(handle const _Array, size_t const Count, size_t const Length)
 	{
+		UInt8* const Array = static_cast<UInt8*>(_Array);
 		for (UInt8* Byte = Array; Byte < (Array + (Count * Length)); ++Byte)
 			*Byte = self->Read();
 	}
@@ -48,8 +49,9 @@ GD_NAMESPACE_BEGIN
 	/// @param Array  Input elements that would be written.
 	/// @param Count  Length of one element
 	/// @param Length Length of memory in elements.
-	GDINL void OutputStream::Write(UInt8 const* const Array, size_t const Count, size_t const Length)
+	GDINL void OutputStream::Write(chandle const _Array, size_t const Count, size_t const Length)
 	{
+		UInt8 const* const Array = static_cast<UInt8 const*>(_Array);
 		for (UInt8 const* Byte = Array; Byte < (Array + (Count * Length)); ++Byte)
 			self->Write(*Byte);
 	}
