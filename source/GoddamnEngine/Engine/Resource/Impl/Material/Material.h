@@ -20,8 +20,8 @@ GD_NAMESPACE_BEGIN
 	private:
 		GD_TYPEINFORMATION_DEFINITION(Material, Resource, GDAPI);
 
-		HRIShaderProgram* MaterialProgram;
-		HRIShaderInstance* MaterialInstance;
+		RefPtr<HRIShaderProgram> MaterialProgram;
+		RefPtr<HRIShaderInstance> MaterialInstance;
 
 		/// ==========================================================================================
 		GDINL Material(
@@ -40,17 +40,14 @@ GD_NAMESPACE_BEGIN
 
 		/// ==========================================================================================
 		/// Returns shader program that this material is using
-		GDINL HRIShaderProgram* GetShaderProgram(
-		) const 
+		GDINL RefPtr<HRIShaderProgram> GetShaderProgram() const 
 		{ 
 			return self->MaterialProgram; 
 		}
 
 		/// ==========================================================================================
 		/// New shader program material would use
-		GDAPI void SetShaderProgram(
-			_In_ HRIShaderProgram* const shaderProgram
-		);
+		GDAPI void SetShaderProgram(RefPtr<HRIShaderProgram> const& Effect);
 			
 		/// @}
 		/// ==========================================================================================
@@ -105,7 +102,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 
 	protected:
-		GDAPI virtual void OnResourceLoad(InputStream* const InputResourceData); 
+		GDAPI virtual void OnResourceLoad(UniquePtr<InputStream> const& InputResourceData); 
 		GDAPI virtual void OnResourceUnload();
 	};
 

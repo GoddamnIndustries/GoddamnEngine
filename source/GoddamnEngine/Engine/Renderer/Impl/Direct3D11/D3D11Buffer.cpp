@@ -12,7 +12,7 @@ GD_NAMESPACE_BEGIN
 
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11VertexBuffer, HRIVertexBuffer, GDINT, nullptr);
 	HRID3D11VertexBuffer::HRID3D11VertexBuffer(Float32 const* const Data, size_t const Size) 
-	 : HRIVertexBuffer(Data, Size)
+		: HRIVertexBuffer(Data, Size)
 	{	
 		D3D11_BUFFER_DESC VertexBufferDescription;
 		ZeroMemory(&VertexBufferDescription, sizeof(VertexBufferDescription));
@@ -29,13 +29,15 @@ GD_NAMESPACE_BEGIN
 		VertexBufferData.SysMemPitch = 0;
 		VertexBufferData.SysMemSlicePitch = 0;
 
-		HRESULT const Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&VertexBufferDescription, &VertexBufferData, &self->Buffer.GetPointer());
-		GD_ASSERT(SUCCEEDED(Result), "Vertex buffer creation failed.");
+		HRESULT Result = E_FAIL;
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&VertexBufferDescription, &VertexBufferData, &self->Buffer))) {
+			throw D3D11Exception("Vertex buffer creation failed.");
+		}
 	}
 
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11IndexBuffer, HRIIndexBuffer, GDINT, nullptr);
 	HRID3D11IndexBuffer::HRID3D11IndexBuffer(chandle const Data, size_t const Size, size_t const Stride)
-	 : HRIIndexBuffer(Data, Size, Stride)
+		: HRIIndexBuffer(Data, Size, Stride)
 	{
 		switch (self->Stride)
 		{	// Setting up index format of our buffer.
@@ -60,14 +62,15 @@ GD_NAMESPACE_BEGIN
 		IndexBufferData.SysMemPitch = 0;
 		IndexBufferData.SysMemSlicePitch = 0;
 
-		HRESULT const Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&IndexBufferDescription, &IndexBufferData, &self->Buffer.GetPointer());
-		GD_ASSERT(SUCCEEDED(Result), "Index buffer creation failed.");
+		HRESULT Result = E_FAIL;
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&IndexBufferDescription, &IndexBufferData, &self->Buffer))) {
+			throw D3D11Exception("Index buffer creation failed.");
+		}
 	}
 	
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11ConstantBuffer, HRIConstantBuffer, GDINT, nullptr);
 	HRID3D11ConstantBuffer::HRID3D11ConstantBuffer(size_t const Size)
-	 // Constant buffer's memory is aligned by 16 bytes.
-	 : HRIConstantBuffer(Size - (Size % 16) + (((Size % 16) != 0) ? 16 : 0))
+		: HRIConstantBuffer(Size - (Size % 16) + (((Size % 16) != 0) ? 16 : 0))	// Constant buffer's memory is aligned by 16 bytes.
 	{
 		D3D11_BUFFER_DESC ConstantBufferDescription;
 		ZeroMemory(&ConstantBufferDescription, sizeof(ConstantBufferDescription));
@@ -78,8 +81,10 @@ GD_NAMESPACE_BEGIN
 		ConstantBufferDescription.StructureByteStride = 0;
 		ConstantBufferDescription.MiscFlags = 0;
 
-		HRESULT const Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&ConstantBufferDescription, nullptr, &self->Buffer.GetPointer());
-		GD_ASSERT(SUCCEEDED(Result), "Constant buffer creation failed.");
+		HRESULT Result = E_FAIL;
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&ConstantBufferDescription, nullptr, &self->Buffer))) {
+			throw D3D11Exception("Constant buffer creation failed.");
+		}
 	}
 
 	void HRID3D11ConstantBuffer::CopyDataTo(handle const Data) const
@@ -88,11 +93,13 @@ GD_NAMESPACE_BEGIN
 		D3D11_MAPPED_SUBRESOURCE ConstantBufferData;
 		ZeroMemory(&ConstantBufferData, sizeof(ConstantBufferData));
 
-		HRESULT Result = HRD3D11Interface::GetInstance().Context->Map(self->Buffer.GetPointer(), 0, D3D11_MAP_READ, 0, &ConstantBufferData);
-		GD_ASSERT(SUCCEEDED(Result), "Constant buffer data mapping failed.");
+		HRESULT Result = E_FAIL;
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Context->Map(self->Buffer.Get(), 0, D3D11_MAP_READ, 0, &ConstantBufferData))) {
+			throw D3D11Exception("Constant buffer data mapping failed.");
+		}
 
 		memcpy(Data, ConstantBufferData.pData, self->GetSize());
-		HRD3D11Interface::GetInstance().Context->Unmap(self->Buffer.GetPointer(), 0);
+		HRD3D11Interface::GetInstance().Context->Unmap(self->Buffer.Get(), 0);
 	}
 
 	void HRID3D11ConstantBuffer::CopyDataFrom(chandle const Data)
@@ -100,11 +107,13 @@ GD_NAMESPACE_BEGIN
 		D3D11_MAPPED_SUBRESOURCE ConstantBufferData;
 		ZeroMemory(&ConstantBufferData, sizeof(ConstantBufferData));
 
-		HRESULT Result = HRD3D11Interface::GetInstance().Context->Map(self->Buffer.GetPointer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ConstantBufferData);
-		GD_ASSERT(SUCCEEDED(Result), "Constant buffer data mapping failed.");
+		HRESULT Result = E_FAIL;
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Context->Map(self->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ConstantBufferData))) {
+			throw D3D11Exception("Constant buffer data mapping failed.");
+		}
 
 		memcpy(ConstantBufferData.pData, Data, self->GetSize());
-		HRD3D11Interface::GetInstance().Context->Unmap(self->Buffer.GetPointer(), 0);
+		HRD3D11Interface::GetInstance().Context->Unmap(self->Buffer.Get(), 0);
 	}
 
 	HRIVertexBuffer  * HRD3D11Interface::CreateVertexBuffer  (Float32 const* const Data, size_t const Size                     ) { return new HRID3D11VertexBuffer  (Data, Size        ); }

@@ -3,207 +3,109 @@
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
-///		* --.--.2012 - Created by James Jhuighuy
+///		* --.--.2012 - Originally written by James Jhuighuy.
+///		* Today      - Created by You :)
 /// ==========================================================================================
 
-// Icluding common engine stuff.
-#include <GoddamnEngine/Engine/Engine.h>
 #include <GoddamnEngine/Engine/Application/Application.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
-#include <GoddamnEngine/Engine/Component/Transform/Transform.h>
-#include <GoddamnEngine/Engine/Component/MeshRenderer/MeshRenderer.h>
-#include <GoddamnEngine/Engine/Component/Static/Input/Input.h>
-#include <GoddamnEngine/Engine/Component/Static/Physics/Physics.h>
+#include <GoddamnEngine/Engine/Component/Static/Input/Input.h>			// To handle input.
+#include <GoddamnEngine/Engine/Component/Static/Physics/Physics.h>		// To create collisions.
+#include <GoddamnEngine/Engine/Component/Transform/Transform.h>			// To position objects in the world.
+#include <GoddamnEngine/Engine/Component/MeshRenderer/MeshRenderer.h>	// To render meshes.
 
+#if (defined(GD_NAMESPACE))
 using namespace GD_NAMESPACE;
+#endif	// if (defined(GD_NAMESPACE))
 
-class TestController final : public Component
-{
-private:
-	GD_SERIALIZABLE_DEFINITION(TestController, Component, GDINT);
-
-	GD_SERIALIZATION_BEGIN(TestController, Component);
-	GD_FIELD(float, s);
-	//GD_FIELD(Light*, l);
-	//GD_FIELD_ARRAY(String, j);
-	GD_SERIALIZATION_END();
-
-	bool b;
-
-public:
-	TestController() :
-		GD_EXTENDS_SERIALIZABLE(Component)
-	{
-		s = 0.02f;
-		b = true;
-	}
-
-	virtual void OnInitializeSelf()
-	{
-	}
-
-	virtual void OnUpdateSelf()
-	{
-		if (Input::IsKeyDown(KeyCode::R))
-		{
-			b = !b;
-		}
-
-		Transform* t = (self)->GetGameObject()->GetTransform();
-
-		if (Input::IsKeyDown(KeyCode::W))
-		{
-			t->Translate(Vector3Fast(0, 0, s));
-		}
-		if (Input::IsKeyDown(KeyCode::S))
-		{
-			t->Translate(Vector3Fast(0, 0, -s));
-		}
-		if (Input::IsKeyDown(KeyCode::A))
-		{
-			t->Translate(Vector3Fast(-s, 0, 0));
-		}
-		if (Input::IsKeyDown(KeyCode::D))
-		{
-			t->Translate(Vector3Fast(+s, 0, 0));
-		}
-
-		/**/ if (Input::IsKeyDown(KeyCode::Q))
-		{
-			t->Rotate(Vector3Fast(0, -s * 5, 0));
-			auto a = t->GetRotation();
-			int i = 0;
-		}
-		else if (Input::IsKeyDown(KeyCode::E))
-		{
-			t->Rotate(Vector3Fast(0, s * 5, 0));
-		}
-	}
-};
-
-class DebugRuntime final : public Application
+/// Defines application runtime class.
+class SimpleSceneSampleApp final : public Application
 {
 public:
-	GDINT DebugRuntime(int const argumentsCount, char const* const* const argumentsList) :
-		Application(argumentsCount, argumentsList)
-	{}
+	GDINL          SimpleSceneSampleApp(int const CMDArgsCount, char const* const* const CMDArgsList) : Application(CMDArgsCount, CMDArgsList) { }
+	GDINL virtual ~SimpleSceneSampleApp() { }
 
-	GDINT virtual void OnInitialize();
+	GDINT virtual void OnInitialize() final override;
 
-	GDINT virtual String GetApplicationName() const { return "Debug Runtime"; }
-	GDINT virtual String GetApplicationVersion() const { return "v5.0.0.1"; }
-};
+	GDINL virtual String const& GetApplicationName   () const final override { String static const ApplicationName("GoddamnEngine Sample 01 - Simple Scene"); return ApplicationName; }
+	GDINL virtual String const& GetApplicationVersion() const final override { String static const ApplicationVersion("v1.0.0.1");                            return ApplicationVersion; }
+};	// class SimpleSceneSampleApp
 
-void DebugRuntime::OnInitialize()
+/// Represents a simple DooM-like FPS controller.
+$GD_REFLECTABLE()
+class SimpleSceneFPSController final : public Component
 {
-	Scene* const scene = new Scene(Scene::FlagsNone);
+	$GD_REFLECTABLE_BODY_GENERATED_CRAP()
+	 GD_TYPEINFORMATION_DEFINITION(SimpleSceneFPSController, Component, GDINT)
 
-	GameObject* object0 = scene->CreateGameObject();
-	GameObject* object1 = scene->CreateGameObject();
-	GameObject* object2 = scene->CreateGameObject();
-	GameObject* object3 = scene->CreateGameObject();
+public/*Component properties*/:
+	/// Player's moving speed.
+	$GD_PROPERTY(ReadWrite, DefinedAs = Field)
+	float MovingSpeed = 1.3f;
 
-	//Object0
-	auto 
-		transform0 = object0->AddComponent<Transform>();
-		transform0->SetPosition(Vector3Fast(0.0f, 1.75f, -7.0f));
+public/*Class API*/:
+	GDINL SimpleSceneFPSController() { }
+	GDINL virtual ~SimpleSceneFPSController() { }
 
-	auto camera0 = object0->AddComponent<Camera>();
-	auto testController0 = object0->AddComponent<TestController>();
-	//auto rigidbody0 = object0->AddComponent<Rigidbody>();
+	/// Is invoked each frame engine renders.
+	virtual void OnUpdateSelf() final override;
+};	// class SimpleSceneFPSController
 
-	/*auto
-		rigidbody0 = object0->AddComponent<Rigidbody>();
-		rigidbody0->SetRigidbodyType(RigidbodyType::Character);
-		rigidbody0->SetColliderShape(GD_LOAD_RESOURCE("file://..\\Resources/labs_mesh", StaticMesh));*/
+GD_TYPEINFORMATION_IMPLEMENTATION(SimpleSceneFPSController, Component, GDINT);
 
-	//Object1
-	auto 
-		transform1 = object1->AddComponent<Transform>();
-		transform1->SetScale(Vector3Fast(25.0f));
-		transform1->SetPosition(Vector3Fast(0.0f));
+void SimpleSceneSampleApp::OnInitialize()
+{	// Initializing Application.
+	self->Application::OnInitialize();
 
-	auto 
-		meshRenderer1 = object1->AddComponent<MeshRenderer>();
-		meshRenderer1->SetStaticMesh(GD_LOAD_RESOURCE(R"(file://D:\Engine\IncredibleEngine\resources\labs_mesh)", StaticMesh));
-		meshRenderer1->SetMaterial(GD_LOAD_RESOURCE(R"(file://D:\Engine\IncredibleEngine\bin.x64\test_material.xml)", Material));
-		//auto rigidbody1 = object1->AddComponent<MeshCollider>();
+	// Creating a scene.
+	/*RefPtr<Scene>*/Scene* const CurrentScene = new Scene(Scene::FlagsNone);
+	{	// Creating a Player with Transform, camera and FPS controller and collider.
+		RefPtr<GameObject> const PlayerObject = CurrentScene->CreateGameObject();
+		RefPtr<Transform> const PlayerTransform = PlayerObject->AddComponent<Transform>();
+		PlayerTransform->SetPosition(Vector3Fast(0.0f, 1.75f, -7.0f));
 
-	//auto
-	//	meshCollider1 = object1->AddComponent<MeshCollider>();
-	//	//meshCollider1->SwitchToTrigger();
-	//	object1->AddComponent<TriggerTest>();
-
-	//Object2
-	auto 
-		transform2 = object2->AddComponent<Transform>();
-		transform2->SetPosition(Vector3Fast(0.0f, 1.75f, -2.0f));
-		transform2->SetScale(Vector3Fast(0.25f));
-		transform2->SetRotation(Vector3Fast(-90.0f, 0.0f, 0.0f));
-
-		/*auto 
-		light2 = object2->AddComponent<Light>();
-		light2->SetColor(Color(1.0f,  1.0f, 1.0f, 1.0f));
-		light2->SetIntensivity(1.0f);*/
-
-	/*auto 
-		meshRenderer2 = object2->AddComponent<MeshRenderer>();
-		meshRenderer2->SetStaticMesh(GD_LOAD_RESOURCE("file://..\\Resources//sphere.shk", StaticMesh));
-		meshRenderer2->SetMaterial(GD_LOAD_RESOURCE("file://..\\Resources/labs_material2",	Material));*/
-			
-	/*auto
-		boxCollider2 = object2->AddComponent<SphereCollider>();*/
+		RefPtr<Camera> const PlayerCamera = PlayerObject->AddComponent<Camera>();
+		RefPtr<SimpleSceneFPSController> const PlayerFPSController = PlayerObject->AddComponent<SimpleSceneFPSController>();
 		
-		/*auto
-		rigidbody2 = object2->AddComponent<Rigidbody>();
-		rigidbody2->Enable(false);*/
+	//	RefPtr<Rigidbody> const PlayerRigidbody = PlayerObject->AddComponent<Rigidbody>();
+	//	PlayerRigidbody->SetRigidbodyType(RigidbodyType::Character);
+	//	PlayerRigidbody->SetColliderShape(GD_LOAD_RESOURCE("file://..\\Resources/labs_mesh", StaticMesh));
+	}
 
-	auto 
-		transform3 = object3->AddComponent<Transform>();
-		transform3->SetPosition(Vector3Fast(0.0f, 0.5f, -3.0f));
+	{	// Creating a level shape with Transform, collider and shape.
+		RefPtr<GameObject> const LevelShapeObject = CurrentScene->CreateGameObject();
+		RefPtr<Transform> const LevelShapeTransform = LevelShapeObject->AddComponent<Transform>();
+		LevelShapeTransform->SetScale(Vector3Fast(25.0f));
+
+		RefPtr<MeshRenderer> const LevelShapeRenderer = LevelShapeObject->AddComponent<MeshRenderer>();
+		LevelShapeRenderer->SetStaticMesh(RSStreamer::GetInstance().LoadImmediately<StaticMesh>("file://Resources/LevelMesh.ProprietaryMeshFormat"));
+		LevelShapeRenderer->SetMaterial(RSStreamer::GetInstance().LoadImmediately<Material>("file://Resources/LevelMeshMaterial.xml"));
+
+	//	RefPtr<MeshCollider> const LevelShapeCollider = LevelShapeObject->AddComponent<MeshCollider>();
+	}
 }
 
-GD_SERIALIZABLE_IMPLEMENTATION(TestController, Component, GDINT);
+void SimpleSceneFPSController::OnUpdateSelf()
+{	// Getting our Transform component.
+	Transform* const MyTransform = self->GetGameObject()->GetTransform();
 
-#include <time.h>
+	// Handling WASD keys to move, E and R to rotate.
+	/**/ if (Input::IsKeyDown(KeyCode::W)) MyTransform->Translate(Vector3Fast(0.0f, 0.0f, +self->MovingSpeed));
+	else if (Input::IsKeyDown(KeyCode::S)) MyTransform->Translate(Vector3Fast(0.0f, 0.0f, -self->MovingSpeed));
+	/**/ if (Input::IsKeyDown(KeyCode::A)) MyTransform->Translate(Vector3Fast(-self->MovingSpeed, 0.0f, 0.0f));
+	else if (Input::IsKeyDown(KeyCode::D)) MyTransform->Translate(Vector3Fast(+self->MovingSpeed, 0.0f, 0.0f));
+	/**/ if (Input::IsKeyDown(KeyCode::Q)) MyTransform->Rotate(Vector3Fast(0.0f, -self->MovingSpeed * 5.0f, 0.0f));
+	else if (Input::IsKeyDown(KeyCode::E)) MyTransform->Rotate(Vector3Fast(0.0f, +self->MovingSpeed * 5.0f, 0.0f));
 
-int main(
-	_In_ int const ArgumentsCount, 
-	_In_ char const* const* const ArgumentsList
-)
+	// Handling space key to shoot.
+	if (Input::IsKeyUp(KeyCode::Space)) {
+
+	}
+}
+
+// GD_SERIALIZABLE_IMPLEMENTATION(SimpleSceneFPSController, Component, GDINT);
+
+int main(int const CMDArgsCount, char const* const* const CMDArgsList)
 {
-	time_t const StartTime = clock();
-
-	/*{
-		Vector3Fast Vec3(1.0f, 20.0f, 300.0f);
-		for (size_t cnt = 0; cnt < USHRT_MAX; cnt += 1)
-		{
-			Vec3 *= Vector3Fast(1.0f, 20.0f, 300.0f);
-			Vec3 = Vec3.Cross(Vector3Fast(Vec3.Dot(Vec3--)));
-			Vec3 /= Vec3.Normalize()++;
-		}
-	}	time_t const SSETime = clock() - StartTime;*/
-
-	/*{
-		Vector3 Vec3(1.0f, 20.0f, 300.0f);
-		for (size_t cnt = 0; cnt < USHRT_MAX; cnt += 1)
-		{
-			Vec3 *= Vector3(1.0f, 20.0f, 300.0f);
-			Vec3 = Vec3.Cross(Vector3(Vec3.Dot(Vec3--)));
-			Vec3 /= Vec3.Normalize()++;
-		}
-	}	time_t const NOSSETime = clock() - SSETime;*/
-
-	/*{
-		Matrix4x4 Matrix;
-		for (size_t cnt = 0; cnt < USHRT_MAX; cnt += 1)
-		{
-			Matrix4x4 A = Matrix4x4().Identity(3.0f);
-			A *= Matrix4x4().PerspectiveLh(60.0f, 16.0f/9.0f, 0.1f, 3000.0f);
-			A.Inverse().Transpose().Inverse().Rotate(Quaternion().SetEulerDegrees(Vector3Fast(30.0f, 60.0f, 90.0f)));
-		}
-	} time_t const SSETime = clock() - StartTime;*/
-
-    DebugRuntime DebugRuntimeInstance(ArgumentsCount, ArgumentsList);
-    Application::Execute(DebugRuntimeInstance);
+	SimpleSceneSampleApp SimpleSceneSampleAppInstance(CMDArgsCount, CMDArgsList);
+	Application::Execute(SimpleSceneSampleAppInstance);
 }

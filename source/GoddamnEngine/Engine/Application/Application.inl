@@ -1,29 +1,24 @@
 
 GD_NAMESPACE_BEGIN
 
-	GDINL ApplicationState Application::GetApplicationState() const	 
-	{
-		return self->state;
-	}
-
 	GDINL void Application::OnInitialize()
 	{
-		self->state = ApplicationState::Starting;
+		self->State = ApplicationState::Starting;
 	}
 
 	GDINL void Application::OnDestroy()
 	{
-		self->state = ApplicationState::Exiting;
+		self->State = ApplicationState::Exiting;
 	}
 
 	GDINL void Application::OnSuspend()
 	{
-		self->state = ApplicationState::Suspended;
+		self->State = ApplicationState::Suspended;
 	}
 
 	GDINL void Application::OnResumed()
 	{
-		self->state = ApplicationState::Running;
+		self->State = ApplicationState::Running;
 	}
 
 GD_NAMESPACE_END

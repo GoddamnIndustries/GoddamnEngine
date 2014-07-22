@@ -32,7 +32,7 @@ GD_NAMESPACE_BEGIN
 
 		/// ==========================================================================================
 		GDINL virtual void OnResourceLoad(
-			_In_ InputStream* const InputResourceData
+			_In_ UniquePtr<InputStream> const& InputResourceData
 		);
 
 		/// ==========================================================================================

@@ -219,16 +219,16 @@ GD_NAMESPACE_BEGIN
 		/// Searches for first object with specified searching function.
 		/// @returns Pointer to first found child object.
 		template<typename ObjectType, typename SearchingPredicateType>
-		GDINL ObjectType const* SearchForFirstChildObject(SearchingPredicateType const& Predicate) const;
+		GDINL ObjectType const* FindFirstChildObject(SearchingPredicateType const& Predicate) const;
 		template<typename ObjectType, typename SearchingPredicateType>
-		GDINL ObjectType      * SearchForFirstChildObject(SearchingPredicateType const& Predicate);
+		GDINL ObjectType      * FindFirstChildObject(SearchingPredicateType const& Predicate);
 		
 		/// Searches for first object with specified searching function.
 		/// @returns Pointer to last found child object.
 		template<typename ObjectType, typename SearchingPredicateType>
-		GDINL ObjectType const* SearchForLastChildObject(SearchingPredicateType const& Predicate) const;
+		GDINL ObjectType const* FindLastChildObject(SearchingPredicateType const& Predicate) const;
 		template<typename ObjectType, typename SearchingPredicateType>
-		GDINL ObjectType      * SearchForLastChildObject(SearchingPredicateType const& Predicate);
+		GDINL ObjectType      * FindLastChildObject(SearchingPredicateType const& Predicate);
 
 		/// @}
 		

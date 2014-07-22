@@ -10,5 +10,4 @@ Dim Shell
 Set Shell = WScript.CreateObject("WScript.Shell")
 Shell.Run  "SETX GODDAMN_SDK %CD%\\"
 Set Shell = Nothing
-
 '@echo on

@@ -279,7 +279,7 @@ GD_NAMESPACE_BEGIN
 		GDAPI static const TypeInformation* GetLastRegistered();
 		
 		/// Returns pointer to type that was found by name or nullptr if nothing found
-		GDAPI static TypeInformation const* SearchForType(String const& typeName);
+		GDAPI static TypeInformation const* FindType(String const& typeName);
 
 		/// COnstructs type information in base on type`s name, size, base type and virtual constructor
 		GDAPI TypeInformation(TypeInformationClassInfo const& typeInformationClassInfo);

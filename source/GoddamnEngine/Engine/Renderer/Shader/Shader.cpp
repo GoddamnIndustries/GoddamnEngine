@@ -79,44 +79,42 @@ GD_NAMESPACE_BEGIN
 		self->GetShaderParamLocation()->DidAnyParamValueChanged = true;
 		self->DidValueChanged = true;
 
-		if (ParamValue == nullptr)
-		{	// Parameter unspecified. So we need to clear all data.
+		if (ParamValue == nullptr) {	// Parameter unspecified. So we need to clear all data.
 			if (   (self->ParamDesc->ParamType == GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D  )
-				|| (self->ParamDesc->ParamType == GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE))
+				|| (self->ParamDesc->ParamType == GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE)) {
 				SafeRelease(reinterpret_cast<HRIObject*>(self->ParamValue));
-			else
+			} else {
 				memset(&self->ParamPointer, 0, self->ParamDesc->GetParamSize());
+			}
 		}
 
-		switch (self->ParamDesc->ParamType)
-		{	// Parameter specified. So we need to copy new data.
-		case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D:
-		case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE:
-			{
-				HRIObject*  const NewValue = *reinterpret_cast<HRIObject* const*>(ParamValue);
-				HRIObject*&       OldValue = *reinterpret_cast<HRIObject*      *>(&self->ParamValue);
-				SafeRelease(OldValue);
-				SafeObtain (OldValue = NewValue);
-			}	return;
+		switch (self->ParamDesc->ParamType)	{	// Parameter specified. So we need to copy new data.
+			case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D:
+			case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE:	{
+					HRIObject*  const NewValue = *reinterpret_cast<HRIObject* const*>(ParamValue);
+					HRIObject*&       OldValue = *reinterpret_cast<HRIObject*      *>(&self->ParamValue);
+					SafeRelease(OldValue);
+					SafeObtain (OldValue = NewValue);
+				}	break;
 
-		case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX4X4:
-		case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX3X3:
-		case GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE:
-			{
-				GD_DEBUG_ASSERT(self->ParamPointer != nullptr, "Param points to nullptr data");
-				memcpy(self->ParamPointer, ParamValue, self->ParamDesc->GetParamSize());
-			}	return;
+			case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX4X4:
+			case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX3X3:
+			case GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE: {
+					GD_DEBUG_ASSERT(self->ParamPointer != nullptr, "Param points to nullptr data");
+					memcpy(self->ParamPointer, ParamValue, self->ParamDesc->GetParamSize());
+				}	break;
 
-		case GD_HRI_SHADER_PARAM_DESC_TYPE_STRING:
-			{
-				GD_DEBUG_ASSERT(self->ParamPointer != nullptr, "Param points to nullptr data");
-				Str            NewString = reinterpret_cast<Str>(ParamValue) - 1;
-				HRIShaderChar* OldString = reinterpret_cast<HRIShaderChar*>(self->ParamPointer) - 1;
-				memset(OldString, 0, self->ParamDesc->GetParamSize());
-				while ((*(++OldString) = HRIShaderChar(*(++NewString))) != HRIShaderChar('\0'));
-			}	return;
+			case GD_HRI_SHADER_PARAM_DESC_TYPE_STRING: {
+					GD_DEBUG_ASSERT(self->ParamPointer != nullptr, "Param points to nullptr data");
+					Str            NewString = reinterpret_cast<Str>(ParamValue) - 1;
+					HRIShaderChar* OldString = reinterpret_cast<HRIShaderChar*>(self->ParamPointer) - 1;
+					memset(OldString, 0, self->ParamDesc->GetParamSize());
+					while ((*(++OldString) = HRIShaderChar(*(++NewString))) != HRIShaderChar('\0'));
+				}	break;
 
-		default: GD_ASSERT_FALSE("Unhandled param type"); return;
+			default: {
+					GD_ASSERT_FALSE("Unhandled param type");
+				}	break;
 		}
 	}
 
@@ -142,17 +140,20 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT((self->GetLocationInstance() != nullptr), "Invalid instance specified");
 		GD_DEBUG_ASSERT((object_cast<HRIShaderParamLocation const*>(self->GetLocationInstance()->GetLastChildObject())->LocationDesc->LocationType <= self->LocationDesc->LocationType), "Invalid instance specified");
 
-		if (self->GetLocationInstance()->InstanceFirstLocations[self->LocationDesc->LocationType] == nullptr)
+		if (self->GetLocationInstance()->InstanceFirstLocations[self->LocationDesc->LocationType] == nullptr) {
 			self->GetLocationInstance()->InstanceFirstLocations[self->LocationDesc->LocationType] = self;
+		}
 
-		for (auto const ShaderParamDesc : IterateChildObjects<HRIShaderParamDesc const>(self->LocationDesc))
+		for (auto const ShaderParamDesc : IterateChildObjects<HRIShaderParamDesc const>(self->LocationDesc)) {
 			new HRIShaderParam(self, ShaderParamDesc);
+		}
 	}
 
 	HRIShaderParamLocation::~HRIShaderParamLocation()
 	{
-		if (self->GetLocationInstance()->InstanceFirstLocations[self->LocationDesc->LocationType] == self)
+		if (self->GetLocationInstance()->InstanceFirstLocations[self->LocationDesc->LocationType] == self) {
 			self->GetLocationInstance()->InstanceFirstLocations[self->LocationDesc->LocationType] = object_cast<HRIShaderParamLocation*>(self->GetNextSiblingObject());
+		}
 	}
 
 	/// ==========================================================================================
@@ -170,8 +171,7 @@ GD_NAMESPACE_BEGIN
 		ZeroMemory(self->LocationStorage.GetPointer(), self->LocationDesc->GetLocationInstancesSize());
 
 		size_t Offset = 0;
-		for (auto const ShaderParam : IterateChildObjects<HRIShaderParam>(self))
-		{	// Pointing all params's memory to allocated block.
+		for (auto const ShaderParam : IterateChildObjects<HRIShaderParam>(self)) {	// Pointing all params's memory to allocated block.
 			HRIShaderParamLocation::SetParamPointer(ShaderParam, self->LocationStorage.GetPointer() + Offset);
 			Offset += ShaderParam->ParamDesc->GetParamSize();
 		}
@@ -190,8 +190,7 @@ GD_NAMESPACE_BEGIN
 
 	void HRIShaderParamLocationConstantBufferNative::UploadAllParameters()
 	{
-		if (self->DidAnyParamValueChanged)
-		{	// Uploading all data to GPU. 
+		if (self->DidAnyParamValueChanged) {	// Uploading all data to GPU. 
 			self->DidAnyParamValueChanged = false;
 			self->LocationBuffer->CopyDataFrom(self->GetStorage());
 		}
@@ -220,12 +219,19 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_DEBUG_ASSERT((self->InstanceDesc != nullptr), "Invalid desc specified");
 		ZeroMemory(&self->InstanceFirstLocations, sizeof(self->InstanceFirstLocations));
-		for (auto const ShaderParamLocationDesc : IterateChildObjects<HRIShaderParamLocationDesc const>(self->InstanceDesc))
-			/**/ if (ShaderParamLocationDesc->LocationType == GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_CONSTANTBUFFER)
-				HRInterface::GetInstance().CreateShaderParamLocationConstantBuffer(self, ShaderParamLocationDesc);
-			else if (ShaderParamLocationDesc->LocationType == GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES)
-				HRInterface::GetInstance().CreateShaderParamLocationResources(self, ShaderParamLocationDesc);
-			else { GD_ASSERT_FALSE("Invalid location type"); }
+		for (auto const ShaderParamLocationDesc : IterateChildObjects<HRIShaderParamLocationDesc const>(self->InstanceDesc)) {
+			switch (ShaderParamLocationDesc->LocationType) {
+				case GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_CONSTANTBUFFER:
+					HRInterface::GetInstance().CreateShaderParamLocationConstantBuffer(self, ShaderParamLocationDesc);
+					break;
+				case GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES:
+					HRInterface::GetInstance().CreateShaderParamLocationResources(self, ShaderParamLocationDesc);
+					break;
+				default:
+					GD_ASSERT_FALSE("Invalid location type");
+					break;
+			}
+		}
 	}
 
 	/// ==========================================================================================

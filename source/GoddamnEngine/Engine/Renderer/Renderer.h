@@ -17,7 +17,7 @@
 #include <GoddamnEngine/Core/Format/Format.h>
 #include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
 #include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
-
+#include <GoddamnEngine/Core/Diagnostics/Exception/Exception.h>
 #include <GoddamnEngine/Engine/Plugin/Plugin.h>
 
 #define GD_HRI_DYNAMIC 1
@@ -83,7 +83,7 @@ GD_NAMESPACE_BEGIN
 		GD_HRI_SEMANTICS_COUNT         = GD_HRI_SEMANTIC_UNKNOWN
 	};	// enum HRISemantic
 
-		/// Describes types of buffers
+	/// Describes types of buffers
 	enum HRIBufferType : UInt8
 	{
 		GD_HRI_BUFFER_TYPE_VERTEX,	 ///< Buffer contains vertex description data
@@ -92,6 +92,14 @@ GD_NAMESPACE_BEGIN
 		GD_HRI_BUFFER_TYPE_UNKNOWN,	 ///< Unknown buffer
 		GD_HRI_BUFFER_TYPES_COUNT    = GD_HRI_BUFFER_TYPE_UNKNOWN,
 	};	// enum HRIBufferType
+
+	/// Indicates about runtime error caused by renderer interface
+	class HRIException : public Exception
+	{
+	public /*Public API*/:
+		GDINL explicit HRIException(String const& Message) : Exception(Message.CStr()) { }
+		GDINL virtual ~HRIException() { }
+	};	// class HRIException
 
 	/// ==========================================================================================
 	/// Semantics
@@ -229,7 +237,7 @@ GD_NAMESPACE_BEGIN
 		GDAPI virtual HRIIndexedShape  const* GetIndexedShape () const abstract;
 		GDINL         HRIShaderProgram      * GetShaderProgram() { return const_cast<HRIShaderProgram*>(const_cast<HRILinkagePoint const*>(self)->GetShaderProgram()); }
 		GDINL         HRIIndexedShape       * GetIndexedShape () { return const_cast<HRIIndexedShape *>(const_cast<HRILinkagePoint const*>(self)->GetIndexedShape ()); }
-		GDAPI virtual void SetShaderProgram(HRIShaderProgram const* const ShaderProgram) abstract;
+		GDAPI virtual void SetShaderProgram(HRIShaderProgram const* const Effect) abstract;
 		GDAPI virtual void SetIndexedShape (HRIIndexedShape  const* const IndexedShape ) abstract;
 		GDAPI virtual void RenderSelf() const abstract;
 	};	// class HRILinkagePoint

@@ -49,8 +49,7 @@ GD_NAMESPACE_BEGIN
 		GDINL virtual ~Plugin() {}
 	};
 
-	class PluginManager final : public Object,
-								public Singleton<PluginManager>
+	class PluginManager final : public Object, public Singleton<PluginManager>
 	{
 	private:
 		PluginDescription::PluginLoadingFlags pluginLoadingFlags;

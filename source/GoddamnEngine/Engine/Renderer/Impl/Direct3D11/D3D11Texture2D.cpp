@@ -4,11 +4,11 @@ GD_NAMESPACE_BEGIN
 
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11Texture2D, HRITexture2D, GDINT, nullptr);
 	HRID3D11Texture2D::HRID3D11Texture2D(HRITexture2DCtorInfo const& CtorInfo, chandle const InitialData, size_t const InitialiDataLength) 
-	 : HRITexture2D(CtorInfo, InitialData, InitialiDataLength)
-	 ,	Texture(nullptr)
-	 ,	TextureShaderResource(nullptr)
+		: HRITexture2D(CtorInfo, InitialData, InitialiDataLength)
+		,	Texture(nullptr)
+		,	TextureShaderResource(nullptr)
 	{
-		ID3D11Device* const Device = HRD3D11Interface::GetInstance().Device.GetPointer();
+		ID3D11Device* const Device = HRD3D11Interface::GetInstance().Device.Get();
 		self->CreateTexture(InitialData, Device);
 		self->CreateShaderResourceView(Device);
 		self->CreateTextureSample(Device);
@@ -89,7 +89,7 @@ GD_NAMESPACE_BEGIN
 		result = device->CreateTexture2D(
 			&texture2DDescription, 
 			(((InitialData != nullptr) && (!textureGenerateMipMaps)) ? &texture2DData : nullptr),
-			&self->Texture.GetPointer()
+			&self->Texture
 		);
 
 		GD_ASSERT((SUCCEEDED(result) && (self->Texture != nullptr)), "Failed to create texture");
@@ -102,9 +102,9 @@ GD_NAMESPACE_BEGIN
 		texture2DShaderResource.Texture2D.MostDetailedMip = 0;
 
 		result = device->CreateShaderResourceView(
-			self->Texture.GetPointer(),
+			self->Texture.Get(),
 			&texture2DShaderResource,
-			&self->TextureShaderResource.GetPointer()
+			&self->TextureShaderResource
 		);
 
 		GD_ASSERT((SUCCEEDED(result) && (self->TextureShaderResource != nullptr)),
@@ -112,11 +112,11 @@ GD_NAMESPACE_BEGIN
 
 		if (textureGenerateMipMaps)
 		{
-			ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.GetPointer();
-			Context->UpdateSubresource(self->Texture.GetPointer(), 0, nullptr,
+			ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
+			Context->UpdateSubresource(self->Texture.Get(), 0, nullptr,
 				texture2DData.pSysMem, texture2DData.SysMemPitch,
 				texture2DData.SysMemSlicePitch);
-			Context->GenerateMips(self->TextureShaderResource.GetPointer());
+			Context->GenerateMips(self->TextureShaderResource.Get());
 		}
 	}
 
@@ -169,7 +169,7 @@ GD_NAMESPACE_BEGIN
 
 		HRESULT const result = device->CreateSamplerState(
 			&texture2DSamplerDesription,
-			&self->TextureSample.GetPointer()
+			&self->TextureSample
 		);
 
 		GD_ASSERT((SUCCEEDED(result) && (self->TextureSample != nullptr)),

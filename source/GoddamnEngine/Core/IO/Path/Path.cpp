@@ -22,9 +22,9 @@ GD_NAMESPACE_BEGIN
 		extern String ChangeExtension(String const& SomePath, String const& NewExtension);
 		extern String Combine(Vector<String> const& Paths);
 		extern bool HasExtension(String const& SomePath);
-		extern String GetDirectoryName(String const& SomePath);
+
 		extern String GetExtension(String const& SomePath);
-		
+
 		extern size_t GetLastSlashLocation(String const& SomePath)
 		{
 			for (auto const& Character : Reverse(SomePath))
@@ -33,6 +33,12 @@ GD_NAMESPACE_BEGIN
 			return SIZE_MAX;
 		}
 
+		extern String GetDirectoryName(String const& SomePath)
+		{
+			size_t const LastSlashLocation = Path::GetLastSlashLocation(SomePath);
+			return ((LastSlashLocation != SIZE_MAX) ? SomePath.GetSubstring(0, LastSlashLocation) : SomePath);
+		}
+		
 		extern String GetFileName(String const& SomePath)
 		{
 			size_t const LastSlashLocation = Path::GetLastSlashLocation(SomePath);

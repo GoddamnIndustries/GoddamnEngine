@@ -23,19 +23,17 @@ GD_NAMESPACE_BEGIN
 
 	void HRID3D11ShaderParamLocationResources::UploadAllParameters()
 	{
-		if (self->DidAnyParamValueChanged)
-		{
+		if (self->DidAnyParamValueChanged) {
 			self->DidAnyParamValueChanged = false;
-			for (auto const ShaderParam : IterateChildObjects<HRIShaderParam const>(self))
-				if (HRIShaderParamLocation::QueryAndResetDidParamValueChanged(ShaderParam))
-				{
+			for (auto const ShaderParam : IterateChildObjects<HRIShaderParam const>(self)) {
+				if (HRIShaderParamLocation::QueryAndResetDidParamValueChanged(ShaderParam))	{
 					HRID3D11Texture2D const* const Texture2D = object_cast<HRID3D11Texture2D const*>(ShaderParam->GetValue());
-					if (Texture2D != nullptr) 
-					{
+					if (Texture2D != nullptr) {
 						self->ShaderResourceViews[ShaderParam->ParamDesc->GetParamID()] = Texture2D->GetShaderResource();
-						self->ShaderSampleStates [ShaderParam->ParamDesc->GetParamID()] = Texture2D->GetSample();
+						self->ShaderSampleStates[ShaderParam->ParamDesc->GetParamID()] = Texture2D->GetSample();
 					}
 				}
+			}
 		}
 	}
 
@@ -47,12 +45,12 @@ GD_NAMESPACE_BEGIN
 
 	HRID3D11ShaderInstance::HRID3D11ShaderInstance(HRIShaderInstanceDesc const* const InstanceDesc) : HRIShaderInstance(InstanceDesc)
 	{	// Caching all inner constant buffer.
-		for (auto const Location : IterateChildObjects<HRIShaderParamLocation const>(self))
-			if (Location->LocationDesc->LocationType == GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_CONSTANTBUFFER)
-			{
+		for (auto const Location : IterateChildObjects<HRIShaderParamLocation const>(self)) {
+			if (Location->LocationDesc->LocationType == GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_CONSTANTBUFFER) {
 				HRID3D11ShaderParamLocationConstantBuffer const* const ConstantBufferLocation = object_cast<HRID3D11ShaderParamLocationConstantBuffer const*>(Location);
 				self->ShaderConstantBuffers.PushLast(reinterpret_cast<ID3D11Buffer const*>(ConstantBufferLocation->GetBuffer()->GetNativePointer()));
 			}
+		}
 	}
 
 	/// ==========================================================================================
@@ -62,18 +60,16 @@ GD_NAMESPACE_BEGIN
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11VertexShader, HRIVertexShader, GDINT, nullptr);
 	HRID3D11VertexShader::HRID3D11VertexShader(HRIShaderCtorInfo const& CtorInfo) : HRIVertexShader(CtorInfo)
 	{
-		HRESULT             Result = S_OK;
-		ID3D11Device* const Device = HRD3D11Interface::GetInstance().Device.GetPointer();
-		
-		Result = Device->CreateVertexShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->VertexShader.GetPointer());
-		GD_ASSERT(SUCCEEDED(Result), "Failed to create vertex shader");
+		HRESULT Result = E_FAIL;
+		ID3D11Device* const Device = HRD3D11Interface::GetInstance().Device.Get();	
+		if (FAILED(Result = Device->CreateVertexShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->VertexShader))) {
+			throw D3D11Exception("Failed to create vertex shader");
+		}
 		
 		UINT                     InputLayoutInputSlot = 0;
 		D3D11_INPUT_ELEMENT_DESC InputLayoutElements[15];
-		for (size_t SemanticIter = GD_HRI_SEMANTIC_FIRST; SemanticIter < GD_HRI_SEMANTIC_UNKNOWN; SemanticIter += 1)
-		{	// Setting up all upcoming semantic from shader.
-			if ((self->ShaderDesc->InstanceInputFormat & GD_BIT(UInt64(SemanticIter + 1))) == 0)
-			{	// This semantic is not used, we not need to mention it in layout.
+		for (size_t SemanticIter = GD_HRI_SEMANTIC_FIRST; SemanticIter < GD_HRI_SEMANTIC_UNKNOWN; SemanticIter += 1) {	// Setting up all upcoming semantic from shader.
+			if ((self->ShaderDesc->InstanceInputFormat & GD_BIT(UInt64(SemanticIter + 1))) == 0) {	// This semantic is not used, we not need to mention it in layout.
 				continue;
 			}
 
@@ -92,32 +88,38 @@ GD_NAMESPACE_BEGIN
 			InputLayoutInputSlot += 1;
 		}
 
-		Result = Device->CreateInputLayout(&InputLayoutElements[0], InputLayoutInputSlot, CtorInfo.CreationData, CtorInfo.CreationDataSize, &self->InputLayout.GetPointer());
-		GD_ASSERT(SUCCEEDED(Result), "Failed to create input layout");
+		if (FAILED(Result = Device->CreateInputLayout(&InputLayoutElements[0], InputLayoutInputSlot, CtorInfo.CreationData, CtorInfo.CreationDataSize, &self->InputLayout))) {
+			throw D3D11Exception("Failed to create input layout");
+		}
 	}
 
 	void HRID3D11VertexShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
 	{
-		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.GetPointer();
-		Context->IASetInputLayout(self->InputLayout.GetPointer ()            );
-		Context->VSSetShader     (self->VertexShader.GetPointer(), nullptr, 0);
-		if (TheShaderInstance != nullptr)
-		{	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
+		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
+		Context->IASetInputLayout(self->InputLayout .Get()            );
+		Context->VSSetShader     (self->VertexShader.Get(), nullptr, 0);
+		if (TheShaderInstance != nullptr) {	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
 			HRID3D11ShaderInstance               const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
 			HRID3D11ShaderParamLocationResources const* const ShaderResources = object_cast<HRID3D11ShaderParamLocationResources const*>(ShaderInstance->GetInstanceResourcesLocation());
-			Context->VSSetConstantBuffers(0, static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize()), const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
-			if (ShaderResources != nullptr)
-			{	// Our shader also cointains resources.
-				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
-				Context->VSSetShaderResources(0, LocationInstancesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
-				Context->VSSetSamplers       (0, LocationInstancesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
+			
+			UINT const LocationConstantBuffersCount = static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize());
+			if (LocationConstantBuffersCount != 0) {
+				Context->VSSetConstantBuffers(0, LocationConstantBuffersCount, const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
+			}
+			
+			if (ShaderResources != nullptr)	{	// Our shader also cointains resources.
+				UINT const LocationResourcesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
+				if (LocationResourcesCount != 0) {
+					Context->VSSetShaderResources(0, LocationResourcesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
+					Context->VSSetSamplers       (0, LocationResourcesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
+				}
 			}
 		}
 	}
 
 	void HRID3D11VertexShader::UnbindShader() const
 	{
-		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.GetPointer();
+		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
 		Context->IASetInputLayout    (      nullptr            );
 		Context->VSSetShaderResources(0, 0, nullptr            );
 		Context->VSSetSamplers       (0, 0, nullptr            );
@@ -132,31 +134,38 @@ GD_NAMESPACE_BEGIN
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11HullShader, HRIHullShader, GDINT, nullptr);
 	HRID3D11HullShader::HRID3D11HullShader(HRIShaderCtorInfo const& CtorInfo) : HRIHullShader(CtorInfo)
 	{
-		HRESULT       const Result = HRD3D11Interface::GetInstance().Device->CreateHullShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->HullShader.GetPointer());
-		GD_ASSERT(SUCCEEDED(Result), "Failed to create Hull shader");
+		HRESULT Result = E_FAIL;
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateHullShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->HullShader))) {
+			throw D3D11Exception("Failed to create Hull shader");
+		}
 	}
 
 	void HRID3D11HullShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
 	{
-		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.GetPointer();
-		Context->HSSetShader(self->HullShader.GetPointer(), nullptr, 0);
-		if (TheShaderInstance != nullptr)
-		{	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
+		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
+		Context->HSSetShader(self->HullShader.Get(), nullptr, 0);
+		if (TheShaderInstance != nullptr) {	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
 			HRID3D11ShaderInstance               const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
 			HRID3D11ShaderParamLocationResources const* const ShaderResources = object_cast<HRID3D11ShaderParamLocationResources const*>(ShaderInstance->GetInstanceResourcesLocation());
-			Context->HSSetConstantBuffers(0, static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize()), const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
-			if (ShaderResources != nullptr)
-			{	// Our shader also cointains resources.
-				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
-				Context->HSSetShaderResources(0, LocationInstancesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
-				Context->HSSetSamplers       (0, LocationInstancesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
+			
+			UINT const LocationConstantBuffersCount = static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize());
+			if (LocationConstantBuffersCount != 0) {
+				Context->HSSetConstantBuffers(0, LocationConstantBuffersCount, const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
+			}
+			
+			if (ShaderResources != nullptr)	{	// Our shader also cointains resources.
+				UINT const LocationResourcesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
+				if (LocationResourcesCount != 0) {
+					Context->HSSetShaderResources(0, LocationResourcesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
+					Context->HSSetSamplers       (0, LocationResourcesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
+				}
 			}
 		}
 	}
 
 	void HRID3D11HullShader::UnbindShader() const
 	{
-		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.GetPointer();
+		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
 		Context->HSSetShaderResources(0, 0, nullptr            );
 		Context->HSSetSamplers       (0, 0, nullptr            );
 		Context->HSSetConstantBuffers(0, 0, nullptr            );
@@ -170,31 +179,38 @@ GD_NAMESPACE_BEGIN
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11DomainShader, HRIDomainShader, GDINT, nullptr);
 	HRID3D11DomainShader::HRID3D11DomainShader(HRIShaderCtorInfo const& CtorInfo) : HRIDomainShader(CtorInfo)
 	{
-		HRESULT       const Result = HRD3D11Interface::GetInstance().Device->CreateDomainShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->DomainShader.GetPointer());
-		GD_ASSERT(SUCCEEDED(Result), "Failed to create Domain shader");
+		HRESULT Result = E_FAIL;
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateDomainShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->DomainShader))) {
+			throw D3D11Exception("Failed to create Domain shader");
+		}
 	}
 
 	void HRID3D11DomainShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
 	{
-		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.GetPointer();
-		Context->DSSetShader(self->DomainShader.GetPointer(), nullptr, 0);
-		if (TheShaderInstance != nullptr)
-		{	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
+		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
+		Context->DSSetShader(self->DomainShader.Get(), nullptr, 0);
+		if (TheShaderInstance != nullptr) {	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
 			HRID3D11ShaderInstance               const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
 			HRID3D11ShaderParamLocationResources const* const ShaderResources = object_cast<HRID3D11ShaderParamLocationResources const*>(ShaderInstance->GetInstanceResourcesLocation());
-			Context->DSSetConstantBuffers(0, static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize()), const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
-			if (ShaderResources != nullptr)
-			{	// Our shader also cointains resources.
-				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
-				Context->DSSetShaderResources(0, LocationInstancesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
-				Context->DSSetSamplers       (0, LocationInstancesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
+			
+			UINT const LocationConstantBuffersCount = static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize());
+			if (LocationConstantBuffersCount != 0) {
+				Context->DSSetConstantBuffers(0, LocationConstantBuffersCount, const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
+			}
+			
+			if (ShaderResources != nullptr) {	// Our shader also cointains resources.
+				UINT const LocationResourcesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
+				if (LocationResourcesCount != 0) {
+					Context->DSSetShaderResources(0, LocationResourcesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
+					Context->DSSetSamplers       (0, LocationResourcesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
+				}
 			}
 		}
 	}
 
 	void HRID3D11DomainShader::UnbindShader() const
 	{
-		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.GetPointer();
+		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
 		Context->DSSetShaderResources(0, 0, nullptr            );
 		Context->DSSetSamplers       (0, 0, nullptr            );
 		Context->DSSetConstantBuffers(0, 0, nullptr            );
@@ -208,31 +224,36 @@ GD_NAMESPACE_BEGIN
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11PixelShader, HRIPixelShader, GDINT, nullptr);
 	HRID3D11PixelShader::HRID3D11PixelShader(HRIShaderCtorInfo const& CtorInfo) : HRIPixelShader(CtorInfo)
 	{
-		HRESULT       const Result = HRD3D11Interface::GetInstance().Device->CreatePixelShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->PixelShader.GetPointer());
-		GD_ASSERT(SUCCEEDED(Result), "Failed to create Pixel shader");
+		HRESULT Result = E_FAIL;
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreatePixelShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->PixelShader))) {
+			throw D3D11Exception("Failed to create Pixel shader");
+		}
 	}
 
 	void HRID3D11PixelShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
 	{
-		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.GetPointer();
-		Context->PSSetShader(self->PixelShader.GetPointer(), nullptr, 0);
-		if (TheShaderInstance != nullptr)
-		{	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
+		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
+		Context->PSSetShader(self->PixelShader.Get(), nullptr, 0);
+		if (TheShaderInstance != nullptr) {	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
 			HRID3D11ShaderInstance               const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
 			HRID3D11ShaderParamLocationResources const* const ShaderResources = object_cast<HRID3D11ShaderParamLocationResources const*>(ShaderInstance->GetInstanceResourcesLocation());
-			Context->PSSetConstantBuffers(0, static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize()), const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
-			if (ShaderResources != nullptr)
-			{	// Our shader also cointains shader resources.
-				UINT const LocationInstancesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
-				Context->PSSetShaderResources(0, LocationInstancesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
-				Context->PSSetSamplers       (0, LocationInstancesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
+			UINT const LocationConstantBuffersCount = static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetSize());
+			if (LocationConstantBuffersCount != 0) {
+				Context->PSSetConstantBuffers(0, LocationConstantBuffersCount, const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
+			}
+			if (ShaderResources != nullptr) {	// Our shader also cointains shader resources.
+				UINT const LocationResourcesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
+				if (LocationResourcesCount != 0) {
+					Context->PSSetShaderResources(0, LocationResourcesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
+					Context->PSSetSamplers       (0, LocationResourcesCount, const_cast<ID3D11SamplerState      * const*>(&ShaderResources->ShaderSampleStates [0]));
+				}
 			}
 		}
 	}
 
 	void HRID3D11PixelShader::UnbindShader() const
 	{
-		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.GetPointer();
+		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
 		Context->PSSetShaderResources(0, 0, nullptr            );
 		Context->PSSetSamplers       (0, 0, nullptr            );
 		Context->PSSetConstantBuffers(0, 0, nullptr            );

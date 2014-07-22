@@ -2,12 +2,14 @@
 #include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
 #include <GoddamnEngine/Engine/Resource/Resource.h>
 
+#include <GoddamnEngine/Core/IO/Path/Path.h>
+
 #include <GoddamnEngine/Engine/HUD/HUD.h>
 #include <GoddamnEngine/Engine/Plugin/Plugin.h>
 #include <GoddamnEngine/Engine/Renderer/Renderer.h>
 // #include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRenderer.h>
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11Renderer.h>
-#include <GoddamnEngine/Engine/Resource/Impl/ShaderProgram/ShaderProgramResource.h>
+#include <GoddamnEngine/Engine/Resource/Impl/Effect/Effect.h>
 
 #include <conio.h>
 
@@ -24,28 +26,37 @@ GD_NAMESPACE_BEGIN
 	}
 
 	/// ==========================================================================================
-	// Constructor / Destructor
+	/// Constructor / Destructor
 	/// ==========================================================================================
 
-	Application::Application(int const argumentsCount, 
-							 char const* const* const argumentsList) :
-		CommandLineArgumentsCount(argumentsCount),
-		CommandLineArgumentsList(argumentsList),
-		lowLevelSystem(new LowLevelSystem()),
-		pluginManager(new PluginManager()),
-		resourceStreamer(new ResourceStreamer()),
-		staticComponentHandler(new GameObject()),
-		gameObjectsHandler(new /*Object*/GameObject())
-	{
-		/*atexit([]() -> void
-		{
-			// Registering hook for some libraries like Mono
-			// termination on-error process: they just print message and terminate app.
+	Application::Application(int const CMDArgsCount, char const* const* const CMDArgsList) 
+		: CMDArgsCount(CMDArgsCount)
+		, CMDArgsList(CMDArgsList)
+		, TheResourceStreamer(new RSStreamer())
+		, ThePluginManager(new PluginManager())
+		, lowLevelSystem(new LowLevelSystem())
+		, staticComponentHandler(new GameObject())
+		, gameObjectsHandler(new /*Object*/GameObject())
+	{	// Some libraries, like Mono just terminate process if some error accures. 
+		// For debug purposes we setup a callback.
+#if (defined(GD_PLATFORM_DESKTOP))
+		int const ExitCallbackSetupResult = std::atexit([]() -> void {
+#	if (defined(GD_PLATFORM_WINDOWS))
+			DWORD ExitCode = MAXDWORD;
+			::GetExitCodeProcess(::GetCurrentProcess(), &ExitCode);
+			if (ExitCode == 0)
+				return;
+#	endif	// if (defined(GD_PLATFORM_WINDOWS))
 			Debug::Log("Press any key to terminate...");
-			
-			#pragma warning(suppress: 6031)
+			GD_WARNING_SUPPRESS(6031)
 			_getch();
-		});*/
+		});
+		GD_DEBUG_ASSERT(ExitCallbackSetupResult == 0, "Failed to setup exit callback.");
+#endif	// if (defined(GD_PLATFORM_DESKTOP))
+
+		// Handling command line arguments.
+		GD_DEBUG_ASSERT((self->CMDArgsCount >= 1) && (self->CMDArgsList != nullptr), "Invalid command line arguments specified");
+		self->EnvironmentPath = Path::GetDirectoryName(self->CMDArgsList[0]);
 
 		new HRD3D11Interface();
 		self->staticComponentHandler.GetPointer()->AttachToObject(self);
@@ -58,19 +69,14 @@ GD_NAMESPACE_BEGIN
 	}
 
 	/// ==========================================================================================
-	// Application termination
+	/// Application termination
 	/// ==========================================================================================
 
-	void Application::Exit(const ExitCode exitCode)
+	void Application::Exit(ExitCode const TheExitCode)
 	{
-		Application& 
-			application = Application::GetInstance();
-			application.state = ApplicationState::Exiting;
-
-		if (exitCode != ExitCode::Normal)	// We not terminating in unusual way
-		{
-			exit((int)exitCode);
-		}
+		Application::GetInstance().State = ApplicationState::Exiting;
+		if (TheExitCode != ExitCode::Normal)	// We not terminating in unusual way
+			std::exit(static_cast<int>(TheExitCode));
 
 		// Temporary force exit
 		exit(0);
@@ -78,9 +84,8 @@ GD_NAMESPACE_BEGIN
 
 	void Application::CancelExit()
 	{
-		Application::GetInstance().state = ((Application::GetInstance().state != ApplicationState::Exiting)
-			? Application::GetInstance().state
-			: ApplicationState::Running);
+		ApplicationState& State = Application::GetInstance().State;
+		State = ((State != ApplicationState::Exiting) ? Application::GetInstance().State : ApplicationState::Running);
 	}
 
 	/// ==========================================================================================
@@ -90,7 +95,7 @@ GD_NAMESPACE_BEGIN
 	int Application::Execute(Application& application)
 	{
 		//JobSystem::StartJobThread();
-		application.state = ApplicationState::Starting;
+		application.State = ApplicationState::Starting;
 
 		application.staticComponentHandler->OnInitializeSelf();
 		application.staticComponentHandler->OnStartSelf();
@@ -101,12 +106,12 @@ GD_NAMESPACE_BEGIN
 		
 		// Beginning initialization phase:
 		LowLevelSystem::GetInstance().SetEventCallBack(GD_LL_EVENT_ON_WINDOW_CLOSED, OnEvent);
-		ResourceStreamer::GetInstance().WaitForLoading();
+		RSStreamer::GetInstance().WaitForLoading();
 
 		// All resources are now loaded, we a ready for final start 
 		// And rendering! God is with us!
-		application.state = ApplicationState::Running;
-		for (/*size_t fpsCount = 0*/; application.state != ApplicationState::Exiting;)
+		application.State = ApplicationState::Running;
+		for (/*size_t fpsCount = 0*/; application.State != ApplicationState::Exiting;)
 		{
 			LowLevelSystem::GetInstance().UpdateWindow();
 			Scene::GetInstance().OnUpdate();

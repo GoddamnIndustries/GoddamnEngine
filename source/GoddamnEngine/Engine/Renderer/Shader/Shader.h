@@ -437,7 +437,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL HRIShaderCtorInfo(HRIShaderCtorInfo const& CtorInfo);
 		GDINL HRIShaderCtorInfo(
-			HRIShaderProgram*     const  ShaderProgram,
+			HRIShaderProgram*     const  Effect,
 			chandle               const  CreationData,
 			size_t                const  CreationDataSize,
 			HRIShaderInstanceDesc const* CreationInstanceDesc

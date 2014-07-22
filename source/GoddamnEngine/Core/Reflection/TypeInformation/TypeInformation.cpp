@@ -48,7 +48,7 @@ GD_NAMESPACE_BEGIN
 	}
 
 	/// ==========================================================================================
-	TypeInformation const* TypeInformation::SearchForType(const String& typeName)
+	TypeInformation const* TypeInformation::FindType(const String& typeName)
 	{
 		for (TypeInformation const* 
 			typeInformationIterator = TypeInformation::GetLastRegistered(); typeInformationIterator != nullptr;

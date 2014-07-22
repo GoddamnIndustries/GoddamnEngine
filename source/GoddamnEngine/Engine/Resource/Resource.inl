@@ -5,55 +5,78 @@ GD_NAMESPACE_BEGIN
 	/// URI class
 	/// ==========================================================================================
 	
-	GDINL URIType URI::GetIdentifierType() const
+	GDINL RSURIType RSURI::GetIdentifierType() const
 	{
 		return self->IdentifierType;
 	}
 
-	GDINL URIProtocolType URI::GetProtocol() const 
+	GDINL RSURIProtocolType RSURI::GetProtocol() const 
 	{
 		return self->Protocol;
 	}
 
-	GDINL String const& URI::GetPathToFile() const
+	GDINL String const& RSURI::GetPathToFile() const
 	{
-		GD_ASSERT(((self->GetIdentifierType() == GD_URI_TYPE_PATH_TO_REAL_FILE) || self->GetIdentifierType() == GD_URI_TYPE_PATH_TO_VIRTUAL_FILE), "Attempted to get path to real file for inlined-file");
+		GD_ASSERT(((self->GetIdentifierType() == RSURIType::PathToRealFile) || self->GetIdentifierType() == RSURIType::PathToVirtualFile), "Attempted to get path to real file for inlined-file");
 		return self->PathToFile;
 	}
 
-	GDINL String const& URI::GetPathInFile() const
+	GDINL String const& RSURI::GetPathInFile() const
 	{
-		GD_ASSERT((self->GetIdentifierType() == GD_URI_TYPE_PATH_TO_VIRTUAL_FILE), "Attempted to get path to virtual file for real file");
+		GD_ASSERT((self->GetIdentifierType() == RSURIType::PathToVirtualFile), "Attempted to get path to virtual file for real file");
 		return self->PathInFile;
 	}
 
-	GDINL StringBuilder const& URI::GetInlinedData() const
+	GDINL StringBuilder const& RSURI::GetInlinedData() const
 	{
-		GD_ASSERT((self->GetIdentifierType() == GD_URI_TYPE_INLINED_DATA), "Attempted to get path to virtual file for real file");
+		GD_ASSERT((self->GetIdentifierType() == RSURIType::InlinedData), "Attempted to get path to virtual file for real file");
 		return self->InlinedData;
 	}
 
-	GDINL String URI::GetIdentifierString() const
+	GDINL String RSURI::GetIdentifierString() const
 	{
-		GD_ASSERT(((self->GetIdentifierType() == GD_URI_TYPE_PATH_TO_REAL_FILE) || self->GetIdentifierType() == GD_URI_TYPE_PATH_TO_VIRTUAL_FILE), "Attempted to get path to real file for inlined-file");
 		StringBuilder IdentifierBuilder;
-		IdentifierBuilder.AppendFormat("%s://%s", URIProtocolTypeToStr(self->GetProtocol()), self->GetPathToFile().CStr());
-		if (self->GetIdentifierType() == GD_URI_TYPE_PATH_TO_VIRTUAL_FILE)
-			IdentifierBuilder.AppendFormat("?%s", self->GetPathInFile().CStr());
+		if ((self->GetIdentifierType() == RSURIType::PathToRealFile) || self->GetIdentifierType() == RSURIType::PathToVirtualFile) {
+			IdentifierBuilder.AppendFormat("%s://%s", RSURIProtocolTypeToStr(self->GetProtocol()), self->GetPathToFile().CStr());
+			if (self->GetIdentifierType() == RSURIType::PathToVirtualFile)
+				IdentifierBuilder.AppendFormat("?%s", self->GetPathInFile().CStr());
+		} else {
+			IdentifierBuilder.Append("inline://~~~some~unique~data~~~");
+		}
 
 		return IdentifierBuilder.ToString();
 	}
 
-	GDINL bool URI::operator== (HashSumm const Hash) const
+	GDINL bool RSURI::operator== (HashSumm const Hash) const
 	{
 		return (self->Hash == Hash);
 	}
 
 	GDINL Resource::Resource(String const& identifier) 
 		: Object(Object::TreeLockingFlagsDefaultResource)
-		, State(ResourceState::Unknown)
+		, State(RSState::Unknown)
 		, Identifier(identifier)
 	{
 	}
+
+	/// ==========================================================================================
+	/// RSStreamer class.
+	/// Provides resource streaming and immediate loading.
+	/// ==========================================================================================
+
+	template<typename ResourceType>
+	GDINL RefPtr<ResourceType> RSStreamer::LoadImmediately(String const& ID)
+	{
+		static_assert((TypeTraits::IsBaseType<Resource, ResourceType>::Value), "Type 'ResourceType' should be derived from 'Resource'");
+		return (object_cast<ResourceType*>(self->LoadImmediately(ID, ResourceType::GetClassTypeInformation()).Release()));
+	}
+
+	template<typename ResourceType>
+	GDINL RefPtr<ResourceType> RSStreamer::ProcessStreaming(String const& ID)
+	{
+		static_assert((TypeTraits::IsBaseType<Resource, ResourceType>::Value), "Type 'ResourceType' should be derived from 'Resource'");
+		return (object_cast<ResourceType*>(RSStreamer::GetInstance().ProcessStreaming(ID, ResourceType::GetClassTypeInformation()).Release()));
+	}
+
 
 GD_NAMESPACE_END

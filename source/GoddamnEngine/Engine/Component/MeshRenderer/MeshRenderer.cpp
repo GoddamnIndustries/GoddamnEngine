@@ -11,9 +11,9 @@ GD_NAMESPACE_BEGIN
 	GD_SINGLETON_IMPLEMENTATION(MeshRenderer);
 
 	MeshRenderer::MeshRenderer() 
-	 : GD_EXTENDS_SERIALIZABLE(Component)
-	 , OnMeshRendererParamChangedEvent(&IOnMeshRendererParamChangedListener::OnMeshRendererParamChanged)
-	 , RendererLinkagePoint           ( HRInterface::GetInstance().CreateLinkagePoint()                )
+		: GD_EXTENDS_SERIALIZABLE(Component)
+		, OnMeshRendererParamChangedEvent(&IOnMeshRendererParamChangedListener::OnMeshRendererParamChanged)
+		, RendererLinkagePoint           ( HRInterface::GetInstance().CreateLinkagePoint()                )
 	{
 	}
 
@@ -40,7 +40,7 @@ GD_NAMESPACE_BEGIN
 		self->RendererVertexShaderInstance = HRInterface::GetInstance().CreateShaderInstance(self->GetMaterial()->GetShaderProgram()->GetProgramVertexShader()->ShaderDesc);
 
 		self->RendererLinkagePoint->SetIndexedShape (self->GetStaticMesh()->GetLodAt(0));
-		self->RendererLinkagePoint->SetShaderProgram(self->GetMaterial()->GetShaderProgram());
+		self->RendererLinkagePoint->SetShaderProgram(self->GetMaterial()->GetShaderProgram().GetPointer());
 
 		self->RendererMatrixMvp    = self->RendererVertexShaderInstance->GetParamByName("VertexMvpMatrix");
 		self->RendererMatrixModel  = self->RendererVertexShaderInstance->GetParamByName("VertexModelMatrix");

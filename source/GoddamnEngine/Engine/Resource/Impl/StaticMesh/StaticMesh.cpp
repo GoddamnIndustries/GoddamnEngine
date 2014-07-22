@@ -106,7 +106,7 @@ GD_NAMESPACE_BEGIN
 	// LoadShekel_* functions
 	/// ==========================================================================================
 
-	void LoadShekel_01(InputStream* const InputResourceData, HRIIndexedShape* const staticMesh)
+	void LoadShekel_01(UniquePtr<InputStream> const& InputResourceData, HRIIndexedShape* const staticMesh)
 	{
 		/// ==========================================================================================
 		// Shekels(R) in version 0.1 are simple: 
@@ -152,7 +152,7 @@ GD_NAMESPACE_BEGIN
 		staticMesh->SetIndexData(&indicesBuffer[0], indicesBuffer.GetSize(), sizeof(indicesBuffer[0]));
 	}
 
-	void LoadShekel_10(InputStream* const InputResourceData, HRIIndexedShape* const staticMesh)
+	void LoadShekel_10(UniquePtr<InputStream> const& InputResourceData, HRIIndexedShape* const staticMesh)
 	{
 		GD_ASSERT(false, "Unimplemented");
 	}
@@ -161,7 +161,7 @@ GD_NAMESPACE_BEGIN
 	// Messaging functions
 	/// ==========================================================================================
 
-	void StaticMesh::OnResourceLoad(InputStream* const InputResourceData)
+	void StaticMesh::OnResourceLoad(UniquePtr<InputStream> const& InputResourceData)
 	{
 		/// ==========================================================================================
 		// Attempting to check if this file is Shekel(R)

@@ -24,9 +24,15 @@
 #	pragma warning(pop)
 #endif	// if (defined (GD_D3DWIN7))
 
-#define GD_D3D_SAFE_RELEASE(What) { if ((What) != nullptr) { (What)->Release(); What = nullptr; } }
-
 GD_NAMESPACE_BEGIN
+
+	/// Indicates about runtime error caused by renderer interface
+	class D3D11Exception : public HRIException
+	{
+	public /*Public API*/:
+		GDINL explicit D3D11Exception(String const& Message) : HRIException(Message.CStr()) { }
+		GDINL virtual ~D3D11Exception() { }
+	};	// class D3D11Exception
 
 	/// Provides automatic releasing of Direct3D 11 objects.
 	template<typename D3D11PointerType>
@@ -41,20 +47,23 @@ GD_NAMESPACE_BEGIN
 		GDINL  D3D11RefPtr(D3D11RefPtr          && OtherPtr         ) : Pointer(OtherPtr.Pointer) { OtherPtr.Pointer = nullptr; }
 		GDINL ~D3D11RefPtr()                                                                      { if (Pointer != nullptr) self->Pointer->Release(); }
 
-		GDINL D3D11PointerType*      & GetPointer()       { return self->Pointer; }
-		GDINL D3D11PointerType* const& GetPointer() const { return self->Pointer; }
+		GDINL D3D11PointerType* Get() const { return self->Pointer; }
 
-		GDINL D3D11PointerType* Reset(D3D11PointerType* const Pointer)
+		GDINL D3D11PointerType* const* GetAddressOf() const { return  (&self->Pointer); }
+		GDINL D3D11PointerType*      * GetAddressOf()       { return  (&self->Pointer); }
+
+		GDINL D3D11PointerType* Reset()
 		{
 			self->~D3D11RefPtr();
-			return (self->Pointer = Pointer);
+			D3D11PointerType* const Pointer = self->Pointer;
+			self->Pointer = nullptr;
+			return Pointer;
 		}
 
 		GDINL D3D11RefPtr& operator= (D3D11RefPtr const& OtherPtr) = delete;
 		GDINL D3D11RefPtr& operator= (D3D11RefPtr     && OtherPtr)
 		{
-			if ((&OtherPtr) != self)
-			{
+			if ((&OtherPtr) != self) {
 				self->~D3D11RefPtr();
 				self->Pointer = OtherPtr.Pointer;
 				OtherPtr.Pointer = nullptr;
@@ -63,10 +72,12 @@ GD_NAMESPACE_BEGIN
 			return *self;
 		}
 
-		GDINL D3D11PointerType& operator*  () const { return  (*self->GetPointer()); }
-		GDINL D3D11PointerType* operator-> () const { return  ( self->GetPointer()); }
-		GDINL bool              operator== (D3D11PointerType const* const OtherPointer) const { return  (self->GetPointer() == OtherPointer); }
-		GDINL bool              operator!= (D3D11PointerType const* const OtherPointer) const { return !((*self) == OtherPointer); }
+		GDINL D3D11PointerType* const* operator&  () const { return  (&self->Pointer); }
+		GDINL D3D11PointerType*      * operator&  ()       { return  (&self->Pointer); }
+		GDINL D3D11PointerType&  operator*  () const { return  (*self->Get()); }
+		GDINL D3D11PointerType*  operator-> () const { return  ( self->Get()); }
+		GDINL bool               operator== (D3D11PointerType const* const OtherPointer) const { return  (self->Get() == OtherPointer); }
+		GDINL bool               operator!= (D3D11PointerType const* const OtherPointer) const { return !((*self) == OtherPointer); }
 	};	// class D3D11RefPtr
 
 	class HRD3D11Interface final : public HRInterface

@@ -9,14 +9,14 @@
 #include <GoddamnEngine/Core/Containers/Map/Map.h>
 #include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
 #include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
-
-#include <GoddamnEngine/Engine/Resource/ResourceStreamer/ResourceStreamer.h>
 #include <GoddamnEngine/Engine/Plugin/Plugin.h>
 #include <GoddamnEngine/Engine/Scene/Scene.h>
 
 #define GD_EXIT_CODE_OFFSET 0x00008421	//(This value is binary identity Matrix4x4) 0xB2CB
 
 GD_NAMESPACE_BEGIN
+
+	class RSStreamer;
 
 	/// Describes application state
 	enum class ApplicationState : UInt8
@@ -34,28 +34,28 @@ GD_NAMESPACE_BEGIN
 		Unknown		= 0xFF,						///< Unknown termination reason.
 	};
 
-	class Application : public Object,
-					    public Singleton<Application>
+	class Application : public Object, public Singleton<Application>
 	{
 	private:
 		GD_TYPEINFORMATION_DEFINITION(Application, Object, GDAPI);
+		String EnvironmentPath;
+
+		UniquePtr<PluginManager   > ThePluginManager;
+		UniquePtr<RSStreamer> TheResourceStreamer;
 
 		RefPtr<LowLevelSystem> lowLevelSystem;
-		RefPtr<PluginManager> pluginManager;
-		RefPtr<ResourceStreamer> resourceStreamer;
 		// RefPtr<SceneManager> sceneManager;
 		RefPtr<GameObject> staticComponentHandler;
 		RefPtr<Object> gameObjectsHandler;
 
 	protected:
 		Map<HashSumm, String>	cmdArguments;
-		ApplicationState state;
-		size_t loadedScene;
-		String path;
+		ApplicationState State;
+		size_t LoadedScene;
 
 	public:
-		int /*const*/ CommandLineArgumentsCount;
-		char const* const* const CommandLineArgumentsList;
+		int                const CMDArgsCount;
+		char const* const* const CMDArgsList;
 
 		/// @name Application termination
 		/// @{
@@ -79,42 +79,27 @@ GD_NAMESPACE_BEGIN
 
 		/// @}
 
-	protected:
-
-		/// @name Constructor / Destructor
-		/// @{
-
-		/// @brief			Initializes application with command line arguments
-		/// @param argc		Command arguments cout
-		/// @param argv		Command arguments value
-		GDAPI Application(int const argumentsCount, 
-						  char const* const* const argumentsList);
-		
-		/// @brief			Deallocates application
+	protected/*Constructor / Destructor*/:
+		/// Initializes application with command line arguments
+		/// @param CMDArgsCount Command arguments cout
+		/// @param CMDArgsList  Command arguments value
+		GDAPI Application(int const CMDArgsCount, char const* const* const CMDArgsList);
 		GDAPI virtual ~Application();
 
-		/// @}
-
 	public:
+		/// Returns 'Application'`s name
+		GDAPI virtual String const& GetApplicationName() const abstract;
 
-		/// @name Getters
-		/// @{
+		/// Returns 'Application'`s version
+		GDAPI virtual String const& GetApplicationVersion() const abstract;
 
-		/// @brief			Returns 'Application'`s name
-		/// @returns		'Application'`s name
-		GDAPI virtual String GetApplicationName() const abstract;
+		/// Returns 'Application'`s state
+		GDINL ApplicationState GetApplicationState() const { return self->State; }
 
-		/// @brief			Returns 'Application'`s version
-		/// @returns		'Application'`s version
-		GDAPI virtual String GetApplicationVersion() const abstract;
+		/// Returns path to application`s executable.
+		GDINL String const& GetEnvironmentPath() const { return self->EnvironmentPath; }
 
-		/// @brief			Returns 'Application'`s state
-		/// @returns		'Application'`s state
-		GDINL ApplicationState GetApplicationState() const;
-
-		/// @}
-
-	private:
+	protected:
 		/// @name Messages for Application <-> OS exchange
 		/// @{
 

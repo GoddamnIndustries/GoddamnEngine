@@ -9,7 +9,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	void Texture2DResource::OnResourceLoad(
-		_In_ InputStream* const InputResourceData
+		_In_ UniquePtr<InputStream> const& InputResourceData
 	)
 	{
 		Vector<UInt8> texture2DData(InputResourceData->GetSize());

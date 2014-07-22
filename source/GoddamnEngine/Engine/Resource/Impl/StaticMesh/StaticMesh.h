@@ -74,7 +74,7 @@ GD_NAMESPACE_BEGIN
 		GDAPI void CombineWithMesh(StaticMesh const* staticMesh);
 
 	private:
-		GDAPI virtual void OnResourceLoad(InputStream* const InputResourceData);
+		GDAPI virtual void OnResourceLoad(UniquePtr<InputStream> const& InputResourceData);
 		GDAPI virtual void OnResourceUnload();
 
 	};

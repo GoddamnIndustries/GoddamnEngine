@@ -21,10 +21,10 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINT          HRID3D11Texture2D(HRITexture2DCtorInfo const& CtorInfo, chandle const InitialData, size_t const InitialiDataLength);
 		GDINL virtual ~HRID3D11Texture2D() { }
-		GDINL virtual handle GetNativePointer() const { return self->Texture.GetPointer(); }
-		GDINL ID3D11Texture2D*          GetTexture       () const { return self->Texture.GetPointer(); }
-		GDINL ID3D11SamplerState*       GetSample        () const { return self->TextureSample.GetPointer(); }
-		GDINL ID3D11ShaderResourceView* GetShaderResource() const { return self->TextureShaderResource.GetPointer(); }
+		GDINL virtual handle GetNativePointer() const { return self->Texture.Get(); }
+		GDINL ID3D11Texture2D*          GetTexture       () const { return self->Texture.Get(); }
+		GDINL ID3D11SamplerState*       GetSample        () const { return self->TextureSample.Get(); }
+		GDINL ID3D11ShaderResourceView* GetShaderResource() const { return self->TextureShaderResource.Get(); }
 	};	// class HRID3D11Texture2D
 
 GD_NAMESPACE_END

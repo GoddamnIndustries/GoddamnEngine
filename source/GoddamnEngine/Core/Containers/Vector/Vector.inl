@@ -57,8 +57,9 @@ GD_NAMESPACE_BEGIN
 		: MemoryProviderInstance((Capacity != SIZE_MAX) ? Capacity : InitialElemntsCount) 
 	{
 		self->Count = InitialElemntsCount;
-		for (MutableIterator Iterator = self->Begin(); Iterator != self->End(); Iterator += 1)
+		for (MutableIterator Iterator = self->Begin(); Iterator != self->End(); Iterator += 1) {
 			new (&*Iterator) ElementType(/*InitialElement*/);
+		}
 	}
 
 	GD_VECTOR_TEMPLATE()
@@ -67,8 +68,9 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_DEBUG_ASSERT((EndIterator >= StartIterator), "Invalid iterators specified.");
 		self->Count = static_cast<size_t>(EndIterator - StartIterator);
-		for (ConstIterator Iterator = StartIterator; Iterator != EndIterator; Iterator += 1)
+		for (ConstIterator Iterator = StartIterator; Iterator != EndIterator; Iterator += 1) {
 			new (&*self->Begin() + (Iterator - StartIterator)) ElementType(*Iterator);
+		}
 	}
 
 	GD_VECTOR_TEMPLATE()
@@ -76,8 +78,9 @@ GD_NAMESPACE_BEGIN
 		: MemoryProviderInstance(InitializerList.size())
 	{
 		self->Count = InitializerList.size();
-		for (typename std::initializer_list<ElementType>::const_iterator Iterator = InitializerList.begin(); Iterator != InitializerList.end(); Iterator += 1)
+		for (typename std::initializer_list<ElementType>::const_iterator Iterator = InitializerList.begin(); Iterator != InitializerList.end(); Iterator += 1) {
 			new (&*self->Begin() + (Iterator - InitializerList.begin())) ElementType(*Iterator);
+		}
 	}
 
 #if (defined(__cplusplus_cli))
@@ -86,8 +89,9 @@ GD_NAMESPACE_BEGIN
 		: MemoryProviderInstance(static_cast<size_t>(CliArray->Length))
 	{
 		self->Count = static_cast<size_t>(CliArray->Length);
-		for (ConstIterator Iterator = StartIterator; Iterator != EndIterator; Iterator += 1)
+		for (ConstIterator Iterator = StartIterator; Iterator != EndIterator; Iterator += 1) {
 			new (&*self->Begin() + (Iterator - OtherVector.Begin()) ElementType(CliArray[Iterator - OtherVector.Begin()]);
+		}
 	}
 #endif	// if (defined(__cplusplus_cli))
 
@@ -96,8 +100,9 @@ GD_NAMESPACE_BEGIN
 		: MemoryProviderInstance(OtherVector.GetCapacity())
 	{
 		self->Count = OtherVector.Count;
-		for (ConstIterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); Iterator += 1)
+		for (ConstIterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); Iterator += 1) {
 			new (&*self->Begin() + (Iterator - OtherVector.Begin())) ElementType(*Iterator);
+		}
 	}
 
 	GD_VECTOR_TEMPLATE()
@@ -129,18 +134,16 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE()
 	inline void GD_VECTOR_CLASS()::Resize(size_t const NewSize)
 	{
-		if (self->GetSize() != NewSize)
-		{	// We do not need to resize our element with same size.
-			if (self->GetSize() < NewSize)
-			{	// Increasing size of container, we need to initialize new elements with template value.
+		if (self->GetSize() != NewSize) {	// We do not need to resize our element with same size.
+			if (self->GetSize() < NewSize) {	// Increasing size of container, we need to initialize new elements with template value.
 				self->ReserveToSize(NewSize);
-				for (MutableIterator Iterator = self->End(); Iterator != (self->Begin() + NewSize); Iterator += 1)
+				for (MutableIterator Iterator = self->End(); Iterator != (self->Begin() + NewSize); Iterator += 1) {
 					new (&*Iterator) ElementType();
-			}
-			else
-			{	// Decreasing size of container, we need to destroy last elements there.
-				for (MutableIterator Iterator = (self->Begin() + NewSize); Iterator != self->End(); Iterator += 1)
+				}
+			} else {	// Decreasing size of container, we need to destroy last elements there.
+				for (MutableIterator Iterator = (self->Begin() + NewSize); Iterator != self->End(); Iterator += 1) {
 					(*Iterator).~ElementType();
+				}
 			}
 
 			self->Count = NewSize;
@@ -150,13 +153,14 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE()
 	inline void GD_VECTOR_CLASS()::Reserve(size_t const NewCapacity)
 	{	// Moving elements into other memory block. Note that elements outside range keep uninitialized.
-		if (self->GetCapacity() != NewCapacity)
-		{
+		if (self->GetCapacity() != NewCapacity)	{
 			MemoryProviderType NewMemoryProviderInstance(NewCapacity);
-			for (MutableIterator Iterator = self->Begin(); Iterator != (self->Begin() + Min(self->GetSize(), NewCapacity)); Iterator += 1)
+			for (MutableIterator Iterator = self->Begin(); Iterator != (self->Begin() + Min(self->GetSize(), NewCapacity)); Iterator += 1) {
 				new (NewMemoryProviderInstance.GetPointer() + (Iterator - self->Begin())) ElementType(Move(*Iterator));
-			for (MutableIterator Iterator = self->Begin(); Iterator !=  self->End(); Iterator += 1)
+			}
+			for (MutableIterator Iterator = self->Begin(); Iterator != self->End(); Iterator += 1) {
 				(*Iterator).~ElementType();
+			}
 
 			self->MemoryProviderInstance = Move(NewMemoryProviderInstance);
 		}
@@ -165,8 +169,7 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE()
 	inline void GD_VECTOR_CLASS()::ReserveToSize(size_t const NewSize)
 	{
-		if (self->GetCapacity() < NewSize)
-		{	// Changing capacity to make container not reallocate memory next time.
+		if (self->GetCapacity() < NewSize) {	// Changing capacity to make container not reallocate memory next time.
 			size_t const Exponent = /*IntegerMath::Log2(NewSize)*/static_cast<size_t>(log2f(float(NewSize)));
 			self->Reserve(size_t(1) << (Exponent + size_t(1)));
 		}
@@ -240,8 +243,9 @@ GD_NAMESPACE_BEGIN
 		GD_ASSERT((Index <= self->GetSize()), "Index is out of bounds");
 		self->ReserveToSize(self->GetSize() + 1);
 		self->Count += 1;
-		for (MutableIterator Iterator = self->End() - 1; Iterator != self->Begin() + Index - 1; Iterator -= 1)
+		for (MutableIterator Iterator = self->End() - 1; Iterator != self->Begin() + Index - 1; Iterator -= 1) {
 			*(Iterator - 1) = Move(*Iterator);
+		}
 
 		new (&*self->Begin() + Index) ElementType(Forward<ElementType>(Element));
 	}
@@ -256,10 +260,11 @@ GD_NAMESPACE_BEGIN
 	inline void GD_VECTOR_CLASS()::RemoveElementAt(size_t const Index)
 	{
 		GD_ASSERT((Index < self->GetSize()), "Index is out of bounds");
-		for (MutableIterator Iterator = self->Begin() + Index; Iterator != (self->End() - 1); Iterator += 1)
+		for (MutableIterator Iterator = self->Begin() + Index; Iterator != (self->End() - 1); Iterator += 1) {
 			*Iterator = Move(*(Iterator + 1));
+		}
 
-		  self->Count -= 1;
+		--self->Count;
 		(*self->End()).~ElementType();
 	}
 
@@ -287,10 +292,10 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE() template<typename SearchingPredicateType>
 	inline size_t GD_VECTOR_CLASS()::FindFirstElement(SearchingPredicateType const& SearchingPredicate) const
 	{
-		for (ConstIterator Iterator = self->Begin(); Iterator != self->End(); Iterator += 1)
-		{
-			if (SearchingPredicate(*Iterator))
+		for (ConstIterator Iterator = self->Begin(); Iterator != self->End(); Iterator += 1) {
+			if (SearchingPredicate(*Iterator)) {
 				return (Iterator - self->Begin());
+			}
 		}
 
 		return SIZE_MAX;
@@ -299,10 +304,10 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE() template<typename SearchingPredicateType>
 	inline size_t GD_VECTOR_CLASS()::FindLastElement(SearchingPredicateType const& SearchingPredicate) const
 	{
-		for (ReverseConstIterator Iterator = self->ReverseBegin(); Iterator != self->ReverseEnd(); Iterator += 1)
-		{
-			if (SearchingPredicate(*Iterator))
+		for (ReverseConstIterator Iterator = self->ReverseBegin(); Iterator != self->ReverseEnd(); Iterator += 1) {
+			if (SearchingPredicate(*Iterator)) {
 				return (Iterator - self->ReverseEnd());
+			}
 		}
 
 		return SIZE_MAX;
@@ -311,7 +316,7 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE()
 	inline size_t GD_VECTOR_CLASS()::FindFirstElement(ElementType const& Element) const
 	{	// Lets use lambda as our predicate
-		return self->FindFirstElement([&Element](ElementType const& OtherElement){
+		return self->FindFirstElement([&Element](ElementType const& OtherElement) {
 			return (OtherElement == Element);
 		});
 	}
@@ -319,7 +324,7 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE()
 	inline size_t GD_VECTOR_CLASS()::FindLastElement(ElementType const& Element) const
 	{	// Lets use lambda as our predicate
-		return self->FindFirstElement([&Element](ElementType const& OtherElement){
+		return self->FindFirstElement([&Element](ElementType const& OtherElement) {
 			return (OtherElement == Element);
 		});
 	}
@@ -330,12 +335,10 @@ GD_NAMESPACE_BEGIN
 		/// @todo Implementation is a little broken if container includes equal values.
 		MutableIterator Left = _Left, Right = _Right;
 		MutableIterator const Pivot = self->Begin() + (((Left - self->Begin()) + (Right - self->Begin())) / 2);
-		while (Left <= Right)
-		{
+		while (Left <= Right) {
 			while (SortingPredicate((*Left ), (*Pivot))) Left  += 1;
 			while (SortingPredicate((*Pivot), (*Right))) Right -= 1;
-			if (Left <= Right)
-			{	
+			if (Left <= Right) {	
 				Swap((*Left), (*Right));
 				Left  += 1;
 				Right -= 1;
@@ -363,8 +366,7 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE()
 	inline GD_VECTOR_CLASS()& GD_VECTOR_CLASS()::operator= (Vector&& OtherVector)
 	{	
-		if ((&OtherVector) != self)
-		{	// Check if we are not assigning container itself.
+		if ((&OtherVector) != self) {	// Check if we are not assigning container itself.
 			self->Clear();
 			self->MemoryProviderInstance = Move(OtherVector.MemoryProviderInstance);
 			self->Count	= OtherVector.Count;
@@ -377,17 +379,14 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE()
 	inline GD_VECTOR_CLASS()& GD_VECTOR_CLASS()::operator= (Vector const& OtherVector)
 	{	
-		if ((&OtherVector) != self)
-		{	// Check if we are not assigning container itself.
-			if (self->GetCapacity() >= OtherVector.GetSize())
-			{	// We have enough place here, so it is optimal to move is here without realloc.
+		if ((&OtherVector) != self) {	// Check if we are not assigning container itself.
+			if (self->GetCapacity() >= OtherVector.GetSize()) {	// We have enough place here, so it is optimal to move is here without realloc.
 				self->Emptify();
 				self->Count = OtherVector.Count;
-				for (ConstIterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); Iterator += 1)
+				for (ConstIterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); Iterator += 1) {
 					new (self->Begin() + (Iterator - OtherVector.Begin())) ElementType(*Iterator);
-			}
-			else
-			{	// Not enough memory. Copying specified vector and moving it here.
+				}
+			} else {	// Not enough memory. Copying specified vector and moving it here.
 				(*self) = Move(Vector(OtherVector));
 			}
 		}
@@ -398,15 +397,13 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE()
 	inline GD_VECTOR_CLASS()& GD_VECTOR_CLASS()::operator= (std::initializer_list<ElementType> const& InitializerList)
 	{	
-		if (self->GetCapacity() >= InitializerList.size())
-		{	// We have enough place here, so it is optimal to move is here without realloc.
+		if (self->GetCapacity() >= InitializerList.size()) {	// We have enough place here, so it is optimal to move is here without realloc.
 			self->Emptify();
 			self->Count = InitializerList.size();
-			for (typename std::initializer_list<ElementType>::const_iterator Iterator = InitializerList.begin(); Iterator != InitializerList.end(); Iterator += 1)
+			for (typename std::initializer_list<ElementType>::const_iterator Iterator = InitializerList.begin(); Iterator != InitializerList.end(); Iterator += 1) {
 				new (self->Begin() + (Iterator - InitializerList.begin())) ElementType(*Iterator);
-		}
-		else
-		{	// Not enough memory. Assigning itself a container created with specified initializer list.
+			}
+		} else {	// Not enough memory. Assigning itself a container created with specified initializer list.
 			(*self) = Move(Vector(InitializerList));
 		}
 
@@ -417,15 +414,13 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE()
 	inline GD_VECTOR_CLASS()& GD_VECTOR_CLASS()::operator= (array<ElementType>^ CliArray)
 	{
-		if (self->GetCapacity() >= static_cast<size_t>(CliArray->Length))
-		{	// We have enough place here, so it is optimal to move is here without realloc.
+		if (self->GetCapacity() >= static_cast<size_t>(CliArray->Length)) {	// We have enough place here, so it is optimal to move is here without realloc.
 			self->Emptify();
 			self->Count = static_cast<size_t>(CliArray->Length);
-			for (ConstIterator Iterator = StartIterator; Iterator != EndIterator; Iterator += 1)
+			for (ConstIterator Iterator = StartIterator; Iterator != EndIterator; Iterator += 1) {
 				new (self->Begin() + (Iterator - OtherVector.Begin())) ElementType(CliArray[Iterator - OtherVector.Begin()]);
-		}
-		else
-		{	// Not enough memory. Assigning itself a container created with CLI/C++ Array.
+			}
+		} else {	// Not enough memory. Assigning itself a container created with CLI/C++ Array.
 			(*self) = Move(Vector(CliArray));
 		}
 

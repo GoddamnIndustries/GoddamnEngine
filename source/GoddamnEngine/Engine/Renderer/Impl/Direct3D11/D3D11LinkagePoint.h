@@ -22,7 +22,7 @@ GD_NAMESPACE_BEGIN
 	{
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRID3D11LinkagePoint, HRILinkagePoint, GDINT);
-		RefPtr<HRID3D11ShaderProgram const> ShaderProgram;
+		RefPtr<HRID3D11ShaderProgram const> Effect;
 		RefPtr<HRID3D11IndexedShape  const> IndexedShape;
 		mutable bool IsRelinkingRequired = false;
 		mutable struct LinkageCache final {
@@ -37,11 +37,11 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HRID3D11LinkagePoint() { }
 		GDINL virtual ~HRID3D11LinkagePoint() { }
 		
-		GDINL virtual HRIShaderProgram const* GetShaderProgram() const final { return self->ShaderProgram.GetPointer(); }
+		GDINL virtual HRIShaderProgram const* GetShaderProgram() const final { return self->Effect.GetPointer(); }
 		GDINL virtual HRIIndexedShape  const* GetIndexedShape () const final { return self->IndexedShape.GetPointer(); }
-		GDINL virtual void SetShaderProgram(HRIShaderProgram const* const ShaderProgram) final
+		GDINL virtual void SetShaderProgram(HRIShaderProgram const* const Effect) final
 		{
-			self->ShaderProgram = object_cast<HRID3D11ShaderProgram const*>(ShaderProgram);
+			self->Effect = object_cast<HRID3D11ShaderProgram const*>(Effect);
 			self->IsRelinkingRequired = true;
 		}
 

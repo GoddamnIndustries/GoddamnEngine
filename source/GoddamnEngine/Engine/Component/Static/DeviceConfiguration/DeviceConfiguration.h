@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 			String const typeName = RenderingSystemElement::GetClassTypeInformation()->Name + 
 				/*"_" + systemPostfix*/ "_D3D11";
 			
-			TypeInformation const* const typeInformation = TypeInformation::SearchForType(typeName);
+			TypeInformation const* const typeInformation = TypeInformation::FindType(typeName);
 			GD_ASSERT((typeInformation != nullptr), 
 				"No type information specified for type '%s'", &typeName[0]);
 			GD_ASSERT((typeInformation->VirtualConstructor != nullptr), 

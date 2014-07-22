@@ -1,7 +1,6 @@
 #include <GoddamnEngine/Engine/HUD/HUD.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.h>
-#include <GoddamnEngine/Engine/Resource/Impl/ShaderProgram/ShaderProgramResource.h>
-#include <GoddamnEngine/Engine/Resource/ResourceStreamer/ResourceStreamer.h>
+#include <GoddamnEngine/Engine/Resource/Impl/Effect/Effect.h>
 
 // Cool precision, yeah?
 #define GD_RADIANS(Degrees) (0.01745329251994329576923690768489f * Degrees) 
@@ -273,7 +272,7 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	void HUDResources::LoadHUDElementShader()
 	{
-		auto const HUDShader = ResourceStreamer::GetInstance().LoadImmediately<ShaderProgramResource>("file://CommonResources/Shaders/HUDShader.hlsl.xml")->GetProgram();
+		auto const HUDShader = RSStreamer::GetInstance().LoadImmediately<RSEffect>("file://CommonResources/Shaders/HUDShader.hlsl.xml")->GetEffectShaderProgram();
 		
 		/*auto const VertexShaderInstance = HRInterface::GetInstance().CreateShaderInstance(ShaderInstanceCtorInfo(HUDShader->GetProgramVertexShader()->ShaderDesc));
 		GD_ASSERT((VertexShaderInstance->GetParamByName("HUDElementRectangle") != nullptr), "Vertex shader param was not found");
@@ -284,7 +283,7 @@ GD_NAMESPACE_BEGIN
 		auto const PixelShaderInstance = HRInterface::GetInstance().CreateShaderInstance(ShaderInstanceCtorInfo(HUDShader->GetProgramPixelShader()->ShaderDesc));
 		PixelShaderInstance->RemoveReference();*/
 
-		self->HUDMountingPoint->SetShaderProgram(HUDShader);
+		self->HUDMountingPoint->SetShaderProgram(HUDShader.GetPointer());
 	}
 
 	/// ==========================================================================================

@@ -37,8 +37,8 @@ GD_NAMESPACE_BEGIN
 		ParamLocationDesc->LocationInstancesSize  += self->GetParamSize();
 		ParamLocationDesc->LocationInstancesCount += 1;
 
-		GD_DEBUG_ASSERT((ParamLocationDesc->LocationInstancesSize  < GD_HRI_SHADER_PARAM_MAX_LOCATION_SIZE), "Max location parametrs size reached" );
-		GD_DEBUG_ASSERT((ParamLocationDesc->LocationInstancesCount < GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT        ), "Max location parametrs count reached");
+		GD_DEBUG_ASSERT((ParamLocationDesc->LocationInstancesSize  < GD_HRI_SHADER_PARAM_MAX_LOCATION_SIZE),  "Max location parametrs size reached" );
+		GD_DEBUG_ASSERT((ParamLocationDesc->LocationInstancesCount < GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT), "Max location parametrs count reached");
 	}
 
 	GDINL HRIShaderParamDesc::~HRIShaderParamDesc()
@@ -50,16 +50,14 @@ GD_NAMESPACE_BEGIN
 
 	GDINL size_t HRIShaderParamDesc::GetParamSize() const
 	{
-		if (self->ParamCachedSize == SIZE_MAX)
-		{	// Precaching param size.
-			switch (self->ParamType)
-			{
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D:
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE:	return (self->ParamCachedSize = self->ParamArrayLength * sizeof(HRIObject const*));
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX4X4:	return (self->ParamCachedSize = self->ParamArrayLength * sizeof(Matrix4x4));
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX3X3:	return (self->ParamCachedSize = self->ParamArrayLength * sizeof(Matrix3));
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_STRING:		return (self->ParamCachedSize = self->ParamArrayLength * sizeof(HRIShaderChar) * GD_HRI_SHADER_PARAM_MAX_STRING_LENGTH);
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE:	return (self->ParamCachedSize = self->ParamArrayLength * GD_FORMAT_SIZEOF(self->ParamFormat));
+		if (self->ParamCachedSize == SIZE_MAX) {	// Precaching param size.
+			switch (self->ParamType) {
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D:
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE:	return (self->ParamCachedSize = self->ParamArrayLength * sizeof(HRIObject const*));
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX4X4:	return (self->ParamCachedSize = self->ParamArrayLength * sizeof(Matrix4x4));
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX3X3:	return (self->ParamCachedSize = self->ParamArrayLength * sizeof(Matrix3));
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_STRING:		return (self->ParamCachedSize = self->ParamArrayLength * sizeof(HRIShaderChar) * GD_HRI_SHADER_PARAM_MAX_STRING_LENGTH);
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE:	return (self->ParamCachedSize = self->ParamArrayLength * GD_FORMAT_SIZEOF(self->ParamFormat));
 			}
 
 			return (self->ParamCachedSize = 0);
@@ -137,7 +135,7 @@ GD_NAMESPACE_BEGIN
 	GDINL HRIShaderParam const* HRIShaderParamLocation::GetParamByName(String const& ParamName) const
 	{
 		HashSumm const ParamNameHash = ParamName.GetHashSumm();
-		return self->SearchForFirstChildObject<HRIShaderParam const>([ParamNameHash](HRIShaderParam const* const LocationShaderParam) -> bool { 
+		return self->FindFirstChildObject<HRIShaderParam const>([ParamNameHash](HRIShaderParam const* const LocationShaderParam) -> bool { 
 			return (LocationShaderParam->ParamDesc->ParamHash == ParamNameHash); 
 		});
 	}
@@ -154,12 +152,12 @@ GD_NAMESPACE_BEGIN
 
 	void HRIShaderParamLocationConstantBufferEmulated::UploadAllParameters()
 	{
-		if (self->DidAnyParamValueChanged)
-		{
-			for (auto Param : IterateChildObjects<HRIShaderParam const>(self))
-				if (HRIShaderParamLocation::QueryAndResetDidParamValueChanged(Param))
+		if (self->DidAnyParamValueChanged) {
+			for (auto Param : IterateChildObjects<HRIShaderParam const>(self)) {
+				if (HRIShaderParamLocation::QueryAndResetDidParamValueChanged(Param)) {
 					self->UploadSingleParameter(Param);
-
+				}
+			}
 			self->DidAnyParamValueChanged = false;
 		}
 	}
@@ -194,7 +192,7 @@ GD_NAMESPACE_BEGIN
 
 	GDINL HRIShaderParamLocationDesc const* HRIShaderInstanceDesc::GetFirstLocationDesc(HRIShaderParamLocationDescType const InstanceLocationDescType) const
 	{
-		return self->SearchForFirstChildObject<HRIShaderParamLocationDesc const>(
+		return self->FindFirstChildObject<HRIShaderParamLocationDesc const>(
 			[InstanceLocationDescType](HRIShaderParamLocationDesc const* HRIShaderParamLocationDesc) -> bool { return (HRIShaderParamLocationDesc->LocationType == InstanceLocationDescType); }
 		);
 	}
@@ -221,7 +219,7 @@ GD_NAMESPACE_BEGIN
 	GDINL HRIShaderParam const* HRIShaderInstance::GetParamByName(String const& ParamName) const
 	{
 		HRIShaderParam const* HRIShaderParam = nullptr;
-		self->SearchForFirstChildObject<HRIShaderParamLocation const>(
+		self->FindFirstChildObject<HRIShaderParamLocation const>(
 			[&HRIShaderParam, &ParamName](HRIShaderParamLocation const* shaderLocation) -> bool { return (HRIShaderParam = shaderLocation->GetParamByName(ParamName)) != nullptr; }
 		);
 

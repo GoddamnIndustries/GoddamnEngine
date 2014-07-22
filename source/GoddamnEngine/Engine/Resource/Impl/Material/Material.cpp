@@ -1,7 +1,6 @@
 #include <GoddamnEngine/Engine/Resource/Impl/Material/Material.h>
-#include <GoddamnEngine/Engine/Resource/Impl/ShaderProgram/ShaderProgramResource.h>
+#include <GoddamnEngine/Engine/Resource/Impl/Effect/Effect.h>
 #include <GoddamnEngine/Engine/Resource/Impl/Texture2D/Texture2DResource.h>
-#include <GoddamnEngine/Engine/Resource/ResourceStreamer/ResourceStreamer.h>
 
 #include <GoddamnEngine/Engine/Renderer/Renderer.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/Shader.h>
@@ -14,27 +13,15 @@ GD_NAMESPACE_BEGIN
 	GD_TYPEINFORMATION_IMPLEMENTATION(Material, Resource, GDAPI, GD_RESOURCE_ARGS);
 
 	/// ==========================================================================================
-	void Material::SetShaderProgram(
-		_In_ HRIShaderProgram* const shaderProgram
-	) 
+	void Material::SetShaderProgram(RefPtr<HRIShaderProgram> const& Effect) 
 	{
-		GD_ASSERT((shaderProgram != nullptr), "Invalid shader program specified");
-		if (self->MaterialProgram != shaderProgram)
+		GD_ASSERT((Effect != nullptr), "Invalid shader program specified");
+		if (self->MaterialProgram != Effect)
 		{
-			HRIPixelShader* const pixelShader = shaderProgram->GetProgramPixelShader();
-			if (pixelShader != nullptr)
-			{
-				HRIShaderInstance* const shaderInstance = HRInterface::GetInstance().CreateShaderInstance(pixelShader->ShaderDesc);
-
-				if (self->MaterialInstance != nullptr)
-				{
-					 /// @todo Add parameters movement from old instance to new one
-					 self->MaterialInstance->RemoveReference();
-				}
-
-				SafeRelease(self->MaterialProgram);
-				(self->MaterialInstance = shaderInstance)->AddReference();
-				(self->MaterialProgram = shaderProgram)->AddReference();
+			HRIPixelShader* const EffectPixelShader = Effect->GetProgramPixelShader();
+			if (EffectPixelShader != nullptr) {
+				self->MaterialInstance = HRInterface::GetInstance().CreateShaderInstance(EffectPixelShader->ShaderDesc);
+				self->MaterialProgram = Effect;
 			}
 		}
 	}
@@ -55,7 +42,7 @@ GD_NAMESPACE_BEGIN
 		if (pixelShader != nullptr)
 		{
 			self->MaterialInstance->GetInstanceResourcesLocation()->UploadAllParameters();
-			pixelShader->BindShader(self->MaterialInstance);
+			pixelShader->BindShader(self->MaterialInstance.GetPointer());
 		}
 	}
 
@@ -69,7 +56,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	void Material::OnResourceLoad(InputStream* const InputResourceData)
+	void Material::OnResourceLoad(UniquePtr<InputStream> const& InputResourceData)
 	{
 		String materialStr(nullptr, InputResourceData->GetSize() / sizeof(Char));
 		InputResourceData->Read(&materialStr[0], 1, InputResourceData->GetSize());
@@ -79,15 +66,12 @@ GD_NAMESPACE_BEGIN
 		mxml_node_t* const materialRootNode = mxmlGetFirstChild(materialXml);
 
 		String const metrialShaderId = mxmlElementGetAttr(materialRootNode, "Shader");
-		ShaderProgramResource const* const materialShaderProgramResource
-			= ResourceStreamer::GetInstance().LoadImmediately<ShaderProgramResource>(metrialShaderId);
-		if (materialShaderProgramResource != nullptr)
-		{
-			self->SetShaderProgram(materialShaderProgramResource->Program);
-			materialShaderProgramResource->RemoveReference();
+		RefPtr<RSEffect> const materialShaderProgramResource = RSStreamer::GetInstance().LoadImmediately<RSEffect>(metrialShaderId);
+		if (materialShaderProgramResource != nullptr) {
+			self->SetShaderProgram(materialShaderProgramResource->GetEffectShaderProgram());
 		}
 
-		GD_MXML_FOREACH_CHILD (materialParamNode, materialRootNode)
+	/*	GD_MXML_FOREACH_CHILD (materialParamNode, materialRootNode)
 		{
 			String const materialParamName = mxmlElementGetAttr(materialParamNode, "Name");
 			String const materialParamValue = mxmlElementGetAttr(materialParamNode, "Value");
@@ -114,7 +98,7 @@ GD_NAMESPACE_BEGIN
 				} break;
 				case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D:
 				{
-					Texture2DResource const* const textureResource = ResourceStreamer::GetInstance().LoadImmediately<Texture2DResource>(materialParamValue);
+					RefPtr<Texture2DResource> const textureResource = RSStreamer::GetInstance().LoadImmediately<Texture2DResource>(materialParamValue);
 					if (textureResource != nullptr)
 					{
 						materialParam->SetValue<HRITexture2D const*>(textureResource->GetHRITexture2D());
@@ -126,7 +110,7 @@ GD_NAMESPACE_BEGIN
 				} break;
 				default: GD_ASSERT_FALSE("Invalid paramter type");
 			}
-		}
+		}*/
 
 		mxmlDelete(materialXml);
 	}
@@ -134,8 +118,6 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	void Material::OnResourceUnload()
 	{
-		SafeRelease(self->MaterialInstance);
-		SafeRelease(self->MaterialProgram);
 	}
 
 GD_NAMESPACE_END

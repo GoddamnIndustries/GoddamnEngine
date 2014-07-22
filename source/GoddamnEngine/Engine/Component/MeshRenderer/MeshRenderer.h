@@ -41,8 +41,8 @@ GD_NAMESPACE_BEGIN
 		GD_SERIALIZABLE_DEFINITION(MeshRenderer, Component, GDAPI);
 
 		GD_SERIALIZATION_BEGIN(MeshRenderer, Component);
-			GD_FIELD(StaticMesh*,	RendererMesh);			
-			GD_FIELD(Material*,		RendererMaterial);
+			GD_FIELD(RefPtr<StaticMesh>, RendererMesh);			
+			GD_FIELD(RefPtr<Material>,   RendererMaterial);
 			GD_FIELD(bool,			RendererCastShadows); 
 			GD_FIELD(bool,			RendererRecieveShadows); 
 		GD_SERIALIZATION_END();
@@ -89,12 +89,11 @@ GD_NAMESPACE_BEGIN
 
 		/// ==========================================================================================
 		/// Returns static mesh attached to this mesh renderer
-		GDINL StaticMesh* GetStaticMesh(
-		) const	{ return self->RendererMesh; }
+		GDINL RefPtr<StaticMesh> GetStaticMesh() const { return self->RendererMesh; }
 
 		/// ==========================================================================================
 		/// Changes static mesh attached to this object
-		GDINL void SetStaticMesh(StaticMesh* const mesh)
+		GDINL void SetStaticMesh(RefPtr<StaticMesh> const& mesh)
 		{
 			GD_ASSERT((mesh != nullptr), "'mesh' could not be 'nullptr'");
 			self->RendererMesh = mesh;
@@ -103,14 +102,12 @@ GD_NAMESPACE_BEGIN
 
 		/// ==========================================================================================
 		/// Returns material attached to this mesh renderer
-		GDINL Material* GetMaterial(
+		GDINL RefPtr<Material> GetMaterial(
 		) const	{ return self->RendererMaterial; }
 
 		/// ==========================================================================================
 		/// Changes material attached to this mesh renderer
-		GDINL void SetMaterial(
-			_In_ Material* const material
-		)
+		GDINL void SetMaterial(RefPtr<Material> const& material)
 		{
 			GD_ASSERT((material != nullptr), "'material' could not be 'nullptr'");
 			self->RendererMaterial = material;

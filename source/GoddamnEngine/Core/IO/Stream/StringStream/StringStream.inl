@@ -127,7 +127,7 @@ GD_NAMESPACE_BEGIN
 	GDINL void BaseStringInputStream<CharacterType>::Read(handle const Array, size_t const Count, size_t const Length)
 	{
 		GD_DEBUG_ASSERT(self->DataReference != nullptr, "Nullptr data reference.");
-		if (self->DataReferencePosition + (Count * Length) >= self->DataReferenceLength)
+		if (self->DataReferencePosition + (Count * Length) > self->DataReferenceLength)
 			throw IOException("Failed to read from data reference (position is out of bounds).");
 
 		::memcpy(Array, self->DataReference, Count * Length);

@@ -78,7 +78,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL RefPtr& operator= (RefPtr&& Other)
 		{
-			if ((&OtherPtr) != self)
+			if ((&Other) != self)
 			{
 				SafeRelease(self->Pointer);
 				self->Pointer = Other.Pointer;
