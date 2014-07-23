@@ -40,7 +40,7 @@ GD_NAMESPACE_BEGIN
 		GDINL virtual ~HLSLParserErrorException() { }
 	};	// class ToolchainException
 
-	static StreamedLexerOptions const& GetDefaultOptionsForHlsl();
+	static StreamedLexerOptions const& GetDefaultOptionsFoRHlsl();
 	static HLSLSemanticType HLSLSemanticTypeFromString(String const& Semantic);
 
 	enum HLSLOperator : StreamedLexerOperator
@@ -186,7 +186,7 @@ GD_NAMESPACE_BEGIN
 	public /*Class API*/:
 		GDINT ~HLSLParserImpl()	{ }
 		GDINT  HLSLParserImpl(IToolchain* const  Toolchain, UniquePtr<InputStream>&& Stream)
-			: IToolchainTool(Toolchain), Lexer(Toolchain, Forward<UniquePtr<InputStream>>(Stream), GetDefaultOptionsForHlsl())
+			: IToolchainTool(Toolchain), Lexer(Toolchain, Forward<UniquePtr<InputStream>>(Stream), GetDefaultOptionsFoRHlsl())
 		{	// Registering default types.
 			self->EnterScope(&HLSLSuperGlobalScope);
 			self->EnterScope(self->GlobalScope = new HLSLScope());
@@ -565,7 +565,7 @@ GD_NAMESPACE_BEGIN
 		ConstantBuffer->Name = self->CurrentLexem.GetRawData();
 
 		self->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR);
-		if (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_COLON) {	    // Pasring constant buffer registerhere.
+		if (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_COLON) {	    // Pasring constant buffer registeRHere.
 			    ConstantBuffer->Register = static_cast<HLSLRegister const*>(self->ParseExprColon(GD_HLSL_EXPRCOLON_TYPE_REGISTER));
 			if (ConstantBuffer->Register == nullptr)                return nullptr;
 			if (ConstantBuffer->Register->Register != GD_HLSL_REGISTER_B)
@@ -995,7 +995,7 @@ GD_NAMESPACE_BEGIN
 		return HRI2HLSLTranslationsTable[static_cast<size_t>(Semantic)];
 	}
 
-	GDINT static StreamedLexerOptions const& GetDefaultOptionsForHlsl()
+	GDINT static StreamedLexerOptions const& GetDefaultOptionsFoRHlsl()
 	{
 #if (!defined(__INTELLISENSE__)) // IntelliSence marks following code with errors. Just let in not parse it.
 		static StreamedLexerOptions const HlslLexerOptions(

@@ -305,7 +305,7 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief				Removes all white spaces from 'String'`s beginning
 		/// @code
-		///					const String a(" \t\n\rHello, world   ");
+		///					const String a(" \t\n\RHello, world   ");
 		///					const String b(a.TrimmLeft());	// 'b' now equals "Hello, world   "
 		/// @endcode
 		/// @returns			Trimmed from left-side HeapMemory
@@ -313,15 +313,15 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief				Removes all white spaces from 'String'`s ending
 		/// @code
-		///					const String a(" \t\n\rHello, world   ");
-		///					const String b(a.TrimmRight());	// 'b' now equals " \t\n\rHello, world"
+		///					const String a(" \t\n\RHello, world   ");
+		///					const String b(a.TrimmRight());	// 'b' now equals " \t\n\RHello, world"
 		/// @endcode
 		/// @returns			Trimmed from right-side HeapMemory
 		GDAPI String TrimmRight() const;
 
 		/// @brief				Removes all white spaces from 'String'`s beginning and ending
 		/// @code
-		///					const String a(" \t\n\rHello, world   ");
+		///					const String a(" \t\n\RHello, world   ");
 		///					const String b(a.Trimm());	// 'b' now equals "Hello, world"
 		/// @endcode
 		/// @returns			Trimmed HeapMemory

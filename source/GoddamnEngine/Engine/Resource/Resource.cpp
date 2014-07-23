@@ -76,12 +76,12 @@ GD_NAMESPACE_BEGIN
 						TheResource->OnResourceLoad(InputResourceData);
 					}
 				} else {
+#else	// if (defined(GD_PLATFORM_DESKTOP))
+				/*Cooking is not supported on this platform*/ {
+#endif	// if (defined(GD_PLATFORM_DESKTOP))
 					Debug::Log(String::Format("Loading raw resource with id %s", TheResource->Identifier.GetIdentifierString().CStr()));
 					TheResource->OnResourceLoad(InputResourceData);
 				}
-#else	// if (defined(GD_PLATFORM_DESKTOP))
-				TheResource->OnResourceLoad(InputResourceData);
-#endif	// if (defined(GD_PLATFORM_DESKTOP))
 			} catch (RSLoadingException const& ResourceLoadingExc) {
 				throw Exception(String::Format("Resource loading failed because of: %s", ResourceLoadingExc.GetErrorMessage().CStr()));
 			} catch (IOException const& IOExc) {

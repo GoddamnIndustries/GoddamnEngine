@@ -19,10 +19,11 @@
 GD_NAMESPACE_BEGIN
 
 	/// Generic quaternion class.
-	template<typename ElementType, typename = typename EnableIf<TypeTraits::IsFloatingPoint<ElementType>::Value>::Type>
+	template<typename ElementType>
 	struct Quaternion_t final
 	{
 	public:
+		static_assert(TypeTraits::IsFloatingPoint<ElementType>::Value, "'Quaternion_t<T>' error: T should be floating point");
 		typedef typename Conditional<TypeTraits::IsPodType<ElementType>::Value, ElementType, ElementType const&>::Type ElementTypeConstRef;
 		ElementType x, y, z, w;
 
@@ -139,7 +140,7 @@ GD_NAMESPACE_BEGIN
 
 #if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
 	template<>
-	struct GD_ALIGN(16) Quaternion_t<Float32> final
+	struct GD_MSC_ALIGN(16) Quaternion_t<Float32> final
 	{
 		union {
 			Float32x4Intrinsics::VectorRegisterType ElementsVector;
@@ -172,6 +173,11 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public /* Class API */:
+
+		/// ------------------------------------------------------------------------------------------
+		/// *** EulerRadians ***
+		/// ------------------------------------------------------------------------------------------
+
 		inline Vector3Fast GetEulerRadians() const
 		{
 			Float32 const y = Float32(asin (Float32(-2) * (self->x * self->z - self->w * self->y)));
@@ -251,7 +257,7 @@ GD_NAMESPACE_BEGIN
 			self->ElementsVector = Other.ElementsVector;
 			return (*self);
 		}
-	};	// Quaternion_t<Float32>
+	} GD_GCC_ALIGN(16);	// Quaternion_t<Float32>
 #endif	// if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
 
 	typedef Quaternion_t<float> Quaternion;

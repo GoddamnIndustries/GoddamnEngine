@@ -44,7 +44,6 @@ GD_NAMESPACE_BEGIN
 		/// Loads assembly from path
 		GDAPI static Assembly const* LoadAssemblyFromPath(String const& Path) { return new Assembly(Path); }
 
-	protected:
 		GDAPI Assembly(_In_ String const& FileName);
 		GDAPI virtual ~Assembly();
 

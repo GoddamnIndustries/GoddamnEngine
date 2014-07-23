@@ -12,9 +12,15 @@
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Impl/HLSL/HLSLCompiler.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.h>
-
 #include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.h>
-#include <GoddamnEngine/Core/Reflection/Assembly/Assembly.h>
+#if (!defined(GD_D3D_LINKED))
+#	include <GoddamnEngine/Core/Reflection/Assembly/Assembly.h>
+#	include <cstdio>
+#	if (defined(GD_PLATFORM_WINAPI))
+#		define popen _popen
+#		define pclose _pclose
+#	endif	// if (defined(GD_PLATFORM_WINAPI))
+#endif	// if (!defined(GD_D3D_LINKED))
 #include <d3dcompiler.h>
 
 GD_NAMESPACE_BEGIN
@@ -34,18 +40,60 @@ GD_NAMESPACE_BEGIN
 		GDINL virtual ~HLSLCompilerErrorException() { }
 	};	// class ToolchainException
 
-#define GD_D3D_LINKED
 #if (!defined(GD_D3D_LINKED))
 	static pD3DCompile D3DCompile;
 	struct pD3DCompileLoader final 
 	{
+		UniquePtr<Assembly const> D3DCompilerAssembly;
 		GDINT pD3DCompileLoader()
-		{
-			RefPtr<Assembly const> const D3DCompilerAssembly(Assembly::LoadAssemblyFromPath(D3DCOMPILER_DLL));
-			GD_ASSERT(D3DCompilerAssembly != nullptr, "Failed to load '"D3DCOMPILER_DLL"' assembly.");
-			
-			D3DCompile = reinterpret_cast<pD3DCompile>(D3DCompilerAssembly->GetNativeMethod("D3DCompile"));
-			GD_ASSERT(D3DCompile != nullptr, "Failed to load 'D3DCompile' function from '"D3DCOMPILER_DLL"' assembly.");
+		{	// Trying to load compile function from standart D3D compiler DLL.
+			if ((self->D3DCompilerAssembly = Assembly::LoadAssemblyFromPath(D3DCOMPILER_DLL)) != nullptr) {
+				if ((D3DCompile = reinterpret_cast<pD3DCompile>(D3DCompilerAssembly->GetNativeMethod("D3DCompile"))) == nullptr) {
+					self->D3DCompilerAssembly = nullptr;
+					Debug::Error("Failed to load 'D3DCompile' function from '"D3DCOMPILER_DLL"' assembly.");
+				}
+
+				return;
+			} else {
+				Debug::Error("Failed to load '"D3DCOMPILER_DLL"' assembly.");
+			}
+
+			// No compiler DLL or compile method was found. Lets emulate it via call to 'fxc.exe' utility.
+			D3DCompile = [](
+				LPCVOID                         pSrcData,
+				SIZE_T                          SrcDataSize,
+				LPCSTR                          pFileName,
+				CONST D3D_SHADER_MACRO*         pDefines,
+				ID3DInclude*                    pInclude,
+				LPCSTR                          pEntrypoint,
+				LPCSTR                          pTarget,
+				UINT                            Flags1,
+				UINT                            Flags2,
+				ID3DBlob**                      ppCode,
+				ID3DBlob**                      ppErrorMsgs) -> HRESULT
+			{
+#if (defined(GD_PLATFORM_64BIT))
+				static char const FXCPath[] = R"("%DXSDK_DIR%Utilities\bin\x64\fxc.exe ")";
+#else	// if (defined(GD_PLATFORM_64BIT))
+				static char const FXCPath[] = R"("%DXSDK_DIR%Utilities\bin\x68\fxc.exe ")";
+#endif	// if (defined(GD_PLATFORM_64BIT))
+				
+				// Building command.
+				StringBuilder FXCCommandBuilder;
+				FXCCommandBuilder.Append(FXCPath);
+
+				GD_NOT_IMPLEMENTED();
+
+				FILE* const FXCPipe = ::popen(FXCCommandBuilder.GetPointer(), "r");
+				if (FXCPipe != nullptr) {
+					int const FXCExecutionResult = ::pclose(FXCPipe);
+					if (FXCExecutionResult == 0) {
+						return S_OK;
+					}
+				}
+
+				return E_FAIL;
+			};
 		}
 	} static const D3DCompileLoader;
 #endif	// if (!defined(GD_D3D_LINKED))

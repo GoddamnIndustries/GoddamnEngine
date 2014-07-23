@@ -73,7 +73,7 @@ void SimpleSceneSampleApp::OnInitialize()
 
 	{	// Creating a level shape with Transform, collider and shape.
 		RefPtr<GameObject> const LevelShapeObject = CurrentScene->CreateGameObject();
-		RefPtr<Transform> const LevelShapeTransform = LevelShapeObject->AddComponent<Transform>();
+		RefPtr<Transform > const LevelShapeTransform = LevelShapeObject->AddComponent<Transform>();
 		LevelShapeTransform->SetScale(Vector3Fast(25.0f));
 
 		RefPtr<MeshRenderer> const LevelShapeRenderer = LevelShapeObject->AddComponent<MeshRenderer>();
@@ -84,21 +84,40 @@ void SimpleSceneSampleApp::OnInitialize()
 	}
 }
 
+#define Time 
+constexpr Float32 GetDeltaTime() { return 0.0014f; } // Now executing at 650 - 700 FPS.
+
 void SimpleSceneFPSController::OnUpdateSelf()
 {	// Getting our Transform component.
+	// Note: Unlike Unity, Transform is cached. So it can be used without user-caching.
 	Transform* const MyTransform = self->GetGameObject()->GetTransform();
 
 	// Handling WASD keys to move, E and R to rotate.
-	/**/ if (Input::IsKeyDown(KeyCode::W)) MyTransform->Translate(Vector3Fast(0.0f, 0.0f, +self->MovingSpeed));
-	else if (Input::IsKeyDown(KeyCode::S)) MyTransform->Translate(Vector3Fast(0.0f, 0.0f, -self->MovingSpeed));
-	/**/ if (Input::IsKeyDown(KeyCode::A)) MyTransform->Translate(Vector3Fast(-self->MovingSpeed, 0.0f, 0.0f));
-	else if (Input::IsKeyDown(KeyCode::D)) MyTransform->Translate(Vector3Fast(+self->MovingSpeed, 0.0f, 0.0f));
-	/**/ if (Input::IsKeyDown(KeyCode::Q)) MyTransform->Rotate(Vector3Fast(0.0f, -self->MovingSpeed * 5.0f, 0.0f));
-	else if (Input::IsKeyDown(KeyCode::E)) MyTransform->Rotate(Vector3Fast(0.0f, +self->MovingSpeed * 5.0f, 0.0f));
-
+	Float32 const DeltaPosition = self->MovingSpeed * Time::GetDeltaTime();
+	// Forward/Backward.
+	if (Input::IsKeyDown(KeyCode::W)) {
+		MyTransform->Translate(Vector3Fast(0.0f, 0.0f, DeltaPosition));
+	} else if (Input::IsKeyDown(KeyCode::S)) {
+		MyTransform->Translate(Vector3Fast(0.0f, 0.0f, -DeltaPosition));
+	}
+	
+	// Right/Left.
+	if (Input::IsKeyDown(KeyCode::D)) {
+		MyTransform->Translate(Vector3Fast(DeltaPosition, 0.0f, 0.0f));
+	} else if (Input::IsKeyDown(KeyCode::A)) {
+		MyTransform->Translate(Vector3Fast(-DeltaPosition, 0.0f, 0.0f));
+	}
+	
+	// Rotating Right/Left.
+	if (Input::IsKeyDown(KeyCode::E)) {
+		MyTransform->Rotate(Vector3Fast(0.0f, 5.0f * DeltaPosition, 0.0f));
+	} else if (Input::IsKeyDown(KeyCode::Q)) {
+		MyTransform->Rotate(Vector3Fast(0.0f, -5.0f * DeltaPosition, 0.0f));
+	}
+	
 	// Handling space key to shoot.
 	if (Input::IsKeyUp(KeyCode::Space)) {
-
+		throw NotImplementedException("Shooting is not implemented!");
 	}
 }
 

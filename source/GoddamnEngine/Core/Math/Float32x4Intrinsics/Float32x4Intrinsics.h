@@ -12,19 +12,16 @@
 
 #include <GoddamnEngine/Include.h>
 
-#  if (defined(GD_PLATFORM_DESKTOP) || defined(GD_PLATFORM_CONSOLE))	// We have SSE support
+#if (defined(GD_PLATFORM_DESKTOP) || defined(GD_PLATFORM_CONSOLE))	// We have SSE support
 #	include <GoddamnEngine/Core/Math/Float32x4Intrinsics/Float32x4IntrinsicsSSE.inl>
-#elif (defined(GD_PLATFORM_MOBILE))
-#	include <GoddamnEngine/Core/Math/Float32x4Intrinsics/Float32x4IntrinsicsNeon.inl>
-#else
-#	define GD_NO_FLOAT32X4INTRINSICS 1
-#	if (defined(GD_DOCUMENTATION))
+#endif	// if (defined(GD_PLATFORM_DESKTOP) || defined(GD_PLATFORM_CONSOLE))	// We have SSE support
 
 GD_NAMESPACE_BEGIN
 
 	/// Contains abstraction layer on Float32x4 vector intrinsics.
 	namespace Float32x4Intrinsics
 	{
+#if (defined(GD_DOCUMENTATION))
 		/// Platform vector Vector type.
 		typedef some_intrinsic_type VectorRegisterType;
 
@@ -47,6 +44,12 @@ GD_NAMESPACE_BEGIN
 		/// Returns swizzling result of all components of a specified vector.
 		GDINT VectorRegisterType VectorSwizzle(VectorRegisterType const Register, unsigned const x, unsigned const y, unsigned const z, unsigned const w);
 
+		/// Selects elements from vector using control vector.
+		GDINL VectorRegisterType VectorSelect(VectorRegisterType const First, VectorRegisterType const Second, VectorRegisterType const Control);
+
+		/// Selectes X from second vector and YZW from second vector.
+		GDINL VectorRegisterType VectorMove(VectorRegisterType const First, VectorRegisterType const Second);
+
 		/// Adds ('+') two vectors.
 		GDINT VectorRegisterType VectorAdd(VectorRegisterType const First, VectorRegisterType const Second);
 		/// Subtracts ('-') two vectors.
@@ -55,30 +58,47 @@ GD_NAMESPACE_BEGIN
 		GDINT VectorRegisterType VectorMul(VectorRegisterType const First, VectorRegisterType const Second);
 		/// Divides ('/') two vectors.
 		GDINT VectorRegisterType VectorDiv(VectorRegisterType const First, VectorRegisterType const Second);
-		
+		/// Bitwise ands ('&') two vectors.
+		GDINT VectorRegisterType VectorAnd(VectorRegisterType const First, VectorRegisterType const Second);
+		/// Bitwise ors ('|') two vectors.
+		GDINT VectorRegisterType VectorOr(VectorRegisterType const First, VectorRegisterType const Second);
+
 		/// Multiplies first on seconds and add third vector to result.
 		GDINT VectorRegisterType VectorMulAdd(VectorRegisterType const First, VectorRegisterType const Second, VectorRegisterType const Third)
 
 		/// Returns two vectors DOT product.
 		GDINT Float32 VectorDot4(VectorRegisterType const First, VectorRegisterType const Second);
 		GDINT Float32 VectorDot3(VectorRegisterType const First, VectorRegisterType const Second);
+		GDINT VectorRegisterType VectorDot4Vector(VectorRegisterType const First, VectorRegisterType const Second);
+		GDINT VectorRegisterType VectorDot3Vector(VectorRegisterType const First, VectorRegisterType const Second);
+
+		/// Negates vector.
+		GDINT VectorRegisterType VectorNegate(VectorRegisterType const Vector);
 
 		/// Returns two vectors CROSS product.
 		GDINT VectorRegisterType VectorCross(VectorRegisterType const First, VectorRegisterType const Second);
+		GDINT VectorRegisterType Vector3Cross(VectorRegisterType const First, VectorRegisterType const Second);
 
 		GDINT Float32 VectorLength(VectorRegisterType const Vector);
 		GDINT VectorRegisterType VectorNormalize(VectorRegisterType const Vector);
+		GDINT VectorRegisterType Vector3Normalize(VectorRegisterType const Vector);
 
 		/// Inverses specified matrix.
 		/// @param Input  Initial matrix that requires to be inversed.
 		/// @param Matrix Matrix to perform inversion on.
-		GDINT void MatrixInverse(VectorRegisterType* const Matrix, VectorRegisterType const* const Input)
+		GDINT void MatrixInverse(VectorRegisterType* const Matrix, VectorRegisterType const* const Input);
+#endif	// if (defined(GD_DOCUMENTATION))
+
+		GDINL Float32 UInt32ToFloat32(UInt32 const UInt) { return (*reinterpret_cast<Float32 const*>(&UInt)); }
+		GDINL Float32 GetFloat32_0xFFFFFFFF() { return UInt32ToFloat32(0xFFFFFFFF); }
+	
+		GDINL VectorRegisterType const static VectorMake_0000() { return VectorMake(0.0f); }
+		GDINL VectorRegisterType const static VectorMake_1000() { return VectorMake(GetFloat32_0xFFFFFFFF(), 0.0f, 0.0f, 0.0f); }
+		GDINL VectorRegisterType const static VectorMake_0100() { return VectorMake(0.0f, GetFloat32_0xFFFFFFFF(), 0.0f, 0.0f); }
+		GDINL VectorRegisterType const static VectorMake_1110() { return VectorMake(GetFloat32_0xFFFFFFFF(), GetFloat32_0xFFFFFFFF(), GetFloat32_0xFFFFFFFF(), 0.0f); }
 	}	// namespace Float32x4Intrinsics
 
-GD_NAMESPACE_END
-
-#	endif	// if (defined(GD_DOCUMENTATION))
-#endif
+	GD_NAMESPACE_END
 
 #if (!defined(GD_NO_FLOAT32X4INTRINSICS))
 #	define GD_HAS_FLOAT32X4INTRINSICS 1

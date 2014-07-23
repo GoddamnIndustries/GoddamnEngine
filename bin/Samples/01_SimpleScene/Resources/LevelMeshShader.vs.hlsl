@@ -23,8 +23,8 @@ struct VertexInput
 void Main(in  VertexInput	IN_VERTEX_INPUT,
 		  out VertexToPixel	OUT_V2P)
 {
-	OUT_V2P.FragCoord = float4(IN_VERTEX_INPUT.Position, 1.0);
-//	OUT_V2P.FragCoord = mul(VertexModelMatrix, float4(IN_VERTEX_INPUT.Position, 1.0));
+//	OUT_V2P.FragCoord = float4(IN_VERTEX_INPUT.Position, 1.0);
+	OUT_V2P.FragCoord = mul(VertexMvpMatrix, float4(IN_VERTEX_INPUT.Position, 1.0));
 	OUT_V2P.Position  = float3(mul(VertexModelMatrix, float4(IN_VERTEX_INPUT.Position, 1.0)).xyz);
 	OUT_V2P.Normal	  = /*mul(_VertexNormalMatrix, */IN_VERTEX_INPUT.Normal/*)*/;
 	OUT_V2P.TexCoord  = IN_VERTEX_INPUT.TexCoord;

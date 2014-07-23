@@ -501,20 +501,20 @@ GD_NAMESPACE_BEGIN
 			"\n/// ==========================================================================================\n\n";
 
 		String const HeaderPathWithoutExtension = Path::GetDirectoryAndFileNameWithoutExtension(self->HeaderPath);
-		String const HeaderHeaderOutputPath = HeaderPathWithoutExtension + ".Generated.h";
-		self->HeaderHeaderOutput = new FileOutputStream(HeaderHeaderOutputPath);
-		if (!self->HeaderHeaderOutput->CanWrite())
+		String const HeadeRHeaderOutputPath = HeaderPathWithoutExtension + ".Generated.h";
+		self->HeadeRHeaderOutput = new FileOutputStream(HeadeRHeaderOutputPath);
+		if (!self->HeadeRHeaderOutput->CanWrite())
 		{	// Failed to open output.
-			CPPBaseParserErrorDesc static const CannonWriteHeaderHeaderError("Failed to create header`s generated header output file (%s).");
-			self->RaiseError(CannonWriteHeaderHeaderError, HeaderHeaderOutputPath.CStr());
+			CPPBaseParserErrorDesc static const CannonWriteHeadeRHeaderError("Failed to create header`s generated header output file (%s).");
+			self->RaiseError(CannonWriteHeadeRHeaderError, HeadeRHeaderOutputPath.CStr());
 			self->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
 			return false;
 		}
 		else
 		{
-			String const HeaderHeaderOutputRelativePath = Path::GetFileName(HeaderHeaderOutputPath);
-			String const HeaderHeaderOutputCopyright = String::Format(Copyrights, HeaderHeaderOutputRelativePath.CStr());
-			self->HeaderHeaderOutput->Write(HeaderHeaderOutputCopyright.CStr(), 0, sizeof(Char) * HeaderHeaderOutputCopyright.GetSize());
+			String const HeadeRHeaderOutputRelativePath = Path::GetFileName(HeadeRHeaderOutputPath);
+			String const HeadeRHeaderOutputCopyright = String::Format(Copyrights, HeadeRHeaderOutputRelativePath.CStr());
+			self->HeadeRHeaderOutput->Write(HeadeRHeaderOutputCopyright.CStr(), 0, sizeof(Char) * HeadeRHeaderOutputCopyright.GetSize());
 
 			Str static const HeaderInitializer =
 				  "#pragma once"
@@ -525,8 +525,8 @@ GD_NAMESPACE_BEGIN
 				"\n";
 
 			String const HeaderPathWithoutDirAndExtension = Path::GetFileName(HeaderPathWithoutExtension);
-			String const HeaderHeaderOutputInitializer = String::Format(HeaderInitializer, HeaderPathWithoutDirAndExtension.CStr(), HeaderPathWithoutDirAndExtension.CStr());
-			self->HeaderHeaderOutput->Write(HeaderHeaderOutputInitializer.CStr(), 0, sizeof(Char) * HeaderHeaderOutputInitializer.GetSize());
+			String const HeadeRHeaderOutputInitializer = String::Format(HeaderInitializer, HeaderPathWithoutDirAndExtension.CStr(), HeaderPathWithoutDirAndExtension.CStr());
+			self->HeadeRHeaderOutput->Write(HeadeRHeaderOutputInitializer.CStr(), 0, sizeof(Char) * HeadeRHeaderOutputInitializer.GetSize());
 		}
 
 		String const HeaderSourceOutputPath = HeaderPathWithoutExtension + ".Generated.cpp";
@@ -552,7 +552,7 @@ GD_NAMESPACE_BEGIN
 
 			String const HeaderPathWithoutDir = Path::GetFileName(self->HeaderPath);
 			String const HeaderSourceOutputInitializer = String::Format(SourceInitializer, HeaderPathWithoutDir.CStr());
-			self->HeaderHeaderOutput->Write(HeaderSourceOutputInitializer.CStr(), 0, sizeof(Char) * HeaderSourceOutputInitializer.GetSize());
+			self->HeadeRHeaderOutput->Write(HeaderSourceOutputInitializer.CStr(), 0, sizeof(Char) * HeaderSourceOutputInitializer.GetSize());
 		}
 
 		return true;
@@ -572,7 +572,7 @@ GD_NAMESPACE_BEGIN
 			"\nGD_NAMESPACE_END"
 			"\n";
 
-		self->HeaderHeaderOutput->Write(HeaderFinalizers, 0, (sizeof(HeaderFinalizers) - 1) * sizeof(Char));
+		self->HeadeRHeaderOutput->Write(HeaderFinalizers, 0, (sizeof(HeaderFinalizers) - 1) * sizeof(Char));
 		self->HeaderSourceOutput->Write(SourceFinalizers, 0, (sizeof(SourceFinalizers) - 1) * sizeof(Char));
 		return true;
 	}

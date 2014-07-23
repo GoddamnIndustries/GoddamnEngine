@@ -16,6 +16,8 @@
 // #include <GoddamnEngine/Engine/Resource/StaticMesh/StaticMeshVertexBufferObject/StaticMeshVertexBufferObject.h>
 // #include <GoddamnEngine/Platform/RenderTargetObject.h>
 
+#include <DirectXMath.h>
+
 GD_NAMESPACE_BEGIN
 
 	//static HRIRenderTarget* RenderTarget = nullptr;
@@ -272,7 +274,9 @@ GD_NAMESPACE_BEGIN
 		Vector3Fast const lookAt = transform->TransformVector(Vector3Fast(0.0, 0.0, 1.0f));
 		Vector3Fast const position = transform->GetGlobalPosition();
 		
-		self->ViewMatrix = Matrix4x4(1.0f).LookAtLh(position, lookAt, upVec);
+		self->ViewMatrix = Matrix4x4(1.0f).LookAtLH(position, lookAt, upVec);
+	//	using namespace DirectX;
+	//	XMMATRIX m = XMMatrixLookAtLH(position.ElementsVector, lookAt.ElementsVector, upVec.ElementsVector);
 	}
 
 	/// ==========================================================================================
@@ -287,14 +291,17 @@ GD_NAMESPACE_BEGIN
 				Float32 const AspectRatio = ((self->Viewport.Width - self->Viewport.Left) * static_cast<Float32>(Screen::GetResolutionWidth()))
 										  / ((self->Viewport.Height - self->Viewport.Top) * static_cast<Float32>(Screen::GetResolutionHeight()));
 			
-				self->ProjectionMatrix = Matrix4x4(1.0f).PerspectiveLh(
+				self->ProjectionMatrix = Matrix4x4(1.0f).PerspectiveLH(
 					self->FieldOfView, AspectRatio,
 					self->ClippingPlanes.ZNear, self->ClippingPlanes.ZFar
 				);
+
+			//	using namespace DirectX;
+			//	XMMATRIX m = XMMatrixPerspectiveFovLH(self->FieldOfView / 57.295779513082320876798154814105f, AspectRatio, self->ClippingPlanes.ZNear, self->ClippingPlanes.ZFar);
 			}	break;
 		case GD_CAMERA_PROJECTION_ORTHOGRAPHIC:
 			{
-				self->ProjectionMatrix = Matrix4x4(1.0f).OrthoLh(
+				self->ProjectionMatrix = Matrix4x4(1.0f).OrthoLH(
 					self->Viewport.Left, self->Viewport.Left + self->Viewport.Width, 
 					self->Viewport.Top + self->Viewport.Height, self->Viewport.Top, 
 					self->ClippingPlanes.ZNear, self->ClippingPlanes.ZFar

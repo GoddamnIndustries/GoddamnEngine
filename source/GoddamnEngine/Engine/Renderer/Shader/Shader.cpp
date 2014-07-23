@@ -63,15 +63,11 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_DEBUG_ASSERT((self->GetParentObject() != nullptr), "Invalid param location specified");
 		GD_DEBUG_ASSERT((self->ParamDesc != nullptr), "Invalid param desc specified");
-
-		memset(&self->ParamValue, 0, sizeof(self->ParamValue));
-		self->ParamDesc->AddReference();
 	}
 
 	HRIShaderParam::~HRIShaderParam()
 	{
 		self->SetValue(nullptr);
-		self->ParamDesc->RemoveReference();
 	}
 
 	void HRIShaderParam::SetValue(chandle const ParamValue)
@@ -79,42 +75,42 @@ GD_NAMESPACE_BEGIN
 		self->GetShaderParamLocation()->DidAnyParamValueChanged = true;
 		self->DidValueChanged = true;
 
-		if (ParamValue == nullptr) {	// Parameter unspecified. So we need to clear all data.
+		if (ParamValue != nullptr) {	// Parameter specified. So we need to copy new data.
+			switch (self->ParamDesc->ParamType)	{	
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D:
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE:	{
+					HRIObject*  const NewValue = *reinterpret_cast<HRIObject* const*>(ParamValue);
+					HRIObject*&       OldValue = *reinterpret_cast<HRIObject*      *>(&self->ParamValue);
+					SafeRelease(OldValue);
+					SafeObtain (OldValue = NewValue);
+				} break;
+
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX4X4:
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX3X3:
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE: {
+					GD_DEBUG_ASSERT(self->ParamPointer != nullptr, "Param points to nullptr data");
+					memcpy(self->ParamPointer, ParamValue, self->ParamDesc->GetParamSize());
+				} break;
+
+				case GD_HRI_SHADER_PARAM_DESC_TYPE_STRING: {
+					GD_DEBUG_ASSERT(self->ParamPointer != nullptr, "Param points to nullptr data");
+					Str            NewString = reinterpret_cast<Str>(ParamValue) - 1;
+					HRIShaderChar* OldString = reinterpret_cast<HRIShaderChar*>(self->ParamPointer) - 1;
+					memset(OldString, 0, self->ParamDesc->GetParamSize());
+					while ((*(++OldString) = HRIShaderChar(*(++NewString))) != HRIShaderChar('\0'));
+				} break;
+
+				default: {
+					GD_ASSERT_FALSE("Unhandled param type");
+				} break;
+			}
+		} else { // Parameter unspecified. So we need to clear all data.
 			if (   (self->ParamDesc->ParamType == GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D  )
 				|| (self->ParamDesc->ParamType == GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE)) {
 				SafeRelease(reinterpret_cast<HRIObject*>(self->ParamValue));
 			} else {
 				memset(&self->ParamPointer, 0, self->ParamDesc->GetParamSize());
 			}
-		}
-
-		switch (self->ParamDesc->ParamType)	{	// Parameter specified. So we need to copy new data.
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D:
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE:	{
-					HRIObject*  const NewValue = *reinterpret_cast<HRIObject* const*>(ParamValue);
-					HRIObject*&       OldValue = *reinterpret_cast<HRIObject*      *>(&self->ParamValue);
-					SafeRelease(OldValue);
-					SafeObtain (OldValue = NewValue);
-				}	break;
-
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX4X4:
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX3X3:
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE: {
-					GD_DEBUG_ASSERT(self->ParamPointer != nullptr, "Param points to nullptr data");
-					memcpy(self->ParamPointer, ParamValue, self->ParamDesc->GetParamSize());
-				}	break;
-
-			case GD_HRI_SHADER_PARAM_DESC_TYPE_STRING: {
-					GD_DEBUG_ASSERT(self->ParamPointer != nullptr, "Param points to nullptr data");
-					Str            NewString = reinterpret_cast<Str>(ParamValue) - 1;
-					HRIShaderChar* OldString = reinterpret_cast<HRIShaderChar*>(self->ParamPointer) - 1;
-					memset(OldString, 0, self->ParamDesc->GetParamSize());
-					while ((*(++OldString) = HRIShaderChar(*(++NewString))) != HRIShaderChar('\0'));
-				}	break;
-
-			default: {
-					GD_ASSERT_FALSE("Unhandled param type");
-				}	break;
 		}
 	}
 
@@ -215,7 +211,7 @@ GD_NAMESPACE_BEGIN
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderInstance, HRIObject, GDAPI, nullptr);
 
 	HRIShaderInstance::HRIShaderInstance(HRIShaderInstanceDesc const* const InstanceDesc)
-	 : HRIObject(HRIObject::TreeLockingFlagsNone), InstanceDesc(InstanceDesc)
+		: HRIObject(HRIObject::TreeLockingFlagsNone), InstanceDesc(InstanceDesc)
 	{
 		GD_DEBUG_ASSERT((self->InstanceDesc != nullptr), "Invalid desc specified");
 		ZeroMemory(&self->InstanceFirstLocations, sizeof(self->InstanceFirstLocations));

@@ -42,12 +42,12 @@ GD_NAMESPACE_BEGIN
 #if (defined(GD_DEBUG))
 		if (self->PhysicsSdk->getPvdConnectionManager() != nullptr)
 		{
-			char const* const VisualDebuggerHost = "127.0.0.1";
+			char const* const VisualDebuggeRHost = "127.0.0.1";
 			int const VisualDebuggerPort = 5425;
 			int const VisualDebuggerTimeout = 100;
 			self->VisualDebugger = PxVisualDebuggerExt::createConnection(
 				self->PhysicsSdk->getPvdConnectionManager(),
-				VisualDebuggerHost, VisualDebuggerPort, VisualDebuggerTimeout,
+				VisualDebuggeRHost, VisualDebuggerPort, VisualDebuggerTimeout,
 				PxVisualDebuggerExt::getAllConnectionFlags()
 			);
 		}

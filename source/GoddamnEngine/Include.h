@@ -134,12 +134,13 @@
 #		define _CRT_SECURE_NO_WARNINGS
 #	endif
 #	define GD_WARNING_SUPPRESS(Warning) __pragma(warning(suppress: Warning))
-#	define GD_ALIGN(Alignment)	__declspec(align(Alignment))
-#	define GD_DEPRECATED		__declspec(deprecated)
-#	define GDINT				__declspec(/*No export needed*/)
-#	define GDEXP				__declspec(dllexport)
-#	define GDIMP				__declspec(dllimport)
-#	define GDINL				__forceinline
+#	define GD_GCC_ALIGN(Alignment)	
+#	define GD_MSC_ALIGN(Alignment)	__declspec(align(Alignment))
+#	define GD_DEPRECATED			__declspec(deprecated)
+#	define GDINT					__declspec(/*No export needed*/)
+#	define GDEXP					__declspec(dllexport)
+#	define GDIMP					__declspec(dllimport)
+#	define GDINL					__forceinline
 #	if (defined(_WINDLL) && !defined(GD_DLL_IMPORT))
 #		define GDAPI GDEXP
 #	else
@@ -182,7 +183,7 @@
 
 #if defined(__cplusplus)
 #	define GD_PLATFORM_HAS_MOVE_SUPPORT		(true)
-#	define GD_NAMESPACE						goddamn 
+#	define GD_NAMESPACE						Goddamn 
 #	if(defined(GD_NAMESPACE))
 #		define GD_NAMESPACE_BEGIN				namespace GD_NAMESPACE { 
 #		define GD_NAMESPACE_END					} // namespace GD_NAMESPACE { 

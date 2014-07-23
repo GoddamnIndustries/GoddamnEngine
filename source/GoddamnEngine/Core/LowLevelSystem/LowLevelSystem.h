@@ -136,7 +136,7 @@ GD_NAMESPACE_BEGIN
 		BrowserStop = 0xA9,
 		BrowserSearch = 0xAA,
 		BrowserFavorites = 0xAB,
-		BrowserHome = 0xAC,
+		BrowseRHome = 0xAC,
 		VolumeMute = 0xAD,
 		VolumeDown = 0xAE,
 		VolumeUp = 0xAF,

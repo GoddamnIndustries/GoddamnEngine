@@ -165,17 +165,17 @@ GD_NAMESPACE_BEGIN
 	{
 		/// ==========================================================================================
 		// Attempting to check if this file is Shekel(R)
-		struct ShekelHeader
+		struct ShekeLHeader
 		{
 			char format[10];
 			ShekelVersion version;
-		} shekelHeader;
+		} shekeLHeader;
 		
-		InputResourceData->Read(&shekelHeader, 1, sizeof(shekelHeader));
-		GD_ASSERT((strcmp(&shekelHeader.format[0], "SHEKEL??!") == 0), 
+		InputResourceData->Read(&shekeLHeader, 1, sizeof(shekeLHeader));
+		GD_ASSERT((strcmp(&shekeLHeader.format[0], "SHEKEL??!") == 0), 
 			"Shekel(R) format validation failed.");
 
-		switch (shekelHeader.version)
+		switch (shekeLHeader.version)
 		{
 		case ShekelVersion::Version01: { LoadShekel_01(InputResourceData, self->GetLodAt(0)); } break;
 		case ShekelVersion::Version10: { LoadShekel_10(InputResourceData, self->GetLodAt(0)); } break;

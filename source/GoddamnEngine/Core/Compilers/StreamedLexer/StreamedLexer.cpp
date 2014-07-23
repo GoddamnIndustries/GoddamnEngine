@@ -425,7 +425,7 @@ GD_NAMESPACE_BEGIN
 			if (WasNotationSwitched)
 			{	// Checking if notation switching is provided in format "0x...":
 				CharAnsi const UpperCaseCharacter = CharAnsiHelpers::ToUpperCase(self->CurrentCharacter);
-				/**/ if (UpperCaseCharacter == Options.IntegerHexadecimalNotationDelimiter)	self->CurrentLexemIntegerNotation = 16;
+				/**/ if (UpperCaseCharacter == Options.IntegeRHexadecimalNotationDelimiter)	self->CurrentLexemIntegerNotation = 16;
 				else if (UpperCaseCharacter == Options.IntegerOctalNotationDelimiter)		self->CurrentLexemIntegerNotation = 8;
 				else if (UpperCaseCharacter == Options.IntegerBinaryNotationDelimiter)		self->CurrentLexemIntegerNotation = 2;
 				else WasNotationSwitched = false;
@@ -927,7 +927,7 @@ GD_NAMESPACE_BEGIN
 		_In_ String	                    && SingleLineCommentDeclaration,
 		_In_ String	                    && MultipleLineCommentBeginning,
 		_In_ String	                    && MultipleLineCommentEnding,
-		_In_ CharAnsi const                IntegerHexadecimalNotationDelimiter,
+		_In_ CharAnsi const                IntegeRHexadecimalNotationDelimiter,
 		_In_ CharAnsi const                IntegerOctalNotationDelimiter,
 		_In_ CharAnsi const                IntegerBinaryNotationDelimiter,
 		_In_ CharAnsi const                FloatingPointDelimiter
@@ -936,15 +936,15 @@ GD_NAMESPACE_BEGIN
 		, SingleLineCommentDeclaration(Forward<String>(SingleLineCommentDeclaration))
 		, MultipleLineCommentBeginning(Forward<String>(MultipleLineCommentBeginning))
 		, MultipleLineCommentEnding(Forward<String>(MultipleLineCommentEnding))
-		, IntegerHexadecimalNotationDelimiter((IntegerHexadecimalNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerHexadecimalNotationDelimiter) : CharAnsi('\0'))
+		, IntegeRHexadecimalNotationDelimiter((IntegeRHexadecimalNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegeRHexadecimalNotationDelimiter) : CharAnsi('\0'))
 		, IntegerOctalNotationDelimiter((IntegerOctalNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerOctalNotationDelimiter) : CharAnsi('\0'))
 		, IntegerBinaryNotationDelimiter((IntegerBinaryNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerBinaryNotationDelimiter) : CharAnsi('\0'))
 		, FloatingPointDelimiter(FloatingPointDelimiter)
 	{
 		// Checking if all delimiters are alphabetic characters.
 		/// @todo Add check for all notation switching characters have unique or \0 values.
-		GD_DEBUG_ASSERT(((self->IntegerHexadecimalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(self->IntegerHexadecimalNotationDelimiter)),
-			"'IntegerHexadecimalNotationDelimiter' should be alphabetic character. Recommended value is 'x'.");
+		GD_DEBUG_ASSERT(((self->IntegeRHexadecimalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(self->IntegeRHexadecimalNotationDelimiter)),
+			"'IntegeRHexadecimalNotationDelimiter' should be alphabetic character. Recommended value is 'x'.");
 		GD_DEBUG_ASSERT(((self->IntegerOctalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(self->IntegerOctalNotationDelimiter)),
 			"'IntegerOctalNotationDelimiter' should be alphabetic character. Recommended value is 'c'.");
 		GD_DEBUG_ASSERT(((self->IntegerBinaryNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(self->IntegerBinaryNotationDelimiter)),

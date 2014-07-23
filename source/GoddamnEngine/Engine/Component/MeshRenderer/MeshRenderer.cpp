@@ -78,11 +78,10 @@ GD_NAMESPACE_BEGIN
 	
 	void MeshRenderer::OnRenderSelf(Camera const* const camera)
 	{
-		if (self->RendererVertexShaderInstance != nullptr)
-		{
+		if (self->RendererVertexShaderInstance != nullptr) {
 			Matrix4x4 const& MatrixModel  = self->GetGameObject()->GetTransform()->GetTransformMatrix();
-			Matrix4x4 const  MatrixVp     = camera->GetProjectionMatrix() * camera->GetViewMatrix();
-			Matrix4x4 const  MatrixMvp    = MatrixVp * MatrixModel;
+			Matrix4x4 const  MatrixVp     = camera->GetViewMatrix() * camera->GetProjectionMatrix();
+			Matrix4x4 const  MatrixMvp    = MatrixModel * MatrixVp;
 		//	Matrix3 const  MatrixNormal = Matrix3(Matrix4x4(MatrixModel).Inverse()).Transpose();
 
 			self->RendererMatrixMvp   ->SetValue<Matrix4x4>(MatrixMvp);

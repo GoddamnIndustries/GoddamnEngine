@@ -24,7 +24,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL VectorRegisterType VectorMake(Float32 const CommonValue)
 		{
-			return _mm_set1_ps(CommonValue);
+			return _mm_set_ps1(CommonValue);
 		}
 
 		// Dirty hack to provide constexpr 'ElementIndex' param.
@@ -32,16 +32,14 @@ GD_NAMESPACE_BEGIN
 		template<unsigned const ElementIndex>
 		GDINL VectorRegisterType _VectorReplicate(VectorRegisterType const Register)
 		{
-			enum : unsigned { ShuffleMask = GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(ElementIndex, ElementIndex, ElementIndex, ElementIndex) };
-			return _mm_shuffle_ps(Register, Register, ShuffleMask);
+			return _mm_shuffle_ps(Register, Register, GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(ElementIndex, ElementIndex, ElementIndex, ElementIndex));
 		}
 
 #define VectorShuffle(Register0, Register1, x, y, z, w)	_VectorShuffle<x, y, z, w>(Register0, Register1)
 		template<unsigned const x, unsigned const y, unsigned const z, unsigned const w>
 		GDINL VectorRegisterType _VectorShuffle(VectorRegisterType const Register0, VectorRegisterType const Register1)
 		{
-			enum : unsigned { ShuffleMask = GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(x, y, z, w) };
-			return _mm_shuffle_ps(Register0, Register1, ShuffleMask);
+			return _mm_shuffle_ps(Register0, Register1, GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(x, y, z, w));
 		}
 
 		// Dirty hack to provide constexpr 'x..w' params.
@@ -49,8 +47,19 @@ GD_NAMESPACE_BEGIN
 		template<unsigned const x, unsigned const y, unsigned const z, unsigned const w>
 		GDINL VectorRegisterType _VectorSwizzle(VectorRegisterType const Register)
 		{
-			enum : unsigned { ShuffleMask = GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(x, y, z, w) };
-			return _mm_shuffle_ps(Register, Register, ShuffleMask);
+			return _mm_shuffle_ps(Register, Register, GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(x, y, z, w));
+		}
+
+		GDINL VectorRegisterType VectorSelect(VectorRegisterType const First, VectorRegisterType const Second, VectorRegisterType const Control)
+		{
+			__m128 Temp0 = _mm_andnot_ps(Control, First);
+			__m128 Temp1 = _mm_and_ps(Second, Control);
+			return _mm_or_ps(Temp0, Temp1);
+		}
+
+		GDINL VectorRegisterType VectorMove(VectorRegisterType const First, VectorRegisterType const Second)
+		{
+			return _mm_move_ss(First, Second);
 		}
 
 		GDINL VectorRegisterType VectorMake(Float32 const x, Float32 const y, Float32 const z, Float32 const w)
@@ -78,6 +87,16 @@ GD_NAMESPACE_BEGIN
 			return _mm_div_ps(First, Second);
 		}
 
+		GDINL VectorRegisterType VectorAnd(VectorRegisterType const First, VectorRegisterType const Second)
+		{
+			return _mm_and_ps(First, Second);
+		}
+
+		GDINL VectorRegisterType VectorOr(VectorRegisterType const First, VectorRegisterType const Second)
+		{
+			return _mm_or_ps(First, Second);
+		}
+
 		GDINL VectorRegisterType VectorMulAdd(VectorRegisterType const First, VectorRegisterType const Second, VectorRegisterType const Third)
 		{
 			return _mm_add_ps(_mm_mul_ps(First, Second), Third);
@@ -89,28 +108,55 @@ GD_NAMESPACE_BEGIN
 			__m128 const Temp2 = _mm_sqrt_ss(Temp1);
 			return _mm_cvtss_f32(Temp2);
 		}
+		
+		inline VectorRegisterType VectorNegate(VectorRegisterType const Vector)
+		{
+			return _mm_sub_ps(_mm_setzero_ps(), Vector);
+		}
 
 		inline VectorRegisterType VectorNormalize(VectorRegisterType const Vector)
 		{
-			__m128 const Temp1 = _mm_dp_ps(Vector, Vector, 0xFF);
+			enum { ShuffleMask = 0xFF /*0b11111111*/ };
+			__m128 const Temp1 = _mm_dp_ps(Vector, Vector, ShuffleMask);
+			__m128 const Temp2 = _mm_rsqrt_ps(Temp1);
+			return _mm_mul_ps(Vector, Temp2);
+		}
+
+		inline VectorRegisterType Vector3Normalize(VectorRegisterType const Vector)
+		{
+			__m128 const Temp1 = _mm_dp_ps(Vector, Vector, 0x7F /*0b01111111*/);
 			__m128 const Temp2 = _mm_rsqrt_ps(Temp1);
 			return _mm_mul_ps(Vector, Temp2);
 		}
 
 		inline Float32 VectorDot4(VectorRegisterType const First, VectorRegisterType const Second)
 		{
-			__m128 const Temp1 = _mm_dp_ps(First, Second, 0xFF);
+			__m128 const Temp1 = _mm_dp_ps(First, Second, 0xFF /*0b11111111*/);
 			return _mm_cvtss_f32(Temp1);
 		}
 
 		inline Float32 VectorDot3(VectorRegisterType const First, VectorRegisterType const Second)
 		{
-			enum : unsigned { ShuffleMask = GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(1, 2, 3, 0) };
-			__m128 const Temp1 = _mm_dp_ps(First, Second, ShuffleMask);
+			__m128 const Temp1 = _mm_dp_ps(First, Second, 0x7F /*0b01110001*/);
 			return _mm_cvtss_f32(Temp1);
 		}
 
+		inline VectorRegisterType VectorDot4Vector(VectorRegisterType const First, VectorRegisterType const Second)
+		{
+			return _mm_dp_ps(First, Second, 0xFF /*0b11111111*/);
+		}
+
+		inline VectorRegisterType VectorDot3Vector(VectorRegisterType const First, VectorRegisterType const Second)
+		{
+			return _mm_dp_ps(First, Second, 0x7F /*0b0111111*/);
+		}
+
 		inline VectorRegisterType VectorCross(VectorRegisterType const First, VectorRegisterType const Second)
+		{
+			throw 0;
+		}
+
+		inline VectorRegisterType Vector3Cross(VectorRegisterType const First, VectorRegisterType const Second)
 		{
 			__m128 const  FirstYZXW = _mm_shuffle_ps(First,  First,  GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(1, 2, 0, 3));
 			__m128 const  FirstZXYW = _mm_shuffle_ps(First,  First,  GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(2, 0, 1, 3));

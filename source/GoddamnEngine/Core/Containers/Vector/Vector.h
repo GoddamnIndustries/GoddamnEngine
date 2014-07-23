@@ -135,13 +135,13 @@ GD_NAMESPACE_BEGIN
 			{ 
 			}
 			
-			inline HeapMemoryProvider(HeapMemoryProvider const& OtherHeapMemoryProvider) = delete;
-			inline HeapMemoryProvider(HeapMemoryProvider     && OtherHeapMemoryProvider)
-				: Capacity(OtherHeapMemoryProvider.Capacity)
-				, Memory  (OtherHeapMemoryProvider.Memory  )
+			inline HeapMemoryProvider(HeapMemoryProvider const& OtheRHeapMemoryProvider) = delete;
+			inline HeapMemoryProvider(HeapMemoryProvider     && OtheRHeapMemoryProvider)
+				: Capacity(OtheRHeapMemoryProvider.Capacity)
+				, Memory  (OtheRHeapMemoryProvider.Memory  )
 			{
-				OtherHeapMemoryProvider.Memory = nullptr;
-				OtherHeapMemoryProvider.Capacity = 0;
+				OtheRHeapMemoryProvider.Memory = nullptr;
+				OtheRHeapMemoryProvider.Capacity = 0;
 			}
 
 			inline ~HeapMemoryProvider()
@@ -153,16 +153,16 @@ GD_NAMESPACE_BEGIN
 			GDINL ElementType const* GetPointer () const { return self->Memory; }
 			GDINL ElementType      * GetPointer ()		 { return self->Memory; }
 
-			inline HeapMemoryProvider& operator= (HeapMemoryProvider const& OtherHeapMemoryProvider) = delete;
-			inline HeapMemoryProvider& operator= (HeapMemoryProvider     && OtherHeapMemoryProvider)
+			inline HeapMemoryProvider& operator= (HeapMemoryProvider const& OtheRHeapMemoryProvider) = delete;
+			inline HeapMemoryProvider& operator= (HeapMemoryProvider     && OtheRHeapMemoryProvider)
 			{
-				if ((&OtherHeapMemoryProvider) != self)
+				if ((&OtheRHeapMemoryProvider) != self)
 				{
 					self->~HeapMemoryProvider();
-					self->Memory   = OtherHeapMemoryProvider.Memory;
-					self->Capacity = OtherHeapMemoryProvider.Capacity;
-					OtherHeapMemoryProvider.Memory = nullptr;
-					OtherHeapMemoryProvider.Capacity = 0;
+					self->Memory   = OtheRHeapMemoryProvider.Memory;
+					self->Capacity = OtheRHeapMemoryProvider.Capacity;
+					OtheRHeapMemoryProvider.Memory = nullptr;
+					OtheRHeapMemoryProvider.Capacity = 0;
 				}
 
 				return *self;

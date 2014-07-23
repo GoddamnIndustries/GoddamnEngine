@@ -151,13 +151,11 @@ GD_NAMESPACE_BEGIN
 
 	void Transform::OnTransformed(Component* const transformer)
 	{
-		self->transformMatrix = 
-			/*self->parent->transformMatrix **/
-			Matrix4x4().Translate(self->position) *
-			Matrix4x4().Rotate(self->rotation) *
-			Matrix4x4().Scale(self->scale);
+		Matrix4x4 const Scaling = Matrix4x4().Scale(self->scale);
+		Matrix4x4 const Rotation = Matrix4x4().Rotate(self->rotation);
+		Matrix4x4 const Translation = Matrix4x4().Translate(self->position);
 
-	//	self->normalMatrix = Matrix3(Matrix4x4(self->transformMatrix).Inverse()).Transpose(); 
+		self->transformMatrix = Scaling * Rotation * Translation;
 	}
 
 GD_NAMESPACE_END
