@@ -74,28 +74,6 @@ GD_NAMESPACE_BEGIN
 			GDINL ~OpenGLDriver() { }
 
 		public /*Class API*/:
-#if ((!defined(GD_HRI_OGL_ES)) && (defined(GD_PLATFORM_WINDOWS)))
-		private /*WGL methods dynamic linkage*/:
-			typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC   ) (HDC const hDC, int const* const piAttribIList, const FLOAT* const pfAttribFList, UINT const nMaxFormats, int* const piFormats, UINT* const nNumFormats);
-			typedef HGLRC(WINAPI * PFNWGLCREATECONTEXTATTRIBSARBPROC) (HDC const hDC, HGLRC const hShareContext, int const* attribList);
-			typedef BOOL (WINAPI * PFNWGLSwapIntervalEXTPROC        ) (int const interval);
-			PFNWGLCHOOSEPIXELFORMATARBPROC    _WinChoosePixelFormatARB    = nullptr;
-			PFNWGLCREATECONTEXTATTRIBSARBPROC _WinCreateContextAttribsARB = nullptr;
-			PFNWGLSwapIntervalEXTPROC         _WinSwapIntervalEXT         = nullptr;
-		public /*WGL API*/:
-			GDINL BOOL WinChoosePixelFormatARB(HDC const hDC, int const* const piAttribIList, const FLOAT* const pfAttribFList, UINT const nMaxFormats, int* const piFormats, UINT* const nNumFormats) const
-			{
-				return self->_WinChoosePixelFormatARB(hDC, piAttribIList, pfAttribFList, nMaxFormats, piFormats, nNumFormats);
-			}
-			GDINL HGLRC WinCreateContextAttribsARB(HDC const hDC, HGLRC const hShareContext, int const* attribList) const
-			{
-				return self->_WinCreateContextAttribsARB(hDC, hShareContext, attribList);
-			}
-			GDINL BOOL WinSwapIntervalEXT(int const interval)
-			{
-				return self->_WinSwapIntervalEXT(interval);
-			}
-#endif	// if ((!defined(GD_HRI_OGL_ES)) && (defined(GD_PLATFORM_WINDOWS)))
 #include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
 		};	// struct DriverMethodsType
 		

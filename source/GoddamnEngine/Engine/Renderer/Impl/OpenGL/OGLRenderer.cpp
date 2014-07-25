@@ -40,77 +40,64 @@ GD_NAMESPACE_BEGIN
 		}
 #if (!defined(GD_HRI_OGL_ES))
 #	if (defined(GD_PLATFORM_WINDOWS))
-		HDC const DeviceContext = HDC(LowLevelSystem::GetInstance().hDeviceContext);
+		HWND const Window = HWND(LowLevelSystem::GetInstance().hWindow);
+		HDC  const DeviceContext = GetDC(Window);
 
-		/*Loading extensions*/ {
-			PIXELFORMATDESCRIPTOR PixelFormat;
-			if (::SetPixelFormat(DeviceContext, 1, &PixelFormat) != TRUE) {
-				throw HRIOGLException("'::SetPixelFormat' failed.");
-			}
-			// Creating temporary context to load OpenGL API.
-			HGLRC const TemporaryRendererContext = ::wglCreateContext(DeviceContext);
-			if (TemporaryRendererContext == nullptr) {
-				throw HRIOGLException("Failed to create temporary OpenGL context ('::wglCreateContext' returned nullptr).");
-			}
-			if (::wglMakeCurrent(DeviceContext, TemporaryRendererContext) != TRUE) {
-				throw HRIOGLException("Failed to create set temporary OpenGL context ('::wglMakeCurrent' failed).");
-			}
-			// Loading OpenGL methods using generated code and WGL manually.
-#include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
-			/**/self->Driver._WinChoosePixelFormatARB = reinterpret_cast<OpenGLDriver::PFNWGLCHOOSEPIXELFORMATARBPROC>(wglGetProcAddress("wglChoosePixelFormatARB"));
-			if (self->Driver._WinChoosePixelFormatARB == nullptr) {
-				throw HRIOGLException("Unable to map 'wglChoosePixelFormatARB' method.");
-			}
-			/**/self->Driver._WinCreateContextAttribsARB = reinterpret_cast<OpenGLDriver::PFNWGLCREATECONTEXTATTRIBSARBPROC>(wglGetProcAddress("wglCreateContextAttribsARB"));
-			if (self->Driver._WinCreateContextAttribsARB == nullptr) {
-				throw HRIOGLException("Unable to map 'wglCreateContextAttribsARB' method.");
-			}
-			/**/self->Driver._WinSwapIntervalEXT = reinterpret_cast<OpenGLDriver::PFNWGLSwapIntervalEXTPROC>(wglGetProcAddress("wglSwapIntervalEXT"));
-			if (self->Driver._WinSwapIntervalEXT == nullptr) {
-				throw HRIOGLException("Unable to map 'wglSwapIntervalEXT' method.");
-			}
+		PIXELFORMATDESCRIPTOR PixelFormatDescriptor;
+		ZeroMemory(&PixelFormatDescriptor, sizeof(PIXELFORMATDESCRIPTOR));
+		PixelFormatDescriptor.nSize      = sizeof(PIXELFORMATDESCRIPTOR);
+		PixelFormatDescriptor.dwFlags    = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
+		PixelFormatDescriptor.iPixelType = PFD_TYPE_RGBA;
+		PixelFormatDescriptor.cColorBits = 32;
+		PixelFormatDescriptor.cDepthBits = 32;
+		PixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
 
-			::wglMakeCurrent(nullptr, nullptr);
-			::wglDeleteContext(TemporaryRendererContext);
+		int const PixelFormat = ::ChoosePixelFormat(DeviceContext, &PixelFormatDescriptor);
+		if (PixelFormat == 0) {
+			throw HRIOGLException("Failed to choose pixel format ('::ChoosePixelFormat' returned 0)");
+		}
+		if (::SetPixelFormat(DeviceContext, PixelFormat, &PixelFormatDescriptor) != TRUE) {
+			throw HRIOGLException("Failed to set pixel format ('::SetPixelFormat' failed)");
 		}
 
-		/* Creating a real OpenGL 4.3 context: */ {
-			int static const PixelFormatAttributes[] = {
-				WGL_SUPPORT_OPENGL_ARB,    TRUE,
-				WGL_DRAW_TO_WINDOW_ARB,    TRUE,
-				WGL_ACCELERATION_ARB,      WGL_FULL_ACCELERATION_ARB,
-				WGL_COLOR_BITS_ARB,        24,
-				WGL_DEPTH_BITS_ARB,        24,
-				WGL_STENCIL_BITS_ARB,      8,
-				WGL_DOUBLE_BUFFER_ARB,     TRUE,
-				WGL_SWAP_METHOD_ARB,       WGL_SWAP_EXCHANGE_ARB,
-				WGL_PIXEL_TYPE_ARB,        WGL_TYPE_RGBA_ARB,
-				0
-			};
-
-			int static const VersionAttributes[] = {
-				WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-				WGL_CONTEXT_MINOR_VERSION_ARB, 2,
-				0
-			};
-
-			/*Selecting pixel format*/ {
-				int  ChosenPixelFormat = 0;
-				UINT ChosenFormatCount = 0;
-				if (self->Driver.WinChoosePixelFormatARB(DeviceContext, &PixelFormatAttributes[0], nullptr, 1, &ChosenPixelFormat, &ChosenFormatCount) != TRUE) {
-					throw HRIOGLException("Failed to choose pixel format ('->wglChoosePixelFormatARB' failed).");
-				}
-			}
-
-			if ((self->RenderingContext = self->Driver.WinCreateContextAttribsARB(DeviceContext, 0, &VersionAttributes[0])) == nullptr) {
-				throw HRIOGLException(String::Format("Failed to create OpenGL %d.%d context ('->wglCreateContextAttribsARB' failed).", VersionAttributes[0], VersionAttributes[1]));
-			}
-
-			if(::wglMakeCurrent(DeviceContext, self->RenderingContext) != TRUE) {
-				throw HRIOGLException("Failed to make generated context current ('::wglMakeCurrent' failed).");
-			}
+		// Creating temporary OpenGL 2.1 context to load extensions.
+		HGLRC const TemporaryContext = ::wglCreateContext(DeviceContext);
+		if (TemporaryContext == nullptr) {
+			throw HRIOGLException("Failed to create temporary OpenGL context ('::wglCreateContext' returned nullptr)");
 		}
-		//	endif	// if (defined(GD_PLATFORM_WINDOWS))
+		if (wglMakeCurrent(DeviceContext, TemporaryContext) != TRUE) {
+			throw HRIOGLException("Failed to setup temorary OpenGL context ('::wglMakeCurrent' failed)");
+		}
+
+		// Loading OpenGL methods using generated code and WGL manually.
+#if (!defined(__INTELLISENSE__))	// Intelly Sence goes crazy while parsing code below.
+#	include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
+#endif	// if (!defined(__INTELLISENSE__))
+
+		// Loading API that allowes creation of avanced context.
+		typedef HGLRC(APIENTRY* PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC const hDC, HGLRC const hGLRC, int const* const Attributes);
+		auto const WinCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>(::wglGetProcAddress("wglCreateContextAttribsARB"));
+		if (WinCreateContextAttribsARB == nullptr) {
+			throw HRIOGLException("Unable to map 'wglCreateContextAttribsARB' method.");
+		}
+
+		::wglMakeCurrent(nullptr, nullptr);
+		::wglDeleteContext(TemporaryContext);
+
+		int static const VersionAttributes[] = {
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 2,
+			0
+		};
+
+		if ((self->RenderingContext = WinCreateContextAttribsARB(DeviceContext, nullptr, VersionAttributes)) == nullptr) {
+			throw HRIOGLException(String::Format("Failed to create OpenGL %d.%d context ('->wglCreateContextAttribsARB' failed).", VersionAttributes[0], VersionAttributes[1]));
+		}
+		if (::wglMakeCurrent(DeviceContext, self->RenderingContext) != TRUE) {
+			throw HRIOGLException("Failed to make generated context current ('::wglMakeCurrent' failed).");
+		}
+
+//	endif	// if (defined(GD_PLATFORM_WINDOWS))
 #	else	// *** Platform Select ***
 #		error "'HROGLInterface::CreateContex()' is not implemented for target platform (OpenGL desktop)."
 #	endif	// *** Platform Select ***
@@ -141,9 +128,6 @@ GD_NAMESPACE_BEGIN
 #	define GD_DEFINE_OGL_METHOD(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) self->Driver._##MethodName = nullptr;
 #	include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
 #	if (defined(GD_PLATFORM_WINDOWS))
-		self->Driver._WinChoosePixelFormatARB    = nullptr;
-		self->Driver._WinCreateContextAttribsARB = nullptr;
-		self->Driver._WinSwapIntervalEXT         = nullptr;
 		::wglMakeCurrent(nullptr, nullptr);
 		::wglDeleteContext(self->RenderingContext);
 		self->RenderingContext = nullptr;
