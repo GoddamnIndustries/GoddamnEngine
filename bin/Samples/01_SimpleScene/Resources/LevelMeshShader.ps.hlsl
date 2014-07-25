@@ -6,8 +6,8 @@ struct VertexToPixel
 	float2 TexCoord		: TEXCOORD3;
 };
 
-Texture2D TestTexture : register(t0);
-SamplerState TestTextureSampler : register(s0);
+//Texture2D TestTexture : register(t0);
+//SamplerState TestTextureSampler : register(s0);
 
 void Main(
 	in  const	VertexToPixel	IN_V2P,
@@ -18,5 +18,5 @@ void Main(
 {
 	OUT_POSITION = float4(IN_V2P.Position, IN_V2P.FragCoord.a);
 	OUT_NORMAL	 = float4(IN_V2P.Normal, 1.0f);
-	OUT_COLOR = float4(normalize(abs(IN_V2P.TexCoord)), 1.0, 1.0f);// TestTexture.Sample(TestTextureSampler, IN_V2P.TexCoord);
+	OUT_COLOR    = float4(normalize(abs(IN_V2P.TexCoord)), 1.0, 1.0f);// TestTexture.Sample(TestTextureSampler, IN_V2P.TexCoord);
 }

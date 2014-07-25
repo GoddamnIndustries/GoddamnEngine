@@ -27,12 +27,12 @@
 GD_NAMESPACE_BEGIN
 
 	/// Indicates about runtime error caused by renderer interface
-	class D3D11Exception : public HRIException
+	class HRID3D11Exception : public HRIException
 	{
 	public /*Public API*/:
-		GDINL explicit D3D11Exception(String const& Message) : HRIException(Message.CStr()) { }
-		GDINL virtual ~D3D11Exception() { }
-	};	// class D3D11Exception
+		GDINL explicit HRID3D11Exception(String const& Message) : HRIException(Message.CStr()) { }
+		GDINL virtual ~HRID3D11Exception() { }
+	};	// class HRID3D11Exception
 
 	/// Provides automatic releasing of Direct3D 11 objects.
 	template<typename D3D11PointerType>

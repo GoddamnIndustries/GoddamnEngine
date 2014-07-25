@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 
 		HRESULT Result = E_FAIL;
 		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&VertexBufferDescription, &VertexBufferData, &self->Buffer))) {
-			throw D3D11Exception("Vertex buffer creation failed.");
+			throw HRID3D11Exception("Vertex buffer creation failed.");
 		}
 	}
 
@@ -64,7 +64,7 @@ GD_NAMESPACE_BEGIN
 
 		HRESULT Result = E_FAIL;
 		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&IndexBufferDescription, &IndexBufferData, &self->Buffer))) {
-			throw D3D11Exception("Index buffer creation failed.");
+			throw HRID3D11Exception("Index buffer creation failed.");
 		}
 	}
 	
@@ -83,7 +83,7 @@ GD_NAMESPACE_BEGIN
 
 		HRESULT Result = E_FAIL;
 		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&ConstantBufferDescription, nullptr, &self->Buffer))) {
-			throw D3D11Exception("Constant buffer creation failed.");
+			throw HRID3D11Exception("Constant buffer creation failed.");
 		}
 	}
 
@@ -95,7 +95,7 @@ GD_NAMESPACE_BEGIN
 
 		HRESULT Result = E_FAIL;
 		if (FAILED(Result = HRD3D11Interface::GetInstance().Context->Map(self->Buffer.Get(), 0, D3D11_MAP_READ, 0, &ConstantBufferData))) {
-			throw D3D11Exception("Constant buffer data mapping failed.");
+			throw HRID3D11Exception("Constant buffer data mapping failed.");
 		}
 
 		memcpy(Data, ConstantBufferData.pData, self->GetSize());
@@ -109,7 +109,7 @@ GD_NAMESPACE_BEGIN
 
 		HRESULT Result = E_FAIL;
 		if (FAILED(Result = HRD3D11Interface::GetInstance().Context->Map(self->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ConstantBufferData))) {
-			throw D3D11Exception("Constant buffer data mapping failed.");
+			throw HRID3D11Exception("Constant buffer data mapping failed.");
 		}
 
 		memcpy(ConstantBufferData.pData, Data, self->GetSize());

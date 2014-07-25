@@ -24,7 +24,7 @@ GD_NAMESPACE_BEGIN
 
 				DXGI_ADAPTER_DESC adapterDescription = { 0 };
 				Result = adapter->GetDesc(&adapterDescription);
-				throw D3D11Exception("Getting information about GPU adapter failed");
+				throw HRID3D11Exception("Getting information about GPU adapter failed");
 
 				const size_t videoCardMemory = adapterDescription.DedicatedVideoMemory / 1024 / 1024;
 				const String videoCardDescription(&adapterDescription.Description[0]);
@@ -98,17 +98,17 @@ GD_NAMESPACE_BEGIN
 			&self->Device,		            /* _Out_  ID3D11Device **ppDevice */
 			&CreatedFeatureLevel,			/* _Out_  D3D_FEATURE_LEVEL *pFeatureLevel */
 			&self->Context)) {	            /* _Out_  ID3D11DeviceContext **ppImmediateContext */
-			throw D3D11Exception("Failed to create DirectX Device and Swap Chain");
+			throw HRID3D11Exception("Failed to create DirectX Device and Swap Chain");
 		}
 		
 		/* Setting up back buffer */ {
 			D3D11RefPtr<ID3D11Texture2D> BackBuffer;
 			if (FAILED(Result = self->SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(BackBuffer.GetAddressOf())))) {
-				throw D3D11Exception("Getting pointer to back buffer failed");
+				throw HRID3D11Exception("Getting pointer to back buffer failed");
 			}
 
 			if (FAILED(Result = self->Device->CreateRenderTargetView(BackBuffer.Get(), nullptr, &self->RenderTargetView))) {
-				throw D3D11Exception("RenderTargetView creation failed.");
+				throw HRID3D11Exception("RenderTargetView creation failed.");
 			}
 		}
 
@@ -128,7 +128,7 @@ GD_NAMESPACE_BEGIN
 			DepthBufferDescription.MiscFlags          = 0;
 
 			if (FAILED(Result = self->Device->CreateTexture2D(&DepthBufferDescription, nullptr, &self->DepthStencilBuffer))) {
-				throw D3D11Exception("Creation of Depth buffer failed.");
+				throw HRID3D11Exception("Creation of Depth buffer failed.");
 			}
 		}
 
@@ -151,7 +151,7 @@ GD_NAMESPACE_BEGIN
 			DepthStencilDesc.BackFace.StencilFunc         = D3D11_COMPARISON_ALWAYS;
 
 			if (FAILED(Result = self->Device->CreateDepthStencilState(&DepthStencilDesc, &self->DepthStencilState))) {
-				throw D3D11Exception("DepthStencilState creation failed");
+				throw HRID3D11Exception("DepthStencilState creation failed");
 			}
 		}	self->Context->OMSetDepthStencilState(self->DepthStencilState.Get(), 1);
 
@@ -163,7 +163,7 @@ GD_NAMESPACE_BEGIN
 			DepthStencilViewDesc.Texture2D.MipSlice = 0;
 
 			if (FAILED(Result = self->Device->CreateDepthStencilView(self->DepthStencilBuffer.Get(), &DepthStencilViewDesc, &self->DepthStencilView))) {
-				throw D3D11Exception("DepthStencilView creation failed");
+				throw HRID3D11Exception("DepthStencilView creation failed");
 			}
 		}	self->Context->OMSetRenderTargets(1, &self->RenderTargetView, self->DepthStencilView.Get() /*nullptr*/);
 
@@ -182,7 +182,7 @@ GD_NAMESPACE_BEGIN
 			RasterizerDesc.ScissorEnable         = FALSE;
 
 			if (FAILED(Result = self->Device->CreateRasterizerState(&RasterizerDesc, &self->SolidRasterizerState))) {
-				throw D3D11Exception("Rasterizer State creation failed");
+				throw HRID3D11Exception("Rasterizer State creation failed");
 			}
 		}	self->Context->RSSetState(self->SolidRasterizerState.Get());
 			
@@ -221,8 +221,10 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_UNUSED(clearingViewport);
 
-		if (doClearDepth)
+		if (doClearDepth) {
 			self->Context->ClearDepthStencilView(self->DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		}
+
 		self->Context->ClearRenderTargetView(self->RenderTargetView.Get(), &clearColor[0]);
 	}
 
@@ -233,6 +235,7 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
+#if (!defined(GD_MONOLITHIC_ENGINE))
 /// ==========================================================================================
 GDEXP extern bool EnginePluginEntry(GD PluginDescription* const Description)
 {
@@ -246,3 +249,4 @@ GDEXP extern bool EnginePluginEntry(GD PluginDescription* const Description)
 
 	return true;
 }
+#endif	// if (!defined(GD_MONOLITHIC_ENGINE))

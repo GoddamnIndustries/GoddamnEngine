@@ -117,18 +117,14 @@ GD_NAMESPACE_BEGIN
 					self->StreamerMode = ResourceStreamerMode::LaunchedNormalLoading;
 				}
 			} break;
-
-		case ResourceStreamerMode::LaunchedNormalLoading:
-			{
+			case ResourceStreamerMode::LaunchedNormalLoading: {
 				//while (self->requestedResources.GetSize() != 0)
 				//{
 				//	RefPtr<Resource> const resource = self->requestedResources.GetFirstElement().Value;
 				//	RSStreamer::GetInstance().LoadImmediately(resource);
 				//}
 			} break;
-
-		case ResourceStreamerMode::LaunchedStreaming:
-			{
+			case ResourceStreamerMode::LaunchedStreaming: {
 				//while (self->requestedResources.GetSize() != 0);
 			} break;
 		}

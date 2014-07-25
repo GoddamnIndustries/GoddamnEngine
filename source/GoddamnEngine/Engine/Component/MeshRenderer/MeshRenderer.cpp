@@ -59,7 +59,7 @@ GD_NAMESPACE_BEGIN
 	{
 		if (self->RendererVertexShaderInstance == nullptr)
 		{
-			// self->OnMeshRendererParamChanged(self);
+			self->OnMeshRendererParamChanged(self);
 		}
 	}
 

@@ -1,3 +1,11 @@
+/// ==========================================================================================
+/// D3D11RenderTarget.cpp: Render target Direct3D11 implementation.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// 
+/// History:
+///		* 17.02.2014  - Created by James Jhuighuy
+/// ==========================================================================================
+
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11RenderTarget.h>
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11Texture2D.h>
 
@@ -8,8 +16,7 @@ GD_NAMESPACE_BEGIN
 	{
 		HRESULT Result = E_FAIL;
 		ID3D11Device* const device = HRD3D11Interface::GetInstance().Device.Get();
-		for (auto const TheTexture2D : self->RenderTargetTextures)
-		{	// Creating render target for each texture.
+		for (auto const TheTexture2D : self->RenderTargetTextures) {	// Creating render target for each texture.
 			HRID3D11Texture2D const* const Texture2D = object_cast<HRID3D11Texture2D const*>(TheTexture2D);
 
 			D3D11_RENDER_TARGET_VIEW_DESC RenderTargetViewDesc;
@@ -20,7 +27,7 @@ GD_NAMESPACE_BEGIN
 
 			ID3D11RenderTargetView* RenderTargetView = nullptr;
 			if (FAILED(Result = device->CreateRenderTargetView(Texture2D->GetTexture(), &RenderTargetViewDesc, &RenderTargetView))) {
-				throw D3D11Exception("Failed to create render target view");
+				throw HRID3D11Exception("Failed to create render target view");
 			}
 
 			self->RenderTargetRenderTargets.PushLast(RenderTargetView);

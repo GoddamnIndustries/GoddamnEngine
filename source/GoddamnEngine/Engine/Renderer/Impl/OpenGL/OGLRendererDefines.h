@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// OGLRendererMethods.h - OpenGL constants.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* 05.06.2014 - Created by James Jhuighuy.
 ///					   Copy-pasted from 'GLES3/gl3.h' header.
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 GD_NAMESPACE_BEGIN
 
@@ -762,5 +762,9 @@ GD_NAMESPACE_BEGIN
 #define GL_MAX_ELEMENT_INDEX                             0x8D6B
 #define GL_NUM_SAMPLE_COUNTS                             0x9380
 #define GL_TEXTURE_IMMUTABLE_LEVELS                      0x82DF
+
+// These come from OpenGL 4:
+#define GL_TESS_CONTROL_SHADER							 0x8E88
+#define GL_TESS_EVALUATION_SHADER						 0x8E87
 
 GD_NAMESPACE_END

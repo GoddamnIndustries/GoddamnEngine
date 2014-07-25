@@ -63,7 +63,7 @@ GD_NAMESPACE_BEGIN
 		HRESULT Result = E_FAIL;
 		ID3D11Device* const Device = HRD3D11Interface::GetInstance().Device.Get();	
 		if (FAILED(Result = Device->CreateVertexShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->VertexShader))) {
-			throw D3D11Exception("Failed to create vertex shader");
+			throw HRID3D11Exception("Failed to create vertex shader");
 		}
 		
 		UINT                     InputLayoutInputSlot = 0;
@@ -89,7 +89,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		if (FAILED(Result = Device->CreateInputLayout(&InputLayoutElements[0], InputLayoutInputSlot, CtorInfo.CreationData, CtorInfo.CreationDataSize, &self->InputLayout))) {
-			throw D3D11Exception("Failed to create input layout");
+			throw HRID3D11Exception("Failed to create input layout");
 		}
 	}
 
@@ -136,7 +136,7 @@ GD_NAMESPACE_BEGIN
 	{
 		HRESULT Result = E_FAIL;
 		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateHullShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->HullShader))) {
-			throw D3D11Exception("Failed to create Hull shader");
+			throw HRID3D11Exception("Failed to create Hull shader");
 		}
 	}
 
@@ -181,7 +181,7 @@ GD_NAMESPACE_BEGIN
 	{
 		HRESULT Result = E_FAIL;
 		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateDomainShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->DomainShader))) {
-			throw D3D11Exception("Failed to create Domain shader");
+			throw HRID3D11Exception("Failed to create Domain shader");
 		}
 	}
 
@@ -226,7 +226,7 @@ GD_NAMESPACE_BEGIN
 	{
 		HRESULT Result = E_FAIL;
 		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreatePixelShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->PixelShader))) {
-			throw D3D11Exception("Failed to create Pixel shader");
+			throw HRID3D11Exception("Failed to create Pixel shader");
 		}
 	}
 

@@ -48,7 +48,7 @@ GD_NAMESPACE_BEGIN
 		GDINL HRIShaderResourceViewsVector const& GetShaderResourceViews() const { return self->ShaderResourceViews; }
 		GDINL HRIShaderSampleStatesVector  const& GetShaderSampleStates () const { return self->ShaderSampleStates; }
 
-		GDINT virtual void UploadAllParameters() final;
+		GDINT virtual void UploadAllParameters() override final;
 	};	// class HRID3D11ShaderParamLocationResources
 
 	/// Shader instance implementation for D3D11.

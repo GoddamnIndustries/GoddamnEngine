@@ -41,8 +41,8 @@ GD_NAMESPACE_BEGIN
 		HRIPixelShader* const pixelShader = self->MaterialProgram->GetProgramPixelShader();
 		if (pixelShader != nullptr)
 		{
-			self->MaterialInstance->GetInstanceResourcesLocation()->UploadAllParameters();
-			pixelShader->BindShader(self->MaterialInstance.GetPointer());
+		//	self->MaterialInstance->GetInstanceResourcesLocation()->UploadAllParameters();
+		//	pixelShader->BindShader(self->MaterialInstance.GetPointer());
 		}
 	}
 

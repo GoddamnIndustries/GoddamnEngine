@@ -7,7 +7,7 @@
 #include <GoddamnEngine/Engine/HUD/HUD.h>
 #include <GoddamnEngine/Engine/Plugin/Plugin.h>
 #include <GoddamnEngine/Engine/Renderer/Renderer.h>
-// #include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRenderer.h>
+#include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRenderer.h>
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11Renderer.h>
 #include <GoddamnEngine/Engine/Resource/Impl/Effect/Effect.h>
 
@@ -58,7 +58,9 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT((self->CMDArgsCount >= 1) && (self->CMDArgsList != nullptr), "Invalid command line arguments specified");
 		self->EnvironmentPath = Path::GetDirectoryName(self->CMDArgsList[0]);
 
-		new HRD3D11Interface();
+		new HROGLInterface();
+	//	new HRD3D11Interface();
+
 		self->staticComponentHandler.GetPointer()->AttachToObject(self);
 		StaticComponent::InitializeAsHandler(self->staticComponentHandler.GetPointer());
 		HRInterface::GetInstance().CreateContex();

@@ -257,7 +257,7 @@ GD_NAMESPACE_BEGIN
 		StringBuilder HLSLGeneratorOutput;
 		HLSLGenerator(self->Toolchain).GenerateShader(HLSLGeneratorOutput, ShaderParsedData);
 
-		UINT D3DCompileFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+		UINT D3DCompileFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_AVOID_FLOW_CONTROL;
 #if (defined(GD_DEBUG))
 		D3DCompileFlags |= D3DCOMPILE_DEBUG;
 #else	// if (defined(GD_DEBUG))

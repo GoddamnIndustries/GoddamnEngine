@@ -79,7 +79,7 @@ GD_NAMESPACE_BEGIN
 			Vector<UInt8> const VertexShaderData = RSStreamer::GetInstance().LoadImmediately<RSBinary>(VertexShaderPath)->BinaryData;
 			UniquePtr<InputStream> VertexShaderInputStream(new StringInputStream(reinterpret_cast<CharAnsi const*>(&VertexShaderData[0]), VertexShaderData.GetSize()));
 			UniquePtr<OutputStream> VertexShaderOutputStream(new StringOutputStream(VertexShaderOutput));
-			RefPtr<HRIShaderInstanceDesc> VertexShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(Move(VertexShaderInputStream), VertexShaderOutputStream, GD_HRI_SHADER_TYPE_VERTEX, GD_HRI_SHADERCC_COMPILER_TARGET_HLSL, "Main"));
+			RefPtr<HRIShaderInstanceDesc> VertexShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(Move(VertexShaderInputStream), VertexShaderOutputStream, GD_HRI_SHADER_TYPE_VERTEX, /*GD_HRI_SHADERCC_COMPILER_TARGET_HLSL*/GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430, "Main"));
 			HRIShaderCtorInfo const VertexShaderCtorInfo(self->EffectShaderProgram.GetPointer(), VertexShaderOutput.GetPointer(), VertexShaderOutput.GetSize(), VertexShaderInstanceDesc.GetPointer());
 			HRInterface::GetInstance().CreateVertexShader(VertexShaderCtorInfo);
 		}
@@ -89,7 +89,7 @@ GD_NAMESPACE_BEGIN
 			Vector<UInt8> const PixelShaderData = RSStreamer::GetInstance().LoadImmediately<RSBinary>(PixelShaderPath)->BinaryData;
 			UniquePtr<InputStream> PixelShaderInputStream(new StringInputStream(reinterpret_cast<CharAnsi const*>(&PixelShaderData[0]), PixelShaderData.GetSize()));
 			UniquePtr<OutputStream> PixelShaderOutputStream(new StringOutputStream(PixelShaderOutput));
-			RefPtr<HRIShaderInstanceDesc> PixelShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(Move(PixelShaderInputStream), PixelShaderOutputStream, GD_HRI_SHADER_TYPE_PIXEL, GD_HRI_SHADERCC_COMPILER_TARGET_HLSL, "Main"));
+			RefPtr<HRIShaderInstanceDesc> PixelShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(Move(PixelShaderInputStream), PixelShaderOutputStream, GD_HRI_SHADER_TYPE_PIXEL, /*GD_HRI_SHADERCC_COMPILER_TARGET_HLSL*/GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430, "Main"));
 			HRIShaderCtorInfo const PixelShaderCtorInfo(self->EffectShaderProgram.GetPointer(), PixelShaderOutput.GetPointer(), PixelShaderOutput.GetSize(), PixelShaderInstanceDesc.GetPointer());
 			HRInterface::GetInstance().CreatePixelShader(PixelShaderCtorInfo);
 		}

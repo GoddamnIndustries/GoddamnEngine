@@ -96,8 +96,8 @@ R"(
 #define static
 #define inline
 #define const
-#define Sampler2D   sampler2D
-#define SamplerCube samplerCube
+#define Texture2D   sampler2D
+#define TextureCube samplerCube
 #define bool2   bvec2
 #define bool3   bvec3
 #define bool4   bvec4
@@ -205,18 +205,17 @@ R"(
 		}
 
 		if (SupportsConstantBuffers) {
-			Builder.AppendFormat("\n\nlayout(std140, row_major, binding = %d) uniform %s \n{", static_cast<int>(ConstantBuffer->Register->RegisterID), ConstantBuffer->Name.CStr());
+			Builder.AppendFormat("\n\nlayout(std140, binding = %d) uniform %s \n{", static_cast<int>(ConstantBuffer->Register->RegisterID), ConstantBuffer->Name.CStr());
 		} else {
 			Builder.AppendFormat("\n\n// uniform %s {", ConstantBuffer->Name.CStr());
 		}
 
-		for (auto const& Definition : ConstantBuffer->InnerDefinitions)
-		{
+		for (auto const& Definition : ConstantBuffer->InnerDefinitions) {
 			HLSLVariable const* const ConstantBufferField = static_cast<HLSLVariable const*>(Definition);
 			if (SupportsConstantBuffers) {
 				Builder.AppendFormat("\n\t%s %s", ConstantBufferField->Type->Name.CStr(), ConstantBufferField->Name.CStr());
 			} else {
-				Builder.AppendFormat("\nlayout(row_major) uniform %s %s", ConstantBufferField->Type->Name.CStr(), ConstantBufferField->Name.CStr());
+				Builder.AppendFormat("\nlayout() uniform %s %s", ConstantBufferField->Type->Name.CStr(), ConstantBufferField->Name.CStr());
 			}
 
 			if (ConstantBufferField->ArrayIndex != 0) {
@@ -242,10 +241,10 @@ R"(
 		Builder.Append("\n\n");
 		if (StaticVariable->ExprColon != nullptr) {
 			HLSLRegister const* const StaticVariableRegister = static_cast<HLSLRegister const*>(StaticVariable->ExprColon);
-			Builder.Append("layout(location = %d) uniform", static_cast<int>(StaticVariableRegister->RegisterID));
+			Builder.AppendFormat("layout(location = %d) uniform ", static_cast<int>(StaticVariableRegister->RegisterID));
 		}
 
-		Builder.AppendFormat("%s %", StaticVariable->Type->Name.CStr(), StaticVariable->Name.CStr());
+		Builder.AppendFormat("%s %s", StaticVariable->Type->Name.CStr(), StaticVariable->Name.CStr());
 		if (StaticVariable->ArrayIndex != 0) {
 			Builder.AppendFormat("[%d]", static_cast<int>(StaticVariable->ArrayIndex));
 		}
@@ -261,11 +260,12 @@ R"(
 		}
 
 		Builder.AppendFormat("\n\ninline %s %s(", StaticFunction->Type->Name.CStr(), StaticFunction->Name.CStr());
-		for (auto const& Argument : StaticFunction->Arguments)
+		for (auto const& Argument : StaticFunction->Arguments) {
 			Builder.AppendFormat("%s%s %s %s, ",
-			(((Argument->AccsessType & GD_HLSL_ARGUMENT_IN ) != 0) ? "in"  : ""),
-			(((Argument->AccsessType & GD_HLSL_ARGUMENT_OUT) != 0) ? "out" : ""),
-			Argument->Type->Name.CStr(), Argument->Name.CStr());
+				(((Argument->AccsessType & GD_HLSL_ARGUMENT_IN) != 0) ? "in" : ""),
+				(((Argument->AccsessType & GD_HLSL_ARGUMENT_OUT) != 0) ? "out" : ""),
+				Argument->Type->Name.CStr(), Argument->Name.CStr());
+		}
 		*(Builder.GetPointer() + Builder.GetSize() - 2) =  ')';
 		*(Builder.GetPointer() + Builder.GetSize() - 1) = '\n';
 		Builder.Append(StaticFunction->Body);
@@ -278,7 +278,7 @@ R"(
 		StringBuilder FakeEntryInternals, FakeEntryExternals;
 		int LastUsedSemanticIn = 0, LastUsedSemanticOut = 0;
 		for (auto const& Argument : EntryPoint->Arguments) {
-			Str const ArgumentAccessType = ((Argument->AccsessType == GD_HLSL_ARGUMENT_IN) ? "in" : "out");
+			Str const ArgumentAccessType = ((Argument->AccsessType == GD_HLSL_ARGUMENT_IN) ? "in " : "out");
 			int&      LastUsedSemantic   = ((Argument->AccsessType == GD_HLSL_ARGUMENT_IN) ? LastUsedSemanticIn : LastUsedSemanticOut);
 
 			if (Argument->Type->Class == GD_HLSL_TYPE_CLASS_STRUCT) {
@@ -326,7 +326,7 @@ R"(
 
 		*(FakeEntryInvocation.GetPointer() + FakeEntryInvocation.GetSize() - 2) = ')';	// Removing trailing comma.
 		*(FakeEntryInvocation.GetPointer() + FakeEntryInvocation.GetSize() - 1) = ';';	// Removing trailing space.
-		  FakeEntryInvocation = Move(StringBuilder().AppendFormat("\n\t%s(%s", EntryPoint->Name.CStr(), FakeEntryInvocation));
+		  FakeEntryInvocation = Move(StringBuilder().AppendFormat("\n\t%s(%s", EntryPoint->Name.CStr(), FakeEntryInvocation.GetPointer()));
 
 		if (EntryPoint->Type->Class == GD_HLSL_TYPE_CLASS_STRUCT) {
 			FakeEntryInternals.AppendFormat("\n\t%s Ret;", EntryPoint->Type->Name.CStr());
@@ -346,7 +346,7 @@ R"(
 			FakeEntryInvocation = Move(StringBuilder().AppendFormat("\n\tVaryingRet = %s", FakeEntryInvocation.GetPointer() + 2));
 		}
 
-		Builder.AppendFormat("\n%s\n\nvoid main()\n{%s\n%s\n%s\n}\n", FakeEntryExternals.GetPointer(), FakeEntryInternals.GetPointer(), FakeEntryInvocation.GetPointer(), FakeEntryAssigment);
+		Builder.AppendFormat("\n%s\n\nvoid main()\n{%s\n%s\n%s\n}\n", FakeEntryExternals.GetPointer(), FakeEntryInternals.GetPointer(), FakeEntryInvocation.GetPointer(), FakeEntryAssigment.GetPointer());
 	}
 
 	void GLSLCompiler::GenerateAndCompileShader(
@@ -364,17 +364,17 @@ R"(
 		StringBuilder GLSLPreprocessedBuilder;
 		GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLCopyright, GD_ARRAY_SIZE(GLSLInsertations::GLSLCopyright) - 1);
 		switch (ShaderTargetPlatform) {
-			case GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430:
+			case GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430: {
 				GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSL430Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSL430Preambule) - 1);
-				break;
+			} break;
 
-			case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3:
+			case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3: {
 				GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLES3Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSLES3Preambule) - 1);
-				break;
+			} break;
 
-			case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2:
+			case GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2: {
 				GLSLPreprocessedBuilder.Append(GLSLInsertations::GLSLES2Preambule, GD_ARRAY_SIZE(GLSLInsertations::GLSLES2Preambule) - 1);
-				break;
+			} break;
 		}
 
 		// We use mcpp preprocessor because it is faster than our one.
@@ -464,8 +464,8 @@ R"(
 			glslang::TShader GLSLangShader(HRI2GLSLangShaderType[ShaderType]);
 			GLSLangShader.setStrings(&GLSLOptimizerBuilderPtr, 1);
 			if (!GLSLangShader.parse(&GLSLangInitializer.DefaultResources, 100, true, EShMsgDefault)) {	// Failed to compile our shader.
-				GLSLCompilerErrorDesc static const glslangCompilationFailed("glslang compilation returned errors: \n%s");
-				throw GLSLCompilerErrorException(glslangCompilationFailed.ToString(nullptr, GLSLangShader.getInfoLog()));
+				GLSLCompilerErrorDesc static const glslangCompilationFailed("glslang compilation returned errors: \n%s\nGenerated code:\n%s");
+				throw GLSLCompilerErrorException(glslangCompilationFailed.ToString(nullptr, GLSLangShader.getInfoLog(), GLSLOptimizerBuilderPtr));
 			} else {
 				Debug::Log(GLSLangShader.getInfoLog());
 			}

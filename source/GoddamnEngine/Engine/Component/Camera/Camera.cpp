@@ -241,7 +241,7 @@ GD_NAMESPACE_BEGIN
 		{
 			RenderTarget->BindRenderTarget();
 		}*/
-		HRInterface::GetInstance().ClearContext(Rectangle(), Color(1.0f, 0.0f, 1.0f, 1.0f));
+		HRInterface::GetInstance().ClearContext(Rectangle(0.0f, 0.0f, 1.0f, 1.0f), Color(1.0f, 0.0f, 1.0f, 1.0f));
 		Scene::GetInstance().OnRender(self);
 
 		//if (enableLights)
@@ -274,7 +274,7 @@ GD_NAMESPACE_BEGIN
 		Vector3Fast const lookAt = transform->TransformVector(Vector3Fast(0.0, 0.0, 1.0f));
 		Vector3Fast const position = transform->GetGlobalPosition();
 		
-		self->ViewMatrix = Matrix4x4(1.0f).LookAtLH(position, lookAt, upVec);
+		Matrix4x4::MakeLookAtLH(self->ViewMatrix, position, lookAt, upVec);
 	//	using namespace DirectX;
 	//	XMMATRIX m = XMMatrixLookAtLH(position.ElementsVector, lookAt.ElementsVector, upVec.ElementsVector);
 	}
@@ -290,7 +290,6 @@ GD_NAMESPACE_BEGIN
 			{
 				Float32 const AspectRatio = ((self->Viewport.Width - self->Viewport.Left) * static_cast<Float32>(Screen::GetResolutionWidth()))
 										  / ((self->Viewport.Height - self->Viewport.Top) * static_cast<Float32>(Screen::GetResolutionHeight()));
-			
 				self->ProjectionMatrix = Matrix4x4(1.0f).PerspectiveLH(
 					self->FieldOfView, AspectRatio,
 					self->ClippingPlanes.ZNear, self->ClippingPlanes.ZFar

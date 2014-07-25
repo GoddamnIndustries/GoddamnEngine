@@ -49,7 +49,9 @@ GD_NAMESPACE_BEGIN
 
 	FileInputStream::~FileInputStream()
 	{
-		self->Close();
+		if (self->FileHandle != nullptr) {
+			self->Close();
+		}
 	}
 
 	/// @see BaseStream::GetPosition()
@@ -57,17 +59,16 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
 		long const Position = ::ftell(self->FileHandle);
-		if (Position < 0l)
+		if (Position < 0l) {
 			throw IOException("Failed to get position of stream ('ftell' returned negative value).");
-
+		}
 		return static_cast<size_t>(Position);
 	}
 
 	/// @see BaseStream::GetSize()
 	size_t FileInputStream::GetSize() const
 	{
-		if (self->FileLength == SIZE_MAX)
-		{	// Finiding out position.
+		if (self->FileLength == SIZE_MAX) {	// Finiding out position.
 			FileInputStream* const MutableSelf = const_cast<FileInputStream*>(self);
 			size_t const CurrentPosition = MutableSelf->GetPosition();
 			MutableSelf->Seek(0, SeekOrigin::End);
@@ -82,9 +83,9 @@ GD_NAMESPACE_BEGIN
 	void FileInputStream::Close()
 	{
 		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fclose(self->FileHandle) != 0)
+		if (::fclose(self->FileHandle) != 0) {
 			throw IOException("Failed to close file ('fclose' returned non-zero value).");
-
+		}
 		self->FilePath.Emptify();
 		self->FileHandle = nullptr;
 		self->FileLength = SIZE_MAX;
@@ -101,8 +102,9 @@ GD_NAMESPACE_BEGIN
 
 		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
 		int const StandartOrigin = SeekOriginTable[static_cast<size_t>(Origin)];
-		if (::fseek(self->FileHandle, static_cast<long>(Offset), StandartOrigin) != 0)
+		if (::fseek(self->FileHandle, static_cast<long>(Offset), StandartOrigin) != 0) {
 			throw IOException("Failed to seek inside file ('fseek' returned non-zero value).");
+		}
 	}
 
 	/// @see InputStream::Read()
@@ -119,8 +121,9 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT(Count != 0, "Zero elements count specified");
 		GD_DEBUG_ASSERT(Length != 0, "Zero element length specified");
 		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fread(Array, Length, Count, self->FileHandle) != Count)
+		if (::fread(Array, Length, Count, self->FileHandle) != Count) {
 			throw IOException("Failed to read from file ('fread' returned invalid value).");
+		}
 	}
 
 	/// ==========================================================================================
@@ -135,25 +138,27 @@ GD_NAMESPACE_BEGIN
 	FileOutputStream::FileOutputStream(String const& FilePath)
 		: FilePath(FilePath)
 	{
-		if (access(self->FilePath.CStr(), F_OK) != -1)
-		{	// File exists.
-			if (access(self->FilePath.CStr(), W_OK) == -1)
+		if (access(self->FilePath.CStr(), F_OK) != -1) {	// File exists.
+			if (access(self->FilePath.CStr(), W_OK) == -1) {
 				throw IOException(String::Format("File with path '%s' cannon be opened for writing ('access(W_OK)' failed).", FilePath.CStr()));
+			}
 			self->FileHandle = ::fopen(self->FilePath.CStr(), "wb");
-			if (self->FileHandle == nullptr)
+			if (self->FileHandle == nullptr) {
 				throw IOException("Failed to open existing file for writing (fopen(\"wb\") returned nullptr).");
-		}
-		else
-		{	// File does not exists.
+			}
+		} else {	// File does not exists.
 			self->FileHandle = ::fopen(self->FilePath.CStr(), "wb");
-			if (self->FileHandle == nullptr)
+			if (self->FileHandle == nullptr) {
 				throw IOException("Failed to create new file for writing (fopen(\"wb\") returned nullptr).");
+			}
 		}
 	}
 
 	FileOutputStream::~FileOutputStream()
 	{
-		self->Close();
+		if (self->FileHandle != nullptr) {
+			self->Close();
+		}
 	}
 
 	/// @see BaseStream::GetPosition()
@@ -161,9 +166,9 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
 		long const Position = ::ftell(self->FileHandle);
-		if (Position < 0l)
+		if (Position < 0l) {
 			throw IOException("Failed to get position of stream ('ftell' returned negative value).");
-
+		}
 		return static_cast<size_t>(Position);
 	}
 
@@ -177,8 +182,9 @@ GD_NAMESPACE_BEGIN
 	void FileOutputStream::Close()
 	{
 		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fclose(self->FileHandle) != 0)
+		if (::fclose(self->FileHandle) != 0) {
 			throw IOException("Failed to close file ('fclose' returned non-zero value).");
+		}
 
 		self->FilePath.Emptify();
 		self->FileHandle = nullptr;
@@ -189,8 +195,9 @@ GD_NAMESPACE_BEGIN
 	void FileOutputStream::Flush()
 	{
 		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fflush(self->FileHandle) != 0)
+		if (::fflush(self->FileHandle) != 0) {
 			throw IOException("Failed to flush file ('fflush' returned non-zero value).");
+		}
 	}
 
 	/// @see OutputStream::Write(UInt8 const Byte)
@@ -205,8 +212,9 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT(Count != 0, "Zero elements count specified");
 		GD_DEBUG_ASSERT(Length != 0, "Zero element length specified");
 		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fwrite(Array, Length, Count, self->FileHandle) != Count)
+		if (::fwrite(Array, Length, Count, self->FileHandle) != Count) {
 			throw IOException("Failed to write wo file ('fwrite' returned invalid value).");
+		}
 	}
 
 GD_NAMESPACE_END

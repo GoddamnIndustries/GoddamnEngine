@@ -308,7 +308,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if (defined(GD_HRI_SHADER_D3D11_EMULATING) && (!defined(GD_DOCUMENTATION)))
 
 	/// Default implementation of constant buffer location.
-	class HRIShaderParamLocationConstantBufferNative final : public HRIShaderParamLocationConstantBufferBase
+	class HRIShaderParamLocationConstantBufferNative : public HRIShaderParamLocationConstantBufferBase
 	{
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRIShaderParamLocationConstantBufferNative, HRIShaderParamLocation, GDAPI);
@@ -542,7 +542,7 @@ GD_NAMESPACE_BEGIN
 		GDINL HRIDomainShader         * GetProgramDomainShader ()       { return self->ProgramDomainShader; }
 #if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 #	if (!defined(GetProgramTessellationEvaluationShader))
-#	     define  GetProgramTessellationEvaluationShader GetProgramHullShader
+#	     define  GetProgramTessellationEvaluationShader GetProgramDomainShader
 #	else	// if (!defined(GetProgramTessellationEvaluationShader))
 #		 error '"GetProgramTessellationEvaluationShader" Identifier was already defined, please remove if or disable OpenGL naming aliasing.'
 #	endif	// if (!defined(GetProgramTessellationEvaluationShader))
@@ -553,7 +553,7 @@ GD_NAMESPACE_BEGIN
 		GDINL HRIPixelShader         * GetProgramPixelShader   ()       { return self->ProgramPixelShader; }
 #if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 #	if (!defined(GetProgramFragmentShader))
-#	     define  GetProgramFragmentShader GetProgramHullShader
+#	     define  GetProgramFragmentShader GetProgramPixelShader
 #	else	// if (!defined(GetProgramFragmentShader))
 #		 error "'GetProgramFragmentShader' Identifier was already defined, please remove if or disable OpenGL naming aliasing."
 #	endif	// if (!defined(GetProgramFragmentShader))

@@ -28,13 +28,17 @@ GD_NAMESPACE_BEGIN
 				HRISemantic     const  Semantic = static_cast<HRISemantic>(SemanticIter);
 				HRISemanticDesc const& SemanticDesc = HRISemanticGetDesc(Semantic);
 				HRIVertexBuffer const* const VertexBuffer = self->IndexedShape->GetVertexBuffer(Semantic);
-				GD_DEBUG_ASSERT(VertexBuffer != nullptr, "No vertex buffer for required semantic exists.");
+				if (VertexBuffer == nullptr) {
+					throw HRID3D11Exception("No vertex buffer for required semantic exists.");
+				}
 
 				UINT const VerticesCount = static_cast<UINT>(VertexBuffer->GetSize()) / GD_FORMAT_COUNT_EXTRACT(SemanticDesc.SlotFormat);
 				if (self->LinkingCache.VerticesCount == UINT_MAX) {
 					self->LinkingCache.VerticesCount = VerticesCount;
 				} else {
-					GD_DEBUG_ASSERT(self->LinkingCache.VerticesCount == VerticesCount, "Invalid vertices number.");
+					if (self->LinkingCache.VerticesCount != VerticesCount) {
+						throw HRID3D11Exception("Invalid vertices number.");
+					}
 				}
 
 				self->LinkingCache.Buffers.PushLast(reinterpret_cast<ID3D11Buffer*>(VertexBuffer->GetNativePointer()));

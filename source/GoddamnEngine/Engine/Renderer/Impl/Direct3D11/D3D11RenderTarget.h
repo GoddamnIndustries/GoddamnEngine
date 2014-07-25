@@ -1,5 +1,5 @@
 /// ==========================================================================================
-/// HRIRenderTarget.h: Frame-buffer Direct3D11 interface
+/// D3D11RenderTarget.h: Render target Direct3D11 interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
@@ -7,8 +7,8 @@
 /// ==========================================================================================
 
 #pragma once
-#ifndef GD_ENGINE_RENDERER_IMPL_D3D11_HRI_BUFFER
-#define GD_ENGINE_RENDERER_IMPL_D3D11_HRI_BUFFER
+#ifndef GD_ENGINE_RENDERER_IMPL_D3D11_RENDER_TARGET
+#define GD_ENGINE_RENDERER_IMPL_D3D11_RENDER_TARGET
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11Renderer.h>
