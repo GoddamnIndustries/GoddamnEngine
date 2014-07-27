@@ -3,8 +3,8 @@
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
-///		* --.06.2013 - Created by James Jhuighuy
-///		* 13.05.2014 - Rewritten from scratch by James Jhuighuy
+///		* --.06.2013 - Created by James Jhuighuy.
+///		* 13.05.2014 - Rewritten from scratch by James Jhuighuy.
 /// ==========================================================================================
 
 #pragma once
@@ -22,45 +22,365 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// @brief	UTF-8 Character
+	/// ANSI Character.
 	typedef char CharAnsi;
 
-	/// @brief	UTF-16 Character
-#if defined(GD_PLATFORM_WINDOWS)
+	/// Unicode Character.
+#if defined(GD_COMPILER_MSC)
 	typedef wchar_t CharUtf16;
-#else
+#else	// if defined(GD_COMPILER_MSC)
 	typedef char16_t CharUtf16;
-#endif
+#endif	// if defined(GD_COMPILER_MSC)
 
-	/// @brief	UTF-16 Character
-	typedef UInt32 CharUtf32;
-
+#if (defined(_UNICODE))
+	typedef CharUtf18 Char;
+#else	// if (defined(_UNICODE))
 	typedef CharAnsi Char;
-
-#if 0
-	typedef struct { }* HashSumm;
-#endif
+#endif	// if (defined(_UNICODE))
 	
-	/// ==========================================================================================
-	/// Hash representation
-	class HashSumm final
+	typedef UInt32 HashValueType;
+
+	/// Represents hash summ that can not be implcilty casted to integer type. 
+	struct HashSumm final
 	{
-	public:
-		typedef UInt32 HashValueType;
-
 	private:
-		HashValueType hashValue = 0;
+		HashValueType HashValue = 0;
 
 	public:
-		GDINL explicit HashSumm() { }
-		GDINL explicit HashSumm(_In_ HashValueType const hashValue) : hashValue(hashValue) { }
-		GDINL		   HashSumm(_In_ HashSumm const& hashSumm) : hashValue(hashSumm.hashValue) { }
+		/// Initializes hash summ with precomputed integer value.
+		GDINL explicit HashSumm(HashValueType const HashValue) : HashValue(HashValue) { }
 
-		GDINL HashSumm& operator=  (_In_ HashSumm const& hashSumm)		 { self->hashValue = hashSumm.hashValue; return *self; }
-		GDINL bool		operator== (_In_ HashSumm const& hashSumm) const { return self->hashValue == hashSumm.hashValue; }
-		GDINL HashValueType GetValue() const { return self->hashValue; }
-	};	// class HashSumm
+		/// Returns integer representation of this hash summ.
+		GDINL HashValueType GetValue() const { return self->HashValue; }
 
+		/// Compares to hash summes.
+		GDINL bool operator== (HashSumm const& hashSumm) const { return (self->HashValue == hashSumm.HashValue); }
+		GDINL bool operator!= (HashSumm const& hashSumm) const { return (self->HashValue != hashSumm.HashValue); }
+	};	// struct HashSumm
+
+	template<typename CharType> 
+	class BaseString final
+	{
+		/// ------------------------------------------------------------------------------------------
+		/// Iterator type.
+		/// ------------------------------------------------------------------------------------------
+	private /*Class internal types.*/:
+		template<typename Tag>
+		struct Iterator final
+		{
+			typedef Char ThisElementType;
+			typedef typename Conditional<Tag::IsConst, Char const*, Char*>::Type ThisPtrType;
+			typedef typename Conditional<Tag::IsConst, Char const&, Char&>::Type ThisRefType;
+
+		private:
+			ThisPtrType Pointer = nullptr;
+
+		public:
+			GDINL  Iterator(ThisPtrType const  Pointer) : Pointer(Pointer) { }
+			GDINL  Iterator(Iterator    const& Iterator) : Pointer(Iterator.Pointer) { }
+			GDINL ~Iterator() { }
+
+			/// Increases/decreases iterator.
+			GDINL Iterator& operator++ (int const) { ++self->Pointer; return (*self); }
+			GDINL Iterator& operator++ (         ) { ++self->Pointer; return (*self); }
+			GDINL Iterator& operator-- (int const) { --self->Pointer; return (*self); }
+			GDINL Iterator& operator-- (         ) { --self->Pointer; return (*self); }
+
+			/// Increases/decreases iterator on specified value.
+			inline Iterator& operator+= (ptrdiff_t const Offset)	   { self->Pointer += Offset; return (*self); }
+			inline Iterator& operator-= (ptrdiff_t const Offset)       { self->Pointer -= Offset; return (*self); }
+			inline Iterator  operator+  (ptrdiff_t const Offset) const { return Iterator(self->Pointer + Offset); }
+			inline Iterator  operator-  (ptrdiff_t const Offset) const { return Iterator(self->Pointer - Offset); }
+
+			/// Computes difference between iterators.
+			inline ptrdiff_t operator- (Iterator const&       Iterator) const { return (self->Pointer - Iterator.Pointer); }
+			inline ptrdiff_t operator- (Char     const* const  Pointer) const { return (self->Pointer - Pointer); }
+
+			/// Compares iterators.
+			GDINL bool operator== (Iterator const&       Other  ) const { return (self->Pointer == Other.Pointer); }
+			GDINL bool operator!= (Iterator const&       Other  ) const { return (self->Pointer != Other.Pointer); }
+			GDINL bool operator== (Char     const* const Pointer) const { return (self->Pointer == Pointer); }
+			GDINL bool operator!= (Char     const* const Pointer) const { return (self->Pointer != Pointer); }
+
+			/// Assigns this iterator other value.
+			GDINL Iterator& operator= (ThisPtrType const  Pointer) { self->Pointer = Pointer; return (*self); }
+			GDINL Iterator& operator= (Iterator    const& Iterator) { self->Pointer = Iterator->Pointer; return (*self); }
+
+			/// (De)referensing iterator.
+			GDINL ThisRefType operator*  () const { return (*self->Pointer); }
+			GDINL ThisPtrType operator-> () const { return (self->Pointer); }
+		};	// struct Iterator
+	
+	public /*Class public types.*/:
+		/// Iterator type this container uses.
+		typedef Iterator<ContainerDetails::IteratorTagMutable> MutableIterator;
+		typedef Iterator<ContainerDetails::IteratorTagConst  > ConstIterator;
+
+		/// Reverse iterator type this container uses.
+		typedef ContainerDetails::ReverseIterator<MutableIterator> ReverseMutableIterator;
+		typedef ContainerDetails::ReverseIterator<ConstIterator  > ReverseConstIterator;
+
+	private /*Class members & API*/:
+		enum : size_t { StringMaxHeapSize = 16 };
+		size_t StringSize = 0;
+		union {
+			CharType  StringStackArray[StringMaxHeapSize] = { 0 };
+			CharType* StringHeapPointer;
+		};	// anonymous union
+
+		/// ------------------------------------------------------------------------------------------
+		/// *** ConstructWith *** 
+		/// ------------------------------------------------------------------------------------------
+
+		/// Initializes a string with a array of characters and length.
+		/// @param Chars  String initial data.
+		/// @param Size Size of string initial data.
+		inline void ConstructWithDataPointerAndSize(CharType const* const Chars, size_t const Size)
+		{
+			GD_DEBUG_ASSERT(Chars != nullptr, "Nullptr data specified");
+			self->StringSize = Size;
+			size_t const DataSizeInBytes = (Size + 1) * sizeof(CharType);
+			if (self->StringSize >= BaseString::StringMaxHeapSize) {
+				self->StringHeapPointer = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
+				::memcpy(self->StringHeapPointer, Chars, DataSizeInBytes);
+			} else {
+				::memcpy(&self->StringStackArray[0], Chars, DataSizeInBytes);
+			}
+		}
+
+		/// Initializes a string with some C string with unknown length.
+		/// @param Chars  String initial data.
+		GDINL void ConstructWithDataPointer(CharType const* const Chars)
+		{
+			self->ConstructWithDataPointer(Chars, CharTraits<CharType>::StrLen(Chars));
+		}
+
+	public /*Constructors/Destructor*/:
+		/// ------------------------------------------------------------------------------------------
+		/// *** Standart constructors. ***
+		/// ------------------------------------------------------------------------------------------
+
+		/// Initializes an empty string.
+		GDINL BaseString()
+		{
+			self->StringSize = 0;
+			self->StringStackArray[0] = CharType('\0');
+		}
+
+		/// Initializes this string with copy of other string.
+		/// @param OtherBaseString Other string to copy.
+		GDINL BaseString(BaseString const& OtherBaseString)
+		{
+			self->ConstructWithDataPointerAndSize(OtherBaseString.CStr(), OtherBaseString.GetSize());
+		}
+
+		/// Moves other string into this string.
+		/// @param OtherBaseString Other string to move into this.
+		GDINL BaseString(BaseString&& OtherBaseString)
+		{
+			(*self) = Forward<BaseString>(OtherBaseString);
+		}
+
+		/// ------------------------------------------------------------------------------------------
+		/// *** Custom constructors. ***
+		/// ------------------------------------------------------------------------------------------
+
+		/// Initializes a string with a single character.
+		/// @param Character Initial string character.
+		GDINL BaseString(Char const Character)
+		{
+			self->StringSize = 1;
+			self->StringStackArray[0] = Character;
+			self->StringStackArray[1] = CharType('\0');
+		}
+
+		/// Initializes a string with some C string with known length.
+		/// @param Chars  String initial data.
+		/// @param Size Size of string initial data.
+		GDINL BaseString(CharType const* const Chars, size_t const Size)
+		{
+			self->ConstructWithDataPointer(Chars, Size);
+		}
+
+		/// Initializes a string with some C string with unknown length.
+		/// @param Chars  String initial data.
+		GDINL BaseString(CharType const* const Chars)
+		{
+			self->ConstructWithDataPointer(Chars);
+		}
+
+		/// Fills a string with specified number of characters.
+		/// @param Size   A length of string.
+		/// @param FillWith A character that string would be filled with.
+		inline BaseString(size_t const Size, CharType const FillWith = CharType('\0'))
+		{
+			if ((self->StringSize = Size) >= BaseString::StringMaxHeapSize) {
+				size_t const DataSizeInBytes = (Size + 1) * sizeof(CharType);
+				self->StringHeapPointer = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
+			}
+
+			if (sizeof(CharType) != 1) {
+				for (auto& Character : (*self)) {
+					Character = FillWith;
+				}
+			} else {
+				memset(self->CStr(), FillWith, Size);
+			}
+
+			(*self->CStr() + self->GetSize()) = CharType('\0');
+		}
+
+		/// ------------------------------------------------------------------------------------------
+		/// *** Destructor. ***
+		/// ------------------------------------------------------------------------------------------
+
+		/// Deinitialzes string.
+		GDINL ~BaseString()
+		{
+			self->Clear();
+		}
+
+	public /*Class API*/:
+		/// Returns length of this string.
+		/// @returnes Size of this string.
+		GDINL size_t GetSize() const
+		{
+			return self->StringSize;
+		}
+
+		/// Returnes pointer on this string.
+		/// @returnes C-String version of this object.
+		GDINL CharType const* CStr() const
+		{
+			if (self->GetSize() >= BaseString::StringMaxHeapSize) {
+				return self->StringHeapPointer;
+			} else {
+				return &self->StringStackArray[0];
+			}
+		}
+		GDINL CharType* CStr()
+		{
+			return const_cast<CharType*>(const_cast<BaseString const*>(self)->CStr());
+		}
+		GDINL void Clear()
+		{
+			if (self->StringSize >= BaseString::StringMaxHeapSize) {
+				Allocator::DeallocateMemory(self->StringHeapPointer);
+				self->StringHeapPointer = nullptr;
+			}
+			self->Emptify();
+		}
+		GDINL void Emptify()
+		{
+			self->StringSize = 0;
+		}
+
+	public /*Operators*/:
+		/// ------------------------------------------------------------------------------------------
+		/// *** Assigment Operators. ***
+		/// ------------------------------------------------------------------------------------------
+
+		GDINL BaseString& operator=	(BaseString const& OtherBaseString)
+		{
+			self->~BaseString();
+			self->ConstructWithDataPointerAndSize(OtherBaseString.CStr(), OtherBaseString.GetSize());
+		}
+
+		inline BaseString& operator= (BaseString&& OtherBaseString)
+		{
+			self->~BaseString();
+			self->StringSize = OtherBaseString.StringSize;
+			OtherBaseString.StringSize = 0;
+			if (self->StringSize >= BaseString::StringMaxHeapSize) {
+				self->StringHeapPointer = OtherBaseString.StringHeapPointer;
+				OtherBaseString.StringHeapPointer = nullptr;
+			} else {
+				size_t const DataSizeInBytes = (self->StringSize + 1) * sizeof(CharType);
+				::memcpy(&self->StringStackArray[0], &OtherBaseString.StringStackArray[0], DataSizeInBytes);
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------------
+		/// *** Access Operators. ***
+		/// ------------------------------------------------------------------------------------------
+
+		GDINL CharType const& operator[] (size_t const Index) const
+		{
+			GD_DEBUG_ASSERT(Index <= self->GetSize(), "Invalid string subindex.");
+			return (*(self->CStr() + Index));
+		}
+
+		GDINL CharType& operator[] (size_t const Index)
+		{
+			return const_cast<Char&>(*const_cast<BaseString const*>(self)[Index]);
+		}
+
+		/// ------------------------------------------------------------------------------------------
+		/// *** Concatenation Operators ***
+		/// ------------------------------------------------------------------------------------------
+
+		inline BaseString operator+ (BaseString const& OtherBaseString) const
+		{
+			BaseString Result(self->StringSize + OtherBaseString->GetSize());
+			::memcpy(Result.CStr(),                      self->          CStr(), self->StringSize           * sizeof(CharType));
+			::memcpy(Result.CStr() + self->StringSize, OtherBaseString.CStr(), OtherBaseString.StringSize * sizeof(CharType));
+			return Result;
+		}
+
+		inline BaseString& operator+= (BaseString const& OtherBaseString)
+		{
+			BaseString Copy(Move(*self));
+			return ((*self) = Move(Copy + OtherBaseString));
+		}
+
+		/// ------------------------------------------------------------------------------------------
+		/// Comparation operators.
+		/// ------------------------------------------------------------------------------------------
+
+		inline bool operator== (BaseString const & OtherBaseString) const
+		{
+			if (self->StringSize == OtherBaseString.StringSize) {
+				return (CharTraits<CharType>::StrNCmp(self->CStr(), OtherBaseString.CStr(), self->StringSize) == 0);
+			} else {
+				return false;
+			}
+		}
+
+		inline bool operator!= (BaseString const & OtherBaseString) const
+		{
+			return !((*self) == OtherBaseString);
+		}
+
+		inline bool operator== (CharType const Character) const
+		{
+			if (self->StringSize == 1) {
+				return (*self->CStr() == Character);
+			} else {
+				return false;
+			}
+		}
+
+		inline bool operator!= (CharType const Character) const
+		{
+			return !((*self) == Character);
+		}
+
+	private /**/:
+		/// ------------------------------------------------------------------------------------------
+		/// *** Range Operators. ***
+		/// ------------------------------------------------------------------------------------------
+
+		GDINL friend MutableIterator begin(BaseString      & some_string) { return some_string.Begin(); }
+		GDINL friend   ConstIterator begin(BaseString const& some_string) { return some_string.Begin(); }
+		GDINL friend MutableIterator end  (BaseString      & some_string) { return some_string.End(); }
+		GDINL friend   ConstIterator end  (BaseString const& some_string) { return some_string.End(); }
+	};	// class BaseString
+
+	typedef BaseString<CharAnsi >  ANSIString;
+	typedef BaseString<CharUtf16> UTF16String;
+	typedef BaseString<Char     >      String;
+	 
+#if 0
 	/// @brief	Basic String class in GoddamnEngine
 	///			This class uses default C's character type. UTF-8 and UTF-16 characters are not supported.
 	///			Usage:
@@ -486,6 +806,7 @@ GD_NAMESPACE_BEGIN
 		GDINL friend MutableIterator end  (String      & some_string) { return some_string.End(); }
 		GDINL friend   ConstIterator end  (String const& some_string) { return some_string.End(); }
 	};
+#endif	// if 0
 
 	/// Provides helper functions for processing ANSI characters.
 	namespace CharAnsiHelpers
@@ -558,7 +879,9 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#include <GoddamnEngine/Core/Text/String/String.inl>
+#if 0
+#	include <GoddamnEngine/Core/Text/String/String.inl>
+#endif	// if 0
 
 #undef GDINL
 #pragma pop_macro("GDINL")

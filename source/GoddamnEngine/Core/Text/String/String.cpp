@@ -1,4 +1,5 @@
 #include <GoddamnEngine/Core/Text/String/String.h>
+#if 0
 #include <GoddamnEngine/Core/Text/String/StringEx.h>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 #include <GoddamnEngine/Core/Allocator/Allocator.h>
@@ -443,3 +444,5 @@ GD_NAMESPACE_BEGIN
 	}
 	
 GD_NAMESPACE_END
+
+#endif 0

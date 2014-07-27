@@ -7,18 +7,6 @@
 #		include <Windows.h>
 #		include <gl/GL.h>
 #		define GD_GL_GET_PROC_ADDRESS			(::wglGetProcAddress)
-#		define WGL_DRAW_TO_WINDOW_ARB			0x2001
-#		define WGL_ACCELERATION_ARB				0x2003
-#		define WGL_SWAP_METHOD_ARB				0x2007
-#		define WGL_SUPPORT_OPENGL_ARB			0x2010
-#		define WGL_DOUBLE_BUFFER_ARB			0x2011
-#		define WGL_PIXEL_TYPE_ARB				0x2013
-#		define WGL_COLOR_BITS_ARB				0x2014
-#		define WGL_DEPTH_BITS_ARB				0x2022
-#		define WGL_STENCIL_BITS_ARB				0x2023
-#		define WGL_FULL_ACCELERATION_ARB		0x2027
-#		define WGL_SWAP_EXCHANGE_ARB			0x2028
-#		define WGL_TYPE_RGBA_ARB				0x202B
 #		define WGL_CONTEXT_MAJOR_VERSION_ARB	0x2091
 #		define WGL_CONTEXT_MINOR_VERSION_ARB	0x2092
 //	endif	//	if (defined(GD_PLATFORM_WINDOWS))
@@ -70,7 +58,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		// Loading OpenGL methods using generated code and WGL manually.
-#if (!defined(__INTELLISENSE__))	// Intelly Sence goes crazy while parsing code below.
+#if (!defined(__INTELLISENSE__))	// Intelli Sence goes crazy while parsing code below.
 #	include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
 #endif	// if (!defined(__INTELLISENSE__))
 
@@ -126,7 +114,9 @@ GD_NAMESPACE_BEGIN
 	{
 #if (!defined(GD_HRI_OGL_ES))
 #	define GD_DEFINE_OGL_METHOD(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) self->Driver._##MethodName = nullptr;
-#	include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
+#	if (!defined(__INTELLISENSE__))	// Intelli Sence goes crazy while parsing code below.
+#		include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
+#	endif	// if (!defined(__INTELLISENSE__))
 #	if (defined(GD_PLATFORM_WINDOWS))
 		::wglMakeCurrent(nullptr, nullptr);
 		::wglDeleteContext(self->RenderingContext);

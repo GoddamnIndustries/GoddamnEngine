@@ -24,7 +24,7 @@ GD_NAMESPACE_BEGIN
 			TypeInformationRegistrationCs.Leave();
 		}
 
-		GD_ASSERT((self->Name.GetSize() > 0),
+		GD_ASSERT((self->Name.GetLength() > 0),
 			"'TypeInformation::TypeInformation' error: invalid name specified: name is empty");
 
 		GD_ASSERT(((self->BaseType != nullptr) || (self == Object::GetClassTypeInformation())),
