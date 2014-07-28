@@ -22,8 +22,43 @@
 
 GD_NAMESPACE_BEGIN
 
+	typedef UInt32 HashValueType;
+
+	/// Represents hash summ that can not be implcilty casted to integer type. 
+	struct HashCode final
+	{
+	private:
+		HashValueType HashValue = 0;
+
+	public:
+		/// Initializes hash summ with precomputed integer value.
+		GDINL explicit HashCode(HashValueType const HashValue = 0) : HashValue(HashValue) { }
+
+		/// Returns integer representation of this hash summ.
+		GDINL HashValueType GetValue() const { return self->HashValue; }
+
+		/// Compares to hash summes.
+		GDINL bool operator== (HashCode const& HashCode) const { return (self->HashValue == HashCode.HashValue); }
+		GDINL bool operator!= (HashCode const& HashCode) const { return (self->HashValue != HashCode.HashValue); }
+	};	// struct HashCode
+
+	template<typename CharType>
+	struct CharTraits;
+
 	/// ANSI Character.
 	typedef char CharAnsi;
+	template<>
+	struct CharTraits<CharAnsi> final
+	{
+		GDINL static CharAnsi        ToLower  (CharAnsi const Character)                                                                { return static_cast<CharAnsi>(::tolower(Character)); }
+		GDINL static CharAnsi        ToUpper  (CharAnsi const Character)                                                                { return static_cast<CharAnsi>(::toupper(Character)); }
+		GDINL static size_t          StrLen   (CharAnsi const* const CString)                                                           { return (::strlen)(CString); }
+		GDINL static CharAnsi const* StrStr   (CharAnsi const* const First, CharAnsi const* const Second)                               { return (::strstr)(First, Second); }
+		GDINL static CharAnsi const* StrChr   (CharAnsi const* const CString, CharAnsi const Character)                                 { return (::strchr)(CString, Character); }
+		GDINL static CharAnsi const* StrRChr  (CharAnsi const* const CString, CharAnsi const Character)                                 { return (::strrchr)(CString, Character); }
+		GDINL static int             StrNCmp  (CharAnsi const* const First, CharAnsi const* const Second, size_t const MaxLength)       { return (::strncmp)(First, Second, MaxLength); }
+		GDINL static int             VSNPrintF(CharAnsi* CString, size_t const Count, CharAnsi const* const Format, va_list const Args) { return (::vsnprintf)(CString, Count, Format, Args); }
+	};	// struct CharTraits<CharAnsi>
 
 	/// Unicode Character.
 #if defined(GD_COMPILER_MSC)
@@ -31,32 +66,26 @@ GD_NAMESPACE_BEGIN
 #else	// if defined(GD_COMPILER_MSC)
 	typedef char16_t CharUtf16;
 #endif	// if defined(GD_COMPILER_MSC)
+	template<>
+	struct CharTraits<CharUtf16> final
+	{
+		GDINL static CharUtf16        ToLower  (CharUtf16 const Character)                                                                 { return static_cast<CharUtf16>(::towlower(Character)); }
+		GDINL static CharUtf16        ToUpper  (CharUtf16 const Character)                                                                 { return static_cast<CharUtf16>(::towupper(Character)); }
+		GDINL static size_t           StrLen   (CharUtf16 const* const CString)                                                            { return (::wcslen)(CString); }
+		GDINL static CharUtf16 const* StrStr   (CharUtf16 const* const First, CharUtf16 const* const Second)                               { return (::wcsstr)(First, Second); }
+		GDINL static CharUtf16 const* StrChr   (CharUtf16 const* const CString, CharUtf16 const Character)                                 { return (::wcschr)(CString, Character); }
+		GDINL static CharUtf16 const* StrRChr  (CharUtf16 const* const CString, CharUtf16 const Character)                                 { return (::wcsrchr)(CString, Character); }
+		GDINL static int              StrNCmp  (CharUtf16 const* const First, CharUtf16 const* const Second, size_t const MaxLength)       { return (::wcsncmp)(First, Second, MaxLength); }
+		GDINL static int              VSNPrintF(CharUtf16* CString, size_t const Count, CharUtf16 const* const Format, va_list const Args) { return (::vswprintf)(CString, Count, Format, Args); }
+	};	// struct CharTraits<CharUtf16>
 
 #if (defined(_UNICODE))
-	typedef CharUtf18 Char;
+#	define GD_TEXT(Text) L##Text
+	typedef CharUtf16 Char;
 #else	// if (defined(_UNICODE))
+#	define GD_TEXT(Text) Text
 	typedef CharAnsi Char;
 #endif	// if (defined(_UNICODE))
-	
-	typedef UInt32 HashValueType;
-
-	/// Represents hash summ that can not be implcilty casted to integer type. 
-	struct HashSumm final
-	{
-	private:
-		HashValueType HashValue = 0;
-
-	public:
-		/// Initializes hash summ with precomputed integer value.
-		GDINL explicit HashSumm(HashValueType const HashValue) : HashValue(HashValue) { }
-
-		/// Returns integer representation of this hash summ.
-		GDINL HashValueType GetValue() const { return self->HashValue; }
-
-		/// Compares to hash summes.
-		GDINL bool operator== (HashSumm const& hashSumm) const { return (self->HashValue == hashSumm.HashValue); }
-		GDINL bool operator!= (HashSumm const& hashSumm) const { return (self->HashValue != hashSumm.HashValue); }
-	};	// struct HashSumm
 
 	template<typename CharType> 
 	class BaseString final
@@ -124,7 +153,7 @@ GD_NAMESPACE_BEGIN
 		enum : size_t { StringMaxHeapSize = 16 };
 		size_t StringSize = 0;
 		union {
-			CharType  StringStackArray[StringMaxHeapSize] = { 0 };
+			CharType  StringStackArray[StringMaxHeapSize];
 			CharType* StringHeapPointer;
 		};	// anonymous union
 
@@ -152,7 +181,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Chars  String initial data.
 		GDINL void ConstructWithDataPointer(CharType const* const Chars)
 		{
-			self->ConstructWithDataPointer(Chars, CharTraits<CharType>::StrLen(Chars));
+			self->ConstructWithDataPointerAndSize(Chars, CharTraits<CharType>::StrLen(Chars));
 		}
 
 	public /*Constructors/Destructor*/:
@@ -199,7 +228,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Size Size of string initial data.
 		GDINL BaseString(CharType const* const Chars, size_t const Size)
 		{
-			self->ConstructWithDataPointer(Chars, Size);
+			self->ConstructWithDataPointerAndSize(Chars, Size);
 		}
 
 		/// Initializes a string with some C string with unknown length.
@@ -227,7 +256,7 @@ GD_NAMESPACE_BEGIN
 				memset(self->CStr(), FillWith, Size);
 			}
 
-			(*self->CStr() + self->GetSize()) = CharType('\0');
+			(*(self->CStr() + self->GetSize())) = CharType('\0');
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -241,12 +270,27 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public /*Class API*/:
+		GDINL MutableIterator Begin()       { return MutableIterator(self->CStr()); }
+		GDINL ConstIterator   Begin() const { return ConstIterator(self->CStr()); }
+		GDINL MutableIterator End  ()       { return MutableIterator(self->CStr() + self->GetSize()); }
+		GDINL ConstIterator   End  () const { return ConstIterator(self->CStr() + self->GetSize()); }
+
+		/// Returns iterator that points to last container element.
+		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(self->CStr() + (self->GetSize() - 1))); }
+		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(self->CStr() + (self->GetSize() - 1))); }
+
+		/// Returns iterator that points to preceding the first container element
+		GDINL ReverseMutableIterator ReverseEnd()       { return ReverseMutableIterator(MutableIterator(self->CStr() - 1)); }
+		GDINL   ReverseConstIterator ReverseEnd() const { return   ReverseConstIterator(ConstIterator(self->CStr() - 1)); }
+
 		/// Returns length of this string.
 		/// @returnes Size of this string.
 		GDINL size_t GetSize() const
 		{
 			return self->StringSize;
 		}
+
+		GDINL bool IsEmpty() const { return (self->GetSize() != 0); }
 
 		/// Returnes pointer on this string.
 		/// @returnes C-String version of this object.
@@ -274,6 +318,124 @@ GD_NAMESPACE_BEGIN
 		{
 			self->StringSize = 0;
 		}
+		GDINL CharType  GetLastElement() const { return (*(self->CStr() + self->GetSize() - 1)); }
+		inline HashCode GetHashCode() const
+		{
+			HashValueType Computed = 0;
+			for (auto const MyCharacter : (*self)) {
+				Computed = 65599 * Computed + MyCharacter;
+			}
+
+			return HashCode((Computed >> 16) ^ Computed);
+		}
+
+		inline BaseString GetSubstring(size_t const From, size_t const To) const
+		{
+			GD_DEBUG_ASSERT(To >= From, "Invalid sustring indices.");
+			BaseString Result(To - From);
+			::memcpy(Result.CStr(), &(*self)[From], (To - From) * sizeof(CharType));
+			return Result;
+		}
+		GDINL BaseString GetSubstring(size_t const From) const
+		{
+			return self->GetSubstring(From, self->GetSize());
+		}
+		inline size_t Find(CharType const Character) const
+		{
+			CharType const* const CString = self->CStr();
+			CharType const* const Location = CharTraits<CharType>::StrChr(CString, Character);
+			if (Location != nullptr) {
+				return static_cast<size_t>(Location - CString);
+			} else {
+				return SIZE_MAX;
+			}
+		}
+
+		inline size_t Find(CharType const* const OtherCString) const
+		{
+			CharType const* const CString = self->CStr();
+			CharType const* const Location = CharTraits<CharType>::StrStr(CString, OtherCString);
+			if (Location != nullptr) {
+				return static_cast<size_t>(Location - CString);
+			} else {
+				return SIZE_MAX;
+			}
+		}
+
+		inline size_t ReverseFind(CharType const Character) const
+		{
+			CharType const* const CString = self->CStr();
+			CharType const* const Location = CharTraits<CharType>::StrRChr(CString, Character);
+			if (Location != nullptr) {
+				return static_cast<size_t>(Location - CString);
+			} else {
+				return SIZE_MAX;
+			}
+		}
+
+		inline size_t ReverseFind(CharType const* const OtherCString) const
+		{
+			size_t const OtherCStringLength = CharTraits<CharType>::StrLen(OtherCString);
+			if (OtherCStringLength > self->StringSize) {
+				CharType const* const CString = self->CStr();
+				CharType const* const CStringStart = CString() + self->GetSize() - OtherCStringLength;
+				CharType const* const CStringEnd = CString - 1;
+				for (CharType const*  CStringIter = CStringStart; CStringIter != CStringEnd; --CStringIter) {
+					 CharType const* const Location = CharTraits<CharType>::StrStr(CStringIter, OtherCString);
+					if (Location != nullptr) {
+						return static_cast<size_t>(Location - CString);
+					}
+				}
+			} 
+				
+			return SIZE_MAX;
+		}
+
+		inline BaseString ToUpper() const
+		{
+			BaseString Result(*self);
+			for (auto& Character : Result) {
+				Character = static_cast<CharType>(CharTraits<CharType>::ToUpper(Character));
+			}
+
+			return Result;
+		}
+
+		inline BaseString ToLower() const
+		{
+			BaseString Result(*self);
+			for (auto& Character : Result) {
+				Character = static_cast<CharType>(CharTraits<CharType>::ToLower(Character));
+			}
+
+			return Result;
+		}
+
+		inline static BaseString FormatVa(CharType const* const Format, va_list const List)
+		{
+			CharType Buffer1024[1024];
+			memset(&Buffer1024[0], 0, sizeof(Buffer1024));
+			int const Result0 = CharTraits<CharType>::VSNPrintF(&Buffer1024[0], GD_ARRAY_SIZE(Buffer1024), Format, List);
+			if ((Result0 > 0) && (Result0 < GD_ARRAY_SIZE(Buffer1024))) {
+				return String(&Buffer1024[0]);
+			} else {
+				CharType Buffer2048[2048];
+				memset(&Buffer2048[0], 0, sizeof(Buffer2048));
+				int const Result1 = CharTraits<CharType>::VSNPrintF(&Buffer2048[0], GD_ARRAY_SIZE(Buffer2048), Format, List);
+				if ((Result1 > 0) && (Result1 < GD_ARRAY_SIZE(Buffer2048))) {
+					return String(&Buffer2048[0]);
+				} else {
+					GD_ASSERT_FALSE("String formatting failed due buffers error.");
+					return String();
+				}
+			}
+		}
+
+		inline static BaseString Format(CharType const* const Format, ...)
+		{
+			va_list List; va_start(List, Format);
+			return (String::FormatVa(Format, List));
+		}
 
 	public /*Operators*/:
 		/// ------------------------------------------------------------------------------------------
@@ -284,6 +446,7 @@ GD_NAMESPACE_BEGIN
 		{
 			self->~BaseString();
 			self->ConstructWithDataPointerAndSize(OtherBaseString.CStr(), OtherBaseString.GetSize());
+			return (*self);
 		}
 
 		inline BaseString& operator= (BaseString&& OtherBaseString)
@@ -298,6 +461,8 @@ GD_NAMESPACE_BEGIN
 				size_t const DataSizeInBytes = (self->StringSize + 1) * sizeof(CharType);
 				::memcpy(&self->StringStackArray[0], &OtherBaseString.StringStackArray[0], DataSizeInBytes);
 			}
+
+			return (*self);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -312,7 +477,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL CharType& operator[] (size_t const Index)
 		{
-			return const_cast<Char&>(*const_cast<BaseString const*>(self)[Index]);
+			return const_cast<Char&>((*const_cast<BaseString const*>(self))[Index]);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -321,8 +486,8 @@ GD_NAMESPACE_BEGIN
 
 		inline BaseString operator+ (BaseString const& OtherBaseString) const
 		{
-			BaseString Result(self->StringSize + OtherBaseString->GetSize());
-			::memcpy(Result.CStr(),                      self->          CStr(), self->StringSize           * sizeof(CharType));
+			BaseString Result(self->StringSize + OtherBaseString.GetSize());
+			::memcpy(Result.CStr(),                    self->          CStr(), self->StringSize           * sizeof(CharType));
 			::memcpy(Result.CStr() + self->StringSize, OtherBaseString.CStr(), OtherBaseString.StringSize * sizeof(CharType));
 			return Result;
 		}
@@ -376,9 +541,9 @@ GD_NAMESPACE_BEGIN
 		GDINL friend   ConstIterator end  (BaseString const& some_string) { return some_string.End(); }
 	};	// class BaseString
 
-	typedef BaseString<CharAnsi >  ANSIString;
-	typedef BaseString<CharUtf16> UTF16String;
-	typedef BaseString<Char     >      String;
+	typedef BaseString<CharAnsi > ANSIString;
+	typedef BaseString<CharUtf16> WideString;
+	typedef BaseString<Char     >     String;
 	 
 #if 0
 	/// @brief	Basic String class in GoddamnEngine
@@ -585,21 +750,21 @@ GD_NAMESPACE_BEGIN
 
 		/// @}
 
-		GDINL Char const* CStr() const { return &(*self)[0]; }
-		GDINL Char      * CStr()       { return &(*self)[0]; }
+		GDINL Char const* CStr() const { return self->CStr(); }
+		GDINL Char      * CStr()       { return self->CStr(); }
 
-		GDINL MutableIterator Begin()       { return MutableIterator(&(*self)[0]); }
-		GDINL ConstIterator   Begin() const { return ConstIterator(&(*self)[0]); }
-		GDINL MutableIterator End()       { return MutableIterator(&(*self)[0] + self->GetSize()); }
-		GDINL ConstIterator   End() const { return ConstIterator(&(*self)[0] + self->GetSize()); }
+		GDINL MutableIterator Begin()       { return MutableIterator(self->CStr()); }
+		GDINL ConstIterator   Begin() const { return ConstIterator(self->CStr()); }
+		GDINL MutableIterator End()       { return MutableIterator(self->CStr() + self->GetSize()); }
+		GDINL ConstIterator   End() const { return ConstIterator(self->CStr() + self->GetSize()); }
 
 		/// Returns iterator that points to last container element.
-		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(&(*self)[0] + (self->GetSize() - 1))); }
-		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(&(*self)[0] + (self->GetSize() - 1))); }
+		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(self->CStr() + (self->GetSize() - 1))); }
+		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(self->CStr() + (self->GetSize() - 1))); }
 
 		/// Returns iterator that points to preceding the first container element
-		GDINL ReverseMutableIterator ReverseEnd()       { return ReverseMutableIterator(MutableIterator(&(*self)[0] - 1)); }
-		GDINL   ReverseConstIterator ReverseEnd() const { return   ReverseConstIterator(ConstIterator(&(*self)[0] - 1)); }
+		GDINL ReverseMutableIterator ReverseEnd()       { return ReverseMutableIterator(MutableIterator(self->CStr() - 1)); }
+		GDINL   ReverseConstIterator ReverseEnd() const { return   ReverseConstIterator(ConstIterator(self->CStr() - 1)); }
 
 		/// @name 'String'`s HeapSize
 		/// @{
@@ -750,9 +915,9 @@ GD_NAMESPACE_BEGIN
 
 		/// @}
 
-		/// @brief				Computes 'String'`s 'HashSumm'
-		/// @returns			'String'`s 'HashSumm'
-		GDAPI HashSumm GetHashSumm() const;
+		/// @brief				Computes 'String'`s 'HashCode'
+		/// @returns			'String'`s 'HashCode'
+		GDAPI HashCode GetHashCode() const;
 
 		/// @brief				Adds element to 'String'
 		/// @param character	Char to add
@@ -793,7 +958,7 @@ GD_NAMESPACE_BEGIN
 		GDAPI bool operator== (const String& s) const;
 
 		/// @brief			Comparing operator
-		GDINL bool operator== (const HashSumm& hash) const;
+		GDINL bool operator== (const HashCode& hash) const;
 
 		/// @brief			Comparing operator
 		GDINL bool operator!= (const String& HeapMemory) const;

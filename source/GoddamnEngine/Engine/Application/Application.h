@@ -49,7 +49,7 @@ GD_NAMESPACE_BEGIN
 		RefPtr<Object> gameObjectsHandler;
 
 	protected:
-		Map<HashSumm, String>	cmdArguments;
+		Map<HashCode, String>	cmdArguments;
 		ApplicationState State;
 		size_t LoadedScene;
 

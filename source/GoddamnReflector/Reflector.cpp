@@ -410,7 +410,7 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 
 	/// Contains specialized annotation parser registry.
-	Map<HashSumm, CPPAnnotationParserSpawner::CtorProc> CPPAnnotationParserSpawner::AnnotationParsersRegistry;
+	Map<HashCode, CPPAnnotationParserSpawner::CtorProc> CPPAnnotationParserSpawner::AnnotationParsersRegistry;
 
 	/// ------------------------------------------------------------------------------------------
 	/// Public class API:
@@ -422,7 +422,7 @@ GD_NAMESPACE_BEGIN
 	/// @note It is not recommended to use this method directly: use RAI CPPAnnotationParserSpawner::Node<T> class instead.
 	void CPPAnnotationParserSpawner::RegisterAnnotationParser(String const& Name, CtorProc const Ctor)
 	{
-		HashSumm const NameHash = Name.GetHashSumm();
+		HashCode const NameHash = Name.GetHashCode();
 		if (CPPAnnotationParserSpawner::AnnotationParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX)
 			GD_ASSERT_FALSE("Parser for annotation '%s' was already defined.", Name.CStr());
 
@@ -435,7 +435,7 @@ GD_NAMESPACE_BEGIN
 	/// @returns Pointer to parser if it was succesfullt created.
 	SharedPtr<CPPAnnotationParser> CPPAnnotationParserSpawner::SpawnAnnotationParser(String const& Name, handle const Args)
 	{
-		HashSumm const NameHash = Name.GetHashSumm();
+		HashCode const NameHash = Name.GetHashCode();
 		size_t const FoundIndex = CPPAnnotationParserSpawner::AnnotationParsersRegistry.FindFirstElement(NameHash);
 		if (FoundIndex != SIZE_MAX)
 			return CPPAnnotationParserSpawner::AnnotationParsersRegistry.GetElementAt(FoundIndex).Value(Args);
@@ -458,7 +458,7 @@ GD_NAMESPACE_BEGIN
 	/// @note It is not recommended to use this method directly: use RAI CPPAnnotationParserParamSpawner::Node<T> class instead.
 	void CPPAnnotationParamParserSpawner::RegisterAnnotationParamParser(String const& Name, CtorProc const Ctor)
 	{
-		HashSumm const NameHash = Name.GetHashSumm();
+		HashCode const NameHash = Name.GetHashCode();
 		if (self->AnnotationParamParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX)
 			GD_ASSERT_FALSE("Parser for paremeter of an annotation '%s' was already defined.", Name.CStr());
 
@@ -471,7 +471,7 @@ GD_NAMESPACE_BEGIN
 	/// @returns Pointer to parser if it was succesfullt created.
 	UniquePtr<CPPAnnotationParamParser> CPPAnnotationParamParserSpawner::SpawnAnnotationParamParser(String const& Name, handle const Args) const
 	{
-		HashSumm const NameHash = Name.GetHashSumm();
+		HashCode const NameHash = Name.GetHashCode();
 		size_t const FoundIndex = self->AnnotationParamParsersRegistry.FindFirstElement(NameHash);
 		if (FoundIndex != SIZE_MAX)
 			return self->AnnotationParamParsersRegistry.GetElementAt(FoundIndex).Value(Args);

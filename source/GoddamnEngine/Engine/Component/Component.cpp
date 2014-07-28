@@ -36,7 +36,7 @@ GD_NAMESPACE_BEGIN
 		//// Computing index of this component
 		//const size_t componentIndex = [self, &name]() -> size_t
 		//{
-		//	const HashSumm typeNameHash = name.GetHashSumm();
+		//	const HashCode typeNameHash = name.GetHashCode();
 		//	const size_t componentIndex = globalComponents->GetElementIndex(typeNameHash);
 
 		//	if (componentIndex == -1)
@@ -59,7 +59,7 @@ GD_NAMESPACE_BEGIN
 	Component::~Component()
 	{
 		//// Decreasing other component's index and removing self from list
-		//const HashSumm typeNameHash = self->GetTypeInformation().GetName().GetHashSumm();
+		//const HashCode typeNameHash = self->GetTypeInformation().GetName().GetHashCode();
 		//const size_t componentIndex = globalComponents->GetElementIndex(typeNameHash);
 		//if (componentIndex != -1)
 		//{

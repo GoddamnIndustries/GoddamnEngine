@@ -362,11 +362,11 @@ GD_NAMESPACE_BEGIN
 
 		// Writing FromString function.
 		OutputGeneratedSourceStream->WriteString(String("\n\n\t") + EnumerationFromStrInterface);
-		OutputGeneratedSourceStream->WriteString("\n\t{\n\t\tUInt32 const HashCode = String(Value).GetHashSumm();\n\t\tswitch(HashCode) {");
+		OutputGeneratedSourceStream->WriteString("\n\t{\n\t\tUInt32 const HashCode = String(Value).GetHashCode();\n\t\tswitch(HashCode) {");
 		for (size_t Cnt = 0; Cnt < EnumerationNames.GetSize(); ++Cnt)
 		{	// Writing prehashed values.
 			OutputGeneratedSourceStream->WriteString(String::Format("\n\t\t\tcase %d: return %s;"
-				, static_cast<Int32>(EnumerationNames.GetElementAt(Cnt).GetHashSumm().GetValue())
+				, static_cast<Int32>(EnumerationNames.GetElementAt(Cnt).GetHashCode().GetValue())
 				, Enumeration->EnumerationValues.GetElementAt(Cnt).Key.CStr()));
 		}
 		OutputGeneratedSourceStream->WriteString("\n\t\t}\n\t\treturn ???Something???;\n\t}");

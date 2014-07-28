@@ -15,27 +15,17 @@
   ##########################################################################
   -->
   <!-- String class -->
-	<Type Name="Goddamn::String">
-		<DisplayString>{HeapMemory, s}</DisplayString>
-		<!--<DisplayString Condition="IsOnHeap">{HeapMemory, s}</DisplayString>-->
-		<!--<DisplayString Condition="IsOnHeap == false">{&amp;StackMemory[0], s}</DisplayString>-->
-		<StringView>HeapMemory, s</StringView> 
-		<!--<StringView Condition="IsOnHeap">HeapMemory, s</StringView>-->
-		<!--<StringView Condition="IsOnHeap == false">StackMemory, s</StringView>-->
+	<Type Name="Goddamn::BaseString&lt;*&gt;">
+    <DisplayString Condition="StringSize &gt;= StringMaxHeapSize">{StringHeapPointer}</DisplayString>
+    <DisplayString Condition="StringSize &lt; StringMaxHeapSize">{&amp;StringStackArray[0]}</DisplayString>
+    <StringView Condition="StringSize &gt;= StringMaxHeapSize">StringHeapPointer</StringView>
+    <StringView Condition="StringSize &lt; StringMaxHeapSize">&amp;StringStackArray[0]</StringView>
 		<Expand>
-			<Item Name="Length">HeapSize</Item>
-			<!--<Item Condition="IsOnHeap" Name="Length">HeapSize</Item>-->
-			<!--<Item Condition="IsOnHeap == false" Name="Length">StackSize</Item>-->
-      <Item Name="Capacity">HeapCapacity</Item>
-      <!--<Item Condition="IsOnHeap" Name="Capacity">HeapCapacity</Item>-->
-			<!--<Item Condition="IsOnHeap == false" Name="Capacity">StackCapacity</Item> -->
+			<Item Name="Length">StringSize</Item>
 			<ArrayItems>
-        <Size>HeapSize</Size>
-        <!--<Size Condition="IsOnHeap">HeapSize</Size>-->
-				<!--<Size Condition="IsOnHeap == false">StackSize</Size> -->
-        <ValuePointer>HeapMemory</ValuePointer>
-        <!--<ValuePointer Condition="IsOnHeap">HeapMemory</ValuePointer>-->
-				<!-- <ValuePointer Condition="IsOnHeap == false">&amp;StackMemory[0]</ValuePointer> -->
+        <Size>StringSize</Size>
+        <ValuePointer Condition="StringSize &gt;= StringMaxHeapSize">StringHeapPointer</ValuePointer>
+        <ValuePointer Condition="StringSize &lt; StringMaxHeapSize">&amp;StringStackArray[0]</ValuePointer>
 			</ArrayItems>
 		</Expand>
 	</Type>

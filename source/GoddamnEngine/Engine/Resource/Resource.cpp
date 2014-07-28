@@ -37,7 +37,7 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_DEBUG_ASSERT((TypeInformation != nullptr), "Nullptr Type information specified.");
 		ScopedLock const Lock(self->StreamerLock);
-		HashSumm   const IDHash = ID.GetHashSumm();
+		HashCode   const IDHash = ID.GetHashCode();
 		for (auto const Child : IterateChildObjects<Resource>(self)) {
 			if (Child->Identifier == IDHash) {
 				GD_ASSERT(Child->GetTypeInformation()->IsDerivedFrom(TypeInformation), "Requested resource exists, but it's type is incompatible with passed one.");
@@ -164,10 +164,10 @@ GD_NAMESPACE_BEGIN
 	RSURI::RSURI(String const& URI)
 	{
 		String static const ProtocolDelimiterString = "://";
-		size_t        const ProtocolDelimiter = URI.Find(ProtocolDelimiterString);
+		size_t        const ProtocolDelimiter = URI.Find(ProtocolDelimiterString.CStr());
 		GD_ASSERT((ProtocolDelimiter != -1), "URI parsing failed: string doesn't matches 'protocol://value0[?value1]'");
 
-		self->Hash = URI.GetHashSumm();
+		self->Hash = URI.GetHashCode();
 		self->Protocol = RSURIProtocolTypeFromStr(URI.GetSubstring(0, ProtocolDelimiter).CStr());
 		switch (self->Protocol)
 		{

@@ -17,9 +17,6 @@
 
 GD_NAMESPACE_BEGIN
 
-	template<typename CharType>
-	using BaseString = String; 
-
 	/// Represents mutable sequence of characters.
 	template<typename CharType>
 	class BaseStringBuilder final

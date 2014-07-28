@@ -11,41 +11,36 @@ GD_NAMESPACE_BEGIN
 		_In_ String const& FileName
 	) : NativePointer(nullptr)
 	{
-		size_t const DllPathExtentionIndex = FileName.ReverseFind('.');
-		if (DllPathExtentionIndex != -1)
+		size_t const DLLPathExtentionIndex = FileName.ReverseFind('.');
+		if (DLLPathExtentionIndex != -1)
 		{
-			String const DllExtention = FileName.GetSubstring(DllPathExtentionIndex);
-			if (DllExtention.ToUpper() == "DLL")
-			{
+			String const DLLExtention = FileName.GetSubstring(DLLPathExtentionIndex + 1);
+			if (DLLExtention.ToUpper() == "DLL") {
 				// Disabling errors for DLL opening when system throws message box
 #if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSC))
 				UINT const DefaultErrorMode = GetErrorMode();
 				SetErrorMode(SEM_FAILCRITICALERRORS);
-				self->NativePointer = (reinterpret_cast<handle>(LoadLibraryA(&FileName[0])));
+				self->NativePointer = (reinterpret_cast<handle>(::LoadLibraryA(&FileName[0])));
 				SetErrorMode(DefaultErrorMode);
-#else
-				self->NativePointer = (reinterpret_cast<handle>(LoadLibraryA(&FileName[0])));
-#endif
+#else	// if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSC))
+				self->NativePointer = (reinterpret_cast<handle>(::LoadLibraryA(&FileName[0])));
+#endif	// if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSC))
 			}
 		}
 	}
 
 	/// ==========================================================================================
 	/// ==========================================================================================
-	Assembly::~Assembly(
-	)
+	Assembly::~Assembly()
 	{
-		if (self->WasSuccessfullyLoaded())
-		{
+		if (self->WasSuccessfullyLoaded()) {
 			FreeModule(reinterpret_cast<HMODULE>(self->NativePointer));
 		}
 	}
 
 	/// ==========================================================================================
 	/// ==========================================================================================
-	chandle Assembly::GetNativeMethod(
-		_In_ String const& FunctionName
-	) const
+	chandle Assembly::GetNativeMethod(_In_ String const& FunctionName) const
 	{
 		GD_ASSERT((self->WasSuccessfullyLoaded()),
 			"Library was not loaded, but attempted to obtain procedure address");

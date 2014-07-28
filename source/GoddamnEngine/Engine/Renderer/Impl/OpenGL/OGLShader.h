@@ -44,7 +44,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINT explicit HRIOGLShaderInstance(HRIShaderInstanceDesc const* const InstanceDesc);
 		GDINL virtual ~HRIOGLShaderInstance() { }
-		GDINT void BindInstance() const;
+		GDINT void BindInstance(HRIShaderType const ShaderType) const;
 	};	// class HRID3D11ShaderInstance
 
 	/// Vertex shader implementation for OGL.

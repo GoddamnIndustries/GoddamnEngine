@@ -40,8 +40,9 @@ GD_NAMESPACE_BEGIN
 			String FormattedMessage = String::FormatVa(self->Message.CStr(), List);
 			va_end(List);
 
-			if (CurrentLexem != nullptr)
+			if (CurrentLexem != nullptr) {
 				return String::Format("(%u, %u): error GD0000: %s", CurrentLexem->GetLine(), CurrentLexem->GetSymbol(), FormattedMessage.CStr());
+			}
 			return String::Format("error GD0000: %s", FormattedMessage.CStr());
 		}
 	};	// struct ToolchainMessageDesc

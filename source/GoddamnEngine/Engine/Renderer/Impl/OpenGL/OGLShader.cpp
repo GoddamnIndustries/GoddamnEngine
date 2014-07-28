@@ -22,6 +22,7 @@ GD_NAMESPACE_BEGIN
 		if (self->ProgramID != 0) {
 			auto const& GL = HROGLInterface::GetInstance().Driver;
 			GL.DeleteProgram(self->ProgramID);
+			self->ProgramID = 0;
 		}
 	}
 
@@ -36,20 +37,20 @@ GD_NAMESPACE_BEGIN
 
 			HRIOGLVertexShader const* const VertexShader = object_cast<HRIOGLVertexShader const*>(self->GetProgramVertexShader());
 			if (VertexShader != nullptr) {	// All other shaders are only useful is vertex shader exists.
-				GL.AttachShader(ProgramID, VertexShader->GetVertexShaderID());
+				GL.AttachShader(self->ProgramID, VertexShader->GetVertexShaderID());
 #if (!defined(GD_HRI_OGL_ES))
 				HRIOGLTessCtrlShader const* const TessCtrlShader = object_cast<HRIOGLTessCtrlShader const*>(self->GetProgramTessellationControlShader());
 				if (TessCtrlShader != nullptr) {	// Tesselation evaluation is useless without tesselation control.
-					GL.AttachShader(ProgramID, TessCtrlShader->GetTessCtrlShaderID());
+					GL.AttachShader(self->ProgramID, TessCtrlShader->GetTessCtrlShaderID());
 					HRIOGLTessEvalShader const* const TessEvalShader = object_cast<HRIOGLTessEvalShader const*>(self->GetProgramTessellationEvaluationShader());
 					if (TessEvalShader != nullptr) {
-						GL.AttachShader(ProgramID, TessEvalShader->GetTessEvalShaderID());
+						GL.AttachShader(self->ProgramID, TessEvalShader->GetTessEvalShaderID());
 					}
 				}
 #endif	// if (!defined(GD_HRI_OGL_ES))
-				HRIOGLFragmentShader const* const TessEvalShader = object_cast<HRIOGLFragmentShader const*>(self->GetProgramFragmentShader());
-				if (TessEvalShader != nullptr) {
-					GL.AttachShader(ProgramID, TessEvalShader->GetFragmentShaderID());
+				HRIOGLFragmentShader const* const FragmentShader = object_cast<HRIOGLFragmentShader const*>(self->GetProgramFragmentShader());
+				if (FragmentShader != nullptr) {
+					GL.AttachShader(self->ProgramID, FragmentShader->GetFragmentShaderID());
 				}
 			}
 
@@ -60,7 +61,7 @@ GD_NAMESPACE_BEGIN
 				GLint LinkingResultLogLength = 0;
 				GL.GetProgramiv(self->ProgramID, GL_INFO_LOG_LENGTH, &LinkingResultLogLength);
 				if (LinkingResultLogLength > 0) {
-					String LinkingResultLog(nullptr, static_cast<size_t>(LinkingResultLogLength));
+					String LinkingResultLog(static_cast<size_t>(LinkingResultLogLength));
 					GL.GetProgramInfoLog(self->ProgramID, static_cast<GLsizei>(LinkingResultLogLength), nullptr, LinkingResultLog.CStr());
 					throw HRIOGLException(String("Shader linking failed with following log: ") + LinkingResultLog);
 				} else {
@@ -96,9 +97,9 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	void HRIOGLShaderInstance::BindInstance() const
+	void HRIOGLShaderInstance::BindInstance(HRIShaderType const ShaderType) const
 	{
-		GLuint ConstantBufferBindingPoint = 0;
+		GLuint ConstantBufferBindingPoint = static_cast<GLuint>(ShaderType)* static_cast<GLuint>(GD_HRI_SHADER_MAX_CBUFFERS_LOCATIONS);
 		auto const& GL = HROGLInterface::GetInstance().Driver;
 		for (auto const ConstantBufferID : self->ShaderConstantBuffers) {
 			GL.BindBufferBase(GL_UNIFORM_BUFFER, ConstantBufferBindingPoint, ConstantBufferID);
@@ -129,7 +130,7 @@ GD_NAMESPACE_BEGIN
 			GLint CompilationResultLogLength = 0;
 			GL.GetShaderiv(self->VertexShaderID, GL_INFO_LOG_LENGTH, &CompilationResultLogLength);
 			if (CompilationResultLogLength > 0) {
-				String CompilationResultLog(nullptr, static_cast<size_t>(CompilationResultLogLength));
+				String CompilationResultLog(static_cast<size_t>(CompilationResultLogLength));
 				GL.GetShaderInfoLog(self->VertexShaderID, static_cast<GLsizei>(CompilationResultLogLength), nullptr, CompilationResultLog.CStr());
 				throw HRIOGLException(String("Vertex shader compilation failed with following log: ") + CompilationResultLog);
 			} else {
@@ -142,6 +143,7 @@ GD_NAMESPACE_BEGIN
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
 		GL.DeleteProgram(self->VertexShaderID);
+		self->VertexShaderID = 0;
 	}
 
 	void HRIOGLVertexShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
@@ -150,7 +152,7 @@ GD_NAMESPACE_BEGIN
 		ShaderProgram->BindShaderProgram();
 		if (TheShaderInstance != nullptr) {
 			HRIOGLShaderInstance const* const ShaderInstance = object_cast<HRIOGLShaderInstance const*>(TheShaderInstance);
-			ShaderInstance->BindInstance();
+			ShaderInstance->BindInstance(GD_HRI_SHADER_TYPE_VERTEX);
 		}
 	}
 
@@ -184,7 +186,7 @@ GD_NAMESPACE_BEGIN
 			GLint CompilationResultLogLength = 0;
 			GL.GetShaderiv(self->TessCtrlShaderID, GL_INFO_LOG_LENGTH, &CompilationResultLogLength);
 			if (CompilationResultLogLength > 0) {
-				String CompilationResultLog(nullptr, static_cast<size_t>(CompilationResultLogLength));
+				String CompilationResultLog(static_cast<size_t>(CompilationResultLogLength));
 				GL.GetShaderInfoLog(self->TessCtrlShaderID, static_cast<GLsizei>(CompilationResultLogLength), nullptr, CompilationResultLog.CStr());
 				throw HRIOGLException(String("Tesselation Control shader compilation failed with following log: ") + CompilationResultLog);
 			} else {
@@ -197,6 +199,7 @@ GD_NAMESPACE_BEGIN
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
 		GL.DeleteProgram(self->TessCtrlShaderID);
+		self->TessCtrlShaderID = 0;
 	}
 
 	void HRIOGLTessCtrlShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
@@ -205,7 +208,7 @@ GD_NAMESPACE_BEGIN
 		ShaderProgram->BindShaderProgram();
 		if (TheShaderInstance != nullptr) {
 			HRIOGLShaderInstance const* const ShaderInstance = object_cast<HRIOGLShaderInstance const*>(TheShaderInstance);
-			ShaderInstance->BindInstance();
+			ShaderInstance->BindInstance(GD_HRI_SHADER_TYPE_TESSELLATION_CONTROL);
 		}
 	}
 
@@ -237,7 +240,7 @@ GD_NAMESPACE_BEGIN
 			GLint CompilationResultLogLength = 0;
 			GL.GetShaderiv(self->TessEvalShaderID, GL_INFO_LOG_LENGTH, &CompilationResultLogLength);
 			if (CompilationResultLogLength > 0) {
-				String CompilationResultLog(nullptr, static_cast<size_t>(CompilationResultLogLength));
+				String CompilationResultLog(static_cast<size_t>(CompilationResultLogLength));
 				GL.GetShaderInfoLog(self->TessEvalShaderID, static_cast<GLsizei>(CompilationResultLogLength), nullptr, CompilationResultLog.CStr());
 				throw HRIOGLException(String("Tesselation Evaluation shader compilation failed with following log: ") + CompilationResultLog);
 			} else {
@@ -250,6 +253,7 @@ GD_NAMESPACE_BEGIN
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
 		GL.DeleteProgram(self->TessEvalShaderID);
+		self->TessEvalShaderID = 0;
 	}
 
 	void HRIOGLTessEvalShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
@@ -258,7 +262,7 @@ GD_NAMESPACE_BEGIN
 		ShaderProgram->BindShaderProgram();
 		if (TheShaderInstance != nullptr) {
 			HRIOGLShaderInstance const* const ShaderInstance = object_cast<HRIOGLShaderInstance const*>(TheShaderInstance);
-			ShaderInstance->BindInstance();
+			ShaderInstance->BindInstance(GD_HRI_SHADER_TYPE_TESSELLATION_EVALUATION);
 		}
 	}
 
@@ -292,7 +296,7 @@ GD_NAMESPACE_BEGIN
 			GLint CompilationResultLogLength = 0;
 			GL.GetShaderiv(self->FragmentShaderID, GL_INFO_LOG_LENGTH, &CompilationResultLogLength);
 			if (CompilationResultLogLength > 0) {
-				String CompilationResultLog(nullptr, static_cast<size_t>(CompilationResultLogLength));
+				String CompilationResultLog(static_cast<size_t>(CompilationResultLogLength));
 				GL.GetShaderInfoLog(self->FragmentShaderID, static_cast<GLsizei>(CompilationResultLogLength), nullptr, CompilationResultLog.CStr());
 				throw HRIOGLException(String("Fragment shader compilation failed with following log: ") + CompilationResultLog);
 			} else {
@@ -313,7 +317,7 @@ GD_NAMESPACE_BEGIN
 		ShaderProgram->BindShaderProgram();
 		if (TheShaderInstance != nullptr) {
 			HRIOGLShaderInstance const* const ShaderInstance = object_cast<HRIOGLShaderInstance const*>(TheShaderInstance);
-			ShaderInstance->BindInstance();
+			ShaderInstance->BindInstance(GD_HRI_SHADER_TYPE_FRAGMENT);
 		}
 	}
 

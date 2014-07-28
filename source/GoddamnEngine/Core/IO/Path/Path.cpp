@@ -27,9 +27,12 @@ GD_NAMESPACE_BEGIN
 
 		extern size_t GetLastSlashLocation(String const& SomePath)
 		{
-			for (auto const& Character : Reverse(SomePath))
-				if ((Character == Char('\\')) || (Character == Char('/')))
+			for (auto const& Character : Reverse(SomePath)) {
+				if ((Character == Char('\\')) || (Character == Char('/'))) {
 					return (&Character - &(*SomePath.Begin()) + 1);
+				}
+			}
+
 			return SIZE_MAX;
 		}
 
@@ -48,8 +51,9 @@ GD_NAMESPACE_BEGIN
 		extern String GetDirectoryAndFileNameWithoutExtension(String const& SomePath)
 		{
 			size_t const Index = SomePath.ReverseFind('.');
-			if (Index == SIZE_MAX)
+			if (Index == SIZE_MAX) {
 				return SomePath;
+			}
 
 			return SomePath.GetSubstring(0, Index - 1);
 		}
@@ -61,7 +65,7 @@ GD_NAMESPACE_BEGIN
 
 		extern String GetTemporaryFileName()
 		{
-			String TemporaryFileName(nullptr, L_tmpnam);
+			String TemporaryFileName(L_tmpnam);
 			GD_ASSERT(tmpnam(TemporaryFileName.CStr()) != nullptr, "Failed to create temporary file name.");
 			return Path::GetTemporaryPath() + TemporaryFileName;
 		}
@@ -72,12 +76,13 @@ GD_NAMESPACE_BEGIN
 #if (defined(GD_PLATFORM_WINDOWS))
 				char static TemporaryPath[MAX_PATH];
 				DWORD const static Result = GetTempPathA(MAX_PATH, &TemporaryPath[0]);
-				GD_ASSERT(Result != 0, "Failed to get temporary dir path");
+				GD_ASSERT(Result != 0, "Failed to get temporary directory path");
 				return TemporaryPath;
 #else	// if (defined(GD_PLATFORM_WINDOWS))
 				char const* const TemporaryPath = getenv("TMPDIR");
-				if (TemporaryPath == 0)
+				if (TemporaryPath == nullptr) {
 					return "/tmp";
+				}
 				return TemporaryPath;
 #endif	// if (defined(GD_PLATFORM_WINDOWS))
 			}());

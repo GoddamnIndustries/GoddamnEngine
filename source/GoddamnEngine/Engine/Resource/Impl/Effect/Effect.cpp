@@ -68,7 +68,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if 0
 		self->EffectShaderProgram = HRInterface::GetInstance().CreateShaderProgram();
 		
-		String ShaderPathes(nullptr, InputResourceData->GetSize());
+		String ShaderPathes(InputResourceData->GetSize());
 		InputResourceData->Read(ShaderPathes.CStr(), 1, InputResourceData->GetSize());
 
 		size_t const CommaIndex = ShaderPathes.Find(',');

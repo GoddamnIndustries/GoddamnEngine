@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 		size_t                      const  ParamArrayLength /* = 1                                   */,
 		HRIShaderParamID            const  ParamID          /* = GD_HRI_SHADER_PARAM_DESC_ID_UNKNOWN */)
 		: HRIObject(HRIObject::TreeLockingFlagsAll, ParamLocationDesc)
-		, ParamName(ParamName), ParamHash  (ParamName.GetHashSumm())
+		, ParamName(ParamName), ParamHash  (ParamName.GetHashCode())
 		, ParamType(ParamType), ParamFormat(ParamFormat), ParamArrayLength(ParamArrayLength)
 		, ParamID(ParamID)
 	{
@@ -134,7 +134,7 @@ GD_NAMESPACE_BEGIN
 
 	GDINL HRIShaderParam const* HRIShaderParamLocation::GetParamByName(String const& ParamName) const
 	{
-		HashSumm const ParamNameHash = ParamName.GetHashSumm();
+		HashCode const ParamNameHash = ParamName.GetHashCode();
 		return self->FindFirstChildObject<HRIShaderParam const>([ParamNameHash](HRIShaderParam const* const LocationShaderParam) -> bool { 
 			return (LocationShaderParam->ParamDesc->ParamHash == ParamNameHash); 
 		});

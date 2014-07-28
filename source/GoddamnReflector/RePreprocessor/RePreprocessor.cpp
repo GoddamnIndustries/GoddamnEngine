@@ -32,14 +32,17 @@ GD_NAMESPACE_BEGIN
 
 		// Reading all directive into a string.
 		BaseParser->ExpectNextLexem();
-		String PreprocessorDirective = BaseParser->GetCurrentLexem().GetRawData();
-		for (;;)
-		{	
+		StringBuilder PreprocessorDirectiveBuilder;
+		PreprocessorDirectiveBuilder.Append(BaseParser->GetCurrentLexem().GetRawData());
+		for (;;) {	
 			Char const Character = BaseParser->GetLexer()->GetNextCharacter();
-			if ((Character == Char('\n')) || (Character == Char('\r')))
+			if ((Character == Char('\n')) || (Character == Char('\r'))) {
 				break;
-			PreprocessorDirective.PushLast(Character);
+			}
+
+			PreprocessorDirectiveBuilder.Append(Character);
 		};
+		String const PreprocessorDirective = PreprocessorDirectiveBuilder.ToString();
 		BaseParser->ExpectNextLexem();
 
 		// '#endif' directive parsing.
@@ -125,7 +128,7 @@ GD_NAMESPACE_BEGIN
 			GDINT StringBuilder& WriteBlock(Block const* SomeBlock)
 			{
 				++self->IdentsCount;
-				String const Idents(nullptr, self->IdentsCount, Char('\t'));
+				String const Idents(self->IdentsCount, Char('\t'));
 				Builder.AppendFormat("\n%sBlock <Level %u> {", Idents.CStr(), self->IdentsCount);
 				Builder.AppendFormat("\n%s\tPreCondition : %s", Idents.CStr(), (!SomeBlock->PreCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PreCondition.CStr()).CStr() : "None"));
 				Builder.AppendFormat("\n%s\tPostCondition : %s", Idents.CStr(), (!SomeBlock->PostCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PostCondition.CStr()).CStr() : "None"));

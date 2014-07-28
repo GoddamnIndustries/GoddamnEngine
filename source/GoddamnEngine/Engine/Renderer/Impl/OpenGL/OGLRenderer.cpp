@@ -1,4 +1,5 @@
 #include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRenderer.h>
+#include <GoddamnEngine/Engine/Renderer/Shader/Shader.h>
 
 #if (!defined(GD_HRI_OGL_ES))
 #	if (defined(GD_PLATFORM_WINDOWS))
@@ -6,13 +7,13 @@
 #		pragma comment(lib, "GLU32.lib")
 #		include <Windows.h>
 #		include <gl/GL.h>
-#		define GD_GL_GET_PROC_ADDRESS			(::wglGetProcAddress)
-#		define WGL_CONTEXT_MAJOR_VERSION_ARB	0x2091
-#		define WGL_CONTEXT_MINOR_VERSION_ARB	0x2092
+#		define GD_GL_GET_PROC_ADDRESS (::wglGetProcAddress)
 //	endif	//	if (defined(GD_PLATFORM_WINDOWS))
 #	else	// *** Platform Select ***
 #		error "'~~~Platform-Dependant-Includes~~~' error: Code for target platform is not implemented."
 #	endif	// *** Platform Select ***
+#else	// if (!defined(GD_HRI_OGL_ES))
+#	define GD_GL_GET_PROC_ADDRESS (::eglGetProcAddress)
 #endif	// if (!defined(GD_HRI_OGL_ES))
 	
 GD_NAMESPACE_BEGIN
@@ -24,7 +25,8 @@ GD_NAMESPACE_BEGIN
 #define GD_DEFINE_OGL_METHOD(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) \
 		/**/self->Driver._##MethodName = reinterpret_cast<ReturnType (*)(ArgumentsDeclarations)>(GD_GL_GET_PROC_ADDRESS("gl"#MethodName)); \
 		if (self->Driver._##MethodName == nullptr) { \
-			throw HRIOGLException("Unable to map 'gl"#MethodName"' method."); \
+			/*throw HRIOGLException("Unable to map 'gl"#MethodName"' method.");*/ \
+			Debug::Warning("Unable to map 'gl"#MethodName"' method.");\
 		}
 #if (!defined(GD_HRI_OGL_ES))
 #	if (defined(GD_PLATFORM_WINDOWS))
@@ -63,8 +65,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if (!defined(__INTELLISENSE__))
 
 		// Loading API that allowes creation of avanced context.
-		typedef HGLRC(APIENTRY* PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC const hDC, HGLRC const hGLRC, int const* const Attributes);
-		auto const WinCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>(::wglGetProcAddress("wglCreateContextAttribsARB"));
+		auto const WinCreateContextAttribsARB = reinterpret_cast<HGLRC(*)(HDC const hDC, HGLRC const hGLRC, int const* const Attributes)>(::wglGetProcAddress("wglCreateContextAttribsARB"));
 		if (WinCreateContextAttribsARB == nullptr) {
 			throw HRIOGLException("Unable to map 'wglCreateContextAttribsARB' method.");
 		}
@@ -73,8 +74,8 @@ GD_NAMESPACE_BEGIN
 		::wglDeleteContext(TemporaryContext);
 
 		int static const VersionAttributes[] = {
-			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-			WGL_CONTEXT_MINOR_VERSION_ARB, 2,
+			/*WGL_CONTEXT_MAJOR_VERSION_ARB*/ 0x2091, 4,
+			/*WGL_CONTEXT_MINOR_VERSION_ARB*/ 0x2092, 2,
 			0
 		};
 
@@ -97,15 +98,30 @@ GD_NAMESPACE_BEGIN
 #	endif	// *** Platform Select ***
 #endif	// if (!defined(GD_HRI_OGL_ES))
 		
-		::glEnable(GL_DEPTH_TEST);
+		auto const& GL = HROGLInterface::GetInstance().Driver;
+		
+		// Lets check shader limits.
+		GLint MaxUniformBufferBindings = 0;
+		GL.GetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &MaxUniformBufferBindings);
+		GD_HRI_OGL_CHECK_ERRORS("Failed to get 'GL_MAX_UNIFORM_BUFFER_BINDINGS' constant");
+		if (MaxUniformBufferBindings < (static_cast<GLint>(GD_HRI_SHADER_MAX_CBUFFERS_LOCATIONS) * static_cast<GLint>(GD_HRI_SHADER_TYPES_COUNT))) {
+			Debug::Error(String::Format("Engine requiests more UBO bindings, than Driver supports. This may cause crashes/graphics artifacts."));
+		}
+
+		// Enabling functionality.
+		GL.Enable(GL_DEPTH_TEST);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to enable Depth Test");
-		::glFrontFace (GL_CW);
+
+		GL.FrontFace (GL_CW);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to set Clock-Wise vertices mode");
-		::glEnable(GL_CULL_FACE);
+
+		GL.Enable(GL_CULL_FACE);
 		GD_HRI_OGL_CHECK_ERRORS("Failed enable Face culling");
-		::glCullFace(GL_BACK);
+
+		GL.CullFace(GL_BACK);
 		GD_HRI_OGL_CHECK_ERRORS("Failed switch face culling to Back surface culling");
-		::glClearDepth(1.0f);
+
+		GL.ClearDepth(1.0f);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to Clear depth to 1.0f");
 		return true;
 	}
@@ -137,9 +153,10 @@ GD_NAMESPACE_BEGIN
 
 	void HROGLInterface::ClearContext(Rectangle const& ClearingViewport, Color const& ClearColor, bool const DoClearDepth /* = true */)
 	{
-		::glClear(GL_COLOR_BUFFER_BIT | (DoClearDepth ? GL_DEPTH_BUFFER_BIT : 0));
-		::glClearColor(ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a);
-		::glViewport(static_cast<GLint>(self->ContextResolution.Width  * ClearingViewport.Left  ),
+		auto const& GL = HROGLInterface::GetInstance().Driver;
+		GL.Clear(GL_COLOR_BUFFER_BIT | (DoClearDepth ? GL_DEPTH_BUFFER_BIT : 0));
+		GL.ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a);
+		GL.Viewport(static_cast<GLint>(self->ContextResolution.Width  * ClearingViewport.Left  ),
 					 static_cast<GLint>(self->ContextResolution.Height * ClearingViewport.Top   ),
 					 static_cast<GLint>(self->ContextResolution.Width  * ClearingViewport.Width ),
 					 static_cast<GLint>(self->ContextResolution.Height * ClearingViewport.Height));

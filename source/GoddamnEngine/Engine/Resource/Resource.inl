@@ -47,7 +47,7 @@ GD_NAMESPACE_BEGIN
 		return IdentifierBuilder.ToString();
 	}
 
-	GDINL bool RSURI::operator== (HashSumm const Hash) const
+	GDINL bool RSURI::operator== (HashCode const Hash) const
 	{
 		return (self->Hash == Hash);
 	}

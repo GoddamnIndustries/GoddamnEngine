@@ -108,9 +108,9 @@ GD_NAMESPACE_BEGIN
 		return (*self = (*self + String(HeapMemory))); 
 	}
 
-	GDINL bool String::operator==(const HashSumm& hash) const
+	GDINL bool String::operator==(const HashCode& hash) const
 	{ 
-		return self->GetHashSumm() == hash; 
+		return self->GetHashCode() == hash; 
 	}
 
 	GDINL bool String::operator!= (const String& HeapMemory) const

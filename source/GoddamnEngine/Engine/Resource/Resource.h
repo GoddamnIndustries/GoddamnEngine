@@ -65,7 +65,7 @@ GD_NAMESPACE_BEGIN
 		StringBuilder InlinedData;
 		String PathToFile;
 		String PathInFile;
-		HashSumm Hash;
+		HashCode Hash;
 
 	public /*Constructor / Destructor*/:
 		/// Parses RSURI
@@ -114,7 +114,7 @@ GD_NAMESPACE_BEGIN
 		GDINL String GetIdentifierString() const;
 
 	public /*Operators*/:
-		GDINL bool operator== (HashSumm const Hash) const;
+		GDINL bool operator== (HashCode const Hash) const;
 	};	// class RSURI
 
 	///	Describing state of Resource

@@ -360,15 +360,15 @@ GD_NAMESPACE_BEGIN
 	// String Hash
 	/// ==========================================================================================
 
-	HashSumm String::GetHashSumm() const
+	HashCode String::GetHashCode() const
 	{
-		HashSumm::HashValueType computed = 0;
+		HashCode::HashValueType computed = 0;
 		for (size_t cnt = 0; cnt < self->GetSize(); cnt += 1) 
 		{
 			computed = 65599 * computed + (*self)[cnt];
 		}
 		
-		return HashSumm((computed >> 16) ^ computed);
+		return HashCode((computed >> 16) ^ computed);
 	}
 
 	/// ==========================================================================================

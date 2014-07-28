@@ -266,7 +266,7 @@ GD_NAMESPACE_BEGIN
 
 	private /*Class Members*/:
 		/// Contains specialized annotation parser registry.
-		Map<HashSumm, CtorProc> static AnnotationParsersRegistry;
+		Map<HashCode, CtorProc> static AnnotationParsersRegistry;
 
 	public /*Class API*/:
 		/// Registers new specialized annotation parser in registry.
@@ -324,7 +324,7 @@ GD_NAMESPACE_BEGIN
 		typedef UniquePtr<CPPAnnotationParamParser>(*CtorProc)(handle const Args);
 
 		/// Contains specialized annotation params parser registry.
-		Map<HashSumm, CtorProc> AnnotationParamParsersRegistry;
+		Map<HashCode, CtorProc> AnnotationParamParsersRegistry;
 
 	public /*Class Types and API*/:
 		/// Provides registering all annotation-parser-derived classes.

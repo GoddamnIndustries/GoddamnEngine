@@ -8,7 +8,8 @@
 # ==========================================================================================
 
 if [[ -z "$1" ]]; then
-	GL3HEADER='C:\Program Files (x86)\Imagination\PowerVR\GraphicsSDK\SDK_3.3\Builds\Include\GLES3\gl3.h'
+#	GL3HEADER='C:\Program Files (x86)\Imagination\PowerVR\GraphicsSDK\SDK_3.3\Builds\Include\GLES3\gl3.h'
+	GL3HEADER='OpenGL4.3CoreARB.Non-Source_h'
 else
 	GL3HEADER=$1
 fi
@@ -130,6 +131,16 @@ cat << ___EndOfData___
 		GD_DEFINE_OGL_METHOD_GLUE_ARGS(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10) \\
 		)
 
+// WinAPI has macros for everything..
+#if (defined(GD_PLATFORM_WINAPI))
+#	pragma push_macro("MemoryBarrier")
+#	undef MemoryBarrier
+#	pragma push_macro("near")
+#	undef near
+#	pragma push_macro("far")
+#	undef far
+#endif	// if (defined(GD_PLATFORM_WINAPI))
+
 /// ==========================================================================================
 /// Some OpenGL <-> Goddamn coding style conversions.
 /// ==========================================================================================
@@ -145,7 +156,7 @@ cat << ___EndOfData___
 ___EndOfData___
 
 while read -r LINE; do
-	if [[ $LINE == GL_API* ]]; then
+	if [[ $LINE == GL* ]]; then
 		# Found function definition	
 		# Locating parameters start brace
 		BRACE_OPEN_INDEX=` awk -v a="$LINE" -v b='(' 'BEGIN{print index(a,b)}'`
@@ -161,51 +172,58 @@ while read -r LINE; do
 			FUNCTION_NAME=${FUNCTION_DECLS[3]:2}
 		fi
 				
-		# Processing function parameters.
-		PARAMETERS=(`echo ${LINE:$BRACE_OPEN_INDEX:$(($BRACE_CLOSE_INDEX - $BRACE_OPEN_INDEX - 1))} | tr " " "\n"`)
-		PARAMETERS_LENGTH=${#PARAMETERS[@]}
+		if [[ $FUNCTION_NAME != *glCreateSyncFromCLeventARB* ]]; then
+			# Processing function parameters.
+			PARAMETERS=(`echo ${LINE:$BRACE_OPEN_INDEX:$(($BRACE_CLOSE_INDEX - $BRACE_OPEN_INDEX - 1))} | tr " " "\n"`)
+			PARAMETERS_LENGTH=${#PARAMETERS[@]}
 		
-		PARAMETERS_DECL='\n'
-		PARAMETERS_COUNT=0
+			PARAMETERS_DECL='\n'
+			PARAMETERS_COUNT=0
 		
-		# Explicit no parameters was defined using 'void' keyword.
-		if [[ $PARAMETERS_LENGTH != 1 ]]; then
-			PARAMETERS_DECL=',\n'
-			for (( PARAMETER_INDEX=0; PARAMETER_INDEX<$PARAMETERS_LENGTH; )); do
-				PARAMETER_TYPE=${PARAMETERS[$PARAMETER_INDEX]}
-				if [[ $PARAMETER_TYPE == const ]]; then	# Const pointer
-					PARAMETER_TYPE='const '${PARAMETERS[$PARAMETER_INDEX + 1]}
-					PARAMETER_TYPE_NEXT=${PARAMETERS[$PARAMETER_INDEX + 2]}
-					if [[ $PARAMETER_TYPE_NEXT == const* ]]; then	# Const pointer on const pointer
-						PARAMETER_TYPE=$PARAMETER_TYPE' '$PARAMETER_TYPE_NEXT
-						((++PARAMETER_INDEX))
-					fi
+			# Explicit no parameters was defined using 'void' keyword.
+			if [[ $PARAMETERS_LENGTH != 1 ]]; then
+				PARAMETERS_DECL=',\n'
+				for (( PARAMETER_INDEX=0; PARAMETER_INDEX<$PARAMETERS_LENGTH; )); do
+					PARAMETER_TYPE=${PARAMETERS[$PARAMETER_INDEX]}
+					if [[ $PARAMETER_TYPE == const ]]; then	# Const pointer
+						PARAMETER_TYPE='const '${PARAMETERS[$PARAMETER_INDEX + 1]}
+						PARAMETER_TYPE_NEXT=${PARAMETERS[$PARAMETER_INDEX + 2]}
+						if [[ $PARAMETER_TYPE_NEXT == const* ]]; then	# Const pointer on const pointer
+							PARAMETER_TYPE=$PARAMETER_TYPE' '$PARAMETER_TYPE_NEXT
+							((++PARAMETER_INDEX))
+						fi
 					
-					PARAMETER_NAME=${PARAMETERS[$PARAMETER_INDEX + 2]}
-					((PARAMETER_INDEX += 3))
-				else
-					PARAMETER_NAME=${PARAMETERS[$PARAMETER_INDEX + 1]}
-					((PARAMETER_INDEX += 2))
-				fi
+						PARAMETER_NAME=${PARAMETERS[$PARAMETER_INDEX + 2]}
+						((PARAMETER_INDEX += 3))
+					else
+						PARAMETER_NAME=${PARAMETERS[$PARAMETER_INDEX + 1]}
+						((PARAMETER_INDEX += 2))
+					fi
 				
-				if [[ $PARAMETER_NAME == '*'* ]]; then	# Pointer sign was added to name and not to type
-					PARAMETER_NAME=${PARAMETER_NAME:1}
-					PARAMETER_TYPE=$PARAMETER_TYPE'*'
-				fi
+					if [[ $PARAMETER_NAME == '*'* ]]; then	# Pointer sign was added to name and not to type
+						PARAMETER_NAME=${PARAMETER_NAME:1}
+						PARAMETER_TYPE=$PARAMETER_TYPE'*'
+					fi
 				
-				PARAMETERS_DECL=$PARAMETERS_DECL"\t$PARAMETER_TYPE const, $PARAMETER_NAME\n"
-				((PARAMETERS_COUNT ++))
-			done
-		fi
+					PARAMETERS_DECL=$PARAMETERS_DECL"\t$PARAMETER_TYPE const, $PARAMETER_NAME\n"
+					((PARAMETERS_COUNT ++))
+				done
+			fi
 		
-		printf "\n\n// $FUNCTION_TYPE gl$FUNCTION_NAME(${PARAMETERS[*]})"
-		printf "\nGD_DEFINE_OGL_METHOD_$PARAMETERS_COUNT(\n\t$FUNCTION_TYPE, $FUNCTION_NAME$PARAMETERS_DECL\t)"
+			printf "\n\n// $FUNCTION_TYPE gl$FUNCTION_NAME(${PARAMETERS[*]})"
+			printf "\nGD_DEFINE_OGL_METHOD_$PARAMETERS_COUNT(\n\t$FUNCTION_TYPE, $FUNCTION_NAME$PARAMETERS_DECL\t)"
+		fi
 	fi
 done < "$GL3HEADER"
 
 # Writing Header postfix
 cat << ___EndOfData___
 
+#if (defined(GD_PLATFORM_WINAPI))
+#	pragma pop_macro("MemoryBarrier")
+#	pragma pop_macro("near")
+#	pragma pop_macro("far")
+#endif	// if (defined(GD_PLATFORM_WINAPI))
 
 #undef GD_DEFINE_OGL_METHOD_0
 #undef GD_DEFINE_OGL_METHOD_1

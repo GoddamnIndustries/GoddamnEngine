@@ -15,12 +15,12 @@ GD_NAMESPACE_BEGIN
 	extern Str HRIShaderTypeToStr(HRIShaderType const ShaderType)
 	{
 		Str static const HRIShaderTypeToStrTable[] = {
-			/* GD_HRI_SHADER_TYPE_COMPUTE  = */ "compute",
-			/* GD_HRI_SHADER_TYPE_GEOMETRY = */ "geometry",
 			/* GD_HRI_SHADER_TYPE_VERTEX   = */ "vertex",
 			/* GD_HRI_SHADER_TYPE_HULL     = */ "hull",
 			/* GD_HRI_SHADER_TYPE_DOMAIN   = */ "domain",
 			/* GD_HRI_SHADER_TYPE_PIXEL    = */ "pixel",
+			/* GD_HRI_SHADER_TYPE_COMPUTE  = */ "compute",
+			/* GD_HRI_SHADER_TYPE_GEOMETRY = */ "geometry",
 		};
 
 		GD_DEBUG_ASSERT(ShaderType < GD_HRI_SHADER_TYPES_COUNT, "Invalid shader type specified");

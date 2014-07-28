@@ -20,6 +20,7 @@
 #	define GD_HRI_OGL_ES
 #endif	// if (defined(IE_PLATFORM_MOBILE) || defined(IE_HRI_OGL_FORCE_ES))
 
+#include <KHR/khrplatform.h>
 #if (defined(GD_HRI_OGL_ES))
 #	include <EGL/egl.h>
 #	include <GLES3/gl3.h>
@@ -31,7 +32,7 @@
 
 #define GD_HRI_OGL_CHECK_ERRORS(Message) \
 	do { \
-		GLenum const Result = ::glGetError(); \
+		GLenum const Result = GL.GetError(); \
 		if (Result != GL_NO_ERROR) { \
 			Str const ResultLog = reinterpret_cast<Str>(::gluErrorString(Result)); \
 			if (ResultLog != nullptr) { \
@@ -43,6 +44,34 @@
 	} while(false)
 
 GD_NAMESPACE_BEGIN
+
+#if (!defined(GD_HRI_OGL_ES))
+	// We have to define missing types here.
+	typedef khronos_int8_t GLbyte;
+	typedef khronos_float_t GLclampf;
+	typedef khronos_int32_t GLfixed;
+	typedef short GLshort;
+	typedef unsigned short GLushort;
+	typedef void GLvoid;
+	typedef struct __GLsync *GLsync;
+	typedef khronos_int64_t GLint64;
+	typedef khronos_uint64_t GLuint64;
+	typedef unsigned int GLenum;
+	typedef unsigned int GLuint;
+	typedef char GLchar;
+	typedef khronos_float_t GLfloat;
+	typedef khronos_ssize_t GLsizeiptr;
+	typedef khronos_intptr_t GLintptr;
+	typedef unsigned int GLbitfield;
+	typedef int GLint;
+	typedef unsigned char GLboolean;
+	typedef int GLsizei;
+	typedef khronos_uint8_t GLubyte;
+	typedef void* GLeglImageOES;
+#endif	// if (defined(!GD_HRI_OGL_ES))
+	typedef void(*GLDEBUGPROCARB)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
+	typedef GLDEBUGPROCARB GLDEBUGPROCKHR;
+	typedef GLDEBUGPROCARB GLDEBUGPROC;
 
 	/// Indicates about runtime error caused by renderer interface
 	class HRIOGLException : public HRIException

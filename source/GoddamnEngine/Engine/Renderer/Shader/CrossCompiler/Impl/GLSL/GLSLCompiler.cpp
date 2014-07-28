@@ -136,10 +136,10 @@ R"(
 	public:
 		GDINL  GLSLGenerator(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
 		GDINL ~GLSLGenerator() { }
-		GDINT void GenerateShader(StringBuilder& Builder, HLSLScope const* const ShaderParsedData, String const& ShaderEntryName, HRIShaderCrossCompilerTarget const ShaderTargetPlatform);
+		GDINT void GenerateShader(StringBuilder& Builder, HLSLScope const* const ShaderParsedData, String const& ShaderEntryName, HRIShaderCrossCompilerTarget const ShaderTargetPlatform, HRIShaderType const ShaderType);
 	private:
 		GDINT void GenerateShaderStruct(HLSLStruct const* const Struct, StringBuilder& Builder);
-		GDINT void GenerateShaderConstantBuffer(HLSLCBuffer const* const ConstantBuffer, StringBuilder& Builder, bool const SupportsConstantBuffers);
+		GDINT void GenerateShaderConstantBuffer(HLSLCBuffer const* const ConstantBuffer, StringBuilder& Builder, bool const SupportsConstantBuffers, HRIShaderType const ShaderType);
 		GDINT void GenerateShaderStaticVariable(HLSLVariable const* const StaticVariable, StringBuilder& Builder);
 		GDINT void GenerateShaderStaticFunction(HLSLFunction const* const StaticFunction, StringBuilder& Builder);
 		GDINT void GenerateShaderEntry(HLSLFunction const* const EntryPoint, StringBuilder& Builder);
@@ -154,7 +154,7 @@ R"(
 	/// Public class API:
 	/// ------------------------------------------------------------------------------------------
 
-	void GLSLGenerator::GenerateShader(StringBuilder& Builder, HLSLScope const* const ShaderParsedData, String const& ShaderEntryName, HRIShaderCrossCompilerTarget const ShaderTargetPlatform)
+	void GLSLGenerator::GenerateShader(StringBuilder& Builder, HLSLScope const* const ShaderParsedData, String const& ShaderEntryName, HRIShaderCrossCompilerTarget const ShaderTargetPlatform, HRIShaderType const ShaderType)
 	{
 		Builder.Append(GLSLInsertations::GLSLInsertation, GD_ARRAY_SIZE(GLSLInsertations::GLSLInsertation) - 1);
 		for (auto const& Definition : ShaderParsedData->InnerDefinitions) {	// Enumerating all definitions in shader.
@@ -164,7 +164,7 @@ R"(
 			} else {	// This definition is not a type.
 				HLSLCBuffer const* const ConstantBuffer = HLSLDynamicCast<HLSLCBuffer const*>(Definition);
 				if (ConstantBuffer != nullptr) {
-					self->GenerateShaderConstantBuffer(ConstantBuffer, Builder, ShaderTargetPlatform != GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2);
+					self->GenerateShaderConstantBuffer(ConstantBuffer, Builder, ShaderTargetPlatform != GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2, ShaderType);
 				} else {	// This definition is not a constant buffer.
 					HLSLVariable const* const StaticVariable = HLSLDynamicCast<HLSLVariable const*>(Definition);
 					if (StaticVariable != nullptr) {
@@ -197,7 +197,7 @@ R"(
 		Builder.Append("\n};");
 	}
 
-	void GLSLGenerator::GenerateShaderConstantBuffer(HLSLCBuffer const* const ConstantBuffer, StringBuilder& Builder, bool const SupportsConstantBuffers)
+	void GLSLGenerator::GenerateShaderConstantBuffer(HLSLCBuffer const* const ConstantBuffer, StringBuilder& Builder, bool const SupportsConstantBuffers, HRIShaderType const ShaderType)
 	{
 		if (ConstantBuffer->Register == nullptr) {
 			GLSLCompilerErrorDesc static const ExplicitConstantBufferRegisterNotSpecified("constant buffer 's' does not contains meta information about register.");
@@ -205,7 +205,9 @@ R"(
 		}
 
 		if (SupportsConstantBuffers) {
-			Builder.AppendFormat("\n\nlayout(std140, binding = %d) uniform %s \n{", static_cast<int>(ConstantBuffer->Register->RegisterID), ConstantBuffer->Name.CStr());
+			Builder.AppendFormat("\n\nlayout(std140, binding = %d) uniform %s \n{", 
+				static_cast<int>(ConstantBuffer->Register->RegisterID) + static_cast<int>(ShaderType)* static_cast<int>(GD_HRI_SHADER_MAX_CBUFFERS_LOCATIONS),
+				ConstantBuffer->Name.CStr());
 		} else {
 			Builder.AppendFormat("\n\n// uniform %s {", ConstantBuffer->Name.CStr());
 		}
@@ -358,7 +360,7 @@ R"(
 	)
 	{
 		StringBuilder GLSLGeneratorBuilder;
-		GLSLGenerator(self->Toolchain).GenerateShader(GLSLGeneratorBuilder, ShaderParsedData, ShaderEntryName, ShaderTargetPlatform);
+		GLSLGenerator(self->Toolchain).GenerateShader(GLSLGeneratorBuilder, ShaderParsedData, ShaderEntryName, ShaderTargetPlatform, ShaderType);
 
 		// Now we need just preprocess generated code to reduñe loading time.
 		StringBuilder GLSLPreprocessedBuilder;
@@ -452,12 +454,12 @@ R"(
 			} static const GLSLangInitializer;
 
 			static EShLanguage const HRI2GLSLangShaderType[] = {
-				/* GD_HRI_SHADER_TYPE_COMPUTE                 = */ EShLangCompute,        
-				/* GD_HRI_SHADER_TYPE_GEOMETRY                = */ EShLangGeometry,       
 				/* GD_HRI_SHADER_TYPE_VERTEX                  = */ EShLangVertex,         
 				/* GD_HRI_SHADER_TYPE_TESSELLATION_CONTROL    = */ EShLangTessControl,    
 				/* GD_HRI_SHADER_TYPE_TESSELLATION_EVALUATION = */ EShLangTessEvaluation, 
 				/* GD_HRI_SHADER_TYPE_FRAGMENT                = */ EShLangFragment,
+				/* GD_HRI_SHADER_TYPE_COMPUTE                 = */ EShLangCompute,
+				/* GD_HRI_SHADER_TYPE_GEOMETRY                = */ EShLangGeometry,
 			};
 
 			char const* const GLSLOptimizerBuilderPtr = GLSLOptimizerBuilder.GetPointer();

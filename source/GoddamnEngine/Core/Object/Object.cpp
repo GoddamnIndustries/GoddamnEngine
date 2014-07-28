@@ -216,8 +216,7 @@ GD_NAMESPACE_BEGIN
 			 object != nullptr;
 			 object  = object->GetPreviousSiblingObject())
 		{
-			dumpedTreeData += (String(nullptr, DumpedTreeDataRecursionLevel - 1, '\t')
-				+ String::Format("Object 0x%x with RTTI: %s\n", object, &object->GetTypeInformation()->Name[0]));
+			dumpedTreeData += (String(DumpedTreeDataRecursionLevel - 1, '\t') + String::Format("Object 0x%x with RTTI: %s\n", object, &object->GetTypeInformation()->Name[0]));
 			 
 			object->DumpTreeData(dumpedTreeData);
 		}

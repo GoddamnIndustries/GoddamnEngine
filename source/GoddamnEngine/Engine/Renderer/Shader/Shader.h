@@ -54,25 +54,32 @@ GD_NAMESPACE_BEGIN
 	enum HRIShaderLimits : size_t 
 	{
 		/// Max size of shader param location in bytes.
-		GD_HRI_SHADER_PARAM_MAX_LOCATION_SIZE = 128 * 1024 * 1024,
+		GD_HRI_SHADER_PARAM_MAX_LOCATION_SIZE = 16 * 1024,
 		
 		/// Max number of variables that can be stored inside location.
-		GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT = 10,
+		GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT = 16,
 
 		/// Max length of shader string parameter.
 		GD_HRI_SHADER_PARAM_MAX_STRING_LENGTH = 64,
+
+		/// Max constant buffer locations inside single shader.
+		/// *	OpenGL case:
+		///			Mainly, this limitation comes from OpenGL, where we cannot use same buffer registers in one program.
+		///			Mostly GPU drivers max limitation in 84 uniform buffers per shader program. We have 6 shader stage ->
+		///			14 uniform buffers per progragm. We leave a small buffering space (13 * 6 = 78) for uncommon drivers.
+		GD_HRI_SHADER_MAX_CBUFFERS_LOCATIONS = 13
 	};	// enum HRIShaderLimits
 
 	/// Describes types of shaders.
 	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | GoddamnCase | Public)
 	enum HRIShaderType : size_t
 	{
-		GD_HRI_SHADER_TYPE_COMPUTE,								///< Computing shader type.
-		GD_HRI_SHADER_TYPE_GEOMETRY,							///< Geometry shader type.
 		GD_HRI_SHADER_TYPE_VERTEX,								///< Vertex shader type.
 		GD_HRI_SHADER_TYPE_HULL,								///< Hull shader type.
 		GD_HRI_SHADER_TYPE_DOMAIN,								///< Domain shader type.
 		GD_HRI_SHADER_TYPE_PIXEL,								///< Pixel shader type.
+		GD_HRI_SHADER_TYPE_COMPUTE,								///< Computing shader type.
+		GD_HRI_SHADER_TYPE_GEOMETRY,							///< Geometry shader type.
 		GD_HRI_SHADER_TYPE_UNKNOWN,								///< Unknown shader type (internal usage only).
 		GD_HRI_SHADER_TYPES_COUNT								= GD_HRI_SHADER_TYPE_UNKNOWN,
 #if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
@@ -128,7 +135,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Hash of parameter`s name.
 	//	$GD_PROPERTY(ReadOnly, DefinedAs = Field)
-		HashSumm const ParamHash;
+		HashCode const ParamHash;
 
 		/// Type of this parameter.
 		$GD_PROPERTY(ReadOnly, DefinedAs = Field)
@@ -496,12 +503,12 @@ GD_NAMESPACE_BEGIN
 		union {
 			HRIShader* ProgramShaders[GD_HRI_SHADER_TYPES_COUNT];
 			struct {
-				HRIComputeShader * ProgramComputeShader;
-				HRIGeometryShader* ProgramGeometryShader;
 				HRIVertexShader  * ProgramVertexShader;
 				HRIHullShader    * ProgramHullShader;
 				HRIDomainShader  * ProgramDomainShader;
 				HRIPixelShader   * ProgramPixelShader;
+				HRIComputeShader * ProgramComputeShader;
+				HRIGeometryShader* ProgramGeometryShader;
 			};	// anonymous struct
 		};	// anonymous union
 

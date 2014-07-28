@@ -268,12 +268,12 @@ GD_NAMESPACE_BEGIN
 		}
 
 		LPCSTR static const D3DCompileProfiles[] = {
-			/* GD_HRI_SHADER_TYPE_COMPUTE  = */ "cs_5_0",
-			/* GD_HRI_SHADER_TYPE_GEOMETRY = */ "gs_5_0",
 			/* GD_HRI_SHADER_TYPE_VERTEX   = */ "vs_5_0",
 			/* GD_HRI_SHADER_TYPE_HULL     = */ "hs_5_0",
 			/* GD_HRI_SHADER_TYPE_DOMAIN   = */ "ds_5_0",
 			/* GD_HRI_SHADER_TYPE_PIXEL    = */ "ps_5_0",
+			/* GD_HRI_SHADER_TYPE_COMPUTE  = */ "cs_5_0",
+			/* GD_HRI_SHADER_TYPE_GEOMETRY = */ "gs_5_0",
 		};
 		GD_DEBUG_ASSERT(ShaderType < GD_HRI_SHADER_TYPE_UNKNOWN, "Invalid shader type specified.");
 		LPCSTR const D3DCompileProfile = D3DCompileProfiles[ShaderType];

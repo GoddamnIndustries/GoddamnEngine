@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 
 	void Material::OnResourceLoad(UniquePtr<InputStream> const& InputResourceData)
 	{
-		String materialStr(nullptr, InputResourceData->GetSize() / sizeof(Char));
+		String materialStr(InputResourceData->GetSize() / sizeof(Char));
 		InputResourceData->Read(&materialStr[0], 1, InputResourceData->GetSize());
 
 		mxml_node_t* const materialXml = mxmlLoadString(nullptr, &materialStr[0], MXML_TEXT_CALLBACK);

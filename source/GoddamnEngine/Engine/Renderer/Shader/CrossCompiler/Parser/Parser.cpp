@@ -891,8 +891,8 @@ GD_NAMESPACE_BEGIN
 
 	static HLSLSemanticType HLSLSemanticTypeFromString(String const& Semantic)
 	{
-		static StackUnorderedMap<HashSumm, HLSLSemanticType, GD_HLSL_SEMANTICS_COUNT> const SemanticsList = {
-#	  define GD_HLSL_DEFINE_SEMANTIC(Semantic) { String(#Semantic).GetHashSumm(), GD_HLSL_SEMANTIC_##Semantic }
+		static StackUnorderedMap<HashCode, HLSLSemanticType, GD_HLSL_SEMANTICS_COUNT> const SemanticsList = {
+#	  define GD_HLSL_DEFINE_SEMANTIC(Semantic) { String(#Semantic).GetHashCode(), GD_HLSL_SEMANTIC_##Semantic }
 			 GD_HLSL_DEFINE_SEMANTIC(BINORMAL),
 			 GD_HLSL_DEFINE_SEMANTIC(BLENDINDICES),
 			 GD_HLSL_DEFINE_SEMANTIC(BLENDWEIGHT),
@@ -930,7 +930,7 @@ GD_NAMESPACE_BEGIN
 #	undef    GD_HLSL_DEFINE_SEMANTIC
 		};
 
-		size_t const SemanticIndex  = SemanticsList.FindFirstElement(Semantic.GetHashSumm());
+		size_t const SemanticIndex  = SemanticsList.FindFirstElement(Semantic.GetHashCode());
 		return     ((SemanticIndex != SIZE_MAX) ? SemanticsList.GetElementAt(SemanticIndex).Second : GD_HLSL_SEMANTIC_UNKNOWN);
 	}
 
