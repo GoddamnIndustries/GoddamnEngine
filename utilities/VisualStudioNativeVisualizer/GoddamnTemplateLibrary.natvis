@@ -64,6 +64,7 @@
     <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
     <Expand>
       <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
+      <Item Condition="Pointer != 0" Name="Reference counter">Pointer->ReferenceCount</Item>
     </Expand>
   </Type>
   <!-- 
@@ -102,7 +103,7 @@
   <!-- Matrix3x4 class -->
   <!-- Matrix4x3 class -->
   <!-- Matrix4x4 class -->
-  <Type Name="Godddamn::Matrix4x4t&lt;*&gt;">
+  <Type Name="Goddamn::Matrix4x4t&lt;*&gt;">
     <DisplayString>{_0}, {_1}, {_2}, {_3}</DisplayString>
     <Expand>
       <Item Name="Row 0">_0</Item>

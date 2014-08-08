@@ -1,9 +1,9 @@
-#include <GoddamnEngine/Engine/Component/MeshRenderer/MeshRenderer.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
-#include <GoddamnEngine/Engine/Component/Transform/Transform.h>
+#include <GoddamnEngine/Engine/Component/Impl/MeshRenderer/MeshRenderer.h>
+#include <GoddamnEngine/Engine/Component/Impl/Transform/Transform.h>
 #include <GoddamnEngine/Engine/Resource/Resource.h>
 
 #include <GoddamnEngine/Engine/Renderer/Renderer.h>
+#include <DirectXMath.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -70,22 +70,25 @@ GD_NAMESPACE_BEGIN
 		self->OnMeshRendererParamChangedEvent.TriggerAndLaunchEvent();
 	}
 
-	void MeshRenderer::OnDestroySelf()
+	void MeshRenderer::OnDestroySelf(bool const IsForceDestruction)
 	{
 		self->GetGameObject()->GetTransform()->OnTransfromedEvent -= self;
 		self->OnMeshRendererParamChangedEvent -= self;
 	}
 	
-	void MeshRenderer::OnRenderSelf(Camera const* const camera)
+	void MeshRenderer::OnRenderSelf(RefPtr<Camera> const& TheCamera)
 	{
 		if (self->RendererVertexShaderInstance != nullptr) {
 			Matrix4x4 const& MatrixModel  = self->GetGameObject()->GetTransform()->GetTransformMatrix();
-			Matrix4x4 const  MatrixVp     = camera->GetViewMatrix() * camera->GetProjectionMatrix();
-			Matrix4x4 const  MatrixMvp    = MatrixModel * MatrixVp;
-		//	Matrix3 const  MatrixNormal = Matrix3(Matrix4x4(MatrixModel).Inverse()).Transpose();
+			Matrix4x4 const  MatrixMVP    = MatrixModel * TheCamera->GetViewMatrix() * TheCamera->GetProjectionMatrix();
+		//	Matrix3   const  MatrixNormal = Matrix3(Matrix4x4(MatrixModel).Inverse()).Transpose();
 
-			self->RendererMatrixMvp   ->SetValue<Matrix4x4>(MatrixMvp);
-			self->RendererMatrixModel ->SetValue<Matrix4x4>(MatrixModel);
+		//	using namespace DirectX;
+		//	XMMATRIX m = XMMatrixPerspectiveFovLH(60.0f / 57.295779513082320876798154814105f, 16.0f / 9.0f, 0.3f, 1000.0f);
+		//	self->RendererMatrixMvp->SetValue(&m.r[0]);
+		
+			self->RendererMatrixMvp   ->SetValue<Matrix4x4>(MatrixMVP);
+		//	self->RendererMatrixModel ->SetValue<Matrix4x4>(MatrixModel);
 		//	self->RendererMatrixNormal->SetValue<Matrix3>(MatrixNormal);
 		}
 

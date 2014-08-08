@@ -10,8 +10,8 @@
 #include <GoddamnEngine/Engine/Application/Application.h>
 #include <GoddamnEngine/Engine/Component/Static/Input/Input.h>			// To handle input.
 #include <GoddamnEngine/Engine/Component/Static/Physics/Physics.h>		// To create collisions.
-#include <GoddamnEngine/Engine/Component/Transform/Transform.h>			// To position objects in the world.
-#include <GoddamnEngine/Engine/Component/MeshRenderer/MeshRenderer.h>	// To render meshes.
+#include <GoddamnEngine/Engine/Component/Impl/Transform/Transform.h>			// To position objects in the world.
+#include <GoddamnEngine/Engine/Component/Impl/MeshRenderer/MeshRenderer.h>	// To render meshes.
 
 #if (defined(GD_NAMESPACE))
 using namespace GD_NAMESPACE;
@@ -40,7 +40,7 @@ class SimpleSceneFPSController final : public Component
 public/*Component properties*/:
 	/// Player's moving speed.
 	$GD_PROPERTY(ReadWrite, DefinedAs = Field)
-	float MovingSpeed = 1.3f;
+	Float32 MovingSpeed = 2.6f;
 
 public/*Class API*/:
 	GDINL SimpleSceneFPSController() { }
@@ -60,8 +60,9 @@ void SimpleSceneSampleApp::OnInitialize()
 	/*RefPtr<Scene>*/Scene* const CurrentScene = new Scene(Scene::FlagsNone);
 	{	// Creating a Player with Transform, camera and FPS controller and collider.
 		RefPtr<GameObject> const PlayerObject = CurrentScene->CreateGameObject();
-		RefPtr<Transform> const PlayerTransform = PlayerObject->AddComponent<Transform>();
+		RefPtr<Transform> const PlayerTransform(PlayerObject->AddComponent<Transform>());
 		PlayerTransform->SetPosition(Vector3Fast(0.0f, 1.75f, -7.0f));
+		PlayerTransform->SetRotation(Vector3Fast(0.0f, 180.0f, 0.0f));
 
 		RefPtr<Camera> const PlayerCamera = PlayerObject->AddComponent<Camera>();
 		RefPtr<SimpleSceneFPSController> const PlayerFPSController = PlayerObject->AddComponent<SimpleSceneFPSController>();
@@ -90,7 +91,7 @@ constexpr Float32 GetDeltaTime() { return 0.0014f; } // Now executing at 650 - 7
 void SimpleSceneFPSController::OnUpdateSelf()
 {	// Getting our Transform component.
 	// Note: Unlike Unity, Transform is cached. So it can be used without user-caching.
-	Transform* const MyTransform = self->GetGameObject()->GetTransform();
+	RefPtr<Transform> const MyTransform(self->GetGameObject()->GetTransform());
 
 	// Handling WASD keys to move, E and R to rotate.
 	Float32 const DeltaPosition = self->MovingSpeed * Time::GetDeltaTime();

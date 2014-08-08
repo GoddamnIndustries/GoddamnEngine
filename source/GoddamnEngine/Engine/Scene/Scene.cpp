@@ -1,5 +1,4 @@
 #include <GoddamnEngine/Engine/Scene/Scene.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
 #include <GoddamnEngine/Engine/Component/Static/StaticComponent.h>
 
 GD_NAMESPACE_BEGIN

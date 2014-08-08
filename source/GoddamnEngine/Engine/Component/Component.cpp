@@ -1,78 +1,58 @@
 #include <GoddamnEngine/Engine/Component/Component.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
-
 #include <GoddamnEngine/Engine/Resource/Resource.h>
-
 #include <GoddamnEngine/Core/Containers/Map/Map.h>
 #include <GoddamnEngine/Core/Text/String/String.h>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.h>
 
 GD_NAMESPACE_BEGIN
 
-	GD_SERIALIZABLE_IMPLEMENTATION_C(Component, Serializable, GDAPI, nullptr);
 
 	/// ==========================================================================================
-	// 'Component's searchers
+	/// Component class.		
+	/// Base class that is a simple part of each game object.
 	/// ==========================================================================================
 
-	Component::Component(ComponentAbilitiesFlags const abilitiesFlags /* = GD_COMPONENT_ABILITGDS_UNKNOWN */, 
-		ObjectTreeLockingFlags const treeLockingFlags /* = Object::TreeLockingFlagsDefaultComponent */) :
-		GD_EXTENDS_SERIALIZABLE(Serializable/*, treeLockingFlags*/),
-		AbilitiesFlags(abilitiesFlags)
+	GD_SERIALIZABLE_IMPLEMENTATION_C(Component, Object, GDAPI, nullptr);
+
+	/// ==========================================================================================
+	/// GameObject class.
+	/// ==========================================================================================
+
+	GD_SERIALIZABLE_IMPLEMENTATION(GameObject, Component, GDAPI);
+
+	RefPtr<Component> GameObject::GetComponent(ITypeInformation const* const TypeInfo)
 	{
-		//// The Exies - What You Deserve
-		//self->enabled = true;
-		//self->gameObject = []() -> GameObject*
-		//{
-		//	ContextManager& contextManager = ContextManager::GetInstance();
-		//	GameObjectsContext* gameObjectsContex = (GameObjectsContext*)contextManager.GetBindedInstance();
+		for (auto const AttachedComponent : IterateChildObjects<Component>(self)) {
+			ITypeInformation const* const AttachedComponentTypeInfo = AttachedComponent->GetTypeInformation();
+			if (AttachedComponentTypeInfo->IsDerivedFrom(TypeInfo)) {
+				AttachedComponent->AddReference();
+				return AttachedComponent;
+			}
+		}
 
-		//	return (gameObjectsContex != nullptr 
-		//		? (GameObject*)gameObjectsContex->GetBindedInstance()
-		//		: (GameObject*)nullptr
-		//	);
-		//}();
-
-		//// Computing index of this component
-		//const size_t componentIndex = [self, &name]() -> size_t
-		//{
-		//	const HashCode typeNameHash = name.GetHashCode();
-		//	const size_t componentIndex = globalComponents->GetElementIndex(typeNameHash);
-
-		//	if (componentIndex == -1)
-		//	{
-		//		globalComponents->AddElement(typeNameHash, ComponentsList());
-		//		return globalComponents->GetSize() - 1;
-		//	}
-
-		//	return componentIndex;
-		//}();
-
-		//ComponentsList& 
-		//	componentsList = globalComponents->GetElementAt(componentIndex).Value;
-		//	componentsList.PushLast(self);
-
-		//self->index = componentsList.GetSize() - 1;
+		return nullptr;
 	}
 
-	// The Bloodhound Gang - I Hope You Die
-	Component::~Component()
+	RefPtr<Component> GameObject::AddComponent(ITypeInformation const* const TypeInfo)
 	{
-		//// Decreasing other component's index and removing self from list
-		//const HashCode typeNameHash = self->GetTypeInformation().GetName().GetHashCode();
-		//const size_t componentIndex = globalComponents->GetElementIndex(typeNameHash);
-		//if (componentIndex != -1)
-		//{
-		//	ComponentsList& componentsList = globalComponents->GetElementAt(componentIndex).Value;
-		//	for (size_t cnt = self->GetComponentIndex() + 1; cnt < componentsList.GetSize(); cnt += 1)
-		//	{
-		//		Component*	
-		//			component = componentsList[cnt];
-		//			component->index -= 1;
-		//	}
+		RefPtr<Component> const FoundAttachedComponent(self->GetComponent(TypeInfo));
+		if (FoundAttachedComponent != nullptr) {
+			return FoundAttachedComponent;
+		}
+		else {
+			GD_DEBUG_ASSERT(TypeInfo->VirtualConstructor != nullptr, "Failed to create a instance of a abstract class.");
+			RefPtr<Component> const CreatedComponent = object_cast<Component*>(TypeInfo->VirtualConstructor(nullptr, nullptr));
+			CreatedComponent->AttachToObject(self);
+			return CreatedComponent;
+		}
+	}
 
-		//	componentsList.RemoveElementAt(index);
-		//}
+	void GameObject::RemoveComponent(ITypeInformation const* const TypeInfo)
+	{
+		RefPtr<Component> const FoundAttachedComponent = self->GetComponent(TypeInfo);
+		if (FoundAttachedComponent != nullptr) {
+			FoundAttachedComponent->DetachFromParentObject();
+		}
 	}
 
 GD_NAMESPACE_END

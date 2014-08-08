@@ -4,15 +4,13 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
 #include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
-
 #include <GoddamnEngine/Engine/Component/Component.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
 
 GD_NAMESPACE_BEGIN
 
 	class GameObject;
 
-	class Scene : public Object, public Singleton<Scene>
+	class Scene : public Component, public Singleton<Scene>
 	{
 		friend class Application;
 		typedef UInt8 SceneFlags;
@@ -47,50 +45,6 @@ GD_NAMESPACE_BEGIN
 		/// @param gameObject	Game object to clone
 		/// @returns			Clone or original game object
 		GDAPI GameObject* Instantiate(GameObject* const gameObject);
-
-	private:
-		GDINL virtual void OnInit() 
-		{ 
-			for (GameObject* 
-				gameObject = ((GameObject*)self->GetLastChildObject()); gameObject != nullptr; 
-				gameObject = ((GameObject*)gameObject->GetPreviousSiblingObject()))
-			{
-				gameObject->OnInitializeSelf();
-			}
-		}
-
-		GDINL virtual void OnStart()	
-		{ 
-			for (GameObject* 
-				gameObject = ((GameObject*)self->GetLastChildObject()); gameObject != nullptr; 
-				gameObject = ((GameObject*)gameObject->GetPreviousSiblingObject()))
-			{
-				gameObject->OnStartSelf();
-			}
-		}
-
-		GDINL virtual void OnUpdate()	
-		{ 
-			for (GameObject* 
-				gameObject = ((GameObject*)self->GetLastChildObject()); gameObject != nullptr; 
-				gameObject = ((GameObject*)gameObject->GetPreviousSiblingObject()))
-			{
-				gameObject->OnUpdateSelf();
-			}
-		}
-
-	public:
-		GDINL virtual void OnRender(
-			_In_ Camera const* const camera
-		)
-		{ 
-			for (GameObject* 
-				gameObject = ((GameObject*)self->GetLastChildObject()); gameObject != nullptr; 
-				gameObject = ((GameObject*)gameObject->GetPreviousSiblingObject()))
-			{
-				gameObject->OnRenderSelf(camera);
-			}
-		}
 	};
 
 	class SceneManager : public Object,

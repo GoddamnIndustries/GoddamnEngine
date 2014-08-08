@@ -98,21 +98,21 @@ R"(
 #define const
 #define Texture2D   sampler2D
 #define TextureCube samplerCube
-#define bool2   bvec2
-#define bool3   bvec3
-#define bool4   bvec4
-#define int2    ivec2
-#define int3    ivec3
-#define int4    ivec4
-#define uint2   uvec2
-#define uint3   uvec3
-#define uint4   uvec4
-#define float2   vec2
-#define float3   vec3
-#define float4   vec4
-#define double2 dvec2
-#define double3 dvec3
-#define double4 dvec4
+#define bool2     bvec2
+#define bool3     bvec3
+#define bool4     bvec4
+#define int2      ivec2
+#define int3      ivec3
+#define int4      ivec4
+#define uint2     uvec2
+#define uint3     uvec3
+#define uint4     uvec4
+#define float2     vec2
+#define float3     vec3
+#define float4     vec4
+#define double2   dvec2
+#define double3   dvec3
+#define double4   dvec4
 #define float2x2   mat2x2
 #define float2x3   mat2x3
 #define float3x2   mat3x2
@@ -127,7 +127,7 @@ R"(
 #define double3x4 dmat3x4
 #define double4x3 dmat4x3
 #define double4x4 dmat4x4
-#define mul(First, Second) (First * Second)
+#define mul(Vector, Matrix) ((Vector) * (Matrix))
 )";
 	}	// namespace GLSLInsertations
 
@@ -205,7 +205,7 @@ R"(
 		}
 
 		if (SupportsConstantBuffers) {
-			Builder.AppendFormat("\n\nlayout(std140, binding = %d) uniform %s \n{", 
+			Builder.AppendFormat("\n\nlayout(std140, row_major, binding = %d) uniform %s \n{", 
 				static_cast<int>(ConstantBuffer->Register->RegisterID) + static_cast<int>(ShaderType)* static_cast<int>(GD_HRI_SHADER_MAX_CBUFFERS_LOCATIONS),
 				ConstantBuffer->Name.CStr());
 		} else {
@@ -217,7 +217,7 @@ R"(
 			if (SupportsConstantBuffers) {
 				Builder.AppendFormat("\n\t%s %s", ConstantBufferField->Type->Name.CStr(), ConstantBufferField->Name.CStr());
 			} else {
-				Builder.AppendFormat("\nlayout() uniform %s %s", ConstantBufferField->Type->Name.CStr(), ConstantBufferField->Name.CStr());
+				Builder.AppendFormat("\nlayout(row_major) uniform %s %s", ConstantBufferField->Type->Name.CStr(), ConstantBufferField->Name.CStr());
 			}
 
 			if (ConstantBufferField->ArrayIndex != 0) {

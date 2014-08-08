@@ -107,7 +107,7 @@ GD_NAMESPACE_BEGIN
 		GD_CLASS_UNCOPIABLE  (Object);
 
 		mutable ObjectTreeLockingFlags TreeLockingFlags = TreeLockingFlagsDefaultObject;
-		mutable ObjectRefenceCount RefenceCount = 1;
+		mutable ObjectRefenceCount ReferenceCount = 1;
 		Object* ParentObject = nullptr;
 		Object* NextSiblingObject = nullptr;
 		Object* PreviousSiblingObject = nullptr;
@@ -278,14 +278,8 @@ GD_NAMESPACE_BEGIN
 	public /*Inner types*/:
 		/// Provides iteration of constant sibling objects.
 		typedef typename Conditional<Tag::IsConst, Object const*, Object*>::Type ThisPtrType;
-		typedef typename Conditional<Tag::IsConst, 
-			typename Object::  ConstIterator<ObjectType>,
-			typename Object::MutableIterator<ObjectType>
-		>::Type Iterator;
-		typedef typename Conditional<Tag::IsConst,
-			typename Object::  ReverseConstIterator<ObjectType>,
-			typename Object::ReverseMutableIterator<ObjectType>
-		>::Type ReverseIterator;
+		typedef typename Conditional<Tag::IsConst, typename Object::ConstIterator<ObjectType>, typename Object::MutableIterator<ObjectType>>::Type Iterator;
+		typedef typename Conditional<Tag::IsConst, typename Object::ReverseConstIterator<ObjectType>, typename Object::ReverseMutableIterator<ObjectType>>::Type ReverseIterator;
 
 	private:
 		GD_CLASS_UNASSIGNABLE(ObjectIterationAdapter);
@@ -327,13 +321,17 @@ GD_NAMESPACE_BEGIN
 	/// Increases specified object`s reference count if it exists.
 	GDINL void SafeObtain(Object const* const TheObject)
 	{	// Checking if specified object is not null.
-		if (TheObject != nullptr) TheObject->AddReference();
+		if (TheObject != nullptr) {
+			TheObject->AddReference();
+		}
 	}
 
 	/// Decreases specified object`s reference count if it exists.
 	GDINL void SafeRelease(Object const* const TheObject)
 	{	// Checking if specified object is not null.
-		if (TheObject != nullptr) TheObject->RemoveReference();
+		if (TheObject != nullptr) {
+			TheObject->RemoveReference();
+		}
 	}
 
 	typedef Object HRIObject;

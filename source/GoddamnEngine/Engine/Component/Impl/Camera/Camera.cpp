@@ -1,8 +1,7 @@
-#include <GoddamnEngine/Engine/Component/Camera/Camera.h>
+#include <GoddamnEngine/Engine/Component/Impl/Camera/Camera.h>
 #include <GoddamnEngine/Engine/Component/Static/Screen/Screen.h>
-#include <GoddamnEngine/Engine/Component/MeshRenderer/MeshRenderer.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
-#include <GoddamnEngine/Engine/Component/Transform/Transform.h>
+#include <GoddamnEngine/Engine/Component/Impl/MeshRenderer/MeshRenderer.h>
+#include <GoddamnEngine/Engine/Component/Impl/Transform/Transform.h>
 #include <GoddamnEngine/Engine/Component/Static/Input/Input.h>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.h>
 
@@ -242,7 +241,7 @@ GD_NAMESPACE_BEGIN
 			RenderTarget->BindRenderTarget();
 		}*/
 		HRInterface::GetInstance().ClearContext(Rectangle(0.0f, 0.0f, 1.0f, 1.0f), Color(1.0f, 0.0f, 1.0f, 1.0f));
-		Scene::GetInstance().OnRender(self);
+		Scene::GetInstance().OnRenderSelf(self);
 
 		//if (enableLights)
 		//{
@@ -269,12 +268,11 @@ GD_NAMESPACE_BEGIN
 		_In_ Component* const transformer
 	)
 	{
-		Transform const* const   transform = self->GetGameObject()->GetTransform();
-		Vector3Fast const upVec = transform->RotateVector(Vector3Fast(0.0f, 1.0f, 0.0f)).Normalize();
-		Vector3Fast const lookAt = transform->TransformVector(Vector3Fast(0.0, 0.0, 1.0f));
-		Vector3Fast const position = transform->GetGlobalPosition();
-		
-		Matrix4x4::MakeLookAtLH(self->ViewMatrix, position, lookAt, upVec);
+		RefPtr<Transform const> const  TheTransform(self->GetGameObject()->GetTransform());
+		Vector3Fast const UpVec = TheTransform->RotateVector(Vector3Fast(0.0f, 1.0f, 0.0f)).Normalize();
+		Vector3Fast const LookAt = TheTransform->TransformVector(Vector3Fast(0.0, 0.0, 1.0f));
+		Vector3Fast const Position = TheTransform->GetGlobalPosition();
+		Matrix4x4::MakeLookAtLH(self->ViewMatrix, Position, LookAt, UpVec);
 	//	using namespace DirectX;
 	//	XMMATRIX m = XMMatrixLookAtLH(position.ElementsVector, lookAt.ElementsVector, upVec.ElementsVector);
 	}

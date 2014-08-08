@@ -3,7 +3,6 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Engine/Component/Component.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
 
 #include <GoddamnEngine/Core/Math/Math.h>
 #include <GoddamnEngine/Core/Math/Vector3Fast.h>
@@ -184,7 +183,7 @@ GD_NAMESPACE_BEGIN
 		/// @param vector	Vector to transform
 		GDAPI Vector3Fast TransformVector(const Vector3Fast& vector) const
 		{
-			const Vector4 result = (self->GetTransformMatrix() * Vector4(vector, 1.0f));
+			const  Vector4 result = (self->GetTransformMatrix() * Vector4(vector, 1.0f));
 			return Vector3Fast(result.x, result.y, result.z);
 		}
 
@@ -192,7 +191,9 @@ GD_NAMESPACE_BEGIN
 		/// @param vector	Vector to rotate
 		GDAPI Vector3Fast RotateVector(const Vector3Fast& vector) const
 		{
-			return self->TransformVector(vector) - self->TransformVector(Vector3Fast(0.0f));
+		//	return self->TransformVector(vector) - self->TransformVector(Vector3Fast(0.0f));
+			const Vector4 result = (self->GetTransformMatrix() * Vector4(vector, 0.0f));
+			return Vector3Fast(result.x, result.y, result.z);
 		}
 
 	private:

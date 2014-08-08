@@ -1,11 +1,21 @@
+/// ==========================================================================================
+/// Component.h - Base compinent class interface.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// 
+/// History:
+///		* --.06.2012 - Created by James Jhuighuy.
+/// ==========================================================================================
+
+#pragma once
 #ifndef GD_ENGINE_COMPONENT_COMPONENT
 #define GD_ENGINE_COMPONENT_COMPONENT
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Events/Event.h>
 #include <GoddamnEngine/Core/Object/Object.h>
+#include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
 
-/// Legacy macroes
+/// Legacy macros
 #define Serializable Object
 #define GD_SERIALIZATION_BEGIN(...)
 #define GD_SERIALIZATION_END(...)
@@ -20,93 +30,143 @@
 GD_NAMESPACE_BEGIN
 
 	class Component;
-	class Transform;
-	class Camera;
 	class GameObject;
+	
+	class Camera;
+	class Transform;
 
-	enum ComponentState : UInt8
+	/// Base class that is a simple part of each game object.
+	$GD_REFLECTABLE()
+	class Component : public Object
 	{
-		GD_COMPONENT_STATE_CREATED,
-		GD_COMPONENT_STATE_STARTED,
-		GD_COMPONENT_STATE_UPDATED
-	};
-
-	typedef UInt32 ComponentAbilitiesFlags;
-	enum ComponentAbilitiesFlagsEnumeration : ComponentAbilitiesFlags
-	{
-		GD_COMPONENT_ABILITGDS_DO_RENDER				= GD_BIT(0),	///< This component is renderable
-		GD_COMPONENT_ABILITGDS_DO_RENDER_IF_INVISIBLE	= GD_BIT(1),	///< This component is rendered even if it is invisible
-		GD_COMPONENT_ABILITGDS_DO_UPDATE_IF_INVISIBLE	= GD_BIT(2),	///< This component is not updated when is invisible
-		GD_COMPONENT_ABILITGDS_DO_DESTROY_IF_INVISIBLE	= GD_BIT(3),	///< This component is destroyed when is invisible
-		GD_COMPONENT_ABILITGDS_DO_DISABLE_IF_INVISIBLE	= GD_BIT(3),	///< This component is disabled when becomes invisible
-		GD_COMPONENT_ABILITGDS_DO_ENABLE_IF_INVISIBLE	= GD_BIT(4),	///< This component is enabled when becomes visible
-		GD_COMPONENT_ABILITGDS_UNKNOWN					= (0),
-	};
-
-	/// Component class.
-	class Component : public Serializable
-	{
+		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
+		friend class Application;
 		friend class GameObject;
+		friend class Camera;
+		friend class Scene;
 
 	private:
-		GD_SERIALIZABLE_DEFINITION(Component, Serializable, GDAPI);
-
-		GD_SERIALIZATION_BEGIN(Component, Serializable);
-			GD_FIELD(bool, enabled);
-		GD_SERIALIZATION_END();
-
-		Transform* transform;	
-
-	public:
-		ComponentAbilitiesFlags const AbilitiesFlags;		///< Flags describing abilities of component
+		GD_SERIALIZABLE_DEFINITION(Component, Object, GDAPI);
+		bool Enabled;
 
 	protected:
-		GDAPI Component(ComponentAbilitiesFlags const abilitiesFlags = GD_COMPONENT_ABILITGDS_UNKNOWN,
-			ObjectTreeLockingFlags const treeLockingFlags = Object::TreeLockingFlagsDefaultComponent);
-		
-		GDAPI virtual ~Component();
+		GDINL          Component() { }
+		GDINL virtual ~Component() { }
 
-	public:
-		/// Returns boolean for this component is enabled.
-		/// If component is disabled it does not updates
-		GDINL bool IsEnabled() const;
+	public /*Class API*/:
+		/// Returns true if component is enabled. If component is disables then it does not takes part in scene update/rendering loop.
+		/// @returns True if component is enabled.
+		GDINL bool IsEnabled() const { return self->Enabled; }
 
 		/// Enables / disables this component.
-		GDINL void Enable(bool const enabled = true); 
+		/// @param Enabled Do we need to disable or enable the cmponent.
+		GDINL void Enable(bool const Enabled = true) { self->Enabled = Enabled; }
 
-		/// Returns GameObject this Component attached to
-		GDINL GameObject* GetGameObject() const;
+		/// Returns GameObject this Component attached to.
+		/// @returns GameObject this Component attached to.
+		GDINL RefPtr<GameObject const> GetGameObject() const;
+		GDINL RefPtr<GameObject      > GetGameObject();
 
-		/// Returns Transform of the game object this component attached to
-		GDINL Transform* GetTransform() const;
-
-	protected:
-
+	protected/*Class Messages Set*/:
 		/// Method being called after component was constructed, 
 		/// At this moment we can obtain game object this component is attached to and work with it.
-		/// @note Base classes`s method should be called
-		GDINT virtual void OnInitializeSelf() { }
+		inline virtual void OnInitializeSelf();
 
 		/// Method being called before destructor is called.
 		///	If is normal destruction, at this moment no components are removed from this game object,
 		/// otherwise this is force destruction. 
-		/// @note Base classes`s method should be called
-		GDINT virtual void OnDestroySelf(bool const isForceDestruction) { }
+		inline virtual void OnDestroySelf(bool const IsForceDestruction);
 
 		/// Method being called after before component`s first update
-		/// @note Base classes`s method should be called
-		GDINT virtual void OnStartSelf() { }
+		inline virtual void OnStartSelf();
 
 		/// Method being called each frame.
-		/// @note Base classes`s method should be called
-		GDINT virtual void OnUpdateSelf() { }
+		inline virtual void OnUpdateSelf();
 
 		/// Method each time engine renders this component.
-		/// @note Base classes`s method should be called
-		GDINT virtual void OnRenderSelf(
-			_In_ Camera const* const camera
-		) { }
-	};
+		inline virtual void OnRenderSelf(RefPtr<Camera> const& TheCamera);
+	};	// class Component
+
+	/// Basic on-scene entity. Handles components.
+	class GameObject final : public Component
+	{
+		friend class Application;
+		friend class Transform;
+		friend class Scene;
+
+	private:
+		GD_SERIALIZABLE_DEFINITION(GameObject, Component, GDAPI);
+		RefPtr<Transform> mutable CachedTransform;
+
+	public:
+		String Name;
+		String Tag;
+
+		GDINL          GameObject();
+		GDINL virtual ~GameObject() { }
+
+		/// Disables all components that are attached to this enity.
+		/// @param Enabled Do we need to disable or enable the cmponent.
+		inline void Enable(bool const Enabled = true)
+		{
+			for (auto const AttachedComponent : IterateChildObjects<Component>(self)) {
+				AttachedComponent->Enable(Enabled);
+			}
+		}
+
+		/// @name Component Management
+		/// @{
+
+		/// Searches for attached components with specified type information
+		/// @param typeinfo Type information for required component type
+		/// @returns		Component attached to this object of this type or nullptr if nothing found
+		GDAPI RefPtr<Component      > GetComponent(ITypeInformation const* const TypeInfo);
+		GDINL RefPtr<Component const> GetComponent(ITypeInformation const* const TypeInfo) const
+		{
+			return const_cast<GameObject const*>(self)->GetComponent(TypeInfo);
+		}
+
+		GDINL RefPtr<Transform const> GetTransform() const;
+		GDINL RefPtr<Transform      > GetTransform();
+
+		template<typename ComponentType>
+		GDINL RefPtr<ComponentType> GetComponent()
+		{
+			static_assert((TypeTraits::IsBaseType<Component, ComponentType>::Value), "'GameObject::GetComponent<T>()' error: 'T' should be derived from Component");
+			return object_cast<RefPtr<ComponentType>>(self->GetComponent(ComponentType::GetClassTypeInformation()));
+		}
+
+		template<typename ComponentType>
+		GDINL RefPtr<ComponentType const> GetComponent() const
+		{
+			return const_cast<RefPtr<ComponentType const>>(self->GetComponent<ComponentType>());
+		}
+
+		/// @brief			Adds component with specified type information.
+		/// @param typeinfo Type information for required component type
+		/// @returns		Newly created component of this type or existing
+		GDAPI RefPtr<Component> AddComponent(ITypeInformation const* TypeInfo);
+
+		template<typename ComponentType>
+		GDINL RefPtr<ComponentType> AddComponent()
+		{
+			static_assert((TypeTraits::IsBaseType<Component, ComponentType>::Value), "'GameObject::AddComponent<T>()' error: 'T' should be derived from Component");
+			return object_cast<RefPtr<ComponentType>>(self->AddComponent(ComponentType::GetClassTypeInformation()));
+		}
+
+		/// @brief			Removes component with specified type information (if exists in game object).
+		/// @param typeinfo Type information for required component type
+		GDAPI void RemoveComponent(ITypeInformation const* const TypeInfo);
+		/// @see Component::RemoveComponent
+		template<class ComponentType>
+		GDINL void RemoveComponent()
+		{
+			static_assert((TypeTraits::IsBaseType<Component, ComponentType>::Value), "'GameObject::AddComponent<T>()' error: 'T' should be derived from Component");
+			self->RemoveComponent(ComponentType::GetClassTypeInformation());
+		}
+
+		/// @}
+	};	// class GameObject
 
 GD_NAMESPACE_END
 

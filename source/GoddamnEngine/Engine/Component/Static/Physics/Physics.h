@@ -3,7 +3,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Engine/Component/Static/StaticComponent.h>
-#include <GoddamnEngine/Engine/Component/Transform/Transform.h>
+#include <GoddamnEngine/Engine/Component/Impl/Transform/Transform.h>
 
 #if (!defined(GD_DOCUMENTATION))
 namespace physx

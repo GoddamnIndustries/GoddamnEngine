@@ -256,7 +256,7 @@ GD_NAMESPACE_END
 
 #define _USE_MATH_DEFINES
 #include <cmath>
-#define SquareRoot sqrt
+#define SquareRoot (::sqrt)
 
 //////////////////////////////////////////////////////////////////////////
 // Temporary debug class implementation

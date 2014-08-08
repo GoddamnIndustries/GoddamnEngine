@@ -1,4 +1,4 @@
-#if !defined(GD_COMPONENT_GAME_OBJECT)
+#if !defined(GD_COMPONENTS_SCENE)
 #	pragma error("Attempting to include 'Scene.inl' file. Please, use 'Scene.h' instead")
 #endif
 

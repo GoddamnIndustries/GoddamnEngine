@@ -1,7 +1,7 @@
 #include <GoddamnEngine/Engine/Application/Application.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
 #include <GoddamnEngine/Engine/Resource/Resource.h>
-
+#include <GoddamnEngine/Engine/Component/Static/StaticComponent.h>
+#include <GoddamnEngine/Engine/Component/Impl/Camera/Camera.h>
 #include <GoddamnEngine/Core/IO/Path/Path.h>
 
 #include <GoddamnEngine/Engine/HUD/HUD.h>
@@ -103,8 +103,8 @@ GD_NAMESPACE_BEGIN
 		application.staticComponentHandler->OnStartSelf();
 		application.OnInitialize();
 		
-		Scene::GetInstance().OnInit();
-		Scene::GetInstance().OnStart();
+		Scene::GetInstance().OnInitializeSelf();
+		Scene::GetInstance().OnStartSelf();
 		
 		// Beginning initialization phase:
 		LowLevelSystem::GetInstance().SetEventCallBack(GD_LL_EVENT_ON_WINDOW_CLOSED, OnEvent);
@@ -116,7 +116,7 @@ GD_NAMESPACE_BEGIN
 		for (/*size_t fpsCount = 0*/; application.State != ApplicationState::Exiting;)
 		{
 			LowLevelSystem::GetInstance().UpdateWindow();
-			Scene::GetInstance().OnUpdate();
+			Scene::GetInstance().OnUpdateSelf();
 			application.staticComponentHandler->OnUpdateSelf();
 			application.staticComponentHandler->OnRenderSelf(nullptr);
 			

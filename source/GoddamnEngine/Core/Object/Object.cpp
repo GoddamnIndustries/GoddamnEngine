@@ -20,7 +20,7 @@ GD_NAMESPACE_BEGIN
 
 	Object::~Object()
 	{
-		GD_DEBUG_ASSERT((self->RefenceCount == 0),
+		GD_DEBUG_ASSERT((self->ReferenceCount == 0),
 			"Object destructor invoked but reference counter is not zero. "
 			"Please, do not delete objects yourself and use 'Object::RemoveReference()' method");
 
@@ -43,19 +43,19 @@ GD_NAMESPACE_BEGIN
 
 	ObjectRefenceCount Object::AddReference() const
 	{
-		GD_DEBUG_ASSERT((self->RefenceCount != 0),	"Reference counter is zero. Please, use 'Object::AddReference' and 'Object::RemoveReference' to provide correct reference counting");
-		return (self->RefenceCount += 1);
+		GD_DEBUG_ASSERT((self->ReferenceCount != 0),	"Reference counter is zero. Please, use 'Object::AddReference' and 'Object::RemoveReference' to provide correct reference counting");
+		return (self->ReferenceCount += 1);
 	}
 
 	ObjectRefenceCount Object::RemoveReference() const
 	{
-		GD_DEBUG_ASSERT((self->RefenceCount != 0), "Reference counter is zero. Please, use 'Object::AddReference' and 'Object::RemoveReference' to provide correct reference counting");
-		
-		if ((self->RefenceCount -= 1) == 0)
+		GD_DEBUG_ASSERT((self->ReferenceCount != 0), "Reference counter is zero. Please, use 'Object::AddReference' and 'Object::RemoveReference' to provide correct reference counting");
+		if ((--self->ReferenceCount) == 0) {
 			delete self;
+		}
 
 		GD_WARNING_SUPPRESS(6001);
-		return (self->RefenceCount);
+		return (self->ReferenceCount);
 	}
 
 	/// ==========================================================================================

@@ -16,7 +16,7 @@
 GD_NAMESPACE_BEGIN
 
 	/// Provides automatic reference counting on object-derived objects.
-	template<typename ObjectType, typename = typename EnableIf<TypeTraits::IsBaseType<Object, ObjectType>::Value>::Type>
+	template<typename ObjectType>
 	class RefPtr final
 	{
 	private /* Class members */:
@@ -28,6 +28,7 @@ GD_NAMESPACE_BEGIN
 		GDINL RefPtr(ObjectType* const Pointer = nullptr)
 			: Pointer(Pointer)
 		{
+			SafeObtain(self->Pointer);
 		}
 
 		/// Initializes smart pointer with other pointer.
@@ -110,6 +111,18 @@ GD_NAMESPACE_BEGIN
 			return (*self);
 		}
 
+		template<typename OtherObjectType>
+		GDINL explicit operator RefPtr<OtherObjectType>() const
+		{
+			SafeObtain(self->Pointer);
+			return object_cast<OtherObjectType*>(self->GetPointer());
+		}
+
+		GDINL operator RefPtr<ObjectType const>() const
+		{
+			SafeObtain(self->Pointer);
+			return static_cast<ObjectType const*>(self->GetPointer());
+		}
 
 	private:
 		GDINL friend void Swap(RefPtr& First, RefPtr& Second)

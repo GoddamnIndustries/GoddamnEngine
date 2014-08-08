@@ -8,7 +8,7 @@
 #include <GoddamnEngine/Engine/Resource/Impl/Material/Material.h>
 
 #include <GoddamnEngine/Engine/Component/Component.h>
-#include <GoddamnEngine/Engine/Component/Camera/Camera.h>
+#include <GoddamnEngine/Engine/Component/Impl/Camera/Camera.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -121,18 +121,11 @@ GD_NAMESPACE_BEGIN
 		GDAPI virtual void RenderWithMaterial(Camera* const camera, Material* const material) const {};
 
 	protected:
-		GDAPI virtual void OnInitializeSelf();
-		GDAPI virtual void OnDestroySelf();
-		GDAPI virtual void OnRenderSelf(
-			_In_ Camera const* const camera
-		);
-		GDAPI virtual void OnMeshRendererParamChanged(
-			_In_ Component* const component
-		);
-
-		GDAPI virtual void OnTransformed(
-			_In_ Component* const transformer
-		);
+		GDAPI virtual void OnInitializeSelf() override final;
+		GDAPI virtual void OnDestroySelf(bool const IsForceDestruction) override final;
+		GDAPI virtual void OnRenderSelf(RefPtr<Camera> const& TheCamera) override final;
+		GDAPI virtual void OnMeshRendererParamChanged(Component* const component) override final;
+		GDAPI virtual void OnTransformed(Component* const transformer) override final;
 	};
 
 GD_NAMESPACE_END

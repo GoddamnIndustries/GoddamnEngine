@@ -20,7 +20,6 @@
 #include <string.h>	// memcpy
 
 GD_NAMESPACE_BEGIN
-#include "MathCompilerSetupStart.h"
 
 	/// Generic implementation of a 4 x 4 Row-major matrix representation.
 	/// If is Float32x4 intrinsics are supported, uses them for better performance.
@@ -1129,7 +1128,6 @@ GD_NAMESPACE_BEGIN
 	typedef Matrix4x4t<Float64> Float64x4x4;
 	typedef Float32x4x4 Matrix4x4;
 
-#include "MathCompilerSetupEnd.h"
 GD_NAMESPACE_END
 
 #endif

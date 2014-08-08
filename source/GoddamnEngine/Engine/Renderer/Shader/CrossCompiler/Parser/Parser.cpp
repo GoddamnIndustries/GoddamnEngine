@@ -40,7 +40,7 @@ GD_NAMESPACE_BEGIN
 		GDINL virtual ~HLSLParserErrorException() { }
 	};	// class ToolchainException
 
-	static StreamedLexerOptions const& GetDefaultOptionsFoRHlsl();
+	static StreamedLexerOptions const& GetDefaultOptionsForHLSL();
 	static HLSLSemanticType HLSLSemanticTypeFromString(String const& Semantic);
 
 	enum HLSLOperator : StreamedLexerOperator
@@ -86,7 +86,13 @@ GD_NAMESPACE_BEGIN
 
 #define GD_HLSL_IS_KEYWORD_OF_TYPE(Keyword, Type) (((Keyword) > GD_HLSL_KEYWORD_##Type##_BEGIN__) && ((Keyword) < GD_HLSL_KEYWORD_##Type##_END__))
 
-	static HLSLScope HLSLSuperGlobalScope;
+	struct HLSLSuperGlobalScopeType final : public HLSLScope 
+	{
+		GDINT ~HLSLSuperGlobalScopeType()
+		{
+			self->InnerDefinitions.Clear();
+		}
+	} static HLSLSuperGlobalScope;
 #define GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE() \
 	do { \
 		HLSLSuperGlobalScope.InnerDefinitions.PushLast(self); \
@@ -186,7 +192,7 @@ GD_NAMESPACE_BEGIN
 	public /*Class API*/:
 		GDINT ~HLSLParserImpl()	{ }
 		GDINT  HLSLParserImpl(IToolchain* const  Toolchain, UniquePtr<InputStream>&& Stream)
-			: IToolchainTool(Toolchain), Lexer(Toolchain, Forward<UniquePtr<InputStream>>(Stream), GetDefaultOptionsFoRHlsl())
+			: IToolchainTool(Toolchain), Lexer(Toolchain, Forward<UniquePtr<InputStream>>(Stream), GetDefaultOptionsForHLSL())
 		{	// Registering default types.
 			self->EnterScope(&HLSLSuperGlobalScope);
 			self->EnterScope(self->GlobalScope = new HLSLScope());
@@ -995,7 +1001,7 @@ GD_NAMESPACE_BEGIN
 		return HRI2HLSLTranslationsTable[static_cast<size_t>(Semantic)];
 	}
 
-	GDINT static StreamedLexerOptions const& GetDefaultOptionsFoRHlsl()
+	GDINT static StreamedLexerOptions const& GetDefaultOptionsForHLSL()
 	{
 #if (!defined(__INTELLISENSE__)) // IntelliSence marks following code with errors. Just let in not parse it.
 		static StreamedLexerOptions const HlslLexerOptions(

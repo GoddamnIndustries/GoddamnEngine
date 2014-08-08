@@ -1,5 +1,5 @@
 #include <GoddamnEngine/Engine/Component/Static/Physics/Physics.h>
-#include <GoddamnEngine/Engine/Component/MeshRenderer/MeshRenderer.h>
+#include <GoddamnEngine/Engine/Component/Impl/MeshRenderer/MeshRenderer.h>
 
 #if 0
 

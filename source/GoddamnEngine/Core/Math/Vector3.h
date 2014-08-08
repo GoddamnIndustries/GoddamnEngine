@@ -16,7 +16,6 @@
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
 GD_NAMESPACE_BEGIN
-#include "MathCompilerSetupStart.h"
 
 	/// Three-dimensional vector class.
 	///  Y ^
@@ -320,7 +319,6 @@ GD_NAMESPACE_BEGIN
 	typedef Vector3t<size_t > size_tx3;
 	typedef Float32x3 Vector3;
 
-#include "MathCompilerSetupEnd.h"
 GD_NAMESPACE_END
 
 #endif

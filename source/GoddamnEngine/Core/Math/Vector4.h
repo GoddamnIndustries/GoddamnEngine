@@ -18,7 +18,6 @@
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
 GD_NAMESPACE_BEGIN
-#include "MathCompilerSetupStart.h"
 
 	/// Four-dimensional vector class.
 	template<typename ElementType>
@@ -612,7 +611,6 @@ GD_NAMESPACE_BEGIN
 	typedef Float32x4 Color;
 	typedef Float32x4 Rectangle;
 
-#include "MathCompilerSetupEnd.h"
 GD_NAMESPACE_END
 
 #endif

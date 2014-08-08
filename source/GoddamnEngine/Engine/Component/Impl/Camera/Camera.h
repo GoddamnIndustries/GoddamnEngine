@@ -7,7 +7,7 @@
 #include <GoddamnEngine/Core/Math/Vector4.h>
 #include <GoddamnEngine/Core/Math/Matrix4x4.h>
 #include <GoddamnEngine/Engine/Component/Component.h>
-#include <GoddamnEngine/Engine/Component/Transform/Transform.h>
+#include <GoddamnEngine/Engine/Component/Impl/Transform/Transform.h>
 
 GD_NAMESPACE_BEGIN
 

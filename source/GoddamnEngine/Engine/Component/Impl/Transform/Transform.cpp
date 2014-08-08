@@ -1,17 +1,8 @@
-#include <GoddamnEngine/Engine/Component/Transform/Transform.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
-
+#include <GoddamnEngine/Engine/Component/Impl/Transform/Transform.h>
 #include <GoddamnEngine/Engine/Application/Application.h>
 #include <GoddamnEngine/Engine/Component/Static/DeviceConfiguration/DeviceConfiguration.h>
 	
 GD_NAMESPACE_BEGIN
-
-	GDINL static Transform* GetSceneRoot()
-	{
-		static Transform* sceneRoot = DeviceConfiguration::GetInstance().GetGameObject()->GetTransform();
-		return sceneRoot;
-	}
-#define SceneRoot (GetSceneRoot())
 
 	/// ==========================================================================================
 	// Transform class
@@ -25,7 +16,6 @@ GD_NAMESPACE_BEGIN
 	{
 		self->OnTransfromedEvent += self;
 		self->lockingFlags = 0;
-		self->transform = self;
 		self->parent = nullptr;
 		self->position = Vector3Fast(0.0f);
 		self->rotation = Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
@@ -108,23 +98,23 @@ GD_NAMESPACE_BEGIN
 			"locked transformation.");
 
 		// Disconnecting with old parent
-		if ((self->parent != SceneRoot) && (self->parent != nullptr))
+		if ((self->parent != nullptr) && (self->parent != nullptr))
 		{
 			self->parent->OnTransfromedEvent -= self;
 		}
 
 		// Connecting to new parent
-		if ((parent != SceneRoot) && (parent != nullptr))
+		if ((parent != nullptr) && (parent != nullptr))
 		{
 			parent->OnTransfromedEvent += self;
 		}
 
-		self->parent = ((parent != nullptr) ? parent : SceneRoot);
+		self->parent = parent;
 	}
 
 	void Transform::OnInitializeSelf()
 	{
-		self->SetParent(SceneRoot);
+		self->SetParent(nullptr);
 		self->OnTransfromedEvent.TriggerEvent();
 		self->OnTransfromedEvent.LaunchEvent();
 	}
@@ -138,7 +128,7 @@ GD_NAMESPACE_BEGIN
 	void Transform::OnDestroySelf()
 	{
 		self->OnTransfromedEvent -= self;
-		if (self->parent != SceneRoot)
+		if (self->parent != nullptr)
 		{
 			self->parent->OnTransfromedEvent -= self;
 		}

@@ -203,12 +203,12 @@ GD_NAMESPACE_BEGIN
 	void HLSLGenerator::GenerateShaderStaticVariable(HLSLVariable const* const StaticVariable, StringBuilder& Builder)
 	{
 		Builder.AppendFormat("\n\n%s %s", StaticVariable->Type->Name.CStr(), StaticVariable->Name.CStr());
-		/**/ if (StaticVariable->ArrayIndex != 0) {
+		if (StaticVariable->ArrayIndex != 0) {
 			Builder.AppendFormat("[%d]", static_cast<int>(StaticVariable->ArrayIndex));
 		} else if (StaticVariable->ExprColon != nullptr) {
 			HLSLRegister const* const StaticVariableRegister = static_cast<HLSLRegister const*>(StaticVariable->ExprColon);
 			Builder.AppendFormat(" : register(%c%d)", ((StaticVariableRegister->Register == GD_HLSL_REGISTER_T) ? 't' : 's'),	// Only 't'/'s' registers can be located here. 
-										static_cast<int>(StaticVariableRegister->RegisterID));
+								       static_cast<int>(StaticVariableRegister->RegisterID));
 		}
 
 		Builder.Append(';');
@@ -257,7 +257,7 @@ GD_NAMESPACE_BEGIN
 		StringBuilder HLSLGeneratorOutput;
 		HLSLGenerator(self->Toolchain).GenerateShader(HLSLGeneratorOutput, ShaderParsedData);
 
-		UINT D3DCompileFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_AVOID_FLOW_CONTROL;
+		UINT D3DCompileFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_AVOID_FLOW_CONTROL;
 #if (defined(GD_DEBUG))
 		D3DCompileFlags |= D3DCOMPILE_DEBUG;
 #else	// if (defined(GD_DEBUG))

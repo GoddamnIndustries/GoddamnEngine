@@ -7,9 +7,9 @@
 
 GD_NAMESPACE_BEGIN
 
-/// ==========================================================================================
-// Specifying Null-renderer's screen
-/// ==========================================================================================
+	/// ==========================================================================================
+	// Specifying Null-renderer's screen
+	/// ==========================================================================================
 
 	GD_SERIALIZABLE_IMPLEMENTATION(Screen, StaticComponent, GDAPI);
 	GD_SINGLETON_IMPLEMENTATION(Screen);
@@ -18,8 +18,7 @@ GD_NAMESPACE_BEGIN
 	// Constructor/Destructor
 	/// ==========================================================================================
 
-	Screen::Screen() :
-		StaticComponent(StaticComponentPriority::High)
+	Screen::Screen() : StaticComponent(StaticComponentPriority::High)
 	{
 	}
 

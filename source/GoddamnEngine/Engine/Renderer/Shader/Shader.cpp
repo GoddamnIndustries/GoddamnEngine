@@ -89,14 +89,14 @@ GD_NAMESPACE_BEGIN
 				case GD_HRI_SHADER_PARAM_DESC_TYPE_MATRIX3X3:
 				case GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE: {
 					GD_DEBUG_ASSERT(self->ParamPointer != nullptr, "Param points to nullptr data");
-					memcpy(self->ParamPointer, ParamValue, self->ParamDesc->GetParamSize());
+					::memcpy(self->ParamPointer, ParamValue, self->ParamDesc->GetParamSize());
 				} break;
 
 				case GD_HRI_SHADER_PARAM_DESC_TYPE_STRING: {
 					GD_DEBUG_ASSERT(self->ParamPointer != nullptr, "Param points to nullptr data");
 					Str            NewString = reinterpret_cast<Str>(ParamValue) - 1;
 					HRIShaderChar* OldString = reinterpret_cast<HRIShaderChar*>(self->ParamPointer) - 1;
-					memset(OldString, 0, self->ParamDesc->GetParamSize());
+					::memset(OldString, 0, self->ParamDesc->GetParamSize());
 					while ((*(++OldString) = HRIShaderChar(*(++NewString))) != HRIShaderChar('\0'));
 				} break;
 
@@ -217,15 +217,15 @@ GD_NAMESPACE_BEGIN
 		ZeroMemory(&self->InstanceFirstLocations, sizeof(self->InstanceFirstLocations));
 		for (auto const ShaderParamLocationDesc : IterateChildObjects<HRIShaderParamLocationDesc const>(self->InstanceDesc)) {
 			switch (ShaderParamLocationDesc->LocationType) {
-				case GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_CONSTANTBUFFER:
+				case GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_CONSTANTBUFFER: {
 					HRInterface::GetInstance().CreateShaderParamLocationConstantBuffer(self, ShaderParamLocationDesc);
-					break;
-				case GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES:
+				} break;
+				case GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES: {
 					HRInterface::GetInstance().CreateShaderParamLocationResources(self, ShaderParamLocationDesc);
-					break;
-				default:
+				} break;
+				default: {
 					GD_ASSERT_FALSE("Invalid location type");
-					break;
+				} break;
 			}
 		}
 	}

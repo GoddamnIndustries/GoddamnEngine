@@ -6,7 +6,6 @@
 #include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
 
 #include <GoddamnEngine/Engine/Component/Component.h>
-#include <GoddamnEngine/Engine/Component/GameObject/GameObject.h>
 
 #define GD_STATIC_COMPONENT_TYPEINFORMATION_DEFINITION(Type, ExpSpec) GD_TYPEINFORMATION_DEFINITION(Type, StaticComponent, ExpSpec) 
 #define GD_STATIC_COMPONENT_TYPEINFORMATION_IMPLEMENTATION(Type, ExpSpec) GD_TYPEINFORMATION_IMPLEMENTATION(Type, StaticComponent, ExpSpec)
