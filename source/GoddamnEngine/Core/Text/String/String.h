@@ -331,7 +331,7 @@ GD_NAMESPACE_BEGIN
 
 		inline BaseString GetSubstring(size_t const From, size_t const To) const
 		{
-			GD_DEBUG_ASSERT(To >= From, "Invalid sustring indices.");
+			GD_DEBUG_ASSERT(To >= From, "Invalid substring indices.");
 			BaseString Result(To - From);
 			::memcpy(Result.CStr(), &(*self)[From], (To - From) * sizeof(CharType));
 			return Result;
@@ -340,6 +340,7 @@ GD_NAMESPACE_BEGIN
 		{
 			return self->GetSubstring(From, self->GetSize());
 		}
+
 		inline size_t Find(CharType const Character) const
 		{
 			CharType const* const CString = self->CStr();

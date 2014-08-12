@@ -212,37 +212,36 @@ GD_NAMESPACE_BEGIN
 
 					size_t     ParamFormatSize = GD_FORMAT_SIZE_UNKNOWN;
 					FormatType ParamFormatType = GD_FORMAT_TYPE_UNKNOWN;
-					switch (DataType)
-					{
-					case GD_HLSL_TYPE_DATA_TYPE_bool:
-						ParamFormatSize = GD_FORMAT_SIZE_8BITS;
-						ParamFormatType = GD_FORMAT_TYPE_UINT;
-						break;
+					switch (DataType) {
+						case GD_HLSL_TYPE_DATA_TYPE_bool: {
+							ParamFormatSize = GD_FORMAT_SIZE_8BITS;
+							ParamFormatType = GD_FORMAT_TYPE_UINT;
+						} break;
 
-					case GD_HLSL_TYPE_DATA_TYPE_int:
-						ParamFormatSize = GD_FORMAT_SIZE_32BITS;
-						ParamFormatType = GD_FORMAT_TYPE_SINT;
-						break;
+						case GD_HLSL_TYPE_DATA_TYPE_int: {
+							ParamFormatSize = GD_FORMAT_SIZE_32BITS;
+							ParamFormatType = GD_FORMAT_TYPE_SINT;
+						} break;
 
-					case GD_HLSL_TYPE_DATA_TYPE_float:
-						ParamFormatSize = GD_FORMAT_SIZE_32BITS;
-						ParamFormatType = GD_FORMAT_TYPE_FLOAT;
-						break;
+						case GD_HLSL_TYPE_DATA_TYPE_float: {
+							ParamFormatSize = GD_FORMAT_SIZE_32BITS;
+							ParamFormatType = GD_FORMAT_TYPE_FLOAT;
+						} break;
 
-					case GD_HLSL_TYPE_DATA_TYPE_double:
-						ParamFormatSize = GD_FORMAT_SIZE_64BITS;
-						ParamFormatType = GD_FORMAT_TYPE_FLOAT;
-						break;
+						case GD_HLSL_TYPE_DATA_TYPE_double: {
+							ParamFormatSize = GD_FORMAT_SIZE_64BITS;
+							ParamFormatType = GD_FORMAT_TYPE_FLOAT;
+						} break;
 
-					case GD_HLSL_TYPE_DATA_TYPE_dword:
-					case GD_HLSL_TYPE_DATA_TYPE_uint:
-						ParamFormatSize = GD_FORMAT_SIZE_32BITS;
-						ParamFormatType = GD_FORMAT_TYPE_UINT;
-						break;
+						case GD_HLSL_TYPE_DATA_TYPE_dword:
+						case GD_HLSL_TYPE_DATA_TYPE_uint: {
+							ParamFormatSize = GD_FORMAT_SIZE_32BITS;
+							ParamFormatType = GD_FORMAT_TYPE_UINT;
+						} break;
 
-					default:
-						GD_NOT_IMPLEMENTED();
-						break;
+						default: {
+							GD_NOT_IMPLEMENTED();
+						} break;
 					}
 
 					ParamType = GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE;

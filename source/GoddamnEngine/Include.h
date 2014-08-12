@@ -1,16 +1,16 @@
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Include.h: Common definitions for all GD projects
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
 ///		* --.--.2012 - Created by James Jhuighuy
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
 #pragma once
 #ifndef GODDAMN_ENGINE_INCLUDE
 #define GODDAMN_ENGINE_INCLUDE
 
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 /// Version definitions
 #define ENGINE				GoddamnEngine	
 #define ENGINE_VERSION		0x05000001ui32
@@ -18,51 +18,43 @@
 
 #define GD_ENGINE_NAME		"GoddamnEngine"
 #define GD_ENGINE_VERSION	"1/2"
-//////////////////////////////////////////////////////////////////////////
+/// ==========================================================================================
 
-//////////////////////////////////////////////////////////////////////////
 #define GD_BUILDTYPE_STANDALONE_ENGINE
 // #define GD_BUILDTYPE_EDITOR
 #if !(defined(GD_BUILDTYPE_EDITOR) ^ defined(GD_BUILDTYPE_STANDALONE_ENGINE))
 #	error 'GD_BUILDTYPE_EDITOR' and 'GD_BUILDTYPE_STANDALONE_ENGINE' are both (un)defined, \
 		   please use just one of them to specify project build type
 #endif
-//////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
-/// Detecting platform:
-/// Supported only 64 bit devices!
+/// ==========================================================================================
 /// Supported platforms: 
 ///	Desktop	 :	OS X (Mavericks onwards - TBA), Windows (7 onward, tested on 8.1 only, does not supports RT)
-/// Consoles :	PlayStation 4, XBox One, No SteamBox
-/// Mobile	 :	iOS (iPhone 5S, iPad Air / Mini Retina and further generations - TBA), 
-///				Windows Phone 8 (after first x64 devices - TBA)
+/// Consoles :	PlayStation 4, XBox One, SteamBox
+/// Mobile	 :	iOS (iPhone 5S, iPad Air / Mini Retina and further generations - TBA), Windows Phone 8 (after first x64 devices - TBA)
 #if (defined(_WIN32))
-#	define _USE_MATH_DEFINES       
-#	define _CRT_SECURE_NO_WARNINGS 
-#	define  WIN32_LEAN_AND_MEAN    
-#	define  VC_EXTRALEAN           
+#	define _USE_MATH_DEFINES       // <| M_PI and others
+#	define _CRT_SECURE_NO_WARNINGS // <| Using printf and others
+#	define  WIN32_LEAN_AND_MEAN    // <| We do not need whole WinAPI header.
+#	define  VC_EXTRALEAN		   //  |
 #	include <Windows.h>
-#	define GD_PLATFORM_WINAPI			(1)
+#	define GD_PLATFORM_WINAPI			  (1)
 //	Platform arch, name, desktop/mobile type.
 #	if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))	//   Windows Desktop application.
-#		define GD_PLATFORM_ARCH			("x86")									///< x86 platform 
-#		define GD_PLATFORM_NAME			("Windows")								///< Building for Windows-Powered machine
-#		define GD_PLATFORM_WINDOWS		(GD_PLATFORM_NAME)						///< Macro to detect Windows-specific code
-#		define GD_PLATFORM_DESKTOP		(GD_PLATFORM_WINDOWS)					///< Building for desktop platform 
+#		define GD_PLATFORM_ARCH_X86		  (1)									///< x86 platform 
+#		define GD_PLATFORM_WINDOWS		  (1)									///< Macro to detect Windows-specific code
+#		define GD_PLATFORM_DESKTOP		  (1)			        				///< Building for desktop platform 
 //  endif	// if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
 #	elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP))	//   Windows Phone 8 application.
-#		define GD_PLATFORM_ARCH			("ARM")									///< ARM Platform.
-#		define GD_PLATFORM_NAME			("WindowsPhone8")						///< Building for WindowsPhone 8 smartphone.
-#		define GD_PLATFORM_WP8			(GD_PLATFORM_NAME)						///< Macro to detect WindowsPhone 8-specific code
-#		define GD_PLATFORM_MOBILE		(GD_PLATFORM_WP8)						///< Building for mobile platform 
+#		define GD_PLATFORM_ARCH_ARM  	  (1)									///< ARM Platform.
+#		define GD_PLATFORM_WINDOWS_PHONE8 (1)									///< Macro to detect WindowsPhone 8-specific code
+#		define GD_PLATFORM_MOBILE		  (1)									///< Building for mobile platform 
 //	endif	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP))
 #	elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PC_APP))	//   Windows Store application (Windows Desktop or Windows RT)
 #		if (defined(__WRL_WINRT_STRICT__))										//   Windows RT application.
-#			define GD_PLATFORM_ARCH		("ARM")									///< ARM Platform.
-#			define GD_PLATFORM_NAME		("WindowsRT")							///< Building for WindowsPhone 8 smartphone.
-#			define GD_PLATFORM_WINRT	(GD_PLATFORM_NAME)						///< Macro to detect Windows RT-specific code
-#			define GD_PLATFORM_MOBILE	(GD_PLATFORM_WINRT)						///< Building for mobile platform 
+#			define GD_PLATFORM_ARCH_ARM   (1)									///< ARM Platform.
+#			define GD_PLATFORM_WINDOWS_RT (1)									///< Macro to detect Windows RT-specific code
+#			define GD_PLATFORM_MOBILE	  (1)									///< Building for mobile platform 
 #		else	// if (defined(__WRL_WINRT_STRICT__))							//   Windows Desktop application.
 #			define GD_PLATFORM_ARCH		("x86")									///< x86 Platform.
 #			define GD_PLATFORM_NAME		("Windows")								///< Building for Windows-Powered machine
@@ -71,7 +63,7 @@
 #		endif	// if (defined(__WRL_WINRT_STRICT__))
 //	endif	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
 #	else	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_***))
-#		error 'Unsupported Windows platform.'
+#		error "Unsupported Windows platform.""
 #	endif	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_***))
 //	Debug/Release builds.
 #	if (defined(_DEBUG))
