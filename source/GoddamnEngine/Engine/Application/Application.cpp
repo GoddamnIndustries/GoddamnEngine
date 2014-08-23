@@ -48,7 +48,7 @@ GD_NAMESPACE_BEGIN
 				return;
 #	endif	// if (defined(GD_PLATFORM_WINDOWS))
 			Debug::Log("Press any key to terminate...");
-			GD_WARNING_SUPPRESS(6031)
+		//	GD_WARNING_SUPPRESS(6031)
 			_getch();
 		});
 		GD_DEBUG_ASSERT(ExitCallbackSetupResult == 0, "Failed to setup exit callback.");

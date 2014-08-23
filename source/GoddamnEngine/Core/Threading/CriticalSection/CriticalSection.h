@@ -53,7 +53,6 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINL CriticalSection() 
 		{	// Creating a critical section here.
-			GD_WARNING_SUPPRESS(28125); // warning C28125: The function 'InitializeCriticalSection' must be called from within a try/except block:  The requirement might be conditional.
 			InitializeCriticalSection  (&self->NativeCriticalSection);
 			SetCriticalSectionSpinCount(&self->NativeCriticalSection, 4000);
 		}

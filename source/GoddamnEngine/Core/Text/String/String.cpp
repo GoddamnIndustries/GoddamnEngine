@@ -42,7 +42,7 @@ GD_NAMESPACE_BEGIN
 		int const Result0 = vsnprintf(&Buffer0[0], GD_ARRAY_SIZE(Buffer0), Format, List);
 		///**/ if (Result0 < 0)
 		//{
-		//	GD_ASSERT_FALSE("String formatting failed due format error.");
+		//	GD_DEBUG_ASSERT_FALSE("String formatting failed due format error.");
 		//	return String();
 		//}
 		/*else*/ if ((Result0 > 0) && (Result0 < GD_ARRAY_SIZE(Buffer0)))
@@ -53,13 +53,13 @@ GD_NAMESPACE_BEGIN
 		int const Result1 = vsnprintf(&Buffer1[0], GD_ARRAY_SIZE(Buffer1), Format, List);
 		///**/ if (Result1 < 0)
 		//{
-		//	GD_ASSERT_FALSE("String formatting failed due format error.");
+		//	GD_DEBUG_ASSERT_FALSE("String formatting failed due format error.");
 		//	return String();
 		//}
 		/*else*/ if ((Result1 > 0) && (Result1 < GD_ARRAY_SIZE(Buffer1)))
 			return String(&Buffer1[0]);
 
-		GD_ASSERT_FALSE("String formatting failed buffers error.");
+		GD_DEBUG_ASSERT_FALSE("String formatting failed buffers error.");
 		return String();
 	}
 

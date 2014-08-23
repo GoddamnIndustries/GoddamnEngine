@@ -41,8 +41,7 @@ GD_NAMESPACE_BEGIN
 		if (strncmp(ShaderType.CStr(), "fragment",  sizeof("fragment") ) == 0) return GD_HRI_SHADER_TYPE_PIXEL;
 #endif	// if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 
-		GD_ASSERT_FALSE("Invalid shader type string specified");
-		return GD_HRI_SHADER_TYPE_UNKNOWN;
+		GD_DEBUG_ASSERT_FALSE("Invalid shader type string specified");
 	}
 
 	/// ==========================================================================================
@@ -101,7 +100,7 @@ GD_NAMESPACE_BEGIN
 				} break;
 
 				default: {
-					GD_ASSERT_FALSE("Unhandled param type");
+					GD_DEBUG_ASSERT_FALSE("Unhandled param type");
 				} break;
 			}
 		} else { // Parameter unspecified. So we need to clear all data.
@@ -224,7 +223,7 @@ GD_NAMESPACE_BEGIN
 					HRInterface::GetInstance().CreateShaderParamLocationResources(self, ShaderParamLocationDesc);
 				} break;
 				default: {
-					GD_ASSERT_FALSE("Invalid location type");
+					GD_DEBUG_ASSERT_FALSE("Invalid location type");
 				} break;
 			}
 		}

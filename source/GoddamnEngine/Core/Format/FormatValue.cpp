@@ -22,7 +22,7 @@ GD_NAMESPACE_BEGIN
 	//		case GD_FORMAT_SIZE_16BITS: formatString = "%hu";  break;
 	//		case GD_FORMAT_SIZE_32BITS: formatString = "%u";   break;
 	//		case GD_FORMAT_SIZE_64BITS: formatString = "%lu";  break;
-	//		default: GD_ASSERT_FALSE("Invalid element size specified");
+	//		default: GD_DEBUG_ASSERT_FALSE("Invalid element size specified");
 	//		} break;
 	//	case GD_FORMAT_TYPE_SINT:
 	//		switch (valueElementSize)
@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 	//		case GD_FORMAT_SIZE_16BITS: formatString = "%hd";  break;
 	//		case GD_FORMAT_SIZE_32BITS: formatString = "%d";   break;
 	//		case GD_FORMAT_SIZE_64BITS: formatString = "%ld";  break;
-	//		default: GD_ASSERT_FALSE("Invalid element size specified");
+	//		default: GD_DEBUG_ASSERT_FALSE("Invalid element size specified");
 	//		} break;
 	//	case GD_FORMAT_TYPE_FLOAT:
 	//		switch (valueElementSize)
@@ -40,9 +40,9 @@ GD_NAMESPACE_BEGIN
 	//		// case GD_FORMAT_SIZE_16BITS: formatString = "%hf";  break;
 	//		case GD_FORMAT_SIZE_32BITS: formatString = "%f";   break;
 	//		case GD_FORMAT_SIZE_64BITS: formatString = "%lf";  break;
-	//		default: GD_ASSERT_FALSE("Invalid element size specified");
+	//		default: GD_DEBUG_ASSERT_FALSE("Invalid element size specified");
 	//		} break;
-	//	default: GD_ASSERT_FALSE("Invalid element type type specified");
+	//	default: GD_DEBUG_ASSERT_FALSE("Invalid element type type specified");
 	//	}
 
 	//	String valueStringCopy = valueString;

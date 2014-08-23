@@ -19,31 +19,27 @@
 #include <GoddamnEngine/Core/IO/Path/Path.h>
 
 // We have Warning 4 level (with Wx), but glslang has warning level 3 without Wx.
-#if (defined(GD_COMPILER_MSC))
-#	define _CRT_SECURE_NO_WARNINGS
-#	define _USE_MATH_DEFINES
+#if (defined(GD_COMPILER_MSVC))
 #	pragma warning(push, 0)
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 #include <glsl_optimizer.h>
 #include <glslang.h>
 
 extern "C"
 {
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma push_macro("OUT")
 #	undef OUT
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 #include <mcpp_lib.h>
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma pop_macro("OUT")
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 }
 
-#if (defined(GD_COMPILER_MSC))
-#	undef _CRT_SECURE_NO_WARNINGS
-#	undef _USE_MATH_DEFINES
+#if (defined(GD_COMPILER_MSVC))
 #	pragma warning(pop)
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 
 /// Define this to perform dual check of shaders using both glsl_optimizer and glslang.
 #define GD_HRI_SHADERCC_GLSL_COMPILER_DUAL_CHECK 1
@@ -264,7 +260,7 @@ R"(
 		Builder.AppendFormat("\n\ninline %s %s(", StaticFunction->Type->Name.CStr(), StaticFunction->Name.CStr());
 		for (auto const& Argument : StaticFunction->Arguments) {
 			Builder.AppendFormat("%s%s %s %s, ",
-				(((Argument->AccsessType & GD_HLSL_ARGUMENT_IN) != 0) ? "in" : ""),
+				(((Argument->AccsessType & GD_HLSL_ARGUMENT_IN ) != 0) ? "in"  : ""),
 				(((Argument->AccsessType & GD_HLSL_ARGUMENT_OUT) != 0) ? "out" : ""),
 				Argument->Type->Name.CStr(), Argument->Name.CStr());
 		}
@@ -287,8 +283,8 @@ R"(
 				if (Argument->AccsessType == GD_HLSL_ARGUMENT_IN) {
 					FakeEntryInvocation.AppendFormat("%s(", Argument->Type->Name.CStr(), Argument->Name.CStr());
 				} else {
-					FakeEntryInternals.AppendFormat("\n\t%s %s;", Argument->Type->Name.CStr(), Argument->Name.CStr());
 					FakeEntryInvocation.AppendFormat("%s, ", Argument->Name.CStr());
+					FakeEntryInternals.AppendFormat("\n\t%s %s;", Argument->Type->Name.CStr(), Argument->Name.CStr());
 				}
 
 				HLSLStruct const* const Struct = static_cast<HLSLStruct const*>(Argument->Type);
@@ -348,7 +344,18 @@ R"(
 			FakeEntryInvocation = Move(StringBuilder().AppendFormat("\n\tVaryingRet = %s", FakeEntryInvocation.GetPointer() + 2));
 		}
 
-		Builder.AppendFormat("\n%s\n\nvoid main()\n{%s\n%s\n%s\n}\n", FakeEntryExternals.GetPointer(), FakeEntryInternals.GetPointer(), FakeEntryInvocation.GetPointer(), FakeEntryAssigment.GetPointer());
+		Builder.AppendFormat(
+			"\n/*** Generated Fake Entry Externals ***/%s"
+			"\n\nvoid main()\n{"
+				"/*** Generated Fake Entry Internals ***/\n%s"
+				"/*** Generated Fake Entry Invocation***/\n%s"
+				"/*** Generated Fake Entry Assigment ***/\n%s"
+			"}\n"
+			, FakeEntryExternals .GetPointer()
+			, FakeEntryInternals .GetPointer()
+			, FakeEntryInvocation.GetPointer()
+			, FakeEntryAssigment .GetPointer()
+			);
 	}
 
 	void GLSLCompiler::GenerateAndCompileShader(
@@ -403,8 +410,8 @@ R"(
 		MCPPOutputFile.Read(GLSLPreprocessedBuilder.GetPointer() + GLSLPreprocessedBuilderPos, MCPPOutputFile.GetSize(), 1);
 		MCPPOutputFile.Close();
 
-		GD_DEBUG_ASSERT(remove(MCPPSourceFilePath.CStr()) == 0, "Failed to remove mcpp source file.");
-		GD_DEBUG_ASSERT(remove(MCPPOutputFilePath.CStr()) == 0, "Failed to remove mcpp output file.");
+		GD_DEBUG_ASSERT(::remove(MCPPSourceFilePath.CStr()) == 0, "Failed to remove mcpp source file.");
+		GD_DEBUG_ASSERT(::remove(MCPPOutputFilePath.CStr()) == 0, "Failed to remove mcpp output file.");
 		
 		StringBuilder GLSLOptimizerBuilder;
 #if (!defined(GD_HRI_SHADERCC_GLSL_COMPILER_DUAL_CHECK))
@@ -419,7 +426,7 @@ R"(
 			}
 
 			glslopt_ctx   * const OptimizerContext = glslopt_initialize(((ShaderTargetPlatform == GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3) ? kGlslTargetOpenGLES30 : kGlslTargetOpenGLES20));
-			glslopt_shader* const OptimizedShader  = glslopt_optimize(OptimizerContext, ((ShaderTargetPlatform == GD_HRI_SHADER_TYPE_VERTEX) ? kGlslOptShaderVertex : kGlslOptShaderFragment), GLSLPreprocessedBuilder.GetPointer(), 0);
+			glslopt_shader* const OptimizedShader = glslopt_optimize(OptimizerContext, ((ShaderTargetPlatform == GD_HRI_SHADER_TYPE_VERTEX) ? kGlslOptShaderVertex : kGlslOptShaderFragment), GLSLPreprocessedBuilder.GetPointer(), kGlslOptionSkipPreprocessor);
 			if (!glslopt_get_status(OptimizedShader)) {
 				Str const ShaderOptimizationLog = glslopt_get_log(OptimizedShader);
 				GLSLCompilerErrorDesc static const OptimizerFailedError("shader optmization failed with following log: \n%s");
@@ -448,8 +455,12 @@ R"(
 				GDINT ~GLSLangInitializerType() { glslang::FinalizeProcess(); }
 				GDINT  GLSLangInitializerType()
 				{ 
-					GD_ASSERT(glslang::InitializeProcess(), "Failed to initialize glslang."); 
-					memset(&DefaultResources, 0x01, sizeof(DefaultResources));
+					GD_DEBUG_ASSERT(glslang::InitializeProcess(), "Failed to initialize glslang."); 
+					GD_DEBUG_ASSERT(&self->DefaultResources.maxLights == reinterpret_cast<int*>(&self->DefaultResources), "GLSL refactored, needed rewriting.");
+					::memset(&self->DefaultResources.limits, true, sizeof(self->DefaultResources.limits));
+					for (int* SomeResource = &self->DefaultResources.maxLights; SomeResource != reinterpret_cast<int*>(&self->DefaultResources.limits); ++SomeResource) {
+						(*SomeResource) = INT_MAX;
+					}
 				}
 			} static const GLSLangInitializer;
 

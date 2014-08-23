@@ -315,7 +315,6 @@ GD_NAMESPACE_BEGIN
 				}
 
 				GD_NOT_IMPLEMENTED();
-				return nullptr;
 				// return self->ParseTypedef();
 			} else if (self->CurrentLexem.GetProcessedDataID() == GD_HLSL_KEYWORD_CBUFFER) {	// We are having a constant buffer here:
 				if ((ExpectedDefinitions & GD_HLSL_DEFINITION_CONSTANTBUFFER) == 0) {	// Unexpected constant buffer definition.
@@ -632,7 +631,6 @@ GD_NAMESPACE_BEGIN
 				}
 
 				GD_NOT_IMPLEMENTED();
-				return nullptr;
 			}
 		} else {	// Here comes semantic. 
 			/// @todo Rewrite semantic name and ID extraction after 'String' class refactoring.

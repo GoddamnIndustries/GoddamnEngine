@@ -71,7 +71,7 @@ GD_NAMESPACE_BEGIN
 				texture2DDescription.BindFlags		= D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 				texture2DDescription.CPUAccessFlags = 0;
 			}	break;
-		default: GD_ASSERT_FALSE("Unknwon mod specified"); break;
+		default: GD_DEBUG_ASSERT_FALSE("Unknwon mod specified"); break;
 		}
 
 		D3D11_SUBRESOURCE_DATA texture2DData;
@@ -142,7 +142,7 @@ GD_NAMESPACE_BEGIN
 		{
 		case GD_HRI_TEXTURE_2D_FILTERING_MODE_POINT:	texture2DSamplerDesription.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT; break;
 		case GD_HRI_TEXTURE_2D_FILTERING_MODE_BILINEAR: texture2DSamplerDesription.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; break;
-		default: GD_ASSERT_FALSE("Unknwon mod specified"); break;
+		default: GD_DEBUG_ASSERT_FALSE("Unknwon mod specified"); break;
 		}
 
 		switch (self->WrapMode)
@@ -163,7 +163,7 @@ GD_NAMESPACE_BEGIN
 			} break;
 		default:
 			{
-				GD_ASSERT_FALSE("Unknwon mod specified");
+				GD_DEBUG_ASSERT_FALSE("Unknwon mod specified");
 			} break;
 		}
 

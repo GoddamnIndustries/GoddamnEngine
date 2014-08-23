@@ -8,7 +8,7 @@
 
 #include <GoddamnEngine/Core/IO/Stream/FileStream/FileStream.h>
 
-#if (defined(GD_PLATFORM_WINAPI))
+#if (defined(GD_PLATFORM_API_WINAPI))
 // Implemented using following:
 // http://msdn.microsoft.com/en-us/library/1w06ktdy.aspx
 #	include <io.h>
@@ -16,11 +16,11 @@
 #	define F_OK		(00)
 #	define W_OK		(02)
 #	define R_OK		(04)
-#else	// if (defined(GD_PLATFORM_WINAPI))
+#else	// if (defined(GD_PLATFORM_API_WINAPI))
 #	if (defined(X_OK))
 #		undef   X_OK	// X_OK is not supported on some platforms.
 #	endif	// if (defined(X_OK))
-#endif	// if (defined(GD_PLATFORM_WINAPI))
+#endif	// if (defined(GD_PLATFORM_API_WINAPI))
 
 GD_NAMESPACE_BEGIN
 

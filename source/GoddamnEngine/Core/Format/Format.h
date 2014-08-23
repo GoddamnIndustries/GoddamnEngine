@@ -12,11 +12,11 @@
 #define GD_FORMAT_SIZE_16BITS				(Format(16))
 #define GD_FORMAT_SIZE_32BITS				(Format(32))
 #define GD_FORMAT_SIZE_64BITS				(Format(64))
-#if   (defined(GD_PLATFORM_64BIT))
+#if (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_ARM64))
 #	define GD_FORMAT_SIZE_CURRENT			GD_FORMAT_SIZE_64BITS
-#elif (defined(GD_PLATFORM_32BIT))
+#else	// if (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_ARM64))
 #	define GD_FORMAT_SIZE_CURRENT			GD_FORMAT_SIZE_32BITS
-#endif
+#endif	// if (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_ARM64))
 #define GD_FORMAT_SIZE_MAX					((Format)8)
 #define GD_FORMAT_SIZE_MASK					((Format)0x00F0)
 #define GD_FORMAT_SIZE_EXTRACT(format)		((Format)((((format & GD_FORMAT_SIZE_MASK) >> 4) + 1) * 4))

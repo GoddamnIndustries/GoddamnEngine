@@ -54,7 +54,6 @@ GD_NAMESPACE_BEGIN
 			delete self;
 		}
 
-		GD_WARNING_SUPPRESS(6001);
 		return (self->ReferenceCount);
 	}
 

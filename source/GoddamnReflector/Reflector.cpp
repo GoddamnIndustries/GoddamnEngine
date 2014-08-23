@@ -424,7 +424,7 @@ GD_NAMESPACE_BEGIN
 	{
 		HashCode const NameHash = Name.GetHashCode();
 		if (CPPAnnotationParserSpawner::AnnotationParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX)
-			GD_ASSERT_FALSE("Parser for annotation '%s' was already defined.", Name.CStr());
+			GD_DEBUG_ASSERT_FALSE("Parser for annotation '%s' was already defined.", Name.CStr());
 
 		CPPAnnotationParserSpawner::AnnotationParsersRegistry.PushLast(NameHash, Ctor);
 	}
@@ -460,7 +460,7 @@ GD_NAMESPACE_BEGIN
 	{
 		HashCode const NameHash = Name.GetHashCode();
 		if (self->AnnotationParamParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX)
-			GD_ASSERT_FALSE("Parser for paremeter of an annotation '%s' was already defined.", Name.CStr());
+			GD_DEBUG_ASSERT_FALSE("Parser for paremeter of an annotation '%s' was already defined.", Name.CStr());
 
 		self->AnnotationParamParsersRegistry.PushLast(NameHash, Ctor);
 	}

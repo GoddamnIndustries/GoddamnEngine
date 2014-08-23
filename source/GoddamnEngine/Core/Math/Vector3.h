@@ -121,9 +121,9 @@ GD_NAMESPACE_BEGIN
 			return !((*self) == Other);
 		}
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma region [--- _= Operators ---]
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 
 		GDINL Vector3t& operator+= (ElementTypeConstRef const Vector3Value)
 		{
@@ -241,13 +241,13 @@ GD_NAMESPACE_BEGIN
 			return (--(*self));
 		}
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma endregion
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma region [--- _ Operators ---]
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 
 		GDINL Vector3t operator+ (ElementTypeConstRef const Vector3Value) const
 		{
@@ -301,9 +301,9 @@ GD_NAMESPACE_BEGIN
 			return Vector3t(self->x % Other.x, self->y % Other.y, self->z % Other.z);
 		}
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma endregion
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 	};	// struct Vector3t
 
 	typedef Vector3t< Int8  >  Int8x3;

@@ -98,9 +98,9 @@ GD_NAMESPACE_BEGIN
 			return !((*self) == Other);
 		}
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma region [--- _= Operators ---]
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 
 		GDINL Vector2t& operator+= (ElementTypeConstRef const Vector2Value)
 		{
@@ -205,13 +205,13 @@ GD_NAMESPACE_BEGIN
 			return (--(*self));
 		}
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma endregion
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma region [--- _ Operators ---]
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 
 		GDINL Vector2t operator+ (ElementTypeConstRef const Vector2Value) const
 		{
@@ -265,9 +265,9 @@ GD_NAMESPACE_BEGIN
 			return Vector2t(self->x % Other.x, self->y % Other.y);
 		}
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma endregion
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 	};	// struct Vector2t
 
 	typedef Vector2t< Int8  >  Int8x2;

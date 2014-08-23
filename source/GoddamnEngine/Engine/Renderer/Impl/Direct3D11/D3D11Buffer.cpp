@@ -44,7 +44,7 @@ GD_NAMESPACE_BEGIN
 		case 1: self->IndexFormat = DXGI_FORMAT_R8_UINT;   break;
 		case 2: self->IndexFormat = DXGI_FORMAT_R16_UINT;   break;
 		case 4: self->IndexFormat = DXGI_FORMAT_R32_UINT;   break;
-		default: GD_ASSERT_FALSE("Unhandled stride size."); break;
+		default: GD_DEBUG_ASSERT_FALSE("Unhandled stride size."); break;
 		}
 
 		D3D11_BUFFER_DESC IndexBufferDescription;
@@ -90,6 +90,7 @@ GD_NAMESPACE_BEGIN
 	void HRID3D11ConstantBuffer::CopyDataTo(handle const Data) const
 	{
 		GD_NOT_IMPLEMENTED();
+#if 0
 		D3D11_MAPPED_SUBRESOURCE ConstantBufferData;
 		ZeroMemory(&ConstantBufferData, sizeof(ConstantBufferData));
 
@@ -100,6 +101,7 @@ GD_NAMESPACE_BEGIN
 
 		memcpy(Data, ConstantBufferData.pData, self->GetSize());
 		HRD3D11Interface::GetInstance().Context->Unmap(self->Buffer.Get(), 0);
+#endif	// if 0
 	}
 
 	void HRID3D11ConstantBuffer::CopyDataFrom(chandle const Data)

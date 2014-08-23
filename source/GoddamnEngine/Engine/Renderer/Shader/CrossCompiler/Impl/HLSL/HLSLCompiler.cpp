@@ -16,10 +16,10 @@
 #if (!defined(GD_D3D_LINKED))
 #	include <GoddamnEngine/Core/Reflection/Assembly/Assembly.h>
 #	include <cstdio>
-#	if (defined(GD_PLATFORM_WINAPI))
+#	if (defined(GD_PLATFORM_API_WINAPI))
 #		define popen _popen
 #		define pclose _pclose
-#	endif	// if (defined(GD_PLATFORM_WINAPI))
+#	endif	// if (defined(GD_PLATFORM_API_WINAPI))
 #endif	// if (!defined(GD_D3D_LINKED))
 #include <d3dcompiler.h>
 
@@ -83,7 +83,7 @@ GD_NAMESPACE_BEGIN
 				FXCCommandBuilder.Append(FXCPath);
 
 				GD_NOT_IMPLEMENTED();
-
+#if 0
 				FILE* const FXCPipe = ::popen(FXCCommandBuilder.GetPointer(), "r");
 				if (FXCPipe != nullptr) {
 					int const FXCExecutionResult = ::pclose(FXCPipe);
@@ -93,6 +93,7 @@ GD_NAMESPACE_BEGIN
 				}
 
 				return E_FAIL;
+#endif	// if 0
 			};
 		}
 	} static const D3DCompileLoader;

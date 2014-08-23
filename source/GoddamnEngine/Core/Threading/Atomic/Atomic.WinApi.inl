@@ -7,6 +7,7 @@
 /// ==========================================================================================
 
 #include <GoddamnEngine/Include.h>
+#include <Windows.h>
 
 #pragma once 
 #ifndef GD_CORE_THREADING_ATOMIC_WINAPI

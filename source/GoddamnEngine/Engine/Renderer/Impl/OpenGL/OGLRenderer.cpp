@@ -22,6 +22,7 @@ GD_NAMESPACE_BEGIN
 
 	bool HROGLInterface::CreateContex()
 	{
+		GD_DEBUG_ASSERT(false, "");
 #define GD_DEFINE_OGL_METHOD(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) \
 		/**/self->Driver._##MethodName = reinterpret_cast<ReturnType (*)(ArgumentsDeclarations)>(GD_GL_GET_PROC_ADDRESS("gl"#MethodName)); \
 		if (self->Driver._##MethodName == nullptr) { \
@@ -37,10 +38,10 @@ GD_NAMESPACE_BEGIN
 		ZeroMemory(&PixelFormatDescriptor, sizeof(PIXELFORMATDESCRIPTOR));
 		PixelFormatDescriptor.nSize      = sizeof(PIXELFORMATDESCRIPTOR);
 		PixelFormatDescriptor.dwFlags    = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
+		PixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
 		PixelFormatDescriptor.iPixelType = PFD_TYPE_RGBA;
 		PixelFormatDescriptor.cColorBits = 32;
 		PixelFormatDescriptor.cDepthBits = 32;
-		PixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
 
 		int const PixelFormat = ::ChoosePixelFormat(DeviceContext, &PixelFormatDescriptor);
 		if (PixelFormat == 0) {
@@ -64,7 +65,7 @@ GD_NAMESPACE_BEGIN
 #	include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
 #endif	// if (!defined(__INTELLISENSE__))
 
-		// Loading API that allowes creation of avanced context.
+		// Loading API that allowes creation of advanced context.
 		auto const WinCreateContextAttribsARB = reinterpret_cast<HGLRC(*)(HDC const hDC, HGLRC const hGLRC, int const* const Attributes)>(::wglGetProcAddress("wglCreateContextAttribsARB"));
 		if (WinCreateContextAttribsARB == nullptr) {
 			throw HRIOGLException("Unable to map 'wglCreateContextAttribsARB' method.");
@@ -112,7 +113,7 @@ GD_NAMESPACE_BEGIN
 		GL.Enable(GL_DEPTH_TEST);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to enable Depth Test");
 
-		GL.FrontFace (GL_CW);
+		GL.FrontFace(GL_CW);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to set Clock-Wise vertices mode");
 
 		GL.Enable(GL_CULL_FACE);
@@ -157,9 +158,9 @@ GD_NAMESPACE_BEGIN
 		GL.Clear(GL_COLOR_BUFFER_BIT | (DoClearDepth ? GL_DEPTH_BUFFER_BIT : 0));
 		GL.ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a);
 		GL.Viewport(static_cast<GLint>(self->ContextResolution.Width  * ClearingViewport.Left  ),
-					 static_cast<GLint>(self->ContextResolution.Height * ClearingViewport.Top   ),
-					 static_cast<GLint>(self->ContextResolution.Width  * ClearingViewport.Width ),
-					 static_cast<GLint>(self->ContextResolution.Height * ClearingViewport.Height));
+					static_cast<GLint>(self->ContextResolution.Height * ClearingViewport.Top   ),
+					static_cast<GLint>(self->ContextResolution.Width  * ClearingViewport.Width ),
+					static_cast<GLint>(self->ContextResolution.Height * ClearingViewport.Height));
 	}
 
 	void HROGLInterface::SwapBuffers()

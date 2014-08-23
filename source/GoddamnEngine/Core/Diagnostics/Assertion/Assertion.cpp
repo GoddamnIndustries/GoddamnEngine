@@ -1,43 +1,42 @@
+/// ==========================================================================================
+/// Assertion.h: Assertation mechanism implementation.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// 
+/// History:
+///		* --.01.2014  - Created by James Jhuighuy
+/// ==========================================================================================
+
+#include <GoddamnEngine/Include.h>
+#if ((!defined(GD_PLATFORM_API_COCOA)) || (defined(GD_CORE_DIAGNOSTICS_ASSERTION_MM)))
+
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 #include <GoddamnEngine/Core/Text/String/String.h>
-#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
 
-#if (defined(GD_USE_CUSTOM_ASSERTS) && (defined(GD_PLATFORM_WINDOWS) || defined(GD_PLATFORM_XBOX_ONE))) 
-#	include <Windows.h>
+#include <Windows.h>
 
 GD_NAMESPACE_BEGIN
-	
-	/// ==========================================================================================
-	extern bool Assert(		
-		_In_ Str    const FileName,
-		_In_ Str    const FunctionName,
-		_In_ size_t const LineNumber,
-		_In_ Str    const ExpressionString,
-		_In_ Str    const Message
-	)
+
+	/// Whoa, seems that you have just broken the world's most stable piece of code!
+
+	/// ------------------------------------------------------------------------------------------
+	/// Fatal assertation mechanisms.
+	/// ------------------------------------------------------------------------------------------
+
+	void HandleFatalAssertionVa(FatalAssertionData const* const Data, va_list const Args)
 	{
-		String const FormatedString = String::Format(
-			"%s\n\n\nExpression: \"%s\";\n(In File \"%s\", Function \"%s\", Line #%d).\n"
-			"\nPress\t[Abort]\tto terminate application;"
-			"\nPress\t[Retry]\tto debug application;"
-			"\nPress\t[Ignore]\tto ignore the Assertation.",
-			Message, ExpressionString, FileName, FunctionName, static_cast<int>(LineNumber)
-		);
+		::abort();
+	}
 
-		switch (MessageBoxA(
-            nullptr/*reinterpret_cast<HWND>(LowLevelSystem::GetInstance().hWindow)*/,
-			&FormatedString[0], "Debug Assertation failed!",
-			MB_ABORTRETRYIGNORE | MB_ICONERROR
-		))
-		{
-		case IDABORT:	abort(); return false;
-		case IDIGNORE:			 return false;
-		case IDRETRY:			 return true;
-		}
+	/// ------------------------------------------------------------------------------------------
+	/// Regular assertation mechanisms.
+	/// ------------------------------------------------------------------------------------------
 
-		return true;
+	AssertionState HandleRegularAssertionVa(RegularAssertionData* const Data, va_list const Args)
+	{
+	//	::MessageBoxA(nullptr, "Some text here", "Some title here", 0);
+		return AssertionState::Break;
 	}
 
 GD_NAMESPACE_END
 
-#endif
+#endif	// if ((!defined(GD_PLATFORM_API_COCOA)) || (defined(GD_CORE_DIAGNOSTICS_ASSERTION_MM)))

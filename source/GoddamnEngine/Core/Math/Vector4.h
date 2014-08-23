@@ -351,7 +351,7 @@ GD_NAMESPACE_BEGIN
 
 #if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
 	template<>
-	struct GD_MSC_ALIGN(16) Vector4t<Float32> final
+	struct GD_ALIGN_MSVC(16) Vector4t<Float32> final
 	{
 		enum : size_t { ThisComponentsCount = 4 };
 		union {
@@ -461,9 +461,9 @@ GD_NAMESPACE_BEGIN
 			return const_cast<Vector4t&>(*self)[Index];
 		}
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma region [--- _= Operators ---]
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 
 		GDINL Vector4t& operator+= (Float32 const Vector4Value)
 		{
@@ -541,13 +541,13 @@ GD_NAMESPACE_BEGIN
 			return (--(*self));
 		}
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma endregion
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma region [--- _ Operators ---]
-#endif	// if (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_COMPILER_MSVC))
 
 		GDINL Vector4t operator+ (Float32 const Vector4Value) const
 		{
@@ -589,10 +589,10 @@ GD_NAMESPACE_BEGIN
 			return Vector4t(Float32x4Intrinsics::VectorDiv(self->ElementsVector, Other.ElementsVector));
 		}
 
-#if (defined(GD_COMPILER_MSC))
+#if (defined(GD_COMPILER_MSVC))
 #	pragma endregion
-#endif	// if (defined(GD_COMPILER_MSC))
-	} GD_GCC_ALIGN(16);	// struct Vector4t<Float32, Comparator>
+#endif	// if (defined(GD_COMPILER_MSVC))
+	} GD_ALIGN_GCC(16);	// struct Vector4t<Float32, Comparator>
 #endif	// if ((defined(GD_SUPPORT_SSE)) && (!defined(GD_DOCUMENTATION)))
 
 	typedef Vector4t< Int8  >  Int8x4;

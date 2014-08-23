@@ -108,7 +108,7 @@ GD_NAMESPACE_BEGIN
 				{
 					GD_NOT_IMPLEMENTED();
 				} break;
-				default: GD_ASSERT_FALSE("Invalid paramter type");
+				default: GD_DEBUG_ASSERT_FALSE("Invalid paramter type");
 			}
 		}*/
 

@@ -1,14 +1,14 @@
 /// ==========================================================================================
-/// Include.h: Common definitions for all GD projects
+/// Include.h: Common definitions for all GoddamnEngine inner projects.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
-///		* --.--.2012 - Created by James Jhuighuy
+///		* Long time ago in galaxy far away - Created by James Jhuighuy.
 /// ==========================================================================================
 
 #pragma once
-#ifndef GODDAMN_ENGINE_INCLUDE
-#define GODDAMN_ENGINE_INCLUDE
+#ifndef ___GODDAMN_ENGINE_INCLUDE___
+#define ___GODDAMN_ENGINE_INCLUDE___
 
 /// ==========================================================================================
 /// Version definitions
@@ -20,233 +20,579 @@
 #define GD_ENGINE_VERSION	"1/2"
 /// ==========================================================================================
 
-#define GD_BUILDTYPE_STANDALONE_ENGINE
-// #define GD_BUILDTYPE_EDITOR
-#if !(defined(GD_BUILDTYPE_EDITOR) ^ defined(GD_BUILDTYPE_STANDALONE_ENGINE))
-#	error 'GD_BUILDTYPE_EDITOR' and 'GD_BUILDTYPE_STANDALONE_ENGINE' are both (un)defined, \
-		   please use just one of them to specify project build type
-#endif
-
 /// ==========================================================================================
-/// Supported platforms: 
-///	Desktop	 :	OS X (Mavericks onwards - TBA), Windows (7 onward, tested on 8.1 only, does not supports RT)
-/// Consoles :	PlayStation 4, XBox One, SteamBox
-/// Mobile	 :	iOS (iPhone 5S, iPad Air / Mini Retina and further generations - TBA), Windows Phone 8 (after first x64 devices - TBA)
+/// Platform Determination.
+/// Supported platforms:
+///		@li Windows Desktop (Tested on 8.1) defined as GD_PLATFORM_WINDOWS.
+/// Planned to support:
+///		@li Microsoft Windows Store Application (Under construction) defined as GD_PLATFORM_WINDOWS.
+///		@li Microsoft Windows Phone 8 (Under construction) defined as GD_PLATFORM_WINDOWS_PHONE8.
+///		@li Microsoft Windows RT Application (Under construction) defined as GD_PLATFORM_WINDOWS_RT.
+///		@li Microsoft XBox One Game (Under construction) defined as GD_PLATFORM_XBOX_ONE.
+///		@li Apple OS X (Maverics and newer, under construction) defined as GD_PLATFORM_OS_X.
+///		@li Apple iOS (8 and newer, under construction) defined as GD_PLATFORM_IOS.
+///		@li Sony PlayStation 4 (Under construction) defined as GD_PLATFORM_PLAYSTATION4.
+///		@li Google Android (Under construction) defined as GD_PLATFORM_ANDROID.
+///		@li GNU/Linux including Valve Steambox (Under construction) defined as GD_PLATFORM_GNU_LINUX.
+///		@li HTML5/Asm.js/Emscripten (Under construction) defined as GD_PLATFORM_HTML5.
+/// Thanks to this (http://sourceforge.net/p/predef/wiki/OperatingSystems/) article.
+/// ==========================================================================================
+
+/// ------------------------------------------------------------------------------------------
+/// Microsoft Windows (R) Platforms family.
+/// ------------------------------------------------------------------------------------------
+
 #if (defined(_WIN32))
 #	define _USE_MATH_DEFINES       // <| M_PI and others
 #	define _CRT_SECURE_NO_WARNINGS // <| Using printf and others
 #	define  WIN32_LEAN_AND_MEAN    // <| We do not need whole WinAPI header.
 #	define  VC_EXTRALEAN		   //  |
-#	include <Windows.h>
-#	define GD_PLATFORM_WINAPI			  (1)
-//	Platform arch, name, desktop/mobile type.
-#	if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))	//   Windows Desktop application.
-#		define GD_PLATFORM_ARCH_X86		  (1)									///< x86 platform 
-#		define GD_PLATFORM_WINDOWS		  (1)									///< Macro to detect Windows-specific code
-#		define GD_PLATFORM_DESKTOP		  (1)			        				///< Building for desktop platform 
-//  endif	// if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
-#	elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP))	//   Windows Phone 8 application.
-#		define GD_PLATFORM_ARCH_ARM  	  (1)									///< ARM Platform.
-#		define GD_PLATFORM_WINDOWS_PHONE8 (1)									///< Macro to detect WindowsPhone 8-specific code
-#		define GD_PLATFORM_MOBILE		  (1)									///< Building for mobile platform 
-//	endif	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP))
-#	elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PC_APP))	//   Windows Store application (Windows Desktop or Windows RT)
-#		if (defined(__WRL_WINRT_STRICT__))										//   Windows RT application.
-#			define GD_PLATFORM_ARCH_ARM   (1)									///< ARM Platform.
-#			define GD_PLATFORM_WINDOWS_RT (1)									///< Macro to detect Windows RT-specific code
-#			define GD_PLATFORM_MOBILE	  (1)									///< Building for mobile platform 
-#		else	// if (defined(__WRL_WINRT_STRICT__))							//   Windows Desktop application.
-#			define GD_PLATFORM_ARCH		("x86")									///< x86 Platform.
-#			define GD_PLATFORM_NAME		("Windows")								///< Building for Windows-Powered machine
-#			define GD_PLATFORM_WINDOWS	(GD_PLATFORM_NAME)						///< Macro to detect Windows-specific code
-#			define GD_PLATFORM_MOBILE	(GD_PLATFORM_WINDOWS)					///< Building for mobile platform 
+#	include <winapifamily.h>
+#	define GD_PLATFORM_API_WINAPI		  (1)							///< Obviously Windows platforms run on WinAPI.
+#	if (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_DESKTOP_APP))				//   Windows Desktop application.
+#		define GD_PLATFORM_API_LIBSDL2	  (1)							///< LibSDL2 supports target platform.
+#		define GD_PLATFORM_WINDOWS		  (1)							///< Macro to detect Windows-specific code
+#		define GD_PLATFORM_DESKTOP		  (1)			        		///< Building for desktop platform 
+//  endif	// if (WINAPI_FAMILY_PARTITIONWINAPI_FAMILY_DESKTOP_APP))
+#	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PHONE_APP))				//   Windows Phone 8 application.
+#		define GD_PLATFORM_WINDOWS_PHONE8 (1)							///< Macro to detect WindowsPhone 8-specific code
+#		define GD_PLATFORM_MOBILE		  (1)							///< Building for mobile platform.
+#		error "Building for this platform is not implemented."
+//	endif	// elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PHONE_APP))
+#	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PC_APP))				//   Windows Store application (Windows Desktop or Windows RT)
+#		if (defined(__WRL_WINRT_STRICT__))								//   Windows RT application.
+#			define GD_PLATFORM_WINDOWS_RT (1)							///< Macro to detect Windows RT-specific code
+#			define GD_PLATFORM_MOBILE	  (1)							///< Building for mobile platform 
+#			error "Building for this platform is not implemented."
+#		else	// if (defined(__WRL_WINRT_STRICT__))					//   Windows Desktop application.
+#			define GD_PLATFORM_WINDOWS	  (1)							///< Macro to detect Windows-specific code
+#			define GD_PLATFORM_DESKTOP	  (1)			        		///< Building for desktop platform 
+#			error "Building for this platform is not implemented."
 #		endif	// if (defined(__WRL_WINRT_STRICT__))
-//	endif	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
-#	else	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_***))
-#		error "Unsupported Windows platform.""
-#	endif	// elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_***))
-//	Debug/Release builds.
+//	endif	// elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_DESKTOP_APP))
+#	else	// elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_***))
+#		error "Unsupported Windows target platform."
+#	endif	// elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_***))
+//endif	// if (defined(_WIN32))
+
+/// ------------------------------------------------------------------------------------------
+/// Microsoft XBox One Platform family.
+/// ------------------------------------------------------------------------------------------
+
+/// @todo Identify XBox One here.
+#elif (defined(___SOME_VERY_SPECIFIC_XBOX_ONE_MACRO___))
+#	define GD_PLATFORM_API_WINAPI		  (1)							///< Obviously Windows platforms run on WinAPI.
+#	define GD_PLATFORM_XBOX_ONE			  (1)							///< Building the XBox One game.
+#	define GD_PLATFORM_CONSOLE			  (1)							///< Building the console game.
+#	error "Building for this platform is not implemented."
+//endif	// if (defined(___SOME_VERY_SPECIFIC_XBOX_ONE_MACRO___))
+
+/// ------------------------------------------------------------------------------------------
+/// Apple (R) Platforms family.
+/// ------------------------------------------------------------------------------------------
+
+#elif (defined(__APPLE__))
+#	include <TargetConditionals.h>
+#	define GD_PLATFORM_API_COCOA		  (1)							///< Apple operating systems use Cocoa API.
+#	define GD_PLATFORM_API_POSIX		  (1)							///< And also are POSIX-compatible.
+#	define GD_PLATFORM_API_LIBSDL2		  (1)							///< LibSDL2 supports target platform.
+#	if (defined(TARGET_OS_MAC))
+#		define GD_PLATFORM_DESKTOP		  (1)			        		///< Building for desktop platform 
+#		define GD_PLATFORM_OSX			  (1)							///< OS X application.
+#		error "Building for this platform is not implemented."
+//	elif	// if (defined(TARGET_OS_MAC))
+#	elif (defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_IPHONE) || defined(TARGET_OS_IPAD))
+#		define GD_PLATFORM_MOBILE		  (1)							///< Building for mobile platform 
+#		define GD_PLATFORM_IOS			  (1)							///< iOS application.
+#		error "Building for this platform is not implemented."
+//	endif	// elif (defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_IPHONE) || defined(TARGET_OS_IPAD))
+#	else	// *** Apple Platform selection ***
+#		error "Unsupported Apple target platform."
+#	endif	// *** Apple Platform selection ***
+//endif	// if (defined(__APPLE__))
+
+/// ------------------------------------------------------------------------------------------
+/// Sony PlayStation 4 platform family.
+/// ------------------------------------------------------------------------------------------
+
+/// @todo Identify Sony PlayStation 4 here.
+#elif (defined(___SOME_VERY_SPECIFIC_PLAY_STATION4_MACRO___))
+#	define GD_PLATFORM_API_ORBIS		  (1)							///< PlayStation 4 runs orbis OS.
+#	define GD_PLATFORM_API_POSIX		  (1)							///< And also is POSIX-compatible.
+#	define GD_PLATFORM_PLAYSTATION4		  (1)							///< Building the XBox One game.
+#	define GD_PLATFORM_CONSOLE			  (1)							///< Building the console game.
+#	error "Building for this platform is not implemented."
+//endif	// if (defined(___SOME_VERY_SPECIFIC_PLAY_STATION4_MACRO___))
+
+/// ------------------------------------------------------------------------------------------
+/// Google Android platforms family.
+/// ------------------------------------------------------------------------------------------
+
+#elif (defined(__ANDROID__))
+#	define GD_PLATFORM_MOBILE			  (1)							///< Building for mobile platform 
+#	define GD_PLATFORM_API_POSIX		  (1)							///< Android runs on GNU/Linux which POSIX-compatible.
+#	define GD_PLATFORM_API_LIBSDL2		  (1)							///< LibSDL2 supports target platform.
+#	define GD_PLATFORM_ANDROID			  (1)							///< Android application.
+#	error "Building for this platform is not implemented."
+//endif	// if (defined(__ANDROID__))
+
+/// ------------------------------------------------------------------------------------------
+/// GNU/Linux platforms family.
+/// ------------------------------------------------------------------------------------------
+
+#elif (defined(__linux__))
+#	define GD_PLATFORM_DESKTOP			  (1)			        		///< Building for desktop platform 
+#	define GD_PLATFORM_API_POSIX		  (1)							///< GNU/Linux is POSIX-compatible.
+#	define GD_PLATFORM_API_LIBSDL2		  (1)							///< LibSDL2 supports target platform.
+#	define GD_PLATFORM_GNU_LINUX		  (1)							///< GNU/Linux application.
+#	error "Building for this platform is not implemented."
+//endif	// if (defined(__linux__))
+
+/// ------------------------------------------------------------------------------------------
+/// HTML5/Asm.js/Emscripten platforms family.
+/// ------------------------------------------------------------------------------------------
+
+#elif (defined(__EMSCRIPTEN__))
+#	define GD_PLATFORM_WEB				  (1)			        		///< Building a web-application. 
+#	define GD_PLATFORM_HTML5			  (1)							///< Building an HTML5 web-application.
+#	error "Building for this platform is not implemented."
+//endif	// if (defined(__EMSCRIPTEN__))
+
+/// ------------------------------------------------------------------------------------------
+/// Some unknown platform.
+/// ------------------------------------------------------------------------------------------
+
+#else	// *** Target platform family determination. ***
+#	error "Unsupported engine's target platform family."
+#endif	// *** Target platform family determination. ***
+
+// Checking if there is actualy a single platform selected.
+#if (!(0 \
+	^ defined(GD_PLATFORM_WINDOWS) \
+	^ defined(GD_PLATFORM_WINDOWS_PHONE8) \
+	^ defined(GD_PLATFORM_WINDOWS_RT) \
+	^ defined(GD_PLATFORM_XBOX_ONE) \
+	^ defined(GD_PLATFORM_OS_X) \
+	^ defined(GD_PLATFORM_IOS) \
+	^ defined(GD_PLATFORM_PLAYSTATION4) \
+	^ defined(GD_PLATFORM_ANDROID) \
+	^ defined(GD_PLATFORM_GNU_LINUX) \
+	^ defined(GD_PLATFORM_HTML5)))
+#	error "No target platform was selected OR multiple target platforms were selected."
+#endif	// *** All platforms XORed. ***
+#if (!(0 \
+	^ defined(GD_PLATFORM_WEB) \
+	^ defined(GD_PLATFORM_MOBILE) \
+	^ defined(GD_PLATFORM_DESKTOP) \
+	^ defined(GD_PLATFORM_CONSOLE)))
+#	error "No target platform family was selected OR multiple target platform families were selected."
+#endif	// *** All platform familis XORed ***
+
+/// ==========================================================================================
+/// Compiler Determination.
+/// Supported compilers:
+///		@li Microsoft Visual C++ compiler version 2012 CTP and above - Windowses and XBox One, defined as GD_COMPILER_MSVC.
+/// Planned to support:
+///		@li Apple's Clang compiler - Apple platforms, HTML5, defined as GD_COMPILER_CLANG.
+///		@li GNU Compilers Collections's C++ compiler - Windows, GNU/Linux, Android, PlayStation 4, defined as GD_COMPILER_GCC.
+///		@li Intel C Compiler - Windows, OS X and GNU/Linux, defined as GD_COMPILER_INTEL + default platform compiler.
+/// ==========================================================================================
+
+/// ------------------------------------------------------------------------------------------
+/// Intel C++ Compiler. It actually masks into some other compiler, so processing it first.
+/// ------------------------------------------------------------------------------------------
+
+#if (defined(__INTEL_COMPILER))
+#	define GD_COMPILER_INTEL				(1) ///< Code for target platform is going to be compiled using GNU Compiler collection. 
+#	if (defined(_MSC_VER))
+#		define GD_COMPILER_MSVC_COMPATIBLE	(1)	///< Target compiler is compatible with the MSVC compiler.
+//	endif	// if (defined(_MSC_VER))
+#	elif (defined(__GNUC__))
+#		define GD_COMPILER_GCC_COMPATIBLE	(1)	///< Target compiler is compatible with the GCC compiler.
+//	endif	// elif (defined(__GNUC__))
+#	else	// *** Intel Compiler compatibility layer determination ***
+#		error "Unable to determine Intel Compiler compatibilty layer."
+#	endif	// *** Intel Compiler compatibility layer determination ***
+//endif	// if (defined(__GNUC__))
+
+/// ------------------------------------------------------------------------------------------
+/// Microsoft Visual C++ compiler.
+/// ------------------------------------------------------------------------------------------
+
+#elif (defined(_MSC_VER))
+#	if (_MSC_VER >= 1800)	// 2012 CTP Compiler and above.
+#		define GD_COMPILER_MSVC				(1)	///< Code for target platform is going to be compiled using MSVC.
+#		define GD_COMPILER_MSVC_COMPATIBLE	(1)	///< Target compiler is compatible with the MSVC compiler.
+#	else	// if (_MSC_VER >= 1800)
+#		error "MSVC compiler version is lower than 1800. Please, use MSVC compiler version 2012 CTP and newer."
+#	endif	// if (_MSC_VER >= 1800)
+//endif	// if (defined(_MSC_VER))
+
+/// ------------------------------------------------------------------------------------------
+/// Apple (R) Clang compiler.
+/// ------------------------------------------------------------------------------------------
+
+#elif (defined(__clang__))
+#	define GD_COMPILER_GLANG				(1)	///< Code for target platform is going to be compiled using Clang compiler. 
+#	define GD_COMPILER_GCC_COMPATIBLE		(1)	///< Target compiler is compatible with the GCC compiler.
+//endif	// if (defined(__GNUC__))
+
+/// ------------------------------------------------------------------------------------------
+/// Generally-Not-Usable Compiler Collection.
+/// ------------------------------------------------------------------------------------------
+
+#elif (defined(__GNUC__))
+#	define GD_COMPILER_GCC					(1) ///< Code for target platform is going to be compiled using GNU Compiler collection. 
+#	define GD_COMPILER_GCC_COMPATIBLE		(1)	///< Target compiler is compatible with the GCC compiler.
+//endif	// if (defined(__GNUC__))
+
+/// ------------------------------------------------------------------------------------------
+/// Some unknown C++ compiler.
+/// ------------------------------------------------------------------------------------------
+
+#else	// *** Compiler determination. ***
+#	error "Unsupported engine's compiler."
+#endif	// *** Compiler determination. ***
+
+#if (!(0 \
+	^ defined(GD_COMPILER_GCC) \
+	^ defined(GD_COMPILER_MSVC) \
+	^ defined(GD_COMPILER_CLANG) \
+	^ defined(GD_COMPILER_INTEL)))
+#	error "No known compiler was selected OR multiple compilers were detected."
+#endif	// *** All default compilers XORed. ***
+#if (!(0 \
+	^ defined(GD_COMPILER_MSVC_COMPATIBLE) \
+	^ defined(GD_COMPILER_GCC_COMPATIBLE)))
+#	error "No compiler compatibilty layer specified."
+#endif	// if (!(defined(GD_COMPILER_MSVC_COMPATIBLE) ^ defined(GD_COMPILER_GCC_COMPATIBLE)))
+
+/// ==========================================================================================
+/// Compiler abstraction layer and etc.
+/// ==========================================================================================
+
+/// ------------------------------------------------------------------------------------------
+/// Target architecture decls.
+/// Thanks to this (http://sourceforge.net/p/predef/wiki/Architectures/) article.
+/// ------------------------------------------------------------------------------------------
+
+#if (defined(GD_PLATFORM_HTML5))
+#		define GD_ARCHITECTURE_X86		    (1)					///< Target processor is simulated to be x86.
+#		define GD_ARCHITECTURE_ASMJS	    (1)					///< Target processor is JavaScript Virtual machine.
+#		define GD_ENDIANITY_LITTLE		    (1)					///< Target processor is little-endian.
+#else	// if (defined(GD_PLATFORM_HTML5))
+#	if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+/// @todo Check for ARM64 processors in MSVC Compiler.
+#		if (defined(_M_ARM))
+#			define GD_ARCHITECTURE_ARM32	(1)					///< Target processor is ARM-32 bits.
+#			define GD_ENDIANITY_LITTLE		(1)					///< Target processor is little-endian.
+//		endif	// if (defined(_M_ARM))
+#		elif (defined(_M_X64))
+#			define GD_ARCHITECTURE_X64		(1)					///< Target processor is x64.
+#			define GD_ENDIANITY_LITTLE		(1)					///< Target processor is little-endian.
+//		endif	// if (defined(_M_X64))
+#		elif (defined(_M_IX86))
+#			define GD_ARCHITECTURE_X86		(1)					///< Target processor is x86.
+#			define GD_ENDIANITY_LITTLE		(1)					///< Target processor is little-endian.
+//		endif	// if (defined(_M_IX86))
+#		else	// *** MSVC Architecture selection. ***
+#			error "Unable to determine MSVC compilers target architecture."
+#		endif	// *** MSVC Architecture selection. ***
+//	endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#	elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#		if (defined(__aarch64__))
+#			define GD_ARCHITECTURE_ARM64	(1)					///< Target processor is ARM-64 bits.
+#			define GD_ENDIANITY_LITTLE		(1)					///< Target processor is little-endian.
+//		endif	// if (defined(__aarch64__))
+#		elif (defined(__arm__))
+#			define GD_ARCHITECTURE_ARM32	(1)					///< Target processor is ARM-32 bits.
+#			define GD_ENDIANITY_LITTLE		(1)					///< Target processor is little-endian.
+//		endif	// if (defined(__arm__))
+#		elif (defined(__amd64__))
+#			define GD_ARCHITECTURE_X64		(1)					///< Target processor is x64.
+#			define GD_ENDIANITY_LITTLE		(1)					///< Target processor is little-endian.
+//		endif	// if (defined(__amd64__))
+#		elif (defined(__i386__))
+#			define GD_ARCHITECTURE_X86		(1)					///< Target processor is x86.
+#			define GD_ENDIANITY_LITTLE		(1)					///< Target processor is little-endian.
+//		endif	// if (defined(__i386__))
+#		else	// *** GCC Architecture selection. ***
+#			error "Unable to determine GCC compilers target architecture."
+#		endif	// *** GCC Architecture selection. ***
+//	endif	// if (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	endif	// *** Target architecture decls. ***
+#endif	// if (defined(GD_PLATFORM_HTML5))
+
+#if (!(0 \
+	^ defined(GD_ARCHITECTURE_X86) \
+	^ defined(GD_ARCHITECTURE_X64) \
+	^ defined(GD_ARCHITECTURE_ARM32) \
+	^ defined(GD_ARCHITECTURE_ARM64)))
+#	error "No target CPU architecture was selected."
+#endif	// *** All target architectures xored. ***
+#if (!(0 \
+	^ defined(GD_ENDIANITY_BIG) \
+	^ defined(GD_ENDIANITY_LITTLE)))
+#	error "No target CPU endianity was selected."
+#endif	// *** Big & Little endians xored. ***
+
+/// ------------------------------------------------------------------------------------------
+/// Export specifications and etc.
+/// ------------------------------------------------------------------------------------------
+
+// Exports...
+#if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#	define GDINT __declspec(/*Nothing*/)						///< Assembly internal name.
+#	define GDEXP __declspec(dllexport)							///< Method would be exported from Assembly.
+#	define GDIMP __declspec(dllimport)							///< Method would be imported from external Assembly.
+#	if (defined(_WINDLL) && (!defined(GD_DLL_IMPORT)))
+#		define GDAPI GDEXP										///< Method would be exported/imported from DLL.
+#	else	// if (defined(_WINDLL) && (!defined(GD_DLL_IMPORT)))
+#		define GDAPI GDIMP										///< Method would be exported/imported from DLL.
+#	endif	// if (defined(_WINDLL) && (!defined(GD_DLL_IMPORT)))
+//endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	define GDINT __attribute__((visibility("protected")))		///< Assembly internal name.
+#	define GDAPI __attribute__((visibility("default")))			///< Method would be exported/imported from DLL.
+#	define GDEXP GDAPI											///< Method would be exported/imported from DLL.
+#	define GDIMP GDAPI											///< Method would be imported from external Assembly.
+//endif // if (defined(GD_COMPILER_GCC_COMPATIBLE))
+#endif	// *** Export specification. ***
+
+/// Define this to disable force inlining of methods.
+// #define GD_NO_FORCE_INLINE
+
+// Inlining...
+#if (defined(GD_NO_FORCE_INLINE))
+#	define GDINL inline											///< Inline method.
+#else	// if (defined(GD_NO_FORCE_INLINE))
+#	if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#		define GDINL __forceinline								///< Method would be forcely inlined.
+//	endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#	elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#		define GDINL __attribute__((always_inline)) inline		///< Method would be forcely inlined.
+//	elif (defined(GD_COMPILER_GCC_COMPATIBLE))			
+#	endif	// *** Force inline specification. ***
+#endif	// if (defined(GD_NO_FORCE_INLINE))
+
+// Aligment...
+#if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#	define GD_ALIGN_MSVC(Alignment) __declspec(align(Alignment))		///< Class would be aligned in MSVS compatible notation.
+#	define GD_ALIGN_GCC(Alignment)										///< Dummy class aligment for abstraction.
+//endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	define GD_ALIGN_MSVC(Alignment)										///< Dummy class aligment for abstraction.
+#	define GD_ALIGN_GCC(Alignment) __attribute__((aligned(Alignment)))	///< Class would be aligned in MSVS compatible notation.
+//endif	// if (defined(GD_COMPILER_GCC_COMPATIBLE))
+#endif	// *** Aligment specifications. ***
+
+// Noreturn...
+#if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#	define GD_NORETURN __declspec(noreturn)				///< Method would terminate the application.
+//endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	define GD_NORETURN __attribute__((noreturn))		///< Method would terminate the application.
+//endif	// if  (defined(GD_COMPILER_GCC_COMPATIBLE))
+#endif	// *** Noreturn specifications. ***
+
+// Deprecation...
+#if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#	define GD_DEPRECATED __declspec(deprecated)			///< Following definitions is declared deprecated.
+//endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	define GD_DEPRECATED __attribute__((deprecated))	///< Following definitions is declared deprecated.
+//endif // if (defined(GD_COMPILER_GCC_COMPATIBLE))
+#endif	// *** Deprecation specifications. ***
+
+// // For future expansion...
+// #if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+// //endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+// #elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+// //endif // if (defined(GD_COMPILER_GCC_COMPATIBLE))
+// #endif	// *** Future expansion specifications. ***
+
+/// ------------------------------------------------------------------------------------------
+/// Compiler setup.
+/// ------------------------------------------------------------------------------------------
+
+// __FUNCTION__ in GCC.
+#if (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#		define __FUNCTION__ __func__
+#	endif	// if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#endif	// if (defined(GD_COMPILER_GCC_COMPATIBLE))
+
+#if defined(__cplusplus)
+	// Checking if C++ RTTI is disabled...
+#	if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#		if (defined(_CPP_RTTI))
+#			error "Standart C++ RTTI should be disabled in MSVC compiler."
+#		endif	// if (defined(_CPP_RTTI))
+//	endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#	elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#		if (defined(__GXX_RTTI))
+#			error "Standart C++ RTTI should be disabled in GCC compiler."
+#		endif	// if (defined(__GXX_RTTI))
+//	endif // if (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	endif	// *** C++ RTTI check. ***
+
+	// And exceptions are enabled.
+#	if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#		if (!(defined(_CPPUNWIND)))
+#			error "Excpetions should be enabled in MSVC compiler."
+#		endif	// if (!(defined(_CPPUNWIND)))
+//	endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#	elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#		if (!(defined(__EXCEPTIONS)))
+#			error "Excpetions should be enabled in GCC compiler."
+#		endif	// if (!(defined(__EXCEPTIONS)))
+//	endif // if (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	endif	// *** C++ exceptions check. ***
+#endif	// if defined(__cplusplus)
+
+/// ------------------------------------------------------------------------------------------
+/// Target configuration.
+/// ------------------------------------------------------------------------------------------
+
+#if (defined(GD_COMPILER_MSVC_COMPATIBLE))
 #	if (defined(_DEBUG))
-#		define GD_DEBUG 1
-#	endif	// if defined(_DEBUG)
-//	Bit depth of processor.
-#	if (defined(_M_AMD64))
-#		define GD_PLATFORM_64BIT (GD_PLATFORM_ARCH)
-#	else	// if (defined(_M_AMD64))
-#		define GD_PLATFORM_32BIT (GD_PLATFORM_ARCH)
-#	endif	// if (defined(_M_AMD64))
-//endif	// #if (defined(_WIN32))
+#		define GD_DEBUG		(1)							///< Building a debuggable version of the engine.
+//	endif	// if (defined(_DEBUG))
+#	elif (defined(NDEBUG))
+#		define GD_RELEASE	(1)							///< Building an optimized version of the engine.
+//	endif	// if (defined(NDEBUG))
+#	else	// *** MSVC Debug specifications. ***
+#		error "Unable to determine MSVC build configuration."
+#	endif	// *** MSVC Debug specifications. ***
+//endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	if (defined(__OPTIMIZE__))
+#		define GD_RELEASE	(1)							///< Building an optimized version of the engine.
+#	else	// if (defined(__OPTIMIZE__))
+#		define GD_DEBUG		(1)							///< Building a debuggable version of the engine.
+#	endif	// if (defined(__OPTIMIZE__))
+//endif // if (defined(GD_COMPILER_GCC_COMPATIBLE))
+#endif	// *** Deprecation specifications. ***
 
-#elif defined(__APPLE__)
-#	include "TargetConditionals.h"
-#	  if (defined(__APPLE__) && defined(TARGET_OS_MAC))
-#		define GD_PLATFORM_ARCH			("x86")
-#		define GD_PLATFORM_NAME			("OS X")
-#		define GD_PLATFORM_OSX			(GD_PLATFORM_NAME)
-#		define GD_PLATFORM_DESKTOP		(GD_PLATFORM_OSX)
-//	elif	// if (defined(__APPLE__) && defined(TARGET_OS_MAC))
-#	elif (defined(__APPLE__) && (defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR)))
-#		define GD_PLATFORM_ARCH			("x86")
-#		define GD_PLATFORM_NAME			("iOS")
-#		define GD_PLATFORM_IOS			(GD_PLATFORM_NAME)
-#		define GD_PLATFORM_MOBILE		(GD_PLATFORM_IOS)
-//	elif	// elif (defined(__APPLE__) && (defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR)))
-#	elif (defined(__APPLE__) && (defined(TARGET_OS_IPHONE) defined(TARGET_OS_IPAD)))
-#		define GD_PLATFORM_ARCH			("ARM")
-#		define GD_PLATFORM_NAME			("iOS")
-#		define GD_PLATFORM_IOS			(GD_PLATFORM_NAME)
-#		define GD_PLATFORM_MOBILE		(GD_PLATFORM_IOS)
-//	elif	// elif (defined(__APPLE__) && (defined(TARGET_OS_IPHONE) || defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_OS_IPAD) || defined(TARGET_IPHONE_SIMULATOR)))
-#	else	// elif (defined(__APPLE__) && (defined(TARGET_***) ... ))
-#		error 'Unsupported Apple device!'
-#	endif
-#	if (defined(__LP64__))
-#		define GD_PLATFORM_64BIT		GD_PLATFORM_ARCH
-#	else	// if (defined(__LP64__))
-#		define GD_PLATFORM_32BIT		GD_PLATFORM_ARCH
-#	endif	// if (defined(__LP64__))
-#elif defined(GD_DOCUMENTATION)
-#	define GD_PLATFORM_DESKTOP	GD_DOCUMENTATION
-#	define GD_PLATFORM_MOBILE	GD_DOCUMENTATION
-#	define GD_PLATFORM_CONSOLE	GD_DOCUMENTATION
-#else
-#	error 'Unsupported platform''
-#endif
+#if (!(0 \
+	^ defined(GD_DEBUG) \
+	^ defined(GD_RELEASE)))
+#	error "Failed to determine target configuration."
+#endif	// *** Debug & Release confirations XORed. ***
 
-#if defined(GD_PLATFORM_32BIT)
-#	pragma warning("Deprecated 32-bit build")
-#endif
+/// ==========================================================================================
+/// Engine namepaces.
+/// ==========================================================================================
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-/// Export specifications
-#if (defined(_MSC_VER))
-#	define GD_COMPILER_MSC
-#	if(!defined(_CRT_SECURE_NO_WARNINGS))
-#		define _CRT_SECURE_NO_WARNINGS
-#	endif
-#	define GD_WARNING_SUPPRESS(Warning) __pragma(warning(suppress: Warning))
-#	define GD_GCC_ALIGN(Alignment)	
-#	define GD_MSC_ALIGN(Alignment)	__declspec(align(Alignment))
-#	define GD_DEPRECATED			__declspec(deprecated)
-#	define GDINT					__declspec(/*No export needed*/)
-#	define GDEXP					__declspec(dllexport)
-#	define GDIMP					__declspec(dllimport)
-#	define GDINL					__forceinline
-#	if (defined(_WINDLL) && !defined(GD_DLL_IMPORT))
-#		define GDAPI GDEXP
-#	else
-#		define GDAPI GDIMP
-#	endif
-#else // Assuming this is GCC-Compatible compiler
-#	include <stdint.h>
-#	include <stddef.h>
-#	define GD_COMPILER_GCC
-#	define GD_WARNING_SUPPRESS(Warning)
-#	define GD_ALIGN(Alignment)	__attribute__((aligned(Alignment)))
-#	define GD_DEPRECATED		__attribute__((deprecated))
-#	define GDINL				__attribute__((always_inline)) inline
-#	define GDINT				__attribute__(())
-#	define GDEXP				__attribute__((visibility("default")))
-#	define GDIMP				/*No export needed*/
-#	define GDAPI				/*No export needed*/
-#endif
+#if defined(__cplusplus)
+/// Redefine this to move entire engine code to custom namespace.
+#	define GD_NAMESPACE Goddamn
+#	if (defined(GD_NAMESPACE))
+#		define GD_NAMESPACE_BEGIN namespace GD_NAMESPACE {		///< Declaration of the namespace where entire API is located.
+#		define GD_NAMESPACE_END   }	// namespace GD_NAMESPACE  	///< End of main namespace delcaration.
+#		define GD				  ::GD_NAMESPACE::
+#		define GD_USING_NAMESPACE using namespace ::GD_NAMESPACE
+#	else	// if (defined(GD_NAMESPACE))
+#		define GD_NAMESPACE_BEGIN								///< Dummy for namespace begin.
+#		define GD_NAMESPACE_END									///< Dummy for namespace end.
+#		define GD ::
+#		define GD_USING_NAMESPACE
+#	endif	// if (defined(GD_NAMESPACE))
+#endif	// if defined(__cplusplus)
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-/// Code re-usage
+/// ==========================================================================================
+/// Most common definitions.
+/// ==========================================================================================
+
+#include <cstddef>
+#include <cstdint>
+
+/// ------------------------------------------------------------------------------------------
+/// C++ syntax "improvements" & useful macros.
+/// ------------------------------------------------------------------------------------------
+
+#define GD_MONOLITHIC_ENGINE
+
 #define abstract		= 0
 #define impl_abstract	abstract
-#define throws			throw
-#define throws_nothing	throws()
 #define self			this
+#define object_cast		static_cast
 #define Min(a, b)		(((a) < (b)) ? (a) : (b)) 
 #define Max(a, b)		(((a) > (b)) ? (a) : (b)) 
 #define GD_UNUSED(Argument) ((void) Argument)
 
-#if (defined(_CPP_RTTI) && defined(GD_DEBUG))
-#	define object_cast dynamic_cast
-#else
-#	define object_cast static_cast
-#endif
-
-/// @todo Check CPU endianity here
-#define GD_BIT(Bit) (TypeTraits::RemoveAllModifiers<decltype((Bit))>::Type(1) << (Bit))
-#define GD_MONOLITHIC_ENGINE
-
 #if defined(__cplusplus)
-#	define GD_PLATFORM_HAS_MOVE_SUPPORT		(true)
-#	define GD_NAMESPACE						Goddamn 
-#	if(defined(GD_NAMESPACE))
-#		define GD_NAMESPACE_BEGIN				namespace GD_NAMESPACE { 
-#		define GD_NAMESPACE_END					} // namespace GD_NAMESPACE { 
-#		define GD								::GD_NAMESPACE::
-#	else	// if(defined(GD_NAMESPACE))
-#		define GD_NAMESPACE_BEGIN
-#		define GD_NAMESPACE_END
-#		define GD
-#	endif	// if(defined(GD_NAMESPACE))
-#	define GD_ARRAY_SIZE(Array)				(sizeof(ArraySizeHelper(Array))) //	Using safe macro for array length
-#else
-#	define GD_NAMESPACE 
-#	define GD_NAMESPACE_BEGIN					
-#	define GD_NAMESPACE_END					
-#	define GD 
-#	define GD_ARRAY_SIZE(Array)				(sizeof(Array) / sizeof(Array[0]))
-#endif
-
-#if defined(__cplusplus)
-#	define GD_CLASS_UNASSIGNABLE(Class)		private: GDINT Class& operator= (Class const&)  = delete; \
-											private: GDINT Class& operator= (Class     &&)  = delete;
+#	define GD_BIT(Bit)		(TypeTraits::RemoveAllModifiers<decltype((Bit))>::Type(1) << (Bit))
+#	define GD_CLASS_UNASSIGNABLE(Class)		private: GDINT Class& operator= (Class const&) = delete; \
+											private: GDINT Class& operator= (Class     &&) = delete;
 #	define GD_CLASS_UNSWAPPABLE(Class)		///@todo: GCC does not compiles this: private: GDINT friend void Swap(Class&, Class&) = delete;
 #	define GD_CLASS_UNCOPIABLE(Class)		private: GDINT Class(Class const&) = delete;
 #	define GD_CLASS_UNMOVABLE(Class)		private: GDINT Class(Class     &&) = delete;
+#endif	// if defined(__cplusplus)
+
+/// ------------------------------------------------------------------------------------------
+/// Array size.
+/// ------------------------------------------------------------------------------------------
+
+#if defined(__cplusplus)
 GD_NAMESPACE_BEGIN
-
 	template <typename Type, size_t const Count>
-	char (&ArraySizeHelper(Type (&Array)[Count]))[Count];
+	GDINT char (&ArraySizeHelper(Type (&Array)[Count]))[Count];
+GD_NAMESPACE_END
+#	define GD_ARRAY_SIZE(Array) (sizeof(ArraySizeHelper(Array)))				///< Using safe macro for array length.
+#else	// if defined(__cplusplus)
+#	if (defined(GD_DEBUG))
+		GDINL static size_t gd_array_size_failure() { GD_DEBUG_ASSERT_FALSE("Non-array was passed to 'GD_ARRAY_SIZE' macro."); }
+		/// Using safe macro for array length.
+#		define GD_ARRAY_SIZE(Array) ((sizeof(Array) != sizeof(&Array[0])) ? (sizeof(Array) / sizeof(*Array)) : (SIZE_MAX + (0 & gd_array_size_failure())))
+#	else	// if (defined(GD_DEBUG))
+#		define GD_ARRAY_SIZE(Array) (sizeof(Array) / sizeof(Array[0]))			///< Using UNSAFE macro for array length in C relaese code.
+#	endif	// if (defined(GD_DEBUG))
+#endif	// if defined(__cplusplus)
 
-#if ((defined(GD_PLATFORM_WINDOWS) || defined(GD_PLATFORM_XBOX_ONE) || defined(GD_PLATFORM_WINPHONE8)))
-	typedef   signed __int8	  Int8;  static_assert((sizeof(Int8 ) == 1), "Invalid atomic type size");
-	typedef   signed __int16  Int16; static_assert((sizeof(Int16) == 2), "Invalid atomic type size");
-	typedef   signed __int32  Int32; static_assert((sizeof(Int32) == 4), "Invalid atomic type size");
-	typedef   signed __int64  Int64; static_assert((sizeof(Int64) == 8), "Invalid atomic type size");
+/// ------------------------------------------------------------------------------------------
+/// Basic types.
+/// ------------------------------------------------------------------------------------------
 
-	typedef unsigned __int8  UInt8;  static_assert((sizeof(UInt8 ) == 1), "Invalid atomic type size");
-	typedef unsigned __int16 UInt16; static_assert((sizeof(UInt16) == 2), "Invalid atomic type size");
-	typedef unsigned __int32 UInt32; static_assert((sizeof(UInt32) == 4), "Invalid atomic type size");
-	typedef unsigned __int64 UInt64; static_assert((sizeof(UInt64) == 8), "Invalid atomic type size");
-#else
-	typedef  int8_t   Int8;  static_assert((sizeof(Int8 ) == 1), "Invalid atomic type size");
-	typedef  int16_t  Int16; static_assert((sizeof(Int16) == 2), "Invalid atomic type size");
-	typedef  int32_t  Int32; static_assert((sizeof(Int32) == 4), "Invalid atomic type size");
-	typedef  int64_t  Int64; static_assert((sizeof(Int64) == 8), "Invalid atomic type size");
+#if defined(__cplusplus)
+GD_NAMESPACE_BEGIN
+	typedef std::uint8_t UInt8;
+	typedef std:: int8_t  Int8;
+	static_assert((sizeof(UInt8) == sizeof(Int8)) && (sizeof(UInt8) == 1), "Error in 8-bit integer sizes");
 
-	typedef uint8_t  UInt8;  static_assert((sizeof(UInt8 ) == 1), "Invalid atomic type size");
-	typedef uint16_t UInt16; static_assert((sizeof(UInt16) == 2), "Invalid atomic type size");
-	typedef uint32_t UInt32; static_assert((sizeof(UInt32) == 4), "Invalid atomic type size");
-	typedef uint64_t UInt64; static_assert((sizeof(UInt64) == 8), "Invalid atomic type size");
-#endif
+	typedef std::uint16_t UInt16;
+	typedef std:: int16_t  Int16;
+	static_assert((sizeof(UInt16) == sizeof(Int16)) && (sizeof(UInt16) == 2), "Error in 16-bit integer sizes");
 
-	typedef Int8   Float8[1];  static_assert((sizeof(Float8 ) == 1), "Invalid atomic type size"); ///@todo Add  8-bit floating point class type
-	typedef Int8   Float16[2]; static_assert((sizeof(Float16) == 2), "Invalid atomic type size"); ///@todo Add 16-bit floating point class type
-	typedef float  Float32;    static_assert((sizeof(Float32) == 4), "Invalid atomic type size");
-	typedef double Float64;    static_assert((sizeof(Float64) == 8), "Invalid atomic type size");
+	typedef std::uint32_t UInt32;
+	typedef std:: int32_t  Int32;
+	static_assert((sizeof(UInt32) == sizeof(Int32)) && (sizeof(UInt32) == 4), "Error in 32-bit integer sizes");
 
-	typedef char const*	Str;
-	typedef void const*	chandle; 
-	typedef void	  *	handle; 
+	// In JavaScript we do not have any 64-bit integer types. 
+#if (!defined(GD_ARCHITECTURE_ASMJS))
+	typedef std::uint64_t UInt64;
+	typedef std:: int64_t  Int64;
+	static_assert((sizeof(UInt64) == sizeof(Int64)) && (sizeof(UInt64) == 8), "Error in 64-bit integer sizes");
+#endif	// if (!defined(GD_ARCHITECTURE_ASMJS))
 
-	/*GD_DEPRECATED*/ typedef UInt32 uint;		///@todo Define this ones as deprecated
-	/*GD_DEPRECATED*/ typedef UInt16 ushort;
-	/*GD_DEPRECATED*/ typedef UInt64 ulong;
-	/*GD_DEPRECATED*/ typedef UInt8  byte;
+	typedef UInt8 Float8[1];
+	typedef UInt8 Float16[2];
+
+	typedef float Float32;
+	static_assert(sizeof(Float32) == 4, "Error in 32-bit float sizes");
+
+	typedef double Float64;
+	static_assert(sizeof(Float64) == 8, "Error in 64-bit float sizes");
+
+	typedef char const* Str;
+	typedef void const* chandle;
+	typedef void      *  handle;
 
 GD_NAMESPACE_END
+#	include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
+#	include <GoddamnEngine/Core/Allocator/Allocator.h>
+#endif	// if defined(__cplusplus)
 
-#include <GoddamnEngine/Core/Allocator/Allocator.h>
-
-#define _USE_MATH_DEFINES
 #include <cmath>
 #define SquareRoot (::sqrt)
 
@@ -264,6 +610,4 @@ GD_NAMESPACE_END
 #define Error			Log
 //////////////////////////////////////////////////////////////////////////
 
-#endif
-
-#endif
+#endif	// ifndef ___GODDAMN_ENGINE_INCLUDE___

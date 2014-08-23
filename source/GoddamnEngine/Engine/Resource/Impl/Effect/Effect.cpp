@@ -61,7 +61,7 @@ GD_NAMESPACE_BEGIN
 			else if (ShaderTypeStr == "GD_HRI_SHADER_TYPE_FRAGMENT")
 				HRInterface::GetInstance().CreatePixelShader(CtorInfo);
 #endif	// if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
-			else GD_ASSERT_FALSE("Invalid shader type.");
+			else GD_DEBUG_ASSERT_FALSE("Invalid shader type.");
 		}
 
 		mxmlDelete(shaderProgramDescXml);

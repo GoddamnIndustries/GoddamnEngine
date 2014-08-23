@@ -405,7 +405,6 @@ GD_NAMESPACE_BEGIN
 		
 		// Parsing current character
 		// self->CurrentState cannot be greater equal to unknown state
-		GD_WARNING_SUPPRESS(6385);
 		(self->*(LexemStatesDescTable[size_t(self->CurrentState)].SpecialProcessorPtr))();
 		if (self->RewindedCharacter == CharAnsi('\0'))
 			self->CurrentLexem->RawData += self->CurrentCharacter;

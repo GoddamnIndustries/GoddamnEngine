@@ -121,7 +121,7 @@ GD_NAMESPACE_BEGIN
 		public:
 			template<typename FieldSignatureType>
 			GDINL FieldInformationWriteble(FieldSignatureType const FieldPtr) : FieldInformationReadable<FieldValueType const*>(FieldPtr) { }
-            GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final { GD_ASSERT_FALSE("Attempt to write value to read only field"); }
+            GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final { GD_DEBUG_ASSERT_FALSE("Attempt to write value to read only field"); }
 			GDINL virtual bool IsReadOnly() const final { return true; }
 		};	// class FieldInformationWriteble<FieldValueType const*>
 
@@ -147,7 +147,7 @@ GD_NAMESPACE_BEGIN
 		public:
 			template<typename FieldSignatureType>
 			GDINL FieldInformationWriteble(FieldSignatureType const FieldPtr) : FieldInformationReadable<FieldValueType const FieldOwnerClass::*>(FieldPtr) { }
-            GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final { GD_ASSERT_FALSE("Attempt to write value to read only field"); }
+            GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final { GD_DEBUG_ASSERT_FALSE("Attempt to write value to read only field"); }
 			GDINL virtual bool IsReadOnly() const final { return true; }
 		};	// class FieldInformationWriteble<FieldValueType const FieldValueType::*>
 	}	// namespace FieldInformationPrivate

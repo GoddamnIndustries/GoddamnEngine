@@ -17,14 +17,14 @@ GD_NAMESPACE_BEGIN
 			String const DLLExtention = FileName.GetSubstring(DLLPathExtentionIndex + 1);
 			if (DLLExtention.ToUpper() == "DLL") {
 				// Disabling errors for DLL opening when system throws message box
-#if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSC))
+#if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSVC))
 				UINT const DefaultErrorMode = GetErrorMode();
 				SetErrorMode(SEM_FAILCRITICALERRORS);
 				self->NativePointer = (reinterpret_cast<handle>(::LoadLibraryA(&FileName[0])));
 				SetErrorMode(DefaultErrorMode);
-#else	// if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSC))
+#else	// if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSVC))
 				self->NativePointer = (reinterpret_cast<handle>(::LoadLibraryA(&FileName[0])));
-#endif	// if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSC))
+#endif	// if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSVC))
 			}
 		}
 	}

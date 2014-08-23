@@ -304,7 +304,7 @@ GD_NAMESPACE_BEGIN
 					self->ClippingPlanes.ZNear, self->ClippingPlanes.ZFar
 				);
 			}	break;
-		default: GD_ASSERT_FALSE("Invalid projection mode specified"); break;
+		default: GD_DEBUG_ASSERT_FALSE("Invalid projection mode specified"); break;
 		}
 	}
 

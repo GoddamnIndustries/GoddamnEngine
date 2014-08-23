@@ -222,11 +222,11 @@ GD_NAMESPACE_BEGIN
 						self->InlinedData.Resize(DataTextSize);
 						memcpy(self->InlinedData.GetPointer(), DataText, DataTextSize * sizeof(Char));
 					} else 
-						GD_ASSERT_FALSE("URI parsing failed: parsing inlined data failed: unknown data type");
+						GD_DEBUG_ASSERT_FALSE("URI parsing failed: parsing inlined data failed: unknown data type");
 				}	break;
 
 			default: {
-					GD_ASSERT_FALSE("URI parsing failed: unknown protocol");
+					GD_DEBUG_ASSERT_FALSE("URI parsing failed: unknown protocol");
 				}	break;
 		}
 	}
@@ -246,11 +246,9 @@ GD_NAMESPACE_BEGIN
 				return UniquePtr<InputStream>(new StringInputStream(self->InlinedData));
 
 		default:
-			GD_ASSERT_FALSE("URI parsing failed: unknown protocol");
+			GD_DEBUG_ASSERT_FALSE("URI parsing failed: unknown protocol");
 			break;
 		}
-
-		return UniquePtr<InputStream>(nullptr);
 	}
 
 GD_NAMESPACE_END

@@ -108,14 +108,14 @@
 		)
 
 // WinAPI has macros for everything..
-#if (defined(GD_PLATFORM_WINAPI))
+#if (defined(GD_PLATFORM_API_WINAPI))
 #	pragma push_macro("MemoryBarrier")
 #	undef MemoryBarrier
 #	pragma push_macro("near")
 #	undef near
 #	pragma push_macro("far")
 #	undef far
-#endif	// if (defined(GD_PLATFORM_WINAPI))
+#endif	// if (defined(GD_PLATFORM_API_WINAPI))
 
 /// ==========================================================================================
 /// OpenGL <-> Functionality
@@ -8973,11 +8973,11 @@ GD_DEFINE_OGL_METHOD_8(
 	)
 #endif	// if (defined(GD_HRI_OGL_ES))
 
-#if (defined(GD_PLATFORM_WINAPI))
+#if (defined(GD_PLATFORM_API_WINAPI))
 #	pragma pop_macro("MemoryBarrier")
 #	pragma pop_macro("near")
 #	pragma pop_macro("far")
-#endif	// if (defined(GD_PLATFORM_WINAPI))
+#endif	// if (defined(GD_PLATFORM_API_WINAPI))
 
 #undef GD_DEFINE_OGL_METHOD
 #undef GD_DEFINE_OGL_METHOD_0

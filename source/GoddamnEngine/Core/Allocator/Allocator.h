@@ -14,9 +14,11 @@
 #include <GoddamnEngine/Core/TypeTraits.h>
 #include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
 
+#include <crtdbg.h>
+
 GD_NAMESPACE_BEGIN
 
-	/// Wrapper around default allocator with support of non-POD types
+	/// Wrapper around default allocator.
 	class Allocator final
 	{
 	private:
@@ -42,24 +44,24 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-GDINL void* operator new(size_t const size)
+GDINL void* operator new(size_t const Size)
 {
-	return GD Allocator::AllocateMemory(size);
+	return GD Allocator::AllocateMemory(Size);
 }
 
-GDINL void  operator delete(void* const pointer)
+GDINL void  operator delete(void* const Pointer)
 {
-	GD Allocator::DeallocateMemory(pointer);
+	GD Allocator::DeallocateMemory(Pointer);
 }
 
-GDINL void* operator new[](size_t const size)
+GDINL void* operator new[](size_t const Size)
 {
-	return GD Allocator::AllocateMemory(size);
+	return GD Allocator::AllocateMemory(Size);
 }
 
-GDINL void  operator delete[](void* const pointer)
+GDINL void  operator delete[](void* const Pointer)
 {
-	GD Allocator::DeallocateMemory(pointer);
+	GD Allocator::DeallocateMemory(Pointer);
 }
 
 // #include <GoddamnEngine/Core/Allocator/Allocator.inl>

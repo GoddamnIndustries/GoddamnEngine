@@ -11,6 +11,10 @@
 #	pragma warning(push, 0)
 #endif	// if (defined(_MSC_VER))
 
+/// ==========================================================================================
+/// ~~~ ~~~ ~~~ ~~~ ~~~ START OF EXTERNAL SUPER-STATICALLY-INLINED CODE ~~~ ~~~ ~~~ ~~~ ~~~
+/// ==========================================================================================
+
 //
 //Copyright (C) 2002-2005 3Dlabs Inc. Ltd.
 //Copyright (C) 2012-2013 LunarG, Inc.
@@ -47,9 +51,9 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-/// ~~~~~~~~~~~~~~~
-/// CodeGen.cpp
-/// ~~~~~~~~~~~~~~~
+/// ==========================================================================================
+/// ~~~ ~~~ ~~~ ~~~ ~~~ SUPER-STATICALLY-INLINED SOURCE "CodeGen.cpp" ~~~ ~~~ ~~~ ~~~ ~~~ ~~~
+/// ==========================================================================================
 
 #include <Include/Common.h>
 #include <Include/ShHandle.h>
@@ -91,9 +95,9 @@ bool TGenericCompiler::compile(TIntermNode *root, int version, EProfile profile)
 	return haveValidObjectCode;
 }
 
-/// ~~~~~~~~~~~~~~~
-/// Link.cpp
-/// ~~~~~~~~~~~~~~~
+/// ==========================================================================================
+/// ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ SUPER-STATICALLY-INLINED SOURCE "Link.cpp" ~~~ ~~~ ~~~ ~~~ ~~~ ~~~
+/// ==========================================================================================
 
 #include <Include/Common.h>
 #include <Include/ShHandle.h>
@@ -148,6 +152,10 @@ void DeleteBindingList(TShHandleBase* bindingList)
 {
 	delete bindingList;
 }
+
+/// ==========================================================================================
+/// ~~~ ~~~ ~~~ ~~~ ~~~ END OF EXTERNAL SUPER-STATICALLY-INLINED CODE ~~~ ~~~ ~~~ ~~~ ~~~ ~~~
+/// ==========================================================================================
 
 #if (defined(_MSC_VER))
 #	pragma warning(pop)

@@ -140,7 +140,7 @@ GD_NAMESPACE_BEGIN
 
 #if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
 	template<>
-	struct GD_MSC_ALIGN(16) Quaternion_t<Float32> final
+	struct GD_ALIGN_MSVC(16) Quaternion_t<Float32> final
 	{
 		union {
 			Float32x4Intrinsics::VectorRegisterType ElementsVector;
@@ -257,7 +257,7 @@ GD_NAMESPACE_BEGIN
 			self->ElementsVector = Other.ElementsVector;
 			return (*self);
 		}
-	} GD_GCC_ALIGN(16);	// Quaternion_t<Float32>
+	} GD_ALIGN_GCC(16);	// Quaternion_t<Float32>
 #endif	// if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
 
 	typedef Quaternion_t<float> Quaternion;

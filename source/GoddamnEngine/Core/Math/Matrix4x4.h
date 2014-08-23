@@ -558,7 +558,7 @@ GD_NAMESPACE_BEGIN
 
 #if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
 	template<>
-	struct GD_MSC_ALIGN(16) Matrix4x4t<Float32>
+	struct GD_ALIGN_MSVC(16) Matrix4x4t<Float32>
 	{
 		enum : size_t { ThisRowsCount = 4, ThisColumnsCount = 4 };
 		union {
@@ -1121,7 +1121,7 @@ GD_NAMESPACE_BEGIN
 		{
 			return const_cast<Matrix4x4t*>(self)->operator[](Index);
 		}
-	} GD_GCC_ALIGN(16);	// struct Matrix4x4t
+	} GD_ALIGN_GCC(16);	// struct Matrix4x4t
 #endif	// if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
 
 	typedef Matrix4x4t<Float32> Float32x4x4;

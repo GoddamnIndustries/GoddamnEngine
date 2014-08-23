@@ -10,6 +10,8 @@
 
 GD_NAMESPACE_BEGIN
 
+	typedef UInt16 ushort;
+
 	class HRIBuffer;
 	class HRIIndexedShape;
 

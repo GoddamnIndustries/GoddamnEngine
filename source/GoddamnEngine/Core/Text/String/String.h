@@ -16,6 +16,12 @@
 #include <GoddamnEngine/Core/Containers/Vector/Vector.h>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
+#include <cstring>
+#include <cwctype>
+#include <cstdarg>
+#include <cwchar>
+#include <cctype>
+
 #pragma push_macro("GDINL")
 #undef  GDINL
 #define GDINL inline
@@ -61,11 +67,11 @@ GD_NAMESPACE_BEGIN
 	};	// struct CharTraits<CharAnsi>
 
 	/// Unicode Character.
-#if defined(GD_COMPILER_MSC)
+#if defined(GD_COMPILER_MSVC)
 	typedef wchar_t CharUtf16;
-#else	// if defined(GD_COMPILER_MSC)
+#else	// if defined(GD_COMPILER_MSVC)
 	typedef char16_t CharUtf16;
-#endif	// if defined(GD_COMPILER_MSC)
+#endif	// if defined(GD_COMPILER_MSVC)
 	template<>
 	struct CharTraits<CharUtf16> final
 	{
@@ -426,8 +432,7 @@ GD_NAMESPACE_BEGIN
 				if ((Result1 > 0) && (Result1 < GD_ARRAY_SIZE(Buffer2048))) {
 					return String(&Buffer2048[0]);
 				} else {
-					GD_ASSERT_FALSE("String formatting failed due buffers error.");
-					return String();
+					GD_DEBUG_ASSERT_FALSE("String formatting failed due buffers error.");
 				}
 			}
 		}
