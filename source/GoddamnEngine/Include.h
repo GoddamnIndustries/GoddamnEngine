@@ -404,6 +404,15 @@
 //endif // if (defined(GD_COMPILER_GCC_COMPATIBLE))
 #endif	// *** Deprecation specifications. ***
 
+// Printf-like functions...
+#if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#	define GD_PRINTF_LIKE(StringIndex, FirstToCheck)	///< Following functions smells like printf. Does some real static analyzis on GCC-compatible compilers.
+//endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	define GD_PRINTF_LIKE(StringIndex, FirstToCheck) __attribute__((format (printf, StringIndex, FirstToCheck)))	///< Following functions smells like printf. Does some real static analyzis on GCC-compatible compilers.
+//endif // if (defined(GD_COMPILER_GCC_COMPATIBLE))
+#endif	// *** Printf-like functions. ***
+
 // // For future expansion...
 // #if (defined(GD_COMPILER_MSVC_COMPATIBLE))
 // //endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))

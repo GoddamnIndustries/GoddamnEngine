@@ -17,6 +17,7 @@
 
 #include <cstdlib>
 #include <cstdarg>
+#include <cassert>
 
 /// ------------------------------------------------------------------------------------------
 /// Cross-platform debug break.
@@ -143,11 +144,11 @@ GD_NAMESPACE_BEGIN
 	/// Describes abilities that user can do with the failures.
 	enum class AssertionState : UInt8
 	{
-		Retry,
-		Break,
 		Abort,
+		Retry,
 		Ignore,
 		AlwaysIgnore,
+		Break,
 	};	// enum class AssertionState
 
 	/// Provides inner functionality for hanling regular assertions.
@@ -220,8 +221,9 @@ GD_NAMESPACE_END
 /// Redefining standart C assertion.
 /// ------------------------------------------------------------------------------------------
 
-#include <cassert>
-#undef assert
-#define assert(Expression) GD_DEBUG_ASSERT(Expression, "*** STD-C ASSERT MACRO ***")
+#if (!defined(GD_CORE_DIAGNOSTICS_ASSERTION_CPP))
+#	undef assert
+#	define assert(Expression) GD_DEBUG_ASSERT(Expression, "*** STD-C ASSERT MACRO ***")
+#endif	// if (!defined(GD_CORE_DIAGNOSTICS_ASSERTION_CPP))
 
 #endif	// ifndef GD_CORE_DIAGNOSTICS_ASSERTION

@@ -22,7 +22,8 @@ GD_NAMESPACE_BEGIN
 
 	bool HROGLInterface::CreateContex()
 	{
-		GD_DEBUG_ASSERT(false, "");
+		GD_DEBUG_ASSERT_FALSE("");
+#if 0
 #define GD_DEFINE_OGL_METHOD(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) \
 		/**/self->Driver._##MethodName = reinterpret_cast<ReturnType (*)(ArgumentsDeclarations)>(GD_GL_GET_PROC_ADDRESS("gl"#MethodName)); \
 		if (self->Driver._##MethodName == nullptr) { \
@@ -125,6 +126,7 @@ GD_NAMESPACE_BEGIN
 		GL.ClearDepth(1.0f);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to Clear depth to 1.0f");
 		return true;
+#endif	// if 0
 	}
 
 	bool HROGLInterface::DestroyContext()
