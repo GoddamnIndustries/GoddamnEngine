@@ -147,8 +147,10 @@ GD_NAMESPACE_BEGIN
 		Abort,
 		Retry,
 		Ignore,
-		AlwaysIgnore,
+		IgnoreAll,
+		Report,
 		Break,
+		Invalid
 	};	// enum class AssertionState
 
 	/// Provides inner functionality for hanling regular assertions.
@@ -172,15 +174,18 @@ GD_NAMESPACE_END
 /// and testers can provide feedback for developers. Level 2 is for developers and creating new 
 /// code and catching fatal bugs and debug it.
 
+#define GD_ASSERTION_LEVEL_DEBUG	(2)
+#define GD_ASSERTION_LEVEL_TESTING	(1)
+#define GD_ASSERTION_LEVEL_RELEASE	(0)
 #if (!defined(GD_ASSERTION_LEVEL))
 #	if (defined(GD_DEBUG))
-#		define GD_ASSERTION_LEVEL (2)
+#		define GD_ASSERTION_LEVEL GD_ASSERTION_LEVEL_DEBUG
 //	endif	// if (defined(GD_DEBUG))
 #	elif (defined(GD_RELEASE))
-#		define GD_ASSERTION_LEVEL (0)
+#		define GD_ASSERTION_LEVEL GD_ASSERTION_LEVEL_TESTING
 //	endif	// if (defined(GD_RELEASE))
 #	else	// *** Assertion level selection ***.
-#		define GD_ASSERTION_LEVEL (1)
+#		define GD_ASSERTION_LEVEL GD_ASSERTION_LEVEL_RELEASE
 #	endif	// *** Assertion level selection ***.
 #endif	// if (!defined(GD_ASSERTION_LEVEL))
 
