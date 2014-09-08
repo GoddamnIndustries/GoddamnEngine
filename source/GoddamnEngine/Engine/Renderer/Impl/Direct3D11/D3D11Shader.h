@@ -45,8 +45,8 @@ GD_NAMESPACE_BEGIN
 		GDINT explicit HRID3D11ShaderParamLocationResources(HRIShaderInstance* const ShaderInstance, HRIShaderParamLocationDesc const* const LocationDesc);
 		GDINL virtual ~HRID3D11ShaderParamLocationResources(                                                                                             ) { }
 
-		GDINL HRIShaderResourceViewsVector const& GetShaderResourceViews() const { return self->ShaderResourceViews; }
-		GDINL HRIShaderSampleStatesVector  const& GetShaderSampleStates () const { return self->ShaderSampleStates; }
+		GDINL HRIShaderResourceViewsVector const& GetShaderResourceViews() const { return this->ShaderResourceViews; }
+		GDINL HRIShaderSampleStatesVector  const& GetShaderSampleStates () const { return this->ShaderSampleStates; }
 
 		GDINT virtual void UploadAllParameters() override final;
 	};	// class HRID3D11ShaderParamLocationResources

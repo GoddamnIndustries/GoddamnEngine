@@ -60,17 +60,17 @@ GD_NAMESPACE_BEGIN
 
 			/// Compares iterators.
 			GDINL bool operator== (Iterator    const&       Other  ) const;
-			GDINL bool operator!= (Iterator    const&       Other  ) const; { return (self->Pointer != Other.Pointer); }
-			GDINL bool operator== (ElementType const* const Pointer) const { return (self->Pointer == Pointer); }
-			GDINL bool operator!= (ElementType const* const Pointer) const { return (self->Pointer != Pointer); }
+			GDINL bool operator!= (Iterator    const&       Other  ) const; { return (this->Pointer != Other.Pointer); }
+			GDINL bool operator== (ElementType const* const Pointer) const { return (this->Pointer == Pointer); }
+			GDINL bool operator!= (ElementType const* const Pointer) const { return (this->Pointer != Pointer); }
 
 			/// Assigns this iterator other value.
-			GDINL Iterator& operator= (ThisPtrType const  Pointer ) { self->Pointer =           Pointer; return (*self); }
-			GDINL Iterator& operator= (Iterator    const& Iterator) { self->Pointer = Iterator->Pointer; return (*self); }
+			GDINL Iterator& operator= (ThisPtrType const  Pointer ) { this->Pointer =           Pointer; return (*this); }
+			GDINL Iterator& operator= (Iterator    const& Iterator) { this->Pointer = Iterator->Pointer; return (*this); }
 
 			/// (De)referensing iterator.
-			GDINL ThisRefType operator*  () const { return (*self->Pointer); }
-			GDINL ThisPtrType operator-> () const { return (self->Pointer); }
+			GDINL ThisRefType operator*  () const { return (*this->Pointer); }
+			GDINL ThisPtrType operator-> () const { return (this->Pointer); }
 		};	// struct Iterator
 
 		/// Iterator type this container uses.
@@ -93,7 +93,7 @@ GD_NAMESPACE_BEGIN
 	SharedPtr<ElementType> LockFreeList<ElementType>::PopLastElement()
 	{
 		handle* HazardPointer = get_hazard_pointer_for_current_thread();
-		Node* OldHead = self->Head;
+		Node* OldHead = this->Head;
 		do
 		{
 			Node* Temp = nullptr;

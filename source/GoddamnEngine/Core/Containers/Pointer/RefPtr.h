@@ -28,7 +28,7 @@ GD_NAMESPACE_BEGIN
 		GDINL RefPtr(ObjectType* const Pointer = nullptr)
 			: Pointer(Pointer)
 		{
-			SafeObtain(self->Pointer);
+			SafeObtain(this->Pointer);
 		}
 
 		/// Initializes smart pointer with other pointer.
@@ -36,7 +36,7 @@ GD_NAMESPACE_BEGIN
 		GDINL RefPtr(RefPtr const& Other)
 			: Pointer(Other.Pointer)
 		{
-			SafeObtain(self->Pointer);
+			SafeObtain(this->Pointer);
 		}
 
 		/// Moves other smart pointer to this new object.
@@ -49,79 +49,79 @@ GD_NAMESPACE_BEGIN
 
 		GDINL ~RefPtr()
 		{
-			SafeRelease(self->Pointer);
+			SafeRelease(this->Pointer);
 		}
 
 	public /*Class API*/:
 		/// Returns native pointer stored in this object.
 		GDINL ObjectType* GetPointer() const
 		{
-			return self->Pointer;
+			return this->Pointer;
 		}
 
 		/// Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
 		GDINL ObjectType* Release()
 		{
-			ObjectType* Pointer = self->Pointer;
-			self->Pointer = nullptr;
+			ObjectType* Pointer = this->Pointer;
+			this->Pointer = nullptr;
 			return Pointer;
 		}
 
 	public /*Operators*/:
-		GDINL ObjectType& operator*  () const { return  (*self->GetPointer()); }
-		GDINL ObjectType* operator-> () const { return  ( self->GetPointer()); }
+		GDINL ObjectType& operator*  () const { return  (*this->GetPointer()); }
+		GDINL ObjectType* operator-> () const { return  ( this->GetPointer()); }
 
-		GDINL bool operator== (       ObjectType  const* const OtherPointer) const { return (self->GetPointer() == OtherPointer); }
-		GDINL bool operator== (RefPtr<ObjectType> const&       OtherPointer) const { return (self->GetPointer() == OtherPointer.GetPointer()); }
+		GDINL bool operator== (       ObjectType  const* const OtherPointer) const { return (this->GetPointer() == OtherPointer); }
+		GDINL bool operator== (RefPtr<ObjectType> const&       OtherPointer) const { return (this->GetPointer() == OtherPointer.GetPointer()); }
 
-		GDINL bool operator!= (       ObjectType  const* const OtherPointer) const { return !(*self == OtherPointer); }
-		GDINL bool operator!= (RefPtr<ObjectType> const&       OtherPointer) const { return !(*self == OtherPointer); }
+		GDINL bool operator!= (       ObjectType  const* const OtherPointer) const { return !(*this == OtherPointer); }
+		GDINL bool operator!= (RefPtr<ObjectType> const&       OtherPointer) const { return !(*this == OtherPointer); }
 
 		GDINL RefPtr& operator= (RefPtr&& Other)
 		{
-			if ((&Other) != self)
+			if ((&Other) != this)
 			{
-				SafeRelease(self->Pointer);
-				self->Pointer = Other.Pointer;
+				SafeRelease(this->Pointer);
+				this->Pointer = Other.Pointer;
 				Other.Pointer = nullptr;
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 		GDINL RefPtr& operator= (RefPtr const& Other)
 		{
-			if ((&Other) != self)
+			if ((&Other) != this)
 			{
-				SafeRelease(self->Pointer);
-				SafeObtain(self->Pointer = Other.Pointer);
+				SafeRelease(this->Pointer);
+				SafeObtain(this->Pointer = Other.Pointer);
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 		GDINL RefPtr& operator= (ObjectType* const Other)
 		{
-			if (self->Pointer != Other)
+			if (this->Pointer != Other)
 			{
-				SafeRelease(self->Pointer);
-				SafeObtain(self->Pointer = Other);
+				SafeRelease(this->Pointer);
+				SafeObtain(this->Pointer = Other);
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 		template<typename OtherObjectType>
 		GDINL explicit operator RefPtr<OtherObjectType>() const
 		{
-			SafeObtain(self->Pointer);
-			return object_cast<OtherObjectType*>(self->GetPointer());
+			SafeObtain(this->Pointer);
+			return object_cast<OtherObjectType*>(this->GetPointer());
 		}
 
 		GDINL operator RefPtr<ObjectType const>() const
 		{
-			SafeObtain(self->Pointer);
-			return static_cast<ObjectType const*>(self->GetPointer());
+			SafeObtain(this->Pointer);
+			return static_cast<ObjectType const*>(this->GetPointer());
 		}
 
 	private:

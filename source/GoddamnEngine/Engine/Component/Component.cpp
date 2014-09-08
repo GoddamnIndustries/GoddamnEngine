@@ -22,7 +22,7 @@ GD_NAMESPACE_BEGIN
 
 	RefPtr<Component> GameObject::GetComponent(ITypeInformation const* const TypeInfo)
 	{
-		for (auto const AttachedComponent : IterateChildObjects<Component>(self)) {
+		for (auto const AttachedComponent : IterateChildObjects<Component>(this)) {
 			ITypeInformation const* const AttachedComponentTypeInfo = AttachedComponent->GetTypeInformation();
 			if (AttachedComponentTypeInfo->IsDerivedFrom(TypeInfo)) {
 				AttachedComponent->AddReference();
@@ -35,21 +35,21 @@ GD_NAMESPACE_BEGIN
 
 	RefPtr<Component> GameObject::AddComponent(ITypeInformation const* const TypeInfo)
 	{
-		RefPtr<Component> const FoundAttachedComponent(self->GetComponent(TypeInfo));
+		RefPtr<Component> const FoundAttachedComponent(this->GetComponent(TypeInfo));
 		if (FoundAttachedComponent != nullptr) {
 			return FoundAttachedComponent;
 		}
 		else {
 			GD_DEBUG_ASSERT(TypeInfo->VirtualConstructor != nullptr, "Failed to create a instance of a abstract class.");
 			RefPtr<Component> const CreatedComponent = object_cast<Component*>(TypeInfo->VirtualConstructor(nullptr, nullptr));
-			CreatedComponent->AttachToObject(self);
+			CreatedComponent->AttachToObject(this);
 			return CreatedComponent;
 		}
 	}
 
 	void GameObject::RemoveComponent(ITypeInformation const* const TypeInfo)
 	{
-		RefPtr<Component> const FoundAttachedComponent = self->GetComponent(TypeInfo);
+		RefPtr<Component> const FoundAttachedComponent = this->GetComponent(TypeInfo);
 		if (FoundAttachedComponent != nullptr) {
 			FoundAttachedComponent->DetachFromParentObject();
 		}

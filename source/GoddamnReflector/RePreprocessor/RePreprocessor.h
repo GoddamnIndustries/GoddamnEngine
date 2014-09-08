@@ -41,7 +41,7 @@ GD_NAMESPACE_BEGIN
 
 	public /*Class API*/:
 		GDINT ~CPPRePreprocessorDefinitions() { }
-		GDINL  CPPRePreprocessorDefinitions() : TopBlock(new Block()), CurrentBlock(self->TopBlock.GetPointer()) { }
+		GDINL  CPPRePreprocessorDefinitions() : TopBlock(new Block()), CurrentBlock(this->TopBlock.GetPointer()) { }
 
 		/// @name Preprocessor directoves parsing.
 		/// @{
@@ -65,9 +65,9 @@ GD_NAMESPACE_BEGIN
 		template<typename IterationPredicateType>
 		inline void ForEach(IterationPredicateType const& IterationPredicate) const
 		{
-			for (auto const Element : self->Elements)
+			for (auto const Element : this->Elements)
 				IterationPredicate(Element);
-			for (auto const InnerBlock : self->InnerBlocks)
+			for (auto const InnerBlock : this->InnerBlocks)
 				InnerBlocks->ForEach(IterationPredicate);
 		}
 
@@ -75,7 +75,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Definition Definition that would be appended.
 		GDINL void AppendElement(SharedPtr<CPPDefinition> const& Definition)
 		{
-			self->CurrentBlock->Elements.PushLast(Definition);
+			this->CurrentBlock->Elements.PushLast(Definition);
 		}
 
 		/// @}

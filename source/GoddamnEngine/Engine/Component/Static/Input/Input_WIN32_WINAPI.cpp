@@ -29,7 +29,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL virtual bool IsKeyInState(const KeyCode keyCode, const KeyState keyState) const
 		{
-			return (self->keyboardButtons[(size_t)keyCode] == keyState);
+			return (this->keyboardButtons[(size_t)keyCode] == keyState);
 		}
 
 		/// ==========================================================================================
@@ -38,17 +38,17 @@ GD_NAMESPACE_BEGIN
 
 		GDINL virtual bool IsMouseButtonInState(const MouseButton mouseButton, const KeyState keyState) const
 		{
-			return (self->mouseButtons[(size_t)mouseButton] == keyState);
+			return (this->mouseButtons[(size_t)mouseButton] == keyState);
 		}
 
 		GDINL virtual const Resolution& GetMousePosition() const
 		{
-			return self->mousePosition;
+			return this->mousePosition;
 		}
 
 		GDINL virtual float GetMouseWheelDeltaRotation() const
 		{
-			return self->mouseDeltaRotation;
+			return this->mouseDeltaRotation;
 		}
 
 		/// ==========================================================================================
@@ -78,8 +78,8 @@ GD_NAMESPACE_BEGIN
 
 	void Input_WIN32_WINAPI::OnInitializeSelf()
 	{
-		self->keyboardButtons.Resize(self->keyboardButtons.GetCapacity());
-		self->mouseButtons.Resize(self->mouseButtons.GetCapacity());
+		this->keyboardButtons.Resize(this->keyboardButtons.GetCapacity());
+		this->mouseButtons.Resize(this->mouseButtons.GetCapacity());
 
 		LowLevelSystem& lowLevelSystem = LowLevelSystem::GetInstance();
 
@@ -136,12 +136,12 @@ GD_NAMESPACE_BEGIN
 
 	void Input_WIN32_WINAPI::OnUpdateSelf()
 	{
-		for (size_t cnt = 0; cnt < self->upBindings.GetSize(); cnt += 1)
+		for (size_t cnt = 0; cnt < this->upBindings.GetSize(); cnt += 1)
 		{
-			*(self->upBindings[cnt]) = KeyState::None;
+			*(this->upBindings[cnt]) = KeyState::None;
 		}
 
-		self->upBindings.Emptify();
+		this->upBindings.Emptify();
 	}
 
 GD_NAMESPACE_END

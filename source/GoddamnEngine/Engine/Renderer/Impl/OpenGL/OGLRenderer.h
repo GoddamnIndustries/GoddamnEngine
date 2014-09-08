@@ -108,7 +108,8 @@ GD_NAMESPACE_BEGIN
 		
 		OpenGLDriver Driver;
 #if ((!defined(GD_HRI_OGL_ES)) && (defined(GD_PLATFORM_WINDOWS)))
-		HGLRC RenderingContext;
+		HDC DeviceContext = nullptr;
+		HGLRC RenderingContext = nullptr;
 #endif	// if ((!defined(GD_HRI_OGL_ES)) && (defined(GD_PLATFORM_WINDOWS)))
 
 #define GD_HRI_API  GDINT virtual

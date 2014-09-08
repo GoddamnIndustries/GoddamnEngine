@@ -3,22 +3,22 @@ GD_NAMESPACE_BEGIN
 
 	GDINL void Application::OnInitialize()
 	{
-		self->State = ApplicationState::Starting;
+		this->State = ApplicationState::Starting;
 	}
 
 	GDINL void Application::OnDestroy()
 	{
-		self->State = ApplicationState::Exiting;
+		this->State = ApplicationState::Exiting;
 	}
 
 	GDINL void Application::OnSuspend()
 	{
-		self->State = ApplicationState::Suspended;
+		this->State = ApplicationState::Suspended;
 	}
 
 	GDINL void Application::OnResumed()
 	{
-		self->State = ApplicationState::Running;
+		this->State = ApplicationState::Running;
 	}
 
 GD_NAMESPACE_END

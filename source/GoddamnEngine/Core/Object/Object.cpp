@@ -15,19 +15,19 @@ GD_NAMESPACE_BEGIN
 
 	Object::Object(ObjectTreeLockingFlags const TreeLockingFlags /* = SomeLongValue */, Object* const ParentObject /* = nullptr */) : TreeLockingFlags(TreeLockingFlags)
 	{	// If child object specified, attaching to it.
-		if (ParentObject != nullptr) self->AttachToObject(ParentObject);
+		if (ParentObject != nullptr) this->AttachToObject(ParentObject);
 	}
 
 	Object::~Object()
 	{
-		GD_DEBUG_ASSERT((self->ReferenceCount == 0),
+		GD_DEBUG_ASSERT((this->ReferenceCount == 0),
 			"Object destructor invoked but reference counter is not zero. "
 			"Please, do not delete objects yourself and use 'Object::RemoveReference()' method");
 
-		if (self->GetParentObject() != nullptr)
-			self->DetachFromParentObject(self->GetTreeLockingFlags() & (~TreeLockingFlagsDisableDetaching));
+		if (this->GetParentObject() != nullptr)
+			this->DetachFromParentObject(this->GetTreeLockingFlags() & (~TreeLockingFlagsDisableDetaching));
 
-		for (auto const ChildObject : IterateChildObjects<Object>(self))
+		for (auto const ChildObject : IterateChildObjects<Object>(this))
 		{
 			ChildObject->ParentObject          = nullptr;
 			ChildObject->NextSiblingObject     = nullptr;
@@ -43,18 +43,18 @@ GD_NAMESPACE_BEGIN
 
 	ObjectRefenceCount Object::AddReference() const
 	{
-		GD_DEBUG_ASSERT((self->ReferenceCount != 0),	"Reference counter is zero. Please, use 'Object::AddReference' and 'Object::RemoveReference' to provide correct reference counting");
-		return (self->ReferenceCount += 1);
+		GD_DEBUG_ASSERT((this->ReferenceCount != 0),	"Reference counter is zero. Please, use 'Object::AddReference' and 'Object::RemoveReference' to provide correct reference counting");
+		return (this->ReferenceCount += 1);
 	}
 
 	ObjectRefenceCount Object::RemoveReference() const
 	{
-		GD_DEBUG_ASSERT((self->ReferenceCount != 0), "Reference counter is zero. Please, use 'Object::AddReference' and 'Object::RemoveReference' to provide correct reference counting");
-		if ((--self->ReferenceCount) == 0) {
-			delete self;
+		GD_DEBUG_ASSERT((this->ReferenceCount != 0), "Reference counter is zero. Please, use 'Object::AddReference' and 'Object::RemoveReference' to provide correct reference counting");
+		if ((--this->ReferenceCount) == 0) {
+			delete this;
 		}
 
-		return (self->ReferenceCount);
+		return (this->ReferenceCount);
 	}
 
 	/// ==========================================================================================
@@ -65,27 +65,27 @@ GD_NAMESPACE_BEGIN
 	{
 		if ((CustomTreeLockingFlags & Object::TreeLockingFlagsCheckValidity) != 0)
 		{
-			GD_ASSERT((self->GetParentObject() == nullptr) || ((CustomTreeLockingFlags & Object::TreeLockingFlagsDisableAttachingToObject) == 0),
+			GD_ASSERT((this->GetParentObject() == nullptr) || ((CustomTreeLockingFlags & Object::TreeLockingFlagsDisableAttachingToObject) == 0),
 				"'TreeLockingFlagsDisableAttaching' flag was set, unable to attach to different object");
-			GD_ASSERT(((self->GetParentObject() == nullptr) && ((self->GetNextSiblingObject() == nullptr) && (self->GetPreviousSiblingObject() == nullptr))),
+			GD_ASSERT(((this->GetParentObject() == nullptr) && ((this->GetNextSiblingObject() == nullptr) && (this->GetPreviousSiblingObject() == nullptr))),
 				"This object is already attached, please detach from previous parent first");
 		}
 
 		GD_ASSERT((ParentObject != nullptr), "Attempt to attach to nullptr object");
 
 		if ((CustomTreeLockingFlags & TreeLockingFlagsAutomaticReferenceCounting) != 0)
-			self->AddReference();
+			this->AddReference();
 
-		/**/self->ParentObject = ParentObject;
-		if (self->ParentObject->GetFirstChildObject() == nullptr)
-			self->ParentObject->FirstChildObject = self;
-		if (self->ParentObject->GetLastChildObject() != nullptr)
+		/**/this->ParentObject = ParentObject;
+		if (this->ParentObject->GetFirstChildObject() == nullptr)
+			this->ParentObject->FirstChildObject = this;
+		if (this->ParentObject->GetLastChildObject() != nullptr)
 		{
-			self->PreviousSiblingObject = ParentObject->GetLastChildObject();
-			self->PreviousSiblingObject->NextSiblingObject = self;
+			this->PreviousSiblingObject = ParentObject->GetLastChildObject();
+			this->PreviousSiblingObject->NextSiblingObject = this;
 		}
 
-		self->ParentObject->LastChildObject = self;
+		this->ParentObject->LastChildObject = this;
 	}
 
 	void Object::DetachFromParentObject(ObjectTreeLockingFlags const CustomTreeLockingFlags)
@@ -96,26 +96,26 @@ GD_NAMESPACE_BEGIN
 				"'Object::DetachFromParent' error: 'TreeLockingFlagsDisableDetaching' flag was set, "
 				"unable to detach from parent object");
 
-			GD_ASSERT(self->GetParentObject() != nullptr,
+			GD_ASSERT(this->GetParentObject() != nullptr,
 				"'Object::DetachFromParent' error: this object was not attched to any objects");
 		}
 
 
 		if ((CustomTreeLockingFlags & TreeLockingFlagsAutomaticReferenceCounting) != 0)
-			self->RemoveReference();
+			this->RemoveReference();
 
-		if (self->GetParentObject()->LastChildObject == self)
-			self->GetParentObject()->LastChildObject = nullptr;
-		if (self->ParentObject->GetFirstChildObject() == self)
-			self->ParentObject->FirstChildObject = nullptr;
-		if (self->GetPreviousSiblingObject() != nullptr)
-			self->GetPreviousSiblingObject()->NextSiblingObject = self->GetNextSiblingObject();
-		if (self->GetNextSiblingObject() != nullptr)
-			self->GetNextSiblingObject()->PreviousSiblingObject = self->GetPreviousSiblingObject();
+		if (this->GetParentObject()->LastChildObject == this)
+			this->GetParentObject()->LastChildObject = nullptr;
+		if (this->ParentObject->GetFirstChildObject() == this)
+			this->ParentObject->FirstChildObject = nullptr;
+		if (this->GetPreviousSiblingObject() != nullptr)
+			this->GetPreviousSiblingObject()->NextSiblingObject = this->GetNextSiblingObject();
+		if (this->GetNextSiblingObject() != nullptr)
+			this->GetNextSiblingObject()->PreviousSiblingObject = this->GetPreviousSiblingObject();
 
-		self->PreviousSiblingObject = nullptr;
-		self->NextSiblingObject     = nullptr;
-		self->ParentObject          = nullptr;
+		this->PreviousSiblingObject = nullptr;
+		this->NextSiblingObject     = nullptr;
+		this->ParentObject          = nullptr;
 	}
 
 	/// ==========================================================================================
@@ -131,31 +131,31 @@ GD_NAMESPACE_BEGIN
 		{
 			GD_ASSERT((((CustomTreeLockingFlags & Object::TreeLockingFlagsDisableSiblingSwapping) == 0)	&& ((SiblingObject->TreeLockingFlags & Object::TreeLockingFlagsDisableSiblingSwapping) == 0)),
 				"'TreeLockingFlagsDisableSiblingSwapping' was set, unable to swap child objects");
-			GD_ASSERT(((self->GetParentObject() == SiblingObject->GetParentObject()) && (self->GetParentObject() != nullptr)),
+			GD_ASSERT(((this->GetParentObject() == SiblingObject->GetParentObject()) && (this->GetParentObject() != nullptr)),
 				"Unable to swap objects that are not sibling");
 		}
 
-		if (self == SiblingObject)
+		if (this == SiblingObject)
 		{
 			return;
 		}
 
-		Object* const parentObject = self->GetParentObject();
-		if (parentObject->GetLastChildObject() == self)
+		Object* const parentObject = this->GetParentObject();
+		if (parentObject->GetLastChildObject() == this)
 		{
 			parentObject->LastChildObject = SiblingObject;
 		}
 
 		if (parentObject->GetLastChildObject() == SiblingObject)
 		{
-			parentObject->LastChildObject = self;
+			parentObject->LastChildObject = this;
 		}
 
-		Object* const SelfPreviousSiblingObject = self->GetPreviousSiblingObject();
-		Object* const SelfNextSiblingObject = self->GetNextSiblingObject();
+		Object* const SelfPreviousSiblingObject = this->GetPreviousSiblingObject();
+		Object* const SelfNextSiblingObject = this->GetNextSiblingObject();
 
-		self->PreviousSiblingObject = SiblingObject->GetPreviousSiblingObject();
-		self->NextSiblingObject = SiblingObject->GetNextSiblingObject();
+		this->PreviousSiblingObject = SiblingObject->GetPreviousSiblingObject();
+		this->NextSiblingObject = SiblingObject->GetNextSiblingObject();
 
 		SiblingObject->PreviousSiblingObject = SelfPreviousSiblingObject;
 		SiblingObject->NextSiblingObject = SelfNextSiblingObject;
@@ -177,26 +177,26 @@ GD_NAMESPACE_BEGIN
 				&& ((SiblingObject->TreeLockingFlags & Object::TreeLockingFlagsDisableSiblingMoving) == 0)),
 				"'TreeLockingFlagsDisableSiblingMoving' was set, unable to move child objects");
 
-			GD_ASSERT(((self->GetParentObject() == SiblingObject->GetParentObject())
-				&& (self->GetParentObject() != nullptr)),
+			GD_ASSERT(((this->GetParentObject() == SiblingObject->GetParentObject())
+				&& (this->GetParentObject() != nullptr)),
 				"Unable to swap objects that are not sibling");
 
-			GD_ASSERT((self == self->GetParentObject()->GetLastChildObject()),
+			GD_ASSERT((this == this->GetParentObject()->GetLastChildObject()),
 				"Moving is supported only for objects that are at the end of child list");
 		}
 
-		if ((self->GetPreviousSiblingObject() == SiblingObject) || (self == SiblingObject))
+		if ((this->GetPreviousSiblingObject() == SiblingObject) || (this == SiblingObject))
 		{
 			return;
 		}
 
-		self->GetParentObject()->LastChildObject = self->GetPreviousSiblingObject();
-		self->GetPreviousSiblingObject()->NextSiblingObject = nullptr;
+		this->GetParentObject()->LastChildObject = this->GetPreviousSiblingObject();
+		this->GetPreviousSiblingObject()->NextSiblingObject = nullptr;
 
-		self->PreviousSiblingObject = SiblingObject;
-		self->NextSiblingObject = SiblingObject->GetNextSiblingObject();
-		SiblingObject->GetNextSiblingObject()->PreviousSiblingObject = self;
-		SiblingObject->NextSiblingObject = self;
+		this->PreviousSiblingObject = SiblingObject;
+		this->NextSiblingObject = SiblingObject->GetNextSiblingObject();
+		SiblingObject->GetNextSiblingObject()->PreviousSiblingObject = this;
+		SiblingObject->NextSiblingObject = this;
 	}
 
 #if (defined(GD_DEBUG) || defined(GD_DOCUMENTATION))
@@ -211,7 +211,7 @@ GD_NAMESPACE_BEGIN
 		DumpedTreeDataRecursionLevel += 1;
 
 		for (Object const*
-			 object  = self->GetLastChildObject(); 
+			 object  = this->GetLastChildObject(); 
 			 object != nullptr;
 			 object  = object->GetPreviousSiblingObject())
 		{

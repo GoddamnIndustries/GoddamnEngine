@@ -44,50 +44,50 @@ GD_NAMESPACE_BEGIN
 	{
 		if (ElementBasePanel != nullptr)
 		{	// Connecting to base panel to detect it repositioning
-			ElementBasePanel->OnRectangleParamChangedEvent += self;
-			ElementBasePanel->OnRotationParamChangedEvent  += self;
-			ElementBasePanel->OnDepthParamChangedEvent     += self;
+			ElementBasePanel->OnRectangleParamChangedEvent += this;
+			ElementBasePanel->OnRotationParamChangedEvent  += this;
+			ElementBasePanel->OnDepthParamChangedEvent     += this;
 		}
 
-		if ((self->ElementTextureAtlas.GetPointer() != nullptr) || (self->ElementCharactersAtlas.GetPointer() != nullptr))
+		if ((this->ElementTextureAtlas.GetPointer() != nullptr) || (this->ElementCharactersAtlas.GetPointer() != nullptr))
 		{	// Creating shader instances for this "mesh" instance
 			// If we have nothing to render (e.g. for sizer HUD elements) there is no reason to create shader instances
 			static HRIShaderProgram* const HUDShader = HUDResources::GetInstance().HUDMountingPoint->GetShaderProgram();
-			self->ElementVertexShaderInstance = HRInterface::GetInstance().CreateShaderInstance(HUDShader->GetProgramVertexShader()->ShaderDesc);
-			self->ElementPixelShaderInstance = HRInterface::GetInstance().CreateShaderInstance(HUDShader->GetProgramPixelShader()->ShaderDesc);
+			this->ElementVertexShaderInstance = HRInterface::GetInstance().CreateShaderInstance(HUDShader->GetProgramVertexShader()->ShaderDesc);
+			this->ElementPixelShaderInstance = HRInterface::GetInstance().CreateShaderInstance(HUDShader->GetProgramPixelShader()->ShaderDesc);
 
 			// Reapplying default parameters to pass them to GPU:
 			// Vertex-specific positioning parameters
-			self->SetElementRectangle(self->GetElementRectangle());
-			self->SetElementRotationDegrees(self->GetElementRotationDegrees());
-			self->SetElementDepth(self->GetElementDepth());
-			if (self->ElementTextureAtlas.GetPointer() != nullptr)
+			this->SetElementRectangle(this->GetElementRectangle());
+			this->SetElementRotationDegrees(this->GetElementRotationDegrees());
+			this->SetElementDepth(this->GetElementDepth());
+			if (this->ElementTextureAtlas.GetPointer() != nullptr)
 			{	// Texture-specific parameters
-				self->SetElementTextureIndex(self->GetElementTextureIndex());
-				self->SetElementTextureAtlas();
+				this->SetElementTextureIndex(this->GetElementTextureIndex());
+				this->SetElementTextureAtlas();
 			}
-			if (self->ElementCharactersAtlas.GetPointer() != nullptr)
+			if (this->ElementCharactersAtlas.GetPointer() != nullptr)
 			{	// Font-specific parameters
-				self->SetElementCharactersString(self->GetElementCharactersString());
-				self->SetElementCharactersFontSize(self->GetElementCharactersFontSize());
-				self->SetElementCharactersColor(self->GetElementCharactersColor());
-				self->SetElementCharactersPadding(self->GetElementCharactersPadding());
-				self->SetElementCharactersAtlas();
+				this->SetElementCharactersString(this->GetElementCharactersString());
+				this->SetElementCharactersFontSize(this->GetElementCharactersFontSize());
+				this->SetElementCharactersColor(this->GetElementCharactersColor());
+				this->SetElementCharactersPadding(this->GetElementCharactersPadding());
+				this->SetElementCharactersAtlas();
 			}
 
-			self->ElementPixelShaderInstance->GetInstanceResourcesLocation()->UploadAllParameters();
+			this->ElementPixelShaderInstance->GetInstanceResourcesLocation()->UploadAllParameters();
 		}
 	}
 
 	/// ==========================================================================================
 	HUDElementPanel::~HUDElementPanel()
 	{
-		auto ElementBasePanel  = const_cast<HUDElementPanel*>(self->ElementBasePanel.GetPointer());
+		auto ElementBasePanel  = const_cast<HUDElementPanel*>(this->ElementBasePanel.GetPointer());
 		if  (ElementBasePanel != nullptr)
 		{	// Disconnecting to base panel
-			ElementBasePanel->OnRectangleParamChangedEvent -= self;
-			ElementBasePanel->OnRotationParamChangedEvent  -= self;
-			ElementBasePanel->OnDepthParamChangedEvent	   -= self;
+			ElementBasePanel->OnRectangleParamChangedEvent -= this;
+			ElementBasePanel->OnRotationParamChangedEvent  -= this;
+			ElementBasePanel->OnDepthParamChangedEvent	   -= this;
 		}
 	}
 
@@ -95,9 +95,9 @@ GD_NAMESPACE_BEGIN
 	static String const ElementRectangleName("HUDElementRectangle");
 	void HUDElementPanel::SetElementRectangle(Rectangle const& ElementRectangle)
 	{
-		Rectangle ElementRectangleAbsolute = (self->ElementRectangle = ElementRectangle);
+		Rectangle ElementRectangleAbsolute = (this->ElementRectangle = ElementRectangle);
 		for (HUDElementPanel const*
-			 Panel =  self->ElementBasePanel.GetPointer(); Panel != nullptr;
+			 Panel =  this->ElementBasePanel.GetPointer(); Panel != nullptr;
 			 Panel = Panel->ElementBasePanel.GetPointer())
 		{	// Recomputing panel rectangle position as XY-translation and size as scaling to parent 
 			ElementRectangleAbsolute = Rectangle(
@@ -108,40 +108,40 @@ GD_NAMESPACE_BEGIN
 			);
 		}
 
-		self->ElementVertexShaderInstance->GetParamByName(ElementRectangleName)->SetValue<Rectangle>(ElementRectangleAbsolute);
-		self->OnRectangleParamChangedEvent.TriggerAndLaunchEvent();
+		this->ElementVertexShaderInstance->GetParamByName(ElementRectangleName)->SetValue<Rectangle>(ElementRectangleAbsolute);
+		this->OnRectangleParamChangedEvent.TriggerAndLaunchEvent();
 	}
 	
 	/// ==========================================================================================
 	static String const ElementRotationRadiansName("HUDElementRotationRadians");
 	GDAPI void HUDElementPanel::SetElementRotationDegrees(Float32 const ElementRotationDegrees)
 	{
-		Float32 ElementRotationDegreesAbsolute = (self->ElementRotationDegrees = ElementRotationDegrees);
+		Float32 ElementRotationDegreesAbsolute = (this->ElementRotationDegrees = ElementRotationDegrees);
 		for (HUDElementPanel const*
-			 Panel = self->ElementBasePanel.GetPointer(); Panel != nullptr;
+			 Panel = this->ElementBasePanel.GetPointer(); Panel != nullptr;
 			 Panel = Panel->ElementBasePanel.GetPointer())
 		{	// Recomputing panel rectangle position as rotation to parent 
 			ElementRotationDegreesAbsolute += Panel->ElementRotationDegrees;
 		}
 
-		self->ElementVertexShaderInstance->GetParamByName(ElementRotationRadiansName)->SetValue<Float32>(GD_RADIANS(ElementRotationDegreesAbsolute));
-		self->OnRotationParamChangedEvent.TriggerAndLaunchEvent();
+		this->ElementVertexShaderInstance->GetParamByName(ElementRotationRadiansName)->SetValue<Float32>(GD_RADIANS(ElementRotationDegreesAbsolute));
+		this->OnRotationParamChangedEvent.TriggerAndLaunchEvent();
 	}
 	
 	/// ==========================================================================================
 	static String const ElementDepthName("HUDElementDepth");
 	GDAPI void HUDElementPanel::SetElementDepth(Int32 const ElementDepth)
 	{
-		Int32 ElementDepthAbsolute = (self->ElementDepth = ElementDepth);
+		Int32 ElementDepthAbsolute = (this->ElementDepth = ElementDepth);
 		for (HUDElementPanel const* 
-			 Panel =  self->ElementBasePanel.GetPointer(); Panel != nullptr; 
+			 Panel =  this->ElementBasePanel.GetPointer(); Panel != nullptr; 
 			 Panel = Panel->ElementBasePanel.GetPointer())
 		{	// Recomputing panel rectangle position as Z-translation
 			ElementDepthAbsolute += Panel->ElementDepth;
 		}
 
-		self->ElementVertexShaderInstance->GetParamByName(ElementDepthName)->SetValue<Float32>(static_cast<Float32>(ElementDepthAbsolute));
-		self->OnDepthParamChangedEvent.TriggerAndLaunchEvent();
+		this->ElementVertexShaderInstance->GetParamByName(ElementDepthName)->SetValue<Float32>(static_cast<Float32>(ElementDepthAbsolute));
+		this->OnDepthParamChangedEvent.TriggerAndLaunchEvent();
 	}
 
 	/// ==========================================================================================
@@ -150,21 +150,21 @@ GD_NAMESPACE_BEGIN
 	static String const ElementTextureAtlasFixedZoneName("HUDElementTextureAtlasFixedZone");
 	void HUDElementPanel::SetElementTextureAtlas()
 	{
-		GD_DEBUG_ASSERT((self->ElementTextureAtlas.GetPointer() != nullptr), "No texture atlas specified");
+		GD_DEBUG_ASSERT((this->ElementTextureAtlas.GetPointer() != nullptr), "No texture atlas specified");
 
-		self->ElementPixelShaderInstance->GetParamByName(ElementTextureAtlasName)->SetValue<HRITexture2D const*>(self->ElementTextureAtlas->AtlasTexture.GetPointer());
-		self->ElementPixelShaderInstance->GetParamByName(ElementTextureAtlasDimensionsName)->SetValue<UInt32x2>(UInt32x2(self->ElementTextureAtlas->AtlasDimensions));
-		self->ElementPixelShaderInstance->GetParamByName(ElementTextureAtlasFixedZoneName)->SetValue<Vector2>(self->ElementTextureAtlas->AtlasFixedZone);
+		this->ElementPixelShaderInstance->GetParamByName(ElementTextureAtlasName)->SetValue<HRITexture2D const*>(this->ElementTextureAtlas->AtlasTexture.GetPointer());
+		this->ElementPixelShaderInstance->GetParamByName(ElementTextureAtlasDimensionsName)->SetValue<UInt32x2>(UInt32x2(this->ElementTextureAtlas->AtlasDimensions));
+		this->ElementPixelShaderInstance->GetParamByName(ElementTextureAtlasFixedZoneName)->SetValue<Vector2>(this->ElementTextureAtlas->AtlasFixedZone);
 	}
 
 	/// ==========================================================================================
 	static String const ElementTextureIndexName("HUDElementTextureIndexName");
 	void HUDElementPanel::SetElementTextureIndex(_In_ UInt32 const ElementTextureIndex)
 	{
-		GD_DEBUG_ASSERT((self->ElementTextureAtlas.GetPointer() != nullptr), "No texture atlas specified");
+		GD_DEBUG_ASSERT((this->ElementTextureAtlas.GetPointer() != nullptr), "No texture atlas specified");
 		
-		self->ElementTextureIndex = ElementTextureIndex;
-		self->ElementPixelShaderInstance->GetParamByName(ElementTextureIndexName)->SetValue<UInt32>(ElementTextureIndex);
+		this->ElementTextureIndex = ElementTextureIndex;
+		this->ElementPixelShaderInstance->GetParamByName(ElementTextureIndexName)->SetValue<UInt32>(ElementTextureIndex);
 	}
 
 	/// ==========================================================================================
@@ -172,10 +172,10 @@ GD_NAMESPACE_BEGIN
 	static String const ElementCharactersAtlasDimensionsName("HUDElementCharactersAtlasDimensions");
 	void HUDElementPanel::SetElementCharactersAtlas()
 	{
-		GD_DEBUG_ASSERT((self->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
+		GD_DEBUG_ASSERT((this->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
 
-		self->ElementPixelShaderInstance->GetParamByName(ElementCharactersAtlasName)->SetValue<HRITexture2D const*>(self->ElementCharactersAtlas->AtlasTexture.GetPointer());
-		self->ElementPixelShaderInstance->GetParamByName(ElementCharactersAtlasDimensionsName)->SetValue<UInt32x2>(UInt32x2(self->ElementCharactersAtlas->AtlasDimensions));
+		this->ElementPixelShaderInstance->GetParamByName(ElementCharactersAtlasName)->SetValue<HRITexture2D const*>(this->ElementCharactersAtlas->AtlasTexture.GetPointer());
+		this->ElementPixelShaderInstance->GetParamByName(ElementCharactersAtlasDimensionsName)->SetValue<UInt32x2>(UInt32x2(this->ElementCharactersAtlas->AtlasDimensions));
 	}
 
 	/// ==========================================================================================
@@ -183,44 +183,44 @@ GD_NAMESPACE_BEGIN
 	static String const ElementCharactersStringLengthName("HUDElementCharactersStringLength");
 	void HUDElementPanel::SetElementCharactersString(_In_ String const& ElementCharactersString)
 	{
-		GD_DEBUG_ASSERT((self->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
+		GD_DEBUG_ASSERT((this->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
 		
-		self->ElementCharactersString = ElementCharactersString;
-		self->ElementPixelShaderInstance->GetParamByName(ElementCharactersStringName)->SetValue(&ElementCharactersString[0]);
-		self->ElementPixelShaderInstance->GetParamByName(ElementCharactersStringLengthName)->SetValue<UInt32>(static_cast<UInt32>(ElementCharactersString.GetSize()));
+		this->ElementCharactersString = ElementCharactersString;
+		this->ElementPixelShaderInstance->GetParamByName(ElementCharactersStringName)->SetValue(&ElementCharactersString[0]);
+		this->ElementPixelShaderInstance->GetParamByName(ElementCharactersStringLengthName)->SetValue<UInt32>(static_cast<UInt32>(ElementCharactersString.GetSize()));
 	}
 
 	/// ==========================================================================================
 	static String const HUDElementCharactersSizeName("HUDElementCharactersSize");
 	void HUDElementPanel::SetElementCharactersFontSize(_In_ Float32 const ElementCharactersFontSize)
 	{
-		GD_DEBUG_ASSERT((self->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
+		GD_DEBUG_ASSERT((this->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
 		static Vector2 const ElementCharactersDefaultSize(0.0055f, 0.0105f);
 			   Vector2 const ElementCharactersSize = ElementCharactersDefaultSize * ElementCharactersFontSize /*/ ElementAbsolutSize*/;
 			   /// @todo add some math here
 
-		self->ElementCharactersFontSize = ElementCharactersFontSize;
-		self->ElementPixelShaderInstance->GetParamByName(HUDElementCharactersSizeName)->SetValue<Vector2>(ElementCharactersSize);
+		this->ElementCharactersFontSize = ElementCharactersFontSize;
+		this->ElementPixelShaderInstance->GetParamByName(HUDElementCharactersSizeName)->SetValue<Vector2>(ElementCharactersSize);
 	}
 
 	/// ==========================================================================================
 	static String const HUDElementCharactersColorName("HUDElementCharactersColor");
 	void HUDElementPanel::SetElementCharactersColor(_In_ Color const& ElementCharactersColor)
 	{
-		GD_DEBUG_ASSERT((self->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
+		GD_DEBUG_ASSERT((this->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
 		
-		self->ElementCharactersColor = ElementCharactersColor;
-		self->ElementPixelShaderInstance->GetParamByName(HUDElementCharactersColorName)->SetValue<Color>(ElementCharactersColor);
+		this->ElementCharactersColor = ElementCharactersColor;
+		this->ElementPixelShaderInstance->GetParamByName(HUDElementCharactersColorName)->SetValue<Color>(ElementCharactersColor);
 	}
 
 	/// ==========================================================================================
 	static String const ElementCharactersPaddingName("HUDElementCharactersPadding");
 	void HUDElementPanel::SetElementCharactersPadding(_In_ Vector2 const& ElementCharactersPadding)
 	{
-		GD_DEBUG_ASSERT((self->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
+		GD_DEBUG_ASSERT((this->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
 
-		self->ElementCharactersPadding = ElementCharactersPadding;
-		self->ElementPixelShaderInstance->GetParamByName(ElementCharactersPaddingName)->SetValue<Vector2>(ElementCharactersPadding);
+		this->ElementCharactersPadding = ElementCharactersPadding;
+		this->ElementPixelShaderInstance->GetParamByName(ElementCharactersPaddingName)->SetValue<Vector2>(ElementCharactersPadding);
 	}
 
 	/// ==========================================================================================
@@ -236,17 +236,17 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	HUDResources::HUDResources()
 	{
-		self->HUDMountingPoint = HRInterface::GetInstance().CreateLinkagePoint();
-		self->LoadHUDElementMesh();
-		self->LoadHUDElementShader();
+		this->HUDMountingPoint = HRInterface::GetInstance().CreateLinkagePoint();
+		this->LoadHUDElementMesh();
+		this->LoadHUDElementShader();
 	}
 
 	/// ==========================================================================================
 	/// ==========================================================================================
 	HUDResources::~HUDResources()
 	{
-		///!!! self->HUDElementMesh->RemoveReference();
-		self->HUDMountingPoint->RemoveReference();
+		///!!! this->HUDElementMesh->RemoveReference();
+		this->HUDMountingPoint->RemoveReference();
 	}
 
 	/// ==========================================================================================
@@ -265,7 +265,7 @@ GD_NAMESPACE_BEGIN
 		HRIIndexedShape* Shape = HRInterface::GetInstance().CreateIndexedShape();
 		Shape->SetVertexData(GD_HRI_SEMANTIC_POSITION, HUDElementMeshVertices, GD_ARRAY_SIZE(HUDElementMeshVertices)                                  );
 		Shape->SetIndexData(                           HUDElementMeshIndices,  GD_ARRAY_SIZE(HUDElementMeshIndices ), sizeof(HUDElementMeshIndices[0]));
-		self->HUDMountingPoint->SetIndexedShape(Shape);
+		this->HUDMountingPoint->SetIndexedShape(Shape);
 	}
 
 	/// ==========================================================================================
@@ -283,7 +283,7 @@ GD_NAMESPACE_BEGIN
 		auto const PixelShaderInstance = HRInterface::GetInstance().CreateShaderInstance(ShaderInstanceCtorInfo(HUDShader->GetProgramPixelShader()->ShaderDesc));
 		PixelShaderInstance->RemoveReference();*/
 
-		self->HUDMountingPoint->SetShaderProgram(HUDShader.GetPointer());
+		this->HUDMountingPoint->SetShaderProgram(HUDShader.GetPointer());
 	}
 
 	/// ==========================================================================================
@@ -292,9 +292,9 @@ GD_NAMESPACE_BEGIN
 	{
 		ElementPanel->ElementVertexShaderInstance->GetInstanceFirstConstantBuffersLocation()->UploadAllParameters();
 		ElementPanel->ElementPixelShaderInstance->GetInstanceFirstConstantBuffersLocation()->UploadAllParameters();
-		self->HUDMountingPoint->GetShaderProgram()->GetProgramVertexShader()->BindShader(ElementPanel->ElementVertexShaderInstance.GetPointer());
-		self->HUDMountingPoint->GetShaderProgram()->GetProgramPixelShader()->BindShader(ElementPanel->ElementPixelShaderInstance.GetPointer());
-		self->HUDMountingPoint->RenderSelf();
+		this->HUDMountingPoint->GetShaderProgram()->GetProgramVertexShader()->BindShader(ElementPanel->ElementVertexShaderInstance.GetPointer());
+		this->HUDMountingPoint->GetShaderProgram()->GetProgramPixelShader()->BindShader(ElementPanel->ElementPixelShaderInstance.GetPointer());
+		this->HUDMountingPoint->RenderSelf();
 	}
 
 GD_NAMESPACE_END

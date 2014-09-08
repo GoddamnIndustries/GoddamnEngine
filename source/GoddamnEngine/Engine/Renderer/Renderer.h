@@ -15,10 +15,11 @@
 
 #include <GoddamnEngine/Core/Math/Math.h>
 #include <GoddamnEngine/Core/Format/Format.h>
+#include <GoddamnEngine/Core/Framework/Framework.h>
 #include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
-#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
 #include <GoddamnEngine/Core/Diagnostics/Exception/Exception.h>
 #include <GoddamnEngine/Engine/Plugin/Plugin.h>
+#include <GoddamnEngine/Engine/Application/Application.h>
 
 #define GD_HRI_DYNAMIC 1
 #define GD_HRI_MAX_RENDER_TARGETS 10
@@ -127,7 +128,7 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HRIBuffer(HRIBufferType const BufferType) : BufferType(BufferType) { }
 		GDINL virtual ~HRIBuffer(                              )                          { }
 	public:
-		GDINL HRIBufferType  GetType()          const { return self->BufferType; }
+		GDINL HRIBufferType  GetType()          const { return this->BufferType; }
 		GDAPI virtual handle GetNativePointer() const abstract;
 	};	// class HRIBuffer
 
@@ -142,8 +143,8 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HRIVertexBuffer(Float32 const* const Data, size_t const Size) : HRIBuffer(GD_HRI_BUFFER_TYPE_VERTEX), Data(Data), Size(Size) { }
 		GDINL virtual ~HRIVertexBuffer(                                            ) { }
 	public:
-		GDINL Float32 const* GetData() const { return self->Data; }
-		GDINL size_t         GetSize() const { return self->Size; }
+		GDINL Float32 const* GetData() const { return this->Data; }
+		GDINL size_t         GetSize() const { return this->Size; }
 	};	// class HRIVertexBuffer
 
 	/// Provides interaction of Index data with GPU.
@@ -158,9 +159,9 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HRIIndexBuffer(chandle const Data, size_t const Size, size_t const Stride) : HRIBuffer(GD_HRI_BUFFER_TYPE_VERTEX), Data(Data), Size(Size), Stride(Stride) { }
 		GDINL virtual ~HRIIndexBuffer(                                                          ) { }
 	public:
-		GDINL chandle GetData  () const { return self->Data; }
-		GDINL size_t  GetSize  () const { return self->Size; }
-		GDINL size_t  GetStride() const { return self->Stride; }
+		GDINL chandle GetData  () const { return this->Data; }
+		GDINL size_t  GetSize  () const { return this->Size; }
+		GDINL size_t  GetStride() const { return this->Stride; }
 	};	// class HRIIndexBuffer
 
 	/// Provides interaction of constant buffers data with GPU.
@@ -173,7 +174,7 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HRIConstantBuffer(size_t const Size) : HRIBuffer(GD_HRI_BUFFER_TYPE_CONSTANT), Size(Size) { }
 		GDINL virtual ~HRIConstantBuffer(                 ) { }
 	public:
-		GDINL size_t GetSize() const { return self->Size; }
+		GDINL size_t GetSize() const { return this->Size; }
 		GDAPI virtual void CopyDataTo  ( handle const Data) const abstract;
 		GDAPI virtual void CopyDataFrom(chandle const Data)       abstract;
 	};	// class HRIConstantBuffer
@@ -203,20 +204,20 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HRIIndexedShape() : VertexBuffers(GD_HRI_SEMANTICS_COUNT) { }
 		GDINL virtual ~HRIIndexedShape() { }
 	public:
-		GDAPI virtual HRITopologyType GetTopologyType(                                  ) const { return self->TopologyType;                }
-		GDAPI virtual void            SetTopologyType(HRITopologyType const TopologyType)       {        self->TopologyType = TopologyType; }
+		GDAPI virtual HRITopologyType GetTopologyType(                                  ) const { return this->TopologyType;                }
+		GDAPI virtual void            SetTopologyType(HRITopologyType const TopologyType)       {        this->TopologyType = TopologyType; }
 		GDAPI virtual void SetVertexData(HRISemantic const Semantic, Float32 const* const Data, size_t const Size                     );
 		GDAPI virtual void SetIndexData (                            chandle        const Data, size_t const Size, size_t const Stride);
-		GDAPI virtual HRIIndexBuffer  const* GetIndexBuffer() const { return self->IndexBuffer.GetPointer(); }
-		GDAPI virtual HRIIndexBuffer       * GetIndexBuffer()       { return self->IndexBuffer.GetPointer(); }
+		GDAPI virtual HRIIndexBuffer  const* GetIndexBuffer() const { return this->IndexBuffer.GetPointer(); }
+		GDAPI virtual HRIIndexBuffer       * GetIndexBuffer()       { return this->IndexBuffer.GetPointer(); }
 		GDAPI virtual HRIVertexBuffer const* GetVertexBuffer(HRISemantic const Semantic) const 
 		{ 
-			return self->VertexBuffers[static_cast<size_t>(Semantic)].GetPointer(); 
+			return this->VertexBuffers[static_cast<size_t>(Semantic)].GetPointer(); 
 		}
 		
 		GDAPI virtual HRIVertexBuffer* GetVertexBuffer(HRISemantic const Semantic)       
 		{ 
-			return const_cast<HRIVertexBuffer*>(const_cast<HRIIndexedShape const*>(self)->GetVertexBuffer(Semantic)); 
+			return const_cast<HRIVertexBuffer*>(const_cast<HRIIndexedShape const*>(this)->GetVertexBuffer(Semantic)); 
 		}
 	};	// class HRIIndexedShape
 
@@ -235,8 +236,8 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDAPI virtual HRIShaderProgram const* GetShaderProgram() const abstract;
 		GDAPI virtual HRIIndexedShape  const* GetIndexedShape () const abstract;
-		GDINL         HRIShaderProgram      * GetShaderProgram() { return const_cast<HRIShaderProgram*>(const_cast<HRILinkagePoint const*>(self)->GetShaderProgram()); }
-		GDINL         HRIIndexedShape       * GetIndexedShape () { return const_cast<HRIIndexedShape *>(const_cast<HRILinkagePoint const*>(self)->GetIndexedShape ()); }
+		GDINL         HRIShaderProgram      * GetShaderProgram() { return const_cast<HRIShaderProgram*>(const_cast<HRILinkagePoint const*>(this)->GetShaderProgram()); }
+		GDINL         HRIIndexedShape       * GetIndexedShape () { return const_cast<HRIIndexedShape *>(const_cast<HRILinkagePoint const*>(this)->GetIndexedShape ()); }
 		GDAPI virtual void SetShaderProgram(HRIShaderProgram const* const Effect) abstract;
 		GDAPI virtual void SetIndexedShape (HRIIndexedShape  const* const IndexedShape ) abstract;
 		GDAPI virtual void RenderSelf() const abstract;
@@ -360,11 +361,11 @@ GD_NAMESPACE_BEGIN
 		GD_TYPEINFORMATION_DEFINITION(HRInterface, Object, GDAPI);
 
 	protected:
-		GDINL explicit HRInterface() : ContextResolution(LowLevelSystem::GetInstance().WindowResolution) { }
+		GDINL explicit HRInterface() : ContextRectagle(Application::GetInstance().GetApplicationGameWindow()->GetWindowRectangle()) { }
 		GDINL virtual ~HRInterface() { }
 
 	public:
-		Resolution& ContextResolution; ///< Reference to low level screen resolution
+		Rectangle ContextRectagle; ///< Reference to low level screen resolution
 
 	public /*Class API*/:
 		GDINL bool DoesSupportsTesselation() const

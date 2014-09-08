@@ -1,5 +1,4 @@
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11Renderer.h>
-#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -51,13 +50,14 @@ GD_NAMESPACE_BEGIN
 						{
 							// const auto& dml = displayModificationsList[cnt];
 							// const VsyncDescription description = { dml.RefreshRate.Numerator, dml.RefreshRate.Denominator };
-							// self->resolutionsDescription.AddElement(Resolution((long)dml.Width, (long)dml.Height), description);
+							// this->resolutionsDescription.AddElement(Resolution((long)dml.Width, (long)dml.Height), description);
 						}
 					} adapterOutput->Release();
 				} adapter->Release();
 			} factory->Release();
 		}
 #endif
+		auto const GameWindow = Application::GetInstance().GetApplicationGameWindow();
 		HRESULT Result = E_FAIL;
 
 		// Creating Device and swap chain
@@ -65,15 +65,15 @@ GD_NAMESPACE_BEGIN
 		ZeroMemory(&SwapChainDesc, sizeof(SwapChainDesc));
 		SwapChainDesc.BufferCount						 = 1;
 		SwapChainDesc.BufferUsage						 = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		SwapChainDesc.BufferDesc.Width					 = static_cast<UINT>(LowLevelSystem::GetInstance().WindowResolution.Width);
-		SwapChainDesc.BufferDesc.Height					 = static_cast<UINT>(LowLevelSystem::GetInstance().WindowResolution.Height);
+		SwapChainDesc.BufferDesc.Width					 = static_cast<UINT>(this->ContextRectagle.Width);
+		SwapChainDesc.BufferDesc.Height					 = static_cast<UINT>(this->ContextRectagle.Height);
 		SwapChainDesc.BufferDesc.Format					 = DXGI_FORMAT_R8G8B8A8_UNORM;
 		SwapChainDesc.BufferDesc.Scaling				 = DXGI_MODE_SCALING_UNSPECIFIED;
 		SwapChainDesc.BufferDesc.ScanlineOrdering		 = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		SwapChainDesc.SwapEffect						 = DXGI_SWAP_EFFECT_DISCARD;
 		SwapChainDesc.Flags								 = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-		SwapChainDesc.OutputWindow						 = HWND(  LowLevelSystem::GetInstance().hWindow);
-		SwapChainDesc.Windowed							 = BOOL(!(LowLevelSystem::GetInstance().IsFullscreen));
+		SwapChainDesc.OutputWindow						 = reinterpret_cast<HWND>(GameWindow->GetWindowNativeHandle());
+		SwapChainDesc.Windowed							 = BOOL(!GameWindow->GetWindowIsFullscreen());
 		SwapChainDesc.BufferDesc.RefreshRate.Numerator	 = 0;
 		SwapChainDesc.BufferDesc.RefreshRate.Denominator = 1; 
 		SwapChainDesc.SampleDesc.Count					 = 1;
@@ -94,20 +94,20 @@ GD_NAMESPACE_BEGIN
 			GD_ARRAY_SIZE(FeatureLevels),	/* _In_   UINT FeatureLevels */
 			D3D11_SDK_VERSION,				/* _In_   UINT SDKVersion */
 			&SwapChainDesc,					/* _In_   const DXGI_SWAP_CHAIN_DESC *pSwapChainDesc */
-			&self->SwapChain,	            /* _Out_  IDXGISwapChain **ppSwapChain */
-			&self->Device,		            /* _Out_  ID3D11Device **ppDevice */
+			&this->SwapChain,	            /* _Out_  IDXGISwapChain **ppSwapChain */
+			&this->Device,		            /* _Out_  ID3D11Device **ppDevice */
 			&CreatedFeatureLevel,			/* _Out_  D3D_FEATURE_LEVEL *pFeatureLevel */
-			&self->Context)) {	            /* _Out_  ID3D11DeviceContext **ppImmediateContext */
+			&this->Context)) {	            /* _Out_  ID3D11DeviceContext **ppImmediateContext */
 			throw HRID3D11Exception("Failed to create DirectX Device and Swap Chain");
 		}
 		
 		/* Setting up back buffer */ {
 			D3D11RefPtr<ID3D11Texture2D> BackBuffer;
-			if (FAILED(Result = self->SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(BackBuffer.GetAddressOf())))) {
+			if (FAILED(Result = this->SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(BackBuffer.GetAddressOf())))) {
 				throw HRID3D11Exception("Getting pointer to back buffer failed");
 			}
 
-			if (FAILED(Result = self->Device->CreateRenderTargetView(BackBuffer.Get(), nullptr, &self->RenderTargetView))) {
+			if (FAILED(Result = this->Device->CreateRenderTargetView(BackBuffer.Get(), nullptr, &this->RenderTargetView))) {
 				throw HRID3D11Exception("RenderTargetView creation failed.");
 			}
 		}
@@ -116,8 +116,8 @@ GD_NAMESPACE_BEGIN
 			D3D11_TEXTURE2D_DESC DepthBufferDescription; 
 			ZeroMemory(&DepthBufferDescription, sizeof(DepthBufferDescription));
 			DepthBufferDescription.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
-			DepthBufferDescription.Height             = static_cast<UINT>(LowLevelSystem::GetInstance().WindowResolution.Height);
-			DepthBufferDescription.Width              = static_cast<UINT>(LowLevelSystem::GetInstance().WindowResolution.Width);
+			DepthBufferDescription.Height             = static_cast<UINT>(this->ContextRectagle.Height);
+			DepthBufferDescription.Width              = static_cast<UINT>(this->ContextRectagle.Width);
 			DepthBufferDescription.MipLevels          = 1;
 			DepthBufferDescription.ArraySize          = 1;
 			DepthBufferDescription.SampleDesc.Count   = 1;
@@ -127,7 +127,7 @@ GD_NAMESPACE_BEGIN
 			DepthBufferDescription.CPUAccessFlags     = 0;
 			DepthBufferDescription.MiscFlags          = 0;
 
-			if (FAILED(Result = self->Device->CreateTexture2D(&DepthBufferDescription, nullptr, &self->DepthStencilBuffer))) {
+			if (FAILED(Result = this->Device->CreateTexture2D(&DepthBufferDescription, nullptr, &this->DepthStencilBuffer))) {
 				throw HRID3D11Exception("Creation of Depth buffer failed.");
 			}
 		}
@@ -150,10 +150,10 @@ GD_NAMESPACE_BEGIN
 			DepthStencilDesc.BackFace.StencilPassOp       = D3D11_STENCIL_OP_KEEP;
 			DepthStencilDesc.BackFace.StencilFunc         = D3D11_COMPARISON_ALWAYS;
 
-			if (FAILED(Result = self->Device->CreateDepthStencilState(&DepthStencilDesc, &self->DepthStencilState))) {
+			if (FAILED(Result = this->Device->CreateDepthStencilState(&DepthStencilDesc, &this->DepthStencilState))) {
 				throw HRID3D11Exception("DepthStencilState creation failed");
 			}
-		}	self->Context->OMSetDepthStencilState(self->DepthStencilState.Get(), 1);
+		}	this->Context->OMSetDepthStencilState(this->DepthStencilState.Get(), 1);
 
 		/*Depth stencil view description*/ {
 			D3D11_DEPTH_STENCIL_VIEW_DESC DepthStencilViewDesc; 
@@ -162,10 +162,10 @@ GD_NAMESPACE_BEGIN
 			DepthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 			DepthStencilViewDesc.Texture2D.MipSlice = 0;
 
-			if (FAILED(Result = self->Device->CreateDepthStencilView(self->DepthStencilBuffer.Get(), &DepthStencilViewDesc, &self->DepthStencilView))) {
+			if (FAILED(Result = this->Device->CreateDepthStencilView(this->DepthStencilBuffer.Get(), &DepthStencilViewDesc, &this->DepthStencilView))) {
 				throw HRID3D11Exception("DepthStencilView creation failed");
 			}
-		}	self->Context->OMSetRenderTargets(1, &self->RenderTargetView, self->DepthStencilView.Get() /*nullptr*/);
+		}	this->Context->OMSetRenderTargets(1, &this->RenderTargetView, this->DepthStencilView.Get() /*nullptr*/);
 
 		/*Rasterizer Description*/ {
 			D3D11_RASTERIZER_DESC RasterizerDesc; 
@@ -181,56 +181,55 @@ GD_NAMESPACE_BEGIN
 			RasterizerDesc.MultisampleEnable     = FALSE;
 			RasterizerDesc.ScissorEnable         = FALSE;
 
-			if (FAILED(Result = self->Device->CreateRasterizerState(&RasterizerDesc, &self->SolidRasterizerState))) {
+			if (FAILED(Result = this->Device->CreateRasterizerState(&RasterizerDesc, &this->SolidRasterizerState))) {
 				throw HRID3D11Exception("Rasterizer State creation failed");
 			}
-		}	self->Context->RSSetState(self->SolidRasterizerState.Get());
+		}	this->Context->RSSetState(this->SolidRasterizerState.Get());
 			
 		/*Setting up default viewport*/ {
 			D3D11_VIEWPORT DefaultViewport; 
 			ZeroMemory(&DefaultViewport, sizeof(DefaultViewport));
-			DefaultViewport.Width    = FLOAT(LowLevelSystem::GetInstance().WindowResolution.Width);
-			DefaultViewport.Height   = FLOAT(LowLevelSystem::GetInstance().WindowResolution.Height);
+			DefaultViewport.Width    = FLOAT(this->ContextRectagle.Width);
+			DefaultViewport.Height   = FLOAT(this->ContextRectagle.Height);
 			DefaultViewport.TopLeftX = 0.0f;
 			DefaultViewport.TopLeftY = 0.0f;
 			DefaultViewport.MinDepth = 0.0f;
 			DefaultViewport.MaxDepth = 1.0f;
-			self->Context->RSSetViewports(1, &DefaultViewport);
+			this->Context->RSSetViewports(1, &DefaultViewport);
 		}
 
-		self->Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		this->Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		return true;
 	}
 
 	bool HRD3D11Interface::DestroyContext()
 	{
-		self->SwapChain->SetFullscreenState(FALSE, nullptr);
-		self->SolidRasterizerState.Reset();
-		self->DepthStencilView    .Reset();
-		self->DepthStencilState   .Reset();
-		self->DepthStencilBuffer  .Reset();
-		self->RenderTargetView    .Reset();
-		self->Context             .Reset();
-		self->Device              .Reset();
-		self->SwapChain           .Reset();
+		this->SwapChain->SetFullscreenState(FALSE, nullptr);
+		this->SolidRasterizerState.Reset();
+		this->DepthStencilView    .Reset();
+		this->DepthStencilState   .Reset();
+		this->DepthStencilBuffer  .Reset();
+		this->RenderTargetView    .Reset();
+		this->Context             .Reset();
+		this->Device              .Reset();
+		this->SwapChain           .Reset();
 
 		return true;
 	}
 
-	void HRD3D11Interface::ClearContext(Rectangle const& clearingViewport, Color const& clearColor, bool const doClearDepth /* = true */) 
+	void HRD3D11Interface::ClearContext(Rectangle const& ClearingViewport, Color const& ClearColor, bool const DoClearDepth /* = true */) 
 	{
-		GD_UNUSED(clearingViewport);
-
-		if (doClearDepth) {
-			self->Context->ClearDepthStencilView(self->DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		GD_UNUSED(ClearingViewport);
+		if (DoClearDepth) {
+			this->Context->ClearDepthStencilView(this->DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 		}
 
-		self->Context->ClearRenderTargetView(self->RenderTargetView.Get(), &clearColor[0]);
+		this->Context->ClearRenderTargetView(this->RenderTargetView.Get(), &ClearColor[0]);
 	}
 
 	void HRD3D11Interface::SwapBuffers()
 	{
-		self->SwapChain->Present(0, 0);
+		this->SwapChain->Present(0, 0);
 	}
 
 GD_NAMESPACE_END

@@ -138,7 +138,7 @@ namespace GoddamnEngine.OpenGLUtility
 		ReturnType (* _##MethodName)(ArgumentsDeclarations) = nullptr; \
 	public: \
 		GDINL ReturnType MethodName(ArgumentsDeclarations) const { \
-			return self->_##MethodName(ArgumentsPassing); \
+			return this->_##MethodName(ArgumentsPassing); \
 		}
 
 #define GD_DEFINE_OGL_METHOD_LINKED(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) \

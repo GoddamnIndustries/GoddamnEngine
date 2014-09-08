@@ -33,7 +33,7 @@ GD_NAMESPACE_BEGIN
 	{
 		UInt8* const Array = static_cast<UInt8*>(_Array);
 		for (UInt8* Byte = Array; Byte < (Array + (Count * Length)); ++Byte)
-			*Byte = self->Read();
+			*Byte = this->Read();
 	}
 
 	/// ==========================================================================================
@@ -53,7 +53,7 @@ GD_NAMESPACE_BEGIN
 	{
 		UInt8 const* const Array = static_cast<UInt8 const*>(_Array);
 		for (UInt8 const* Byte = Array; Byte < (Array + (Count * Length)); ++Byte)
-			self->Write(*Byte);
+			this->Write(*Byte);
 	}
 
 GD_NAMESPACE_END

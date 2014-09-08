@@ -72,16 +72,16 @@ GD_NAMESPACE_BEGIN
 	) : HRIObject(HRIObject::TreeLockingFlagsAll, passImageEffect),
 		PassShaderProgram(passShaderProgram)
 	{
-	/*	GD_DEBUG_ASSERT((self->GetParentObject() != nullptr), "Invalid image effect pass specified");
-		GD_DEBUG_ASSERT((self->PassShaderProgram != nullptr), "Invalid image shader program specified");
+	/*	GD_DEBUG_ASSERT((this->GetParentObject() != nullptr), "Invalid image effect pass specified");
+		GD_DEBUG_ASSERT((this->PassShaderProgram != nullptr), "Invalid image shader program specified");
 
-		self->PassRenderTarget = HRInterface::GetInstance().CreateRenderTarget(passRenderTargetInfo);
-		self->PassShaderInstance = HRInterface::GetInstance().CreateShaderInstance(self->PassShaderProgram->GetProgramPixelShader()->ShaderDesc);
+		this->PassRenderTarget = HRInterface::GetInstance().CreateRenderTarget(passRenderTargetInfo);
+		this->PassShaderInstance = HRInterface::GetInstance().CreateShaderInstance(this->PassShaderProgram->GetProgramPixelShader()->ShaderDesc);
 
-		HRIShaderParam* const passColorMap = self->PassShaderInstance->GetParamByName("ColorMap");
+		HRIShaderParam* const passColorMap = this->PassShaderInstance->GetParamByName("ColorMap");
 		if (passColorMap)
 		{
-			auto const previousImageEffectPass = object_cast<ImageEffectPass const*>(self->GetPreviousSiblingObject());
+			auto const previousImageEffectPass = object_cast<ImageEffectPass const*>(this->GetPreviousSiblingObject());
 			passColorMap->SetValue<HRITexture2D const*>(
 				(previousImageEffectPass != nullptr)
 				? previousImageEffectPass->PassRenderTarget->RenderTargetTextures[0]
@@ -89,13 +89,13 @@ GD_NAMESPACE_BEGIN
 			);
 		}
 
-		HRIShaderParam* const passPositionMap = self->PassShaderInstance->GetParamByName("PositionMap");
+		HRIShaderParam* const passPositionMap = this->PassShaderInstance->GetParamByName("PositionMap");
 		if (passPositionMap)
 		{
 			passPositionMap->SetValue<HRITexture2D const*>(RenderTargetPosTexture);
 		}
 
-		HRIShaderParam* const passNormalMap = self->PassShaderInstance->GetParamByName("FNormalMap");
+		HRIShaderParam* const passNormalMap = this->PassShaderInstance->GetParamByName("FNormalMap");
 		if (passNormalMap)
 		{
 			passNormalMap->SetValue<HRITexture2D const*>(RenderTargetNormTexture);
@@ -108,9 +108,9 @@ GD_NAMESPACE_BEGIN
 	ImageEffectPass::~ImageEffectPass(
 	)
 	{
-		self->PassRenderTarget->RemoveReference();
-		self->PassShaderInstance->RemoveReference();
-		self->PassShaderProgram->RemoveReference();
+		this->PassRenderTarget->RemoveReference();
+		this->PassShaderInstance->RemoveReference();
+		this->PassShaderProgram->RemoveReference();
 	}
 
 	/// ==========================================================================================
@@ -127,18 +127,18 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	Camera::Camera() :
 		GD_EXTENDS_SERIALIZABLE(Component),
-		OnProjectionMatrixChangedEvent(&IOnProjectionMatrixChangedListener::OnProjectionMatrixChanged, self)
+		OnProjectionMatrixChangedEvent(&IOnProjectionMatrixChangedListener::OnProjectionMatrixChanged, this)
 	{
-		self->ClearColor			= Color(0.00f, 0.00f, 0.56f, 1.00f);
-		self->Viewport				= Rectangle(0.0f, 0.0f, 1.0f, 1.0f);
-		self->Projection			= GD_CAMERA_PROJECTION_PERSPECTIVE;
-		self->ClearType				= GD_CAMERA_CLEAR_TYPE_ALL;
-		self->ClippingPlanes		= CameraClippingPlanes(0.3f, 1000.0f);
-        self->RenderTarget    		= nullptr;
-		self->FieldOfView			= 60.0f;
-		self->AspectRatio			= 1.0f;
-		self->ProjectionMatrix		= Matrix4x4(1.0f);
-		self->ViewMatrix			= Matrix4x4(1.0f);
+		this->ClearColor			= Color(0.00f, 0.00f, 0.56f, 1.00f);
+		this->Viewport				= Rectangle(0.0f, 0.0f, 1.0f, 1.0f);
+		this->Projection			= GD_CAMERA_PROJECTION_PERSPECTIVE;
+		this->ClearType				= GD_CAMERA_CLEAR_TYPE_ALL;
+		this->ClippingPlanes		= CameraClippingPlanes(0.3f, 1000.0f);
+        this->RenderTarget    		= nullptr;
+		this->FieldOfView			= 60.0f;
+		this->AspectRatio			= 1.0f;
+		this->ProjectionMatrix		= Matrix4x4(1.0f);
+		this->ViewMatrix			= Matrix4x4(1.0f);
 	}
 
 	/// ==========================================================================================
@@ -157,11 +157,11 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	void Camera::OnInitializeSelf()
 	{
-		self->GetGameObject()->GetTransform()->OnTransfromedEvent += self;
-		self->OnProjectionMatrixChangedEvent += self;
+		this->GetGameObject()->GetTransform()->OnTransfromedEvent += this;
+		this->OnProjectionMatrixChangedEvent += this;
 
-		self->OnProjectionMatrixChangedEvent.TriggerEvent();
-		self->OnProjectionMatrixChangedEvent.LaunchEvent();
+		this->OnProjectionMatrixChangedEvent.TriggerEvent();
+		this->OnProjectionMatrixChangedEvent.LaunchEvent();
 
 		//RenderTarget = HRInterface::GetInstance().CreateRenderTarget(
 		//	HRIRenderTargetCtorInfo(
@@ -228,8 +228,8 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	void Camera::OnDestroySelf()
 	{
-		self->GetGameObject()->GetTransform()->OnTransfromedEvent -= self;
-		self->OnProjectionMatrixChangedEvent -= self;
+		this->GetGameObject()->GetTransform()->OnTransfromedEvent -= this;
+		this->OnProjectionMatrixChangedEvent -= this;
 	}
 
 	void Camera::OnUpdateSelf()
@@ -241,13 +241,13 @@ GD_NAMESPACE_BEGIN
 			RenderTarget->BindRenderTarget();
 		}*/
 		HRInterface::GetInstance().ClearContext(Rectangle(0.0f, 0.0f, 1.0f, 1.0f), Color(1.0f, 0.0f, 1.0f, 1.0f));
-		Scene::GetInstance().OnRenderSelf(self);
+		Scene::GetInstance().OnRenderSelf(this);
 
 		//if (enableLights)
 		//{
 		//	RenderTarget->UnbindRenderTarget();
 		//	HRInterface::GetInstance().ClearContext(Rectangle(0, 0, 1280, 720), Color(1.0f, 0.0f, 1.0f, 1.0f));
-		//	//fxLocation->GetParamByName("CameraPosition")->SetValue<Vector3>(self->GetGameObject()->GetTransform()->GetPosition());
+		//	//fxLocation->GetParamByName("CameraPosition")->SetValue<Vector3>(this->GetGameObject()->GetTransform()->GetPosition());
 		//	mountingPoint->GetShaderProgram()->GetProgramVertexShader()->BindShader(nullptr);
 		//	mountingPoint->GetShaderProgram()->GetProgramPixelShader()->BindShader(fxLocation);
 		//	mountingPoint->RenderSelf();
@@ -268,11 +268,11 @@ GD_NAMESPACE_BEGIN
 		_In_ Component* const transformer
 	)
 	{
-		RefPtr<Transform const> const  TheTransform(self->GetGameObject()->GetTransform());
+		RefPtr<Transform const> const  TheTransform(this->GetGameObject()->GetTransform());
 		Vector3Fast const UpVec = TheTransform->RotateVector(Vector3Fast(0.0f, 1.0f, 0.0f)).Normalize();
 		Vector3Fast const LookAt = TheTransform->TransformVector(Vector3Fast(0.0, 0.0, 1.0f));
 		Vector3Fast const Position = TheTransform->GetGlobalPosition();
-		Matrix4x4::MakeLookAtLH(self->ViewMatrix, Position, LookAt, UpVec);
+		Matrix4x4::MakeLookAtLH(this->ViewMatrix, Position, LookAt, UpVec);
 	//	using namespace DirectX;
 	//	XMMATRIX m = XMMatrixLookAtLH(position.ElementsVector, lookAt.ElementsVector, upVec.ElementsVector);
 	}
@@ -282,26 +282,26 @@ GD_NAMESPACE_BEGIN
 		_In_ Camera const* const camera 
 	)
 	{
-		switch (self->Projection)
+		switch (this->Projection)
 		{
 		case GD_CAMERA_PROJECTION_PERSPECTIVE:
 			{
-				Float32 const AspectRatio = ((self->Viewport.Width - self->Viewport.Left) * static_cast<Float32>(Screen::GetResolutionWidth()))
-										  / ((self->Viewport.Height - self->Viewport.Top) * static_cast<Float32>(Screen::GetResolutionHeight()));
-				self->ProjectionMatrix = Matrix4x4(1.0f).PerspectiveLH(
-					self->FieldOfView, AspectRatio,
-					self->ClippingPlanes.ZNear, self->ClippingPlanes.ZFar
+				Float32 const AspectRatio = ((this->Viewport.Width - this->Viewport.Left) * static_cast<Float32>(Screen::GetResolutionWidth()))
+										  / ((this->Viewport.Height - this->Viewport.Top) * static_cast<Float32>(Screen::GetResolutionHeight()));
+				this->ProjectionMatrix = Matrix4x4(1.0f).PerspectiveLH(
+					this->FieldOfView, AspectRatio,
+					this->ClippingPlanes.ZNear, this->ClippingPlanes.ZFar
 				);
 
 			//	using namespace DirectX;
-			//	XMMATRIX m = XMMatrixPerspectiveFovLH(self->FieldOfView / 57.295779513082320876798154814105f, AspectRatio, self->ClippingPlanes.ZNear, self->ClippingPlanes.ZFar);
+			//	XMMATRIX m = XMMatrixPerspectiveFovLH(this->FieldOfView / 57.295779513082320876798154814105f, AspectRatio, this->ClippingPlanes.ZNear, this->ClippingPlanes.ZFar);
 			}	break;
 		case GD_CAMERA_PROJECTION_ORTHOGRAPHIC:
 			{
-				self->ProjectionMatrix = Matrix4x4(1.0f).OrthoLH(
-					self->Viewport.Left, self->Viewport.Left + self->Viewport.Width, 
-					self->Viewport.Top + self->Viewport.Height, self->Viewport.Top, 
-					self->ClippingPlanes.ZNear, self->ClippingPlanes.ZFar
+				this->ProjectionMatrix = Matrix4x4(1.0f).OrthoLH(
+					this->Viewport.Left, this->Viewport.Left + this->Viewport.Width, 
+					this->Viewport.Top + this->Viewport.Height, this->Viewport.Top, 
+					this->ClippingPlanes.ZNear, this->ClippingPlanes.ZFar
 				);
 			}	break;
 		default: GD_DEBUG_ASSERT_FALSE("Invalid projection mode specified"); break;

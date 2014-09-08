@@ -14,12 +14,12 @@ GD_NAMESPACE_BEGIN
 		GD_EXTENDS_SERIALIZABLE(Component),
 		OnTransfromedEvent(&IOnTransformedListener::OnTransformed)
 	{
-		self->OnTransfromedEvent += self;
-		self->lockingFlags = 0;
-		self->parent = nullptr;
-		self->position = Vector3Fast(0.0f);
-		self->rotation = Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-		self->scale = Vector3Fast(1.0f, 1.0f, 1.0f);
+		this->OnTransfromedEvent += this;
+		this->lockingFlags = 0;
+		this->parent = nullptr;
+		this->position = Vector3Fast(0.0f);
+		this->rotation = Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+		this->scale = Vector3Fast(1.0f, 1.0f, 1.0f);
 	}
 
 	Transform::~Transform()
@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 		GD_ASSERT((Application::GetInstance().GetApplicationState() == ApplicationState::Starting),
 			"Method 'Transform::LockTransformation' is avaliable only on application initialization state");
 
-		self->lockingFlags |= lockingFlags;
+		this->lockingFlags |= lockingFlags;
 	}
 
 	/// ==========================================================================================
@@ -40,33 +40,33 @@ GD_NAMESPACE_BEGIN
 
 	void Transform::SetPosition(const Vector3Fast& position)
 	{ 
-		self->OnTransfromedEvent.TriggerEvent();
-		GD_ASSERT((self->lockingFlags & Transform::LockTranslation) == 0,
+		this->OnTransfromedEvent.TriggerEvent();
+		GD_ASSERT((this->lockingFlags & Transform::LockTranslation) == 0,
 			"'Transform::SetPosition' error: Translation for this object "
 			"was locked by 'Transform::LockTransformation'");
 
-		self->position = position; 
+		this->position = position; 
 	}
 
 	void Transform::SetGlobalPosition(const Vector3Fast& position)
 	{
-		Vector3Fast const offset = (position - self->GetGlobalPosition());
-		self->Translate(offset);
+		Vector3Fast const offset = (position - this->GetGlobalPosition());
+		this->Translate(offset);
 	}
 
 	void Transform::SetRotation(const Quaternion& rotation)
 	{ 
-		GD_ASSERT((self->lockingFlags & Transform::LockRotation) == 0,
+		GD_ASSERT((this->lockingFlags & Transform::LockRotation) == 0,
 			"'Transform::SetRotation' error: Rotation for this object "
 			"was locked by 'Transform::LockTransformation'");
 
-		self->OnTransfromedEvent.TriggerEvent();
-		self->rotation = rotation; 
+		this->OnTransfromedEvent.TriggerEvent();
+		this->rotation = rotation; 
 	}
 
 	void Transform::SetScale(const Vector3Fast& scale)
 	{
-		/**/ if ((self->lockingFlags & Transform::LockNonUniformScale) != 0)
+		/**/ if ((this->lockingFlags & Transform::LockNonUniformScale) != 0)
 		{
 			GD_ASSERT((GD_COMPARE_FLOATS(scale.x, scale.y) 
 				&& GD_COMPARE_FLOATS(scale.y, scale.z) 
@@ -75,7 +75,7 @@ GD_NAMESPACE_BEGIN
 				"locked by 'Transform::LockTransformation', but 'Transform::SetScale' "
 				"was attempted to scale with non-uniform scaling vector");
 		}
-		else if ((self->lockingFlags & Transform::LockScale) != 0)
+		else if ((this->lockingFlags & Transform::LockScale) != 0)
 		{
 			GD_ASSERT(false,
 				"'Transform::SetScale' error: Scaling for this object was locked "
@@ -86,66 +86,66 @@ GD_NAMESPACE_BEGIN
 			"'Transform::SetScale' error: All components of scaling vector should be "
 			"positive real values");
 
-		self->OnTransfromedEvent.TriggerEvent();
-		self->scale = scale; 
+		this->OnTransfromedEvent.TriggerEvent();
+		this->scale = scale; 
 	}
 
 	void Transform::SetParent(Transform* const parent)
 	{
-		self->OnTransfromedEvent.TriggerEvent();
-		GD_ASSERT((self->lockingFlags == Transform::LockNothing),
+		this->OnTransfromedEvent.TriggerEvent();
+		GD_ASSERT((this->lockingFlags == Transform::LockNothing),
 			"'Transform::SetParent' error: unable to set parent for object with "
 			"locked transformation.");
 
 		// Disconnecting with old parent
-		if ((self->parent != nullptr) && (self->parent != nullptr))
+		if ((this->parent != nullptr) && (this->parent != nullptr))
 		{
-			self->parent->OnTransfromedEvent -= self;
+			this->parent->OnTransfromedEvent -= this;
 		}
 
 		// Connecting to new parent
 		if ((parent != nullptr) && (parent != nullptr))
 		{
-			parent->OnTransfromedEvent += self;
+			parent->OnTransfromedEvent += this;
 		}
 
-		self->parent = parent;
+		this->parent = parent;
 	}
 
 	void Transform::OnInitializeSelf()
 	{
-		self->SetParent(nullptr);
-		self->OnTransfromedEvent.TriggerEvent();
-		self->OnTransfromedEvent.LaunchEvent();
+		this->SetParent(nullptr);
+		this->OnTransfromedEvent.TriggerEvent();
+		this->OnTransfromedEvent.LaunchEvent();
 	}
 
 	void Transform::OnStartSelf()
 	{
-		self->OnTransfromedEvent.TriggerEvent();
-		self->OnTransfromedEvent.LaunchEvent();
+		this->OnTransfromedEvent.TriggerEvent();
+		this->OnTransfromedEvent.LaunchEvent();
 	}
 
 	void Transform::OnDestroySelf()
 	{
-		self->OnTransfromedEvent -= self;
-		if (self->parent != nullptr)
+		this->OnTransfromedEvent -= this;
+		if (this->parent != nullptr)
 		{
-			self->parent->OnTransfromedEvent -= self;
+			this->parent->OnTransfromedEvent -= this;
 		}
 	}
 
 	void Transform::OnUpdateSelf()
 	{
-		self->OnTransfromedEvent.LaunchEvent();
+		this->OnTransfromedEvent.LaunchEvent();
 	}
 
 	void Transform::OnTransformed(Component* const transformer)
 	{
-		Matrix4x4 const Scaling = Matrix4x4().Scale(self->scale);
-		Matrix4x4 const Rotation = Matrix4x4().Rotate(self->rotation);
-		Matrix4x4 const Translation = Matrix4x4().Translate(self->position);
+		Matrix4x4 const Scaling = Matrix4x4().Scale(this->scale);
+		Matrix4x4 const Rotation = Matrix4x4().Rotate(this->rotation);
+		Matrix4x4 const Translation = Matrix4x4().Translate(this->position);
 
-		self->transformMatrix = Scaling * Rotation * Translation;
+		this->transformMatrix = Scaling * Rotation * Translation;
 	}
 
 GD_NAMESPACE_END

@@ -39,7 +39,7 @@ GD_NAMESPACE_BEGIN
 		/// Initial reference count is 1.
 		GDINL SharedPtr(PointerType* const Pointer = nullptr)
 			: Pointer(Pointer)
-			, ReferenceCount(self->Pointer != nullptr ? new UInt32(1) : nullptr)
+			, ReferenceCount(this->Pointer != nullptr ? new UInt32(1) : nullptr)
 		{
 		}
 
@@ -49,8 +49,8 @@ GD_NAMESPACE_BEGIN
 			: Pointer(Other.Pointer)
 			, ReferenceCount(Other.ReferenceCount)
 		{
-			if (self->ReferenceCount != nullptr)
-				++(*self->ReferenceCount);
+			if (this->ReferenceCount != nullptr)
+				++(*this->ReferenceCount);
 		}
 
 		/// Moves other shared pointer to this object.
@@ -67,11 +67,11 @@ GD_NAMESPACE_BEGIN
 		/// If decremeneted reference counter values is 0, than object would be deallocated.
 		GDINL ~SharedPtr()
 		{
-			if (self->ReferenceCount != nullptr)
-				if ((--(*self->ReferenceCount)) == 0)
+			if (this->ReferenceCount != nullptr)
+				if ((--(*this->ReferenceCount)) == 0)
 				{
-					delete self->Pointer;
-					delete self->ReferenceCount;
+					delete this->Pointer;
+					delete this->ReferenceCount;
 				}
 		}
 
@@ -79,65 +79,65 @@ GD_NAMESPACE_BEGIN
 		/// Returns native pointer stored in this object.
 		GDINL PointerType* GetPointer() const
 		{
-			return self->Pointer;
+			return this->Pointer;
 		}
 
 		/// Deletes pointer, stored in this object and assigns it new specified value.
 		/// @returns New specified pointer.
 		GDINL PointerType* Reset(PointerType* const Pointer)
 		{
-			self->~SharedPtr();
-			self->Pointer = Pointer;
-			self->ReferenceCount = new UInt32(1);
-			return self->Pointer;
+			this->~SharedPtr();
+			this->Pointer = Pointer;
+			this->ReferenceCount = new UInt32(1);
+			return this->Pointer;
 		}
 
 	public /*Operators*/:
-		GDINL PointerType& operator*  () const { return (*self->GetPointer()); }
-		GDINL PointerType* operator-> () const { return ( self->GetPointer()); }
+		GDINL PointerType& operator*  () const { return (*this->GetPointer()); }
+		GDINL PointerType* operator-> () const { return ( this->GetPointer()); }
 
-		GDINL bool operator== (PointerType            const* const OtherPointer) const { return (self->GetPointer() == OtherPointer); }
-		GDINL bool operator== (SharedPtr<PointerType> const&       OtherPointer) const { return (self->GetPointer() == OtherPointer.GetPointer()); }
-		GDINL bool operator!= (PointerType            const* const OtherPointer) const { return !(*self == OtherPointer); }
-		GDINL bool operator!= (SharedPtr<PointerType> const&       OtherPointer) const { return !(*self == OtherPointer); }
+		GDINL bool operator== (PointerType            const* const OtherPointer) const { return (this->GetPointer() == OtherPointer); }
+		GDINL bool operator== (SharedPtr<PointerType> const&       OtherPointer) const { return (this->GetPointer() == OtherPointer.GetPointer()); }
+		GDINL bool operator!= (PointerType            const* const OtherPointer) const { return !(*this == OtherPointer); }
+		GDINL bool operator!= (SharedPtr<PointerType> const&       OtherPointer) const { return !(*this == OtherPointer); }
 
 		GDINL SharedPtr& operator= (SharedPtr const& OtherPtr)
 		{
-			if ((&OtherPtr) != self)
+			if ((&OtherPtr) != this)
 			{
-				self->~SharedPtr();
-				self->Pointer = OtherPtr.Pointer;
-				self->ReferenceCount = OtherPtr.ReferenceCount;
-				if (self->ReferenceCount != nullptr)
-					++(*self->ReferenceCount);
+				this->~SharedPtr();
+				this->Pointer = OtherPtr.Pointer;
+				this->ReferenceCount = OtherPtr.ReferenceCount;
+				if (this->ReferenceCount != nullptr)
+					++(*this->ReferenceCount);
 			}
-			return (*self);
+			return (*this);
 		}
 
 		GDINL SharedPtr& operator= (SharedPtr&& OtherPtr)
 		{
-			if ((&OtherPtr) != self)
+			if ((&OtherPtr) != this)
 			{
-				self->~UniquePtr();
-				self->Pointer = OtherPtr.Pointer;
-				self->ReferenceCount = OtherPtr.ReferenceCount;
+				this->~UniquePtr();
+				this->Pointer = OtherPtr.Pointer;
+				this->ReferenceCount = OtherPtr.ReferenceCount;
 				OtherPtr.Pointer = nullptr;
 				OtherPtr.ReferenceCount = nullptr;
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 		GDINL SharedPtr& operator= (PointerType* const Other)
 		{
-			if (self->Pointer != Other)
+			if (this->Pointer != Other)
 			{
-				self->~SharedPtr();
-				self->Pointer = Pointer;
-				self->ReferenceCount = ((self->Pointer != nullptr) ? new UInt32(1) : nullptr);
+				this->~SharedPtr();
+				this->Pointer = Pointer;
+				this->ReferenceCount = ((this->Pointer != nullptr) ? new UInt32(1) : nullptr);
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 	private:
@@ -171,8 +171,8 @@ GD_NAMESPACE_BEGIN
 			: Pointer(Other.Pointer)
 			, ReferenceCount(Other.ReferenceCount)
 		{
-			if (self->ReferenceCount != nullptr)
-				AtomicsIntrinsics::InterlockedIncrement(self->ReferenceCount);
+			if (this->ReferenceCount != nullptr)
+				AtomicsIntrinsics::InterlockedIncrement(this->ReferenceCount);
 		}
 
 		/// Moves other shared pointer to this object.
@@ -189,11 +189,11 @@ GD_NAMESPACE_BEGIN
 		/// If decremeneted reference counter values is 0, than object would be deallocated.
 		GDINL ~SharedPtr()
 		{
-			if (self->ReferenceCount != nullptr)
-				if (AtomicsIntrinsics::InterlockedDecrement(self->ReferenceCount) == 0)
+			if (this->ReferenceCount != nullptr)
+				if (AtomicsIntrinsics::InterlockedDecrement(this->ReferenceCount) == 0)
 				{
-					delete self->Pointer;
-					delete self->ReferenceCount;
+					delete this->Pointer;
+					delete this->ReferenceCount;
 				}
 		}
 
@@ -201,66 +201,66 @@ GD_NAMESPACE_BEGIN
 		/// Returns native pointer stored in this object.
 		GDINL PointerType* GetPointer() const
 		{
-			return self->Pointer;
+			return this->Pointer;
 		}
 
 		/// Deletes pointer, stored in this object and assigns it new specified value.
 		/// @returns New specified pointer.
 		GDINL PointerType* Reset(PointerType* const Pointer)
 		{
-			self->~SharedPtr();
-			self->Pointer = Pointer;
-			self->ReferenceCount = new UInt32(1);
-			return self->Pointer;
+			this->~SharedPtr();
+			this->Pointer = Pointer;
+			this->ReferenceCount = new UInt32(1);
+			return this->Pointer;
 		}
 
 	public /*Operators*/:
-		GDINL PointerType& operator*  () const { return (*self->GetPointer()); }
-		GDINL PointerType* operator-> () const { return (self->GetPointer()); }
+		GDINL PointerType& operator*  () const { return (*this->GetPointer()); }
+		GDINL PointerType* operator-> () const { return (this->GetPointer()); }
 
-		GDINL bool operator== (PointerType            const* const OtherPointer) const { return (self->GetPointer() == OtherPointer); }
-		GDINL bool operator== (SharedPtr<PointerType> const&       OtherPointer) const { return (self->GetPointer() == OtherPointer.GetPointer()); }
+		GDINL bool operator== (PointerType            const* const OtherPointer) const { return (this->GetPointer() == OtherPointer); }
+		GDINL bool operator== (SharedPtr<PointerType> const&       OtherPointer) const { return (this->GetPointer() == OtherPointer.GetPointer()); }
 
-		GDINL bool operator!= (PointerType            const* const OtherPointer) const { return !(*self == OtherPointer); }
-		GDINL bool operator!= (SharedPtr<PointerType> const&       OtherPointer) const { return !(*self == OtherPointer); }
+		GDINL bool operator!= (PointerType            const* const OtherPointer) const { return !(*this == OtherPointer); }
+		GDINL bool operator!= (SharedPtr<PointerType> const&       OtherPointer) const { return !(*this == OtherPointer); }
 
 		GDINL SharedPtr& operator= (SharedPtr const& OtherPtr)
 		{
-			if ((&OtherPtr) != self)
+			if ((&OtherPtr) != this)
 			{
-				self->~SharedPtr();
-				self->Pointer = OtherPtr.Pointer;
-				self->ReferenceCount = OtherPtr.ReferenceCount;
-				if (self->ReferenceCount != nullptr)
-					AtomicsIntrinsics::InterlockedIncrement(self->ReferenceCount);
+				this->~SharedPtr();
+				this->Pointer = OtherPtr.Pointer;
+				this->ReferenceCount = OtherPtr.ReferenceCount;
+				if (this->ReferenceCount != nullptr)
+					AtomicsIntrinsics::InterlockedIncrement(this->ReferenceCount);
 			}
-			return (*self);
+			return (*this);
 		}
 
 		GDINL SharedPtr& operator= (SharedPtr&& OtherPtr)
 		{
-			if ((&OtherPtr) != self)
+			if ((&OtherPtr) != this)
 			{
-				self->~SharedPtr();
-				self->Pointer = OtherPtr.Pointer;
-				self->ReferenceCount = OtherPtr.ReferenceCount;
+				this->~SharedPtr();
+				this->Pointer = OtherPtr.Pointer;
+				this->ReferenceCount = OtherPtr.ReferenceCount;
 				OtherPtr.Pointer = nullptr;
 				OtherPtr.ReferenceCount = nullptr;
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 		GDINL SharedPtr& operator= (PointerType* const Other)
 		{
-			if (self->Pointer != Other)
+			if (this->Pointer != Other)
 			{
-				self->~SharedPtr();
-				self->Pointer = Other;
-				self->ReferenceCount = new Int32(1);
+				this->~SharedPtr();
+				this->Pointer = Other;
+				this->ReferenceCount = new Int32(1);
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 	private:

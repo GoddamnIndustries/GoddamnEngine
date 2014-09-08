@@ -49,9 +49,9 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		GDINL CameraClippingPlanes& operator= (CameraClippingPlanes const& clippingPlanes)
 		{ 
-			self->ZNear = clippingPlanes.ZNear;
-			self->ZFar = clippingPlanes.ZFar;
-			return *self;
+			this->ZNear = clippingPlanes.ZNear;
+			this->ZFar = clippingPlanes.ZFar;
+			return *this;
 		}
 	};
 
@@ -118,7 +118,7 @@ GD_NAMESPACE_BEGIN
 		GDINL CameraProjection GetProjection(
 		) const
 		{ 
-			return self->Projection;
+			return this->Projection;
 		}
 
 		/// ==========================================================================================
@@ -127,8 +127,8 @@ GD_NAMESPACE_BEGIN
 			_In_ CameraProjection const projection
 		)
 		{ 
-			self->Projection = projection; 
-			self->OnProjectionMatrixChangedEvent.TriggerEvent();
+			this->Projection = projection; 
+			this->OnProjectionMatrixChangedEvent.TriggerEvent();
 		}
 
 		/// ==========================================================================================
@@ -136,7 +136,7 @@ GD_NAMESPACE_BEGIN
 		GDINL Rectangle const& GetViewport(
 		) const
 		{ 
-			return self->Viewport; 
+			return this->Viewport; 
 		}
 
 		/// ==========================================================================================
@@ -145,8 +145,8 @@ GD_NAMESPACE_BEGIN
 			_In_ Rectangle const& viewport
 		)
 		{ 
-			self->Viewport = viewport; 
-			self->OnProjectionMatrixChangedEvent.TriggerEvent();
+			this->Viewport = viewport; 
+			this->OnProjectionMatrixChangedEvent.TriggerEvent();
 		}
 		
 		/// ==========================================================================================
@@ -154,7 +154,7 @@ GD_NAMESPACE_BEGIN
 		GDINL Color const& GetClearColor(
 		) const
 		{ 
-			return self->ClearColor; 
+			return this->ClearColor; 
 		}
 
 		/// ==========================================================================================
@@ -163,29 +163,29 @@ GD_NAMESPACE_BEGIN
 			_In_ Color const& clearColor
 		)
 		{ 
-			self->ClearColor = clearColor; 
+			this->ClearColor = clearColor; 
 		}
 		
 		/// ==========================================================================================
 		/// Returns clipping planes of this camera
 		GDINL CameraClippingPlanes const& GetClippingPlanes() const
 		{ 
-			return self->ClippingPlanes; 
+			return this->ClippingPlanes; 
 		}
 
 		/// ==========================================================================================
 		/// Changes clipping planes of this camera
 		GDINL void SetClippingPlanes(const CameraClippingPlanes& clippingPlanes)
 		{ 
-			self->ClippingPlanes = clippingPlanes; 
-			self->OnProjectionMatrixChangedEvent.TriggerEvent();
+			this->ClippingPlanes = clippingPlanes; 
+			this->OnProjectionMatrixChangedEvent.TriggerEvent();
 		}
 		
 		/// ==========================================================================================
 		/// Returns field of view of this camera
 		GDINL float GetFieldOFView() const 
 		{ 
-			return self->FieldOfView; 
+			return this->FieldOfView; 
 		}
 
 		/// ==========================================================================================
@@ -194,8 +194,8 @@ GD_NAMESPACE_BEGIN
 			_In_ float const fieldOfView
 		)
 		{ 
-			self->FieldOfView = fieldOfView;  
-			self->OnProjectionMatrixChangedEvent.TriggerEvent();
+			this->FieldOfView = fieldOfView;  
+			this->OnProjectionMatrixChangedEvent.TriggerEvent();
 		}
 
 		/// ==========================================================================================
@@ -203,7 +203,7 @@ GD_NAMESPACE_BEGIN
 		GDINL CameraClearType GetClearType(
 		) const 
 		{ 
-			return self->ClearType; 
+			return this->ClearType; 
 		}
 
 		/// ==========================================================================================
@@ -212,8 +212,8 @@ GD_NAMESPACE_BEGIN
 			_In_ CameraClearType const clearType
 		) 
 		{ 
-			self->ClearType = clearType; 
-			self->OnProjectionMatrixChangedEvent.TriggerEvent();
+			this->ClearType = clearType; 
+			this->OnProjectionMatrixChangedEvent.TriggerEvent();
 		}
 
 		/// ==========================================================================================
@@ -221,7 +221,7 @@ GD_NAMESPACE_BEGIN
 		GDINL Matrix4x4 const& GetProjectionMatrix(
 		) const
 		{ 
-			return self->ProjectionMatrix; 
+			return this->ProjectionMatrix; 
 		}
 
 		/// ==========================================================================================
@@ -229,7 +229,7 @@ GD_NAMESPACE_BEGIN
 		GDINL Matrix4x4 const& GetViewMatrix(
 		) const 
 		{ 
-			return self->ViewMatrix; 
+			return this->ViewMatrix; 
 		}
 
 		/// @}
@@ -243,7 +243,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL bool IsUsingRenderTarget() const 
 		{
-            return (self->RenderTarget != nullptr);
+            return (this->RenderTarget != nullptr);
 		}
 
 		GDAPI void UseRenderTarget(const bool useRenderTarget);

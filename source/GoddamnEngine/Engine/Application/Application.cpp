@@ -34,7 +34,8 @@ GD_NAMESPACE_BEGIN
 		, CMDArgsList(CMDArgsList)
 		, TheResourceStreamer(new RSStreamer())
 		, ThePluginManager(new PluginManager())
-		, lowLevelSystem(new LowLevelSystem())
+		, TheGameWindow(new Window())
+	//	, lowLevelSystem(new LowLevelSystem())
 		, staticComponentHandler(new GameObject())
 		, gameObjectsHandler(new /*Object*/GameObject())
 	{	// Some libraries, like Mono just terminate process if some error accures. 
@@ -55,14 +56,14 @@ GD_NAMESPACE_BEGIN
 #endif	// if (defined(GD_PLATFORM_DESKTOP))
 
 		// Handling command line arguments.
-		GD_DEBUG_ASSERT((self->CMDArgsCount >= 1) && (self->CMDArgsList != nullptr), "Invalid command line arguments specified");
-		self->EnvironmentPath = Path::GetDirectoryName(self->CMDArgsList[0]);
+		GD_DEBUG_ASSERT((this->CMDArgsCount >= 1) && (this->CMDArgsList != nullptr), "Invalid command line arguments specified");
+		this->EnvironmentPath = Path::GetDirectoryName(this->CMDArgsList[0]);
 
 		new HROGLInterface();
 	//	new HRD3D11Interface();
 
-		self->staticComponentHandler.GetPointer()->AttachToObject(self);
-		StaticComponent::InitializeAsHandler(self->staticComponentHandler.GetPointer());
+		this->staticComponentHandler.GetPointer()->AttachToObject(this);
+		StaticComponent::InitializeAsHandler(this->staticComponentHandler.GetPointer());
 		HRInterface::GetInstance().CreateContex();
 	}
 
@@ -107,7 +108,7 @@ GD_NAMESPACE_BEGIN
 		Scene::GetInstance().OnStartSelf();
 		
 		// Beginning initialization phase:
-		LowLevelSystem::GetInstance().SetEventCallBack(GD_LL_EVENT_ON_WINDOW_CLOSED, OnEvent);
+	//	LowLevelSystem::GetInstance().SetEventCallBack(GD_LL_EVENT_ON_WINDOW_CLOSED, OnEvent);
 		RSStreamer::GetInstance().WaitForLoading();
 
 		// All resources are now loaded, we a ready for final start 
@@ -115,7 +116,7 @@ GD_NAMESPACE_BEGIN
 		application.State = ApplicationState::Running;
 		for (/*size_t fpsCount = 0*/; application.State != ApplicationState::Exiting;)
 		{
-			LowLevelSystem::GetInstance().UpdateWindow();
+			application.TheGameWindow->WindowUpdate();
 			Scene::GetInstance().OnUpdateSelf();
 			application.staticComponentHandler->OnUpdateSelf();
 			application.staticComponentHandler->OnRenderSelf(nullptr);

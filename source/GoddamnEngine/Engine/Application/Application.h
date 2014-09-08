@@ -7,8 +7,10 @@
 #include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
 #include <GoddamnEngine/Core/Text/String/String.h>
 #include <GoddamnEngine/Core/Containers/Map/Map.h>
+#include <GoddamnEngine/Core/Containers/Pointer/SharedPtr.h>
 #include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
-#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
+//#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
+#include <GoddamnEngine/Core/Framework/Framework.h>
 #include <GoddamnEngine/Engine/Plugin/Plugin.h>
 #include <GoddamnEngine/Engine/Scene/Scene.h>
 
@@ -40,11 +42,13 @@ GD_NAMESPACE_BEGIN
 		GD_TYPEINFORMATION_DEFINITION(Application, Object, GDAPI);
 		String EnvironmentPath;
 
-		UniquePtr<PluginManager   > ThePluginManager;
-		UniquePtr<RSStreamer> TheResourceStreamer;
+		UniquePtr<PluginManager> ThePluginManager;
+		UniquePtr<RSStreamer   > TheResourceStreamer;
 
-		RefPtr<LowLevelSystem> lowLevelSystem;
-		// RefPtr<SceneManager> sceneManager;
+		SharedPtr<Window       > TheGameWindow;
+
+	//	RefPtr<LowLevelSystem> lowLevelSystem;
+	//	RefPtr<SceneManager> sceneManager;
 		RefPtr<GameObject> staticComponentHandler;
 		RefPtr<Object> gameObjectsHandler;
 
@@ -94,10 +98,13 @@ GD_NAMESPACE_BEGIN
 		GDAPI virtual String const& GetApplicationVersion() const abstract;
 
 		/// Returns 'Application'`s state
-		GDINL ApplicationState GetApplicationState() const { return self->State; }
+		GDINL ApplicationState GetApplicationState() const { return this->State; }
+
+		/// Returns the Window that application has created.
+		GDINL SharedPtr<Window> GetApplicationGameWindow() const { return this->TheGameWindow; }
 
 		/// Returns path to application`s executable.
-		GDINL String const& GetEnvironmentPath() const { return self->EnvironmentPath; }
+		GDINL String const& GetEnvironmentPath() const { return this->EnvironmentPath; }
 
 	protected:
 		/// @name Messages for Application <-> OS exchange

@@ -178,7 +178,7 @@ GD_NAMESPACE_BEGIN
 			, DefinitionType(DefinitionType)
 			, Type(Definition.Type)
 		{
-			self->Name = Definition.Name;
+			this->Name = Definition.Name;
 		}
 	};	// struct HLSLDefinition
 
@@ -190,7 +190,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		Vector<HLSLDefinition const*> InnerDefinitions;
-		GDINL virtual ~HLSLScope() { for (auto const Definition : self->InnerDefinitions) delete Definition; }
+		GDINL virtual ~HLSLScope() { for (auto const Definition : this->InnerDefinitions) delete Definition; }
 		GDINL explicit HLSLScope() { }
 		GDINT HLSLDefinition const* FindDefinition(String const& Name) const;
 		GDINT HLSLVariable   const* FindVariable  (String const& Name) const;
@@ -231,7 +231,7 @@ GD_NAMESPACE_BEGIN
 	{
 		HLSLTypeClass const Class;
 		GDINL virtual ~HLSLType(                         ) { }
-		GDINL explicit HLSLType(HLSLTypeClass const Class) : HLSLDefinition(GD_HLSL_DEFINITION_TYPE), Class(Class) { self->Type = self; }
+		GDINL explicit HLSLType(HLSLTypeClass const Class) : HLSLDefinition(GD_HLSL_DEFINITION_TYPE), Class(Class) { this->Type = this; }
 	};	// struct HLSLType
 
 	struct HLSLScalarType : public HLSLType
@@ -267,7 +267,7 @@ GD_NAMESPACE_BEGIN
 	struct HLSLCBuffer final : public HLSLDefinition, public HLSLScope
 	{
 		HLSLRegister const* Register = nullptr;
-		GDINL virtual ~HLSLCBuffer() { delete self->Register; }
+		GDINL virtual ~HLSLCBuffer() { delete this->Register; }
 		GDINL explicit HLSLCBuffer() : HLSLDefinition(GD_HLSL_DEFINITION_CONSTANTBUFFER) { }
 	};	// struct HLSLCBuffer
 

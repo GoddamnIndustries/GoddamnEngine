@@ -84,7 +84,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief			Executes the thread
 		GDINL void Execute()
 		{
-			return self->ExecuteWithDelay(0.0f);
+			return this->ExecuteWithDelay(0.0f);
 		}
 
 		/// @brief			Terminates thread execution
@@ -99,7 +99,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief			Waits thread for finishing
 		GDINL void WaitForFinishing()
 		{
-			return self->WaitForFinishing(-1.0f);
+			return this->WaitForFinishing(-1.0f);
 		}
 
 		/// @}
@@ -111,7 +111,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns		Pointer on native thread on this system
 		GDINL handle GetNativeThread() const
 		{
-			return self->nativeThread;
+			return this->nativeThread;
 		}
 
 		/// @brief			Returns 'Thread'`s state
@@ -119,25 +119,25 @@ GD_NAMESPACE_BEGIN
 		/// @see ThreadState
 		GDINL ThreadState GetThreadState() const
 		{ 
-			return self->state; 
+			return this->state; 
 		}
 
 		/// @brief			Test if thread is running now
 		GDINL bool IsRunning() const 
 		{ 
-			return self->GetThreadState() == ThreadState::Running; 
+			return this->GetThreadState() == ThreadState::Running; 
 		}
 		
 		/// @brief			Test if thread was finished
 		GDINL bool IsFinished() const 
 		{ 
-			return self->GetThreadState() == ThreadState::Finished; 
+			return this->GetThreadState() == ThreadState::Finished; 
 		}
 
 		/// @brief			Test if thread was finished
 		GDINL bool IsStopped() const 
 		{ 
-			return self->GetThreadState() == ThreadState::Terminated; 
+			return this->GetThreadState() == ThreadState::Terminated; 
 		}
 
 		/// @}

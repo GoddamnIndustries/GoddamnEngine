@@ -76,15 +76,15 @@ GD_NAMESPACE_BEGIN
 
 		/// Returns reference on last parsed lexem.
 		/// @returns Reference on last parsed lexem.
-		GDINL Lexem const& GetCurrentLexem() const { return self->CurrentLexem; }
+		GDINL Lexem const& GetCurrentLexem() const { return this->CurrentLexem; }
 
 	//	/// Returns reference on input stream this parser reads from.
 	//	/// @returns Reference on input stream this parser reads from.
-	//	GDINL InputStream* GetInputStream() { return self->Input.GetPointer(); }
+	//	GDINL InputStream* GetInputStream() { return this->Input.GetPointer(); }
 
 		/// Returns reference on lexer this parser ususes.
 		/// @returns Reference on lexer this parser ususes.
-		GDINL StreamedLexer* GetLexer() { return self->Lexer.GetPointer(); }
+		GDINL StreamedLexer* GetLexer() { return this->Lexer.GetPointer(); }
 
 		/// @}
 

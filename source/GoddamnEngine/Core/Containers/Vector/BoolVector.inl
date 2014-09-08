@@ -25,64 +25,64 @@ GD_NAMESPACE_BEGIN
 	GD_BVECTOR_TEMPLATE()
 	GDINL size_t GD_BVECTOR_CLASS()::GetSize() const
 	{
-		return (self->ByteStorage.GetSize() * GD_BITS_PER_BYTE) + self->BitIndex + 1;
+		return (this->ByteStorage.GetSize() * GD_BITS_PER_BYTE) + this->BitIndex + 1;
 	}
 
 	GD_BVECTOR_TEMPLATE()
 	GDINL size_t GD_BVECTOR_CLASS()::GetCapacity() const
 	{
-		return (self->ByteStorage.GetCapacity() * GD_BITS_PER_BYTE);
+		return (this->ByteStorage.GetCapacity() * GD_BITS_PER_BYTE);
 	}
 
 	GD_BVECTOR_TEMPLATE()
 	GDINL void GD_BVECTOR_CLASS()::Resize(size_t const NewBitsCount, bool const InitialBit /* = bool() */)
 	{
-		self->ByteStorage.Resize(NewBitsCount / GD_BITS_PER_BYTE);
-		self->BitIndex        = (NewBitsCount % GD_BITS_PER_BYTE);
+		this->ByteStorage.Resize(NewBitsCount / GD_BITS_PER_BYTE);
+		this->BitIndex        = (NewBitsCount % GD_BITS_PER_BYTE);
 	}
 
 	GD_BVECTOR_TEMPLATE()
 	GDINL void GD_BVECTOR_CLASS()::Reserve(size_t const NewCapacity)
 	{
-		self->ByteStorage.Reserve(NewCapacity / GD_BITS_PER_BYTE);
+		this->ByteStorage.Reserve(NewCapacity / GD_BITS_PER_BYTE);
 	}
 
 	GD_BVECTOR_TEMPLATE()
 	GDINL void GD_BVECTOR_CLASS()::Emptify()
 	{
-		self->Resize(0);
+		this->Resize(0);
 	}
 
 	GD_BVECTOR_TEMPLATE()
 	GDINL void GD_BVECTOR_CLASS()::Clear()
 	{
-		self->Reserve(0);
+		this->Reserve(0);
 	}
 
 	GD_BVECTOR_TEMPLATE()
 	GDINL bool GD_BVECTOR_CLASS()::GetElementAt(size_t const Index) const
 	{
-		GD_ASSERT((Index < self->GetSize()), "Index is out of bounds");
-		return (((self->ByteStorage[Index / GD_BITS_PER_BYTE]) & GD_BIT(self->BitIndex)) != 0);
+		GD_ASSERT((Index < this->GetSize()), "Index is out of bounds");
+		return (((this->ByteStorage[Index / GD_BITS_PER_BYTE]) & GD_BIT(this->BitIndex)) != 0);
 	}
 
 	GD_BVECTOR_TEMPLATE()
 	GDINL bool GD_BVECTOR_CLASS()::GetFirstElement() const
 	{
-		return self->GetElementAt(0);
+		return this->GetElementAt(0);
 	}
 
 	GD_BVECTOR_TEMPLATE()
 	GDINL bool GD_BVECTOR_CLASS()::GetLastElement() const
 	{
-		return self->GetElementAt(self->GetSize() - 1);
+		return this->GetElementAt(this->GetSize() - 1);
 	}
 
 	GD_BVECTOR_TEMPLATE()
 	GDINL void SetElementAt(size_t const Index, bool const Bit)
 	{
-		GD_ASSERT((Index < self->GetSize()), "Index is out of bounds");
-		self->ByteStorage[Index / GD_BITS_PER_BYTE] |= (Bit ? GD_BIT(self->BitIndex) : 0);
+		GD_ASSERT((Index < this->GetSize()), "Index is out of bounds");
+		this->ByteStorage[Index / GD_BITS_PER_BYTE] |= (Bit ? GD_BIT(this->BitIndex) : 0);
 	}
 
 	GD_BVECTOR_TEMPLATE()
@@ -100,22 +100,22 @@ GD_NAMESPACE_BEGIN
 	GD_BVECTOR_TEMPLATE()
 	GDINL void GD_BVECTOR_CLASS()::PushLast(bool NewBit /* = bool() */)
 	{
-		if ((++self->BitIndex) == GD_BITS_PER_BYTE)
+		if ((++this->BitIndex) == GD_BITS_PER_BYTE)
 		{	// Here comes bytes border.
-			self->ByteStorage.PushLast();
-			self->BitIndex = 0;
+			this->ByteStorage.PushLast();
+			this->BitIndex = 0;
 		}
 
-		self->ByteStorage[Index / GD_BITS_PER_BYTE] |= (NewBit ? GD_BIT(self->BitIndex) : 0);
+		this->ByteStorage[Index / GD_BITS_PER_BYTE] |= (NewBit ? GD_BIT(this->BitIndex) : 0);
 	}
 
 	GD_BVECTOR_TEMPLATE()
 	GDINL void GD_BVECTOR_CLASS()::PopLast()
 	{
-		if ((--self->BitIndex) == SIZE_MAX)
+		if ((--this->BitIndex) == SIZE_MAX)
 		{	// Here comes bytes border.
-			self->ByteStorage.PopLast()
-			self->BitIndex = 0;
+			this->ByteStorage.PopLast()
+			this->BitIndex = 0;
 		}
 	}
 

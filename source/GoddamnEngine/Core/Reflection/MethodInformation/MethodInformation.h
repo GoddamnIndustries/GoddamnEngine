@@ -104,11 +104,11 @@ GD_NAMESPACE_BEGIN
 
 			public:
 				GDINL MethodTraits(ThisMethodType const MethodPtr) : MethodPtr(MethodPtr) { }
-				GDINL virtual IMethodTraitsBase const* Clone() const { return new MethodTraits<ReturnType(*)(ArgumentTypes...)>(self->MethodPtr); }
+				GDINL virtual IMethodTraitsBase const* Clone() const { return new MethodTraits<ReturnType(*)(ArgumentTypes...)>(this->MethodPtr); }
 				GDINL virtual ReturnType Invoke(handle const Instance, ArgumentTypes&&... Arguments) const
 				{
 					GD_UNUSED(Instance); // Since no instance is required to be used while invocation of static function
-					return (*self->MethodPtr)(Forward<ArgumentTypes>(Arguments)...);
+					return (*this->MethodPtr)(Forward<ArgumentTypes>(Arguments)...);
 				}
 			};	// struct MethodTraits<ReturnType(*)(ArgumentTypes...)>
 
@@ -122,11 +122,11 @@ GD_NAMESPACE_BEGIN
 
 			public:
 				GDINL MethodTraits(ThisMethodType const MethodPtr) : MethodPtr(MethodPtr) { }
-				GDINL virtual IMethodTraitsBase const* Clone() const { return new MethodTraits<ReturnType(ClassType::*)(ArgumentTypes...)>(self->MethodPtr); }
+				GDINL virtual IMethodTraitsBase const* Clone() const { return new MethodTraits<ReturnType(ClassType::*)(ArgumentTypes...)>(this->MethodPtr); }
 				GDINL virtual ReturnType Invoke(handle const Instance, ArgumentTypes&&... Arguments) const
 				{
 					ClassType* const ClassInstance = static_cast<ClassType*>(Instance);
-					return (ClassInstance->*self->MethodPtr)(Forward<ArgumentTypes>(Arguments)...);
+					return (ClassInstance->*this->MethodPtr)(Forward<ArgumentTypes>(Arguments)...);
 				}
 			};	// struct MethodTraits<ReturnType(ClassType::*)(ArgumentTypes...)>
 
@@ -140,11 +140,11 @@ GD_NAMESPACE_BEGIN
 
 			public:
 				GDINL MethodTraits(ThisMethodType const MethodPtr) : MethodPtr(MethodPtr) { }
-				GDINL virtual IMethodTraitsBase const* Clone() const { return new MethodTraits<ReturnType(ClassType::*)(ArgumentTypes...) const>(self->MethodPtr); }
+				GDINL virtual IMethodTraitsBase const* Clone() const { return new MethodTraits<ReturnType(ClassType::*)(ArgumentTypes...) const>(this->MethodPtr); }
 				GDINL virtual ReturnType Invoke(handle const Instance, ArgumentTypes&&... Arguments) const
 				{
 					ClassType const* const ClassInstance = static_cast<ClassType const*>(Instance);
-					return (ClassInstance->*self->MethodPtr)(Forward<ArgumentTypes>(Arguments)...);
+					return (ClassInstance->*this->MethodPtr)(Forward<ArgumentTypes>(Arguments)...);
 				}
 			};	// struct MethodTraits<ReturnType(ClassType::*)(ArgumentTypes...) const>
 
@@ -160,10 +160,10 @@ GD_NAMESPACE_BEGIN
 			GDINL MethodBase(MethodBase const& MethodBaseRef) : MethodTraitsPtr(MethodBaseRef->Clone()) { }
 
 		public:
-			GDINL MethodBase& operator= (MethodBase const& MethodBaseRef) { self->MethodTraitsPtr = MethodBaseRef.MethodTraitsPtr; return (*self); }
-			GDINL ReturnType  operator()(handle const Instance, ArgumentTypes&&... Arguments) const { return self->MethodTraitsPtr->Invoke(Instance, Forward<ArgumentTypes>(Arguments)...); }
-			GDINL bool operator== (MethodBase const& MethodBaseRef) const { return ((*self->MethodTraitsPtr) == *(MethodBaseRef.MethodTraitsPtr)); }
-			GDINL bool operator!= (MethodBase const& MethodBaseRef) const { return !((*self) == MethodBaseRef); }
+			GDINL MethodBase& operator= (MethodBase const& MethodBaseRef) { this->MethodTraitsPtr = MethodBaseRef.MethodTraitsPtr; return (*this); }
+			GDINL ReturnType  operator()(handle const Instance, ArgumentTypes&&... Arguments) const { return this->MethodTraitsPtr->Invoke(Instance, Forward<ArgumentTypes>(Arguments)...); }
+			GDINL bool operator== (MethodBase const& MethodBaseRef) const { return ((*this->MethodTraitsPtr) == *(MethodBaseRef.MethodTraitsPtr)); }
+			GDINL bool operator!= (MethodBase const& MethodBaseRef) const { return !((*this) == MethodBaseRef); }
 		};	// struct MethodBase
 
 #if (!defined(GD_DOCUMENTATION))
@@ -184,7 +184,7 @@ GD_NAMESPACE_BEGIN
 				GDINL ReturnType Invoke(handle const Instance, va_list ArgumentsList) const 
 				{
 					GD_UNUSED(ArgumentsList);
-					return (*self)(Instance); 
+					return (*this)(Instance); 
 				}
 			};	// struct MethodInvBase<0>
 
@@ -194,7 +194,7 @@ GD_NAMESPACE_BEGIN
 				GDINL ReturnType Invoke(handle const Instance, va_list ArgumentsList) const 
 				{
 					GD_METHOD_INV_GET_ARGUMENT(0);
-					return (*self)(Instance, A0);
+					return (*this)(Instance, A0);
 				}
 			};	// struct MethodInvBase<1>
 
@@ -205,7 +205,7 @@ GD_NAMESPACE_BEGIN
 				{ 
 					GD_METHOD_INV_GET_ARGUMENT(0);
 					GD_METHOD_INV_GET_ARGUMENT(1);
-					return (*self)(Instance, A0, A1);
+					return (*this)(Instance, A0, A1);
 				}
 			};	// struct MethodInvBase<2>
 
@@ -217,7 +217,7 @@ GD_NAMESPACE_BEGIN
 					GD_METHOD_INV_GET_ARGUMENT(0);
 					GD_METHOD_INV_GET_ARGUMENT(1);
 					GD_METHOD_INV_GET_ARGUMENT(2);
-					return (*self)(Instance, A0, A1, A2);
+					return (*this)(Instance, A0, A1, A2);
 				}
 			};	// struct MethodInvBase<3>
 
@@ -230,7 +230,7 @@ GD_NAMESPACE_BEGIN
 					GD_METHOD_INV_GET_ARGUMENT(1);
 					GD_METHOD_INV_GET_ARGUMENT(2);
 					GD_METHOD_INV_GET_ARGUMENT(3);
-					return (*self)(Instance, A0, A1, A2, A3);
+					return (*this)(Instance, A0, A1, A2, A3);
 				}
 			};	// struct MethodInvBase<4>
 		}	// namespace MethodPrivate
@@ -259,7 +259,7 @@ GD_NAMESPACE_BEGIN
 			/// @todo Add invocation example here
 			GDINL void Invoke(handle const Instance, handle const ReturnValueOutputPtr, va_list ArgumentsList) const
 			{
-				*static_cast<ReturnType*>(ReturnValueOutputPtr) = Forward<ReturnType>(self->ThisBaseType::Invoke(Instance, ArgumentsList));
+				*static_cast<ReturnType*>(ReturnValueOutputPtr) = Forward<ReturnType>(this->ThisBaseType::Invoke(Instance, ArgumentsList));
 			}
 		};	// struct MethodEx<ReturnType>
 #undef GD_METHOD_EX_BASE_TYPE
@@ -275,7 +275,7 @@ GD_NAMESPACE_BEGIN
 			GDINL void Invoke(handle const Instance, handle const ReturnValueOutputPtr, va_list ArgumentsList) const
 			{
 				GD_UNUSED(ReturnValueOutputPtr);
-				self->ThisMethodExBaseType::Invoke(Instance, ArgumentsList);
+				this->ThisMethodExBaseType::Invoke(Instance, ArgumentsList);
 			}
 		};	// struct MethodEx<void>
 #endif	// if (!defined(GD_DOCUMENTATION))
@@ -307,7 +307,7 @@ GD_NAMESPACE_BEGIN
 			{
 				va_list ArgumentsList = va_list(); 
 				va_start(ArgumentsList, ReturnValueOutputPtr);
-				self->ThisMethodExType::Invoke(Instance, ReturnValueOutputPtr, ArgumentsList);
+				this->ThisMethodExType::Invoke(Instance, ReturnValueOutputPtr, ArgumentsList);
 				va_end(ArgumentsList);
 			}
 		};	// class BasicMethodInformation

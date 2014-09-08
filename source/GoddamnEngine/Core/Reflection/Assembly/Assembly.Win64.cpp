@@ -20,10 +20,10 @@ GD_NAMESPACE_BEGIN
 #if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSVC))
 				UINT const DefaultErrorMode = GetErrorMode();
 				SetErrorMode(SEM_FAILCRITICALERRORS);
-				self->NativePointer = (reinterpret_cast<handle>(::LoadLibraryA(&FileName[0])));
+				this->NativePointer = (reinterpret_cast<handle>(::LoadLibraryA(&FileName[0])));
 				SetErrorMode(DefaultErrorMode);
 #else	// if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSVC))
-				self->NativePointer = (reinterpret_cast<handle>(::LoadLibraryA(&FileName[0])));
+				this->NativePointer = (reinterpret_cast<handle>(::LoadLibraryA(&FileName[0])));
 #endif	// if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSVC))
 			}
 		}
@@ -33,8 +33,8 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	Assembly::~Assembly()
 	{
-		if (self->WasSuccessfullyLoaded()) {
-			FreeModule(reinterpret_cast<HMODULE>(self->NativePointer));
+		if (this->WasSuccessfullyLoaded()) {
+			FreeModule(reinterpret_cast<HMODULE>(this->NativePointer));
 		}
 	}
 
@@ -42,11 +42,11 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	chandle Assembly::GetNativeMethod(_In_ String const& FunctionName) const
 	{
-		GD_ASSERT((self->WasSuccessfullyLoaded()),
+		GD_ASSERT((this->WasSuccessfullyLoaded()),
 			"Library was not loaded, but attempted to obtain procedure address");
 
 		return reinterpret_cast<chandle>(GetProcAddress(
-			   reinterpret_cast<HMODULE>(self->NativePointer), (&FunctionName[0])));
+			   reinterpret_cast<HMODULE>(this->NativePointer), (&FunctionName[0])));
 	}
 
 GD_NAMESPACE_END

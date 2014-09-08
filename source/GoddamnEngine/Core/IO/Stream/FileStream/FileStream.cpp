@@ -38,27 +38,27 @@ GD_NAMESPACE_BEGIN
 	FileInputStream::FileInputStream(String const& FilePath)
 		: FilePath(FilePath)
 	{
-		if (access(self->FilePath.CStr(), F_OK) == -1)
+		if (access(this->FilePath.CStr(), F_OK) == -1)
 			throw FileNotFoundException(String::Format("File with path '%s' was not found on disk ('access(F_OK)' failed).", FilePath.CStr()));
-		if (access(self->FilePath.CStr(), R_OK) == -1)
+		if (access(this->FilePath.CStr(), R_OK) == -1)
 			throw IOException(String::Format("File with path '%s' cannon be opened for reading ('access(R_OK)' failed).", FilePath.CStr()));
 		
-		self->FileHandle = ::fopen(self->FilePath.CStr(), "rb");
-		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "File was validated with 'access' but 'fopen' has failed.");
+		this->FileHandle = ::fopen(this->FilePath.CStr(), "rb");
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "File was validated with 'access' but 'fopen' has failed.");
 	}
 
 	FileInputStream::~FileInputStream()
 	{
-		if (self->FileHandle != nullptr) {
-			self->Close();
+		if (this->FileHandle != nullptr) {
+			this->Close();
 		}
 	}
 
 	/// @see BaseStream::GetPosition()
 	size_t FileInputStream::GetPosition() const
 	{
-		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		long const Position = ::ftell(self->FileHandle);
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		long const Position = ::ftell(this->FileHandle);
 		if (Position < 0l) {
 			throw IOException("Failed to get position of stream ('ftell' returned negative value).");
 		}
@@ -68,27 +68,27 @@ GD_NAMESPACE_BEGIN
 	/// @see BaseStream::GetSize()
 	size_t FileInputStream::GetSize() const
 	{
-		if (self->FileLength == SIZE_MAX) {	// Finiding out position.
-			FileInputStream* const MutableSelf = const_cast<FileInputStream*>(self);
+		if (this->FileLength == SIZE_MAX) {	// Finiding out position.
+			FileInputStream* const MutableSelf = const_cast<FileInputStream*>(this);
 			size_t const CurrentPosition = MutableSelf->GetPosition();
 			MutableSelf->Seek(0, SeekOrigin::End);
 			MutableSelf->FileLength = MutableSelf->GetPosition();
 			MutableSelf->Seek(CurrentPosition, SeekOrigin::Begin);
 		}
 
-		return self->FileLength;
+		return this->FileLength;
 	}
 
 	/// @see InputStream::Close()
 	void FileInputStream::Close()
 	{
-		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fclose(self->FileHandle) != 0) {
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		if (::fclose(this->FileHandle) != 0) {
 			throw IOException("Failed to close file ('fclose' returned non-zero value).");
 		}
-		self->FilePath.Emptify();
-		self->FileHandle = nullptr;
-		self->FileLength = SIZE_MAX;
+		this->FilePath.Emptify();
+		this->FileHandle = nullptr;
+		this->FileLength = SIZE_MAX;
 	}
 
 	/// @see InputStream::Seek(ptrdiff_t const Offset, SeekOrigin const Origin)
@@ -100,9 +100,9 @@ GD_NAMESPACE_BEGIN
 			/* SeekOrigin::End     = */ SEEK_END
 		};
 
-		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
 		int const StandartOrigin = SeekOriginTable[static_cast<size_t>(Origin)];
-		if (::fseek(self->FileHandle, static_cast<long>(Offset), StandartOrigin) != 0) {
+		if (::fseek(this->FileHandle, static_cast<long>(Offset), StandartOrigin) != 0) {
 			throw IOException("Failed to seek inside file ('fseek' returned non-zero value).");
 		}
 	}
@@ -111,7 +111,7 @@ GD_NAMESPACE_BEGIN
 	UInt8 FileInputStream::Read()
 	{
 		UInt8 Result = 0;
-		self->Read(&Result, 1, sizeof(Result));
+		this->Read(&Result, 1, sizeof(Result));
 		return Result;
 	}
 
@@ -120,8 +120,8 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_DEBUG_ASSERT(Count != 0, "Zero elements count specified");
 		GD_DEBUG_ASSERT(Length != 0, "Zero element length specified");
-		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fread(Array, Length, Count, self->FileHandle) != Count) {
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		if (::fread(Array, Length, Count, this->FileHandle) != Count) {
 			throw IOException("Failed to read from file ('fread' returned invalid value).");
 		}
 	}
@@ -138,17 +138,17 @@ GD_NAMESPACE_BEGIN
 	FileOutputStream::FileOutputStream(String const& FilePath)
 		: FilePath(FilePath)
 	{
-		if (access(self->FilePath.CStr(), F_OK) != -1) {	// File exists.
-			if (access(self->FilePath.CStr(), W_OK) == -1) {
+		if (access(this->FilePath.CStr(), F_OK) != -1) {	// File exists.
+			if (access(this->FilePath.CStr(), W_OK) == -1) {
 				throw IOException(String::Format("File with path '%s' cannon be opened for writing ('access(W_OK)' failed).", FilePath.CStr()));
 			}
-			self->FileHandle = ::fopen(self->FilePath.CStr(), "wb");
-			if (self->FileHandle == nullptr) {
+			this->FileHandle = ::fopen(this->FilePath.CStr(), "wb");
+			if (this->FileHandle == nullptr) {
 				throw IOException("Failed to open existing file for writing (fopen(\"wb\") returned nullptr).");
 			}
 		} else {	// File does not exists.
-			self->FileHandle = ::fopen(self->FilePath.CStr(), "wb");
-			if (self->FileHandle == nullptr) {
+			this->FileHandle = ::fopen(this->FilePath.CStr(), "wb");
+			if (this->FileHandle == nullptr) {
 				throw IOException("Failed to create new file for writing (fopen(\"wb\") returned nullptr).");
 			}
 		}
@@ -156,16 +156,16 @@ GD_NAMESPACE_BEGIN
 
 	FileOutputStream::~FileOutputStream()
 	{
-		if (self->FileHandle != nullptr) {
-			self->Close();
+		if (this->FileHandle != nullptr) {
+			this->Close();
 		}
 	}
 
 	/// @see BaseStream::GetPosition()
 	size_t FileOutputStream::GetPosition() const
 	{
-		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		long const Position = ::ftell(self->FileHandle);
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		long const Position = ::ftell(this->FileHandle);
 		if (Position < 0l) {
 			throw IOException("Failed to get position of stream ('ftell' returned negative value).");
 		}
@@ -175,27 +175,27 @@ GD_NAMESPACE_BEGIN
 	/// @see BaseStream::GetSize()
 	size_t FileOutputStream::GetSize() const
 	{	// Since we just rewrite files, each output stream size is it's position + 1.
-		return (self->GetPosition() + 1);
+		return (this->GetPosition() + 1);
 	}
 
 	/// @see OutputStream::Close()
 	void FileOutputStream::Close()
 	{
-		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fclose(self->FileHandle) != 0) {
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		if (::fclose(this->FileHandle) != 0) {
 			throw IOException("Failed to close file ('fclose' returned non-zero value).");
 		}
 
-		self->FilePath.Emptify();
-		self->FileHandle = nullptr;
-		self->FileLength = SIZE_MAX;
+		this->FilePath.Emptify();
+		this->FileHandle = nullptr;
+		this->FileLength = SIZE_MAX;
 	}
 
 	/// @see OutputStream::Flush()
 	void FileOutputStream::Flush()
 	{
-		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fflush(self->FileHandle) != 0) {
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		if (::fflush(this->FileHandle) != 0) {
 			throw IOException("Failed to flush file ('fflush' returned non-zero value).");
 		}
 	}
@@ -203,7 +203,7 @@ GD_NAMESPACE_BEGIN
 	/// @see OutputStream::Write(UInt8 const Byte)
 	void FileOutputStream::Write(UInt8 const Byte)
 	{
-		self->Write(&Byte, 1, sizeof(Byte));
+		this->Write(&Byte, 1, sizeof(Byte));
 	}
 
 	/// @see OutputStream::Write(chandle const Array, size_t const Count, size_t const Length)
@@ -211,8 +211,8 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_DEBUG_ASSERT(Count != 0, "Zero elements count specified");
 		GD_DEBUG_ASSERT(Length != 0, "Zero element length specified");
-		GD_DEBUG_ASSERT(self->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fwrite(Array, Length, Count, self->FileHandle) != Count) {
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		if (::fwrite(Array, Length, Count, this->FileHandle) != Count) {
 			throw IOException("Failed to write wo file ('fwrite' returned invalid value).");
 		}
 	}

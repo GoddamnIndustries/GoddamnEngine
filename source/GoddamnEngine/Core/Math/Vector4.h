@@ -123,37 +123,37 @@ GD_NAMESPACE_BEGIN
 	public /* Class API */:
 		GDINL ElementType Dot(const Vector4t& v) const
 		{
-			return self->x * v.x + self->y * v.y + self->z * v.z + self->w * v.w;
+			return this->x * v.x + this->y * v.y + this->z * v.z + this->w * v.w;
 		}
 
 		GDINL Vector4t Cross(const Vector4t& v) const
 		{
-			return Vector4t(self->y * v.z - self->z * v.y, self->z * v.x - self->x * v.z, self->x * v.y - self->y * v.x, ElementType(1));
+			return Vector4t(this->y * v.z - this->z * v.y, this->z * v.x - this->x * v.z, this->x * v.y - this->y * v.x, ElementType(1));
 		}
 
 		GDINL ElementType Length() const
 		{
-			return SquareRoot(self->Dot(*self));
+			return SquareRoot(this->Dot(*this));
 		}
 
 		GDINL Vector4t Normalize() const
 		{
-			return ((*self) / self->Length());
+			return ((*this) / this->Length());
 		}
 
 	public /* Operators */:
 		GDINL ElementTypeConstRef operator[] (size_t const Index) const
 		{
 			GD_ASSERT(Index < ThisComponentsCount, "invalid Vector4t subindex.");
-			return self->Elements[Index];
+			return this->Elements[Index];
 		}
 
 		GDINL bool operator== (Vector4t const& Other) const
 		{
-			if (self->x == Other.x) {
-				if (self->y == Other.y) {
-					if (self->z == Other.z) {
-						if (self->w == Other.w) {
+			if (this->x == Other.x) {
+				if (this->y == Other.y) {
+					if (this->z == Other.z) {
+						if (this->w == Other.w) {
 							return true;
 						}
 					}
@@ -164,188 +164,188 @@ GD_NAMESPACE_BEGIN
 
 		GDINL bool operator!= (Vector4t const& Other) const
 		{
-			return !((*self) == Other);
+			return !((*this) == Other);
 		}
 
 		GDINL Vector4t& operator+= (ElementTypeConstRef const Vector4Value)
 		{
-			self->x += Vector4Value;
-			self->y += Vector4Value;
-			self->z += Vector4Value;
-			self->w += Vector4Value;
-			return (*self);
+			this->x += Vector4Value;
+			this->y += Vector4Value;
+			this->z += Vector4Value;
+			this->w += Vector4Value;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator-= (ElementTypeConstRef const Vector4Value)
 		{
-			self->x -= Vector4Value;
-			self->y -= Vector4Value;
-			self->z -= Vector4Value;
-			self->w -= Vector4Value;
-			return (*self);
+			this->x -= Vector4Value;
+			this->y -= Vector4Value;
+			this->z -= Vector4Value;
+			this->w -= Vector4Value;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator*= (ElementTypeConstRef const Vector4Value)
 		{
-			self->x *= Vector4Value;
-			self->y *= Vector4Value;
-			self->z *= Vector4Value;
-			self->w *= Vector4Value;
-			return (*self);
+			this->x *= Vector4Value;
+			this->y *= Vector4Value;
+			this->z *= Vector4Value;
+			this->w *= Vector4Value;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator/= (ElementTypeConstRef const Vector4Value)
 		{
-			self->x /= Vector4Value;
-			self->y /= Vector4Value;
-			self->z /= Vector4Value;
-			self->w /= Vector4Value;
-			return (*self);
+			this->x /= Vector4Value;
+			this->y /= Vector4Value;
+			this->z /= Vector4Value;
+			this->w /= Vector4Value;
+			return (*this);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector4t& operator%= (ElementTypeConstRef const Vector4Value)
 		{
-			self->x %= Vector4Value;
-			self->y %= Vector4Value;
-			self->z %= Vector4Value;
-			self->w %= Vector4Value;
-			return (*self);
+			this->x %= Vector4Value;
+			this->y %= Vector4Value;
+			this->z %= Vector4Value;
+			this->w %= Vector4Value;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator = (Vector4t const& Other)
 		{
-			self->x = Other.x;
-			self->y = Other.y;
-			self->z = Other.z;
-			self->w = Other.w;
-			return (*self);
+			this->x = Other.x;
+			this->y = Other.y;
+			this->z = Other.z;
+			this->w = Other.w;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator+= (Vector4t const& Other)
 		{
-			self->x += Other.x;
-			self->y += Other.y;
-			self->z += Other.z;
-			self->w += Other.w;
-			return (*self);
+			this->x += Other.x;
+			this->y += Other.y;
+			this->z += Other.z;
+			this->w += Other.w;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator-= (Vector4t const& Other)
 		{
-			self->x -= Other.x;
-			self->y -= Other.y;
-			self->z -= Other.z;
-			self->w -= Other.w;
-			return (*self);
+			this->x -= Other.x;
+			this->y -= Other.y;
+			this->z -= Other.z;
+			this->w -= Other.w;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator*= (Vector4t const& Other)
 		{
-			self->x *= Other.x;
-			self->y *= Other.y;
-			self->z *= Other.z;
-			self->w *= Other.w;
-			return (*self);
+			this->x *= Other.x;
+			this->y *= Other.y;
+			this->z *= Other.z;
+			this->w *= Other.w;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator/= (Vector4t const& Other)
 		{
-			self->x /= Other.x;
-			self->y /= Other.y;
-			self->z /= Other.z;
-			self->w /= Other.w;
-			return (*self);
+			this->x /= Other.x;
+			this->y /= Other.y;
+			this->z /= Other.z;
+			this->w /= Other.w;
+			return (*this);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector4t& operator%= (Vector4t const& Other)
 		{
-			self->x %= Other.x;
-			self->y %= Other.y;
-			self->z %= Other.z;
-			self->w %= Other.w;
-			return (*self);
+			this->x %= Other.x;
+			this->y %= Other.y;
+			this->z %= Other.z;
+			this->w %= Other.w;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator++ ()
 		{
-			++self->x;
-			++self->y;
-			++self->z;
-			++self->w;
-			return (*self);
+			++this->x;
+			++this->y;
+			++this->z;
+			++this->w;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator-- ()
 		{
-			--self->x;
-			--self->y;
-			--self->z;
-			--self->w;
-			return (*self);
+			--this->x;
+			--this->y;
+			--this->z;
+			--this->w;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator++ (int)
 		{
-			return (++(*self));
+			return (++(*this));
 		}
 
 		GDINL Vector4t& operator-- (int)
 		{
-			return (--(*self));
+			return (--(*this));
 		}
 
 		GDINL Vector4t operator+ (ElementTypeConstRef const Vector4Value) const
 		{
-			return Vector4t(self->x + Vector4Value, self->y + Vector4Value, self->z + Vector4Value, self->w + Vector4Value);
+			return Vector4t(this->x + Vector4Value, this->y + Vector4Value, this->z + Vector4Value, this->w + Vector4Value);
 		}
 
 		GDINL Vector4t operator- (ElementTypeConstRef const Vector4Value) const
 		{
-			return Vector4t(self->x - Vector4Value, self->y - Vector4Value, self->z - Vector4Value, self->w - Vector4Value);
+			return Vector4t(this->x - Vector4Value, this->y - Vector4Value, this->z - Vector4Value, this->w - Vector4Value);
 		}
 
 		GDINL Vector4t operator* (ElementTypeConstRef const Vector4Value) const
 		{
-			return Vector4t(self->x * Vector4Value, self->y * Vector4Value, self->z * Vector4Value, self->w * Vector4Value);
+			return Vector4t(this->x * Vector4Value, this->y * Vector4Value, this->z * Vector4Value, this->w * Vector4Value);
 		}
 
 		GDINL Vector4t operator/ (ElementTypeConstRef const Vector4Value) const
 		{
-			return Vector4t(self->x / Vector4Value, self->y / Vector4Value, self->z / Vector4Value, self->w / Vector4Value);
+			return Vector4t(this->x / Vector4Value, this->y / Vector4Value, this->z / Vector4Value, this->w / Vector4Value);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector4t operator% (ElementTypeConstRef const Vector4Value) const
 		{
-			return Vector4t(self->x % Vector4Value, self->y % Vector4Value, self->z % Vector4Value, self->w % Vector4Value);
+			return Vector4t(this->x % Vector4Value, this->y % Vector4Value, this->z % Vector4Value, this->w % Vector4Value);
 		}
 
 		GDINL Vector4t operator+ (Vector4t const& Other) const
 		{
-			return Vector4t(self->x + Other.x, self->y + Other.y, self->z + Other.z, self->w + Other.w);
+			return Vector4t(this->x + Other.x, this->y + Other.y, this->z + Other.z, this->w + Other.w);
 		}
 
 		GDINL Vector4t operator- (Vector4t const& Other) const
 		{
-			return Vector4t(self->x - Other.x, self->y - Other.y, self->z - Other.z, self->w - Other.w);
+			return Vector4t(this->x - Other.x, this->y - Other.y, this->z - Other.z, this->w - Other.w);
 		}
 
 		GDINL Vector4t operator* (Vector4t const& Other) const
 		{
-			return Vector4t(self->x * Other.x, self->y * Other.y, self->z * Other.z, self->w * Other.w);
+			return Vector4t(this->x * Other.x, this->y * Other.y, this->z * Other.z, this->w * Other.w);
 		}
 
 		GDINL Vector4t operator/ (Vector4t const& Other) const
 		{
-			return Vector4t(self->x / Other.x, self->y / Other.y, self->z / Other.z, self->w / Other.w);
+			return Vector4t(this->x / Other.x, this->y / Other.y, this->z / Other.z, this->w / Other.w);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector4t operator% (Vector4t const& Other) const
 		{
-			return Vector4t(self->x % Other.x, self->y % Other.y, self->z % Other.z, self->w % Other.w);
+			return Vector4t(this->x % Other.x, this->y % Other.y, this->z % Other.z, this->w % Other.w);
 		}
 	};	// struct Vector4t
 
@@ -431,34 +431,34 @@ GD_NAMESPACE_BEGIN
 	public /* Class API */:
 		GDINL Float32 Length() const
 		{
-			return Float32x4Intrinsics::VectorLength(self->ElementsVector);
+			return Float32x4Intrinsics::VectorLength(this->ElementsVector);
 		}
 
 		GDINL Vector4t Normalize() const
 		{
-			return Vector4t(Float32x4Intrinsics::VectorNormalize(self->ElementsVector));
+			return Vector4t(Float32x4Intrinsics::VectorNormalize(this->ElementsVector));
 		}
 
 		GDINL Float32 Dot(Vector4t const& Other) const
 		{
-			return Float32x4Intrinsics::VectorDot4(self->ElementsVector, Other.ElementsVector);
+			return Float32x4Intrinsics::VectorDot4(this->ElementsVector, Other.ElementsVector);
 		}
 
 		GDINL Vector4t Cross(Vector4t const& Other) const
 		{
-			return Vector4t(Float32x4Intrinsics::Vector3Cross(self->ElementsVector, Other.ElementsVector));
+			return Vector4t(Float32x4Intrinsics::Vector3Cross(this->ElementsVector, Other.ElementsVector));
 		}
 
 	public /* Operators */:
 		GDINL Float32& operator[] (size_t const Index)
 		{
 			GD_ASSERT(Index < ThisComponentsCount, "invalid Vector4 subindex.");
-			return self->Elements[Index];
+			return this->Elements[Index];
 		}
 
 		GDINL Float32 const& operator[] (size_t const Index) const
 		{
-			return const_cast<Vector4t&>(*self)[Index];
+			return const_cast<Vector4t&>(*this)[Index];
 		}
 
 #if (defined(GD_COMPILER_MSVC))
@@ -467,78 +467,78 @@ GD_NAMESPACE_BEGIN
 
 		GDINL Vector4t& operator+= (Float32 const Vector4Value)
 		{
-			self->ElementsVector = Float32x4Intrinsics::VectorAdd(self->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value));
-			return (*self);
+			this->ElementsVector = Float32x4Intrinsics::VectorAdd(this->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value));
+			return (*this);
 		}
 
 		GDINL Vector4t& operator-= (Float32 const Vector4Value)
 		{
-			self->ElementsVector = Float32x4Intrinsics::VectorSub(self->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value));
-			return (*self);
+			this->ElementsVector = Float32x4Intrinsics::VectorSub(this->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value));
+			return (*this);
 		}
 
 		GDINL Vector4t& operator*= (Float32 const Vector4Value)
 		{
-			self->ElementsVector = Float32x4Intrinsics::VectorMul(self->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value));
-			return (*self);
+			this->ElementsVector = Float32x4Intrinsics::VectorMul(this->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value));
+			return (*this);
 		}
 
 		GDINL Vector4t& operator/= (Float32 const Vector4Value)
 		{
-			self->ElementsVector = Float32x4Intrinsics::VectorDiv(self->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value));
-			return (*self);
+			this->ElementsVector = Float32x4Intrinsics::VectorDiv(this->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value));
+			return (*this);
 		}
 
 		GDINL Vector4t& operator = (Vector4t const& Other)
 		{
-			self->ElementsVector = Other.ElementsVector;
-			return (*self);
+			this->ElementsVector = Other.ElementsVector;
+			return (*this);
 		}
 
 		GDINL Vector4t& operator+= (Vector4t const& Other)
 		{
-			self->ElementsVector = Float32x4Intrinsics::VectorAdd(self->ElementsVector, Other.ElementsVector);
-			return (*self);
+			this->ElementsVector = Float32x4Intrinsics::VectorAdd(this->ElementsVector, Other.ElementsVector);
+			return (*this);
 		}
 
 		GDINL Vector4t& operator-= (Vector4t const& Other)
 		{
-			self->ElementsVector = Float32x4Intrinsics::VectorSub(self->ElementsVector, Other.ElementsVector);
-			return (*self);
+			this->ElementsVector = Float32x4Intrinsics::VectorSub(this->ElementsVector, Other.ElementsVector);
+			return (*this);
 		}
 
 		GDINL Vector4t& operator*= (Vector4t const& Other)
 		{
-			self->ElementsVector = Float32x4Intrinsics::VectorMul(self->ElementsVector, Other.ElementsVector);
-			return (*self);
+			this->ElementsVector = Float32x4Intrinsics::VectorMul(this->ElementsVector, Other.ElementsVector);
+			return (*this);
 		}
 
 		GDINL Vector4t& operator/= (Vector4t const& Other)
 		{
-			self->ElementsVector = Float32x4Intrinsics::VectorDiv(self->ElementsVector, Other.ElementsVector);
-			return (*self);
+			this->ElementsVector = Float32x4Intrinsics::VectorDiv(this->ElementsVector, Other.ElementsVector);
+			return (*this);
 		}
 
 		GDINL Vector4t& operator++ ()
 		{
-			self->ElementsVector = Float32x4Intrinsics::VectorAdd(self->ElementsVector, Float32x4Intrinsics::VectorMake(1.0f));
-			return (*self);
+			this->ElementsVector = Float32x4Intrinsics::VectorAdd(this->ElementsVector, Float32x4Intrinsics::VectorMake(1.0f));
+			return (*this);
 		}
 
 		GDINL Vector4t& operator-- ()
 		{
-			self->ElementsVector = Float32x4Intrinsics::VectorAdd(self->ElementsVector, Float32x4Intrinsics::VectorMake(1.0f));
-			return (*self);
+			this->ElementsVector = Float32x4Intrinsics::VectorAdd(this->ElementsVector, Float32x4Intrinsics::VectorMake(1.0f));
+			return (*this);
 		}
 
 		GDINL Vector4t& operator++ (int)
 		{
-			return (++(*self));
+			return (++(*this));
 		}
 
 		GDINL Vector4t& operator-- (int)
 		{
-			return (--(*self));
+			return (--(*this));
 		}
 
 #if (defined(GD_COMPILER_MSVC))
@@ -551,42 +551,42 @@ GD_NAMESPACE_BEGIN
 
 		GDINL Vector4t operator+ (Float32 const Vector4Value) const
 		{
-			return Vector4t(Float32x4Intrinsics::VectorAdd(self->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value)));
+			return Vector4t(Float32x4Intrinsics::VectorAdd(this->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value)));
 		}
 
 		GDINL Vector4t operator- (Float32 const Vector4Value) const
 		{
-			return Vector4t(Float32x4Intrinsics::VectorSub(self->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value)));
+			return Vector4t(Float32x4Intrinsics::VectorSub(this->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value)));
 		}
 
 		GDINL Vector4t operator* (Float32 const Vector4Value) const
 		{
-			return Vector4t(Float32x4Intrinsics::VectorMul(self->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value)));
+			return Vector4t(Float32x4Intrinsics::VectorMul(this->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value)));
 		}
 
 		GDINL Vector4t operator/ (Float32 const Vector4Value) const
 		{
-			return Vector4t(Float32x4Intrinsics::VectorDiv(self->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value)));
+			return Vector4t(Float32x4Intrinsics::VectorDiv(this->ElementsVector, Float32x4Intrinsics::VectorMake(Vector4Value)));
 		}
 
 		GDINL Vector4t operator+ (Vector4t const& Other) const
 		{
-			return Vector4t(Float32x4Intrinsics::VectorAdd(self->ElementsVector, Other.ElementsVector));
+			return Vector4t(Float32x4Intrinsics::VectorAdd(this->ElementsVector, Other.ElementsVector));
 		}
 
 		GDINL Vector4t operator- (Vector4t const& Other) const
 		{
-			return Vector4t(Float32x4Intrinsics::VectorSub(self->ElementsVector, Other.ElementsVector));
+			return Vector4t(Float32x4Intrinsics::VectorSub(this->ElementsVector, Other.ElementsVector));
 		}
 
 		GDINL Vector4t operator* (Vector4t const& Other) const
 		{
-			return Vector4t(Float32x4Intrinsics::VectorMul(self->ElementsVector, Other.ElementsVector));
+			return Vector4t(Float32x4Intrinsics::VectorMul(this->ElementsVector, Other.ElementsVector));
 		}
 
 		GDINL Vector4t operator/ (Vector4t const& Other) const
 		{
-			return Vector4t(Float32x4Intrinsics::VectorDiv(self->ElementsVector, Other.ElementsVector));
+			return Vector4t(Float32x4Intrinsics::VectorDiv(this->ElementsVector, Other.ElementsVector));
 		}
 
 #if (defined(GD_COMPILER_MSVC))

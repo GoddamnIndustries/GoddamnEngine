@@ -16,7 +16,7 @@ GD_NAMESPACE_BEGIN
 	{
 		HRESULT Result = E_FAIL;
 		ID3D11Device* const device = HRD3D11Interface::GetInstance().Device.Get();
-		for (auto const TheTexture2D : self->RenderTargetTextures) {	// Creating render target for each texture.
+		for (auto const TheTexture2D : this->RenderTargetTextures) {	// Creating render target for each texture.
 			HRID3D11Texture2D const* const Texture2D = object_cast<HRID3D11Texture2D const*>(TheTexture2D);
 
 			D3D11_RENDER_TARGET_VIEW_DESC RenderTargetViewDesc;
@@ -30,13 +30,13 @@ GD_NAMESPACE_BEGIN
 				throw HRID3D11Exception("Failed to create render target view");
 			}
 
-			self->RenderTargetRenderTargets.PushLast(RenderTargetView);
+			this->RenderTargetRenderTargets.PushLast(RenderTargetView);
 		}
 	}
 		
 	HRID3D11RenderTarget::~HRID3D11RenderTarget() 
 	{
-		for (auto const RenderTarget : self->RenderTargetRenderTargets)
+		for (auto const RenderTarget : this->RenderTargetRenderTargets)
 			RenderTarget->Release();
 	}
 
@@ -44,7 +44,7 @@ GD_NAMESPACE_BEGIN
 	{
 		ID3D11DeviceContext   * const Context          = HRD3D11Interface::GetInstance().Context.Get();
 		ID3D11DepthStencilView* const DepthStencilView = HRD3D11Interface::GetInstance().DepthStencilView.Get();
-		Context->OMSetRenderTargets(static_cast<UINT>(self->RenderTargetRenderTargets.GetSize()), &self->RenderTargetRenderTargets[0], DepthStencilView);
+		Context->OMSetRenderTargets(static_cast<UINT>(this->RenderTargetRenderTargets.GetSize()), &this->RenderTargetRenderTargets[0], DepthStencilView);
 	}
 
 	void HRID3D11RenderTarget::UnbindRenderTarget() const

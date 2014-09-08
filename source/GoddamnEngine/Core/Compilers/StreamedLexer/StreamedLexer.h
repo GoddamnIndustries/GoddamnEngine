@@ -62,13 +62,13 @@ GD_NAMESPACE_BEGIN
 		/// Returns true if this character exists alphabet of special characters this options instance uses.
 		GDINL bool IsInSpecialCharactersAlphabet(CharAnsi const Character) const 
 		{	// Searching for specified character inside alphabet. 
-			return (self->SpecialCharactersAlphabet.Find(Character) != -1); 
+			return (this->SpecialCharactersAlphabet.Find(Character) != -1); 
 		}
 
 	private:
 		GDINL void AppendToSpecialCharactersAlphabet(CharAnsi const Character)
 		{	// Extending alphabet if character does not already exists there .
-			if (!self->IsInSpecialCharactersAlphabet(Character)) self->SpecialCharactersAlphabet += Character;
+			if (!this->IsInSpecialCharactersAlphabet(Character)) this->SpecialCharactersAlphabet += Character;
 		}
 	};	// struct StreamedLexerOptions
 

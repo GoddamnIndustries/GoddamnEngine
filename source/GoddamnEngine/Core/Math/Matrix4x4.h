@@ -64,7 +64,7 @@ GD_NAMESPACE_BEGIN
 		/// Copy constructor.
 		GDINL Matrix4x4t(Matrix4x4t const& Other)
 		{
-			memcpy(self, &Other, sizeof(*self));
+			memcpy(this, &Other, sizeof(*this));
 		}
 
 		GDINL ~Matrix4x4t()
@@ -94,8 +94,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeIdentity
 		GDINL Matrix4x4t& Identity(ElementTypeConstRef const ElementDiagVal = ElementType(1))
 		{
-			Matrix4x4t::MakeIdentity((*self), ElementDiagVal);
-			return (*self);
+			Matrix4x4t::MakeIdentity((*this), ElementDiagVal);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -165,8 +165,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeInverse
 		GDINL Matrix4x4t& Inverse()
 		{
-			Matrix4x4t::MakeInverse((*self), (*self));
-			return (*self);
+			Matrix4x4t::MakeInverse((*this), (*this));
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -194,8 +194,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeTranspose
 		Matrix4x4t& Transpose()
 		{
-			Matrix4x4t::MakeTranspose((*self), (*self));
-			return (*self);
+			Matrix4x4t::MakeTranspose((*this), (*this));
+			return (*this);
 		}
 
 		/// @}
@@ -231,8 +231,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeRotation
 		GDINL Matrix4x4t& Rotate(Quaternion_t<ElementType> const& Rotation)
 		{
-			Matrix4x4t::MakeRotation((*self), Rotation);
-			return (*self);
+			Matrix4x4t::MakeRotation((*this), Rotation);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -256,8 +256,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeScale
 		GDINL Matrix4x4t& Scale(Vector3t<ElementType> const& Scale)
 		{
-			Matrix4x4t::MakeIdentity((*self), Scale);
-			return (*self);
+			Matrix4x4t::MakeIdentity((*this), Scale);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -278,8 +278,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeTranslation
 		GDINL Matrix4x4t& Translate(Vector3t<ElementType> const& Translation)
 		{
-			Matrix4x4t::MakeTranslation((*self), Translation);
-			return (*self);
+			Matrix4x4t::MakeTranslation((*this), Translation);
+			return (*this);
 		}
 
 		/// @}
@@ -307,8 +307,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeLookToLH
 		GDINL Matrix4x4t& LookToLH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
-			Matrix4x4t::MakeLookToLH((*self), Eye, Dir, Up);
-			return (*self);
+			Matrix4x4t::MakeLookToLH((*this), Eye, Dir, Up);
+			return (*this);
 		}
 
 		/// Builds a look-to matrix (Right-Handed coordinate system).
@@ -326,8 +326,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeLookToRH
 		GDINL Matrix4x4t& LookToRH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
-			Matrix4x4t::MakeLookToRH((*self), Eye, Dir, Up);
-			return (*self);
+			Matrix4x4t::MakeLookToRH((*this), Eye, Dir, Up);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -356,8 +356,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeLookAtLH
 		GDINL Matrix4x4t& LookAtLH(Vector3t<ElementType> const& Eye, Vector3t<ElementType> const& At, Vector3t<ElementType> const& Up)
 		{
-			Matrix4x4t::MakeLookAtLH((*self), Eye, At, Up);
-			return (*self);
+			Matrix4x4t::MakeLookAtLH((*this), Eye, At, Up);
+			return (*this);
 		}
 
 		/// Builds a look-at matrix (Right-Handed coordinate system)
@@ -375,8 +375,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeLookAtRH
 		GDINL Matrix4x4t& LookAtRH(Vector3t<ElementType> const& Eye, Vector3t<ElementType> const& At, Vector3t<ElementType> const& Up)
 		{
-			Matrix4x4t::MakeLookAtRH((*self), Eye, At, Up);
-			return (*self);
+			Matrix4x4t::MakeLookAtRH((*this), Eye, At, Up);
+			return (*this);
 		}
 
 		/// @}
@@ -413,8 +413,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakePerspectiveLH
 		GDINL Matrix4x4t& PerspectiveLH(ElementTypeConstRef const FOVDegrees, ElementTypeConstRef const Aspect, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
-			Matrix4x4t::MakePerspectiveLH((*self), FOVDegrees, Aspect, ZNear, ZFar);
-			return (*self);
+			Matrix4x4t::MakePerspectiveLH((*this), FOVDegrees, Aspect, ZNear, ZFar);
+			return (*this);
 		}
 
 		/// Builds perspective-projection matrix (Right-Handed coordinate system)
@@ -433,8 +433,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakePerspectiveRH
 		GDINL Matrix4x4t& PerspectiveRH(ElementTypeConstRef const FOVDegrees, ElementTypeConstRef const Aspect, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
-			Matrix4x4t::MakePerspectiveRH((*self), FOVDegrees, Aspect, ZNear, ZFar);
-			return (*self);
+			Matrix4x4t::MakePerspectiveRH((*this), FOVDegrees, Aspect, ZNear, ZFar);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -462,8 +462,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeOrthoLH
 		GDINL Matrix4x4t<ElementType>& OrthoLH(ElementTypeConstRef const Left, ElementTypeConstRef const Right, ElementTypeConstRef const Bottom, ElementTypeConstRef const Top, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
-			Matrix4x4t::MakeOrthoLH((*self), Left, Right, Bottom, Top, ZNear, ZFar);
-			return (*self);
+			Matrix4x4t::MakeOrthoLH((*this), Left, Right, Bottom, Top, ZNear, ZFar);
+			return (*this);
 		}
 
 		/// Builds orthographic-projection matrix (Right-Handed coordinate system)
@@ -484,8 +484,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeOrthoRH
 		GDINL Matrix4x4t<ElementType>& OrthoRH(ElementTypeConstRef const Left, ElementTypeConstRef const Right, ElementTypeConstRef const Bottom, ElementTypeConstRef const Top, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
-			Matrix4x4t::MakeOrthoRH((*self), Left, Right, Bottom, Top, ZNear, ZFar);
-			return (*self);
+			Matrix4x4t::MakeOrthoRH((*this), Left, Right, Bottom, Top, ZNear, ZFar);
+			return (*this);
 		}
 
 		/// @}
@@ -495,64 +495,64 @@ GD_NAMESPACE_BEGIN
 		inline Matrix4x4t<ElementType> operator* (Matrix4x4t const& Other) const
 		{
 			return Matrix4x4t(
-				self->_0 * Other._00 + self->_1 * Other._01 + self->_2 * Other._02 + self->_3 * Other._03,
-				self->_0 * Other._10 + self->_1 * Other._11 + self->_2 * Other._12 + self->_3 * Other._13,
-				self->_0 * Other._20 + self->_1 * Other._21 + self->_2 * Other._22 + self->_3 * Other._23,
-				self->_0 * Other._30 + self->_1 * Other._31 + self->_2 * Other._32 + self->_3 * Other._33
+				this->_0 * Other._00 + this->_1 * Other._01 + this->_2 * Other._02 + this->_3 * Other._03,
+				this->_0 * Other._10 + this->_1 * Other._11 + this->_2 * Other._12 + this->_3 * Other._13,
+				this->_0 * Other._20 + this->_1 * Other._21 + this->_2 * Other._22 + this->_3 * Other._23,
+				this->_0 * Other._30 + this->_1 * Other._31 + this->_2 * Other._32 + this->_3 * Other._33
 			);
 		}
 
 		GDINL Vector4t<ElementType> operator* (Vector4t<ElementType> const& Vector) const
 		{
 			return Vector4t<ElementType>(
-				self->_00 * Vector.x + self->_10 * Vector.y + self->_20 * Vector.z + self->_30 * Vector.w,
-				self->_01 * Vector.x + self->_11 * Vector.y + self->_21 * Vector.z + self->_31 * Vector.w,
-				self->_02 * Vector.x + self->_12 * Vector.y + self->_22 * Vector.z + self->_32 * Vector.w,
-				self->_03 * Vector.x + self->_13 * Vector.y + self->_23 * Vector.z + self->_33 * Vector.w
+				this->_00 * Vector.x + this->_10 * Vector.y + this->_20 * Vector.z + this->_30 * Vector.w,
+				this->_01 * Vector.x + this->_11 * Vector.y + this->_21 * Vector.z + this->_31 * Vector.w,
+				this->_02 * Vector.x + this->_12 * Vector.y + this->_22 * Vector.z + this->_32 * Vector.w,
+				this->_03 * Vector.x + this->_13 * Vector.y + this->_23 * Vector.z + this->_33 * Vector.w
 			);
 		}
 
 		GDINL Matrix4x4t<ElementType>& operator*= (ElementTypeConstRef const& Scalar)
 		{
-			self->_0 *= Scalar;
-			self->_1 *= Scalar;
-			self->_2 *= Scalar;
-			self->_3 *= Scalar;
+			this->_0 *= Scalar;
+			this->_1 *= Scalar;
+			this->_2 *= Scalar;
+			this->_3 *= Scalar;
 
-			return (*self);
+			return (*this);
 		}
 
 		GDINL Matrix4x4t<ElementType>& operator/= (ElementTypeConstRef const& Scalar)
 		{
-			self->_0 /= Scalar;
-			self->_1 /= Scalar;
-			self->_2 /= Scalar;
-			self->_3 /= Scalar;
+			this->_0 /= Scalar;
+			this->_1 /= Scalar;
+			this->_2 /= Scalar;
+			this->_3 /= Scalar;
 
-			return (*self);
+			return (*this);
 		}
 
 		inline Matrix4x4t<ElementType>& operator*= (Matrix4x4t const& Other)
 		{
-			(*self) = ((*self) * Other);
-			return (*self);
+			(*this) = ((*this) * Other);
+			return (*this);
 		}
 
 		GDINL Matrix4x4t<ElementType>& operator= (Matrix4x4t const& Other)
 		{
-			memcpy(self, &Other, sizeof(*self));
-			return (*self);
+			memcpy(this, &Other, sizeof(*this));
+			return (*this);
 		}
 
 		GDINL Vector4t<ElementType>& operator[] (size_t const Index)
 		{ 
 			GD_ASSERT(Index < ThisRowsCount, "invalid Matrix4x4 subindex.");
-			return *(&self->_0 + Index);
+			return *(&this->_0 + Index);
 		}
 
 		GDINL Vector4t<ElementType> const& operator[] (size_t const Index) const 
 		{
-			return const_cast<Matrix4x4t*>(self)->operator[](Index);
+			return const_cast<Matrix4x4t*>(this)->operator[](Index);
 		}
 	};	// struct Matrix4x4t
 
@@ -638,8 +638,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeIdentity
 		GDINL Matrix4x4t& Identity(Float32 const Float32Def = 1.0f)
 		{
-			Matrix4x4t::MakeIdentity((*self), Float32Def);
-			return (*self);
+			Matrix4x4t::MakeIdentity((*this), Float32Def);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -659,8 +659,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeInverse
 		GDINL Matrix4x4t& Inverse()
 		{
-			Matrix4x4t::MakeInverse((*self), (*self));
-			return (*self);
+			Matrix4x4t::MakeInverse((*this), (*this));
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -687,8 +687,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeTranspose
 		Matrix4x4t& Transpose()
 		{
-			Matrix4x4t::MakeTranspose((*self), (*self));
-			return (*self);
+			Matrix4x4t::MakeTranspose((*this), (*this));
+			return (*this);
 		}
 
 		/// @}
@@ -750,8 +750,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeRotation
 		GDINL Matrix4x4t& Rotate(Quaternion_t<Float32> const& Rotation)
 		{
-			Matrix4x4t::MakeRotation((*self), Rotation);
-			return (*self);
+			Matrix4x4t::MakeRotation((*this), Rotation);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -775,8 +775,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeScale
 		GDINL Matrix4x4t& Scale(Vector3Fast const& Scale)
 		{
-			Matrix4x4t::MakeScale((*self), Scale);
-			return (*self);
+			Matrix4x4t::MakeScale((*this), Scale);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -797,8 +797,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeTranslation
 		GDINL Matrix4x4t& Translate(Vector3Fast const& Translation)
 		{
-			Matrix4x4t::MakeTranslation((*self), Translation);
-			return (*self);
+			Matrix4x4t::MakeTranslation((*this), Translation);
+			return (*this);
 		}
 
 		/// @}
@@ -840,8 +840,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeLookToLH
 		GDINL Matrix4x4t& LookToLH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
-			Matrix4x4t::MakeLookToLH((*self), Eye, Dir, Up);
-			return (*self);
+			Matrix4x4t::MakeLookToLH((*this), Eye, Dir, Up);
+			return (*this);
 		}
 
 		/// Builds a look-to matrix (Right-Handed coordinate system).
@@ -859,8 +859,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeLookToRH
 		GDINL Matrix4x4t& LookToRH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
-			Matrix4x4t::MakeLookToRH((*self), Eye, Dir, Up);
-			return (*self);
+			Matrix4x4t::MakeLookToRH((*this), Eye, Dir, Up);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -883,8 +883,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeLookAtLH
 		GDINL Matrix4x4t& LookAtLH(Vector3Fast const& Eye, Vector3Fast const& At, Vector3Fast const& Up)
 		{
-			Matrix4x4t::MakeLookAtLH((*self), Eye, At, Up);
-			return (*self);
+			Matrix4x4t::MakeLookAtLH((*this), Eye, At, Up);
+			return (*this);
 		}
 
 		/// Builds a look-at matrix (Right-Handed coordinate system)
@@ -903,8 +903,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeLookAtRH
 		GDINL Matrix4x4t& LookAtRH(Vector3Fast const& Eye, Vector3Fast const& At, Vector3Fast const& Up)
 		{
-			Matrix4x4t::MakeLookAtRH((*self), Eye, At, Up);
-			return (*self);
+			Matrix4x4t::MakeLookAtRH((*this), Eye, At, Up);
+			return (*this);
 		}
 
 		/// @}
@@ -948,8 +948,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakePerspectiveLH
 		GDINL Matrix4x4t& PerspectiveLH(Float32 const FOVDegrees, Float32 const Aspect, Float32 const ZNear, Float32 const ZFar)
 		{
-			Matrix4x4t::MakePerspectiveLH((*self), FOVDegrees, Aspect, ZNear, ZFar);
-			return (*self);
+			Matrix4x4t::MakePerspectiveLH((*this), FOVDegrees, Aspect, ZNear, ZFar);
+			return (*this);
 		}
 
 		/// Builds perspective-projection matrix (Right-Handed coordinate system).
@@ -982,8 +982,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakePerspectiveLH
 		GDINL Matrix4x4t& PerspectiveRH(Float32 const FOVDegrees, Float32 const Aspect, Float32 const ZNear, Float32 const ZFar)
 		{
-			Matrix4x4t::MakePerspectiveRH((*self), FOVDegrees, Aspect, ZNear, ZFar);
-			return (*self);
+			Matrix4x4t::MakePerspectiveRH((*this), FOVDegrees, Aspect, ZNear, ZFar);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -1011,8 +1011,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeOrthoLH
 		GDINL Matrix4x4t<Float32>& OrthoLH(Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{
-			Matrix4x4t::MakeOrthoLH((*self), Left, Right, Bottom, Top, ZNear, ZFar);
-			return (*self);
+			Matrix4x4t::MakeOrthoLH((*this), Left, Right, Bottom, Top, ZNear, ZFar);
+			return (*this);
 		}
 
 		/// Builds orthographic-projection matrix (Left-Handed coordinate system)
@@ -1033,8 +1033,8 @@ GD_NAMESPACE_BEGIN
 		/// @see Matrix4x4t::MakeOrthoLH
 		GDINL Matrix4x4t<Float32>& OrthoRH(Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{
-			Matrix4x4t::MakeOrthoRH((*self), Left, Right, Bottom, Top, ZNear, ZFar);
-			return (*self);
+			Matrix4x4t::MakeOrthoRH((*this), Left, Right, Bottom, Top, ZNear, ZFar);
+			return (*this);
 		}
 
 		/// @}
@@ -1046,25 +1046,25 @@ GD_NAMESPACE_BEGIN
 			Matrix4x4t Result;
 			Float32x4Intrinsics::VectorRegisterType Temp;
 
-			Temp       = Float32x4Intrinsics::VectorMul   (Float32x4Intrinsics::VectorReplicate(self->_R0, 0), Other._R0      );
-			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R0, 1), Other._R1, Temp);
-			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R0, 2), Other._R2, Temp);
-			Result._R0 = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R0, 3), Other._R3, Temp);
+			Temp       = Float32x4Intrinsics::VectorMul   (Float32x4Intrinsics::VectorReplicate(this->_R0, 0), Other._R0      );
+			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R0, 1), Other._R1, Temp);
+			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R0, 2), Other._R2, Temp);
+			Result._R0 = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R0, 3), Other._R3, Temp);
 
-			Temp       = Float32x4Intrinsics::VectorMul   (Float32x4Intrinsics::VectorReplicate(self->_R1, 0), Other._R0      );
-			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R1, 1), Other._R1, Temp);
-			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R1, 2), Other._R2, Temp);
-			Result._R1 = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R1, 3), Other._R3, Temp);
+			Temp       = Float32x4Intrinsics::VectorMul   (Float32x4Intrinsics::VectorReplicate(this->_R1, 0), Other._R0      );
+			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R1, 1), Other._R1, Temp);
+			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R1, 2), Other._R2, Temp);
+			Result._R1 = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R1, 3), Other._R3, Temp);
 
-			Temp       = Float32x4Intrinsics::VectorMul   (Float32x4Intrinsics::VectorReplicate(self->_R2, 0), Other._R0      );
-			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R2, 1), Other._R1, Temp);
-			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R2, 2), Other._R2, Temp);
-			Result._R2 = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R2, 3), Other._R3, Temp);
+			Temp       = Float32x4Intrinsics::VectorMul   (Float32x4Intrinsics::VectorReplicate(this->_R2, 0), Other._R0      );
+			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R2, 1), Other._R1, Temp);
+			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R2, 2), Other._R2, Temp);
+			Result._R2 = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R2, 3), Other._R3, Temp);
 
-			Temp       = Float32x4Intrinsics::VectorMul   (Float32x4Intrinsics::VectorReplicate(self->_R3, 0), Other._R0      );
-			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R3, 1), Other._R1, Temp);
-			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R3, 2), Other._R2, Temp);
-			Result._R3 = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(self->_R3, 3), Other._R3, Temp);
+			Temp       = Float32x4Intrinsics::VectorMul   (Float32x4Intrinsics::VectorReplicate(this->_R3, 0), Other._R0      );
+			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R3, 1), Other._R1, Temp);
+			Temp       = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R3, 2), Other._R2, Temp);
+			Result._R3 = Float32x4Intrinsics::VectorMulAdd(Float32x4Intrinsics::VectorReplicate(this->_R3, 3), Other._R3, Temp);
 
 			return Result;
 		}
@@ -1072,54 +1072,54 @@ GD_NAMESPACE_BEGIN
 		inline Vector4t<Float32> operator* (Vector4t<Float32> const& Vector) const
 		{
 			return Vector4t<Float32>(
-				self->_00 * Vector.x + self->_10 * Vector.y + self->_20 * Vector.z + self->_30 * Vector.w,
-				self->_01 * Vector.x + self->_11 * Vector.y + self->_21 * Vector.z + self->_31 * Vector.w,
-				self->_02 * Vector.x + self->_12 * Vector.y + self->_22 * Vector.z + self->_32 * Vector.w,
-				self->_03 * Vector.x + self->_13 * Vector.y + self->_23 * Vector.z + self->_33 * Vector.w
+				this->_00 * Vector.x + this->_10 * Vector.y + this->_20 * Vector.z + this->_30 * Vector.w,
+				this->_01 * Vector.x + this->_11 * Vector.y + this->_21 * Vector.z + this->_31 * Vector.w,
+				this->_02 * Vector.x + this->_12 * Vector.y + this->_22 * Vector.z + this->_32 * Vector.w,
+				this->_03 * Vector.x + this->_13 * Vector.y + this->_23 * Vector.z + this->_33 * Vector.w
 			);
 		}
 
 		Matrix4x4t<Float32>& operator*= (Float32 const& Scalar)
 		{
-			self->_0 *= Scalar;
-			self->_1 *= Scalar;
-			self->_2 *= Scalar;
-			self->_3 *= Scalar;
+			this->_0 *= Scalar;
+			this->_1 *= Scalar;
+			this->_2 *= Scalar;
+			this->_3 *= Scalar;
 
-			return (*self);
+			return (*this);
 		}
 
 		Matrix4x4t<Float32>& operator/= (Float32 const& Scalar)
 		{
-			self->_0 /= Scalar;
-			self->_1 /= Scalar;
-			self->_2 /= Scalar;
-			self->_3 /= Scalar;
+			this->_0 /= Scalar;
+			this->_1 /= Scalar;
+			this->_2 /= Scalar;
+			this->_3 /= Scalar;
 
-			return (*self);
+			return (*this);
 		}
 
 		inline Matrix4x4t<Float32>& operator*= (Matrix4x4t const& Other)
 		{
-			(*self) = ((*self) * Other);
-			return (*self);
+			(*this) = ((*this) * Other);
+			return (*this);
 		}
 
 		GDINL Matrix4x4t<Float32>& operator= (Matrix4x4t const& Other)
 		{
-			memcpy(self, &Other, sizeof(*self));
-			return (*self);
+			memcpy(this, &Other, sizeof(*this));
+			return (*this);
 		}
 
 		GDINL Vector4t<Float32>& operator[] (size_t const Index)
 		{
 			GD_ASSERT(Index < ThisRowsCount, "invalid Matrix4x4 subindex.");
-			return *(&self->_0 + Index);
+			return *(&this->_0 + Index);
 		}
 
 		GDINL Vector4t<Float32> const& operator[] (size_t const Index) const
 		{
-			return const_cast<Matrix4x4t*>(self)->operator[](Index);
+			return const_cast<Matrix4x4t*>(this)->operator[](Index);
 		}
 	} GD_ALIGN_GCC(16);	// struct Matrix4x4t
 #endif	// if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))

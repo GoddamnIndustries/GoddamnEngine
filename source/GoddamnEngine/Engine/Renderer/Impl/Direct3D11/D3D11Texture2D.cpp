@@ -9,21 +9,21 @@ GD_NAMESPACE_BEGIN
 		,	TextureShaderResource(nullptr)
 	{
 		ID3D11Device* const Device = HRD3D11Interface::GetInstance().Device.Get();
-		self->CreateTexture(InitialData, Device);
-		self->CreateShaderResourceView(Device);
-		self->CreateTextureSample(Device);
+		this->CreateTexture(InitialData, Device);
+		this->CreateShaderResourceView(Device);
+		this->CreateTextureSample(Device);
 	}
 
 	void HRID3D11Texture2D::CreateTexture(chandle const InitialData, ID3D11Device* const device)
 	{
 		HRESULT result = S_OK;
-		DXGI_FORMAT const texturePixelFormat = ToDxgiFormatUnorm(self->PixelFormat);
+		DXGI_FORMAT const texturePixelFormat = ToDxgiFormatUnorm(this->PixelFormat);
 		bool textureGenerateMipMaps = false;
 		{
 			UINT texturePixelFormatSupport = 0;
 			if (SUCCEEDED(device->CheckFormatSupport(texturePixelFormat, &texturePixelFormatSupport))
 				&& ((texturePixelFormatSupport & D3D11_FORMAT_SUPPORT_MIP_AUTOGEN) != 0)
-				&& (self->Mode == GD_HRI_TEXTURE_2D_MODE_STATIC))
+				&& (this->Mode == GD_HRI_TEXTURE_2D_MODE_STATIC))
 			{
 				textureGenerateMipMaps = true;
 			}
@@ -31,8 +31,8 @@ GD_NAMESPACE_BEGIN
 
 		D3D11_TEXTURE2D_DESC texture2DDescription;
 		ZeroMemory(&texture2DDescription, sizeof(texture2DDescription));
-		texture2DDescription.Width  = static_cast<UINT>(self->TheResolution.Width);
-		texture2DDescription.Height = static_cast<UINT>(self->TheResolution.Height);
+		texture2DDescription.Width  = static_cast<UINT>(this->TheResolution.Width);
+		texture2DDescription.Height = static_cast<UINT>(this->TheResolution.Height);
 		texture2DDescription.MipLevels = 1;
 		texture2DDescription.ArraySize = 1;
 		texture2DDescription.Format = texturePixelFormat;
@@ -40,7 +40,7 @@ GD_NAMESPACE_BEGIN
 		texture2DDescription.SampleDesc.Count   = 1;
 		texture2DDescription.MiscFlags			= 0;
 
-		switch (self->Mode)
+		switch (this->Mode)
 		{
 		case GD_HRI_TEXTURE_2D_MODE_STATIC:
 			{
@@ -79,44 +79,44 @@ GD_NAMESPACE_BEGIN
 		if (InitialData != nullptr)
 		{
 			texture2DData.pSysMem = InitialData;
-			texture2DData.SysMemPitch = static_cast<UINT>(GD_FORMAT_SIZEOF(self->PixelFormat)
-				* self->TheResolution.Width);
-			texture2DData.SysMemSlicePitch = static_cast<UINT>(GD_FORMAT_SIZEOF(self->PixelFormat)
-				* self->TheResolution.Width
-				* self->TheResolution.Height);
+			texture2DData.SysMemPitch = static_cast<UINT>(GD_FORMAT_SIZEOF(this->PixelFormat)
+				* this->TheResolution.Width);
+			texture2DData.SysMemSlicePitch = static_cast<UINT>(GD_FORMAT_SIZEOF(this->PixelFormat)
+				* this->TheResolution.Width
+				* this->TheResolution.Height);
 		}
 
 		result = device->CreateTexture2D(
 			&texture2DDescription, 
 			(((InitialData != nullptr) && (!textureGenerateMipMaps)) ? &texture2DData : nullptr),
-			&self->Texture
+			&this->Texture
 		);
 
-		GD_ASSERT((SUCCEEDED(result) && (self->Texture != nullptr)), "Failed to create texture");
+		GD_ASSERT((SUCCEEDED(result) && (this->Texture != nullptr)), "Failed to create texture");
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC texture2DShaderResource;
 		ZeroMemory(&texture2DShaderResource, sizeof(texture2DShaderResource));
-		texture2DShaderResource.Format = ToDxgiFormatUnorm(self->PixelFormat);
+		texture2DShaderResource.Format = ToDxgiFormatUnorm(this->PixelFormat);
 		texture2DShaderResource.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		texture2DShaderResource.Texture2D.MipLevels = (textureGenerateMipMaps) ? (-1) : 1;
 		texture2DShaderResource.Texture2D.MostDetailedMip = 0;
 
 		result = device->CreateShaderResourceView(
-			self->Texture.Get(),
+			this->Texture.Get(),
 			&texture2DShaderResource,
-			&self->TextureShaderResource
+			&this->TextureShaderResource
 		);
 
-		GD_ASSERT((SUCCEEDED(result) && (self->TextureShaderResource != nullptr)),
+		GD_ASSERT((SUCCEEDED(result) && (this->TextureShaderResource != nullptr)),
 			"Failed to create shader resource");
 
 		if (textureGenerateMipMaps)
 		{
 			ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
-			Context->UpdateSubresource(self->Texture.Get(), 0, nullptr,
+			Context->UpdateSubresource(this->Texture.Get(), 0, nullptr,
 				texture2DData.pSysMem, texture2DData.SysMemPitch,
 				texture2DData.SysMemSlicePitch);
-			Context->GenerateMips(self->TextureShaderResource.Get());
+			Context->GenerateMips(this->TextureShaderResource.Get());
 		}
 	}
 
@@ -138,14 +138,14 @@ GD_NAMESPACE_BEGIN
 		texture2DSamplerDesription.MinLOD = 0.0f;
 		texture2DSamplerDesription.MaxLOD = D3D11_FLOAT32_MAX;
 
-		switch (self->FilteringMode)
+		switch (this->FilteringMode)
 		{
 		case GD_HRI_TEXTURE_2D_FILTERING_MODE_POINT:	texture2DSamplerDesription.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT; break;
 		case GD_HRI_TEXTURE_2D_FILTERING_MODE_BILINEAR: texture2DSamplerDesription.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; break;
 		default: GD_DEBUG_ASSERT_FALSE("Unknwon mod specified"); break;
 		}
 
-		switch (self->WrapMode)
+		switch (this->WrapMode)
 		{
 			case GD_HRI_TEXTURE_2D_WRAP_MODE_CLAMP:
 			{
@@ -169,10 +169,10 @@ GD_NAMESPACE_BEGIN
 
 		HRESULT const result = device->CreateSamplerState(
 			&texture2DSamplerDesription,
-			&self->TextureSample
+			&this->TextureSample
 		);
 
-		GD_ASSERT((SUCCEEDED(result) && (self->TextureSample != nullptr)),
+		GD_ASSERT((SUCCEEDED(result) && (this->TextureSample != nullptr)),
 			"Failed to create sample state");
 	}
 

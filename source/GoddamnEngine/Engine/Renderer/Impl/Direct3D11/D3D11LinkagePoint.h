@@ -37,18 +37,18 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HRID3D11LinkagePoint() { }
 		GDINL virtual ~HRID3D11LinkagePoint() { }
 		
-		GDINL virtual HRIShaderProgram const* GetShaderProgram() const final { return self->Effect.GetPointer(); }
-		GDINL virtual HRIIndexedShape  const* GetIndexedShape () const final { return self->IndexedShape.GetPointer(); }
+		GDINL virtual HRIShaderProgram const* GetShaderProgram() const final { return this->Effect.GetPointer(); }
+		GDINL virtual HRIIndexedShape  const* GetIndexedShape () const final { return this->IndexedShape.GetPointer(); }
 		GDINL virtual void SetShaderProgram(HRIShaderProgram const* const Effect) final
 		{
-			self->Effect = object_cast<HRID3D11ShaderProgram const*>(Effect);
-			self->IsRelinkingRequired = true;
+			this->Effect = object_cast<HRID3D11ShaderProgram const*>(Effect);
+			this->IsRelinkingRequired = true;
 		}
 
 		GDINL virtual void SetIndexedShape(HRIIndexedShape  const* const IndexedShape) final
 		{
-			self->IndexedShape = object_cast<HRID3D11IndexedShape const*>(IndexedShape);
-			self->IsRelinkingRequired = true;
+			this->IndexedShape = object_cast<HRID3D11IndexedShape const*>(IndexedShape);
+			this->IsRelinkingRequired = true;
 		}
 
 		GDINT virtual void RenderSelf() const final;

@@ -47,9 +47,9 @@ GD_NAMESPACE_BEGIN
 		UniquePtr<Assembly const> D3DCompilerAssembly;
 		GDINT pD3DCompileLoader()
 		{	// Trying to load compile function from standart D3D compiler DLL.
-			if ((self->D3DCompilerAssembly = Assembly::LoadAssemblyFromPath(D3DCOMPILER_DLL)) != nullptr) {
+			if ((this->D3DCompilerAssembly = Assembly::LoadAssemblyFromPath(D3DCOMPILER_DLL)) != nullptr) {
 				if ((D3DCompile = reinterpret_cast<pD3DCompile>(D3DCompilerAssembly->GetNativeMethod("D3DCompile"))) == nullptr) {
-					self->D3DCompilerAssembly = nullptr;
+					this->D3DCompilerAssembly = nullptr;
 					Debug::Error("Failed to load 'D3DCompile' function from '"D3DCOMPILER_DLL"' assembly.");
 				}
 
@@ -127,19 +127,19 @@ GD_NAMESPACE_BEGIN
 		for (auto const& Definition : ShaderParsedData->InnerDefinitions) {	// Enumerating all definitions in shader.
 			HLSLType const* const Type = HLSLDynamicCast<HLSLType const*>(Definition);
 			if (Type != nullptr) {
-				self->GenerateShaderStruct(static_cast<HLSLStruct const*>(Type), Builder);
+				this->GenerateShaderStruct(static_cast<HLSLStruct const*>(Type), Builder);
 			} else {	// This definition is not a type.
 				HLSLCBuffer const* const ConstantBuffer = HLSLDynamicCast<HLSLCBuffer const*>(Definition);
 				if (ConstantBuffer != nullptr) {
-					self->GenerateShaderConstantBuffer(ConstantBuffer, Builder);
+					this->GenerateShaderConstantBuffer(ConstantBuffer, Builder);
 				} else {	// This definition is not a constant buffer.
 					HLSLVariable const* const StaticVariable = HLSLDynamicCast<HLSLVariable const*>(Definition);
 					if (StaticVariable != nullptr) {
-						self->GenerateShaderStaticVariable(StaticVariable, Builder);
+						this->GenerateShaderStaticVariable(StaticVariable, Builder);
 					} else {	// This definition is not a static variable.
 						HLSLFunction const* const StaticFunction = HLSLDynamicCast<HLSLFunction const*>(Definition);
 						if (StaticFunction != nullptr) {	// This definition is static function.
-							self->GenerateShaderStaticFunction(StaticFunction, Builder);
+							this->GenerateShaderStaticFunction(StaticFunction, Builder);
 						}
 					}
 				}
@@ -256,7 +256,7 @@ GD_NAMESPACE_BEGIN
 	)
 	{
 		StringBuilder HLSLGeneratorOutput;
-		HLSLGenerator(self->Toolchain).GenerateShader(HLSLGeneratorOutput, ShaderParsedData);
+		HLSLGenerator(this->Toolchain).GenerateShader(HLSLGeneratorOutput, ShaderParsedData);
 
 		UINT D3DCompileFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_AVOID_FLOW_CONTROL;
 #if (defined(GD_DEBUG))
@@ -264,7 +264,7 @@ GD_NAMESPACE_BEGIN
 #else	// if (defined(GD_DEBUG))
 		D3DCompileFlags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #endif	// if (defined(GD_DEBUG))
-		if (self->Toolchain->DoTreatWarningsAsError()) {
+		if (this->Toolchain->DoTreatWarningsAsError()) {
 			D3DCompileFlags |= D3DCOMPILE_WARNINGS_ARE_ERRORS;
 		}
 

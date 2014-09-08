@@ -16,12 +16,12 @@ GD_NAMESPACE_BEGIN
 	void Material::SetShaderProgram(RefPtr<HRIShaderProgram> const& Effect) 
 	{
 		GD_ASSERT((Effect != nullptr), "Invalid shader program specified");
-		if (self->MaterialProgram != Effect)
+		if (this->MaterialProgram != Effect)
 		{
 			HRIPixelShader* const EffectPixelShader = Effect->GetProgramPixelShader();
 			if (EffectPixelShader != nullptr) {
-				self->MaterialInstance = HRInterface::GetInstance().CreateShaderInstance(EffectPixelShader->ShaderDesc);
-				self->MaterialProgram = Effect;
+				this->MaterialInstance = HRInterface::GetInstance().CreateShaderInstance(EffectPixelShader->ShaderDesc);
+				this->MaterialProgram = Effect;
 			}
 		}
 	}
@@ -38,18 +38,18 @@ GD_NAMESPACE_BEGIN
 	void Material::BindMaterial(
 	) const
 	{
-		HRIPixelShader* const pixelShader = self->MaterialProgram->GetProgramPixelShader();
+		HRIPixelShader* const pixelShader = this->MaterialProgram->GetProgramPixelShader();
 		if (pixelShader != nullptr)
 		{
-		//	self->MaterialInstance->GetInstanceResourcesLocation()->UploadAllParameters();
-		//	pixelShader->BindShader(self->MaterialInstance.GetPointer());
+		//	this->MaterialInstance->GetInstanceResourcesLocation()->UploadAllParameters();
+		//	pixelShader->BindShader(this->MaterialInstance.GetPointer());
 		}
 	}
 
 	/// ==========================================================================================
 	void Material::UnbindMaterial() const
 	{
-		HRIPixelShader* const pixelShader = self->MaterialProgram->GetProgramPixelShader();
+		HRIPixelShader* const pixelShader = this->MaterialProgram->GetProgramPixelShader();
 		if (pixelShader != nullptr)
 		{
 			pixelShader->UnbindShader();
@@ -68,7 +68,7 @@ GD_NAMESPACE_BEGIN
 		String const metrialShaderId = mxmlElementGetAttr(materialRootNode, "Shader");
 		RefPtr<RSEffect> const materialShaderProgramResource = RSStreamer::GetInstance().LoadImmediately<RSEffect>(metrialShaderId);
 		if (materialShaderProgramResource != nullptr) {
-			self->SetShaderProgram(materialShaderProgramResource->GetEffectShaderProgram());
+			this->SetShaderProgram(materialShaderProgramResource->GetEffectShaderProgram());
 		}
 
 	/*	GD_MXML_FOREACH_CHILD (materialParamNode, materialRootNode)
@@ -76,7 +76,7 @@ GD_NAMESPACE_BEGIN
 			String const materialParamName = mxmlElementGetAttr(materialParamNode, "Name");
 			String const materialParamValue = mxmlElementGetAttr(materialParamNode, "Value");
 
-			HRIShaderParam* const materialParam = self->MaterialInstance->GetParamByName(materialParamName);
+			HRIShaderParam* const materialParam = this->MaterialInstance->GetParamByName(materialParamName);
 			GD_ASSERT((materialParam != nullptr), "Param with specified name does not exists in shader");
 
 			switch (materialParam->ParamDesc->ParamType)

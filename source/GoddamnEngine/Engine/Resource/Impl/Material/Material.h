@@ -42,7 +42,7 @@ GD_NAMESPACE_BEGIN
 		/// Returns shader program that this material is using
 		GDINL RefPtr<HRIShaderProgram> GetShaderProgram() const 
 		{ 
-			return self->MaterialProgram; 
+			return this->MaterialProgram; 
 		}
 
 		/// ==========================================================================================
@@ -64,9 +64,9 @@ GD_NAMESPACE_BEGIN
 			_In_ String const& propertyName
 		) const
 		{
-			if (self->MaterialInstance != nullptr)
+			if (this->MaterialInstance != nullptr)
 			{
-				return self->MaterialInstance->GetParamByName(propertyName);
+				return this->MaterialInstance->GetParamByName(propertyName);
 			}
 
 			return nullptr;

@@ -25,8 +25,8 @@ GD_NAMESPACE_BEGIN
 		GDINT explicit HRIOGLVertexBuffer(Float32 const* const Data, size_t const Size);
 		GDINT virtual ~HRIOGLVertexBuffer();
 
-		GDINL virtual  handle GetNativePointer() const final { return const_cast<GLuint*>(&self->VertexBufferObject); }
-		GDINL          GLuint GetBufferID     () const       { return                      self->VertexBufferObject ; }
+		GDINL virtual  handle GetNativePointer() const final { return const_cast<GLuint*>(&this->VertexBufferObject); }
+		GDINL          GLuint GetBufferID     () const       { return                      this->VertexBufferObject ; }
 		GDINT void BindBuffer() const;
 		GDINT void UnbindBuffer() const;
 	};	// class HRIOGLVertexBuffer
@@ -41,8 +41,8 @@ GD_NAMESPACE_BEGIN
 		GDINT explicit HRIOGLIndexBuffer(chandle const Data, size_t const Size, size_t const Stride);
 		GDINL virtual ~HRIOGLIndexBuffer();
 		
-		GDINL virtual  handle GetNativePointer() const final { return const_cast<GLuint*>(&self->IndexBufferObject); }
-		GDINL          GLuint GetBufferID     () const       { return                      self->IndexBufferObject ; }
+		GDINL virtual  handle GetNativePointer() const final { return const_cast<GLuint*>(&this->IndexBufferObject); }
+		GDINL          GLuint GetBufferID     () const       { return                      this->IndexBufferObject ; }
 		GDINT void BindBuffer() const;
 		GDINT void UnbindBuffer() const;
 	};	// class HRIOGLIndexBuffer
@@ -60,8 +60,8 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual void CopyDataTo  ( handle const Data) const final;
 		GDINT virtual void CopyDataFrom(chandle const Data)       final;
 		
-		GDINL virtual  handle GetNativePointer() const final { return const_cast<GLuint*>(&self->UniformBufferObject); }
-		GDINL          GLuint GetBufferID     () const       { return                      self->UniformBufferObject ; }
+		GDINL virtual  handle GetNativePointer() const final { return const_cast<GLuint*>(&this->UniformBufferObject); }
+		GDINL          GLuint GetBufferID     () const       { return                      this->UniformBufferObject ; }
 		GDINT void BindBuffer() const;
 		GDINT void UnbindBuffer() const;
 	};	// class HRIOGLConstantBuffer

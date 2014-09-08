@@ -65,37 +65,37 @@ GD_NAMESPACE_BEGIN
 	public /* Class API */:
 		GDINL ElementType Length() const
 		{
-			return SquareRoot(self->Dot(*self));
+			return SquareRoot(this->Dot(*this));
 		}
 
 		GDINL Vector2t Normalize() const
 		{
-			return ((*self) / self->Length());
+			return ((*this) / this->Length());
 		}
 
 		GDINL ElementType Dot(Vector2t const& Other) const
 		{
-			return (self->x * Other.x + self->y * Other.y);
+			return (this->x * Other.x + this->y * Other.y);
 		}
 
 	public /* Operators */:
 		GDINL ElementTypeConstRef operator[] (size_t const Index) const
 		{
 			GD_ASSERT(Index < ThisComponentsCount, "invalid Vector2t subindex.");
-			return self->Elements[Index];
+			return this->Elements[Index];
 		}
 
 		GDINL bool operator== (Vector2t const& Other) const
 		{
-			if (self->x == Other.x)
-				if (self->y == Other.y)
+			if (this->x == Other.x)
+				if (this->y == Other.y)
 					return true;
 			return false;
 		}
 
 		GDINL bool operator!= (Vector2t const& Other) const
 		{
-			return !((*self) == Other);
+			return !((*this) == Other);
 		}
 
 #if (defined(GD_COMPILER_MSVC))
@@ -104,105 +104,105 @@ GD_NAMESPACE_BEGIN
 
 		GDINL Vector2t& operator+= (ElementTypeConstRef const Vector2Value)
 		{
-			self->x += Vector2Value;
-			self->y += Vector2Value;
-			return (*self);
+			this->x += Vector2Value;
+			this->y += Vector2Value;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator-= (ElementTypeConstRef const Vector2Value)
 		{
-			self->x -= Vector2Value;
-			self->y -= Vector2Value;
-			return (*self);
+			this->x -= Vector2Value;
+			this->y -= Vector2Value;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator*= (ElementTypeConstRef const Vector2Value)
 		{
-			self->x *= Vector2Value;
-			self->y *= Vector2Value;
-			return (*self);
+			this->x *= Vector2Value;
+			this->y *= Vector2Value;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator/= (ElementTypeConstRef const Vector2Value)
 		{
-			self->x /= Vector2Value;
-			self->y /= Vector2Value;
-			return (*self);
+			this->x /= Vector2Value;
+			this->y /= Vector2Value;
+			return (*this);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector2t& operator%= (ElementTypeConstRef const Vector2Value)
 		{
-			self->x %= Vector2Value;
-			self->y %= Vector2Value;
-			return (*self);
+			this->x %= Vector2Value;
+			this->y %= Vector2Value;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator = (Vector2t const& Other)
 		{
-			self->x = Other.x;
-			self->y = Other.y;
-			return (*self);
+			this->x = Other.x;
+			this->y = Other.y;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator+= (Vector2t const& Other)
 		{
-			self->x += Other.x;
-			self->y += Other.y;
-			return (*self);
+			this->x += Other.x;
+			this->y += Other.y;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator-= (Vector2t const& Other)
 		{
-			self->x -= Other.x;
-			self->y -= Other.y;
-			return (*self);
+			this->x -= Other.x;
+			this->y -= Other.y;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator*= (Vector2t const& Other)
 		{
-			self->x *= Other.x;
-			self->y *= Other.y;
-			return (*self);
+			this->x *= Other.x;
+			this->y *= Other.y;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator/= (Vector2t const& Other)
 		{
-			self->x /= Other.x;
-			self->y /= Other.y;
-			return (*self);
+			this->x /= Other.x;
+			this->y /= Other.y;
+			return (*this);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector2t& operator%= (Vector2t const& Other)
 		{
-			self->x %= Other.x;
-			self->y %= Other.y;
-			return (*self);
+			this->x %= Other.x;
+			this->y %= Other.y;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator++ ()
 		{
-			++self->x;
-			++self->y;
-			return (*self);
+			++this->x;
+			++this->y;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator-- ()
 		{
-			--self->x;
-			--self->y;
-			return (*self);
+			--this->x;
+			--this->y;
+			return (*this);
 		}
 
 		GDINL Vector2t& operator++ (int)
 		{
-			return (++(*self));
+			return (++(*this));
 		}
 
 		GDINL Vector2t& operator-- (int)
 		{
-			return (--(*self));
+			return (--(*this));
 		}
 
 #if (defined(GD_COMPILER_MSVC))
@@ -215,54 +215,54 @@ GD_NAMESPACE_BEGIN
 
 		GDINL Vector2t operator+ (ElementTypeConstRef const Vector2Value) const
 		{
-			return Vector2t(self->x + Vector2Value, self->y + Vector2Value);
+			return Vector2t(this->x + Vector2Value, this->y + Vector2Value);
 		}
 
 		GDINL Vector2t operator- (ElementTypeConstRef const Vector2Value) const
 		{
-			return Vector2t(self->x - Vector2Value, self->y - Vector2Value);
+			return Vector2t(this->x - Vector2Value, this->y - Vector2Value);
 		}
 
 		GDINL Vector2t operator* (ElementTypeConstRef const Vector2Value) const
 		{
-			return Vector2t(self->x * Vector2Value, self->y * Vector2Value);
+			return Vector2t(this->x * Vector2Value, this->y * Vector2Value);
 		}
 
 		GDINL Vector2t operator/ (ElementTypeConstRef const Vector2Value) const
 		{
-			return Vector2t(self->x / Vector2Value, self->y / Vector2Value);
+			return Vector2t(this->x / Vector2Value, this->y / Vector2Value);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector2t operator% (ElementTypeConstRef const Vector2Value) const
 		{
-			return Vector2t(self->x % Vector2Value, self->y % Vector2Value);
+			return Vector2t(this->x % Vector2Value, this->y % Vector2Value);
 		}
 
 		GDINL Vector2t operator+ (Vector2t const& Other) const
 		{
-			return Vector2t(self->x + Other.x, self->y + Other.y);
+			return Vector2t(this->x + Other.x, this->y + Other.y);
 		}
 
 		GDINL Vector2t operator- (Vector2t const& Other) const
 		{
-			return Vector2t(self->x - Other.x, self->y - Other.y);
+			return Vector2t(this->x - Other.x, this->y - Other.y);
 		}
 
 		GDINL Vector2t operator* (Vector2t const& Other) const
 		{
-			return Vector2t(self->x * Other.x, self->y * Other.y);
+			return Vector2t(this->x * Other.x, this->y * Other.y);
 		}
 
 		GDINL Vector2t operator/ (Vector2t const& Other) const
 		{
-			return Vector2t(self->x / Other.x, self->y / Other.y);
+			return Vector2t(this->x / Other.x, this->y / Other.y);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector2t operator% (Vector2t const& Other) const
 		{
-			return Vector2t(self->x % Other.x, self->y % Other.y);
+			return Vector2t(this->x % Other.x, this->y % Other.y);
 		}
 
 #if (defined(GD_COMPILER_MSVC))

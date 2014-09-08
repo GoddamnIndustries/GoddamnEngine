@@ -24,7 +24,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINT explicit HRID3D11VertexBuffer(Float32 const* const Data, size_t const Size);
 		GDINL virtual ~HRID3D11VertexBuffer(                                            ) { }
-		GDINL virtual  handle GetNativePointer() const final { return self->Buffer.Get(); }
+		GDINL virtual  handle GetNativePointer() const final { return this->Buffer.Get(); }
 	};	// class HRID3D11VertexBuffer
 
 	class HRID3D11IndexBuffer final : public HRIIndexBuffer
@@ -37,9 +37,9 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINT explicit HRID3D11IndexBuffer(chandle const Data, size_t const Size, size_t const Stride);
 		GDINL virtual ~HRID3D11IndexBuffer(                                                           ) { }
-		GDINL virtual  handle GetNativePointer() const final { return self->GetBufferPointer(); }
-		GDINL ID3D11Buffer*   GetBufferPointer() const       { return self->Buffer.Get(); }
-		GDINL DXGI_FORMAT     GetIndexFormat() const         { return self->IndexFormat; }
+		GDINL virtual  handle GetNativePointer() const final { return this->GetBufferPointer(); }
+		GDINL ID3D11Buffer*   GetBufferPointer() const       { return this->Buffer.Get(); }
+		GDINL DXGI_FORMAT     GetIndexFormat() const         { return this->IndexFormat; }
 	};	// class HRID3D11IndexBuffer
 
 	class HRID3D11ConstantBuffer final : public HRIConstantBuffer
@@ -51,7 +51,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINT explicit HRID3D11ConstantBuffer(size_t const Size);
 		GDINL virtual ~HRID3D11ConstantBuffer(                 ) { }
-		GDINL virtual  handle GetNativePointer() const final { return self->Buffer.Get(); }
+		GDINL virtual  handle GetNativePointer() const final { return this->Buffer.Get(); }
 		GDINT virtual void CopyDataTo  ( handle const Data) const final;
 		GDINT virtual void CopyDataFrom(chandle const Data)       final;
 	};	// class HRID3D11ConstantBuffer

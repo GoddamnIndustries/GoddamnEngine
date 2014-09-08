@@ -20,7 +20,7 @@ GD_NAMESPACE_BEGIN
 			texture2DData.GetSize() / sizeof(char)
 		);*/
 
-		TIFF* const tiff = TIFFOpen(&self->Identifier.GetPathToFile()[0], "rb");//!!! TIFFStreamOpen("Tiff", &texture2DStream);
+		TIFF* const tiff = TIFFOpen(&this->Identifier.GetPathToFile()[0], "rb");//!!! TIFFStreamOpen("Tiff", &texture2DStream);
 		UInt32 texture2DWidth = 0; TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &texture2DWidth);
 		UInt32 texture2DHeight = 0; TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &texture2DHeight);
 		Vector<Color32> texture2DPixels(static_cast<size_t>(texture2DWidth * texture2DHeight) * sizeof(Color32));
@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 		);
 		TIFFClose(tiff);
 
-		self->Texture = HRInterface::GetInstance().CreateTexture2D(
+		this->Texture = HRInterface::GetInstance().CreateTexture2D(
 			HRITexture2DCtorInfo(
 				Resolution(static_cast<Dimension>(texture2DWidth), static_cast<Dimension>(texture2DHeight)),
 				GD_FORMAT_R8G8B8A8_UINT, GD_HRI_TEXTURE_2D_MODE_STATIC, 
@@ -44,7 +44,7 @@ GD_NAMESPACE_BEGIN
 	void Texture2DResource::OnResourceUnload(
 	)
 	{
-		SafeRelease(self->Texture);
+		SafeRelease(this->Texture);
 	}
 
 GD_NAMESPACE_END

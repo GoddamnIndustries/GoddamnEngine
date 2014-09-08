@@ -32,7 +32,7 @@ GD_NAMESPACE_BEGIN
 				memset(&pluginDescription, 0, sizeof(pluginDescription));
 				if (PluginEntryPoint(&pluginDescription))
 				{
-					if ((self->pluginLoadingFlags & pluginDescription.Type) != 0)
+					if ((this->pluginLoadingFlags & pluginDescription.Type) != 0)
 					{
 						Debug::Warning("Plugin with specified type was already loaded");
 						break;
@@ -41,8 +41,8 @@ GD_NAMESPACE_BEGIN
 					if (pluginDescription.PluginTypeInformation->VirtualConstructor != nullptr)
 						pluginDescription.PluginTypeInformation->VirtualConstructor(nullptr, nullptr);
 
-					self->pluginLoadingFlags |= GD_BIT(pluginDescription.Type);
-				//	const_cast<Assembly*>(plugin)->AttachToObject(self);
+					this->pluginLoadingFlags |= GD_BIT(pluginDescription.Type);
+				//	const_cast<Assembly*>(plugin)->AttachToObject(this);
 				}
 			} while (false);
 		//	plugin->RemoveReference();

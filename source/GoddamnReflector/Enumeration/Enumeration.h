@@ -91,17 +91,17 @@ GD_NAMESPACE_BEGIN
 		/// EnumerationStringification.ExportPolicy is set to GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_PUBLIC.
 		inline void SetDefaultsForUnknowns()
 		{
-			if (self->EnumerationType == GD_CPP_ENUMERATION_TYPE_UNKNOWN)
-				self->EnumerationType  = GD_CPP_ENUMERATION_TYPE_ENUMERATION;
+			if (this->EnumerationType == GD_CPP_ENUMERATION_TYPE_UNKNOWN)
+				this->EnumerationType  = GD_CPP_ENUMERATION_TYPE_ENUMERATION;
 			
-			if (self->EnumerationStringification.ChoppingPolicy == GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_UNKNOWN)
-				self->EnumerationStringification.ChoppingPolicy  = GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_CHOPPING;
+			if (this->EnumerationStringification.ChoppingPolicy == GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_UNKNOWN)
+				this->EnumerationStringification.ChoppingPolicy  = GD_CPP_ENUMERATION_STRINGIFICATION_CHOPPING_POLICY_CHOPPING;
 			
-			if (self->EnumerationStringification.CasePolicy == GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_UNKNOWN)
-				self->EnumerationStringification.CasePolicy  = GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_GODDAMN;
+			if (this->EnumerationStringification.CasePolicy == GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_UNKNOWN)
+				this->EnumerationStringification.CasePolicy  = GD_CPP_ENUMERATION_STRINGIFICATION_CASE_POLICY_GODDAMN;
 			
-			if (self->EnumerationStringification.ExportPolicy == GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_UNKNOWN)
-				self->EnumerationStringification.ExportPolicy  = GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_PUBLIC;
+			if (this->EnumerationStringification.ExportPolicy == GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_UNKNOWN)
+				this->EnumerationStringification.ExportPolicy  = GD_CPP_ENUMERATION_STRINGIFICATION_EXPORT_POLICY_PUBLIC;
 		}
 	};	// struct CPPEnumeration
 

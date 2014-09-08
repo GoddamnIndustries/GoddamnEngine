@@ -36,9 +36,9 @@ GD_NAMESPACE_BEGIN
 	GDAPI RefPtr<Resource> RSStreamer::FindOrCreateResource(String const& ID, ITypeInformation const* const TypeInformation) 
 	{
 		GD_DEBUG_ASSERT((TypeInformation != nullptr), "Nullptr Type information specified.");
-		ScopedLock const Lock(self->StreamerLock);
+		ScopedLock const Lock(this->StreamerLock);
 		HashCode   const IDHash = ID.GetHashCode();
-		for (auto const Child : IterateChildObjects<Resource>(self)) {
+		for (auto const Child : IterateChildObjects<Resource>(this)) {
 			if (Child->Identifier == IDHash) {
 				GD_ASSERT(Child->GetTypeInformation()->IsDerivedFrom(TypeInformation), "Requested resource exists, but it's type is incompatible with passed one.");
 				return Child;
@@ -47,7 +47,7 @@ GD_NAMESPACE_BEGIN
 		
 		GD_DEBUG_ASSERT((TypeInformation->VirtualConstructor != nullptr), "Attempted creation of instance of an abstract resource type");
 		RefPtr<Resource> const CreatedResource(object_cast<Resource*>(TypeInformation->VirtualConstructor(nullptr, const_cast<String*>(&ID))));
-		CreatedResource->AttachToObject(self);
+		CreatedResource->AttachToObject(this);
 		CreatedResource->State = RSState::Requested;
 
 		return CreatedResource;
@@ -99,33 +99,33 @@ GD_NAMESPACE_BEGIN
 	/// @returns Possible created or found immediately loaded resource.
 	RefPtr<Resource> RSStreamer::LoadImmediately(String const& ID, TypeInformation const* const TypeInformation)
 	{
-		return self->LoadImmediately(self->FindOrCreateResource(ID, TypeInformation));
+		return this->LoadImmediately(this->FindOrCreateResource(ID, TypeInformation));
 	}
 
 	RefPtr<Resource> RSStreamer::ProcessStreaming(String const& ID, TypeInformation const* const TypeInformation)
 	{	// Resource would loaded in some time.
-		return self->FindOrCreateResource(ID, TypeInformation);
+		return this->FindOrCreateResource(ID, TypeInformation);
 	}
 
 	void RSStreamer::WaitForLoading()
 	{
-		switch(self->StreamerMode) {
+		switch(this->StreamerMode) {
 			case ResourceStreamerMode::NotLaunched:	{
 				if (false) {
 				} else {
 					Debug::Log("Resource streaming is unsupported: resources are loaded in main thread");
-					self->StreamerMode = ResourceStreamerMode::LaunchedNormalLoading;
+					this->StreamerMode = ResourceStreamerMode::LaunchedNormalLoading;
 				}
 			} break;
 			case ResourceStreamerMode::LaunchedNormalLoading: {
-				//while (self->requestedResources.GetSize() != 0)
+				//while (this->requestedResources.GetSize() != 0)
 				//{
-				//	RefPtr<Resource> const resource = self->requestedResources.GetFirstElement().Value;
+				//	RefPtr<Resource> const resource = this->requestedResources.GetFirstElement().Value;
 				//	RSStreamer::GetInstance().LoadImmediately(resource);
 				//}
 			} break;
 			case ResourceStreamerMode::LaunchedStreaming: {
-				//while (self->requestedResources.GetSize() != 0);
+				//while (this->requestedResources.GetSize() != 0);
 			} break;
 		}
 	}
@@ -167,34 +167,34 @@ GD_NAMESPACE_BEGIN
 		size_t        const ProtocolDelimiter = URI.Find(ProtocolDelimiterString.CStr());
 		GD_ASSERT((ProtocolDelimiter != -1), "URI parsing failed: string doesn't matches 'protocol://value0[?value1]'");
 
-		self->Hash = URI.GetHashCode();
-		self->Protocol = RSURIProtocolTypeFromStr(URI.GetSubstring(0, ProtocolDelimiter).CStr());
-		switch (self->Protocol)
+		this->Hash = URI.GetHashCode();
+		this->Protocol = RSURIProtocolTypeFromStr(URI.GetSubstring(0, ProtocolDelimiter).CStr());
+		switch (this->Protocol)
 		{
 			case RSURIProtocolType::File: {
-				self->IdentifierType = RSURIType::PathToRealFile;
-				self->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.GetSubstring(ProtocolDelimiter + ProtocolDelimiterString.GetSize());
-				self->PathInFile = "/";
+				this->IdentifierType = RSURIType::PathToRealFile;
+				this->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.GetSubstring(ProtocolDelimiter + ProtocolDelimiterString.GetSize());
+				this->PathInFile = "/";
 			}	break;
 
 			case RSURIProtocolType::Package: {
 				size_t const QueryDelimiter = URI.Find('?');
 				GD_ASSERT((QueryDelimiter != -1), "URI parsing failed: specified 'package' protocol, but no virtual path specified");
 
-				self->IdentifierType = RSURIType::PathToVirtualFile;
-				self->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.GetSubstring(ProtocolDelimiter + ProtocolDelimiterString.GetSize(), QueryDelimiter);
-				self->PathInFile = URI.GetSubstring(QueryDelimiter + 1);
+				this->IdentifierType = RSURIType::PathToVirtualFile;
+				this->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.GetSubstring(ProtocolDelimiter + ProtocolDelimiterString.GetSize(), QueryDelimiter);
+				this->PathInFile = URI.GetSubstring(QueryDelimiter + 1);
 			}	break;
 
 			case RSURIProtocolType::HTTP:
 			case RSURIProtocolType::HTTPS: {
-				self->IdentifierType = RSURIType::PathToServer;
-				self->PathToFile = URI;
-				self->PathInFile = "/";
+				this->IdentifierType = RSURIType::PathToServer;
+				this->PathToFile = URI;
+				this->PathInFile = "/";
 			}	break;
 
 			case RSURIProtocolType::Inline:	{
-					self->IdentifierType = RSURIType::InlinedData;
+					this->IdentifierType = RSURIType::InlinedData;
 					size_t const QueryDelimiter = URI.Find('?');
 					size_t const DataTextSize   = URI.GetSize() - (ProtocolDelimiter + ProtocolDelimiterString.GetSize());
 					Str    const DataText       = URI.CStr() + ((QueryDelimiter != -1) ? (QueryDelimiter + 1) : (ProtocolDelimiter + ProtocolDelimiterString.GetSize()));
@@ -211,16 +211,16 @@ GD_NAMESPACE_BEGIN
 
 							if ((Index % 2) == 0) {
 								Char const RawCharacter = (((DoubleByte[0] & 0x0F) << 4) | (DoubleByte[1] & 0x0F));
-								self->InlinedData.Append(RawCharacter);
+								this->InlinedData.Append(RawCharacter);
 							}
 						}
 					} else if (strncmp(DataType, "bytecode-base64", sizeof("bytecode-base64") - 1) == 0) {
 						StringInputStream Input(DataText, DataTextSize);
-						StringOutputStream Output(self->InlinedData);
+						StringOutputStream Output(this->InlinedData);
 						Base64::Decode(&Input, &Output);
 					} else if (strncmp(DataType, "plain-text", sizeof("plain-text") - 1) == 0) {
-						self->InlinedData.Resize(DataTextSize);
-						memcpy(self->InlinedData.GetPointer(), DataText, DataTextSize * sizeof(Char));
+						this->InlinedData.Resize(DataTextSize);
+						memcpy(this->InlinedData.GetPointer(), DataText, DataTextSize * sizeof(Char));
 					} else 
 						GD_DEBUG_ASSERT_FALSE("URI parsing failed: parsing inlined data failed: unknown data type");
 				}	break;
@@ -233,17 +233,17 @@ GD_NAMESPACE_BEGIN
 
 	UniquePtr<InputStream> RSURI::OpenInputStream() const
 	{
-		switch (self->Protocol)
+		switch (this->Protocol)
 		{
 		case RSURIProtocolType::Package:
 				GD_NOT_IMPLEMENTED();
 		case RSURIProtocolType::File:
-				return UniquePtr<InputStream>(new FileInputStream(self->PathToFile));
+				return UniquePtr<InputStream>(new FileInputStream(this->PathToFile));
 		case RSURIProtocolType::HTTP:
 		case RSURIProtocolType::HTTPS:
 				GD_NOT_IMPLEMENTED();
 		case RSURIProtocolType::Inline:
-				return UniquePtr<InputStream>(new StringInputStream(self->InlinedData));
+				return UniquePtr<InputStream>(new StringInputStream(this->InlinedData));
 
 		default:
 			GD_DEBUG_ASSERT_FALSE("URI parsing failed: unknown protocol");

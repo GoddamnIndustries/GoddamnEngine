@@ -73,7 +73,7 @@ GD_NAMESPACE_BEGIN
 			{
 				typedef typename Base::ThisFieldTypeClassNonConst ThisFieldTypeClassNonConst;
 				ThisFieldTypeClassNonConst& OutputValueReference = *(reinterpret_cast<ThisFieldTypeClassNonConst*>(OutputValuePtr));
-				OutputValueReference = Forward<ThisFieldTypeClassNonConst>(const_cast<ThisFieldTypeClassNonConst&>(*self->FieldPtr));
+				OutputValueReference = Forward<ThisFieldTypeClassNonConst>(const_cast<ThisFieldTypeClassNonConst&>(*this->FieldPtr));
 			}
 		};	// class FieldInformationReadable<FieldValueType*>
 
@@ -93,7 +93,7 @@ GD_NAMESPACE_BEGIN
 			{
                 typedef typename Base::ThisFieldTypeClassNonConst ThisFieldTypeClassNonConst;
 				ThisFieldTypeClassNonConst& OutputValueReference = *(reinterpret_cast<ThisFieldTypeClassNonConst*>(OutputValuePtr));
-				OutputValueReference = Forward<ThisFieldTypeClassNonConst>(const_cast<ThisFieldTypeClassNonConst&>(object_cast<FieldOwnerClass const*>(Reflectable)->*self->FieldPtr));
+				OutputValueReference = Forward<ThisFieldTypeClassNonConst>(const_cast<ThisFieldTypeClassNonConst&>(object_cast<FieldOwnerClass const*>(Reflectable)->*this->FieldPtr));
 			}
 		};	// class FieldInformationReadable<FieldValueType*>
 
@@ -109,7 +109,7 @@ GD_NAMESPACE_BEGIN
 			GDINL virtual bool IsReadOnly() const final { return false; }
             GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final
 			{
-				FieldValueType& FieldReference = (*self->FieldPtr);
+				FieldValueType& FieldReference = (*this->FieldPtr);
 				FieldReference = Forward<FieldValueType>(*(reinterpret_cast<FieldValueType*>(InputValuePtr)));
 			}
 		};	// class FieldInformationWriteble<FieldValueType*>
@@ -135,7 +135,7 @@ GD_NAMESPACE_BEGIN
 			GDINL virtual bool IsReadOnly() const final { return false; }
             GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final
 			{
-				FieldValueType& FieldReference = (object_cast<FieldOwnerClass*>(Reflectable)->*self->FieldPtr);
+				FieldValueType& FieldReference = (object_cast<FieldOwnerClass*>(Reflectable)->*this->FieldPtr);
 				FieldReference = Forward<FieldValueType>(*(reinterpret_cast<FieldValueType*>(InputValuePtr)));
 			}
 		};	// class FieldInformationWriteble<FieldValueType FieldValueType::*>

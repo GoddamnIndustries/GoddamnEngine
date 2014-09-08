@@ -156,26 +156,26 @@ R"(
 		for (auto const& Definition : ShaderParsedData->InnerDefinitions) {	// Enumerating all definitions in shader.
 			HLSLType const* const Type = HLSLDynamicCast<HLSLType const*>(Definition);
 			if (Type != nullptr) {
-				self->GenerateShaderStruct(static_cast<HLSLStruct const*>(Type), Builder);
+				this->GenerateShaderStruct(static_cast<HLSLStruct const*>(Type), Builder);
 			} else {	// This definition is not a type.
 				HLSLCBuffer const* const ConstantBuffer = HLSLDynamicCast<HLSLCBuffer const*>(Definition);
 				if (ConstantBuffer != nullptr) {
-					self->GenerateShaderConstantBuffer(ConstantBuffer, Builder, ShaderTargetPlatform != GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2, ShaderType);
+					this->GenerateShaderConstantBuffer(ConstantBuffer, Builder, ShaderTargetPlatform != GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2, ShaderType);
 				} else {	// This definition is not a constant buffer.
 					HLSLVariable const* const StaticVariable = HLSLDynamicCast<HLSLVariable const*>(Definition);
 					if (StaticVariable != nullptr) {
-						self->GenerateShaderStaticVariable(StaticVariable, Builder);
+						this->GenerateShaderStaticVariable(StaticVariable, Builder);
 					} else {	// This definition is not a static variable.
 						HLSLFunction const* const StaticFunction = HLSLDynamicCast<HLSLFunction const*>(Definition);
 						if (StaticFunction != nullptr) {	// This definition is static function.
-							self->GenerateShaderStaticFunction(StaticFunction, Builder);
+							this->GenerateShaderStaticFunction(StaticFunction, Builder);
 						}
 					}
 				}
 			}
 		}
 
-		self->GenerateShaderEntry(ShaderParsedData->FindFunction(ShaderEntryName), Builder);
+		this->GenerateShaderEntry(ShaderParsedData->FindFunction(ShaderEntryName), Builder);
 	}
 
 	void GLSLGenerator::GenerateShaderStruct(HLSLStruct const* const Struct, StringBuilder& Builder)
@@ -367,7 +367,7 @@ R"(
 	)
 	{
 		StringBuilder GLSLGeneratorBuilder;
-		GLSLGenerator(self->Toolchain).GenerateShader(GLSLGeneratorBuilder, ShaderParsedData, ShaderEntryName, ShaderTargetPlatform, ShaderType);
+		GLSLGenerator(this->Toolchain).GenerateShader(GLSLGeneratorBuilder, ShaderParsedData, ShaderEntryName, ShaderTargetPlatform, ShaderType);
 
 		// Now we need just preprocess generated code to reduñe loading time.
 		StringBuilder GLSLPreprocessedBuilder;
@@ -456,9 +456,9 @@ R"(
 				GDINT  GLSLangInitializerType()
 				{ 
 					GD_DEBUG_ASSERT(glslang::InitializeProcess(), "Failed to initialize glslang."); 
-					GD_DEBUG_ASSERT(&self->DefaultResources.maxLights == reinterpret_cast<int*>(&self->DefaultResources), "GLSL refactored, needed rewriting.");
-					::memset(&self->DefaultResources.limits, true, sizeof(self->DefaultResources.limits));
-					for (int* SomeResource = &self->DefaultResources.maxLights; SomeResource != reinterpret_cast<int*>(&self->DefaultResources.limits); ++SomeResource) {
+					GD_DEBUG_ASSERT(&this->DefaultResources.maxLights == reinterpret_cast<int*>(&this->DefaultResources), "GLSL refactored, needed rewriting.");
+					::memset(&this->DefaultResources.limits, true, sizeof(this->DefaultResources.limits));
+					for (int* SomeResource = &this->DefaultResources.maxLights; SomeResource != reinterpret_cast<int*>(&this->DefaultResources.limits); ++SomeResource) {
 						(*SomeResource) = INT_MAX;
 					}
 				}

@@ -16,47 +16,47 @@ GD_NAMESPACE_BEGIN
 
 	inline void Component::OnInitializeSelf()
 	{ 
-		for (auto const AttachedComponent : IterateChildObjects<Component>(self)) {
+		for (auto const AttachedComponent : IterateChildObjects<Component>(this)) {
 			AttachedComponent->OnInitializeSelf();
 		}
 	}
 
 	inline void Component::OnDestroySelf(bool const IsForceDestruction)
 	{ 
-		for (auto const AttachedComponent : IterateChildObjects<Component>(self)) {
+		for (auto const AttachedComponent : IterateChildObjects<Component>(this)) {
 			AttachedComponent->OnDestroySelf(IsForceDestruction);
 		}
 	}
 
 	inline void Component::OnStartSelf()
 	{ 
-		for (auto const AttachedComponent : IterateChildObjects<Component>(self)) {
+		for (auto const AttachedComponent : IterateChildObjects<Component>(this)) {
 			AttachedComponent->OnStartSelf();
 		}
 	}
 
 	inline void Component::OnUpdateSelf()
 	{ 
-		for (auto const AttachedComponent : IterateChildObjects<Component>(self)) {
+		for (auto const AttachedComponent : IterateChildObjects<Component>(this)) {
 			AttachedComponent->OnUpdateSelf();
 		}
 	}
 
 	inline void Component::OnRenderSelf(RefPtr<Camera> const& TheCamera)
 	{ 
-		for (auto const AttachedComponent : IterateChildObjects<Component>(self)) {
+		for (auto const AttachedComponent : IterateChildObjects<Component>(this)) {
 			AttachedComponent->OnRenderSelf(TheCamera);
 		}
 	}
 
 	GDINL RefPtr<GameObject> Component::GetGameObject()
 	{
-		return object_cast<GameObject*>(self->GetParentObject());
+		return object_cast<GameObject*>(this->GetParentObject());
 	}
 
 	GDINL RefPtr<GameObject const> Component::GetGameObject() const
 	{
-		return object_cast<GameObject const*>(self->GetParentObject());
+		return object_cast<GameObject const*>(this->GetParentObject());
 	}
 
 	/// ==========================================================================================
@@ -65,22 +65,22 @@ GD_NAMESPACE_BEGIN
 
 	GDINL GameObject::GameObject()
 	{
-		self->AddComponent<Transform>();
+		this->AddComponent<Transform>();
 	}
 
 	GDINL RefPtr<Transform> GameObject::GetTransform()
 	{
-		if (self->CachedTransform == nullptr) {
-			self->CachedTransform = self->GetComponent<Transform>();
-			GD_DEBUG_ASSERT(self->CachedTransform != nullptr, "No Transform component was found.");
+		if (this->CachedTransform == nullptr) {
+			this->CachedTransform = this->GetComponent<Transform>();
+			GD_DEBUG_ASSERT(this->CachedTransform != nullptr, "No Transform component was found.");
 		}
 
-		return self->CachedTransform;
+		return this->CachedTransform;
 	}
 
 	GDINL RefPtr<Transform const> GameObject::GetTransform() const
 	{
-		return const_cast<GameObject*>(self)->GetTransform();
+		return const_cast<GameObject*>(this)->GetTransform();
 	}
 
 GD_NAMESPACE_END

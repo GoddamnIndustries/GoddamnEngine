@@ -17,12 +17,12 @@ GD_NAMESPACE_BEGIN
 		//		"'Scene::Scene' internal error: "
 		//		"using 'UsingOwnStaticComponentsManager' is not allowed");
 
-		//	self->staticComponentsManager = new GameObject();
-		//	StaticComponent::InitializeAsHandler(self->staticComponentsManager.GetPointer());
+		//	this->staticComponentsManager = new GameObject();
+		//	StaticComponent::InitializeAsHandler(this->staticComponentsManager.GetPointer());
 		//}
 		//else
 		//{
-		//	//self->staticComponentsManager = SceneManager::GetInstance().SharedStaticComponentManager;
+		//	//this->staticComponentsManager = SceneManager::GetInstance().SharedStaticComponentManager;
 		//}
 	}
 
@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 	{
 		GameObject* const 
 			gameObject = new GameObject();
-			gameObject->AttachToObject(self);
+			gameObject->AttachToObject(this);
 
 		return gameObject;
 	}
@@ -48,8 +48,8 @@ GD_NAMESPACE_BEGIN
 	SceneManager::SceneManager() :
 		SharedStaticComponentManager(new GameObject())
 	{
-		//RefPtr<Scene> scene = self->AdoptChildObject(new Scene());
-		//scene->AdoptChildObject(self->SharedStaticComponentManager.GetPointer());
+		//RefPtr<Scene> scene = this->AdoptChildObject(new Scene());
+		//scene->AdoptChildObject(this->SharedStaticComponentManager.GetPointer());
 
 
 	}

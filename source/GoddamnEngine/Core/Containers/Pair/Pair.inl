@@ -46,25 +46,25 @@ GD_NAMESPACE_BEGIN
 	GD_PAIR_TEMPLATE()
 	GDINL GD_PAIR_CLASS()& GD_PAIR_CLASS()::operator= (Pair const& OtherPair)
 	{ 
-		if ((&OtherPair) != self)
+		if ((&OtherPair) != this)
 		{
-			self->Key   = OtherPair.Key;
-			self->Value = OtherPair.Value;
+			this->Key   = OtherPair.Key;
+			this->Value = OtherPair.Value;
 		}
 
-		return (*self);
+		return (*this);
 	}
 
 	GD_PAIR_TEMPLATE()
 	GDINL GD_PAIR_CLASS()& GD_PAIR_CLASS()::operator= (Pair&& OtherPair)
 	{ 
-		if ((&OtherPair) != self)
+		if ((&OtherPair) != this)
 		{
-			self->Key   = Move(OtherPair.Key);
-			self->Value = Move(OtherPair.Value);
+			this->Key   = Move(OtherPair.Key);
+			this->Value = Move(OtherPair.Value);
 		}
 
-		return (*self);
+		return (*this);
 	}
 
 #	undef GD_PAIR_TEMPLATE

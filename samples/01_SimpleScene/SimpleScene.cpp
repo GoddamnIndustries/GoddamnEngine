@@ -54,7 +54,7 @@ GD_TYPEINFORMATION_IMPLEMENTATION(SimpleSceneFPSController, Component, GDINT);
 
 void SimpleSceneSampleApp::OnInitialize()
 {	// Initializing Application.
-	self->Application::OnInitialize();
+	this->Application::OnInitialize();
 
 	// Creating a scene.
 	/*RefPtr<Scene>*/Scene* const CurrentScene = new Scene(Scene::FlagsNone);
@@ -91,10 +91,10 @@ constexpr Float32 GetDeltaTime() { return 0.0014f; } // Now executing at 650 - 7
 void SimpleSceneFPSController::OnUpdateSelf()
 {	// Getting our Transform component.
 	// Note: Unlike Unity, Transform is cached. So it can be used without user-caching.
-	RefPtr<Transform> const MyTransform(self->GetGameObject()->GetTransform());
+	RefPtr<Transform> const MyTransform(this->GetGameObject()->GetTransform());
 
 	// Handling WASD keys to move, E and R to rotate.
-	Float32 const DeltaPosition = self->MovingSpeed * Time::GetDeltaTime();
+	Float32 const DeltaPosition = this->MovingSpeed * Time::GetDeltaTime();
 	// Forward/Backward.
 	if (Input::IsKeyDown(KeyCode::W)) {
 		MyTransform->Translate(Vector3Fast(0.0f, 0.0f, DeltaPosition));

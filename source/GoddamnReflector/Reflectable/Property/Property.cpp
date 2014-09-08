@@ -85,8 +85,8 @@ GD_NAMESPACE_BEGIN
 	/// @see CPPAnnotationParser::ParseAnnotation
 	void CPPReflectablePropertyParser::ParseAnnotation(CPPBaseParser* const BaseParser)
 	{	/// Initialization.
-		self->CurrentProperty = new CPPReflectableProperty();
-		self->CPPAnnotationParser::ParseAnnotation(BaseParser);
+		this->CurrentProperty = new CPPReflectableProperty();
+		this->CPPAnnotationParser::ParseAnnotation(BaseParser);
 	}
 
 	/// ==========================================================================================

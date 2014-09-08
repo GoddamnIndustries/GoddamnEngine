@@ -20,8 +20,8 @@ GD_NAMESPACE_BEGIN
 		};
 
 		GD_ASSERT(TopologyType < GD_ARRAY_SIZE(D3D11TopologyTranslationTable), "Invalid topology type specified.");
-		self->D3D11TopologyType = D3D11TopologyTranslationTable[static_cast<size_t>(TopologyType)];
-		self->HRIIndexedShape::SetTopologyType(TopologyType);
+		this->D3D11TopologyType = D3D11TopologyTranslationTable[static_cast<size_t>(TopologyType)];
+		this->HRIIndexedShape::SetTopologyType(TopologyType);
 	}
 
 	HRIIndexedShape* HRD3D11Interface::CreateIndexedShape()

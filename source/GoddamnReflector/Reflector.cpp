@@ -31,13 +31,13 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if lexem was succesfully read.
 	bool CPPBaseParser::TryReadNextLexem()
 	{
-		if (self->Lexer->GetNextLexem(&self->CurrentLexem))
+		if (this->Lexer->GetNextLexem(&this->CurrentLexem))
 		{	// Reading succeded, we need to skip comments comments until read token.
-			if (self->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_COMMENT))
+			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_COMMENT))
 			{	// Comment coming. Maybe we need to store it somewhere or ... 
-				return self->TryReadNextLexem();
+				return this->TryReadNextLexem();
 			}
-			else if (self->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_EOS))
+			else if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_EOS))
 			{	// End-Of-Stream coming.
 				return false;
 			}
@@ -70,7 +70,7 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if current lexem content type mathes with specified one.
 	bool CPPBaseParser::TryExpectLexem(LexemContentType const ContentType)
 	{
-		return (self->CurrentLexem.GetContentType() == ContentType);
+		return (this->CurrentLexem.GetContentType() == ContentType);
 	}
 
 	/// Expects a match of current lexem content type with specified one.
@@ -78,10 +78,10 @@ GD_NAMESPACE_BEGIN
 	/// @param ContentType The expected lexem content type.
 	void CPPBaseParser::ExpectLexem(LexemContentType const ContentType)
 	{
-		if (!self->TryExpectLexem(ContentType))
+		if (!this->TryExpectLexem(ContentType))
 		{	// Unexpected lexem type.
 			CPPBaseParserErrorDesc static const UnexpectedLexemError("unexpected %s. Expected %s.");
-			throw CPPParsingException(UnexpectedLexemError.ToString(&self->CurrentLexem, LexemContentTypeToString(self->CurrentLexem.GetContentType()), LexemContentTypeToString(ContentType)));
+			throw CPPParsingException(UnexpectedLexemError.ToString(&this->CurrentLexem, LexemContentTypeToString(this->CurrentLexem.GetContentType()), LexemContentTypeToString(ContentType)));
 		}
 	}
 
@@ -91,8 +91,8 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if current lexem content type and parsed data ID mathes with specified one.
 	bool CPPBaseParser::TryExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID)
 	{
-		if (self->TryExpectLexem(ContentType))
-			if (self->CurrentLexem.GetProcessedDataID() == ID)
+		if (this->TryExpectLexem(ContentType))
+			if (this->CurrentLexem.GetProcessedDataID() == ID)
 				return true;
 		return false;
 	}
@@ -104,13 +104,13 @@ GD_NAMESPACE_BEGIN
 	/// @param ID          The expected lexem parsed data ID (PDID).
 	void CPPBaseParser::ExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID)
 	{
-		self->ExpectLexem(ContentType);
+		this->ExpectLexem(ContentType);
 
 		// Next lexem exists and has expected content type.
-		if (self->CurrentLexem.GetProcessedDataID() != ID)
+		if (this->CurrentLexem.GetProcessedDataID() != ID)
 		{	// Unexpected lexem value.
 			CPPBaseParserErrorDesc static const UnexpectedLexemValueError("unexpected '%s'.");
-			throw CPPParsingException(UnexpectedLexemValueError.ToString(&self->CurrentLexem, self->CurrentLexem.GetRawData().CStr()));
+			throw CPPParsingException(UnexpectedLexemValueError.ToString(&this->CurrentLexem, this->CurrentLexem.GetRawData().CStr()));
 		}
 	}
 
@@ -118,17 +118,17 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if lexem was succesfully read.
 	bool CPPBaseParser::TryExpectNextLexem()
 	{
-		return self->TryReadNextLexem();
+		return this->TryReadNextLexem();
 	}
 
 	/// Expects next lexem from input stream. 
 	/// If lexem does not exists then raises 'unexpected End-Of-Stream' error.
 	void CPPBaseParser::ExpectNextLexem()
 	{
-		if (!self->TryExpectNextLexem())
+		if (!this->TryExpectNextLexem())
 		{	// Unexpected end of stream while reading lexem.
 			CPPBaseParserErrorDesc static const EndOfStreamInVariableDeclError("unexpected End-Of-Stream.");
-			throw CPPParsingException(EndOfStreamInVariableDeclError.ToString(&self->CurrentLexem));
+			throw CPPParsingException(EndOfStreamInVariableDeclError.ToString(&this->CurrentLexem));
 		}
 	}
 
@@ -138,8 +138,8 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if lexem was succesfully read and mathes with specified content type.
 	bool CPPBaseParser::TryExpectNextLexem(LexemContentType const ContentType)
 	{
-		self->ExpectNextLexem();
-		return self->TryExpectLexem(ContentType);
+		this->ExpectNextLexem();
+		return this->TryExpectLexem(ContentType);
 	}
 
 	/// Expects next lexem from input stream and a match of lexem content type with specified one.
@@ -148,8 +148,8 @@ GD_NAMESPACE_BEGIN
 	/// @param ContentType The expected lexem content type.
 	void CPPBaseParser::ExpectNextLexem(LexemContentType const ContentType)
 	{
-		self->ExpectNextLexem();
-		self->ExpectLexem(ContentType);
+		this->ExpectNextLexem();
+		this->ExpectLexem(ContentType);
 	}
 
 	/// Expects next lexem from input stream, and a match of lexem content type with specified one, and a match of lexem parsed data ID with specified one.
@@ -159,8 +159,8 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if lexem was succesfully read and mathes with specified content type and specified parsed data ID.
 	bool CPPBaseParser::TryExpectNextLexem(LexemContentType const ContentType, StreamedLexerID const ID)
 	{
-		if (self->TryExpectNextLexem(ContentType))
-			if (self->CurrentLexem.GetProcessedDataID() == ID)
+		if (this->TryExpectNextLexem(ContentType))
+			if (this->CurrentLexem.GetProcessedDataID() == ID)
 				return true;
 		return false;
 	}
@@ -173,8 +173,8 @@ GD_NAMESPACE_BEGIN
 	/// @param ID          The expected lexem parsed data ID (PDID).
 	void CPPBaseParser::ExpectNextLexem(LexemContentType const ContentType, StreamedLexerID const ID)
 	{
-		self->ExpectNextLexem();
-		self->ExpectLexem(ContentType, ID);
+		this->ExpectNextLexem();
+		this->ExpectLexem(ContentType, ID);
 	}
 
 	/// ------------------------------------------------------------------------------------------
@@ -191,9 +191,9 @@ GD_NAMESPACE_BEGIN
 		do
 		{	// Expression determination based on braces stack.
 			using namespace StreamedLexerDefaultOptions;
-			if (self->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR))
+			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR))
 			{	// Here is our operator. 
-				StreamedLexerID const PDID = self->GetCurrentLexem().GetProcessedDataID();
+				StreamedLexerID const PDID = this->GetCurrentLexem().GetProcessedDataID();
 				if (   (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_BEGIN) || (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_BEGIN  )
 					|| (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN) || (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN))
 				{	// Opening brace. 
@@ -204,7 +204,7 @@ GD_NAMESPACE_BEGIN
 					if (   (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_END) || (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END  )
 						|| (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END) || (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END))
 					{	// Closing brace. Stack not empty -> matching braces balance.
-						self->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, *(BracesStack.End() - 1) + 1);
+						this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, *(BracesStack.End() - 1) + 1);
 						BracesStack.PopLast();
 					}
 					else if (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_RIGHT_SHIFT)
@@ -212,7 +212,7 @@ GD_NAMESPACE_BEGIN
 						if (   (*(BracesStack.End() - 2) != GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN)
 							|| (*(BracesStack.End() - 1) != GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN))
 						{	// <...< ... >> Mistmatch.
-							self->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END);
+							this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END);
 						}
 
 						BracesStack.Resize(BracesStack.GetSize() - 2);
@@ -223,8 +223,8 @@ GD_NAMESPACE_BEGIN
 					return;
 				}
 			}
-			CodeGenerator->WriteLexem(&self->GetCurrentLexem());
-		} while (self->TryExpectNextLexem());
+			CodeGenerator->WriteLexem(&this->GetCurrentLexem());
+		} while (this->TryExpectNextLexem());
 	}
 
 	/// Parses complex type name. Complex type names are ones with namespace definitions and template parameters. Limitations: 
@@ -236,22 +236,22 @@ GD_NAMESPACE_BEGIN
 		UniquePtr<CPPCodeGenerator> const& CodeGenerator = ((_CodeGenerator != nullptr) ? _CodeGenerator : CPPDummyCodeGenerator);
 
 		// Idenitifier name of type.
-		self->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
-		CodeGenerator->WriteLexem(&self->GetCurrentLexem());
+		this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
+		CodeGenerator->WriteLexem(&this->GetCurrentLexem());
 
 		// Trying to analyze template parameters.
 		using namespace StreamedLexerDefaultOptions;
-		if (self->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN))
+		if (this->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN))
 		{	// Here comes template parameters. Inside template parameters are only types.
 			for (;;)
 			{	// Trying to parse existing template parameter.
-				if (!self->ParseComplexTypenameWithCVs(_CodeGenerator))
+				if (!this->ParseComplexTypenameWithCVs(_CodeGenerator))
 					return false;
 
-				if (!self->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA))
-					self->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END);
+				if (!this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA))
+					this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END);
 			
-				CodeGenerator->WriteLexem(&self->GetCurrentLexem());
+				CodeGenerator->WriteLexem(&this->GetCurrentLexem());
 			}
 		}
 
@@ -267,14 +267,14 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if complex type name was successfully parsed.
 	bool CPPBaseParser::ParseComplexTypenameWithCVs(UniquePtr<CPPCodeGenerator> const& _CodeGenerator /* = nullptr */)
 	{
-		self->ParseComplexTypename(_CodeGenerator);
+		this->ParseComplexTypename(_CodeGenerator);
 		UniquePtr<CPPCodeGenerator> const& CodeGenerator = ((_CodeGenerator != nullptr) ? _CodeGenerator : CPPDummyCodeGenerator);
 
 		do
 		{	// Parsing CVs.
 			using namespace StreamedLexerDefaultOptions;
-			StreamedLexerID const PDID = self->GetCurrentLexem().GetProcessedDataID();
-			if (self->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_KEYWORD))
+			StreamedLexerID const PDID = this->GetCurrentLexem().GetProcessedDataID();
+			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_KEYWORD))
 			{	// Parsing all const-s, volatile-s, signess and etc.
 				if (   (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONST    )
 					|| (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONSTEXPR)
@@ -283,7 +283,7 @@ GD_NAMESPACE_BEGIN
 					|| (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_UNSIGNED ))
 					break;
 			}
-			else if (self->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR))
+			else if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR))
 			{	// Parsing references and pointers.
 				if (   (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_REFERENCING  )
 					|| (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_DEREFERENCING))
@@ -294,8 +294,8 @@ GD_NAMESPACE_BEGIN
 				break;
 			}
 
-			CodeGenerator->WriteLexem(&self->GetCurrentLexem());
-		} while (self->TryExpectNextLexem());
+			CodeGenerator->WriteLexem(&this->GetCurrentLexem());
+		} while (this->TryExpectNextLexem());
 		return true;
 	}
 
@@ -310,10 +310,10 @@ GD_NAMESPACE_BEGIN
 	{
 		do
 		{
-			if (self->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) // This is idenitifier lexem.
-				if (strncmp(self->CurrentLexem.GetRawData().CStr(), ExpectedAnnotationPrefix.CStr(), ExpectedAnnotationPrefix.GetSize()) == 0) // This lexem matches with prefix.
+			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) // This is idenitifier lexem.
+				if (strncmp(this->CurrentLexem.GetRawData().CStr(), ExpectedAnnotationPrefix.CStr(), ExpectedAnnotationPrefix.GetSize()) == 0) // This lexem matches with prefix.
 					return GD_CPP_RESULT_SUCCEEDED;
-		} while (self->TryReadNextLexem());
+		} while (this->TryReadNextLexem());
 		return GD_CPP_RESULT_EMPTY;
 	}
 
@@ -322,22 +322,22 @@ GD_NAMESPACE_BEGIN
 	/// @return True if annotation was succesfully processed.
 	CPPResult CPPBaseParser::ParseAnnotation(handle const Args /* = nullptr */, String const& ExpectedAnnotationPrefix /* = "$GD_" */)
 	{
-		CPPResult const SkippingResult = self->TrySkipToNextAnnotation(ExpectedAnnotationPrefix);
+		CPPResult const SkippingResult = this->TrySkipToNextAnnotation(ExpectedAnnotationPrefix);
 		if (SkippingResult != GD_CPP_RESULT_SUCCEEDED)
 			return SkippingResult;
 
-		SharedPtr<CPPAnnotationParser> AnnotationParser = CPPAnnotationParserSpawner::SpawnAnnotationParser(self->CurrentLexem.GetRawData(), Args);
+		SharedPtr<CPPAnnotationParser> AnnotationParser = CPPAnnotationParserSpawner::SpawnAnnotationParser(this->CurrentLexem.GetRawData(), Args);
 		if (AnnotationParser.GetPointer() != nullptr)
 		{	// Enabling full-featured parser.
-			self->Lexer->SwitchMode(StreamedLexerMode::Advanced);
-			AnnotationParser->ParseAnnotation(self);
+			this->Lexer->SwitchMode(StreamedLexerMode::Advanced);
+			AnnotationParser->ParseAnnotation(this);
 			// Switching back to simple one.
-			self->Lexer->SwitchMode(StreamedLexerMode::Basic);
+			this->Lexer->SwitchMode(StreamedLexerMode::Basic);
 			return GD_CPP_RESULT_SUCCEEDED;
 		}
 
 		// Trying to read next lexem not to make parser stuck on current one.
-		self->TryExpectNextLexem();
+		this->TryExpectNextLexem();
 		return GD_CPP_RESULT_EMPTY;
 	}
 
@@ -358,7 +358,7 @@ GD_NAMESPACE_BEGIN
 		{	// Annotation contains parameters
 			for (;;)
 			{	// Parsing annotation parameters.
-				UniquePtr<CPPAnnotationParamParser> const AnnotationParamParser = self->SpawnParamParser(BaseParser->GetCurrentLexem().GetRawData());
+				UniquePtr<CPPAnnotationParamParser> const AnnotationParamParser = this->SpawnParamParser(BaseParser->GetCurrentLexem().GetRawData());
 				if (AnnotationParamParser == nullptr)
 				{	// Failed to create argument parser.
 					CPPBaseParserErrorDesc static const InvalidAnnotationParameterSpecified("invalid annotation parameter '%s' specified.");
@@ -371,7 +371,7 @@ GD_NAMESPACE_BEGIN
 					for (;;)
 					{	// Loop made to parse multiple paramaters with '|' operator.
 						BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
-						AnnotationParamParser->ParseArgument(BaseParser, self, BaseParser->GetCurrentLexem().GetRawData());
+						AnnotationParamParser->ParseArgument(BaseParser, this, BaseParser->GetCurrentLexem().GetRawData());
 						if (!BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_OR)) break;
 						BaseParser->ExpectNextLexem();
 					}
@@ -401,7 +401,7 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if annotation was succesfully parsed.
 	void CPPAnnotationParser::ParseAnnotation(CPPBaseParser* const BaseParser)
 	{
-		self->ParseAnnotationParams(BaseParser);
+		this->ParseAnnotationParams(BaseParser);
 	}
 
 	/// ==========================================================================================
@@ -459,10 +459,10 @@ GD_NAMESPACE_BEGIN
 	void CPPAnnotationParamParserSpawner::RegisterAnnotationParamParser(String const& Name, CtorProc const Ctor)
 	{
 		HashCode const NameHash = Name.GetHashCode();
-		if (self->AnnotationParamParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX)
+		if (this->AnnotationParamParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX)
 			GD_DEBUG_ASSERT_FALSE("Parser for paremeter of an annotation '%s' was already defined.", Name.CStr());
 
-		self->AnnotationParamParsersRegistry.PushLast(NameHash, Ctor);
+		this->AnnotationParamParsersRegistry.PushLast(NameHash, Ctor);
 	}
 
 	/// Spawns new specialized annotation param parser.
@@ -472,25 +472,25 @@ GD_NAMESPACE_BEGIN
 	UniquePtr<CPPAnnotationParamParser> CPPAnnotationParamParserSpawner::SpawnAnnotationParamParser(String const& Name, handle const Args) const
 	{
 		HashCode const NameHash = Name.GetHashCode();
-		size_t const FoundIndex = self->AnnotationParamParsersRegistry.FindFirstElement(NameHash);
+		size_t const FoundIndex = this->AnnotationParamParsersRegistry.FindFirstElement(NameHash);
 		if (FoundIndex != SIZE_MAX)
-			return self->AnnotationParamParsersRegistry.GetElementAt(FoundIndex).Value(Args);
+			return this->AnnotationParamParsersRegistry.GetElementAt(FoundIndex).Value(Args);
 		return UniquePtr<CPPAnnotationParamParser>(nullptr);
 	}
 
 #if 0
 	bool CPPHeaderReflectorImpl::OpenOutputStreamsAndWriteInitializers()
 	{
-		self->HeaderInputStream = new FileInputStream(self->HeaderPath);
-		if (!self->HeaderInputStream->CanRead())
+		this->HeaderInputStream = new FileInputStream(this->HeaderPath);
+		if (!this->HeaderInputStream->CanRead())
 		{
 			CPPBaseParserErrorDesc static const HeaderNotFoundError("Unable to locate target header at (%s).");
-			self->RaiseError(HeaderNotFoundError, self->HeaderPath.CStr());
-			self->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
+			this->RaiseError(HeaderNotFoundError, this->HeaderPath.CStr());
+			this->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
 			return false;
 		}
 
-		self->HeaderLexer = new StreamedLexer(self->Toolchain, StreamedLexerDefaultOptions::GetDefaultOptionsForCpp());
+		this->HeaderLexer = new StreamedLexer(this->Toolchain, StreamedLexerDefaultOptions::GetDefaultOptionsForCpp());
 
 		Str static const Copyrights =
 			  "/// =========================================================================================="
@@ -500,21 +500,21 @@ GD_NAMESPACE_BEGIN
 			"\n/// Note: this file was generated, please do not edit it manually."
 			"\n/// ==========================================================================================\n\n";
 
-		String const HeaderPathWithoutExtension = Path::GetDirectoryAndFileNameWithoutExtension(self->HeaderPath);
+		String const HeaderPathWithoutExtension = Path::GetDirectoryAndFileNameWithoutExtension(this->HeaderPath);
 		String const HeadeRHeaderOutputPath = HeaderPathWithoutExtension + ".Generated.h";
-		self->HeadeRHeaderOutput = new FileOutputStream(HeadeRHeaderOutputPath);
-		if (!self->HeadeRHeaderOutput->CanWrite())
+		this->HeadeRHeaderOutput = new FileOutputStream(HeadeRHeaderOutputPath);
+		if (!this->HeadeRHeaderOutput->CanWrite())
 		{	// Failed to open output.
 			CPPBaseParserErrorDesc static const CannonWriteHeadeRHeaderError("Failed to create header`s generated header output file (%s).");
-			self->RaiseError(CannonWriteHeadeRHeaderError, HeadeRHeaderOutputPath.CStr());
-			self->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
+			this->RaiseError(CannonWriteHeadeRHeaderError, HeadeRHeaderOutputPath.CStr());
+			this->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
 			return false;
 		}
 		else
 		{
 			String const HeadeRHeaderOutputRelativePath = Path::GetFileName(HeadeRHeaderOutputPath);
 			String const HeadeRHeaderOutputCopyright = String::Format(Copyrights, HeadeRHeaderOutputRelativePath.CStr());
-			self->HeadeRHeaderOutput->Write(HeadeRHeaderOutputCopyright.CStr(), 0, sizeof(Char) * HeadeRHeaderOutputCopyright.GetSize());
+			this->HeadeRHeaderOutput->Write(HeadeRHeaderOutputCopyright.CStr(), 0, sizeof(Char) * HeadeRHeaderOutputCopyright.GetSize());
 
 			Str static const HeaderInitializer =
 				  "#pragma once"
@@ -526,23 +526,23 @@ GD_NAMESPACE_BEGIN
 
 			String const HeaderPathWithoutDirAndExtension = Path::GetFileName(HeaderPathWithoutExtension);
 			String const HeadeRHeaderOutputInitializer = String::Format(HeaderInitializer, HeaderPathWithoutDirAndExtension.CStr(), HeaderPathWithoutDirAndExtension.CStr());
-			self->HeadeRHeaderOutput->Write(HeadeRHeaderOutputInitializer.CStr(), 0, sizeof(Char) * HeadeRHeaderOutputInitializer.GetSize());
+			this->HeadeRHeaderOutput->Write(HeadeRHeaderOutputInitializer.CStr(), 0, sizeof(Char) * HeadeRHeaderOutputInitializer.GetSize());
 		}
 
 		String const HeaderSourceOutputPath = HeaderPathWithoutExtension + ".Generated.cpp";
-		self->HeaderSourceOutput = new FileOutputStream(HeaderSourceOutputPath);
-		if (!self->HeaderSourceOutput->CanWrite())
+		this->HeaderSourceOutput = new FileOutputStream(HeaderSourceOutputPath);
+		if (!this->HeaderSourceOutput->CanWrite())
 		{
 			CPPBaseParserErrorDesc static const CannonWriteHeaderSourceError("Failed to create header`s generated source output file (%s).");
-			self->RaiseError(CannonWriteHeaderSourceError, HeaderSourceOutputPath.CStr());
-			self->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
+			this->RaiseError(CannonWriteHeaderSourceError, HeaderSourceOutputPath.CStr());
+			this->RaiseExceptionWithCode(GD_CPP_REFLECTOR_EXCEPTION_SYNTAX);
 			return false;
 		}
 		else
 		{
 			String const HeaderSourceOutputRelativePath = Path::GetFileName(HeaderSourceOutputPath);
 			String const HeaderSourceOutputCopyright = String::Format(Copyrights, HeaderSourceOutputRelativePath.CStr());
-			self->HeaderSourceOutput->Write(HeaderSourceOutputCopyright.CStr(), 0, sizeof(Char) * HeaderSourceOutputCopyright.GetSize());
+			this->HeaderSourceOutput->Write(HeaderSourceOutputCopyright.CStr(), 0, sizeof(Char) * HeaderSourceOutputCopyright.GetSize());
 
 			Str static const SourceInitializer =
 				  "#include \"%s\""
@@ -550,9 +550,9 @@ GD_NAMESPACE_BEGIN
 				"\nGD_NAMESPACE_BEGIN"
 				"\n";
 
-			String const HeaderPathWithoutDir = Path::GetFileName(self->HeaderPath);
+			String const HeaderPathWithoutDir = Path::GetFileName(this->HeaderPath);
 			String const HeaderSourceOutputInitializer = String::Format(SourceInitializer, HeaderPathWithoutDir.CStr());
-			self->HeadeRHeaderOutput->Write(HeaderSourceOutputInitializer.CStr(), 0, sizeof(Char) * HeaderSourceOutputInitializer.GetSize());
+			this->HeadeRHeaderOutput->Write(HeaderSourceOutputInitializer.CStr(), 0, sizeof(Char) * HeaderSourceOutputInitializer.GetSize());
 		}
 
 		return true;
@@ -572,8 +572,8 @@ GD_NAMESPACE_BEGIN
 			"\nGD_NAMESPACE_END"
 			"\n";
 
-		self->HeadeRHeaderOutput->Write(HeaderFinalizers, 0, (sizeof(HeaderFinalizers) - 1) * sizeof(Char));
-		self->HeaderSourceOutput->Write(SourceFinalizers, 0, (sizeof(SourceFinalizers) - 1) * sizeof(Char));
+		this->HeadeRHeaderOutput->Write(HeaderFinalizers, 0, (sizeof(HeaderFinalizers) - 1) * sizeof(Char));
+		this->HeaderSourceOutput->Write(SourceFinalizers, 0, (sizeof(SourceFinalizers) - 1) * sizeof(Char));
 		return true;
 	}
 #endif

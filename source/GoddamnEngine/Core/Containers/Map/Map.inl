@@ -28,7 +28,7 @@ GD_NAMESPACE_BEGIN
 
 		public:
 			GDINL ByKeySearchingPredicateType(KeyType const& Key) : Key(&Key) { }
-			GDINL bool operator() (Pair<KeyType, ValueType> const& Pair) const { return ((*self->Key) == Pair.Key); }
+			GDINL bool operator() (Pair<KeyType, ValueType> const& Pair) const { return ((*this->Key) == Pair.Key); }
 		};	// struct ByKeySearchingPredicateType 
 	}	// namespace UnorderedMapPrivate
 #endif	// if (!defined(GD_DOCUMENTATION))
@@ -72,68 +72,68 @@ GD_NAMESPACE_BEGIN
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL void GD_UNORDERED_MAP_CLASS()::PushLast(KeyType const& Key, ValueType const& Value)
 	{
-		self->GD_UNORDERED_MAP_BASE()::PushLast(ThisPairType(Key, Value));
+		this->GD_UNORDERED_MAP_BASE()::PushLast(ThisPairType(Key, Value));
 	}
 
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL size_t GD_UNORDERED_MAP_CLASS()::FindFirstElement(KeyType const& Key) const
 	{	// We have a predicate to make search by comparing all pairs by keys.
-		return self->GD_UNORDERED_MAP_BASE()::FindFirstElement(UnorderedMapPrivate::ByKeySearchingPredicateType<KeyType, ValueType>(Key));
+		return this->GD_UNORDERED_MAP_BASE()::FindFirstElement(UnorderedMapPrivate::ByKeySearchingPredicateType<KeyType, ValueType>(Key));
 	}
 
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL size_t GD_UNORDERED_MAP_CLASS()::FindLastElement(KeyType const& Key) const
 	{	// We have a predicate to make search by comparing all pairs by keys.
-		return self->GD_UNORDERED_MAP_BASE()::FindLastElement(UnorderedMapPrivate::ByKeySearchingPredicateType<KeyType, ValueType>(Key));
+		return this->GD_UNORDERED_MAP_BASE()::FindLastElement(UnorderedMapPrivate::ByKeySearchingPredicateType<KeyType, ValueType>(Key));
 	}
 
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL GD_UNORDERED_MAP_CLASS()& GD_UNORDERED_MAP_CLASS()::operator= (UnorderedMap&& OtherMap)
 	{
-		self->GD_UNORDERED_MAP_BASE()::operator=(Forward(OtherMap));
-		return (*self);
+		this->GD_UNORDERED_MAP_BASE()::operator=(Forward(OtherMap));
+		return (*this);
 	}
 
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL GD_UNORDERED_MAP_CLASS()& GD_UNORDERED_MAP_CLASS()::operator= (UnorderedMap const& OtherMap)
 	{
-		self->GD_UNORDERED_MAP_BASE()::operator=(OtherMap);
-		return (*self);
+		this->GD_UNORDERED_MAP_BASE()::operator=(OtherMap);
+		return (*this);
 	}
 
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL GD_UNORDERED_MAP_CLASS()& GD_UNORDERED_MAP_CLASS()::operator= (std::initializer_list<ThisPairType> const& InitializerList)
 	{
-		self->GD_UNORDERED_MAP_BASE()::operator=(InitializerList);
-		return (*self);
+		this->GD_UNORDERED_MAP_BASE()::operator=(InitializerList);
+		return (*this);
 	}
 
 #if (defined(__cplusplus_cli))
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL GD_UNORDERED_MAP_CLASS()& GD_UNORDERED_MAP_CLASS()::operator= (array<ThisPairType>^ CliArray)
 	{
-		self->GD_UNORDERED_MAP_BASE()::operator=(CliArray);
-		return (*self);
+		this->GD_UNORDERED_MAP_BASE()::operator=(CliArray);
+		return (*this);
 	}
 #endif	// if (defined(__cplusplus_cli))
 
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL ValueType const& GD_UNORDERED_MAP_CLASS()::operator[] (KeyType const& Key) const
 	{
-		size_t const Index = self->FindFirstElement(Key);
+		size_t const Index = this->FindFirstElement(Key);
 		if (Index == SIZE_MAX)
 		{
-			self->PushLast(ThisPairType());
-			return self->GetLastElement().Value;
+			this->PushLast(ThisPairType());
+			return this->GetLastElement().Value;
 		}
 
-		return *self->GetElementAt(Index).Value;
+		return *this->GetElementAt(Index).Value;
 	}
 
 	GD_UNORDERED_MAP_TEMPLATE()
 	GDINL ValueType& GD_UNORDERED_MAP_CLASS()::operator[] (KeyType const& Key)
 	{
-		return const_cast<ValueType&>(const_cast<ThisUnorderedMapType const&>(*self)[Key]);
+		return const_cast<ValueType&>(const_cast<ThisUnorderedMapType const&>(*this)[Key]);
 	}
 
 #undef GD_UNORDERED_MAP_TEMPLATE

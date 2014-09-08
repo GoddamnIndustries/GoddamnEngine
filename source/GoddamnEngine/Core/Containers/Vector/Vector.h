@@ -82,26 +82,26 @@ GD_NAMESPACE_BEGIN
 		public:
 			inline StackMemoryProvider(size_t const Capacity){ GD_ASSERT((Capacity <= _Capacity), "Stack memory provider size is out of range."); }
 			inline StackMemoryProvider(StackMemoryProvider const& OtherStackMemoryProvider) = delete;
-			inline StackMemoryProvider(StackMemoryProvider     && OtherStackMemoryProvider) { (*self) = OtherStackMemoryProvider; }
+			inline StackMemoryProvider(StackMemoryProvider     && OtherStackMemoryProvider) { (*this) = OtherStackMemoryProvider; }
 
 			inline ~StackMemoryProvider() { }
 
 			GDINL size_t             GetCapacity() const { return _Capacity; }
-			GDINL ElementType const* GetPointer()  const { return reinterpret_cast<ElementType const*>(&self->Memory[0]); }
-			GDINL ElementType	   * GetPointer()		 { return reinterpret_cast<ElementType      *>(&self->Memory[0]); }
+			GDINL ElementType const* GetPointer()  const { return reinterpret_cast<ElementType const*>(&this->Memory[0]); }
+			GDINL ElementType	   * GetPointer()		 { return reinterpret_cast<ElementType      *>(&this->Memory[0]); }
 
 			inline StackMemoryProvider& operator= (StackMemoryProvider const& OtherStackMemoryProvider) = delete;
 			inline StackMemoryProvider& operator= (StackMemoryProvider     && OtherStackMemoryProvider)
 			{
-				if ((&OtherStackMemoryProvider) != self)
+				if ((&OtherStackMemoryProvider) != this)
 				{	// This operator is quiet dangerous because it does not moves object into new places but just copies memory.
 					// And do we actually need to fill with zeros all moved memory? So leave it be how it is.
-					self->~StackMemoryProvider();
-					memcpy(&self->Memory[0], &OtherStackMemoryProvider.Memory[0], sizeof(self->Memory));
+					this->~StackMemoryProvider();
+					memcpy(&this->Memory[0], &OtherStackMemoryProvider.Memory[0], sizeof(this->Memory));
 					memset(&OtherStackMemoryProvider.Memory[0], 0, sizeof(OtherStackMemoryProvider.Memory));
 				}
 
-				return *self;
+				return *this;
 			}
 
 		private:
@@ -146,26 +146,26 @@ GD_NAMESPACE_BEGIN
 
 			inline ~HeapMemoryProvider()
 			{
-				Allocator::DeallocateMemory(static_cast<handle>(self->Memory));
+				Allocator::DeallocateMemory(static_cast<handle>(this->Memory));
 			}
 
-			GDINL size_t             GetCapacity() const { return self->Capacity; }
-			GDINL ElementType const* GetPointer () const { return self->Memory; }
-			GDINL ElementType      * GetPointer ()		 { return self->Memory; }
+			GDINL size_t             GetCapacity() const { return this->Capacity; }
+			GDINL ElementType const* GetPointer () const { return this->Memory; }
+			GDINL ElementType      * GetPointer ()		 { return this->Memory; }
 
 			inline HeapMemoryProvider& operator= (HeapMemoryProvider const& OtheRHeapMemoryProvider) = delete;
 			inline HeapMemoryProvider& operator= (HeapMemoryProvider     && OtheRHeapMemoryProvider)
 			{
-				if ((&OtheRHeapMemoryProvider) != self)
+				if ((&OtheRHeapMemoryProvider) != this)
 				{
-					self->~HeapMemoryProvider();
-					self->Memory   = OtheRHeapMemoryProvider.Memory;
-					self->Capacity = OtheRHeapMemoryProvider.Capacity;
+					this->~HeapMemoryProvider();
+					this->Memory   = OtheRHeapMemoryProvider.Memory;
+					this->Capacity = OtheRHeapMemoryProvider.Capacity;
 					OtheRHeapMemoryProvider.Memory = nullptr;
 					OtheRHeapMemoryProvider.Capacity = 0;
 				}
 
-				return *self;
+				return *this;
 			}
 
 		private:
@@ -202,34 +202,34 @@ GD_NAMESPACE_BEGIN
 			GDINL ~Iterator(                           ) { }
 
 			/// Increases/decreases iterator.
-			GDINL Iterator& operator++ (int const) { ++self->Pointer; return (*self); }
-			GDINL Iterator& operator++ (         ) { ++self->Pointer; return (*self); }
-			GDINL Iterator& operator-- (int const) { --self->Pointer; return (*self); }
-			GDINL Iterator& operator-- (         ) { --self->Pointer; return (*self); }
+			GDINL Iterator& operator++ (int const) { ++this->Pointer; return (*this); }
+			GDINL Iterator& operator++ (         ) { ++this->Pointer; return (*this); }
+			GDINL Iterator& operator-- (int const) { --this->Pointer; return (*this); }
+			GDINL Iterator& operator-- (         ) { --this->Pointer; return (*this); }
 
 			/// Increases/decreases iterator on specified value.
-			inline Iterator& operator+= (ptrdiff_t const Offset)	      { self->Pointer += Offset; return (*self); }
-			inline Iterator& operator-= (ptrdiff_t const Offset)       { self->Pointer -= Offset; return (*self); }
-			inline Iterator  operator+  (ptrdiff_t const Offset) const { return Iterator(self->Pointer + Offset); }
-			inline Iterator  operator-  (ptrdiff_t const Offset) const { return Iterator(self->Pointer - Offset); }
+			inline Iterator& operator+= (ptrdiff_t const Offset)	      { this->Pointer += Offset; return (*this); }
+			inline Iterator& operator-= (ptrdiff_t const Offset)       { this->Pointer -= Offset; return (*this); }
+			inline Iterator  operator+  (ptrdiff_t const Offset) const { return Iterator(this->Pointer + Offset); }
+			inline Iterator  operator-  (ptrdiff_t const Offset) const { return Iterator(this->Pointer - Offset); }
 
 			/// Computes difference between iterators.
-			inline ptrdiff_t operator- (Iterator           const& Iterator) const { return (self->Pointer - Iterator.Pointer); }
-			inline ptrdiff_t operator- (ElementType const* const  Pointer ) const { return (self->Pointer -          Pointer); }
+			inline ptrdiff_t operator- (Iterator           const& Iterator) const { return (this->Pointer - Iterator.Pointer); }
+			inline ptrdiff_t operator- (ElementType const* const  Pointer ) const { return (this->Pointer -          Pointer); }
 
 			/// Compares iterators.
-			GDINL bool operator== (Iterator    const&       Other  ) const { return (self->Pointer == Other.Pointer); }
-			GDINL bool operator!= (Iterator    const&       Other  ) const { return (self->Pointer != Other.Pointer); }
-			GDINL bool operator== (ElementType const* const Pointer) const { return (self->Pointer == Pointer); }
-			GDINL bool operator!= (ElementType const* const Pointer) const { return (self->Pointer != Pointer); }
+			GDINL bool operator== (Iterator    const&       Other  ) const { return (this->Pointer == Other.Pointer); }
+			GDINL bool operator!= (Iterator    const&       Other  ) const { return (this->Pointer != Other.Pointer); }
+			GDINL bool operator== (ElementType const* const Pointer) const { return (this->Pointer == Pointer); }
+			GDINL bool operator!= (ElementType const* const Pointer) const { return (this->Pointer != Pointer); }
 
 			/// Assigns this iterator other value.
-			GDINL Iterator& operator= (ThisPtrType const  Pointer ) { self->Pointer =           Pointer; return (*self); }
-			GDINL Iterator& operator= (Iterator    const& Iterator) { self->Pointer = Iterator->Pointer; return (*self); }
+			GDINL Iterator& operator= (ThisPtrType const  Pointer ) { this->Pointer =           Pointer; return (*this); }
+			GDINL Iterator& operator= (Iterator    const& Iterator) { this->Pointer = Iterator->Pointer; return (*this); }
 
 			/// (De)referensing iterator.
-			GDINL ThisRefType operator*  () const { return (*self->Pointer); }
-			GDINL ThisPtrType operator-> () const { return (self->Pointer); }
+			GDINL ThisRefType operator*  () const { return (*this->Pointer); }
+			GDINL ThisPtrType operator-> () const { return (this->Pointer); }
 		};	// struct Iterator
 
 		/// Iterator type this container uses.
@@ -261,20 +261,20 @@ GD_NAMESPACE_BEGIN
 
 	public /* Class API */:
 		/// Returns iterator that points to first container element.
-		GDINL MutableIterator Begin()       { return MutableIterator(self->MemoryProviderInstance.GetPointer()); }
-		GDINL   ConstIterator Begin() const { return   ConstIterator(self->MemoryProviderInstance.GetPointer()); }
+		GDINL MutableIterator Begin()       { return MutableIterator(this->MemoryProviderInstance.GetPointer()); }
+		GDINL   ConstIterator Begin() const { return   ConstIterator(this->MemoryProviderInstance.GetPointer()); }
 
 		/// Returns iterator that points to past the end container element.
-		GDINL MutableIterator End  ()       { return MutableIterator(self->MemoryProviderInstance.GetPointer() + self->Count); }
-		GDINL   ConstIterator End  () const { return   ConstIterator(self->MemoryProviderInstance.GetPointer() + self->Count); }
+		GDINL MutableIterator End  ()       { return MutableIterator(this->MemoryProviderInstance.GetPointer() + this->Count); }
+		GDINL   ConstIterator End  () const { return   ConstIterator(this->MemoryProviderInstance.GetPointer() + this->Count); }
 
 		/// Returns iterator that points to last container element.
-		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(self->MemoryProviderInstance.GetPointer() + (self->Count - 1))); }
-		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(self->MemoryProviderInstance.GetPointer() + (self->Count - 1))); }
+		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(this->MemoryProviderInstance.GetPointer() + (this->Count - 1))); }
+		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(this->MemoryProviderInstance.GetPointer() + (this->Count - 1))); }
 
 		/// Returns iterator that points to preceding the first container element
-		GDINL ReverseMutableIterator ReverseEnd  ()       { return ReverseMutableIterator(MutableIterator(self->MemoryProviderInstance.GetPointer() - 1)); }
-		GDINL   ReverseConstIterator ReverseEnd  () const { return   ReverseConstIterator(  ConstIterator(self->MemoryProviderInstance.GetPointer() - 1)); }
+		GDINL ReverseMutableIterator ReverseEnd  ()       { return ReverseMutableIterator(MutableIterator(this->MemoryProviderInstance.GetPointer() - 1)); }
+		GDINL   ReverseConstIterator ReverseEnd  () const { return   ReverseConstIterator(  ConstIterator(this->MemoryProviderInstance.GetPointer() - 1)); }
 
 		/// Returns number of elements that exist in vector.
 		GDINL size_t GetSize    () const;
@@ -282,7 +282,7 @@ GD_NAMESPACE_BEGIN
 		GDINL size_t GetCapacity() const;
 
 		/// Returns true it this container is empty.
-		GDINL bool IsEmpty() const { return self->GetSize() == 0; }
+		GDINL bool IsEmpty() const { return this->GetSize() == 0; }
 
 		/// Resizes vector to make it contain specified number of elements.
 		inline void Resize(size_t const NewElementsCount);

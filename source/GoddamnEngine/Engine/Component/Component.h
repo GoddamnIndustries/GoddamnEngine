@@ -56,11 +56,11 @@ GD_NAMESPACE_BEGIN
 	public /*Class API*/:
 		/// Returns true if component is enabled. If component is disables then it does not takes part in scene update/rendering loop.
 		/// @returns True if component is enabled.
-		GDINL bool IsEnabled() const { return self->Enabled; }
+		GDINL bool IsEnabled() const { return this->Enabled; }
 
 		/// Enables / disables this component.
 		/// @param Enabled Do we need to disable or enable the cmponent.
-		GDINL void Enable(bool const Enabled = true) { self->Enabled = Enabled; }
+		GDINL void Enable(bool const Enabled = true) { this->Enabled = Enabled; }
 
 		/// Returns GameObject this Component attached to.
 		/// @returns GameObject this Component attached to.
@@ -109,7 +109,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Enabled Do we need to disable or enable the cmponent.
 		inline void Enable(bool const Enabled = true)
 		{
-			for (auto const AttachedComponent : IterateChildObjects<Component>(self)) {
+			for (auto const AttachedComponent : IterateChildObjects<Component>(this)) {
 				AttachedComponent->Enable(Enabled);
 			}
 		}
@@ -123,7 +123,7 @@ GD_NAMESPACE_BEGIN
 		GDAPI RefPtr<Component      > GetComponent(ITypeInformation const* const TypeInfo);
 		GDINL RefPtr<Component const> GetComponent(ITypeInformation const* const TypeInfo) const
 		{
-			return const_cast<GameObject const*>(self)->GetComponent(TypeInfo);
+			return const_cast<GameObject const*>(this)->GetComponent(TypeInfo);
 		}
 
 		GDINL RefPtr<Transform const> GetTransform() const;
@@ -133,13 +133,13 @@ GD_NAMESPACE_BEGIN
 		GDINL RefPtr<ComponentType> GetComponent()
 		{
 			static_assert((TypeTraits::IsBaseType<Component, ComponentType>::Value), "'GameObject::GetComponent<T>()' error: 'T' should be derived from Component");
-			return object_cast<RefPtr<ComponentType>>(self->GetComponent(ComponentType::GetClassTypeInformation()));
+			return object_cast<RefPtr<ComponentType>>(this->GetComponent(ComponentType::GetClassTypeInformation()));
 		}
 
 		template<typename ComponentType>
 		GDINL RefPtr<ComponentType const> GetComponent() const
 		{
-			return const_cast<RefPtr<ComponentType const>>(self->GetComponent<ComponentType>());
+			return const_cast<RefPtr<ComponentType const>>(this->GetComponent<ComponentType>());
 		}
 
 		/// @brief			Adds component with specified type information.
@@ -151,7 +151,7 @@ GD_NAMESPACE_BEGIN
 		GDINL RefPtr<ComponentType> AddComponent()
 		{
 			static_assert((TypeTraits::IsBaseType<Component, ComponentType>::Value), "'GameObject::AddComponent<T>()' error: 'T' should be derived from Component");
-			return object_cast<RefPtr<ComponentType>>(self->AddComponent(ComponentType::GetClassTypeInformation()));
+			return object_cast<RefPtr<ComponentType>>(this->AddComponent(ComponentType::GetClassTypeInformation()));
 		}
 
 		/// @brief			Removes component with specified type information (if exists in game object).
@@ -162,7 +162,7 @@ GD_NAMESPACE_BEGIN
 		GDINL void RemoveComponent()
 		{
 			static_assert((TypeTraits::IsBaseType<Component, ComponentType>::Value), "'GameObject::AddComponent<T>()' error: 'T' should be derived from Component");
-			self->RemoveComponent(ComponentType::GetClassTypeInformation());
+			this->RemoveComponent(ComponentType::GetClassTypeInformation());
 		}
 
 		/// @}

@@ -68,50 +68,50 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Makes mesh cast if this enabled
 		GDINL bool GetCastShadows(
-		) const { return self->RendererCastShadows; }
+		) const { return this->RendererCastShadows; }
 
 		/// ==========================================================================================
 		/// Makes mesh cast if this enabled
 		GDINL void SetCastShadows(
 			_In_ bool const castShadows
-		) { self->RendererCastShadows = castShadows; /*self->OnParameterChanged.TriggerEvent();*/ }
+		) { this->RendererCastShadows = castShadows; /*this->OnParameterChanged.TriggerEvent();*/ }
 
 		/// ==========================================================================================
 		/// Makes mesh receive shadows on it's surface if this enabled
 		GDINL bool GetReceiveShadows(
-		) const { return self->RendererRecieveShadows; }
+		) const { return this->RendererRecieveShadows; }
 
 		/// ==========================================================================================
 		/// Makes mesh receive shadows on it's surface if this enabled
 		GDINL void SetReceiveShadows(
 			_In_ bool const receiveShadows
-		) { self->RendererRecieveShadows = receiveShadows; /*self->OnParameterChanged.TriggerEvent();*/ } 	
+		) { this->RendererRecieveShadows = receiveShadows; /*this->OnParameterChanged.TriggerEvent();*/ } 	
 
 		/// ==========================================================================================
 		/// Returns static mesh attached to this mesh renderer
-		GDINL RefPtr<StaticMesh> GetStaticMesh() const { return self->RendererMesh; }
+		GDINL RefPtr<StaticMesh> GetStaticMesh() const { return this->RendererMesh; }
 
 		/// ==========================================================================================
 		/// Changes static mesh attached to this object
 		GDINL void SetStaticMesh(RefPtr<StaticMesh> const& mesh)
 		{
 			GD_ASSERT((mesh != nullptr), "'mesh' could not be 'nullptr'");
-			self->RendererMesh = mesh;
-			self->OnMeshRendererParamChangedEvent.TriggerEvent();
+			this->RendererMesh = mesh;
+			this->OnMeshRendererParamChangedEvent.TriggerEvent();
 		}
 
 		/// ==========================================================================================
 		/// Returns material attached to this mesh renderer
 		GDINL RefPtr<Material> GetMaterial(
-		) const	{ return self->RendererMaterial; }
+		) const	{ return this->RendererMaterial; }
 
 		/// ==========================================================================================
 		/// Changes material attached to this mesh renderer
 		GDINL void SetMaterial(RefPtr<Material> const& material)
 		{
 			GD_ASSERT((material != nullptr), "'material' could not be 'nullptr'");
-			self->RendererMaterial = material;
-			self->OnMeshRendererParamChangedEvent.TriggerEvent();
+			this->RendererMaterial = material;
+			this->OnMeshRendererParamChangedEvent.TriggerEvent();
 		}
 
 		/// @}

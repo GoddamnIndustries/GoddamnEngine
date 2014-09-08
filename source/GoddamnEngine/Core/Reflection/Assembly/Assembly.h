@@ -49,7 +49,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		/// Returns true if Assembly was successfully loaded
-		GDINL bool WasSuccessfullyLoaded() const { return (self->NativePointer != nullptr); }
+		GDINL bool WasSuccessfullyLoaded() const { return (this->NativePointer != nullptr); }
 		
 		/// Returns true if this assembly is executable
 		GDAPI bool IsExecutableAssembly() const;

@@ -53,9 +53,9 @@ GD_NAMESPACE_BEGIN
 	/// @see CPPAnnotationParser::ParseAnnotation
 	void CPPReflectableParser::ParseAnnotation(CPPBaseParser* const BaseParser)
 	{
-		self->CurrentReflectable = new CPPReflectable();
-		self->CPPAnnotationParser::ParseAnnotation(BaseParser);
-		self->CurrentReflectable->SetDefaultsForUnknowns();
+		this->CurrentReflectable = new CPPReflectable();
+		this->CPPAnnotationParser::ParseAnnotation(BaseParser);
+		this->CurrentReflectable->SetDefaultsForUnknowns();
 
 		// Expecting 'class'/'struct' keyword.
 		using namespace StreamedLexerDefaultOptions;
@@ -64,12 +64,12 @@ GD_NAMESPACE_BEGIN
 
 		// Parsing reflectable identifier name.
 		BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
-		self->CurrentReflectable->ReflectableName = BaseParser->GetCurrentLexem().GetRawData();
+		this->CurrentReflectable->ReflectableName = BaseParser->GetCurrentLexem().GetRawData();
 
 		// Reflectable can be specified with 'final' keyword.
 		if (BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_KEYWORD, GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FINAL))
 		{	// Reflectable was specified with 'final' keyword.
-			self->CurrentReflectable->ReflectableIsFinal = true;
+			this->CurrentReflectable->ReflectableIsFinal = true;
 			BaseParser->ExpectNextLexem();
 		}
 
@@ -77,7 +77,7 @@ GD_NAMESPACE_BEGIN
 		BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COLON);
 		BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_KEYWORD, GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_PUBLIC);
 		BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
-		self->CurrentReflectable->ReflectableBaseTypeName = BaseParser->GetCurrentLexem().GetRawData();
+		this->CurrentReflectable->ReflectableBaseTypeName = BaseParser->GetCurrentLexem().GetRawData();
 
 		// Expecting reflectable body here.
 		BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN);
@@ -87,7 +87,7 @@ GD_NAMESPACE_BEGIN
 		if (BaseParser->GetCurrentLexem().GetRawData() != GD_STRINGIFY($GD_REFLECTABLE_BODY_GENERATED_CRAP))
 		{	// Serializable's body should start with '$GD_REFLECTABLE_BODY_GENERATED_CRAP(TypeName)' macro. 
 			CPPBaseParserErrorDesc static const NoGeneratedBodyCrapMacroLocatedError("reflectable body should start with '"GD_STRINGIFY($GD_REFLECTABLE_BODY_GENERATED_CRAP)"(%s)'");
-			throw CPPParsingException(NoGeneratedBodyCrapMacroLocatedError.ToString(&BaseParser->GetCurrentLexem(), self->CurrentReflectable->ReflectableName.CStr()));
+			throw CPPParsingException(NoGeneratedBodyCrapMacroLocatedError.ToString(&BaseParser->GetCurrentLexem(), this->CurrentReflectable->ReflectableName.CStr()));
 		}
 		BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_BEGIN);
 		BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END);
@@ -96,12 +96,12 @@ GD_NAMESPACE_BEGIN
 		// Expecting body filling here.
 		for (;;)
 		{	// Considering all preprocessor directives we met while parsing.
-			while (self->CurrentReflectable->ReflectableElements.ÑonsiderPreprocessorDirective(BaseParser));
+			while (this->CurrentReflectable->ReflectableElements.ÑonsiderPreprocessorDirective(BaseParser));
 			if (BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER))
 			{	// Found identifier. This may be annottion mark.
 				if (strncmp(BaseParser->GetCurrentLexem().GetRawData().CStr(), "$GD_", (sizeof("$GD_") - 1)) == 0)
 				{	// Parsing annotation and switching back to advanced mode.
-					BaseParser->ParseAnnotation(self);
+					BaseParser->ParseAnnotation(this);
 					BaseParser->GetLexer()->SwitchMode(StreamedLexerMode::Advanced);
 				}
 			}
@@ -118,8 +118,8 @@ GD_NAMESPACE_BEGIN
 			BaseParser->ExpectNextLexem();
 		}
 
-		CPPReflectablesListImpl.PushLast(self->CurrentReflectable);
-		self->CurrentReflectable = nullptr;
+		CPPReflectablesListImpl.PushLast(this->CurrentReflectable);
+		this->CurrentReflectable = nullptr;
 	}
 
 GD_NAMESPACE_END

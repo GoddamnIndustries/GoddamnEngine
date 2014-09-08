@@ -85,9 +85,9 @@ GD_NAMESPACE_BEGIN
 			} else {
 				return AssertionLocation::EngineCode;
 			}
+		} else {
+			return AssertionLocation::GameCode;
 		}
-
-		return AssertionLocation::GameCode;
 	}
 
 	void ReportAssertion(AssertionCache const* const TheAssertionCache)
@@ -110,11 +110,11 @@ GD_NAMESPACE_BEGIN
 		CriticalAssertionCriticalSection.Enter();
 
 		AssertionCache TheAssertionCache;
+		TheAssertionCache.IsFatal = true;
 		TheAssertionCache.TheAssertionData = Data;
 		TheAssertionCache.FormattedMessage = String::Format((
 			"Fatal error occured!" GD_PLATFORM_LINEBREAK
 			"At: " GD_PLATFORM_LINEBREAK
-			"[Time]: %s" GD_PLATFORM_LINEBREAK
 			"[File]: %s" GD_PLATFORM_LINEBREAK
 			"[Line]: %u" GD_PLATFORM_LINEBREAK
 			"[Function]: %s" GD_PLATFORM_LINEBREAK
@@ -167,6 +167,10 @@ GD_NAMESPACE_BEGIN
 				case AssertionState::IgnoreAll: {
 					ShouldIgnoreAllRegularAssertions = true;
 				} break;
+				case AssertionState::Retry: 
+				case AssertionState::Break: {
+					// Macros handle here.
+				} break;
 			}
 
 			return TheAssertionState;
@@ -177,6 +181,10 @@ GD_NAMESPACE_BEGIN
 	}
 
 GD_NAMESPACE_END
+
+/// ==========================================================================================
+/// Assertion UI implementation.
+/// ==========================================================================================
 
 /// ==========================================================================================
 /// Win32 API Dialog implementation.
@@ -197,14 +205,6 @@ GD_NAMESPACE_END
 /// ------------------------------------------------------------------------------------------
 /// Win32 Dialog builder helpers.
 /// ------------------------------------------------------------------------------------------
-
-/// Some glue magic.
-#define GD_GLUE2(A, B) A ## B
-#define GD_GLUE(A, B) GD_GLUE2(A, B)
-
-/// Some widening magic.
-#define GD_WIDEN2(String) L ## String
-#define GD_WIDEN(String) GD_WIDEN2(String)
 
 /// Defines initial dialog window header.
 #define GD_DEFINE_DIALOG_HEADER(TheTitle, TheFont) \
@@ -488,16 +488,25 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	static bool ReportAssertionImpl(AssertionCache const* const TheAssertionCache)
-	{
-		static const char ReportFileName[] = "BugReport.txt";
-		::fprintf(stdout, GD_PLATFORM_LINEBREAK "Hey, Bro! You are using a very specific system, so we are unable to send a report message back here.");
-		::fprintf(stdout, GD_PLATFORM_LINEBREAK "Now we will save the message into file '%s', so be so kind and send it as an issue to our GitHub tracker, located here ('%s').", &ReportFileName[0], &ReportGithubURL[0]);
-		return true;
-	}
-
 GD_NAMESPACE_END
 
 #endif	// *** Selecting best-suited API ***
+
+/// ==========================================================================================
+/// Assertion Issue-reporting system.
+/// ==========================================================================================
+
+GD_NAMESPACE_BEGIN
+
+	static bool ReportAssertionImpl(AssertionCache const* const TheAssertionCache)
+	{
+		GD_NOT_IMPLEMENTED();
+	//	static const char ReportFileName[] = "BugReport.txt";
+	//	::fprintf(stdout, GD_PLATFORM_LINEBREAK "Hey, Bro! You are using a very specific system, so we are unable to send a report message back here.");
+	//	::fprintf(stdout, GD_PLATFORM_LINEBREAK "Now we will save the message into file '%s', so be so kind and send it as an issue to our GitHub tracker, located here ('%s').", &ReportFileName[0], &ReportGithubURL[0]);
+	//	return true;
+	}
+
+GD_NAMESPACE_END
 
 #endif	// if ((!defined(GD_PLATFORM_API_COCOA)) || (defined(GD_CORE_DIAGNOSTICS_ASSERTION_MM)))

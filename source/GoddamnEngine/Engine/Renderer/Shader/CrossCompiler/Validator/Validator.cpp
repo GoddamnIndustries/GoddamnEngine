@@ -290,7 +290,7 @@ GD_NAMESPACE_BEGIN
 						throw HLSLValidatorErrorException(EntryReturnValueNotUtilizedError.ToString(nullptr, EntryPointName.CStr(), EntryPointReturnStructField->Name.CStr()));
 					}
 
-					self->ValidateEntryPointArgumentExprColon(EntryPointReturnStructField->ExprColon, ShaderInputSemantics);
+					this->ValidateEntryPointArgumentExprColon(EntryPointReturnStructField->ExprColon, ShaderInputSemantics);
 				}
 			} else if ((EntryPoint->Type->Class == GD_HLSL_TYPE_CLASS_SCALAR) || (EntryPoint->Type->Class == GD_HLSL_TYPE_CLASS_VECTOR)) {	// Entry point returns scalar or vector value.
 				HLSLSemantic const* const EntryPointSemantic = EntryPoint->Semantic;
@@ -299,7 +299,7 @@ GD_NAMESPACE_BEGIN
 					throw HLSLValidatorErrorException(EntryReturnValueNotUtilizedError.ToString(nullptr, EntryPointName.CStr()));
 				}
 
-				self->ValidateEntryPointArgumentExprColon(EntryPointSemantic, ShaderOutputSemantics);
+				this->ValidateEntryPointArgumentExprColon(EntryPointSemantic, ShaderOutputSemantics);
 			} else {	// Entry point return something really strange.
 				HLSLValidatorErrorDesc static const EntryReturnNotUtilizableValueError("entry point function '%s' returns value that cannot be utilized.");
 				throw HLSLValidatorErrorException(EntryReturnNotUtilizableValueError.ToString(nullptr, EntryPointName.CStr()));
@@ -324,10 +324,10 @@ GD_NAMESPACE_BEGIN
 			if (EntryPointArgumentStruct != nullptr) {
 				for (auto const& Definition : EntryPointArgumentStruct->InnerDefinitions) {
 					HLSLVariable const* const EntryPointArgumentStructField = static_cast<HLSLVariable const*>(Definition);
-					self->ValidateEntryPointArgumentExprColon(EntryPointArgumentStructField->ExprColon, *CurrentShaderSemantics);
+					this->ValidateEntryPointArgumentExprColon(EntryPointArgumentStructField->ExprColon, *CurrentShaderSemantics);
 				}
 			} else {
-				self->ValidateEntryPointArgumentExprColon(EntryPointArgument->ExprColon, *CurrentShaderSemantics);
+				this->ValidateEntryPointArgumentExprColon(EntryPointArgument->ExprColon, *CurrentShaderSemantics);
 			}
 		}
 
@@ -341,7 +341,7 @@ GD_NAMESPACE_BEGIN
 		if (ArgumentSemanticHRI == GD_HRI_SEMANTIC_UNKNOWN)	{	/// @todo Do something here.
 	//		HLSLValidatorErrorDesc static const UntranslatableSemanticError("Untranslatable semantic '%s' in argument '%s'");
 	//		throw HLSLValidatorErrorException(UntranslatableSemanticError, HLSLSemanticToStr(ArgumentHLSLSemantic->Semantic), &Argument->Name[0]);
-	//		self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
+	//		this->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 	//	
 	//		return false;
 			return;
@@ -350,7 +350,7 @@ GD_NAMESPACE_BEGIN
 	//	if ((ShaderSemanticsList & GD_BIT(UInt64(ArgumentSemanticHRI + 1))) != 0) {
 	//		HLSLValidatorErrorDesc static const InvalidAccessTypeError("entry point function already contains (in/out)put for '%s' semantic");
 	//		throw HLSLValidatorErrorException(InvalidAccessTypeError, HLSLSemanticToStr(ArgumentSemanticHLSL->Semantic));
-	//		self->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
+	//		this->RaiseExceptionWithCode(GD_HRI_SHADERCC_EXCEPTION_SYNTAX);
 	//
 	//		return false;
 	//	}
@@ -361,9 +361,9 @@ GD_NAMESPACE_BEGIN
 	HRIShaderInstanceDesc* HLSLValidator::ValidateAndGenerateDescription(HLSLScope const* const ParsedData, String const& EntryPointName)
 	{
 		RefPtr<HRIShaderInstanceDesc> ShaderInstanceDesc(nullptr);
-		self->ValidateEntryPoint               (ParsedData, EntryPointName, ShaderInstanceDesc);
-		self->ValidateConstantBuffersParameters(ParsedData, ShaderInstanceDesc.GetPointer());
-		self->ValidateResourceParameters       (ParsedData, ShaderInstanceDesc.GetPointer());
+		this->ValidateEntryPoint               (ParsedData, EntryPointName, ShaderInstanceDesc);
+		this->ValidateConstantBuffersParameters(ParsedData, ShaderInstanceDesc.GetPointer());
+		this->ValidateResourceParameters       (ParsedData, ShaderInstanceDesc.GetPointer());
 
 		return ShaderInstanceDesc.Release();
 	}

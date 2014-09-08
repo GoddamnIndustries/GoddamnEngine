@@ -28,7 +28,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		/// Returns shader program that was loaded from resource
-		GDINL RefPtr<HRIShaderProgram> GetEffectShaderProgram() const { return self->EffectShaderProgram; }
+		GDINL RefPtr<HRIShaderProgram> GetEffectShaderProgram() const { return this->EffectShaderProgram; }
 
 	protected:
 		GDAPI virtual void OnResourceLoad(UniquePtr<InputStream> const& InputResourceData) override final;

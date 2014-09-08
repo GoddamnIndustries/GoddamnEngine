@@ -142,7 +142,7 @@ GD_NAMESPACE_BEGIN
 
 #if (!defined(GD_DOCUMENTATION))
 		template<typename Type> struct IsConstType		       final : public TypeTraitsBase<false> { };
-		template<typename Type> struct IsConstType<Type const> final : public TypeTraitsBase<true>{};
+		template<typename Type> struct IsConstType<Type const> final : public TypeTraitsBase<true > { };
 #else	// if (!defined(GD_DOCUMENTATION))
 		/// Checking if type contains 'const' modifier.
 		template<typename Type> struct IsConstType final { };

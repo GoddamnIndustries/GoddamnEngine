@@ -22,7 +22,7 @@ GD_NAMESPACE_BEGIN
 		mxml_node_t* const shaderProgramDescNode = mxmlFindElement(shaderProgramDescXml, shaderProgramDescXml, "ShaderProgramDesc", nullptr, nullptr, MXML_DESCEND_FIRST);
 		GD_ASSERT((shaderProgramDescNode != nullptr), "Failed locate root node ('ShaderProgramDesc')");
 
-		self->Program = HRInterface::GetInstance().CreateShaderProgram();
+		this->Program = HRInterface::GetInstance().CreateShaderProgram();
 		GD_MXML_FOREACH_CHILD(shaderDescNode, shaderProgramDescNode)
 		{
 			StringBuilder ShaderOutput;
@@ -34,7 +34,7 @@ GD_NAMESPACE_BEGIN
 			RefPtr<HRIShaderInstanceDesc> ShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(
 				Move(ShaderInputStream), ShaderOutputStream, GD_HRI_SHADER_TYPE_VERTEX, GD_HRI_SHADERCC_COMPILER_TARGET_HLSL, "Main"));
 			HRIShaderCtorInfo const CtorInfo(
-				self->Program,
+				this->Program,
 				ShaderOutput.GetPointer(),
 				ShaderOutput.GetSize(),
 				ShaderInstanceDesc.GetPointer()
@@ -66,7 +66,7 @@ GD_NAMESPACE_BEGIN
 
 		mxmlDelete(shaderProgramDescXml);
 #endif	// if 0
-		self->EffectShaderProgram = HRInterface::GetInstance().CreateShaderProgram();
+		this->EffectShaderProgram = HRInterface::GetInstance().CreateShaderProgram();
 		
 		String ShaderPathes(InputResourceData->GetSize());
 		InputResourceData->Read(ShaderPathes.CStr(), 1, InputResourceData->GetSize());
@@ -80,7 +80,7 @@ GD_NAMESPACE_BEGIN
 			UniquePtr<InputStream> VertexShaderInputStream(new StringInputStream(reinterpret_cast<CharAnsi const*>(&VertexShaderData[0]), VertexShaderData.GetSize()));
 			UniquePtr<OutputStream> VertexShaderOutputStream(new StringOutputStream(VertexShaderOutput));
 			RefPtr<HRIShaderInstanceDesc> VertexShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(Move(VertexShaderInputStream), VertexShaderOutputStream, GD_HRI_SHADER_TYPE_VERTEX, /*GD_HRI_SHADERCC_COMPILER_TARGET_HLSL*/GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430, "Main"));
-			HRIShaderCtorInfo const VertexShaderCtorInfo(self->EffectShaderProgram.GetPointer(), VertexShaderOutput.GetPointer(), VertexShaderOutput.GetSize(), VertexShaderInstanceDesc.GetPointer());
+			HRIShaderCtorInfo const VertexShaderCtorInfo(this->EffectShaderProgram.GetPointer(), VertexShaderOutput.GetPointer(), VertexShaderOutput.GetSize(), VertexShaderInstanceDesc.GetPointer());
 			HRInterface::GetInstance().CreateVertexShader(VertexShaderCtorInfo);
 		}
 		{	// Creating vertex shader.
@@ -90,7 +90,7 @@ GD_NAMESPACE_BEGIN
 			UniquePtr<InputStream> PixelShaderInputStream(new StringInputStream(reinterpret_cast<CharAnsi const*>(&PixelShaderData[0]), PixelShaderData.GetSize()));
 			UniquePtr<OutputStream> PixelShaderOutputStream(new StringOutputStream(PixelShaderOutput));
 			RefPtr<HRIShaderInstanceDesc> PixelShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(Move(PixelShaderInputStream), PixelShaderOutputStream, GD_HRI_SHADER_TYPE_PIXEL, /*GD_HRI_SHADERCC_COMPILER_TARGET_HLSL*/GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430, "Main"));
-			HRIShaderCtorInfo const PixelShaderCtorInfo(self->EffectShaderProgram.GetPointer(), PixelShaderOutput.GetPointer(), PixelShaderOutput.GetSize(), PixelShaderInstanceDesc.GetPointer());
+			HRIShaderCtorInfo const PixelShaderCtorInfo(this->EffectShaderProgram.GetPointer(), PixelShaderOutput.GetPointer(), PixelShaderOutput.GetSize(), PixelShaderInstanceDesc.GetPointer());
 			HRInterface::GetInstance().CreatePixelShader(PixelShaderCtorInfo);
 		}
 	}

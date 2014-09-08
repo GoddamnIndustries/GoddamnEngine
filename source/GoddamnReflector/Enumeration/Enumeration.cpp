@@ -78,9 +78,9 @@ GD_NAMESPACE_BEGIN
 	/// @see CPPAnnotationParser::ParseAnnotation
 	void CPPEnumerationParser::ParseAnnotation(CPPBaseParser* const BaseParser)
 	{	/// Initialization.
-		self->CurrentEnumeration = new CPPEnumeration();
-		self->CPPAnnotationParser::ParseAnnotation(BaseParser);
-		self->CurrentEnumeration->SetDefaultsForUnknowns();
+		this->CurrentEnumeration = new CPPEnumeration();
+		this->CPPAnnotationParser::ParseAnnotation(BaseParser);
+		this->CurrentEnumeration->SetDefaultsForUnknowns();
 
 		/// Expecting 'enum'/'enum class' declaration.
 		using namespace StreamedLexerDefaultOptions;
@@ -90,14 +90,14 @@ GD_NAMESPACE_BEGIN
 
 		// Parsing enumeration identifier name.
 		BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
-		self->CurrentEnumeration->EnumerationName = BaseParser->GetCurrentLexem().GetRawData();
+		this->CurrentEnumeration->EnumerationName = BaseParser->GetCurrentLexem().GetRawData();
 		BaseParser->ExpectNextLexem();
 
 		// Parsing enumeration base type (if it was specified).
 		if (BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COLON)) 
 		{	// Enumeration has it`s own base type.
 			BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
-			self->CurrentEnumeration->EnumerationBaseTypeName = BaseParser->GetCurrentLexem().GetRawData();
+			this->CurrentEnumeration->EnumerationBaseTypeName = BaseParser->GetCurrentLexem().GetRawData();
 			BaseParser->ExpectNextLexem();
 		}
 
@@ -108,14 +108,14 @@ GD_NAMESPACE_BEGIN
 		{	// We are having non-empty enumeration here.
 			for (;;)
 			{	// Considering all preprocessor directives we met while parsing.
-				while (self->CurrentEnumeration->EnumerationElements.ÑonsiderPreprocessorDirective(BaseParser));
+				while (this->CurrentEnumeration->EnumerationElements.ÑonsiderPreprocessorDirective(BaseParser));
 				if (BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END)) break;
 
 				// Parsing enumeration element name.
 				BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
 				CPPEnumerationElement* const EnumerationElement = new CPPEnumerationElement();
 				EnumerationElement->Name = BaseParser->GetCurrentLexem().GetRawData();
-				self->CurrentEnumeration->EnumerationElements.AppendElement(SharedPtr<CPPDefinition>(EnumerationElement));
+				this->CurrentEnumeration->EnumerationElements.AppendElement(SharedPtr<CPPDefinition>(EnumerationElement));
 				if (BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END)) break;
 
 				BaseParser->ExpectNextLexem();
@@ -131,8 +131,8 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		CPPEnumerationsListImpl.PushLast(self->CurrentEnumeration);
-		self->CurrentEnumeration = nullptr;
+		CPPEnumerationsListImpl.PushLast(this->CurrentEnumeration);
+		this->CurrentEnumeration = nullptr;
 	}
 
 	/// ==========================================================================================

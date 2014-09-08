@@ -90,7 +90,7 @@ GD_NAMESPACE_BEGIN
 		/// @note			Parent object is treated as origin
 		GDINL const Vector3Fast& GetPosition() const
 		{ 
-			return self->position; 
+			return this->position; 
 		}
 
 		/// @brief			Changes position of this game object
@@ -102,7 +102,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns		Global position of this game object
 		GDINL Vector3Fast GetGlobalPosition() const
 		{ 
-			return self->TransformVector(Vector3Fast(0.0f));
+			return this->TransformVector(Vector3Fast(0.0f));
 		}
 
 		/// @brief			Changes global position of this game object
@@ -114,7 +114,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns		Rotation of this game object in quaternions
 		GDINL const Quaternion&	GetRotation() const 
 		{ 
-			return self->rotation; 
+			return this->rotation; 
 		}
 
 		/// @brief			Changes rotation of this game object in quaternions
@@ -125,15 +125,15 @@ GD_NAMESPACE_BEGIN
 		/// @param rotation	New rotation of this game object in degrees
 		GDAPI void SetRotation(const Vector3Fast& degrees)
 		{ 
-			self->rotation.SetEulerDegrees(degrees); 
-			self->OnTransfromedEvent.TriggerEvent();
+			this->rotation.SetEulerDegrees(degrees); 
+			this->OnTransfromedEvent.TriggerEvent();
 		}
 
 		/// @brief			Returns	scale of this game object
 		/// @returns		Scale of this game object
 		GDINL const Vector3Fast& GetScale() const
 		{ 
-			return self->scale; 
+			return this->scale; 
 		}
 
 		/// @brief			Rescales this game object
@@ -144,7 +144,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns		Pointer to transform of parent game object
 		GDINL Transform* GetParent() const
 		{ 
-			return self->parent; 
+			return this->parent; 
 		}
 
 		/// @brief			Detaches this game object from it`s parent and attaches
@@ -156,18 +156,18 @@ GD_NAMESPACE_BEGIN
 		/// @returns		Left-handed transformation matrix of this game object
 		GDINL const Matrix4x4& GetTransformMatrix() const 
 		{ 
-			return self->transformMatrix; 
+			return this->transformMatrix; 
 		}
 
 		/// @}
 
 		/// @brief					Translates game object
 		/// @param delatPosition	Delta position on which we are going to transform our game object
-		/// @param space			Space in which we are going to translate : world or self
+		/// @param space			Space in which we are going to translate : world or this
 		GDINL void Translate(const Vector3Fast& deltaPosition, const Space space = Space::Self)
 		{
-			self->SetPosition(self->GetPosition() + ((space == Space::Self) 
-				? self->GetRotation() * deltaPosition
+			this->SetPosition(this->GetPosition() + ((space == Space::Self) 
+				? this->GetRotation() * deltaPosition
 				: deltaPosition
 			)); 
 		}
@@ -176,14 +176,14 @@ GD_NAMESPACE_BEGIN
 		/// @param deltaDegrees		Delta rotation on which we are going to transform our game object
 		GDINL void Rotate(const Vector3Fast& deltaDegrees)
 		{ 
-			self->SetRotation(self->GetRotation() * Quaternion().SetEulerDegrees(deltaDegrees)); 
+			this->SetRotation(this->GetRotation() * Quaternion().SetEulerDegrees(deltaDegrees)); 
 		}
 		
 		/// @brief			Transforms vector to this game object`s transformation
 		/// @param vector	Vector to transform
 		GDAPI Vector3Fast TransformVector(const Vector3Fast& vector) const
 		{
-			const  Vector4 result = (self->GetTransformMatrix() * Vector4(vector, 1.0f));
+			const  Vector4 result = (this->GetTransformMatrix() * Vector4(vector, 1.0f));
 			return Vector3Fast(result.x, result.y, result.z);
 		}
 
@@ -191,8 +191,8 @@ GD_NAMESPACE_BEGIN
 		/// @param vector	Vector to rotate
 		GDAPI Vector3Fast RotateVector(const Vector3Fast& vector) const
 		{
-		//	return self->TransformVector(vector) - self->TransformVector(Vector3Fast(0.0f));
-			const Vector4 result = (self->GetTransformMatrix() * Vector4(vector, 0.0f));
+		//	return this->TransformVector(vector) - this->TransformVector(Vector3Fast(0.0f));
+			const Vector4 result = (this->GetTransformMatrix() * Vector4(vector, 0.0f));
 			return Vector3Fast(result.x, result.y, result.z);
 		}
 

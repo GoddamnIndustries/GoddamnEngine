@@ -266,19 +266,19 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		/// Returns reference on text stored in this resource file
-		GDINL Vector<UInt8> const& GetBinaryData() const { return self->BinaryData; }
+		GDINL Vector<UInt8> const& GetBinaryData() const { return this->BinaryData; }
 
 	protected:
 		GDINL virtual void OnResourceLoad(UniquePtr<InputStream> const& InputResourceData)
 		{
-			self->BinaryData.Resize(InputResourceData->GetSize() + 1);
-			InputResourceData->Read(&self->BinaryData[0], 1, self->BinaryData.GetSize() - 1);
-			self->BinaryData.GetLastElement() = '\0';
+			this->BinaryData.Resize(InputResourceData->GetSize() + 1);
+			InputResourceData->Read(&this->BinaryData[0], 1, this->BinaryData.GetSize() - 1);
+			this->BinaryData.GetLastElement() = '\0';
 		}
 
 		GDINL virtual void OnResourceUnload() 
 		{
-			self->BinaryData.Clear();
+			this->BinaryData.Clear();
 		}
 	};
 

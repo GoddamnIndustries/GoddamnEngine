@@ -7,39 +7,39 @@ GD_NAMESPACE_BEGIN
 	
 	GDINL RSURIType RSURI::GetIdentifierType() const
 	{
-		return self->IdentifierType;
+		return this->IdentifierType;
 	}
 
 	GDINL RSURIProtocolType RSURI::GetProtocol() const 
 	{
-		return self->Protocol;
+		return this->Protocol;
 	}
 
 	GDINL String const& RSURI::GetPathToFile() const
 	{
-		GD_ASSERT(((self->GetIdentifierType() == RSURIType::PathToRealFile) || self->GetIdentifierType() == RSURIType::PathToVirtualFile), "Attempted to get path to real file for inlined-file");
-		return self->PathToFile;
+		GD_ASSERT(((this->GetIdentifierType() == RSURIType::PathToRealFile) || this->GetIdentifierType() == RSURIType::PathToVirtualFile), "Attempted to get path to real file for inlined-file");
+		return this->PathToFile;
 	}
 
 	GDINL String const& RSURI::GetPathInFile() const
 	{
-		GD_ASSERT((self->GetIdentifierType() == RSURIType::PathToVirtualFile), "Attempted to get path to virtual file for real file");
-		return self->PathInFile;
+		GD_ASSERT((this->GetIdentifierType() == RSURIType::PathToVirtualFile), "Attempted to get path to virtual file for real file");
+		return this->PathInFile;
 	}
 
 	GDINL StringBuilder const& RSURI::GetInlinedData() const
 	{
-		GD_ASSERT((self->GetIdentifierType() == RSURIType::InlinedData), "Attempted to get path to virtual file for real file");
-		return self->InlinedData;
+		GD_ASSERT((this->GetIdentifierType() == RSURIType::InlinedData), "Attempted to get path to virtual file for real file");
+		return this->InlinedData;
 	}
 
 	GDINL String RSURI::GetIdentifierString() const
 	{
 		StringBuilder IdentifierBuilder;
-		if ((self->GetIdentifierType() == RSURIType::PathToRealFile) || self->GetIdentifierType() == RSURIType::PathToVirtualFile) {
-			IdentifierBuilder.AppendFormat("%s://%s", RSURIProtocolTypeToStr(self->GetProtocol()), self->GetPathToFile().CStr());
-			if (self->GetIdentifierType() == RSURIType::PathToVirtualFile)
-				IdentifierBuilder.AppendFormat("?%s", self->GetPathInFile().CStr());
+		if ((this->GetIdentifierType() == RSURIType::PathToRealFile) || this->GetIdentifierType() == RSURIType::PathToVirtualFile) {
+			IdentifierBuilder.AppendFormat("%s://%s", RSURIProtocolTypeToStr(this->GetProtocol()), this->GetPathToFile().CStr());
+			if (this->GetIdentifierType() == RSURIType::PathToVirtualFile)
+				IdentifierBuilder.AppendFormat("?%s", this->GetPathInFile().CStr());
 		} else {
 			IdentifierBuilder.Append("inline://~~~some~unique~data~~~");
 		}
@@ -49,7 +49,7 @@ GD_NAMESPACE_BEGIN
 
 	GDINL bool RSURI::operator== (HashCode const Hash) const
 	{
-		return (self->Hash == Hash);
+		return (this->Hash == Hash);
 	}
 
 	GDINL Resource::Resource(String const& identifier) 
@@ -68,7 +68,7 @@ GD_NAMESPACE_BEGIN
 	GDINL RefPtr<ResourceType> RSStreamer::LoadImmediately(String const& ID)
 	{
 		static_assert((TypeTraits::IsBaseType<Resource, ResourceType>::Value), "Type 'ResourceType' should be derived from 'Resource'");
-		return (object_cast<ResourceType*>(self->LoadImmediately(ID, ResourceType::GetClassTypeInformation()).Release()));
+		return (object_cast<ResourceType*>(this->LoadImmediately(ID, ResourceType::GetClassTypeInformation()).Release()));
 	}
 
 	template<typename ResourceType>

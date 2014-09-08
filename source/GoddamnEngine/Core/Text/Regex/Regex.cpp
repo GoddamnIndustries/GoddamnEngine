@@ -36,7 +36,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		pcre* const ThePCRE;
 		GDINL RegexImplHandle(pcre* const ThePCRE) : ThePCRE(ThePCRE) { }
-		GDINL ~RegexImplHandle() { ::pcre_free(self->ThePCRE); }
+		GDINL ~RegexImplHandle() { ::pcre_free(this->ThePCRE); }
 	};	// class RegexImplHandle
 
 	Regex::Regex(Str const TheRegexString)

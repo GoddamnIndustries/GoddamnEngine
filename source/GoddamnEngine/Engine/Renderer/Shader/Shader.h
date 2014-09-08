@@ -166,12 +166,12 @@ GD_NAMESPACE_BEGIN
 
 #if (defined(GD_HRI_SHADER_D3D11_EMULATING))
 		/// Returns pointer to function that uploads this param to GPU while emulating constatant buffers functionality.
-		GDINL HRIShaderParamUploaderProc GetParamUploader() const { return self->ParamUploader; }
+		GDINL HRIShaderParamUploaderProc GetParamUploader() const { return this->ParamUploader; }
 #endif	// if (defined(GD_HRI_SHADER_D3D11_EMULATING))
 
 		/// Returns unique shader param ID.
 		$GD_PROPERTY(ReadOnly, DefinedAs = Getter)
-		GDINL HRIShaderParamID GetParamID() const { return self->ParamID; }
+		GDINL HRIShaderParamID GetParamID() const { return this->ParamID; }
 
 		/// Returns size of parameter in bytes
 		$GD_PROPERTY(ReadOnly, DefinedAs = Getter)
@@ -214,7 +214,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Returns pointer value that exists in shader.
 		$GD_PROPERTY(DefinedAs = Getter, AlsoHas = Setter)
-		GDINL handle GetValue() const { return self->ParamValue; }
+		GDINL handle GetValue() const { return this->ParamValue; }
 
 		/// Applies value to shader param.
 		template<typename HRIShaderParamValueType>	
@@ -243,11 +243,11 @@ GD_NAMESPACE_BEGIN
 
 		/// Returns total number of location instances inside
 		$GD_PROPERTY(ReadOnly, DefinedAs = Getter)
-		GDINL size_t GetLocationInstancesCount() const { return self->LocationInstancesCount; }
+		GDINL size_t GetLocationInstancesCount() const { return this->LocationInstancesCount; }
 		
 		/// Returns total size of memory required for this location
 		$GD_PROPERTY(ReadOnly, DefinedAs = Getter)
-		GDINL size_t GetLocationInstancesSize() const { return self->LocationInstancesSize; }
+		GDINL size_t GetLocationInstancesSize() const { return this->LocationInstancesSize; }
 	};	// class HRIShaderParamLocationDesc
 
 	/// Description of single location in shader instance
@@ -307,8 +307,8 @@ GD_NAMESPACE_BEGIN
 		GDAPI explicit HRIShaderParamLocationConstantBufferBase(HRIShaderInstance* const ShaderInstance, HRIShaderParamLocationDesc const* const LocationDesc);
 		GDINL virtual ~HRIShaderParamLocationConstantBufferBase(                                                                                             ) { }
 
-		GDINL UInt8 const* GetStorage() const { return self->LocationStorage.GetPointer(); }
-		GDINL UInt8      * GetStorage()       { return self->LocationStorage.GetPointer(); }
+		GDINL UInt8 const* GetStorage() const { return this->LocationStorage.GetPointer(); }
+		GDINL UInt8      * GetStorage()       { return this->LocationStorage.GetPointer(); }
 	};	// class HRIShaderParamLocationConstantBufferBase
 #else	// if (defined(GD_HRI_SHADER_D3D11_EMULATING) && (!defined(GD_DOCUMENTATION)))
 	typedef HRIShaderParamLocation HRIShaderParamLocationConstantBufferBase;
@@ -327,8 +327,8 @@ GD_NAMESPACE_BEGIN
 		GDAPI virtual void UploadAllParameters() final;
 
 		/// Returns constant buffer this location uses.
-		GDINL HRIConstantBuffer const* GetBuffer() const { return self->LocationBuffer; }
-		GDINL HRIConstantBuffer      * GetBuffer()       { return self->LocationBuffer; }
+		GDINL HRIConstantBuffer const* GetBuffer() const { return this->LocationBuffer; }
+		GDINL HRIConstantBuffer      * GetBuffer()       { return this->LocationBuffer; }
 	};	// class HRIShaderParamLocationConstantBufferNative
 
 #if (defined(GD_HRI_SHADER_D3D11_EMULATING))
@@ -417,12 +417,12 @@ GD_NAMESPACE_BEGIN
 		RefPtr<HRIShaderInstanceDesc const> const InstanceDesc;
 
 		/// Returns resources location attached to this instance.
-		GDINL HRIShaderParamLocation const* GetInstanceResourcesLocation() const { return self->InstanceResourcesLocation; }
-		GDINL HRIShaderParamLocation      * GetInstanceResourcesLocation()       { return self->InstanceResourcesLocation; }
+		GDINL HRIShaderParamLocation const* GetInstanceResourcesLocation() const { return this->InstanceResourcesLocation; }
+		GDINL HRIShaderParamLocation      * GetInstanceResourcesLocation()       { return this->InstanceResourcesLocation; }
 		
 		/// Returns globals location attached to this instance
-		GDINL HRIShaderParamLocationConstantBuffer const* GetInstanceFirstConstantBuffersLocation() const { return self->InstanceFirstConstantBuffersLocation; }
-		GDINL HRIShaderParamLocationConstantBuffer      * GetInstanceFirstConstantBuffersLocation()       { return self->InstanceFirstConstantBuffersLocation; }
+		GDINL HRIShaderParamLocationConstantBuffer const* GetInstanceFirstConstantBuffersLocation() const { return this->InstanceFirstConstantBuffersLocation; }
+		GDINL HRIShaderParamLocationConstantBuffer      * GetInstanceFirstConstantBuffersLocation()       { return this->InstanceFirstConstantBuffersLocation; }
 
 		/// Returns parameter by name or nullptr if it was not found.
 		GDINL HRIShaderParam const* GetParamByName(String const& ParamName) const;
@@ -522,20 +522,20 @@ GD_NAMESPACE_BEGIN
 		GDINL HRIShader      * GetProgramShader(HRIShaderType const HRIShaderType);
 
 		/// Returns compute shader attached to this program
-		GDINL HRIComputeShader  const* GetProgramComputeShader () const { return self->ProgramComputeShader; }
-		GDINL HRIComputeShader       * GetProgramComputeShader ()       { return self->ProgramComputeShader; }
+		GDINL HRIComputeShader  const* GetProgramComputeShader () const { return this->ProgramComputeShader; }
+		GDINL HRIComputeShader       * GetProgramComputeShader ()       { return this->ProgramComputeShader; }
 
 		/// Returns geometry shader attached to this program
-		GDINL HRIGeometryShader const* GetProgramGeometryShader() const { return self->ProgramGeometryShader; }
-		GDINL HRIGeometryShader      * GetProgramGeometryShader()       { return self->ProgramGeometryShader; }
+		GDINL HRIGeometryShader const* GetProgramGeometryShader() const { return this->ProgramGeometryShader; }
+		GDINL HRIGeometryShader      * GetProgramGeometryShader()       { return this->ProgramGeometryShader; }
 
 		/// Returns vertex shader attached to this program
-		GDINL HRIVertexShader   const* GetProgramVertexShader  () const { return self->ProgramVertexShader; }
-		GDINL HRIVertexShader        * GetProgramVertexShader  ()       { return self->ProgramVertexShader; }
+		GDINL HRIVertexShader   const* GetProgramVertexShader  () const { return this->ProgramVertexShader; }
+		GDINL HRIVertexShader        * GetProgramVertexShader  ()       { return this->ProgramVertexShader; }
 		
 		/// Returns Hull shader attached to this program
-		GDINL HRIHullShader     const* GetProgramHullShader    () const { return self->ProgramHullShader; }
-		GDINL HRIHullShader          * GetProgramHullShader    ()       { return self->ProgramHullShader; }
+		GDINL HRIHullShader     const* GetProgramHullShader    () const { return this->ProgramHullShader; }
+		GDINL HRIHullShader          * GetProgramHullShader    ()       { return this->ProgramHullShader; }
 #if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 #	if (!defined(GetProgramTessellationControlShader))
 #	     define  GetProgramTessellationControlShader GetProgramHullShader
@@ -545,8 +545,8 @@ GD_NAMESPACE_BEGIN
 #endif	// if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 
 		/// Returns vertex shader attached to this program
-		GDINL HRIDomainShader    const* GetProgramDomainShader () const { return self->ProgramDomainShader; }
-		GDINL HRIDomainShader         * GetProgramDomainShader ()       { return self->ProgramDomainShader; }
+		GDINL HRIDomainShader    const* GetProgramDomainShader () const { return this->ProgramDomainShader; }
+		GDINL HRIDomainShader         * GetProgramDomainShader ()       { return this->ProgramDomainShader; }
 #if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 #	if (!defined(GetProgramTessellationEvaluationShader))
 #	     define  GetProgramTessellationEvaluationShader GetProgramDomainShader
@@ -556,8 +556,8 @@ GD_NAMESPACE_BEGIN
 #endif	// if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 
 		/// Returns vertex shader attached to this program
-		GDINL HRIPixelShader    const* GetProgramPixelShader   () const { return self->ProgramPixelShader; }
-		GDINL HRIPixelShader         * GetProgramPixelShader   ()       { return self->ProgramPixelShader; }
+		GDINL HRIPixelShader    const* GetProgramPixelShader   () const { return this->ProgramPixelShader; }
+		GDINL HRIPixelShader         * GetProgramPixelShader   ()       { return this->ProgramPixelShader; }
 #if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 #	if (!defined(GetProgramFragmentShader))
 #	     define  GetProgramFragmentShader GetProgramPixelShader

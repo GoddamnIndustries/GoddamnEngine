@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 		VertexBufferData.SysMemSlicePitch = 0;
 
 		HRESULT Result = E_FAIL;
-		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&VertexBufferDescription, &VertexBufferData, &self->Buffer))) {
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&VertexBufferDescription, &VertexBufferData, &this->Buffer))) {
 			throw HRID3D11Exception("Vertex buffer creation failed.");
 		}
 	}
@@ -39,11 +39,11 @@ GD_NAMESPACE_BEGIN
 	HRID3D11IndexBuffer::HRID3D11IndexBuffer(chandle const Data, size_t const Size, size_t const Stride)
 		: HRIIndexBuffer(Data, Size, Stride)
 	{
-		switch (self->Stride)
+		switch (this->Stride)
 		{	// Setting up index format of our buffer.
-		case 1: self->IndexFormat = DXGI_FORMAT_R8_UINT;   break;
-		case 2: self->IndexFormat = DXGI_FORMAT_R16_UINT;   break;
-		case 4: self->IndexFormat = DXGI_FORMAT_R32_UINT;   break;
+		case 1: this->IndexFormat = DXGI_FORMAT_R8_UINT;   break;
+		case 2: this->IndexFormat = DXGI_FORMAT_R16_UINT;   break;
+		case 4: this->IndexFormat = DXGI_FORMAT_R32_UINT;   break;
 		default: GD_DEBUG_ASSERT_FALSE("Unhandled stride size."); break;
 		}
 
@@ -63,7 +63,7 @@ GD_NAMESPACE_BEGIN
 		IndexBufferData.SysMemSlicePitch = 0;
 
 		HRESULT Result = E_FAIL;
-		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&IndexBufferDescription, &IndexBufferData, &self->Buffer))) {
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&IndexBufferDescription, &IndexBufferData, &this->Buffer))) {
 			throw HRID3D11Exception("Index buffer creation failed.");
 		}
 	}
@@ -76,13 +76,13 @@ GD_NAMESPACE_BEGIN
 		ZeroMemory(&ConstantBufferDescription, sizeof(ConstantBufferDescription));
 		ConstantBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		ConstantBufferDescription.Usage     = D3D11_USAGE_DYNAMIC;
-		ConstantBufferDescription.ByteWidth = static_cast<UINT>(self->GetSize());
+		ConstantBufferDescription.ByteWidth = static_cast<UINT>(this->GetSize());
 		ConstantBufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;// | D3D11_CPU_ACCESS_READ;
 		ConstantBufferDescription.StructureByteStride = 0;
 		ConstantBufferDescription.MiscFlags = 0;
 
 		HRESULT Result = E_FAIL;
-		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&ConstantBufferDescription, nullptr, &self->Buffer))) {
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateBuffer(&ConstantBufferDescription, nullptr, &this->Buffer))) {
 			throw HRID3D11Exception("Constant buffer creation failed.");
 		}
 	}
@@ -95,12 +95,12 @@ GD_NAMESPACE_BEGIN
 		ZeroMemory(&ConstantBufferData, sizeof(ConstantBufferData));
 
 		HRESULT Result = E_FAIL;
-		if (FAILED(Result = HRD3D11Interface::GetInstance().Context->Map(self->Buffer.Get(), 0, D3D11_MAP_READ, 0, &ConstantBufferData))) {
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Context->Map(this->Buffer.Get(), 0, D3D11_MAP_READ, 0, &ConstantBufferData))) {
 			throw HRID3D11Exception("Constant buffer data mapping failed.");
 		}
 
-		memcpy(Data, ConstantBufferData.pData, self->GetSize());
-		HRD3D11Interface::GetInstance().Context->Unmap(self->Buffer.Get(), 0);
+		memcpy(Data, ConstantBufferData.pData, this->GetSize());
+		HRD3D11Interface::GetInstance().Context->Unmap(this->Buffer.Get(), 0);
 #endif	// if 0
 	}
 
@@ -110,12 +110,12 @@ GD_NAMESPACE_BEGIN
 		ZeroMemory(&ConstantBufferData, sizeof(ConstantBufferData));
 
 		HRESULT Result = E_FAIL;
-		if (FAILED(Result = HRD3D11Interface::GetInstance().Context->Map(self->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ConstantBufferData))) {
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Context->Map(this->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ConstantBufferData))) {
 			throw HRID3D11Exception("Constant buffer data mapping failed.");
 		}
 
-		memcpy(ConstantBufferData.pData, Data, self->GetSize());
-		HRD3D11Interface::GetInstance().Context->Unmap(self->Buffer.Get(), 0);
+		memcpy(ConstantBufferData.pData, Data, this->GetSize());
+		HRD3D11Interface::GetInstance().Context->Unmap(this->Buffer.Get(), 0);
 	}
 
 	HRIVertexBuffer  * HRD3D11Interface::CreateVertexBuffer  (Float32 const* const Data, size_t const Size                     ) { return new HRID3D11VertexBuffer  (Data, Size        ); }

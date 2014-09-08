@@ -41,11 +41,11 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HashCode(HashValueType const HashValue = 0) : HashValue(HashValue) { }
 
 		/// Returns integer representation of this hash summ.
-		GDINL HashValueType GetValue() const { return self->HashValue; }
+		GDINL HashValueType GetValue() const { return this->HashValue; }
 
 		/// Compares to hash summes.
-		GDINL bool operator== (HashCode const& HashCode) const { return (self->HashValue == HashCode.HashValue); }
-		GDINL bool operator!= (HashCode const& HashCode) const { return (self->HashValue != HashCode.HashValue); }
+		GDINL bool operator== (HashCode const& HashCode) const { return (this->HashValue == HashCode.HashValue); }
+		GDINL bool operator!= (HashCode const& HashCode) const { return (this->HashValue != HashCode.HashValue); }
 	};	// struct HashCode
 
 	template<typename CharType>
@@ -116,34 +116,34 @@ GD_NAMESPACE_BEGIN
 			GDINL ~Iterator() { }
 
 			/// Increases/decreases iterator.
-			GDINL Iterator& operator++ (int const) { ++self->Pointer; return (*self); }
-			GDINL Iterator& operator++ (         ) { ++self->Pointer; return (*self); }
-			GDINL Iterator& operator-- (int const) { --self->Pointer; return (*self); }
-			GDINL Iterator& operator-- (         ) { --self->Pointer; return (*self); }
+			GDINL Iterator& operator++ (int const) { ++this->Pointer; return (*this); }
+			GDINL Iterator& operator++ (         ) { ++this->Pointer; return (*this); }
+			GDINL Iterator& operator-- (int const) { --this->Pointer; return (*this); }
+			GDINL Iterator& operator-- (         ) { --this->Pointer; return (*this); }
 
 			/// Increases/decreases iterator on specified value.
-			inline Iterator& operator+= (ptrdiff_t const Offset)	   { self->Pointer += Offset; return (*self); }
-			inline Iterator& operator-= (ptrdiff_t const Offset)       { self->Pointer -= Offset; return (*self); }
-			inline Iterator  operator+  (ptrdiff_t const Offset) const { return Iterator(self->Pointer + Offset); }
-			inline Iterator  operator-  (ptrdiff_t const Offset) const { return Iterator(self->Pointer - Offset); }
+			inline Iterator& operator+= (ptrdiff_t const Offset)	   { this->Pointer += Offset; return (*this); }
+			inline Iterator& operator-= (ptrdiff_t const Offset)       { this->Pointer -= Offset; return (*this); }
+			inline Iterator  operator+  (ptrdiff_t const Offset) const { return Iterator(this->Pointer + Offset); }
+			inline Iterator  operator-  (ptrdiff_t const Offset) const { return Iterator(this->Pointer - Offset); }
 
 			/// Computes difference between iterators.
-			inline ptrdiff_t operator- (Iterator const&       Iterator) const { return (self->Pointer - Iterator.Pointer); }
-			inline ptrdiff_t operator- (Char     const* const  Pointer) const { return (self->Pointer - Pointer); }
+			inline ptrdiff_t operator- (Iterator const&       Iterator) const { return (this->Pointer - Iterator.Pointer); }
+			inline ptrdiff_t operator- (Char     const* const  Pointer) const { return (this->Pointer - Pointer); }
 
 			/// Compares iterators.
-			GDINL bool operator== (Iterator const&       Other  ) const { return (self->Pointer == Other.Pointer); }
-			GDINL bool operator!= (Iterator const&       Other  ) const { return (self->Pointer != Other.Pointer); }
-			GDINL bool operator== (Char     const* const Pointer) const { return (self->Pointer == Pointer); }
-			GDINL bool operator!= (Char     const* const Pointer) const { return (self->Pointer != Pointer); }
+			GDINL bool operator== (Iterator const&       Other  ) const { return (this->Pointer == Other.Pointer); }
+			GDINL bool operator!= (Iterator const&       Other  ) const { return (this->Pointer != Other.Pointer); }
+			GDINL bool operator== (Char     const* const Pointer) const { return (this->Pointer == Pointer); }
+			GDINL bool operator!= (Char     const* const Pointer) const { return (this->Pointer != Pointer); }
 
 			/// Assigns this iterator other value.
-			GDINL Iterator& operator= (ThisPtrType const  Pointer) { self->Pointer = Pointer; return (*self); }
-			GDINL Iterator& operator= (Iterator    const& Iterator) { self->Pointer = Iterator->Pointer; return (*self); }
+			GDINL Iterator& operator= (ThisPtrType const  Pointer) { this->Pointer = Pointer; return (*this); }
+			GDINL Iterator& operator= (Iterator    const& Iterator) { this->Pointer = Iterator->Pointer; return (*this); }
 
 			/// (De)referensing iterator.
-			GDINL ThisRefType operator*  () const { return (*self->Pointer); }
-			GDINL ThisPtrType operator-> () const { return (self->Pointer); }
+			GDINL ThisRefType operator*  () const { return (*this->Pointer); }
+			GDINL ThisPtrType operator-> () const { return (this->Pointer); }
 		};	// struct Iterator
 	
 	public /*Class public types.*/:
@@ -173,13 +173,13 @@ GD_NAMESPACE_BEGIN
 		inline void ConstructWithDataPointerAndSize(CharType const* const Chars, size_t const Size)
 		{
 			GD_DEBUG_ASSERT(Chars != nullptr, "Nullptr data specified");
-			self->StringSize = Size;
+			this->StringSize = Size;
 			size_t const DataSizeInBytes = (Size + 1) * sizeof(CharType);
-			if (self->StringSize >= BaseString::StringMaxHeapSize) {
-				self->StringHeapPointer = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
-				::memcpy(self->StringHeapPointer, Chars, DataSizeInBytes);
+			if (this->StringSize >= BaseString::StringMaxHeapSize) {
+				this->StringHeapPointer = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
+				::memcpy(this->StringHeapPointer, Chars, DataSizeInBytes);
 			} else {
-				::memcpy(&self->StringStackArray[0], Chars, DataSizeInBytes);
+				::memcpy(&this->StringStackArray[0], Chars, DataSizeInBytes);
 			}
 		}
 
@@ -187,7 +187,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Chars  String initial data.
 		GDINL void ConstructWithDataPointer(CharType const* const Chars)
 		{
-			self->ConstructWithDataPointerAndSize(Chars, CharTraits<CharType>::StrLen(Chars));
+			this->ConstructWithDataPointerAndSize(Chars, CharTraits<CharType>::StrLen(Chars));
 		}
 
 	public /*Constructors/Destructor*/:
@@ -198,22 +198,22 @@ GD_NAMESPACE_BEGIN
 		/// Initializes an empty string.
 		GDINL BaseString()
 		{
-			self->StringSize = 0;
-			self->StringStackArray[0] = CharType('\0');
+			this->StringSize = 0;
+			this->StringStackArray[0] = CharType('\0');
 		}
 
 		/// Initializes this string with copy of other string.
 		/// @param OtherBaseString Other string to copy.
 		GDINL BaseString(BaseString const& OtherBaseString)
 		{
-			self->ConstructWithDataPointerAndSize(OtherBaseString.CStr(), OtherBaseString.GetSize());
+			this->ConstructWithDataPointerAndSize(OtherBaseString.CStr(), OtherBaseString.GetSize());
 		}
 
 		/// Moves other string into this string.
 		/// @param OtherBaseString Other string to move into this.
 		GDINL BaseString(BaseString&& OtherBaseString)
 		{
-			(*self) = Forward<BaseString>(OtherBaseString);
+			(*this) = Forward<BaseString>(OtherBaseString);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -224,9 +224,9 @@ GD_NAMESPACE_BEGIN
 		/// @param Character Initial string character.
 		GDINL BaseString(Char const Character)
 		{
-			self->StringSize = 1;
-			self->StringStackArray[0] = Character;
-			self->StringStackArray[1] = CharType('\0');
+			this->StringSize = 1;
+			this->StringStackArray[0] = Character;
+			this->StringStackArray[1] = CharType('\0');
 		}
 
 		/// Initializes a string with some C string with known length.
@@ -234,14 +234,14 @@ GD_NAMESPACE_BEGIN
 		/// @param Size Size of string initial data.
 		GDINL BaseString(CharType const* const Chars, size_t const Size)
 		{
-			self->ConstructWithDataPointerAndSize(Chars, Size);
+			this->ConstructWithDataPointerAndSize(Chars, Size);
 		}
 
 		/// Initializes a string with some C string with unknown length.
 		/// @param Chars  String initial data.
 		GDINL BaseString(CharType const* const Chars)
 		{
-			self->ConstructWithDataPointer(Chars);
+			this->ConstructWithDataPointer(Chars);
 		}
 
 		/// Fills a string with specified number of characters.
@@ -249,20 +249,20 @@ GD_NAMESPACE_BEGIN
 		/// @param FillWith A character that string would be filled with.
 		inline BaseString(size_t const Size, CharType const FillWith = CharType('\0'))
 		{
-			if ((self->StringSize = Size) >= BaseString::StringMaxHeapSize) {
+			if ((this->StringSize = Size) >= BaseString::StringMaxHeapSize) {
 				size_t const DataSizeInBytes = (Size + 1) * sizeof(CharType);
-				self->StringHeapPointer = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
+				this->StringHeapPointer = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
 			}
 
 			if (sizeof(CharType) != 1) {
-				for (auto& Character : (*self)) {
+				for (auto& Character : (*this)) {
 					Character = FillWith;
 				}
 			} else {
-				memset(self->CStr(), FillWith, Size);
+				memset(this->CStr(), FillWith, Size);
 			}
 
-			(*(self->CStr() + self->GetSize())) = CharType('\0');
+			(*(this->CStr() + this->GetSize())) = CharType('\0');
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -272,63 +272,63 @@ GD_NAMESPACE_BEGIN
 		/// Deinitialzes string.
 		GDINL ~BaseString()
 		{
-			self->Clear();
+			this->Clear();
 		}
 
 	public /*Class API*/:
-		GDINL MutableIterator Begin()       { return MutableIterator(self->CStr()); }
-		GDINL ConstIterator   Begin() const { return ConstIterator(self->CStr()); }
-		GDINL MutableIterator End  ()       { return MutableIterator(self->CStr() + self->GetSize()); }
-		GDINL ConstIterator   End  () const { return ConstIterator(self->CStr() + self->GetSize()); }
+		GDINL MutableIterator Begin()       { return MutableIterator(this->CStr()); }
+		GDINL ConstIterator   Begin() const { return ConstIterator(this->CStr()); }
+		GDINL MutableIterator End  ()       { return MutableIterator(this->CStr() + this->GetSize()); }
+		GDINL ConstIterator   End  () const { return ConstIterator(this->CStr() + this->GetSize()); }
 
 		/// Returns iterator that points to last container element.
-		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(self->CStr() + (self->GetSize() - 1))); }
-		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(self->CStr() + (self->GetSize() - 1))); }
+		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(this->CStr() + (this->GetSize() - 1))); }
+		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(this->CStr() + (this->GetSize() - 1))); }
 
 		/// Returns iterator that points to preceding the first container element
-		GDINL ReverseMutableIterator ReverseEnd()       { return ReverseMutableIterator(MutableIterator(self->CStr() - 1)); }
-		GDINL   ReverseConstIterator ReverseEnd() const { return   ReverseConstIterator(ConstIterator(self->CStr() - 1)); }
+		GDINL ReverseMutableIterator ReverseEnd()       { return ReverseMutableIterator(MutableIterator(this->CStr() - 1)); }
+		GDINL   ReverseConstIterator ReverseEnd() const { return   ReverseConstIterator(ConstIterator(this->CStr() - 1)); }
 
 		/// Returns length of this string.
 		/// @returnes Size of this string.
 		GDINL size_t GetSize() const
 		{
-			return self->StringSize;
+			return this->StringSize;
 		}
 
-		GDINL bool IsEmpty() const { return (self->GetSize() != 0); }
+		GDINL bool IsEmpty() const { return (this->GetSize() != 0); }
 
 		/// Returnes pointer on this string.
 		/// @returnes C-String version of this object.
 		GDINL CharType const* CStr() const
 		{
-			if (self->GetSize() >= BaseString::StringMaxHeapSize) {
-				return self->StringHeapPointer;
+			if (this->GetSize() >= BaseString::StringMaxHeapSize) {
+				return this->StringHeapPointer;
 			} else {
-				return &self->StringStackArray[0];
+				return &this->StringStackArray[0];
 			}
 		}
 		GDINL CharType* CStr()
 		{
-			return const_cast<CharType*>(const_cast<BaseString const*>(self)->CStr());
+			return const_cast<CharType*>(const_cast<BaseString const*>(this)->CStr());
 		}
 		GDINL void Clear()
 		{
-			if (self->StringSize >= BaseString::StringMaxHeapSize) {
-				Allocator::DeallocateMemory(self->StringHeapPointer);
-				self->StringHeapPointer = nullptr;
+			if (this->StringSize >= BaseString::StringMaxHeapSize) {
+				Allocator::DeallocateMemory(this->StringHeapPointer);
+				this->StringHeapPointer = nullptr;
 			}
-			self->Emptify();
+			this->Emptify();
 		}
 		GDINL void Emptify()
 		{
-			self->StringSize = 0;
+			this->StringSize = 0;
 		}
-		GDINL CharType  GetLastElement() const { return (*(self->CStr() + self->GetSize() - 1)); }
+		GDINL CharType  GetLastElement() const { return (*(this->CStr() + this->GetSize() - 1)); }
 		inline HashCode GetHashCode() const
 		{
 			HashValueType Computed = 0;
-			for (auto const MyCharacter : (*self)) {
+			for (auto const MyCharacter : (*this)) {
 				Computed = 65599 * Computed + MyCharacter;
 			}
 
@@ -339,17 +339,17 @@ GD_NAMESPACE_BEGIN
 		{
 			GD_DEBUG_ASSERT(To >= From, "Invalid substring indices.");
 			BaseString Result(To - From);
-			::memcpy(Result.CStr(), &(*self)[From], (To - From) * sizeof(CharType));
+			::memcpy(Result.CStr(), &(*this)[From], (To - From) * sizeof(CharType));
 			return Result;
 		}
 		GDINL BaseString GetSubstring(size_t const From) const
 		{
-			return self->GetSubstring(From, self->GetSize());
+			return this->GetSubstring(From, this->GetSize());
 		}
 
 		inline size_t Find(CharType const Character) const
 		{
-			CharType const* const CString = self->CStr();
+			CharType const* const CString = this->CStr();
 			CharType const* const Location = CharTraits<CharType>::StrChr(CString, Character);
 			if (Location != nullptr) {
 				return static_cast<size_t>(Location - CString);
@@ -360,7 +360,7 @@ GD_NAMESPACE_BEGIN
 
 		inline size_t Find(CharType const* const OtherCString) const
 		{
-			CharType const* const CString = self->CStr();
+			CharType const* const CString = this->CStr();
 			CharType const* const Location = CharTraits<CharType>::StrStr(CString, OtherCString);
 			if (Location != nullptr) {
 				return static_cast<size_t>(Location - CString);
@@ -371,7 +371,7 @@ GD_NAMESPACE_BEGIN
 
 		inline size_t ReverseFind(CharType const Character) const
 		{
-			CharType const* const CString = self->CStr();
+			CharType const* const CString = this->CStr();
 			CharType const* const Location = CharTraits<CharType>::StrRChr(CString, Character);
 			if (Location != nullptr) {
 				return static_cast<size_t>(Location - CString);
@@ -383,9 +383,9 @@ GD_NAMESPACE_BEGIN
 		inline size_t ReverseFind(CharType const* const OtherCString) const
 		{
 			size_t const OtherCStringLength = CharTraits<CharType>::StrLen(OtherCString);
-			if (OtherCStringLength > self->StringSize) {
-				CharType const* const CString = self->CStr();
-				CharType const* const CStringStart = CString() + self->GetSize() - OtherCStringLength;
+			if (OtherCStringLength > this->StringSize) {
+				CharType const* const CString = this->CStr();
+				CharType const* const CStringStart = CString() + this->GetSize() - OtherCStringLength;
 				CharType const* const CStringEnd = CString - 1;
 				for (CharType const*  CStringIter = CStringStart; CStringIter != CStringEnd; --CStringIter) {
 					 CharType const* const Location = CharTraits<CharType>::StrStr(CStringIter, OtherCString);
@@ -400,7 +400,7 @@ GD_NAMESPACE_BEGIN
 
 		inline BaseString ToUpper() const
 		{
-			BaseString Result(*self);
+			BaseString Result(*this);
 			for (auto& Character : Result) {
 				Character = static_cast<CharType>(CharTraits<CharType>::ToUpper(Character));
 			}
@@ -410,7 +410,7 @@ GD_NAMESPACE_BEGIN
 
 		inline BaseString ToLower() const
 		{
-			BaseString Result(*self);
+			BaseString Result(*this);
 			for (auto& Character : Result) {
 				Character = static_cast<CharType>(CharTraits<CharType>::ToLower(Character));
 			}
@@ -450,25 +450,25 @@ GD_NAMESPACE_BEGIN
 
 		GDINL BaseString& operator=	(BaseString const& OtherBaseString)
 		{
-			self->~BaseString();
-			self->ConstructWithDataPointerAndSize(OtherBaseString.CStr(), OtherBaseString.GetSize());
-			return (*self);
+			this->~BaseString();
+			this->ConstructWithDataPointerAndSize(OtherBaseString.CStr(), OtherBaseString.GetSize());
+			return (*this);
 		}
 
 		inline BaseString& operator= (BaseString&& OtherBaseString)
 		{
-			self->~BaseString();
-			self->StringSize = OtherBaseString.StringSize;
+			this->~BaseString();
+			this->StringSize = OtherBaseString.StringSize;
 			OtherBaseString.StringSize = 0;
-			if (self->StringSize >= BaseString::StringMaxHeapSize) {
-				self->StringHeapPointer = OtherBaseString.StringHeapPointer;
+			if (this->StringSize >= BaseString::StringMaxHeapSize) {
+				this->StringHeapPointer = OtherBaseString.StringHeapPointer;
 				OtherBaseString.StringHeapPointer = nullptr;
 			} else {
-				size_t const DataSizeInBytes = (self->StringSize + 1) * sizeof(CharType);
-				::memcpy(&self->StringStackArray[0], &OtherBaseString.StringStackArray[0], DataSizeInBytes);
+				size_t const DataSizeInBytes = (this->StringSize + 1) * sizeof(CharType);
+				::memcpy(&this->StringStackArray[0], &OtherBaseString.StringStackArray[0], DataSizeInBytes);
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -477,13 +477,13 @@ GD_NAMESPACE_BEGIN
 
 		GDINL CharType const& operator[] (size_t const Index) const
 		{
-			GD_DEBUG_ASSERT(Index <= self->GetSize(), "Invalid string subindex.");
-			return (*(self->CStr() + Index));
+			GD_DEBUG_ASSERT(Index <= this->GetSize(), "Invalid string subindex.");
+			return (*(this->CStr() + Index));
 		}
 
 		GDINL CharType& operator[] (size_t const Index)
 		{
-			return const_cast<Char&>((*const_cast<BaseString const*>(self))[Index]);
+			return const_cast<Char&>((*const_cast<BaseString const*>(this))[Index]);
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -492,16 +492,16 @@ GD_NAMESPACE_BEGIN
 
 		inline BaseString operator+ (BaseString const& OtherBaseString) const
 		{
-			BaseString Result(self->StringSize + OtherBaseString.GetSize());
-			::memcpy(Result.CStr(),                    self->          CStr(), self->StringSize           * sizeof(CharType));
-			::memcpy(Result.CStr() + self->StringSize, OtherBaseString.CStr(), OtherBaseString.StringSize * sizeof(CharType));
+			BaseString Result(this->StringSize + OtherBaseString.GetSize());
+			::memcpy(Result.CStr(),                    this->          CStr(), this->StringSize           * sizeof(CharType));
+			::memcpy(Result.CStr() + this->StringSize, OtherBaseString.CStr(), OtherBaseString.StringSize * sizeof(CharType));
 			return Result;
 		}
 
 		inline BaseString& operator+= (BaseString const& OtherBaseString)
 		{
-			BaseString Copy(Move(*self));
-			return ((*self) = Move(Copy + OtherBaseString));
+			BaseString Copy(Move(*this));
+			return ((*this) = Move(Copy + OtherBaseString));
 		}
 
 		/// ------------------------------------------------------------------------------------------
@@ -510,8 +510,8 @@ GD_NAMESPACE_BEGIN
 
 		inline bool operator== (BaseString const & OtherBaseString) const
 		{
-			if (self->StringSize == OtherBaseString.StringSize) {
-				return (CharTraits<CharType>::StrNCmp(self->CStr(), OtherBaseString.CStr(), self->StringSize) == 0);
+			if (this->StringSize == OtherBaseString.StringSize) {
+				return (CharTraits<CharType>::StrNCmp(this->CStr(), OtherBaseString.CStr(), this->StringSize) == 0);
 			} else {
 				return false;
 			}
@@ -519,13 +519,13 @@ GD_NAMESPACE_BEGIN
 
 		inline bool operator!= (BaseString const & OtherBaseString) const
 		{
-			return !((*self) == OtherBaseString);
+			return !((*this) == OtherBaseString);
 		}
 
 		inline bool operator== (CharType const Character) const
 		{
-			if (self->StringSize == 1) {
-				return (*self->CStr() == Character);
+			if (this->StringSize == 1) {
+				return (*this->CStr() == Character);
 			} else {
 				return false;
 			}
@@ -533,7 +533,7 @@ GD_NAMESPACE_BEGIN
 
 		inline bool operator!= (CharType const Character) const
 		{
-			return !((*self) == Character);
+			return !((*this) == Character);
 		}
 
 	private /**/:
@@ -594,34 +594,34 @@ GD_NAMESPACE_BEGIN
 			GDINL ~Iterator() { }
 
 			/// Increases/decreases iterator.
-			GDINL Iterator& operator++ (int const) { ++self->Pointer; return (*self); }
-			GDINL Iterator& operator++ () { ++self->Pointer; return (*self); }
-			GDINL Iterator& operator-- (int const) { --self->Pointer; return (*self); }
-			GDINL Iterator& operator-- () { --self->Pointer; return (*self); }
+			GDINL Iterator& operator++ (int const) { ++this->Pointer; return (*this); }
+			GDINL Iterator& operator++ () { ++this->Pointer; return (*this); }
+			GDINL Iterator& operator-- (int const) { --this->Pointer; return (*this); }
+			GDINL Iterator& operator-- () { --this->Pointer; return (*this); }
 
 			/// Increases/decreases iterator on specified value.
-			inline Iterator& operator+= (ptrdiff_t const Offset)	      { self->Pointer += Offset; return (*self); }
-			inline Iterator& operator-= (ptrdiff_t const Offset)       { self->Pointer -= Offset; return (*self); }
-			inline Iterator  operator+  (ptrdiff_t const Offset) const { return Iterator(self->Pointer + Offset); }
-			inline Iterator  operator-  (ptrdiff_t const Offset) const { return Iterator(self->Pointer - Offset); }
+			inline Iterator& operator+= (ptrdiff_t const Offset)	      { this->Pointer += Offset; return (*this); }
+			inline Iterator& operator-= (ptrdiff_t const Offset)       { this->Pointer -= Offset; return (*this); }
+			inline Iterator  operator+  (ptrdiff_t const Offset) const { return Iterator(this->Pointer + Offset); }
+			inline Iterator  operator-  (ptrdiff_t const Offset) const { return Iterator(this->Pointer - Offset); }
 
 			/// Computes difference between iterators.
-			inline ptrdiff_t operator- (Iterator const& Iterator) const { return (self->Pointer - Iterator.Pointer); }
-			inline ptrdiff_t operator- (Char     const* const  Pointer) const { return (self->Pointer - Pointer); }
+			inline ptrdiff_t operator- (Iterator const& Iterator) const { return (this->Pointer - Iterator.Pointer); }
+			inline ptrdiff_t operator- (Char     const* const  Pointer) const { return (this->Pointer - Pointer); }
 
 			/// Compares iterators.
-			GDINL bool operator== (Iterator const&       Other) const { return (self->Pointer == Other.Pointer); }
-			GDINL bool operator!= (Iterator const&       Other) const { return (self->Pointer != Other.Pointer); }
-			GDINL bool operator== (Char     const* const Pointer) const { return (self->Pointer == Pointer); }
-			GDINL bool operator!= (Char     const* const Pointer) const { return (self->Pointer != Pointer); }
+			GDINL bool operator== (Iterator const&       Other) const { return (this->Pointer == Other.Pointer); }
+			GDINL bool operator!= (Iterator const&       Other) const { return (this->Pointer != Other.Pointer); }
+			GDINL bool operator== (Char     const* const Pointer) const { return (this->Pointer == Pointer); }
+			GDINL bool operator!= (Char     const* const Pointer) const { return (this->Pointer != Pointer); }
 
 			/// Assigns this iterator other value.
-			GDINL Iterator& operator= (ThisPtrType const  Pointer) { self->Pointer = Pointer; return (*self); }
-			GDINL Iterator& operator= (Iterator    const& Iterator) { self->Pointer = Iterator->Pointer; return (*self); }
+			GDINL Iterator& operator= (ThisPtrType const  Pointer) { this->Pointer = Pointer; return (*this); }
+			GDINL Iterator& operator= (Iterator    const& Iterator) { this->Pointer = Iterator->Pointer; return (*this); }
 
 			/// (De)referensing iterator.
-			GDINL ThisRefType operator*  () const { return (*self->Pointer); }
-			GDINL ThisPtrType operator-> () const { return (self->Pointer); }
+			GDINL ThisRefType operator*  () const { return (*this->Pointer); }
+			GDINL ThisPtrType operator-> () const { return (this->Pointer); }
 		};	// struct Iterator
 
 		/// Iterator type this container uses.
@@ -697,8 +697,8 @@ GD_NAMESPACE_BEGIN
 		GDAPI String(const String& HeapMemory);
 		GDINL String(String&& HeapMemory)
 		{
-			self->HeapSize = HeapMemory.HeapSize;
-			self->HeapMemory = HeapMemory.HeapMemory;
+			this->HeapSize = HeapMemory.HeapSize;
+			this->HeapMemory = HeapMemory.HeapMemory;
 			HeapMemory.HeapMemory = nullptr;
 			HeapMemory.HeapSize = 0;
 		}
@@ -756,21 +756,21 @@ GD_NAMESPACE_BEGIN
 
 		/// @}
 
-		GDINL Char const* CStr() const { return self->CStr(); }
-		GDINL Char      * CStr()       { return self->CStr(); }
+		GDINL Char const* CStr() const { return this->CStr(); }
+		GDINL Char      * CStr()       { return this->CStr(); }
 
-		GDINL MutableIterator Begin()       { return MutableIterator(self->CStr()); }
-		GDINL ConstIterator   Begin() const { return ConstIterator(self->CStr()); }
-		GDINL MutableIterator End()       { return MutableIterator(self->CStr() + self->GetSize()); }
-		GDINL ConstIterator   End() const { return ConstIterator(self->CStr() + self->GetSize()); }
+		GDINL MutableIterator Begin()       { return MutableIterator(this->CStr()); }
+		GDINL ConstIterator   Begin() const { return ConstIterator(this->CStr()); }
+		GDINL MutableIterator End()       { return MutableIterator(this->CStr() + this->GetSize()); }
+		GDINL ConstIterator   End() const { return ConstIterator(this->CStr() + this->GetSize()); }
 
 		/// Returns iterator that points to last container element.
-		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(self->CStr() + (self->GetSize() - 1))); }
-		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(self->CStr() + (self->GetSize() - 1))); }
+		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(this->CStr() + (this->GetSize() - 1))); }
+		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(this->CStr() + (this->GetSize() - 1))); }
 
 		/// Returns iterator that points to preceding the first container element
-		GDINL ReverseMutableIterator ReverseEnd()       { return ReverseMutableIterator(MutableIterator(self->CStr() - 1)); }
-		GDINL   ReverseConstIterator ReverseEnd() const { return   ReverseConstIterator(ConstIterator(self->CStr() - 1)); }
+		GDINL ReverseMutableIterator ReverseEnd()       { return ReverseMutableIterator(MutableIterator(this->CStr() - 1)); }
+		GDINL   ReverseConstIterator ReverseEnd() const { return   ReverseConstIterator(ConstIterator(this->CStr() - 1)); }
 
 		/// @name 'String'`s HeapSize
 		/// @{
@@ -779,15 +779,15 @@ GD_NAMESPACE_BEGIN
 		/// @returns			'String'`s length
 		GDINL size_t GetSize() const;
 
-		GDINL bool IsEmpty() const { return self->GetSize() == 0; }
+		GDINL bool IsEmpty() const { return this->GetSize() == 0; }
 
 		/// @brief				Resizes a 'String'
 		/// @param HeapSize			New HeapSize
 		GDAPI void Resize(const size_t HeapSize);
-		GDINL void Emptify() { self->Resize(0); }
+		GDINL void Emptify() { this->Resize(0); }
 
-		GDINL void SetLastElement(Char const C) { *(self->End() - 1) = C; }
-		GDINL Char const& GetLastElement() const { return (*(self->End() - 1)); }
+		GDINL void SetLastElement(Char const C) { *(this->End() - 1) = C; }
+		GDINL Char const& GetLastElement() const { return (*(this->End() - 1)); }
 
 		/// @}
 

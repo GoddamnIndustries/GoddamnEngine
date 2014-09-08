@@ -20,23 +20,23 @@ GD_NAMESPACE_BEGIN
 		{	
 			static CriticalSection TypeInformationRegistrationCs;
 			TypeInformationRegistrationCs.Enter();
-			TypeInformation::lastRegisteredType = self;
+			TypeInformation::lastRegisteredType = this;
 			TypeInformationRegistrationCs.Leave();
 		}
 
-		GD_ASSERT((self->Name.GetSize() > 0),
+		GD_ASSERT((this->Name.GetSize() > 0),
 			"'TypeInformation::TypeInformation' error: invalid name specified: name is empty");
 
-		GD_ASSERT(((self->BaseType != nullptr) || (self == Object::GetClassTypeInformation())),
+		GD_ASSERT(((this->BaseType != nullptr) || (this == Object::GetClassTypeInformation())),
 			"'TypeInformation::TypeInformation' error: nullptr base type specified");
 
 		for (TypeInformation const*
-			typeInformation = self->PreviousType; typeInformation != nullptr;
+			typeInformation = this->PreviousType; typeInformation != nullptr;
 			typeInformation = typeInformation->PreviousType)
 		{
-			if (typeInformation->Name == self->Name)
+			if (typeInformation->Name == this->Name)
 			{
-				GD_ASSERT(/*(memcmp((&self->Size), (&typeInformation->Size), (sizeof(*self) - sizeof(self->Name))) == 0)*/false,
+				GD_ASSERT(/*(memcmp((&this->Size), (&typeInformation->Size), (sizeof(*this) - sizeof(this->Name))) == 0)*/false,
 					"'TypeInformation::TypeInformation' error: this type was alredy registered in RTTI system "
 					"with different parameters than this one. May be your project contains two classes with same "
 					"names. Attempt giving classes unique names.");
@@ -67,7 +67,7 @@ GD_NAMESPACE_BEGIN
 	bool TypeInformation::IsDerivedFrom(TypeInformation const* const typeInformation) const
 	{
 		for (TypeInformation const* 
-			typeInformationIterator = self; typeInformationIterator != nullptr;
+			typeInformationIterator = this; typeInformationIterator != nullptr;
 			typeInformationIterator = typeInformationIterator->BaseType)
 		{
 			if (typeInformationIterator == typeInformation)

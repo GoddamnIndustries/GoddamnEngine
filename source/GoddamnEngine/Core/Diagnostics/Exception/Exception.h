@@ -29,7 +29,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Returns message of thrown exception.
 		/// @returns Thrown error message.
-		GDINL virtual String const& GetErrorMessage() const { return self->Message; }
+		GDINL virtual String const& GetErrorMessage() const { return this->Message; }
 	};	// class Exception
 
 	/// Runtime error that notifies that somerthing went wrong due programmer`s fault.

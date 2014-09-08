@@ -1,5 +1,6 @@
 #include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRenderer.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/Shader.h>
+#include <GoddamnEngine/Engine/Application/Application.h>
 
 #if (!defined(GD_HRI_OGL_ES))
 #	if (defined(GD_PLATFORM_WINDOWS))
@@ -22,17 +23,16 @@ GD_NAMESPACE_BEGIN
 
 	bool HROGLInterface::CreateContex()
 	{
-		GD_DEBUG_ASSERT(__LINE__ == -1, "Something really stange happened");
 #define GD_DEFINE_OGL_METHOD(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) \
-		/**/self->Driver._##MethodName = reinterpret_cast<ReturnType (*)(ArgumentsDeclarations)>(GD_GL_GET_PROC_ADDRESS("gl"#MethodName)); \
-		if (self->Driver._##MethodName == nullptr) { \
+		/**/this->Driver._##MethodName = reinterpret_cast<ReturnType (*)(ArgumentsDeclarations)>(GD_GL_GET_PROC_ADDRESS("gl"#MethodName)); \
+		if (this->Driver._##MethodName == nullptr) { \
 			/*throw HRIOGLException("Unable to map 'gl"#MethodName"' method.");*/ \
 			Debug::Warning("Unable to map 'gl"#MethodName"' method.");\
 		}
 #if (!defined(GD_HRI_OGL_ES))
 #	if (defined(GD_PLATFORM_WINDOWS))
-		HWND const Window = HWND(LowLevelSystem::GetInstance().hWindow);
-		HDC  const DeviceContext = GetDC(Window);
+		HWND const Window = reinterpret_cast<HWND>(Application::GetInstance().GetApplicationGameWindow()->GetWindowNativeHandle());
+		this->DeviceContext = GetDC(Window);
 
 		PIXELFORMATDESCRIPTOR PixelFormatDescriptor;
 		ZeroMemory(&PixelFormatDescriptor, sizeof(PIXELFORMATDESCRIPTOR));
@@ -43,20 +43,20 @@ GD_NAMESPACE_BEGIN
 		PixelFormatDescriptor.cColorBits = 32;
 		PixelFormatDescriptor.cDepthBits = 32;
 
-		int const PixelFormat = ::ChoosePixelFormat(DeviceContext, &PixelFormatDescriptor);
+		int const PixelFormat = ::ChoosePixelFormat(this->DeviceContext, &PixelFormatDescriptor);
 		if (PixelFormat == 0) {
 			throw HRIOGLException("Failed to choose pixel format ('::ChoosePixelFormat' returned 0)");
 		}
-		if (::SetPixelFormat(DeviceContext, PixelFormat, &PixelFormatDescriptor) != TRUE) {
+		if (::SetPixelFormat(this->DeviceContext, PixelFormat, &PixelFormatDescriptor) != TRUE) {
 			throw HRIOGLException("Failed to set pixel format ('::SetPixelFormat' failed)");
 		}
 
 		// Creating temporary OpenGL 2.1 context to load extensions.
-		HGLRC const TemporaryContext = ::wglCreateContext(DeviceContext);
+		HGLRC const TemporaryContext = ::wglCreateContext(this->DeviceContext);
 		if (TemporaryContext == nullptr) {
 			throw HRIOGLException("Failed to create temporary OpenGL context ('::wglCreateContext' returned nullptr)");
 		}
-		if (wglMakeCurrent(DeviceContext, TemporaryContext) != TRUE) {
+		if (wglMakeCurrent(this->DeviceContext, TemporaryContext) != TRUE) {
 			throw HRIOGLException("Failed to setup temorary OpenGL context ('::wglMakeCurrent' failed)");
 		}
 
@@ -80,10 +80,10 @@ GD_NAMESPACE_BEGIN
 			0
 		};
 
-		if ((self->RenderingContext = WinCreateContextAttribsARB(DeviceContext, nullptr, VersionAttributes)) == nullptr) {
+		if ((this->RenderingContext = WinCreateContextAttribsARB(this->DeviceContext, nullptr, VersionAttributes)) == nullptr) {
 			throw HRIOGLException(String::Format("Failed to create OpenGL %d.%d context ('->wglCreateContextAttribsARB' failed).", VersionAttributes[0], VersionAttributes[1]));
 		}
-		if (::wglMakeCurrent(DeviceContext, self->RenderingContext) != TRUE) {
+		if (::wglMakeCurrent(this->DeviceContext, this->RenderingContext) != TRUE) {
 			throw HRIOGLException("Failed to make generated context current ('::wglMakeCurrent' failed).");
 		}
 
@@ -130,14 +130,14 @@ GD_NAMESPACE_BEGIN
 	bool HROGLInterface::DestroyContext()
 	{
 #if (!defined(GD_HRI_OGL_ES))
-#	define GD_DEFINE_OGL_METHOD(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) self->Driver._##MethodName = nullptr;
+#	define GD_DEFINE_OGL_METHOD(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) this->Driver._##MethodName = nullptr;
 #	if (!defined(__INTELLISENSE__))	// Intelli Sence goes crazy while parsing code below.
 #		include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
 #	endif	// if (!defined(__INTELLISENSE__))
 #	if (defined(GD_PLATFORM_WINDOWS))
 		::wglMakeCurrent(nullptr, nullptr);
-		::wglDeleteContext(self->RenderingContext);
-		self->RenderingContext = nullptr;
+		::wglDeleteContext(this->RenderingContext);
+		this->RenderingContext = nullptr;
 //	endif	// if (defined(GD_PLATFORM_WINDOWS))
 #	else	// *** Platform Select ***
 #		error "'HROGLInterface::DestroyContext()' is not implemented for target platform (OpenGL desktop)."
@@ -157,17 +157,17 @@ GD_NAMESPACE_BEGIN
 		auto const& GL = HROGLInterface::GetInstance().Driver;
 		GL.Clear(GL_COLOR_BUFFER_BIT | (DoClearDepth ? GL_DEPTH_BUFFER_BIT : 0));
 		GL.ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a);
-		GL.Viewport(static_cast<GLint>(self->ContextResolution.Width  * ClearingViewport.Left  ),
-					static_cast<GLint>(self->ContextResolution.Height * ClearingViewport.Top   ),
-					static_cast<GLint>(self->ContextResolution.Width  * ClearingViewport.Width ),
-					static_cast<GLint>(self->ContextResolution.Height * ClearingViewport.Height));
+		GL.Viewport(static_cast<GLint>(this->ContextRectagle.Width  * ClearingViewport.Left  ),
+					static_cast<GLint>(this->ContextRectagle.Height * ClearingViewport.Top   ),
+					static_cast<GLint>(this->ContextRectagle.Width  * ClearingViewport.Width ),
+					static_cast<GLint>(this->ContextRectagle.Height * ClearingViewport.Height));
 	}
 
 	void HROGLInterface::SwapBuffers()
 	{
 #if (!defined(GD_HRI_OGL_ES))
 #	if (defined(GD_PLATFORM_WINDOWS))
-		if ((::SwapBuffers(HDC(LowLevelSystem::GetInstance().hDeviceContext))) != TRUE) {
+		if ((::SwapBuffers(HDC(this->DeviceContext))) != TRUE) {
 			throw HRIOGLException("Failed to swap buffers ('::SwapBuffers' failed).");
 		}
 //	endif	// if (defined(GD_PLATFORM_WINDOWS))

@@ -16,21 +16,21 @@ GD_NAMESPACE_BEGIN
 	HRID3D11ShaderParamLocationResources::HRID3D11ShaderParamLocationResources(HRIShaderInstance* const ShaderInstance, HRIShaderParamLocationDesc const* const LocationDesc) 
 		: HRIShaderParamLocationResources(ShaderInstance, LocationDesc)
 	{
-		GD_DEBUG_ASSERT(self->LocationDesc->LocationType == GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES, "Invalid shader location type specified");
-		self->ShaderResourceViews.Resize(self->LocationDesc->GetLocationInstancesCount());
-		self->ShaderSampleStates .Resize(self->LocationDesc->GetLocationInstancesCount());
+		GD_DEBUG_ASSERT(this->LocationDesc->LocationType == GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES, "Invalid shader location type specified");
+		this->ShaderResourceViews.Resize(this->LocationDesc->GetLocationInstancesCount());
+		this->ShaderSampleStates .Resize(this->LocationDesc->GetLocationInstancesCount());
 	}
 
 	void HRID3D11ShaderParamLocationResources::UploadAllParameters()
 	{
-		if (self->DidAnyParamValueChanged) {
-			self->DidAnyParamValueChanged = false;
-			for (auto const ShaderParam : IterateChildObjects<HRIShaderParam const>(self)) {
+		if (this->DidAnyParamValueChanged) {
+			this->DidAnyParamValueChanged = false;
+			for (auto const ShaderParam : IterateChildObjects<HRIShaderParam const>(this)) {
 				if (HRIShaderParamLocation::QueryAndResetDidParamValueChanged(ShaderParam))	{
 					HRID3D11Texture2D const* const Texture2D = object_cast<HRID3D11Texture2D const*>(ShaderParam->GetValue());
 					if (Texture2D != nullptr) {
-						self->ShaderResourceViews[ShaderParam->ParamDesc->GetParamID()] = Texture2D->GetShaderResource();
-						self->ShaderSampleStates[ShaderParam->ParamDesc->GetParamID()] = Texture2D->GetSample();
+						this->ShaderResourceViews[ShaderParam->ParamDesc->GetParamID()] = Texture2D->GetShaderResource();
+						this->ShaderSampleStates[ShaderParam->ParamDesc->GetParamID()] = Texture2D->GetSample();
 					}
 				}
 			}
@@ -45,10 +45,10 @@ GD_NAMESPACE_BEGIN
 
 	HRID3D11ShaderInstance::HRID3D11ShaderInstance(HRIShaderInstanceDesc const* const InstanceDesc) : HRIShaderInstance(InstanceDesc)
 	{	// Caching all inner constant buffer.
-		for (auto const Location : IterateChildObjects<HRIShaderParamLocation const>(self)) {
+		for (auto const Location : IterateChildObjects<HRIShaderParamLocation const>(this)) {
 			if (Location->LocationDesc->LocationType == GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_CONSTANTBUFFER) {
 				HRID3D11ShaderParamLocationConstantBuffer const* const ConstantBufferLocation = object_cast<HRID3D11ShaderParamLocationConstantBuffer const*>(Location);
-				self->ShaderConstantBuffers.PushLast(reinterpret_cast<ID3D11Buffer const*>(ConstantBufferLocation->GetBuffer()->GetNativePointer()));
+				this->ShaderConstantBuffers.PushLast(reinterpret_cast<ID3D11Buffer const*>(ConstantBufferLocation->GetBuffer()->GetNativePointer()));
 			}
 		}
 	}
@@ -62,14 +62,14 @@ GD_NAMESPACE_BEGIN
 	{
 		HRESULT Result = E_FAIL;
 		ID3D11Device* const Device = HRD3D11Interface::GetInstance().Device.Get();	
-		if (FAILED(Result = Device->CreateVertexShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->VertexShader))) {
+		if (FAILED(Result = Device->CreateVertexShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &this->VertexShader))) {
 			throw HRID3D11Exception("Failed to create vertex shader");
 		}
 		
 		UINT                     InputLayoutInputSlot = 0;
 		D3D11_INPUT_ELEMENT_DESC InputLayoutElements[15];
 		for (size_t SemanticIter = GD_HRI_SEMANTIC_FIRST; SemanticIter < GD_HRI_SEMANTIC_UNKNOWN; SemanticIter += 1) {	// Setting up all upcoming semantic from shader.
-			if ((self->ShaderDesc->InstanceInputFormat & GD_BIT(UInt64(SemanticIter + 1))) == 0) {	// This semantic is not used, we not need to mention it in layout.
+			if ((this->ShaderDesc->InstanceInputFormat & GD_BIT(UInt64(SemanticIter + 1))) == 0) {	// This semantic is not used, we not need to mention it in layout.
 				continue;
 			}
 
@@ -88,7 +88,7 @@ GD_NAMESPACE_BEGIN
 			InputLayoutInputSlot += 1;
 		}
 
-		if (FAILED(Result = Device->CreateInputLayout(&InputLayoutElements[0], InputLayoutInputSlot, CtorInfo.CreationData, CtorInfo.CreationDataSize, &self->InputLayout))) {
+		if (FAILED(Result = Device->CreateInputLayout(&InputLayoutElements[0], InputLayoutInputSlot, CtorInfo.CreationData, CtorInfo.CreationDataSize, &this->InputLayout))) {
 			throw HRID3D11Exception("Failed to create input layout");
 		}
 	}
@@ -96,8 +96,8 @@ GD_NAMESPACE_BEGIN
 	void HRID3D11VertexShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
 	{
 		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
-		Context->IASetInputLayout(self->InputLayout .Get()            );
-		Context->VSSetShader     (self->VertexShader.Get(), nullptr, 0);
+		Context->IASetInputLayout(this->InputLayout .Get()            );
+		Context->VSSetShader     (this->VertexShader.Get(), nullptr, 0);
 		if (TheShaderInstance != nullptr) {	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
 			HRID3D11ShaderInstance               const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
 			HRID3D11ShaderParamLocationResources const* const ShaderResources = object_cast<HRID3D11ShaderParamLocationResources const*>(ShaderInstance->GetInstanceResourcesLocation());
@@ -135,7 +135,7 @@ GD_NAMESPACE_BEGIN
 	HRID3D11HullShader::HRID3D11HullShader(HRIShaderCtorInfo const& CtorInfo) : HRIHullShader(CtorInfo)
 	{
 		HRESULT Result = E_FAIL;
-		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateHullShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->HullShader))) {
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateHullShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &this->HullShader))) {
 			throw HRID3D11Exception("Failed to create Hull shader");
 		}
 	}
@@ -143,7 +143,7 @@ GD_NAMESPACE_BEGIN
 	void HRID3D11HullShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
 	{
 		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
-		Context->HSSetShader(self->HullShader.Get(), nullptr, 0);
+		Context->HSSetShader(this->HullShader.Get(), nullptr, 0);
 		if (TheShaderInstance != nullptr) {	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
 			HRID3D11ShaderInstance               const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
 			HRID3D11ShaderParamLocationResources const* const ShaderResources = object_cast<HRID3D11ShaderParamLocationResources const*>(ShaderInstance->GetInstanceResourcesLocation());
@@ -180,7 +180,7 @@ GD_NAMESPACE_BEGIN
 	HRID3D11DomainShader::HRID3D11DomainShader(HRIShaderCtorInfo const& CtorInfo) : HRIDomainShader(CtorInfo)
 	{
 		HRESULT Result = E_FAIL;
-		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateDomainShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->DomainShader))) {
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreateDomainShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &this->DomainShader))) {
 			throw HRID3D11Exception("Failed to create Domain shader");
 		}
 	}
@@ -188,7 +188,7 @@ GD_NAMESPACE_BEGIN
 	void HRID3D11DomainShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
 	{
 		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
-		Context->DSSetShader(self->DomainShader.Get(), nullptr, 0);
+		Context->DSSetShader(this->DomainShader.Get(), nullptr, 0);
 		if (TheShaderInstance != nullptr) {	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
 			HRID3D11ShaderInstance               const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
 			HRID3D11ShaderParamLocationResources const* const ShaderResources = object_cast<HRID3D11ShaderParamLocationResources const*>(ShaderInstance->GetInstanceResourcesLocation());
@@ -225,7 +225,7 @@ GD_NAMESPACE_BEGIN
 	HRID3D11PixelShader::HRID3D11PixelShader(HRIShaderCtorInfo const& CtorInfo) : HRIPixelShader(CtorInfo)
 	{
 		HRESULT Result = E_FAIL;
-		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreatePixelShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &self->PixelShader))) {
+		if (FAILED(Result = HRD3D11Interface::GetInstance().Device->CreatePixelShader(CtorInfo.CreationData, CtorInfo.CreationDataSize, nullptr, &this->PixelShader))) {
 			throw HRID3D11Exception("Failed to create Pixel shader");
 		}
 	}
@@ -233,7 +233,7 @@ GD_NAMESPACE_BEGIN
 	void HRID3D11PixelShader::BindShader(HRIShaderInstance const* const TheShaderInstance) const
 	{
 		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
-		Context->PSSetShader(self->PixelShader.Get(), nullptr, 0);
+		Context->PSSetShader(this->PixelShader.Get(), nullptr, 0);
 		if (TheShaderInstance != nullptr) {	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
 			HRID3D11ShaderInstance               const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
 			HRID3D11ShaderParamLocationResources const* const ShaderResources = object_cast<HRID3D11ShaderParamLocationResources const*>(ShaderInstance->GetInstanceResourcesLocation());

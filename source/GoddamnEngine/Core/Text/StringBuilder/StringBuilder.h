@@ -26,24 +26,24 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		GDINL  BaseStringBuilder(BaseStringBuilder&& Other) : MutableString(Move(Other.MutableString)) { }
-		GDINL  BaseStringBuilder() { self->MutableString.PushLast(CharType('\0')); }
+		GDINL  BaseStringBuilder() { this->MutableString.PushLast(CharType('\0')); }
 		GDINL ~BaseStringBuilder() { }
 
 		/// Returns pointer on content of this builder.
-		GDINL CharType const* GetPointer() const { return &self->MutableString[0]; }
-		GDINL CharType      * GetPointer()       { return &self->MutableString[0]; }
+		GDINL CharType const* GetPointer() const { return &this->MutableString[0]; }
+		GDINL CharType      * GetPointer()       { return &this->MutableString[0]; }
 
 		/// Returns length of this buffer.
-		GDINL size_t GetSize() const { return self->MutableString.GetSize() - 1; }
+		GDINL size_t GetSize() const { return this->MutableString.GetSize() - 1; }
 
 		/// Returns number of characters this builder may include without reallocation.
-		GDINL size_t GetCapacity() const { return self->MutableString.GetCapacity() - 1; }
+		GDINL size_t GetCapacity() const { return this->MutableString.GetCapacity() - 1; }
 
 		/// Resizes buffer.
-		GDINL void Resize(size_t const NewSize) { self->MutableString.Resize(NewSize + 1); }
+		GDINL void Resize(size_t const NewSize) { this->MutableString.Resize(NewSize + 1); }
 
 		/// Resizes buffer that it could store enough data without reallocation.
-		GDINL void Reserve(size_t const NewCapacity) { self->MutableString.Reserve(NewCapacity + 1); }
+		GDINL void Reserve(size_t const NewCapacity) { this->MutableString.Reserve(NewCapacity + 1); }
 
 		/// Appends string to this string builder.
 		/// @param Format Standart printf-like format.
@@ -61,8 +61,8 @@ GD_NAMESPACE_BEGIN
 
 		GDINL BaseStringBuilder& operator= (BaseStringBuilder&& Other) 
 		{ 
-			self->MutableString = Move(Other.MutableString); 
-			return (*self);
+			this->MutableString = Move(Other.MutableString); 
+			return (*this);
 		}
 	};	// class BaseStringBuilder
 

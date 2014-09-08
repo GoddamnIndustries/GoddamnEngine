@@ -63,7 +63,7 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual ~HRIOGLVertexShader();
 		GDINT virtual void BindShader(HRIShaderInstance const* const ShaderInstance) const final;
 		GDINT virtual void UnbindShader() const final;
-		GDINL GLuint GetVertexShaderID() const { return self->VertexShaderID; }
+		GDINL GLuint GetVertexShaderID() const { return this->VertexShaderID; }
 	};	// class HRIOGLVertexShader
 
 #if (!defined(GD_HRI_OGL_ES))
@@ -79,7 +79,7 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual ~HRIOGLTessCtrlShader();
 		GDINT virtual void BindShader(HRIShaderInstance const* const ShaderInstance) const final;
 		GDINT virtual void UnbindShader() const final;
-		GDINL GLuint GetTessCtrlShaderID() const { return self->TessCtrlShaderID; }
+		GDINL GLuint GetTessCtrlShaderID() const { return this->TessCtrlShaderID; }
 	};	// class HRIOGLTessCtrlShader
 
 	/// Domain shader implementation for OGL.
@@ -94,7 +94,7 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual ~HRIOGLTessEvalShader();
 		GDINT virtual void BindShader(HRIShaderInstance const* const ShaderInstance) const final;
 		GDINT virtual void UnbindShader() const final;
-		GDINL GLuint GetTessEvalShaderID() const { return self->TessEvalShaderID; }
+		GDINL GLuint GetTessEvalShaderID() const { return this->TessEvalShaderID; }
 	};	// class HRIOGLTessEvalShader
 #endif	// if (!defined(GD_HRI_OGL_ES))
 
@@ -110,7 +110,7 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual ~HRIOGLFragmentShader();
 		GDINT virtual void BindShader(HRIShaderInstance const* const ShaderInstance) const final;
 		GDINT virtual void UnbindShader() const final;
-		GDINL GLuint GetFragmentShaderID() const { return self->FragmentShaderID; }
+		GDINL GLuint GetFragmentShaderID() const { return this->FragmentShaderID; }
 	};	// class HRIOGLFragmentShader
 
 GD_NAMESPACE_END

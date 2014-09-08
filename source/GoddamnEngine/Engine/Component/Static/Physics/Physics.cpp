@@ -22,31 +22,31 @@ GD_NAMESPACE_BEGIN
 	PhysicsInterface::PhysicsInterface() : StaticComponent(StaticComponentPriority::Low)
 	{
 		using namespace physx;
-		self->Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, 
-			*(self->DefaultCallbackAllocator = new PxDefaultAllocator    ),
-			*(self->DefaultCallbackError     = new PxDefaultErrorCallback)
+		this->Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, 
+			*(this->DefaultCallbackAllocator = new PxDefaultAllocator    ),
+			*(this->DefaultCallbackError     = new PxDefaultErrorCallback)
 		);
 
-		self->PhysicsSdk = PxCreatePhysics(PX_PHYSICS_VERSION, *self->Foundation, PxTolerancesScale());
-		self->Chief      = PxCreateCooking(PX_PHYSICS_VERSION, *self->Foundation, PxCookingParams(self->PhysicsSdk->getTolerancesScale()));
+		this->PhysicsSdk = PxCreatePhysics(PX_PHYSICS_VERSION, *this->Foundation, PxTolerancesScale());
+		this->Chief      = PxCreateCooking(PX_PHYSICS_VERSION, *this->Foundation, PxCookingParams(this->PhysicsSdk->getTolerancesScale()));
 		
-		PxInitExtensions(*self->PhysicsSdk);
+		PxInitExtensions(*this->PhysicsSdk);
 
-		PxSceneDesc SceneDesc(self->PhysicsSdk->getTolerancesScale());
+		PxSceneDesc SceneDesc(this->PhysicsSdk->getTolerancesScale());
 		SceneDesc.gravity		= PxVec3(0.0f, -9.81f, 0.0f);
 		SceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(1);
 		SceneDesc.filterShader	= PxDefaultSimulationFilterShader;
-		self->Scene = self->PhysicsSdk->createScene(SceneDesc);
-		self->DefaultMaterial = self->PhysicsSdk->createMaterial(0.5f, 0.5f, 0.0f);
+		this->Scene = this->PhysicsSdk->createScene(SceneDesc);
+		this->DefaultMaterial = this->PhysicsSdk->createMaterial(0.5f, 0.5f, 0.0f);
 
 #if (defined(GD_DEBUG))
-		if (self->PhysicsSdk->getPvdConnectionManager() != nullptr)
+		if (this->PhysicsSdk->getPvdConnectionManager() != nullptr)
 		{
 			char const* const VisualDebuggeRHost = "127.0.0.1";
 			int const VisualDebuggerPort = 5425;
 			int const VisualDebuggerTimeout = 100;
-			self->VisualDebugger = PxVisualDebuggerExt::createConnection(
-				self->PhysicsSdk->getPvdConnectionManager(),
+			this->VisualDebugger = PxVisualDebuggerExt::createConnection(
+				this->PhysicsSdk->getPvdConnectionManager(),
 				VisualDebuggeRHost, VisualDebuggerPort, VisualDebuggerTimeout,
 				PxVisualDebuggerExt::getAllConnectionFlags()
 			);
@@ -59,24 +59,24 @@ GD_NAMESPACE_BEGIN
 	PhysicsInterface::~PhysicsInterface()
 	{
 #if (defined(GD_DEBUG))
-		if (self->VisualDebugger != nullptr)
-			self->VisualDebugger->release();
+		if (this->VisualDebugger != nullptr)
+			this->VisualDebugger->release();
 #endif	// if (defined(GD_DEBUG))
 
-		self->Scene->release();
-		self->PhysicsSdk->release();
-		self->Foundation->release();
+		this->Scene->release();
+		this->PhysicsSdk->release();
+		this->Foundation->release();
 
-		delete self->DefaultCallbackAllocator;
-		delete self->DefaultCallbackError;
+		delete this->DefaultCallbackAllocator;
+		delete this->DefaultCallbackError;
 	}
 
 	/// ==========================================================================================
 	/// ==========================================================================================
 	void PhysicsInterface::OnUpdateSelf()
 	{
-		self->Scene->simulate(1 / 250.0f);
-		while (!self->Scene->fetchResults());
+		this->Scene->simulate(1 / 250.0f);
+		while (!this->Scene->fetchResults());
 	}
 
 	/// ==========================================================================================
@@ -90,7 +90,7 @@ GD_NAMESPACE_BEGIN
 		using namespace physx;
 		using namespace PxToolkit;
 
-		MeshRenderer* const meshRenderer = self->GetGameObject()->GetComponent<MeshRenderer>();
+		MeshRenderer* const meshRenderer = this->GetGameObject()->GetComponent<MeshRenderer>();
 		GD_ASSERT((meshRenderer != nullptr), "");
 		HRIIndexedShape const* const meshShape = meshRenderer->GetStaticMesh();
 
@@ -114,16 +114,16 @@ GD_NAMESPACE_BEGIN
 		PxDefaultMemoryInputData TriangleMeshData(TriangleMeshCooked.getData(), TriangleMeshCooked.getSize());
 		PxTriangleMesh* const TriangleMesh = PhysicsInterface::GetInstance().PhysicsSdk->createTriangleMesh(TriangleMeshData);
 
-		self->RigidbodyPtr = PhysicsInterface::GetInstance().PhysicsSdk->createRigidStatic(PxTransform(PxIdentity));
-		self->RigidbodyPtr->createShape(PxTriangleMeshGeometry(TriangleMesh, PxMeshScale(25.0f)), *PhysicsInterface::GetInstance().DefaultMaterial);
-		PhysicsInterface::GetInstance().Scene->addActor(*self->RigidbodyPtr);
+		this->RigidbodyPtr = PhysicsInterface::GetInstance().PhysicsSdk->createRigidStatic(PxTransform(PxIdentity));
+		this->RigidbodyPtr->createShape(PxTriangleMeshGeometry(TriangleMesh, PxMeshScale(25.0f)), *PhysicsInterface::GetInstance().DefaultMaterial);
+		PhysicsInterface::GetInstance().Scene->addActor(*this->RigidbodyPtr);
 	}
 
 	/// ==========================================================================================
 	/// ==========================================================================================
 	void MeshCollider::OnDestroySelf(bool const isForceDestruction)
 	{
-		self->RigidbodyPtr->release();
+		this->RigidbodyPtr->release();
 	}
 
 	/// ==========================================================================================
@@ -137,10 +137,10 @@ GD_NAMESPACE_BEGIN
 		using namespace physx;
 		using namespace PxToolkit;
 
-		self->GetGameObject()->GetTransform()->OnTransfromedEvent += self;
-		self->RigidbodyPtr = PhysicsInterface::GetInstance().PhysicsSdk->createRigidDynamic(PxTransform(PxIdentity));
-		self->RigidbodyPtr->createShape(PxBoxGeometry(0.5f, 0.9f, 0.5f), *PhysicsInterface::GetInstance().DefaultMaterial);
-		PhysicsInterface::GetInstance().Scene->addActor(*self->RigidbodyPtr);
+		this->GetGameObject()->GetTransform()->OnTransfromedEvent += this;
+		this->RigidbodyPtr = PhysicsInterface::GetInstance().PhysicsSdk->createRigidDynamic(PxTransform(PxIdentity));
+		this->RigidbodyPtr->createShape(PxBoxGeometry(0.5f, 0.9f, 0.5f), *PhysicsInterface::GetInstance().DefaultMaterial);
+		PhysicsInterface::GetInstance().Scene->addActor(*this->RigidbodyPtr);
 	}
 
 	/// ==========================================================================================
@@ -148,17 +148,17 @@ GD_NAMESPACE_BEGIN
 	void Rigidbody::OnUpdateSelf()
 	{
 		using namespace physx;
-		PxTransform const& RigidbodyTransform = self->RigidbodyPtr->getGlobalPose();
-		self->GetGameObject()->GetTransform()->SetPosition(Vector3(RigidbodyTransform.p.x, RigidbodyTransform.p.y, RigidbodyTransform.p.z));
-		self->GetGameObject()->GetTransform()->SetRotation(Quaternion(RigidbodyTransform.q.x, RigidbodyTransform.q.y, RigidbodyTransform.q.z, RigidbodyTransform.q.w));
+		PxTransform const& RigidbodyTransform = this->RigidbodyPtr->getGlobalPose();
+		this->GetGameObject()->GetTransform()->SetPosition(Vector3(RigidbodyTransform.p.x, RigidbodyTransform.p.y, RigidbodyTransform.p.z));
+		this->GetGameObject()->GetTransform()->SetRotation(Quaternion(RigidbodyTransform.q.x, RigidbodyTransform.q.y, RigidbodyTransform.q.z, RigidbodyTransform.q.w));
 	}
 
 	/// ==========================================================================================
 	/// ==========================================================================================
 	void Rigidbody::OnDestroySelf(bool const isForceDestruction)
 	{
-		self->GetGameObject()->GetTransform()->OnTransfromedEvent -= self;
-		self->RigidbodyPtr->release();
+		this->GetGameObject()->GetTransform()->OnTransfromedEvent -= this;
+		this->RigidbodyPtr->release();
 	}
 
 	/// ==========================================================================================
@@ -167,9 +167,9 @@ GD_NAMESPACE_BEGIN
 	{
 		using namespace physx;
 		PxTransform RigidbodyTransform = PxTransform(PxIdentity);
-		memcpy(&RigidbodyTransform.p, &self->GetGameObject()->GetTransform()->GetPosition(), sizeof(RigidbodyTransform.p));
-		memcpy(&RigidbodyTransform.q, &self->GetGameObject()->GetTransform()->GetRotation(), sizeof(RigidbodyTransform.q));
-		self->RigidbodyPtr->setGlobalPose(RigidbodyTransform);
+		memcpy(&RigidbodyTransform.p, &this->GetGameObject()->GetTransform()->GetPosition(), sizeof(RigidbodyTransform.p));
+		memcpy(&RigidbodyTransform.q, &this->GetGameObject()->GetTransform()->GetRotation(), sizeof(RigidbodyTransform.q));
+		this->RigidbodyPtr->setGlobalPose(RigidbodyTransform);
 	}
 
 

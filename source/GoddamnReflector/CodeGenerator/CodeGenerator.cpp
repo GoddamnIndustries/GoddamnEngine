@@ -33,7 +33,7 @@ GD_NAMESPACE_BEGIN
 		switch (CurrentLexem->GetContentType())
 		{
 		case GD_LEXEM_CONTENT_TYPE_IDENTIFIER:
-			self->Stream->Write(reinterpret_cast<UInt8 const*>(CurrentLexem->GetRawData().CStr()), 0, CurrentLexem->GetRawData().GetSize());
+			this->Stream->Write(reinterpret_cast<UInt8 const*>(CurrentLexem->GetRawData().CStr()), 0, CurrentLexem->GetRawData().GetSize());
 			break;
 		}
 	}

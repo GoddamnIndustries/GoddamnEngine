@@ -70,53 +70,53 @@ GD_NAMESPACE_BEGIN
 
 		GDINL void ResetLexem()
 		{
-			self->Line = 0;
-			self->Symbol = 0;
-			self->ContentType = GD_LEXEM_CONTENT_TYPE_UNKNOWN;
-			self->RawData.Emptify();
-			memset(&self->Padding[0], 0, sizeof(self->Padding));
+			this->Line = 0;
+			this->Symbol = 0;
+			this->ContentType = GD_LEXEM_CONTENT_TYPE_UNKNOWN;
+			this->RawData.Emptify();
+			memset(&this->Padding[0], 0, sizeof(this->Padding));
 		}
 
 	public:
 		GDINL  Lexem() { }
-		GDINL ~Lexem() { self->ResetLexem(); }
+		GDINL ~Lexem() { this->ResetLexem(); }
 		
 		/// Returns position of this lexem in input stream.
-		GDINL size_t           GetLine()               const { return self->Line; }
-		GDINL size_t           GetSymbol()             const { return self->Symbol; }
+		GDINL size_t           GetLine()               const { return this->Line; }
+		GDINL size_t           GetSymbol()             const { return this->Symbol; }
 
 		/// Returns type of content that is located inside lexem.
-		GDINL LexemContentType GetContentType()        const { return self->ContentType; }
+		GDINL LexemContentType GetContentType()        const { return this->ContentType; }
 
 		/// Returns raw lexem data that is presented as string.
-		GDINL String const&    GetRawData()            const { return self->RawData; }
+		GDINL String const&    GetRawData()            const { return this->RawData; }
 
 		/// Returns character data, located inside this lexem if this lexem is character contant.
 		GDINL CharAnsi         GetProcessedDataChar()  const 
 		{
-			GD_DEBUG_ASSERT(self->GetContentType() == GD_LEXEM_CONTENT_TYPE_CONSTANT_CHARACTER, "Lexem`s content type is not character constant");
-			return self->ProcessedDataCharacter; 
+			GD_DEBUG_ASSERT(this->GetContentType() == GD_LEXEM_CONTENT_TYPE_CONSTANT_CHARACTER, "Lexem`s content type is not character constant");
+			return this->ProcessedDataCharacter; 
 		}
 		
 		/// Returns integer data, located inside this lexem if this lexem is integer contant.
 		GDINL UInt64           GetProcessedDataInt()   const 
 		{ 
-			GD_DEBUG_ASSERT(self->GetContentType() == GD_LEXEM_CONTENT_TYPE_CONSTANT_INTEGER, "Lexem`s content type is not integer constant");
-			return self->ProcessedDataInteger; 
+			GD_DEBUG_ASSERT(this->GetContentType() == GD_LEXEM_CONTENT_TYPE_CONSTANT_INTEGER, "Lexem`s content type is not integer constant");
+			return this->ProcessedDataInteger; 
 		}
 		
 		/// Returns float data, located inside this lexem if this lexem is float contant.
 		GDINL Float64          GetProcessedDataFloat() const 
 		{ 
-			GD_DEBUG_ASSERT(self->GetContentType() == GD_LEXEM_CONTENT_TYPE_CONSTANT_FLOAT, "Lexem`s content type is not float constant");
-			return self->ProcessedDataFloat; 
+			GD_DEBUG_ASSERT(this->GetContentType() == GD_LEXEM_CONTENT_TYPE_CONSTANT_FLOAT, "Lexem`s content type is not float constant");
+			return this->ProcessedDataFloat; 
 		}
 		
 		/// Returns some ID data, located inside this lexem if this lexem can has ID.
 		GDINL StreamedLexerID  GetProcessedDataID()    const 
 		{ 
-			if ((self->GetContentType() != GD_LEXEM_CONTENT_TYPE_KEYWORD) && (self->GetContentType() != GD_LEXEM_CONTENT_TYPE_OPERATOR)) return 0;
-			return self->ProcessedDataID;
+			if ((this->GetContentType() != GD_LEXEM_CONTENT_TYPE_KEYWORD) && (this->GetContentType() != GD_LEXEM_CONTENT_TYPE_OPERATOR)) return 0;
+			return this->ProcessedDataID;
 		}
 	};	// struct Lexem
 

@@ -37,7 +37,7 @@ GD_NAMESPACE_BEGIN
 		GDINL String ToString(Lexem const* const CurrentLexem, ...) const
 		{
 			va_list List = va_list(); va_start(List, CurrentLexem);
-			String FormattedMessage = String::FormatVa(self->Message.CStr(), List);
+			String FormattedMessage = String::FormatVa(this->Message.CStr(), List);
 			va_end(List);
 
 			if (CurrentLexem != nullptr) {
@@ -90,18 +90,18 @@ GD_NAMESPACE_BEGIN
 			va_list List = va_list(); va_start(List, Error);
 			vprintf(Error, List);
 			va_end(List);
-			self->RaiseExceptionWithCode(1l); 
+			this->RaiseExceptionWithCode(1l); 
 		}
 		inline void RaiseFatalError(ToolchainMessage const* const Error, ...) 
 		{
 			va_list List = va_list(); va_start(List, Error);
 			vprintf(Error, List);
 			va_end(List);
-			self->RaiseExceptionWithCode(1l);
+			this->RaiseExceptionWithCode(1l);
 		}*/
 		/*inline void RaiseExceptionWithCode(long const ExceptionCode) 
 		{ 
-			self->Toolchain->RaiseException(ToolchainException(ExceptionCode)); 
+			this->Toolchain->RaiseException(ToolchainException(ExceptionCode)); 
 		}*/
 	};	// class IToolchainTool
 

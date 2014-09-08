@@ -211,55 +211,55 @@ GD_NAMESPACE_BEGIN
 	/// Resets lexer implementation.
 	void BasicStreamedLexerImpl::Reset()
 	{
-		self->WasLexemCommited			  = false;
-		self->CurrentState                = GD_LEXER_STATE_UNKNOWN;
-		self->CurrentCharacter            = CharAnsi('\0');				
-		self->CurrentCharacterType        = GD_CHARACTER_TYPE_UNKNOWN;
-		self->CurrentLexemIntegerNotation = DefaultLexemIntegerNotation;
-		self->CurrentMatchingIndex        = 0;			
+		this->WasLexemCommited			  = false;
+		this->CurrentState                = GD_LEXER_STATE_UNKNOWN;
+		this->CurrentCharacter            = CharAnsi('\0');				
+		this->CurrentCharacterType        = GD_CHARACTER_TYPE_UNKNOWN;
+		this->CurrentLexemIntegerNotation = DefaultLexemIntegerNotation;
+		this->CurrentMatchingIndex        = 0;			
 	}
 
 	/// Reads next character from input stream. If stream ends, that returns '\0'. Also handles '\n' and '\r' sequences.
 	CharAnsi BasicStreamedLexerImpl::GetNextCharacter()
 	{	// Testing if we have rewinded character.
-		if (self->RewindedCharacter == CharAnsi('\0'))
+		if (this->RewindedCharacter == CharAnsi('\0'))
 		{
 			try
 			{	// Trying to read next character:
-				self->CurrentCharacter = self->Stream->Read();
-				if (self->CurrentCharacter == CharAnsi('\r'))
+				this->CurrentCharacter = this->Stream->Read();
+				if (this->CurrentCharacter == CharAnsi('\r'))
 				{	// Trying to handle '\r\n' sequence.
-					CharAnsi NextCharacter = self->Stream->Read();
+					CharAnsi NextCharacter = this->Stream->Read();
 					if (NextCharacter != CharAnsi('\n'))
-						self->RewindedCharacter = NextCharacter;
+						this->RewindedCharacter = NextCharacter;
 
 					// New line here.
-					self->CurrentCharacter = CharAnsi('\n');
-					self->CurrentSymbol = 0;
-					self->CurrentLine += 1;
+					this->CurrentCharacter = CharAnsi('\n');
+					this->CurrentSymbol = 0;
+					this->CurrentLine += 1;
 				}
-				else if (self->CurrentCharacter == CharAnsi('\n'))
+				else if (this->CurrentCharacter == CharAnsi('\n'))
 				{	// Handing line termination characters.
-					self->CurrentSymbol = 0;
-					self->CurrentLine += 1;
+					this->CurrentSymbol = 0;
+					this->CurrentLine += 1;
 				}
 				else
 				{	// Next character on current line.
-					self->CurrentSymbol += 1;
+					this->CurrentSymbol += 1;
 				}
 			}
 			catch (IOException const&)
 			{	// We have failed to read.
-				self->CurrentCharacter = CharAnsi('\0');
+				this->CurrentCharacter = CharAnsi('\0');
 			}
 		}
 		else
 		{
-			self->CurrentCharacter = self->RewindedCharacter;
-			self->RewindedCharacter = CharAnsi('\0');
+			this->CurrentCharacter = this->RewindedCharacter;
+			this->RewindedCharacter = CharAnsi('\0');
 		}
 
-		return self->CurrentCharacter;
+		return this->CurrentCharacter;
 	}
 
 	/// Pushes character back to input stream/caches character.
@@ -268,18 +268,18 @@ GD_NAMESPACE_BEGIN
 	{
 		if (Character == CharAnsi('\n'))
 		{	// Reverting line break.
-			self->CurrentSymbol = SIZE_MAX;
-			self->CurrentLine -= 1;
+			this->CurrentSymbol = SIZE_MAX;
+			this->CurrentLine -= 1;
 		}
 		else
 		{	// Reverting just last character.
-			self->CurrentSymbol -= 1;
+			this->CurrentSymbol -= 1;
 		}
 
-		if (self->RewindedCharacter == CharAnsi('\0'))
-			self->RewindedCharacter = Character;
+		if (this->RewindedCharacter == CharAnsi('\0'))
+			this->RewindedCharacter = Character;
 		else
-			self->Stream->Seek(-1, SeekOrigin::End);
+			this->Stream->Seek(-1, SeekOrigin::End);
 	}
 
 	/// Processes single character from input stream.
@@ -300,32 +300,32 @@ GD_NAMESPACE_BEGIN
 		};
 
 		// Reading next character from stream and determining the type of new character and possible type switch.
-		StreamedLexerCharType const PreviousCharacterType = self->CurrentCharacterType;
-		self->GetNextCharacter();
-		self->CurrentCharacterType	// Searching in custom special symbols list and treating all others as valid identifier characters
-			= (self->Options.IsInSpecialCharactersAlphabet(self->CurrentCharacter))	                                                 ? GD_CHARACTER_TYPE_SPECIAL 
-			: (CharAnsiHelpers::IsAlphabetic(self->CurrentCharacter) || CharAnsiHelpers::IsSpecialCharacter(self->CurrentCharacter)) ? GD_CHARACTER_TYPE_ALPHABETIC
-			: (CharAnsiHelpers::IsDigit     (self->CurrentCharacter, self->CurrentLexemIntegerNotation))                             ? GD_CHARACTER_TYPE_DIGIT
-			: (CharAnsiHelpers::IsSpace     (self->CurrentCharacter))                                                                ? GD_CHARACTER_TYPE_SPACE : GD_CHARACTER_TYPE_UNKNOWN; 
-		/**/ if ((self->CurrentCharacterType == GD_CHARACTER_TYPE_SPACE) && (PreviousCharacterType == GD_CHARACTER_TYPE_UNKNOWN))
+		StreamedLexerCharType const PreviousCharacterType = this->CurrentCharacterType;
+		this->GetNextCharacter();
+		this->CurrentCharacterType	// Searching in custom special symbols list and treating all others as valid identifier characters
+			= (this->Options.IsInSpecialCharactersAlphabet(this->CurrentCharacter))	                                                 ? GD_CHARACTER_TYPE_SPECIAL 
+			: (CharAnsiHelpers::IsAlphabetic(this->CurrentCharacter) || CharAnsiHelpers::IsSpecialCharacter(this->CurrentCharacter)) ? GD_CHARACTER_TYPE_ALPHABETIC
+			: (CharAnsiHelpers::IsDigit     (this->CurrentCharacter, this->CurrentLexemIntegerNotation))                             ? GD_CHARACTER_TYPE_DIGIT
+			: (CharAnsiHelpers::IsSpace     (this->CurrentCharacter))                                                                ? GD_CHARACTER_TYPE_SPACE : GD_CHARACTER_TYPE_UNKNOWN; 
+		/**/ if ((this->CurrentCharacterType == GD_CHARACTER_TYPE_SPACE) && (PreviousCharacterType == GD_CHARACTER_TYPE_UNKNOWN))
 		{	// Upcoming space that splits lexems. Just skipping it.
-			self->CurrentCharacterType = GD_CHARACTER_TYPE_UNKNOWN;
+			this->CurrentCharacterType = GD_CHARACTER_TYPE_UNKNOWN;
 			return;
 		}
-		else if ((self->CurrentCharacterType == GD_CHARACTER_TYPE_UNKNOWN) && (self->CurrentCharacter != CharAnsi('\0')))
+		else if ((this->CurrentCharacterType == GD_CHARACTER_TYPE_UNKNOWN) && (this->CurrentCharacter != CharAnsi('\0')))
 		{	// Unknown character exists in stream (except \0 character). Error:
 			StreamedLexerErrorDesc static const InvalidCharacterParsingError("invalid character with code 0x%x was read from input stream.");
-			throw StreamedLexerFatalErrorException(InvalidCharacterParsingError.ToString(self->CurrentLexem, size_t(self->CurrentCharacter)));
+			throw StreamedLexerFatalErrorException(InvalidCharacterParsingError.ToString(this->CurrentLexem, size_t(this->CurrentCharacter)));
 		}
 
-		TestCharacterTypesSwitchingTable const& CurrentTypeSwitchingTable = TestCharacterTypeSwitchingTable[size_t(self->CurrentLexem->ContentType)];
-		if (CurrentTypeSwitchingTable.DoTestCharacterTypeSwitch && (PreviousCharacterType != self->CurrentCharacterType) && (PreviousCharacterType != GD_CHARACTER_TYPE_UNKNOWN))
+		TestCharacterTypesSwitchingTable const& CurrentTypeSwitchingTable = TestCharacterTypeSwitchingTable[size_t(this->CurrentLexem->ContentType)];
+		if (CurrentTypeSwitchingTable.DoTestCharacterTypeSwitch && (PreviousCharacterType != this->CurrentCharacterType) && (PreviousCharacterType != GD_CHARACTER_TYPE_UNKNOWN))
 		{	// Parsing all conditions where token committing is required.
 			// Attempting to switch state. Skipping if previous type is unknown - tokenizer was launched for the first time 
 			StreamedLexerCharType const* NotSwitchOnTypePtr = &CurrentTypeSwitchingTable.NotCommitOnSwitchingTo[0];
 			for (; (*NotSwitchOnTypePtr) != GD_CHARACTER_TYPE_UNKNOWN; NotSwitchOnTypePtr += 1)
 			{	// Testing if current token is required to commit
-				if ((*NotSwitchOnTypePtr) == self->CurrentCharacterType)
+				if ((*NotSwitchOnTypePtr) == this->CurrentCharacterType)
 				{	// Ignoring the commit and continuing processing
 					break;
 				}
@@ -333,8 +333,8 @@ GD_NAMESPACE_BEGIN
 
 			if ((*NotSwitchOnTypePtr) == GD_CHARACTER_TYPE_UNKNOWN)
 			{	// Rewinding character that caused character type switching and committing current character
-				self->RewindedCharacter = self->CurrentCharacter;
-				self->WasLexemCommited = true;
+				this->RewindedCharacter = this->CurrentCharacter;
+				this->WasLexemCommited = true;
 				return;
 			}
 		}
@@ -351,104 +351,104 @@ GD_NAMESPACE_BEGIN
 			/* GD_LEXER_STATE_READING_IDENTIFIER_OR_KEYWORD */ { false, &BasicStreamedLexerImpl::ProcessIdentifierOrKeyword },
 		};
 
-		/**/ if ((self->CurrentCharacter != CharAnsi('\0')) && (self->CurrentState == GD_LEXER_STATE_UNKNOWN))
+		/**/ if ((this->CurrentCharacter != CharAnsi('\0')) && (this->CurrentState == GD_LEXER_STATE_UNKNOWN))
 		{	// Here is first real character of lexem.
-			self->CurrentLexem->Line = self->CurrentLine;
-			self->CurrentLexem->Symbol = self->CurrentSymbol;
+			this->CurrentLexem->Line = this->CurrentLine;
+			this->CurrentLexem->Symbol = this->CurrentSymbol;
 
 			// Attempting to detect new state after previous commit 
-			switch (self->CurrentCharacter)
+			switch (this->CurrentCharacter)
 			{	// Detecting opening quote types:
 			case CharAnsi('\"'): 
-				self->CurrentState = GD_LEXER_STATE_READING_CONSTANT_STRING;
-				self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_CONSTANT_STRING;
-				self->CurrentLexem->RawData += CharAnsi('\"');
+				this->CurrentState = GD_LEXER_STATE_READING_CONSTANT_STRING;
+				this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_CONSTANT_STRING;
+				this->CurrentLexem->RawData += CharAnsi('\"');
 				return;
 			case CharAnsi('\''): 
-				self->CurrentState = GD_LEXER_STATE_READING_CONSTANT_CHARACTER; 
-				self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_CONSTANT_CHARACTER;
-				self->CurrentLexem->RawData += CharAnsi('\'');
+				this->CurrentState = GD_LEXER_STATE_READING_CONSTANT_CHARACTER; 
+				this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_CONSTANT_CHARACTER;
+				this->CurrentLexem->RawData += CharAnsi('\'');
 				return;
-			default: switch (self->CurrentCharacterType)
+			default: switch (this->CurrentCharacterType)
 				{	// Parsing other character types:
 				case GD_CHARACTER_TYPE_SPACE:																  
 					return;
 				case GD_CHARACTER_TYPE_DIGIT: 
-					self->CurrentState = GD_LEXER_STATE_READING_CONSTANT_INTEGER;
-					self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_CONSTANT_INTEGER;
+					this->CurrentState = GD_LEXER_STATE_READING_CONSTANT_INTEGER;
+					this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_CONSTANT_INTEGER;
 					break;
 				case GD_CHARACTER_TYPE_ALPHABETIC: 
-					self->CurrentState = GD_LEXER_STATE_READING_IDENTIFIER_OR_KEYWORD;
-					self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_IDENTIFIER;
+					this->CurrentState = GD_LEXER_STATE_READING_IDENTIFIER_OR_KEYWORD;
+					this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_IDENTIFIER;
 					break;
 				case GD_CHARACTER_TYPE_SPECIAL: 
-					self->CurrentState = GD_LEXER_STATE_READING_COMMENT_OR_OPERATOR;
-					self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_OPERATOR;
+					this->CurrentState = GD_LEXER_STATE_READING_COMMENT_OR_OPERATOR;
+					this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_OPERATOR;
 					break;
 				default: 
 					throw LogicException("Internal error: invalid CurrentCharacterType");
 				} break;
 			}
 		}
-		else if (self->CurrentCharacter == CharAnsi('\0'))
+		else if (this->CurrentCharacter == CharAnsi('\0'))
 		{	// End of stream reached.
-			if (LexemStatesDescTable[size_t(self->CurrentState)].RequiresClosingStatement)
+			if (LexemStatesDescTable[size_t(this->CurrentState)].RequiresClosingStatement)
 			{	// End of stream reached, but we were parsing token that requires terminator. Error:
 				StreamedLexerErrorDesc static const UnexpectedEndOfStream("unexpected end of stream while parsing %s.");
-				throw StreamedLexerFatalErrorException(UnexpectedEndOfStream.ToString(self->CurrentLexem, LexemContentTypeToString(self->CurrentLexem->ContentType)));
+				throw StreamedLexerFatalErrorException(UnexpectedEndOfStream.ToString(this->CurrentLexem, LexemContentTypeToString(this->CurrentLexem->ContentType)));
 			}
 
-			self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_EOS;
-			self->WasLexemCommited = true;
+			this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_EOS;
+			this->WasLexemCommited = true;
 			return;
 		}
 		
 		// Parsing current character
-		// self->CurrentState cannot be greater equal to unknown state
-		(self->*(LexemStatesDescTable[size_t(self->CurrentState)].SpecialProcessorPtr))();
-		if (self->RewindedCharacter == CharAnsi('\0'))
-			self->CurrentLexem->RawData += self->CurrentCharacter;
+		// this->CurrentState cannot be greater equal to unknown state
+		(this->*(LexemStatesDescTable[size_t(this->CurrentState)].SpecialProcessorPtr))();
+		if (this->RewindedCharacter == CharAnsi('\0'))
+			this->CurrentLexem->RawData += this->CurrentCharacter;
 	}
 
 	/// Processes integer constants inside input stream.
 	void BasicStreamedLexerImpl::ProcessIntegerConstant()
 	{
-		switch (self->CurrentCharacterType)
+		switch (this->CurrentCharacterType)
 		{
 		case GD_CHARACTER_TYPE_DIGIT:
 		{	// Nothing to do here.
 		}	break;
 		case GD_CHARACTER_TYPE_ALPHABETIC:
 		{	// Switching notation:
-			bool WasNotationSwitched = ((self->CurrentLexem->ProcessedDataInteger == 0) && (self->CurrentLexemIntegerNotation == StreamedLexerImpl::DefaultLexemIntegerNotation));
+			bool WasNotationSwitched = ((this->CurrentLexem->ProcessedDataInteger == 0) && (this->CurrentLexemIntegerNotation == StreamedLexerImpl::DefaultLexemIntegerNotation));
 			if (WasNotationSwitched)
 			{	// Checking if notation switching is provided in format "0x...":
-				CharAnsi const UpperCaseCharacter = CharAnsiHelpers::ToUpperCase(self->CurrentCharacter);
-				/**/ if (UpperCaseCharacter == Options.IntegeRHexadecimalNotationDelimiter)	self->CurrentLexemIntegerNotation = 16;
-				else if (UpperCaseCharacter == Options.IntegerOctalNotationDelimiter)		self->CurrentLexemIntegerNotation = 8;
-				else if (UpperCaseCharacter == Options.IntegerBinaryNotationDelimiter)		self->CurrentLexemIntegerNotation = 2;
+				CharAnsi const UpperCaseCharacter = CharAnsiHelpers::ToUpperCase(this->CurrentCharacter);
+				/**/ if (UpperCaseCharacter == Options.IntegeRHexadecimalNotationDelimiter)	this->CurrentLexemIntegerNotation = 16;
+				else if (UpperCaseCharacter == Options.IntegerOctalNotationDelimiter)		this->CurrentLexemIntegerNotation = 8;
+				else if (UpperCaseCharacter == Options.IntegerBinaryNotationDelimiter)		this->CurrentLexemIntegerNotation = 2;
 				else WasNotationSwitched = false;
 			}
 
 			if (!WasNotationSwitched)
 			{	// Found, that prefix does not matches template or it does not follows '0' character
-				self->RewindedCharacter = self->CurrentCharacter;
-				self->WasLexemCommited = true;
+				this->RewindedCharacter = this->CurrentCharacter;
+				this->WasLexemCommited = true;
 				return;
 			}
 		}	break;
 		case GD_CHARACTER_TYPE_SPECIAL:
 		{	// OR Switching to float parsing:
-			if (self->CurrentCharacter == self->Options.FloatingPointDelimiter)
+			if (this->CurrentCharacter == this->Options.FloatingPointDelimiter)
 			{	// Floating point delimeter found.
-				self->CurrentState = GD_LEXER_STATE_READING_CONSTANT_FLOAT;
-				self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_CONSTANT_FLOAT;
-				self->CurrentLexem->ProcessedDataFloat = static_cast<Float64>(self->CurrentLexem->ProcessedDataInteger);
+				this->CurrentState = GD_LEXER_STATE_READING_CONSTANT_FLOAT;
+				this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_CONSTANT_FLOAT;
+				this->CurrentLexem->ProcessedDataFloat = static_cast<Float64>(this->CurrentLexem->ProcessedDataInteger);
 			}
 			else
 			{	// Some other special character upcoming, commiting token.
-				self->RewindedCharacter = self->CurrentCharacter;
-				self->WasLexemCommited = true;
+				this->RewindedCharacter = this->CurrentCharacter;
+				this->WasLexemCommited = true;
 				return;
 			}
 		}	break;
@@ -465,41 +465,41 @@ GD_NAMESPACE_BEGIN
 	/// Processes string constants inside input stream.
 	void BasicStreamedLexerImpl::ProcessStringConstant()
 	{	// Parsing string contants in basics mode: so no espace sequences.
-		if (self->CurrentCharacter == Char('\"'))
-			self->WasLexemCommited = true;
+		if (this->CurrentCharacter == Char('\"'))
+			this->WasLexemCommited = true;
 	}
 
 	/// Processes character constants inside input stream.
 	void BasicStreamedLexerImpl::ProcessCharacterConstant()
 	{	// Parsing character contants in basics mode: so no espace sequences.
-		if (self->CurrentCharacter == Char('\''))
-			self->WasLexemCommited = true;
+		if (this->CurrentCharacter == Char('\''))
+			this->WasLexemCommited = true;
 	}
 
 	/// Processes operators inside input stream and handles switching to multiple line comment parsing.
 	void BasicStreamedLexerImpl::ProcessOperatorOrComment()
 	{	
-		if (   (self->Options.SingleLineCommentDeclaration[self->CurrentMatchingIndex] == self->CurrentCharacter)
-			|| (self->Options.MultipleLineCommentBeginning[self->CurrentMatchingIndex] == self->CurrentCharacter))
+		if (   (this->Options.SingleLineCommentDeclaration[this->CurrentMatchingIndex] == this->CurrentCharacter)
+			|| (this->Options.MultipleLineCommentBeginning[this->CurrentMatchingIndex] == this->CurrentCharacter))
 		{	
-			self->CurrentMatchingIndex += 1;
+			this->CurrentMatchingIndex += 1;
 			// Matching with single line comment ending.
-			if (self->Options.SingleLineCommentDeclaration.GetSize() == self->CurrentMatchingIndex)
+			if (this->Options.SingleLineCommentDeclaration.GetSize() == this->CurrentMatchingIndex)
 			{	// Final match, finalizing comment.
-				self->CurrentMatchingIndex = 0;
-				self->CurrentState = GD_LEXER_STATE_READING_COMMENT_SINGLELINE;
-				self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_COMMENT;
-				self->CurrentLexem->ProcessedDataID = 0;
+				this->CurrentMatchingIndex = 0;
+				this->CurrentState = GD_LEXER_STATE_READING_COMMENT_SINGLELINE;
+				this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_COMMENT;
+				this->CurrentLexem->ProcessedDataID = 0;
 				return;
 			}
 
 			// Matching with multiple line comment ending.
-			if (self->Options.MultipleLineCommentBeginning.GetSize() == self->CurrentMatchingIndex)
+			if (this->Options.MultipleLineCommentBeginning.GetSize() == this->CurrentMatchingIndex)
 			{	// Final match, finalizing comment.
-				self->CurrentMatchingIndex = 0;
-				self->CurrentState = GD_LEXER_STATE_READING_COMMENT_MULTIPLELINE;
-				self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_COMMENT;
-				self->CurrentLexem->ProcessedDataID = 0;
+				this->CurrentMatchingIndex = 0;
+				this->CurrentState = GD_LEXER_STATE_READING_COMMENT_MULTIPLELINE;
+				this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_COMMENT;
+				this->CurrentLexem->ProcessedDataID = 0;
 				return;
 			}
 		}
@@ -513,20 +513,20 @@ GD_NAMESPACE_BEGIN
 	/// Processes single line comments inside input stream.
 	void BasicStreamedLexerImpl::ProcessSingleLineComment()
 	{
-		if (self->CurrentCharacter == Char('\n'))
-			self->WasLexemCommited = true;
+		if (this->CurrentCharacter == Char('\n'))
+			this->WasLexemCommited = true;
 	}
 
 	/// Processes multiple line comments inside input stream.
 	void BasicStreamedLexerImpl::ProcessMultipleLineComment()
 	{
-		if (self->Options.MultipleLineCommentEnding[self->CurrentMatchingIndex] == self->CurrentCharacter)
+		if (this->Options.MultipleLineCommentEnding[this->CurrentMatchingIndex] == this->CurrentCharacter)
 		{	// Matching with multiple line comment ending.
-			self->CurrentMatchingIndex += 1;
-			if (self->Options.MultipleLineCommentEnding.GetSize() == self->CurrentMatchingIndex)
+			this->CurrentMatchingIndex += 1;
+			if (this->Options.MultipleLineCommentEnding.GetSize() == this->CurrentMatchingIndex)
 			{	// Final match, finalizing comment.
-				self->CurrentMatchingIndex = 0;
-				self->WasLexemCommited = true;
+				this->CurrentMatchingIndex = 0;
+				this->WasLexemCommited = true;
 				return;
 			}
 		}
@@ -540,11 +540,11 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if lexem was extracted succesfully.
 	bool BasicStreamedLexerImpl::GetNextLexem(Lexem* const OutputLexem)
 	{	// Restoring default tokenizer values
-		self->Reset();
-		self->CurrentLexem = OutputLexem;
-		self->CurrentLexem->ResetLexem();
-		while (!self->WasLexemCommited)
-			self->ProcessUpcomingCharacter();
+		this->Reset();
+		this->CurrentLexem = OutputLexem;
+		this->CurrentLexem->ResetLexem();
+		while (!this->WasLexemCommited)
+			this->ProcessUpcomingCharacter();
 		return true;
 	}
 
@@ -560,105 +560,105 @@ GD_NAMESPACE_BEGIN
 	/// Resets lexer implementation.
 	void StreamedLexerImpl::Reset()
 	{
-		self->BasicStreamedLexerImpl::Reset();
-		self->CurrentMatches			.Emptify();
-		self->CurrentLexemFloatExponent	= 1;
-		self->CurrentESMode				= GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN;
-		self->CurrentlyWasCharWritten	= false;
+		this->BasicStreamedLexerImpl::Reset();
+		this->CurrentMatches			.Emptify();
+		this->CurrentLexemFloatExponent	= 1;
+		this->CurrentESMode				= GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN;
+		this->CurrentlyWasCharWritten	= false;
 	}
 
 	/// Processes integer constants inside input stream.
 	void StreamedLexerImpl::ProcessIntegerConstant()
 	{
-		self->BasicStreamedLexerImpl::ProcessIntegerConstant();
-		if (self->CurrentState == GD_LEXER_STATE_READING_CONSTANT_INTEGER)
+		this->BasicStreamedLexerImpl::ProcessIntegerConstant();
+		if (this->CurrentState == GD_LEXER_STATE_READING_CONSTANT_INTEGER)
 		{	// Processing character if it is digit in current notation.
-			UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(self->CurrentCharacter);
-			self->CurrentLexem->ProcessedDataInteger *= self->CurrentLexemIntegerNotation;
-			self->CurrentLexem->ProcessedDataInteger += CurrentDigit;
+			UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(this->CurrentCharacter);
+			this->CurrentLexem->ProcessedDataInteger *= this->CurrentLexemIntegerNotation;
+			this->CurrentLexem->ProcessedDataInteger += CurrentDigit;
 		}
 	}
 
 	/// Processes floating-point constants inside input stream.
 	void StreamedLexerImpl::ProcessFloatConstant()
 	{	
-		self->BasicStreamedLexerImpl::ProcessFloatConstant();
-		UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(self->CurrentCharacter);
-		self->CurrentLexem->ProcessedDataFloat += (static_cast<Float64>(CurrentDigit) / static_cast<Float64>(self->CurrentLexemFloatExponent));
-		self->CurrentLexemFloatExponent += 1;
+		this->BasicStreamedLexerImpl::ProcessFloatConstant();
+		UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(this->CurrentCharacter);
+		this->CurrentLexem->ProcessedDataFloat += (static_cast<Float64>(CurrentDigit) / static_cast<Float64>(this->CurrentLexemFloatExponent));
+		this->CurrentLexemFloatExponent += 1;
 	}
 
 	/// Processes escape sequence in string or character constant.
 	void StreamedLexerImpl::ProcessEscapeSequenceInStringOrCharacterConstant()
 	{
-		switch (self->CurrentESMode)
+		switch (this->CurrentESMode)
 		{
 		case GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN:
-			if (self->CurrentCharacter == CharAnsi('\\'))
-				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_WAITING;
+			if (this->CurrentCharacter == CharAnsi('\\'))
+				this->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_WAITING;
 			break;
 
 		case GD_LEXER_ESCAPE_SEQUENCE_MODE_WAITING:
-			self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN;
-			self->CurrentlyWasCharWritten = true;
-			switch (self->CurrentCharacter)
+			this->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN;
+			this->CurrentlyWasCharWritten = true;
+			switch (this->CurrentCharacter)
 			{	// For more details read here: http://en.wikipedia.org/wiki/Escape_sequences_in_C
 			case CharAnsi('a'):		// Alarm (Beep, Bell)
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\a');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\a');
 				return;
 			case CharAnsi('b'):		// Backspace
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\b');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\b');
 				return;
 			case CharAnsi('f'):		// Formfeed
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\f');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\f');
 				return;
 			case CharAnsi('n'):		// Newline (Line Feed)
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\n');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\n');
 				return;
 			case CharAnsi('r'):		// Carriage Return
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\r');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\r');
 				return;
 			case CharAnsi('t'):		// Horizontal Tab
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\t');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\t');
 				return;
 			case CharAnsi('v'):		// Vertical Tab
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\v');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\v');
 				return;
 			case CharAnsi('\\'):	// Vertical Tab
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\\');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\\');
 				return;
 			case CharAnsi('\''):	// Single quotation mark
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\'');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\'');
 				return;
 			case CharAnsi('\"'):	// Double quotation mark
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\"');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\"');
 				return;
 			case CharAnsi('\?'):	// Question mark
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\?');
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\?');
 				return;
 			case CharAnsi('x'):		// The character whose numerical value is given by hh interpreted as a hexadecimal number
-				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_HEXADECIMAL_CHARACTER;
-				self->CurrentlyWasCharWritten = false;
+				this->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_HEXADECIMAL_CHARACTER;
+				this->CurrentlyWasCharWritten = false;
 				return;
 			case CharAnsi('u'):		// Unicode characters in string literals (UTF8)
-				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNICODE8;
-				self->CurrentlyWasCharWritten = false;
+				this->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNICODE8;
+				this->CurrentlyWasCharWritten = false;
 				return;
 			case CharAnsi('U'):		// Unicode characters in string literals (UTF16)
-				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNICODE16;
-				self->CurrentlyWasCharWritten = false;
+				this->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNICODE16;
+				this->CurrentlyWasCharWritten = false;
 				return;
 			default:
-				if (!CharAnsiHelpers::IsDigit(self->CurrentCharacter, 8))
+				if (!CharAnsiHelpers::IsDigit(this->CurrentCharacter, 8))
 				{	// Unrecognized character escape sequence.
 					StreamedLexerErrorDesc static const UnrecognizedCharacterEscapeSequenceError("unrecognized character escape sequence '\\%c' in string/character constant.");
-					throw StreamedLexerFatalErrorException(UnrecognizedCharacterEscapeSequenceError.ToString(self->CurrentLexem, self->CurrentCharacter));
+					throw StreamedLexerFatalErrorException(UnrecognizedCharacterEscapeSequenceError.ToString(this->CurrentLexem, this->CurrentCharacter));
 				}
 
 				// The character whose numerical value is given by nnn interpreted as an octal number
-				self->CurrentlyWasCharWritten = false;
-				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_OCTAL_CHARACTER;
-				self->CurrentLexem->ProcessedDataCharacter = CharAnsi('\0');
+				this->CurrentlyWasCharWritten = false;
+				this->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_OCTAL_CHARACTER;
+				this->CurrentLexem->ProcessedDataCharacter = CharAnsi('\0');
 				goto ProcessOctalDigitNow;
 			}	
 
@@ -666,30 +666,30 @@ GD_NAMESPACE_BEGIN
 		case GD_LEXER_ESCAPE_SEQUENCE_MODE_HEXADECIMAL_CHARACTER:
 		{	
 		ProcessOctalDigitNow:;
-			UInt8 const CurrentNotation = ((self->CurrentESMode == GD_LEXER_ESCAPE_SEQUENCE_MODE_OCTAL_CHARACTER) ? 8 : 16);
-			if (!CharAnsiHelpers::IsDigit(self->CurrentCharacter, CurrentNotation))
+			UInt8 const CurrentNotation = ((this->CurrentESMode == GD_LEXER_ESCAPE_SEQUENCE_MODE_OCTAL_CHARACTER) ? 8 : 16);
+			if (!CharAnsiHelpers::IsDigit(this->CurrentCharacter, CurrentNotation))
 			{	// Here is not a not a digit character.
-				if ((self->CurrentLexem->GetRawData().GetSize() < 2) && (CurrentNotation == 16))
+				if ((this->CurrentLexem->GetRawData().GetSize() < 2) && (CurrentNotation == 16))
 				{	// Hex constants must have at least one hex digit (now raw data contains string "'\").
 					StreamedLexerErrorDesc static const EmptyHexadecimalCharacterError("empty string/character constant with '\\x'");
-					throw StreamedLexerFatalErrorException(EmptyHexadecimalCharacterError.ToString(self->CurrentLexem));
+					throw StreamedLexerFatalErrorException(EmptyHexadecimalCharacterError.ToString(this->CurrentLexem));
 				}
 
-				self->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN;
-				self->CurrentlyWasCharWritten = true;
+				this->CurrentESMode = GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN;
+				this->CurrentlyWasCharWritten = true;
 				return;
 			}
 
 			// Processing next character
-			UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(self->CurrentCharacter);
-			if ((static_cast<size_t>(self->CurrentLexem->ProcessedDataCharacter) * CurrentNotation + CurrentDigit) > UCHAR_MAX)
+			UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(this->CurrentCharacter);
+			if ((static_cast<size_t>(this->CurrentLexem->ProcessedDataCharacter) * CurrentNotation + CurrentDigit) > UCHAR_MAX)
 			{	// Too big for character error.
 				StreamedLexerErrorDesc static const TooBigNumberForCharacterError("too big number for character.");
-				throw StreamedLexerFatalErrorException(TooBigNumberForCharacterError.ToString(self->CurrentLexem));
+				throw StreamedLexerFatalErrorException(TooBigNumberForCharacterError.ToString(this->CurrentLexem));
 			}
 
-			self->CurrentLexem->ProcessedDataCharacter *= CurrentNotation;
-			self->CurrentLexem->ProcessedDataCharacter += CurrentDigit;
+			this->CurrentLexem->ProcessedDataCharacter *= CurrentNotation;
+			this->CurrentLexem->ProcessedDataCharacter += CurrentDigit;
 			return;
 		}
 		
@@ -707,76 +707,76 @@ GD_NAMESPACE_BEGIN
 	/// Processes character constants inside input stream.
 	void StreamedLexerImpl::ProcessCharacterConstant()
 	{	
-		self->ProcessEscapeSequenceInStringOrCharacterConstant();
-		if (self->CurrentESMode == GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN)
+		this->ProcessEscapeSequenceInStringOrCharacterConstant();
+		if (this->CurrentESMode == GD_LEXER_ESCAPE_SEQUENCE_MODE_UNKNOWN)
 		{	// We are sure that escape sequence does not exists or was succesfully parsed.
-			if (self->CurrentCharacter == CharAnsi('\''))
+			if (this->CurrentCharacter == CharAnsi('\''))
 			{	// Here is unescaped "'" character.
-				if (!self->CurrentlyWasCharWritten)
+				if (!this->CurrentlyWasCharWritten)
 				{	// Empty character constant error. (now raw data contains quote mark ("'") and parsed ).
 					StreamedLexerErrorDesc static const EmptyCharacterConstantError("empty character constant.");
-					throw StreamedLexerFatalErrorException(EmptyCharacterConstantError.ToString(self->CurrentLexem));
+					throw StreamedLexerFatalErrorException(EmptyCharacterConstantError.ToString(this->CurrentLexem));
 				}
 			
-				self->WasLexemCommited = true;
+				this->WasLexemCommited = true;
 				return;
 			}
 			
-			if (self->CurrentlyWasCharWritten)
+			if (this->CurrentlyWasCharWritten)
 			{	// Multiple characters inside character constant.
 				StreamedLexerErrorDesc static const MultiCharacterCharacterConstantError("multiple characters in character constant %s%c'.");
-				throw StreamedLexerFatalErrorException(MultiCharacterCharacterConstantError.ToString(self->CurrentLexem, self->CurrentLexem->GetRawData().CStr(), self->CurrentCharacter));
+				throw StreamedLexerFatalErrorException(MultiCharacterCharacterConstantError.ToString(this->CurrentLexem, this->CurrentLexem->GetRawData().CStr(), this->CurrentCharacter));
 			}
 
 			// Here is our character.
-			self->CurrentLexem->ProcessedDataCharacter = self->CurrentCharacter;
-			self->CurrentlyWasCharWritten = true;
+			this->CurrentLexem->ProcessedDataCharacter = this->CurrentCharacter;
+			this->CurrentlyWasCharWritten = true;
 		}
 	}
 
 	/// Processes operators inside input stream and handles switching to multiple line comment parsing.
 	void StreamedLexerImpl::ProcessOperatorOrComment()
 	{
-		if (self->CurrentMatches.GetSize() == 0)
+		if (this->CurrentMatches.GetSize() == 0)
 		{	// Filling CurrentMatches with pointers on operators and comments declarations
-			self->CurrentMatchingIndex = 0;
-			self->CurrentMatches.Reserve ( self->Options.OperatorDeclarations.GetSize() + 2);
-			self->CurrentMatches.PushLast(&self->Options.SingleLineCommentDeclaration);
-			self->CurrentMatches.PushLast(&self->Options.MultipleLineCommentBeginning);
-			for (auto const& OperatorDeclaration : self->Options.OperatorDeclarations)
-				self->CurrentMatches.PushLast(&OperatorDeclaration.Second);
+			this->CurrentMatchingIndex = 0;
+			this->CurrentMatches.Reserve ( this->Options.OperatorDeclarations.GetSize() + 2);
+			this->CurrentMatches.PushLast(&this->Options.SingleLineCommentDeclaration);
+			this->CurrentMatches.PushLast(&this->Options.MultipleLineCommentBeginning);
+			for (auto const& OperatorDeclaration : this->Options.OperatorDeclarations)
+				this->CurrentMatches.PushLast(&OperatorDeclaration.Second);
 		}
 
 		bool HasAnyFullMatch = false;
-		Vector<String const*> CurrentMatches(0, self->CurrentMatches.GetSize());
-		for (auto const CurrentOperatorOrCommentMatch : self->CurrentMatches)
+		Vector<String const*> CurrentMatches(0, this->CurrentMatches.GetSize());
+		for (auto const CurrentOperatorOrCommentMatch : this->CurrentMatches)
 		{	
-			if ((*CurrentOperatorOrCommentMatch)[self->CurrentMatchingIndex] == self->CurrentCharacter)
+			if ((*CurrentOperatorOrCommentMatch)[this->CurrentMatchingIndex] == this->CurrentCharacter)
 			{	// Character matches some declaration at current index.
-				if (CurrentOperatorOrCommentMatch->GetSize() == (1 + self->CurrentMatchingIndex))
+				if (CurrentOperatorOrCommentMatch->GetSize() == (1 + this->CurrentMatchingIndex))
 				{	// We are having a full match with some operator, so lets identify it now
-					/**/ if (CurrentOperatorOrCommentMatch == &self->Options.SingleLineCommentDeclaration)
+					/**/ if (CurrentOperatorOrCommentMatch == &this->Options.SingleLineCommentDeclaration)
 					{	// Declaration matches single line comment declaration.
-						self->CurrentMatchingIndex = 0;
-						self->CurrentState = GD_LEXER_STATE_READING_COMMENT_SINGLELINE;
-						self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_COMMENT;
-						self->CurrentLexem->ProcessedDataID = 0;
+						this->CurrentMatchingIndex = 0;
+						this->CurrentState = GD_LEXER_STATE_READING_COMMENT_SINGLELINE;
+						this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_COMMENT;
+						this->CurrentLexem->ProcessedDataID = 0;
 						return;
 					}
-					else if (CurrentOperatorOrCommentMatch == &self->Options.MultipleLineCommentBeginning)
+					else if (CurrentOperatorOrCommentMatch == &this->Options.MultipleLineCommentBeginning)
 					{	// Declaration matches multiple line comment declaration.
-						self->CurrentMatchingIndex = 0;
-						self->CurrentState = GD_LEXER_STATE_READING_COMMENT_MULTIPLELINE;
-						self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_COMMENT;
-						self->CurrentLexem->ProcessedDataID = 0;
+						this->CurrentMatchingIndex = 0;
+						this->CurrentState = GD_LEXER_STATE_READING_COMMENT_MULTIPLELINE;
+						this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_COMMENT;
+						this->CurrentLexem->ProcessedDataID = 0;
 						return;
 					}
 
 					// Declaration matches operator declaration.
-					size_t const Index = self->Options.OperatorDeclarations.FindFirstElement([&](StreamedLexerOperatorDecl const& OperatorDecl) -> bool {
+					size_t const Index = this->Options.OperatorDeclarations.FindFirstElement([&](StreamedLexerOperatorDecl const& OperatorDecl) -> bool {
 						return ((&OperatorDecl.Second) == CurrentOperatorOrCommentMatch);
 					});
-					self->CurrentLexem->ProcessedDataID = self->Options.OperatorDeclarations[Index].First;
+					this->CurrentLexem->ProcessedDataID = this->Options.OperatorDeclarations[Index].First;
 
 					HasAnyFullMatch = true;
 					continue;
@@ -790,41 +790,41 @@ GD_NAMESPACE_BEGIN
 		{	// No matches in this iteration. That means that currect operator ID was set in previos. 
 			if (!HasAnyFullMatch)
 			{	// If there is not full math then some character is breaking the sequence breaking. Rewinding it to handle later.
-				self->RewindedCharacter = self->CurrentCharacter;
+				this->RewindedCharacter = this->CurrentCharacter;
 			}
 
-			self->WasLexemCommited = true;
+			this->WasLexemCommited = true;
 			return;
 		}
 
-		self->CurrentMatches = Move(CurrentMatches);
-		self->CurrentMatchingIndex += 1;
+		this->CurrentMatches = Move(CurrentMatches);
+		this->CurrentMatchingIndex += 1;
 	}
 
 	/// Processes identifiers and keywords inside input stream.
 	void StreamedLexerImpl::ProcessIdentifierOrKeyword()
 	{
-		if ((self->CurrentMatches.GetSize() == 0) && (self->CurrentMatchingIndex == 0))
+		if ((this->CurrentMatches.GetSize() == 0) && (this->CurrentMatchingIndex == 0))
 		{	// Filling CurrentMatches with pointers on operators and comments declarations
-			self->CurrentMatches.Reserve(self->Options.KeywordsDeclarations.GetSize());
-			for (auto const& KeywordsDeclarations : self->Options.KeywordsDeclarations)
-				self->CurrentMatches.PushLast(&KeywordsDeclarations.Second);
+			this->CurrentMatches.Reserve(this->Options.KeywordsDeclarations.GetSize());
+			for (auto const& KeywordsDeclarations : this->Options.KeywordsDeclarations)
+				this->CurrentMatches.PushLast(&KeywordsDeclarations.Second);
 		}
 
 		bool HasAnyFullMatch = false;
-		Vector<String const*> CurrentMatches(0, self->CurrentMatches.GetSize());
-		for (auto const CurrentIdentifierMatch : self->CurrentMatches)
+		Vector<String const*> CurrentMatches(0, this->CurrentMatches.GetSize());
+		for (auto const CurrentIdentifierMatch : this->CurrentMatches)
 		{	
-			if ((*CurrentIdentifierMatch)[self->CurrentMatchingIndex] == self->CurrentCharacter)
+			if ((*CurrentIdentifierMatch)[this->CurrentMatchingIndex] == this->CurrentCharacter)
 			{	// Character matches some declaration at current index
-				if (CurrentIdentifierMatch->GetSize() == (1 + self->CurrentMatchingIndex))
+				if (CurrentIdentifierMatch->GetSize() == (1 + this->CurrentMatchingIndex))
 				{	// We are having a full match with some keyword, so lets identify it now.
-					size_t const Index = self->Options.KeywordsDeclarations.FindFirstElement([&](StreamedLexerKeywordDecl const& KeywordDecl) -> bool {
+					size_t const Index = this->Options.KeywordsDeclarations.FindFirstElement([&](StreamedLexerKeywordDecl const& KeywordDecl) -> bool {
 						return ((&KeywordDecl.Second) == CurrentIdentifierMatch);
 					});
 
-					self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_KEYWORD;
-					self->CurrentLexem->ProcessedDataID = self->Options.KeywordsDeclarations[Index].First;
+					this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_KEYWORD;
+					this->CurrentLexem->ProcessedDataID = this->Options.KeywordsDeclarations[Index].First;
 					
 					HasAnyFullMatch = true;
 					continue;
@@ -837,12 +837,12 @@ GD_NAMESPACE_BEGIN
 		if (!HasAnyFullMatch)
 		{	// We are heving next chracter that makes this lexem valid identifier.
 			// Restoring identifer content type.
-			self->CurrentLexem->ProcessedDataID = 0;
-			self->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_IDENTIFIER;
+			this->CurrentLexem->ProcessedDataID = 0;
+			this->CurrentLexem->ContentType = GD_LEXEM_CONTENT_TYPE_IDENTIFIER;
 		}
 
-		self->CurrentMatches = Move(CurrentMatches);
-		self->CurrentMatchingIndex += 1;
+		this->CurrentMatches = Move(CurrentMatches);
+		this->CurrentMatchingIndex += 1;
 	}
 
 	/// ==========================================================================================
@@ -863,7 +863,7 @@ GD_NAMESPACE_BEGIN
 		, ImplementationMode(LexerMode)
 		, Options(Options)
 	{
-		self->Implementation = ((self->ImplementationMode == StreamedLexerMode::Basic) 
+		this->Implementation = ((this->ImplementationMode == StreamedLexerMode::Basic) 
 			? new BasicStreamedLexerImpl(Toolchain, Options, Forward<UniquePtr<InputStream>>(Stream))
 			: new      StreamedLexerImpl(Toolchain, Options, Forward<UniquePtr<InputStream>>(Stream)));
 	}
@@ -876,13 +876,13 @@ GD_NAMESPACE_BEGIN
 	/// @param LexerMode Describes avaliable feature set of Streamed Lexer.
 	void StreamedLexer::SwitchMode(StreamedLexerMode const LexerMode /* = GD_LEXER_MODE_DEFAULT */)
 	{
-		if (LexerMode != self->ImplementationMode)
+		if (LexerMode != this->ImplementationMode)
 		{	// Lexer mode chagned, we need to switch used implementation.
 			GD_DEBUG_ASSERT(LexerMode < StreamedLexerMode::Count, "Invalid lexer mode specfied");
-			self->ImplementationMode = LexerMode;
-			self->Implementation = ((LexerMode == StreamedLexerMode::Basic)
-				? new BasicStreamedLexerImpl(Move(*self->Implementation)) 
-				: new      StreamedLexerImpl(Move(*self->Implementation)));
+			this->ImplementationMode = LexerMode;
+			this->Implementation = ((LexerMode == StreamedLexerMode::Basic)
+				? new BasicStreamedLexerImpl(Move(*this->Implementation)) 
+				: new      StreamedLexerImpl(Move(*this->Implementation)));
 		}
 	}
 
@@ -893,14 +893,14 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if lexem was successfully extracted. If operation fails (except cases of expected End-Of-Stream) than exception is raised to that toolchain.
 	bool StreamedLexer::GetNextLexem(Lexem* const OutputLexem)
 	{	// We are using implementation class to prevent dozens of private fields in class.
-		return self->Implementation->GetNextLexem(OutputLexem);
+		return this->Implementation->GetNextLexem(OutputLexem);
 	}
 
 	/// Exctracts next character from input stream and wraps line breaks, etc.
 	/// @returns Exctracted character.
 	CharAnsi StreamedLexer::GetNextCharacter()
 	{	// We are using implementation class to prevent dozens of private fields in class.
-		return self->Implementation->GetNextCharacter();
+		return this->Implementation->GetNextCharacter();
 	}
 
 	/// Pushes specified character back to lexer and make it parsable.
@@ -942,43 +942,43 @@ GD_NAMESPACE_BEGIN
 	{
 		// Checking if all delimiters are alphabetic characters.
 		/// @todo Add check for all notation switching characters have unique or \0 values.
-		GD_DEBUG_ASSERT(((self->IntegeRHexadecimalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(self->IntegeRHexadecimalNotationDelimiter)),
+		GD_DEBUG_ASSERT(((this->IntegeRHexadecimalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(this->IntegeRHexadecimalNotationDelimiter)),
 			"'IntegeRHexadecimalNotationDelimiter' should be alphabetic character. Recommended value is 'x'.");
-		GD_DEBUG_ASSERT(((self->IntegerOctalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(self->IntegerOctalNotationDelimiter)),
+		GD_DEBUG_ASSERT(((this->IntegerOctalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(this->IntegerOctalNotationDelimiter)),
 			"'IntegerOctalNotationDelimiter' should be alphabetic character. Recommended value is 'c'.");
-		GD_DEBUG_ASSERT(((self->IntegerBinaryNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(self->IntegerBinaryNotationDelimiter)),
+		GD_DEBUG_ASSERT(((this->IntegerBinaryNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(this->IntegerBinaryNotationDelimiter)),
 			"'IntegerBinaryNotationDelimiter' should be alphabetic character. Recommended value is 'b'.");
 
 		// Validating value of floating pointer delimiter.
 		// We should not forget to append floating point delimiter either it would be treated as alphabetic character.
-		GD_DEBUG_ASSERT(((self->FloatingPointDelimiter == '\0') || CharAnsiHelpers::IsSpecialCharacter(self->FloatingPointDelimiter)),
+		GD_DEBUG_ASSERT(((this->FloatingPointDelimiter == '\0') || CharAnsiHelpers::IsSpecialCharacter(this->FloatingPointDelimiter)),
 			"FloatingPointDelimiter should be special character. Recommended values are '.' or ','.");
-		self->AppendToSpecialCharactersAlphabet(self->FloatingPointDelimiter);
+		this->AppendToSpecialCharactersAlphabet(this->FloatingPointDelimiter);
 
 		// Checking if all operators/comment declarators have unique values and extending alphabet.
-		GD_DEBUG_ASSERT((self->SingleLineCommentDeclaration != self->MultipleLineCommentBeginning), "Multiple line comment declaration should not be equal to single line comment declaration");
-		for (auto const Character : self->SingleLineCommentDeclaration)
+		GD_DEBUG_ASSERT((this->SingleLineCommentDeclaration != this->MultipleLineCommentBeginning), "Multiple line comment declaration should not be equal to single line comment declaration");
+		for (auto const Character : this->SingleLineCommentDeclaration)
 		{	// Checking if single line comment contains only special characters and extending alphabet.
 			GD_DEBUG_ASSERT((CharAnsiHelpers::IsSpecialCharacter(Character)), "Single line comment string should contain only special characters");
-			self->AppendToSpecialCharactersAlphabet(Character);
+			this->AppendToSpecialCharactersAlphabet(Character);
 		}
-		for (auto const Character : self->MultipleLineCommentBeginning)
+		for (auto const Character : this->MultipleLineCommentBeginning)
 		{	// Checking if multiple line comment contains only special characters and extending alphabet.
 			GD_DEBUG_ASSERT((CharAnsiHelpers::IsSpecialCharacter(Character)), "Multiple line comment string should contain only special characters");
-			self->AppendToSpecialCharactersAlphabet(Character);
+			this->AppendToSpecialCharactersAlphabet(Character);
 		}
 
 		// Extending alphabet with characters from operator declarations.
-		for (auto const& OperatorDeclaration : self->OperatorDeclarations)
+		for (auto const& OperatorDeclaration : this->OperatorDeclarations)
 		{	// Checking if none comment declarations is same to operator declaration.
 			/// @todo Add check for all operators have unique values.
 			String const& OperatorDeclarationString = OperatorDeclaration.Second;
-			GD_DEBUG_ASSERT((self->SingleLineCommentDeclaration != OperatorDeclarationString), "Operator declaration should not be equal to single line comment declaration");
-			GD_DEBUG_ASSERT((self->MultipleLineCommentBeginning != OperatorDeclarationString), "Operator declaration should not be equal to multiple line comment declaration");
+			GD_DEBUG_ASSERT((this->SingleLineCommentDeclaration != OperatorDeclarationString), "Operator declaration should not be equal to single line comment declaration");
+			GD_DEBUG_ASSERT((this->MultipleLineCommentBeginning != OperatorDeclarationString), "Operator declaration should not be equal to multiple line comment declaration");
 			for (auto const Character : OperatorDeclarationString)
 			{	// Checking if operator contains only special characters
 				GD_DEBUG_ASSERT((CharAnsiHelpers::IsSpecialCharacter(Character)), "Operator string should contain only special characters");
-				self->AppendToSpecialCharactersAlphabet(Character);
+				this->AppendToSpecialCharactersAlphabet(Character);
 			}
 		}
 	}

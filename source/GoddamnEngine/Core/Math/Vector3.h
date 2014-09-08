@@ -82,43 +82,43 @@ GD_NAMESPACE_BEGIN
 	public /* Class API */:
 		GDINL ElementType Dot(Vector3t const& Other) const
 		{
-			return self->x * Other.x + self->y * Other.y + self->z * Other.z;
+			return this->x * Other.x + this->y * Other.y + this->z * Other.z;
 		}
 
 		GDINL Vector3t Cross(Vector3t const& Other) const
 		{
-			return Vector3t(self->y * Other.z - self->z * Other.y, self->z * Other.x - self->x * Other.z, self->x * Other.y - self->y * Other.x);
+			return Vector3t(this->y * Other.z - this->z * Other.y, this->z * Other.x - this->x * Other.z, this->x * Other.y - this->y * Other.x);
 		}
 
 		GDINL ElementType Length() const
 		{
-			return SquareRoot(self->Dot(*self));
+			return SquareRoot(this->Dot(*this));
 		}
 
 		GDINL Vector3t Normalize() const
 		{
-			return ((*self) / self->Length());
+			return ((*this) / this->Length());
 		}
 
 	public /* Operators */:
 		GDINL ElementTypeConstRef operator[] (size_t const Index) const
 		{
 			GD_ASSERT(Index < ThisComponentsCount, "invalid Vector3t subindex.");
-			return self->Elements[Index];
+			return this->Elements[Index];
 		}
 
 		GDINL bool operator== (Vector3t const& Other) const
 		{
-			if (self->x == Other.x)
-				if (self->y == Other.y)
-					if (self->z == Other.z)
+			if (this->x == Other.x)
+				if (this->y == Other.y)
+					if (this->z == Other.z)
 						return true;
 			return false;
 		}
 
 		GDINL bool operator!= (Vector3t const& Other) const
 		{
-			return !((*self) == Other);
+			return !((*this) == Other);
 		}
 
 #if (defined(GD_COMPILER_MSVC))
@@ -127,118 +127,118 @@ GD_NAMESPACE_BEGIN
 
 		GDINL Vector3t& operator+= (ElementTypeConstRef const Vector3Value)
 		{
-			self->x += Vector3Value;
-			self->y += Vector3Value;
-			self->z += Vector3Value;
-			return (*self);
+			this->x += Vector3Value;
+			this->y += Vector3Value;
+			this->z += Vector3Value;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator-= (ElementTypeConstRef const Vector3Value)
 		{
-			self->x -= Vector3Value;
-			self->y -= Vector3Value;
-			self->z -= Vector3Value;
-			return (*self);
+			this->x -= Vector3Value;
+			this->y -= Vector3Value;
+			this->z -= Vector3Value;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator*= (ElementTypeConstRef const Vector3Value)
 		{
-			self->x *= Vector3Value;
-			self->y *= Vector3Value;
-			self->z *= Vector3Value;
-			return (*self);
+			this->x *= Vector3Value;
+			this->y *= Vector3Value;
+			this->z *= Vector3Value;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator/= (ElementTypeConstRef const Vector3Value)
 		{
-			self->x /= Vector3Value;
-			self->y /= Vector3Value;
-			self->z /= Vector3Value;
-			return (*self);
+			this->x /= Vector3Value;
+			this->y /= Vector3Value;
+			this->z /= Vector3Value;
+			return (*this);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector3t& operator%= (ElementTypeConstRef const Vector3Value)
 		{
-			self->x %= Vector3Value;
-			self->y %= Vector3Value;
-			self->z %= Vector3Value;
-			return (*self);
+			this->x %= Vector3Value;
+			this->y %= Vector3Value;
+			this->z %= Vector3Value;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator = (Vector3t const& Other)
 		{
-			self->x = Other.x;
-			self->y = Other.y;
-			self->z = Other.z;
-			return (*self);
+			this->x = Other.x;
+			this->y = Other.y;
+			this->z = Other.z;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator+= (Vector3t const& Other)
 		{
-			self->x += Other.x;
-			self->y += Other.y;
-			self->z += Other.z;
-			return (*self);
+			this->x += Other.x;
+			this->y += Other.y;
+			this->z += Other.z;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator-= (Vector3t const& Other)
 		{
-			self->x -= Other.x;
-			self->y -= Other.y;
-			self->z -= Other.z;
-			return (*self);
+			this->x -= Other.x;
+			this->y -= Other.y;
+			this->z -= Other.z;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator*= (Vector3t const& Other)
 		{
-			self->x *= Other.x;
-			self->y *= Other.y;
-			self->z *= Other.z;
-			return (*self);
+			this->x *= Other.x;
+			this->y *= Other.y;
+			this->z *= Other.z;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator/= (Vector3t const& Other)
 		{
-			self->x /= Other.x;
-			self->y /= Other.y;
-			self->z /= Other.z;
-			return (*self);
+			this->x /= Other.x;
+			this->y /= Other.y;
+			this->z /= Other.z;
+			return (*this);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector3t& operator%= (Vector3t const& Other)
 		{
-			self->x %= Other.x;
-			self->y %= Other.y;
-			self->z %= Other.z;
-			return (*self);
+			this->x %= Other.x;
+			this->y %= Other.y;
+			this->z %= Other.z;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator++ ()
 		{
-			++self->x;
-			++self->y;
-			++self->z;
-			return (*self);
+			++this->x;
+			++this->y;
+			++this->z;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator-- ()
 		{
-			--self->x;
-			--self->y;
-			--self->z;
-			return (*self);
+			--this->x;
+			--this->y;
+			--this->z;
+			return (*this);
 		}
 
 		GDINL Vector3t& operator++ (int)
 		{
-			return (++(*self));
+			return (++(*this));
 		}
 
 		GDINL Vector3t& operator-- (int)
 		{
-			return (--(*self));
+			return (--(*this));
 		}
 
 #if (defined(GD_COMPILER_MSVC))
@@ -251,54 +251,54 @@ GD_NAMESPACE_BEGIN
 
 		GDINL Vector3t operator+ (ElementTypeConstRef const Vector3Value) const
 		{
-			return Vector3t(self->x + Vector3Value, self->y + Vector3Value, self->z + Vector3Value);
+			return Vector3t(this->x + Vector3Value, this->y + Vector3Value, this->z + Vector3Value);
 		}
 
 		GDINL Vector3t operator- (ElementTypeConstRef const Vector3Value) const
 		{
-			return Vector3t(self->x - Vector3Value, self->y - Vector3Value, self->z - Vector3Value);
+			return Vector3t(this->x - Vector3Value, this->y - Vector3Value, this->z - Vector3Value);
 		}
 
 		GDINL Vector3t operator* (ElementTypeConstRef const Vector3Value) const
 		{
-			return Vector3t(self->x * Vector3Value, self->y * Vector3Value, self->z * Vector3Value);
+			return Vector3t(this->x * Vector3Value, this->y * Vector3Value, this->z * Vector3Value);
 		}
 
 		GDINL Vector3t operator/ (ElementTypeConstRef const Vector3Value) const
 		{
-			return Vector3t(self->x / Vector3Value, self->y / Vector3Value, self->z / Vector3Value);
+			return Vector3t(this->x / Vector3Value, this->y / Vector3Value, this->z / Vector3Value);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector3t operator% (ElementTypeConstRef const Vector3Value) const
 		{
-			return Vector3t(self->x % Vector3Value, self->y % Vector3Value, self->z % Vector3Value);
+			return Vector3t(this->x % Vector3Value, this->y % Vector3Value, this->z % Vector3Value);
 		}
 
 		GDINL Vector3t operator+ (Vector3t const& Other) const
 		{
-			return Vector3t(self->x + Other.x, self->y + Other.y, self->z + Other.z);
+			return Vector3t(this->x + Other.x, this->y + Other.y, this->z + Other.z);
 		}
 
 		GDINL Vector3t operator- (Vector3t const& Other) const
 		{
-			return Vector3t(self->x - Other.x, self->y - Other.y, self->z - Other.z);
+			return Vector3t(this->x - Other.x, this->y - Other.y, this->z - Other.z);
 		}
 
 		GDINL Vector3t operator* (Vector3t const& Other) const
 		{
-			return Vector3t(self->x * Other.x, self->y * Other.y, self->z * Other.z);
+			return Vector3t(this->x * Other.x, this->y * Other.y, this->z * Other.z);
 		}
 
 		GDINL Vector3t operator/ (Vector3t const& Other) const
 		{
-			return Vector3t(self->x / Other.x, self->y / Other.y, self->z / Other.z);
+			return Vector3t(this->x / Other.x, this->y / Other.y, this->z / Other.z);
 		}
 
 		template<typename = typename EnableIf<TypeTraits::IsIntegral<ElementType>::Value>::Type>
 		GDINL Vector3t operator% (Vector3t const& Other) const
 		{
-			return Vector3t(self->x % Other.x, self->y % Other.y, self->z % Other.z);
+			return Vector3t(this->x % Other.x, this->y % Other.y, this->z % Other.z);
 		}
 
 #if (defined(GD_COMPILER_MSVC))

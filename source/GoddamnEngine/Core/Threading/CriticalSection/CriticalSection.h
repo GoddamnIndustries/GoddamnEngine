@@ -53,24 +53,24 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINL CriticalSection() 
 		{	// Creating a critical section here.
-			InitializeCriticalSection  (&self->NativeCriticalSection);
-			SetCriticalSectionSpinCount(&self->NativeCriticalSection, 4000);
+			InitializeCriticalSection  (&this->NativeCriticalSection);
+			SetCriticalSectionSpinCount(&this->NativeCriticalSection, 4000);
 		}
 
 		GDINL ~CriticalSection() 
 		{	// Destroying critical section here.
-			::DeleteCriticalSection(&self->NativeCriticalSection); 
+			::DeleteCriticalSection(&this->NativeCriticalSection); 
 		}
 
 		GDINL void Enter() 
 		{	// Spin first before entering critical section, causing ring-0 transition and context switch.
-			if (::TryEnterCriticalSection(&self->NativeCriticalSection) == 0)
-				::   EnterCriticalSection(&self->NativeCriticalSection); 
+			if (::TryEnterCriticalSection(&this->NativeCriticalSection) == 0)
+				::   EnterCriticalSection(&this->NativeCriticalSection); 
 		}
 		
 		GDINL void Leave() 
 		{	// Leaving critical section
-			::LeaveCriticalSection(&self->NativeCriticalSection); 
+			::LeaveCriticalSection(&this->NativeCriticalSection); 
 		}
 
 //	  if (defined(GD_THREAD_WINAPI))
@@ -85,16 +85,16 @@ GD_NAMESPACE_BEGIN
 			::pthread_mutexattr_t NativeCriticalSectionAttributes;
 			::pthread_mutexattr_init   (&NativeCriticalSectionAttributes);
 			::pthread_mutexattr_settype(&NativeCriticalSectionAttributes, ::PTHREAD_MUTEX_RECURSIVE);
-			::pthread_mutex_init(&self->NativeCriticalSection, &NativeCriticalSectionAttributes);
+			::pthread_mutex_init(&this->NativeCriticalSection, &NativeCriticalSectionAttributes);
 		}
 
 		GDINL ~CriticalSection() 
 		{	// Destroying mutex here.
-			::pthread_mutex_destroy(&self->Mutex); 
+			::pthread_mutex_destroy(&this->Mutex); 
 		}
 
-		GDINL void Enter() { ::pthread_mutex_lock  (&self->NativeCriticalSection); }
-		GDINL void Leave() { ::pthread_mutex_unlock(&self->NativeCriticalSection); }
+		GDINL void Enter() { ::pthread_mutex_lock  (&this->NativeCriticalSection); }
+		GDINL void Leave() { ::pthread_mutex_unlock(&this->NativeCriticalSection); }
 #	endif	//   if (defined(GD_THREAD_PTHREAD))
 			// elif (defined(GD_THREAD_WINAPI))
 #endif	// if (defined(GD_DOCUMENTATION))
@@ -111,8 +111,8 @@ GD_NAMESPACE_BEGIN
 		CriticalSection& ReferencedCriticalSection;
 
 	public:
-		GDINL  ScopedLock(CriticalSection& ReferencedCriticalSection) : ReferencedCriticalSection(ReferencedCriticalSection) { self->ReferencedCriticalSection.Enter(); }
-		GDINL ~ScopedLock()  { self->ReferencedCriticalSection.Leave(); }
+		GDINL  ScopedLock(CriticalSection& ReferencedCriticalSection) : ReferencedCriticalSection(ReferencedCriticalSection) { this->ReferencedCriticalSection.Enter(); }
+		GDINL ~ScopedLock()  { this->ReferencedCriticalSection.Leave(); }
 	};	// class ScopedLock
 
 GD_NAMESPACE_END

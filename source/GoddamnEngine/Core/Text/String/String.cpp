@@ -152,31 +152,31 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_UNUSED(_nullptr);
 
-		self->HeapSize		= HeapSize;
-		self->HeapMemory	= (Char*)Allocator::AllocateMemory((self->GetSize() + 1) * sizeof(Char));
+		this->HeapSize		= HeapSize;
+		this->HeapMemory	= (Char*)Allocator::AllocateMemory((this->GetSize() + 1) * sizeof(Char));
 
-		memset(self->HeapMemory, (int)fillWith, (self->GetSize()) * sizeof(Char));
-		*self->End() = '\0';
+		memset(this->HeapMemory, (int)fillWith, (this->GetSize()) * sizeof(Char));
+		*this->End() = '\0';
 	}
 
 	String::String(const CharAnsi* HeapMemory)
 	{
 		GD_ASSERT((HeapMemory != nullptr), "Nullptr memory specified");
 
-		self->HeapSize		= strlen(HeapMemory);
-		self->HeapMemory	= (Char*)Allocator::AllocateMemory((self->GetSize() + 1) * sizeof(Char));
+		this->HeapSize		= strlen(HeapMemory);
+		this->HeapMemory	= (Char*)Allocator::AllocateMemory((this->GetSize() + 1) * sizeof(Char));
 
-		memcpy(self->HeapMemory, HeapMemory, (self->GetSize() + 1) * sizeof(Char));
+		memcpy(this->HeapMemory, HeapMemory, (this->GetSize() + 1) * sizeof(Char));
 	}
 
 	String::String(const CharUtf16* HeapMemory)
 	{
 		GD_ASSERT((HeapMemory != nullptr), "Nullptr memory specified");
 		
-		self->HeapSize = wcslen(HeapMemory);
-		self->HeapMemory	= (Char*)Allocator::AllocateMemory((self->GetSize() + 1) * sizeof(Char));
+		this->HeapSize = wcslen(HeapMemory);
+		this->HeapMemory	= (Char*)Allocator::AllocateMemory((this->GetSize() + 1) * sizeof(Char));
 
-		wcstombs(self->HeapMemory, HeapMemory, (self->GetSize() + 1) * sizeof(Char));
+		wcstombs(this->HeapMemory, HeapMemory, (this->GetSize() + 1) * sizeof(Char));
 	}
 
 	String::String(const CharUtf32* HeapMemory)
@@ -184,21 +184,21 @@ GD_NAMESPACE_BEGIN
 		GD_ASSERT((HeapMemory != nullptr), "Nullptr memory specified");
 		
 		Char VertexBufferObject[256] = { 0 };
-		for (self->HeapSize = 0; HeapMemory[self->HeapSize] != (CharUtf32)0; self->HeapSize += 1)
+		for (this->HeapSize = 0; HeapMemory[this->HeapSize] != (CharUtf32)0; this->HeapSize += 1)
 		{
-			VertexBufferObject[self->GetSize()] = (Char)HeapMemory[self->GetSize()];
+			VertexBufferObject[this->GetSize()] = (Char)HeapMemory[this->GetSize()];
 		}
 
-		self->HeapMemory = (Char*)Allocator::AllocateMemory((self->GetSize() + 1) * sizeof(Char));
-		memcpy(self->HeapMemory, &VertexBufferObject[0], (self->GetSize() + 1) * sizeof(Char));
+		this->HeapMemory = (Char*)Allocator::AllocateMemory((this->GetSize() + 1) * sizeof(Char));
+		memcpy(this->HeapMemory, &VertexBufferObject[0], (this->GetSize() + 1) * sizeof(Char));
 	}
 
 	String::String(const String& HeapMemory)
 	{
-		self->HeapSize		= HeapMemory.GetSize();
-		self->HeapMemory	= (Char*)Allocator::AllocateMemory((self->GetSize() + 1) * sizeof(Char));
+		this->HeapSize		= HeapMemory.GetSize();
+		this->HeapMemory	= (Char*)Allocator::AllocateMemory((this->GetSize() + 1) * sizeof(Char));
 
-		memcpy(self->HeapMemory, &HeapMemory[0], (self->GetSize() + 1) * sizeof(Char));
+		memcpy(this->HeapMemory, &HeapMemory[0], (this->GetSize() + 1) * sizeof(Char));
 	}
 
 	/// ==========================================================================================
@@ -207,46 +207,46 @@ GD_NAMESPACE_BEGIN
 
 	String::String(const float value)
 	{
-		self->HeapMemory = (Char*)Allocator::AllocateMemory(1 * sizeof(Char));
-		ArithmeticalToString(*self, "%f", value);
+		this->HeapMemory = (Char*)Allocator::AllocateMemory(1 * sizeof(Char));
+		ArithmeticalToString(*this, "%f", value);
 	}
 
 	String::String(const int value)
 	{
-		self->HeapMemory = (Char*)Allocator::AllocateMemory(1 * sizeof(Char));
-		ArithmeticalToString(*self, "%d", value);
+		this->HeapMemory = (Char*)Allocator::AllocateMemory(1 * sizeof(Char));
+		ArithmeticalToString(*this, "%d", value);
 	}
 
 	String::String(const handle value)
 	{
-		self->HeapMemory = (Char*)Allocator::AllocateMemory(1 * sizeof(Char));
-		ArithmeticalToString(*self, "%x", value);
+		this->HeapMemory = (Char*)Allocator::AllocateMemory(1 * sizeof(Char));
+		ArithmeticalToString(*this, "%x", value);
 	}
 
 	String::String(const CharAnsi value)
 	{
-		self->HeapSize		= 1;
-		self->HeapMemory	= (Char*)Allocator::AllocateMemory(2 * sizeof(Char));
-		self->HeapMemory[0] = value;
-		self->HeapMemory[1] = '\0';
+		this->HeapSize		= 1;
+		this->HeapMemory	= (Char*)Allocator::AllocateMemory(2 * sizeof(Char));
+		this->HeapMemory[0] = value;
+		this->HeapMemory[1] = '\0';
 	}
 
 	String::String(const CharUtf16 value)
 	{
-		self->HeapSize		= 1;
-		self->HeapMemory	= (Char*)Allocator::AllocateMemory(2 * sizeof(Char));
-		self->HeapMemory[1] = '\0';
+		this->HeapSize		= 1;
+		this->HeapMemory	= (Char*)Allocator::AllocateMemory(2 * sizeof(Char));
+		this->HeapMemory[1] = '\0';
 
-		wctomb(&self->HeapMemory[0], value);
+		wctomb(&this->HeapMemory[0], value);
 	}
 
 	String::String(const CharUtf32 value)
 	{
-		self->HeapSize		= 1;
-		self->HeapMemory	= (Char*)Allocator::AllocateMemory(2 * sizeof(Char));
-		self->HeapMemory[1] = '\0';
+		this->HeapSize		= 1;
+		this->HeapMemory	= (Char*)Allocator::AllocateMemory(2 * sizeof(Char));
+		this->HeapMemory[1] = '\0';
 
-		wctomb(&self->HeapMemory[0], (CharUtf16)value);
+		wctomb(&this->HeapMemory[0], (CharUtf16)value);
 	}
 
 	/// ==========================================================================================
@@ -255,10 +255,10 @@ GD_NAMESPACE_BEGIN
 
 	String::~String()
 	{
-		Allocator::DeallocateMemory(self->HeapMemory);
+		Allocator::DeallocateMemory(this->HeapMemory);
 
-		self->HeapMemory = nullptr;
-		self->HeapSize = 0;
+		this->HeapMemory = nullptr;
+		this->HeapSize = 0;
 	}
 
 
@@ -268,8 +268,8 @@ GD_NAMESPACE_BEGIN
 
 	void String::Resize(const size_t HeapSize)
 	{
-		self->HeapMemory = (Char*)Allocator::ReallocateMemory(self->HeapMemory, ((self->HeapSize = HeapSize) + 1) * sizeof(Char));
-		self->HeapMemory[HeapSize] = '\0';
+		this->HeapMemory = (Char*)Allocator::ReallocateMemory(this->HeapMemory, ((this->HeapSize = HeapSize) + 1) * sizeof(Char));
+		this->HeapMemory[HeapSize] = '\0';
 	}
 
 	/// ==========================================================================================
@@ -281,19 +281,19 @@ GD_NAMESPACE_BEGIN
 		static const String spaces = " \t\r\n";
 
 		size_t index = 0;
-		for (; (index < self->GetSize() && (spaces.Find((*self)[index]) != -1)); index += 1);
+		for (; (index < this->GetSize() && (spaces.Find((*this)[index]) != -1)); index += 1);
 
-		return self->GetSubstring(index);
+		return this->GetSubstring(index);
 	}
 
 	String String::TrimmRight() const
 	{
 		static const String spaces = " \t\r\n";
 
-		size_t index = self->GetSize() - 1;
-		for (; (index != -1 && (spaces.Find((*self)[index]) != -1)); index -= 1);
+		size_t index = this->GetSize() - 1;
+		for (; (index != -1 && (spaces.Find((*this)[index]) != -1)); index -= 1);
 
-		return self->GetSubstring(0, index + 1);
+		return this->GetSubstring(0, index + 1);
 	}
 
 	/// ==========================================================================================
@@ -303,7 +303,7 @@ GD_NAMESPACE_BEGIN
 	String String::GetSubstring(const size_t from, const size_t to) const 
 	{
 		String HeapMemory(nullptr, to - from);
-		memcpy(&HeapMemory[0], &(*self)[from], (to - from) * sizeof(Char));
+		memcpy(&HeapMemory[0], &(*this)[from], (to - from) * sizeof(Char));
 
 		return HeapMemory;
 	}
@@ -314,21 +314,21 @@ GD_NAMESPACE_BEGIN
 
 	size_t String::Find(const String& HeapMemory) const
 	{
-		const Char* location = strstr(self->HeapMemory, &HeapMemory[0]);
+		const Char* location = strstr(this->HeapMemory, &HeapMemory[0]);
 
 		return (location 
-			? (size_t)(location - self->HeapMemory) 
+			? (size_t)(location - this->HeapMemory) 
 			: -1
 		);
 	}
 
 	size_t String::ReverseFind(const String& HeapMemory) const
 	{
-		String copy(*self);
+		String copy(*this);
 		String reverse = _strrev(&copy[0]);
 
 		size_t const foundIndex = reverse.Find(HeapMemory);
-		return (foundIndex != -1 ? (self->GetSize() - foundIndex) : -1);
+		return (foundIndex != -1 ? (this->GetSize() - foundIndex) : -1);
 	}
 
 	/// ==========================================================================================
@@ -337,7 +337,7 @@ GD_NAMESPACE_BEGIN
 
 	Vector<String> String::Split(const Char c, const bool include) const
 	{
-		String s(*self), VertexBufferObject;
+		String s(*this), VertexBufferObject;
 		Vector<String> result;
 		size_t index = 0;
 		
@@ -363,9 +363,9 @@ GD_NAMESPACE_BEGIN
 	HashCode String::GetHashCode() const
 	{
 		HashCode::HashValueType computed = 0;
-		for (size_t cnt = 0; cnt < self->GetSize(); cnt += 1) 
+		for (size_t cnt = 0; cnt < this->GetSize(); cnt += 1) 
 		{
-			computed = 65599 * computed + (*self)[cnt];
+			computed = 65599 * computed + (*this)[cnt];
 		}
 		
 		return HashCode((computed >> 16) ^ computed);
@@ -379,7 +379,7 @@ GD_NAMESPACE_BEGIN
 	{
 		float result = 0.0f;
 		#pragma warning(suppress: 6031)
-		sscanf(&(*self)[0], "%f", &result);
+		sscanf(&(*this)[0], "%f", &result);
 
 		return result;
 	}
@@ -388,14 +388,14 @@ GD_NAMESPACE_BEGIN
 	{
 		int result = 0;
 		#pragma warning(suppress: 6031)
-		sscanf(&(*self)[0], "%d", &result);
+		sscanf(&(*this)[0], "%d", &result);
 
 		return result;
 	}
 
 	String String::ToUpper() const
 	{
-		String output(*self);
+		String output(*this);
 		for (Char* character = output.HeapMemory; *character != '\0'; character += sizeof(Char))
 		{
 			*character = (Char)toupper(*character);
@@ -406,7 +406,7 @@ GD_NAMESPACE_BEGIN
 
 	String String::ToLower() const
 	{
-		String output(*self);
+		String output(*this);
 		for (Char* character = output.HeapMemory; *character != '\0'; character += sizeof(Char))
 		{
 			*character = (Char)tolower(*character);
@@ -421,24 +421,24 @@ GD_NAMESPACE_BEGIN
 
 	String& String::operator= (const String& HeapMemory)
 	{
-		self->Resize(HeapMemory.GetSize());
+		this->Resize(HeapMemory.GetSize());
 
-		memcpy(&(*self)[0], &HeapMemory[0], self->GetSize());
+		memcpy(&(*this)[0], &HeapMemory[0], this->GetSize());
 
-		return *self;
+		return *this;
 	}
 
 	bool String::operator== (const String& HeapMemory) const
 	{ 
-		return strcmp(&(*self)[0], &HeapMemory[0]) == 0; 
+		return strcmp(&(*this)[0], &HeapMemory[0]) == 0; 
 	}
 
 	String String::operator+ (const String& HeapMemory) const
 	{
-		String result(nullptr, self->GetSize() + HeapMemory.GetSize());
+		String result(nullptr, this->GetSize() + HeapMemory.GetSize());
 
-		memcpy(&result[0], (&self->HeapMemory[0]), self->GetSize() * sizeof(Char));
-		memcpy(&result[self->GetSize()], &HeapMemory[0], (HeapMemory.GetSize() + 1) * sizeof(Char));
+		memcpy(&result[0], (&this->HeapMemory[0]), this->GetSize() * sizeof(Char));
+		memcpy(&result[this->GetSize()], &HeapMemory[0], (HeapMemory.GetSize() + 1) * sizeof(Char));
 
 		return result;
 	}

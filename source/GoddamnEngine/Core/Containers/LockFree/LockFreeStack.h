@@ -59,26 +59,26 @@ GD_NAMESPACE_BEGIN
 			do
 			{
 				++(NewCounter = OldCounter).ExternalCount;
-			} while (!self->Head.compare_exchange_strong(OldCounter, NewCounter, std::memory_order_acquire, std::memory_order_relaxed));
+			} while (!this->Head.compare_exchange_strong(OldCounter, NewCounter, std::memory_order_acquire, std::memory_order_relaxed));
 			OldCounter.ExternalCount = NewCounter.ExternalCount;
 		}
 
 	public:
 		GDINL  LockFreeStack() = default;
-		GDINL ~LockFreeStack() { while (self->Pop() != nullptr); }
+		GDINL ~LockFreeStack() { while (this->Pop() != nullptr); }
 
 		inline void Push(ElementType const& Data)
 		{
 			CountedNodePtr NewNode;
 			NewNode.Pointer = new Node(Data);
 			NewNode.ExternalCount = 1;
-			NewNode.Pointer->Next = self->Head.load(std::memory_order_relaxed);
-			while (!self->Head.compare_exchange_weak(NewNode.Pointer->Next, NewNode, std::memory_order_release, std::memory_order_relaxed));
+			NewNode.Pointer->Next = this->Head.load(std::memory_order_relaxed);
+			while (!this->Head.compare_exchange_weak(NewNode.Pointer->Next, NewNode, std::memory_order_release, std::memory_order_relaxed));
 		}
 
 		inline SharedPtr<ElementType> Pop()
 		{
-			CountedNodePtr OldNode = self->Head.load(std::memory_order_relaxed);
+			CountedNodePtr OldNode = this->Head.load(std::memory_order_relaxed);
 			for (;;)
 			{
 				IncreaseHeadCount(OldNode);
@@ -86,7 +86,7 @@ GD_NAMESPACE_BEGIN
 				if (!Pointer)
 					return SharedPtr<ElementType>();
 				
-				if (self->Head.compare_exchange_strong(OldNode, Pointer->Next, std::memory_order_relaxed))
+				if (this->Head.compare_exchange_strong(OldNode, Pointer->Next, std::memory_order_relaxed))
 				{
 					SharedPtr<ElementType> Result(Pointer->Data);
 					Int32 const CountIncrease = OldNode.ExternalCount - 2;

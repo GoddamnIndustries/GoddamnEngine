@@ -20,24 +20,24 @@ GD_NAMESPACE_BEGIN
 	{	
 		auto const& GL = HROGLInterface::GetInstance().Driver;
 		GLenum Result = GL_NO_ERROR;
-		GL.GenBuffers(1, &self->VertexBufferObject);
+		GL.GenBuffers(1, &this->VertexBufferObject);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to create Vertex buffer");
-		self->BindBuffer();
+		this->BindBuffer();
 		GL.BufferData(GL_ARRAY_BUFFER, Size * sizeof(Float32), Data, GL_STATIC_DRAW);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to pass Vertex buffer data");
-		self->UnbindBuffer();
+		this->UnbindBuffer();
 	}
 
 	HRIOGLVertexBuffer::~HRIOGLVertexBuffer()
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
-		GL.DeleteBuffers(1, &self->VertexBufferObject);
+		GL.DeleteBuffers(1, &this->VertexBufferObject);
 	}
 
 	void HRIOGLVertexBuffer::BindBuffer() const
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
-		GL.BindBuffer(GL_ARRAY_BUFFER, self->VertexBufferObject);
+		GL.BindBuffer(GL_ARRAY_BUFFER, this->VertexBufferObject);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to bind Vertex buffer");
 	}
 
@@ -56,23 +56,23 @@ GD_NAMESPACE_BEGIN
 		: HRIIndexBuffer(Data, Size, Stride)
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
-		GL.GenBuffers(1, &self->IndexBufferObject);
+		GL.GenBuffers(1, &this->IndexBufferObject);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to create Index buffer");
-		self->BindBuffer();
+		this->BindBuffer();
 		GL.BufferData(GL_ELEMENT_ARRAY_BUFFER, Size * Stride, Data, GL_STATIC_DRAW);
-		self->UnbindBuffer();
+		this->UnbindBuffer();
 	}
 	
 	HRIOGLIndexBuffer::~HRIOGLIndexBuffer()
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
-		GL.DeleteBuffers(1, &self->IndexBufferObject);
+		GL.DeleteBuffers(1, &this->IndexBufferObject);
 	}
 
 	void HRIOGLIndexBuffer::BindBuffer() const
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
-		GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, self->IndexBufferObject);
+		GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IndexBufferObject);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to bind Index buffer");
 	}
 
@@ -91,20 +91,20 @@ GD_NAMESPACE_BEGIN
 		: HRIConstantBuffer(Size)
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
-		GL.GenBuffers(1, &self->UniformBufferObject);
+		GL.GenBuffers(1, &this->UniformBufferObject);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to create Uniform buffer");
 	}
 
 	HRIOGLConstantBuffer::~HRIOGLConstantBuffer()
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
-		GL.DeleteBuffers(1, &self->UniformBufferObject);
+		GL.DeleteBuffers(1, &this->UniformBufferObject);
 	}
 
 	void HRIOGLConstantBuffer::BindBuffer() const
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
-		GL.BindBuffer(GL_UNIFORM_BUFFER, self->UniformBufferObject);
+		GL.BindBuffer(GL_UNIFORM_BUFFER, this->UniformBufferObject);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to bind Uniform buffer");
 	}
 
@@ -117,10 +117,10 @@ GD_NAMESPACE_BEGIN
 	void HRIOGLConstantBuffer::CopyDataFrom(chandle const Data)
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
-		self->BindBuffer();
-		GL.BufferData(GL_UNIFORM_BUFFER, self->Size, Data, GL_DYNAMIC_DRAW);
+		this->BindBuffer();
+		GL.BufferData(GL_UNIFORM_BUFFER, this->Size, Data, GL_DYNAMIC_DRAW);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to pass Uniform buffer data");
-		self->UnbindBuffer();
+		this->UnbindBuffer();
 	}
 
 	void HRIOGLConstantBuffer::CopyDataTo(handle const Data) const

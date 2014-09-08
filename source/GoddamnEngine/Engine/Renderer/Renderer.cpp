@@ -40,19 +40,19 @@ GD_NAMESPACE_BEGIN
 			if (Semantic == GD_HRI_SEMANTIC_UNKNOWN)
 			{	// Just clearing out all vertex data.
 				for (size_t SemanticIter = 0; SemanticIter < GD_HRI_SEMANTIC_UNKNOWN; SemanticIter += 1)
-					self->SetVertexData(static_cast<HRISemantic>(SemanticIter), nullptr, 0);
+					this->SetVertexData(static_cast<HRISemantic>(SemanticIter), nullptr, 0);
 				return;
 			}
 			else
-				self->VertexBuffers[static_cast<size_t>(Semantic)] = nullptr;
+				this->VertexBuffers[static_cast<size_t>(Semantic)] = nullptr;
 		}
 		else
-			self->VertexBuffers[static_cast<size_t>(Semantic)] = HRInterface::GetInstance().CreateVertexBuffer(Data, Size);
+			this->VertexBuffers[static_cast<size_t>(Semantic)] = HRInterface::GetInstance().CreateVertexBuffer(Data, Size);
 	}
 
 	void HRIIndexedShape::SetIndexData(chandle const Data, size_t const Size, size_t const Stride)
 	{
-		self->IndexBuffer = ((Data != nullptr)
+		this->IndexBuffer = ((Data != nullptr)
 			? HRInterface::GetInstance().CreateIndexBuffer(Data, Size, Stride)
 			: nullptr
 		);
@@ -67,9 +67,9 @@ GD_NAMESPACE_BEGIN
 		for (HRITexture2D const* Texture2D = FirstTexture; Texture2D != nullptr; Texture2D = va_arg(TexturesList, HRITexture2D const*))
 		{
 			GD_DEBUG_ASSERT((Texture2D->Mode == GD_HRI_TEXTURE_2D_MODE_RenderTarget), "Invalid mode of specified texture");
-			GD_DEBUG_ASSERT((Texture2D->TheResolution == self->RenderTargetResolution), "Invalid resolution of specified texture");
+			GD_DEBUG_ASSERT((Texture2D->TheResolution == this->RenderTargetResolution), "Invalid resolution of specified texture");
 
-			self->RenderTargetTextures.PushLast(Texture2D);
+			this->RenderTargetTextures.PushLast(Texture2D);
 			Texture2D->AddReference();
 		}
 
@@ -79,14 +79,14 @@ GD_NAMESPACE_BEGIN
 	HRIRenderTargetCtorInfo::HRIRenderTargetCtorInfo(HRIRenderTargetCtorInfo const& CtorInfo) 
 		: RenderTargetTextures(CtorInfo.RenderTargetTextures)
 	{
-		for (size_t cnt = 0; cnt < self->RenderTargetTextures.GetSize(); cnt += 1)
-			self->RenderTargetTextures[cnt]->AddReference();
+		for (size_t cnt = 0; cnt < this->RenderTargetTextures.GetSize(); cnt += 1)
+			this->RenderTargetTextures[cnt]->AddReference();
 	}
 
 	HRIRenderTargetCtorInfo::~HRIRenderTargetCtorInfo()
 	{
-		for (size_t cnt = 0; cnt < self->RenderTargetTextures.GetSize(); cnt += 1)
-			self->RenderTargetTextures[cnt]->RemoveReference();
+		for (size_t cnt = 0; cnt < this->RenderTargetTextures.GetSize(); cnt += 1)
+			this->RenderTargetTextures[cnt]->RemoveReference();
 	}
 
 GD_NAMESPACE_END

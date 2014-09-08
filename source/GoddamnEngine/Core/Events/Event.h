@@ -55,8 +55,8 @@ GD_NAMESPACE_BEGIN
 		/// @brief callerParameter			Parameter would be passed to functions invokers
 		GDINL void TriggerEvent(const EventParameterType callerParameter = EventParameterType())
 		{
-			self->CallerParameter = callerParameter;
-			self->WasEventTriggered = true;
+			this->CallerParameter = callerParameter;
+			this->WasEventTriggered = true;
 		}
 
 		/// @brief					Launches event: all listener`s function would
@@ -64,26 +64,26 @@ GD_NAMESPACE_BEGIN
 		///							was triggered. Does nothing over wise.
 		GDINL void LaunchEvent()
 		{
-			if(!self->WasEventTriggered)
+			if(!this->WasEventTriggered)
 			{
 				return;
 			}
 
-			for(size_t cnt = 0; cnt < self->Listeners.GetSize(); cnt += 1)
+			for(size_t cnt = 0; cnt < this->Listeners.GetSize(); cnt += 1)
 			{
-				EventListener* const eventListener = self->Listeners[cnt];
-				(eventListener->*self->ListenerFunction)(self->CallerParameter);
+				EventListener* const eventListener = this->Listeners[cnt];
+				(eventListener->*this->ListenerFunction)(this->CallerParameter);
 			}
 
-			self->CallerParameter = self->DefaultCallerParameter;
-			self->WasEventTriggered = false;
+			this->CallerParameter = this->DefaultCallerParameter;
+			this->WasEventTriggered = false;
 		}
 
 		/// @brief					Triggers event and launches it
 		GDINL void TriggerAndLaunchEvent()
 		{
-			self->TriggerEvent();
-			self->LaunchEvent();
+			this->TriggerEvent();
+			this->LaunchEvent();
 		}
 
 		/// @brief					Adds object as listener on event
@@ -94,25 +94,25 @@ GD_NAMESPACE_BEGIN
 			//	"'Event::operator+=' error: type of parameter 'eventListener' not derived from "
 			//	"'EventListener' class");
 
-			// GD_ASSERT(self->listeners.GetElementIndex(eventListener) == -1,
+			// GD_ASSERT(this->listeners.GetElementIndex(eventListener) == -1,
 			//	"'Event::operator+=' error: value of parameter 'eventListener' already "
 			//	"exists in this event listeners list");
 
-			self->Listeners.PushLast(eventListener);
-			self->WasEventTriggered = false;
+			this->Listeners.PushLast(eventListener);
+			this->WasEventTriggered = false;
 		}
 
 		/// @brief					Removes object from event listeners list
 		/// @param eventListener	Object that is going to be removed from listeners list
 		GDINL void operator-= (EventListener* const eventListener)
 		{
-			const size_t eventListenerIndex = self->Listeners.FindFirstElement(eventListener);
+			const size_t eventListenerIndex = this->Listeners.FindFirstElement(eventListener);
 			GD_ASSERT(eventListenerIndex != -1,
 				"'Event::operator+=' error: value of parameter 'eventListener' does "
 				"not exists in this event listners list");
 
-			self->Listeners.RemoveElementAt(eventListenerIndex);
-			self->WasEventTriggered = false;
+			this->Listeners.RemoveElementAt(eventListenerIndex);
+			this->WasEventTriggered = false;
 		}
 	};
 

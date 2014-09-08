@@ -9,6 +9,10 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Framework/Framework.h>
 
+/// ==========================================================================================
+/// Some defualt stuff.
+/// ==========================================================================================
+
 GD_NAMESPACE_BEGIN
 
 	Str       const Window::DefaultWindowTitle     = "Goddamn motherfucken Window!";
@@ -16,10 +20,13 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#if  ((!defined(GD_PLATFORM_OSX)) && (!defined(GD_PLATFORM_IOS)))
-#	if (defined(GD_PLATFORM_WINDOWS)) && 0
-#		include <GoddamnEngine/Core/Framework/Framework.WinApi.inl>
-#	else
-#		include <GoddamnEngine/Core/Framework/Framework.SDL2.inl>
-#	endif	// if (defined(GD_PLATFORM_WINDOWS))
-#endif	// if ((!defined(GD_PLATFORM_OSX)) && (!defined(GD_PLATFORM_IOS)))
+/// ==========================================================================================
+/// Including platform-dependant solutions.
+/// ==========================================================================================
+
+#if (defined(GD_PLATFORM_API_LIBSDL2))
+#	include "Framework.SDL2.inl"
+//endif	// if (defined(GD_PLATFORM_API_LIBSDL2))
+#else	// *** Selecting best-suiting API ***
+#	error "Framework code is not implemented on target platform"
+#endif	// *** Selecting best-suiting API ***

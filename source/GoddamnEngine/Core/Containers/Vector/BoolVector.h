@@ -39,46 +39,46 @@ GD_NAMESPACE_BEGIN
 			GDINL ~Iterator(                                               ) { }
 
 			/// Compares iterators.
-			GDINL bool operator== (Iterator const& Other) const { return ((self->Pointer == Other.Pointer) && (self->BitIndex == Other.BitIndex)); }
-			GDINL bool operator!= (Iterator const& Other) const { return (!((*self) == Other)); }
+			GDINL bool operator== (Iterator const& Other) const { return ((this->Pointer == Other.Pointer) && (this->BitIndex == Other.BitIndex)); }
+			GDINL bool operator!= (Iterator const& Other) const { return (!((*this) == Other)); }
 			
 			/// (De)referensing iterator.
-			GDINL bool operator*  () const { return (((*self->Pointer) & GD_BIT(self->BitIndex)) != 0); }
-			GDINL bool operator-> () const { return   (self->operator*()); }
+			GDINL bool operator*  () const { return (((*this->Pointer) & GD_BIT(this->BitIndex)) != 0); }
+			GDINL bool operator-> () const { return   (this->operator*()); }
 
 			/// Assigment operators. 
 			GDINL Iterator& operator= (Iterator     && Other) = delete;
 			GDINL Iterator& operator= (Iterator const& Other)
 			{
-				self->Pointer  = Other.Pointer;
-				self->BitIndex = Other.BitIndex;
-				return (*self);
+				this->Pointer  = Other.Pointer;
+				this->BitIndex = Other.BitIndex;
+				return (*this);
 			}
 
 			/// Increments iterator.
-			GDINL Iterator& operator++ (int const) { return ++(*self); }
+			GDINL Iterator& operator++ (int const) { return ++(*this); }
 			GDINL Iterator& operator++ (         )
 			{
-				if ((++self->BitIndex) == GD_BITS_PER_BYTE)
+				if ((++this->BitIndex) == GD_BITS_PER_BYTE)
 				{	// We have reached bytes border.
-					self->BitIndex = 0;
-					self->Pointer += 1;
+					this->BitIndex = 0;
+					this->Pointer += 1;
 				}
 
-				return (*self);
+				return (*this);
 			}
 
 			/// Decrements iterator.
-			GDINL Iterator& operator-- (int const) { return --(*self); }
+			GDINL Iterator& operator-- (int const) { return --(*this); }
 			GDINL Iterator& operator-- (         )
 			{
-				if ((--self->BitIndex) == SIZE_MAX)
+				if ((--this->BitIndex) == SIZE_MAX)
 				{	// We have reached bytes border.
-					self->BitIndex = 0;
-					self->Pointer -= 1;
+					this->BitIndex = 0;
+					this->Pointer -= 1;
 				}
 
-				return (*self);
+				return (*this);
 			}
 		};	// struct Iterator
 
@@ -109,20 +109,20 @@ GD_NAMESPACE_BEGIN
 
 	public /* Class API */:
 		/// Returns iterator that points to first container bit.
-		GDINL MutableIterator Begin()       { return MutableIterator(&self->ByteStorage[0], self->BitIndex); }
-		GDINL   ConstIterator Begin() const { return   ConstIterator(&self->ByteStorage[0], self->BitIndex); }
+		GDINL MutableIterator Begin()       { return MutableIterator(&this->ByteStorage[0], this->BitIndex); }
+		GDINL   ConstIterator Begin() const { return   ConstIterator(&this->ByteStorage[0], this->BitIndex); }
 
 		/// Returns iterator that points to past the end container bit.
-		GDINL MutableIterator End  ()       { return MutableIterator(&self->ByteStorage.GetLastElement(), self->BitIndex + 1); }
-		GDINL   ConstIterator End  () const { return   ConstIterator(&self->ByteStorage.GetLastElement(), self->BitIndex + 1); }
+		GDINL MutableIterator End  ()       { return MutableIterator(&this->ByteStorage.GetLastElement(), this->BitIndex + 1); }
+		GDINL   ConstIterator End  () const { return   ConstIterator(&this->ByteStorage.GetLastElement(), this->BitIndex + 1); }
 
 		/// Returns iterator that points to last container bit.
-		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(&self->ByteStorage.GetLastElement(), self->BitIndex)); }
-		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(  ConstIterator(&self->ByteStorage.GetLastElement(), self->BitIndex)); }
+		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(&this->ByteStorage.GetLastElement(), this->BitIndex)); }
+		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(  ConstIterator(&this->ByteStorage.GetLastElement(), this->BitIndex)); }
 
 		/// Returns iterator that points to preceding the first container bit
-		GDINL ReverseMutableIterator ReverseEnd  ()       { return ReverseMutableIterator(MutableIterator(&self->ByteStorage.GetLastElement(), self->BitIndex - 1)); }
-		GDINL   ReverseConstIterator ReverseEnd  () const { return   ReverseConstIterator(  ConstIterator(&self->ByteStorage.GetLastElement(), self->BitIndex - 1)); }
+		GDINL ReverseMutableIterator ReverseEnd  ()       { return ReverseMutableIterator(MutableIterator(&this->ByteStorage.GetLastElement(), this->BitIndex - 1)); }
+		GDINL   ReverseConstIterator ReverseEnd  () const { return   ReverseConstIterator(  ConstIterator(&this->ByteStorage.GetLastElement(), this->BitIndex - 1)); }
 
 		/// Returns number of bits that exist in vector.
 		GDINL size_t GetSize    () const;

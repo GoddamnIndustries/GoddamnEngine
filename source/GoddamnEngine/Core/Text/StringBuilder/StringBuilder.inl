@@ -17,29 +17,29 @@ GD_NAMESPACE_BEGIN
 	template<typename CharType>
 	inline BaseStringBuilder<CharType>& BaseStringBuilder<CharType>::Append(CharType const* const String, size_t const Length)
 	{
-		size_t const StartPos = self->MutableString.GetSize() - 1;
-		self->MutableString.Resize(self->MutableString.GetSize() + Length);
-		memcpy(&self->MutableString[StartPos], String, (Length + 1) * sizeof(String[0]));
+		size_t const StartPos = this->MutableString.GetSize() - 1;
+		this->MutableString.Resize(this->MutableString.GetSize() + Length);
+		memcpy(&this->MutableString[StartPos], String, (Length + 1) * sizeof(String[0]));
 
-		return (*self);
+		return (*this);
 	}
 
 	template<typename CharType>
 	inline BaseStringBuilder<CharType>& BaseStringBuilder<CharType>::Append(CharType const* const String)
 	{
-		return self->Append(String, strlen(String));
+		return this->Append(String, strlen(String));
 	}
 
 	template<typename CharType>
 	inline BaseStringBuilder<CharType>& BaseStringBuilder<CharType>::Append(String const& TheString)
 	{
-		return self->Append(TheString.CStr(), TheString.GetSize());
+		return this->Append(TheString.CStr(), TheString.GetSize());
 	}
 
 	template<typename CharType> template<size_t const Count>
 	inline BaseStringBuilder<CharType>& BaseStringBuilder<CharType>::Append(CharType const (&Array)[Count])
 	{
-		return self->Append(&Array[0], Count);
+		return this->Append(&Array[0], Count);
 	}
 
 	template<typename CharType>
@@ -49,25 +49,25 @@ GD_NAMESPACE_BEGIN
 		va_start(ArgumentsList, Format);
 
 		String const Formatted = BaseString<CharType>::FormatVa(Format, ArgumentsList);
-		self->Append(Formatted);
+		this->Append(Formatted);
 
 		va_end(ArgumentsList);
 
-		return (*self);
+		return (*this);
 	}
 
 	template<typename CharType>
 	inline BaseStringBuilder<CharType>& BaseStringBuilder<CharType>::Append(CharType const Character)
 	{
-		*(self->MutableString.End() - 1) = Character;
-		  self->MutableString.PushLast(CharType('\0'));
-		return (*self);
+		*(this->MutableString.End() - 1) = Character;
+		  this->MutableString.PushLast(CharType('\0'));
+		return (*this);
 	}
 
 	template<typename CharType>
 	GDINL String BaseStringBuilder<CharType>::ToString() const
 	{
-		return String(&self->MutableString[0]);
+		return String(&this->MutableString[0]);
 	}
 
 GD_NAMESPACE_END

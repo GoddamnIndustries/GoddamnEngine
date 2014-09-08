@@ -48,8 +48,8 @@ GD_NAMESPACE_BEGIN
 		// '#endif' directive parsing.
 		if (strncmp(PreprocessorDirective.CStr(), "endif", sizeof("endif") - 1) == 0)
 		{	// Leaving this block.
-			self->CurrentBlock->PostCondition = Move(PreprocessorDirective);
-			if ((self->CurrentBlock = self->CurrentBlock->ParentBlock) == nullptr)
+			this->CurrentBlock->PostCondition = Move(PreprocessorDirective);
+			if ((this->CurrentBlock = this->CurrentBlock->ParentBlock) == nullptr)
 			{	// Unexpected '#endif' directive. No corresponding '#if' was not found.
 				CPPBaseParserErrorDesc static const UnexpectedEndifDirectiveError("unexpected '#endif' directive. No corresponding '#if' was not found.");
 				throw CPPParsingException(UnexpectedEndifDirectiveError.ToString(&BaseParser->GetCurrentLexem()));
@@ -59,37 +59,37 @@ GD_NAMESPACE_BEGIN
 		} 
 
 		// '#if*', '#elif*' and '#else' directive parsing.
-		else if ((!self->CurrentBlock->Elements.IsEmpty()) || (!self->CurrentBlock->PreCondition.IsEmpty()) || (self->TopBlock == self->CurrentBlock))
+		else if ((!this->CurrentBlock->Elements.IsEmpty()) || (!this->CurrentBlock->PreCondition.IsEmpty()) || (this->TopBlock == this->CurrentBlock))
 		{	// This block already has condition. Now lets see what we can do:
 			if (strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0)
 			{	// Creating a new block (in scope of current).
-				self->CurrentBlock->InnerBlocks.PushLast(SharedPtr<Block>(new Block()));
+				this->CurrentBlock->InnerBlocks.PushLast(SharedPtr<Block>(new Block()));
 				
-				Block* const NewBlock = self->CurrentBlock->InnerBlocks.GetLastElement().GetPointer();
-				NewBlock->ParentBlock = self->CurrentBlock;
+				Block* const NewBlock = this->CurrentBlock->InnerBlocks.GetLastElement().GetPointer();
+				NewBlock->ParentBlock = this->CurrentBlock;
 				NewBlock->PreCondition = Move(PreprocessorDirective);
 				
-				self->CurrentBlock = NewBlock;
+				this->CurrentBlock = NewBlock;
 				return true;
 			}
 			else if ((strncmp(PreprocessorDirective.CStr(), "else", sizeof("else") - 1) == 0) || (strncmp(PreprocessorDirective.CStr(), "elif", sizeof("elif") - 1) == 0))
 			{	// Creating a new block (sibling current).
-				if (self->TopBlock == self->CurrentBlock)
+				if (this->TopBlock == this->CurrentBlock)
 				{	// We are in top block. We need to wrap it with other top.
-					Block* const OldTopBlock = self->TopBlock.Release();
-					self->CurrentBlock = OldTopBlock;
-					self->TopBlock.Reset(new Block());
-					self->TopBlock->InnerBlocks.PushLast(SharedPtr<Block>(OldTopBlock));
-					OldTopBlock->ParentBlock = self->TopBlock.GetPointer();
+					Block* const OldTopBlock = this->TopBlock.Release();
+					this->CurrentBlock = OldTopBlock;
+					this->TopBlock.Reset(new Block());
+					this->TopBlock->InnerBlocks.PushLast(SharedPtr<Block>(OldTopBlock));
+					OldTopBlock->ParentBlock = this->TopBlock.GetPointer();
 				}
 
-				self->CurrentBlock->ParentBlock->InnerBlocks.PushLast(SharedPtr<Block>(new Block()));
+				this->CurrentBlock->ParentBlock->InnerBlocks.PushLast(SharedPtr<Block>(new Block()));
 				
-				Block* const NewBlock = self->CurrentBlock->ParentBlock->InnerBlocks.GetLastElement().GetPointer();
-				NewBlock->ParentBlock = self->CurrentBlock->ParentBlock;
+				Block* const NewBlock = this->CurrentBlock->ParentBlock->InnerBlocks.GetLastElement().GetPointer();
+				NewBlock->ParentBlock = this->CurrentBlock->ParentBlock;
 				NewBlock->PreCondition = Move(PreprocessorDirective);
 				
-				self->CurrentBlock = NewBlock;
+				this->CurrentBlock = NewBlock;
 				return true;
 			}
 		}
@@ -102,7 +102,7 @@ GD_NAMESPACE_BEGIN
 			}
 			else if (strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0)
 			{
-				self->CurrentBlock->PreCondition = Move(PreprocessorDirective);
+				this->CurrentBlock->PreCondition = Move(PreprocessorDirective);
 				return true;
 			}
 		}
@@ -127,9 +127,9 @@ GD_NAMESPACE_BEGIN
 		public:
 			GDINT StringBuilder& WriteBlock(Block const* SomeBlock)
 			{
-				++self->IdentsCount;
-				String const Idents(self->IdentsCount, Char('\t'));
-				Builder.AppendFormat("\n%sBlock <Level %u> {", Idents.CStr(), self->IdentsCount);
+				++this->IdentsCount;
+				String const Idents(this->IdentsCount, Char('\t'));
+				Builder.AppendFormat("\n%sBlock <Level %u> {", Idents.CStr(), this->IdentsCount);
 				Builder.AppendFormat("\n%s\tPreCondition : %s", Idents.CStr(), (!SomeBlock->PreCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PreCondition.CStr()).CStr() : "None"));
 				Builder.AppendFormat("\n%s\tPostCondition : %s", Idents.CStr(), (!SomeBlock->PostCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PostCondition.CStr()).CStr() : "None"));
 				Builder.AppendFormat("\n%s\tElements <Count %u> [", Idents.CStr(), SomeBlock->Elements.GetSize());
@@ -137,14 +137,14 @@ GD_NAMESPACE_BEGIN
 					Builder.AppendFormat("\n%s\t\t\"(0x%x)\",", Idents.CStr(), Element.GetPointer());
 				Builder.AppendFormat("\n%s\t]", Idents.CStr());
 				for (auto const InnerBlock : SomeBlock->InnerBlocks)
-					self->WriteBlock(InnerBlock.GetPointer());
+					this->WriteBlock(InnerBlock.GetPointer());
 				Builder.AppendFormat("\n%s}", Idents.CStr());
-				--self->IdentsCount;
+				--this->IdentsCount;
 
-				return self->Builder;
+				return this->Builder;
 			}
 		};	// class CPPRePreprocessorDefinitionsWriter
-		printf("%s", CPPRePreprocessorDefinitionsWriter().WriteBlock(self->TopBlock.GetPointer()).GetPointer());
+		printf("%s", CPPRePreprocessorDefinitionsWriter().WriteBlock(this->TopBlock.GetPointer()).GetPointer());
 	}
 #endif	// if (defined(GD_DEBUG))
 

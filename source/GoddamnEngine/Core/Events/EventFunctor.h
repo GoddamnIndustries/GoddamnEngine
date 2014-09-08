@@ -39,7 +39,7 @@ GD_NAMESPACE_BEGIN
 
 			GDINL ReturnType operator() (ObjectType* object) const
 			{
-				(object->*self->function)();
+				(object->*this->function)();
 			}
 		};
 
@@ -52,7 +52,7 @@ GD_NAMESPACE_BEGIN
 
 			GDINL ReturnType operator() (ObjectType* object, FirstArgType firstArg) const
 			{
-				(object->*self->function)(firstArg);
+				(object->*this->function)(firstArg);
 			}
 		};
 
@@ -65,7 +65,7 @@ GD_NAMESPACE_BEGIN
 
 			GDINL ReturnType operator() (ObjectType* object, FirstArgType firstArg, SecondArgType secondArg) const
 			{
-				(object->*self->function)(firstArg, secondArg);
+				(object->*this->function)(firstArg, secondArg);
 			}
 		};
 	}

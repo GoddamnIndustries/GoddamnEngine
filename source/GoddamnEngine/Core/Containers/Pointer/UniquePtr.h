@@ -37,66 +37,66 @@ GD_NAMESPACE_BEGIN
 
 		GDINL ~UniquePtr()
 		{ 
-			delete self->Pointer; 
-			self->Pointer = nullptr; 
+			delete this->Pointer; 
+			this->Pointer = nullptr; 
 		}
 
 	public /*Class API*/:
 		/// Returns native pointer stored in this object.
 		GDINL PointerType* GetPointer() const 
 		{ 
-			return self->Pointer; 
+			return this->Pointer; 
 		}
 
 		/// Deletes pointer, stored in this object and assigns it new specified value.
 		/// @returns New specified pointer.
 		GDINL PointerType* Reset(PointerType* const Pointer)
 		{
-			self->~UniquePtr();
-			return (self->Pointer = Pointer);
+			this->~UniquePtr();
+			return (this->Pointer = Pointer);
 		}
 
 		/// Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
 		GDINL PointerType* Release()
 		{
-			PointerType* const Pointer = self->GetPointer();
-			self->Pointer = nullptr;
+			PointerType* const Pointer = this->GetPointer();
+			this->Pointer = nullptr;
 			return Pointer;
 		}
 
 	public /*Operators*/:
-		GDINL PointerType& operator*  () const { return  (*self->GetPointer()); }
-		GDINL PointerType* operator-> () const { return  ( self->GetPointer()); }
+		GDINL PointerType& operator*  () const { return  (*this->GetPointer()); }
+		GDINL PointerType* operator-> () const { return  ( this->GetPointer()); }
 
-		GDINL bool operator== (          PointerType  const* const OtherPointer) const { return (self->GetPointer() == OtherPointer); }
-		GDINL bool operator== (UniquePtr<PointerType> const&       OtherPointer) const { return (self->GetPointer() == OtherPointer.GetPointer()); }
+		GDINL bool operator== (          PointerType  const* const OtherPointer) const { return (this->GetPointer() == OtherPointer); }
+		GDINL bool operator== (UniquePtr<PointerType> const&       OtherPointer) const { return (this->GetPointer() == OtherPointer.GetPointer()); }
 		
-		GDINL bool operator!= (          PointerType  const* const OtherPointer) const { return !(*self == OtherPointer); }
-		GDINL bool operator!= (UniquePtr<PointerType> const&       OtherPointer) const { return !(*self == OtherPointer); }
+		GDINL bool operator!= (          PointerType  const* const OtherPointer) const { return !(*this == OtherPointer); }
+		GDINL bool operator!= (UniquePtr<PointerType> const&       OtherPointer) const { return !(*this == OtherPointer); }
 
 		GDINL UniquePtr& operator= (UniquePtr const& OtherPtr) = delete;
 
 		GDINL UniquePtr& operator= (UniquePtr&& OtherPtr)
 		{
-			if ((&OtherPtr) != self)
+			if ((&OtherPtr) != this)
 			{
-				self->~UniquePtr();
-				self->Pointer = OtherPtr.Pointer;
+				this->~UniquePtr();
+				this->Pointer = OtherPtr.Pointer;
 				OtherPtr.Pointer = nullptr;
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 		GDINL UniquePtr& operator= (PointerType* const Other)
 		{
-			if (self->Pointer != Other)
+			if (this->Pointer != Other)
 			{
-				self->~UniquePtr();
-				self->Pointer = Other;
+				this->~UniquePtr();
+				this->Pointer = Other;
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 	private:
@@ -128,66 +128,66 @@ GD_NAMESPACE_BEGIN
 
 		GDINL ~UniquePtr()
 		{
-			delete[] self->Pointer;
-			self->Pointer = nullptr;
+			delete[] this->Pointer;
+			this->Pointer = nullptr;
 		}
 
 	public /*Class API*/:
 		/// Returns native pointer stored in this object.
 		GDINL PointerType* GetPointer() const
 		{
-			return self->Pointer;
+			return this->Pointer;
 		}
 
 		/// Deletes pointer, stored in this object and assigns it new specified value.
 		/// @returns New specified pointer.
 		GDINL PointerType* Reset(PointerType* const Pointer)
 		{
-			self->~UniquePtr();
-			return (self->Pointer = Pointer);
+			this->~UniquePtr();
+			return (this->Pointer = Pointer);
 		}
 
 		/// Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
 		GDINL PointerType* Release()
 		{
-			PointerType* const Pointer = self->GetPointer();
-			self->Pointer = nullptr;
+			PointerType* const Pointer = this->GetPointer();
+			this->Pointer = nullptr;
 			return Pointer;
 		}
 
 	public /*Operators*/:
-		GDINL PointerType& operator*  () const { return  (*self->GetPointer()); }
-		GDINL PointerType* operator-> () const { return  (self->GetPointer()); }
+		GDINL PointerType& operator*  () const { return  (*this->GetPointer()); }
+		GDINL PointerType* operator-> () const { return  (this->GetPointer()); }
 
-		GDINL bool operator== (          PointerType  const* const OtherPointer) const { return (self->GetPointer() == OtherPointer); }
-		GDINL bool operator== (UniquePtr<PointerType> const&       OtherPointer) const { return (self->GetPointer() == OtherPointer.GetPointer()); }
+		GDINL bool operator== (          PointerType  const* const OtherPointer) const { return (this->GetPointer() == OtherPointer); }
+		GDINL bool operator== (UniquePtr<PointerType> const&       OtherPointer) const { return (this->GetPointer() == OtherPointer.GetPointer()); }
 		
-		GDINL bool operator!= (          PointerType  const* const OtherPointer) const { return !(*self == OtherPointer); }
-		GDINL bool operator!= (UniquePtr<PointerType> const&       OtherPointer) const { return !(*self == OtherPointer); }
+		GDINL bool operator!= (          PointerType  const* const OtherPointer) const { return !(*this == OtherPointer); }
+		GDINL bool operator!= (UniquePtr<PointerType> const&       OtherPointer) const { return !(*this == OtherPointer); }
 
 		GDINL UniquePtr& operator= (UniquePtr const& OtherPtr) = delete;
 
 		GDINL UniquePtr& operator= (UniquePtr&& OtherPtr)
 		{
-			if ((&OtherPtr) != self)
+			if ((&OtherPtr) != this)
 			{
-				self->~UniquePtr();
-				self->Pointer = OtherPtr.Pointer;
+				this->~UniquePtr();
+				this->Pointer = OtherPtr.Pointer;
 				OtherPtr.Pointer = nullptr;
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 		GDINL UniquePtr& operator= (PointerType* const Other)
 		{
-			if (self->Pointer != Other)
+			if (this->Pointer != Other)
 			{
-				self->~UniquePtr();
-				self->Pointer = Other;
+				this->~UniquePtr();
+				this->Pointer = Other;
 			}
 
-			return (*self);
+			return (*this);
 		}
 
 	private:

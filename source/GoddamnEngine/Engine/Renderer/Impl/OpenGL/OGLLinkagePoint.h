@@ -34,18 +34,18 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HRIOGLLinkagePoint() { }
 		GDINL virtual ~HRIOGLLinkagePoint() { }
 		
-		GDINL virtual HRIShaderProgram const* GetShaderProgram() const final { return self->ShaderProgram.GetPointer(); }
-		GDINL virtual HRIIndexedShape  const* GetIndexedShape () const final { return self->IndexedShape.GetPointer(); }
+		GDINL virtual HRIShaderProgram const* GetShaderProgram() const final { return this->ShaderProgram.GetPointer(); }
+		GDINL virtual HRIIndexedShape  const* GetIndexedShape () const final { return this->IndexedShape.GetPointer(); }
 		GDINL virtual void SetShaderProgram(HRIShaderProgram const* const ShaderProgram) final
 		{
-			self->ShaderProgram = object_cast<HRIOGLShaderProgram const*>(ShaderProgram);
-			self->IsRelinkingRequired = true;
+			this->ShaderProgram = object_cast<HRIOGLShaderProgram const*>(ShaderProgram);
+			this->IsRelinkingRequired = true;
 		}
 
 		GDINL virtual void SetIndexedShape(HRIIndexedShape  const* const IndexedShape) final
 		{
-			self->IndexedShape = object_cast<HRIOGLIndexedShape const*>(IndexedShape);
-			self->IsRelinkingRequired = true;
+			this->IndexedShape = object_cast<HRIOGLIndexedShape const*>(IndexedShape);
+			this->IsRelinkingRequired = true;
 		}
 
 		GDINT virtual void RenderSelf() const override final;

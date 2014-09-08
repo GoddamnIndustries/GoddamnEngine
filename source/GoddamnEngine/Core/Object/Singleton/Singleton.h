@@ -11,7 +11,7 @@
 	{																					\
 		GD_ASSERT((__Singleton_##SingletonType##_Instance == nullptr),					\
 			"'Singleton<SingletonType>' error: singleton instance already exists.");	\
-		__Singleton_##SingletonType##_Instance = ((SingletonType*)self);				\
+		__Singleton_##SingletonType##_Instance = ((SingletonType*)this);				\
 	}																					\
 	template<> SingletonType& Singleton<SingletonType>::GetInstance()					\
 	{																					\
@@ -53,7 +53,7 @@ GD_NAMESPACE_BEGIN
 
 	protected:
 		/// Constructs Singleton's instance
-		GDAPI  Singleton();// { Singleton<SingletonType>::Instance = static_cast<SingletonType*>(self); }
+		GDAPI  Singleton();// { Singleton<SingletonType>::Instance = static_cast<SingletonType*>(this); }
 		//GDAPI ~Singleton();// { Singleton<SingletonType>::Instance = nullptr; }
 
 	public:

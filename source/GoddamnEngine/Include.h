@@ -524,11 +524,18 @@
 
 #define abstract		= 0
 #define impl_abstract	abstract
-#define self			this
 #define object_cast		static_cast
 #define Min(a, b)		(((a) < (b)) ? (a) : (b)) 
 #define Max(a, b)		(((a) > (b)) ? (a) : (b)) 
-#define GD_UNUSED(Argument) ((void) Argument)
+#define GD_UNUSED(Argument) (static_cast<void>(Argument))
+
+/// Some glue magic.
+#define GD_GLUE_(A, B) A ## B
+#define GD_GLUE(A, B) GD_GLUE_(A, B)
+
+/// Some widening magic.
+#define GD_WIDEN_(String) L ## String
+#define GD_WIDEN(String) GD_WIDEN_(String)
 
 #if defined(__cplusplus)
 #	define GD_BIT(Bit)		(TypeTraits::RemoveAllModifiers<decltype((Bit))>::Type(1) << (Bit))

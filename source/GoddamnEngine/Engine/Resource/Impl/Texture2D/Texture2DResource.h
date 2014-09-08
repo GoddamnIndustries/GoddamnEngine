@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Returns loaded texture
 		GDINL HRITexture2D* GetHRITexture2D(
-		) const { return self->Texture; }
+		) const { return this->Texture; }
 
 	private:
 

@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINT explicit HRID3D11RenderTarget(HRIRenderTargetCtorInfo const& gpuRenderTargetCtorInfo);
 		GDINT virtual ~HRID3D11RenderTarget();
-		GDINT virtual handle GetNativePointer() const final { return const_cast<ID3D11RenderTargetView**>(&self->RenderTargetRenderTargets[0]); }
+		GDINT virtual handle GetNativePointer() const final { return const_cast<ID3D11RenderTargetView**>(&this->RenderTargetRenderTargets[0]); }
 		GDINT virtual void   BindRenderTarget () const final;
 		GDINT virtual void UnbindRenderTarget () const final;
 	};	// class HRID3D11RenderTarget

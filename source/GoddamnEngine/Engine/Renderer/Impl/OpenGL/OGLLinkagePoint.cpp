@@ -19,21 +19,21 @@ GD_NAMESPACE_BEGIN
 	void HRIOGLLinkagePoint::RenderSelf() const
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
-		if (self->IsRelinkingRequired) {
-			self->IsRelinkingRequired = false;
-			if (self->LinkingCache.VertexArrayObject != 0) {	// Linked previous time, vertex array exists.
-				GL.DeleteVertexArrays(1, &self->LinkingCache.VertexArrayObject);
-				self->LinkingCache.VertexArrayObject = 0;
+		if (this->IsRelinkingRequired) {
+			this->IsRelinkingRequired = false;
+			if (this->LinkingCache.VertexArrayObject != 0) {	// Linked previous time, vertex array exists.
+				GL.DeleteVertexArrays(1, &this->LinkingCache.VertexArrayObject);
+				this->LinkingCache.VertexArrayObject = 0;
 			}
 
-			GL.GenVertexArrays(1, &self->LinkingCache.VertexArrayObject);
+			GL.GenVertexArrays(1, &this->LinkingCache.VertexArrayObject);
 			GD_HRI_OGL_CHECK_ERRORS("Failed to generate Vertex Array Object");
-			GL.BindVertexArray(self->LinkingCache.VertexArrayObject);
+			GL.BindVertexArray(this->LinkingCache.VertexArrayObject);
 			GD_HRI_OGL_CHECK_ERRORS("Failed to bind Vertex Array Object");
 
 			// Vertex attributes.
 			GLuint       ShapeVertexAttribute = 0;
-			UInt64 const ShapeVertexFormat = self->GetShaderProgram()->GetProgramVertexShader()->ShaderDesc->InstanceInputFormat;
+			UInt64 const ShapeVertexFormat = this->GetShaderProgram()->GetProgramVertexShader()->ShaderDesc->InstanceInputFormat;
 			for (size_t SemanticIter = GD_HRI_SEMANTIC_FIRST; SemanticIter != GD_HRI_SEMANTIC_UNKNOWN; SemanticIter += 1) {	// Setting up all upcoming semantic from shader.
 				if ((ShapeVertexFormat & GD_BIT(SemanticIter + 1)) == 0) {	// This semantic is not used, we not need to mention it in layout.
 					continue;
@@ -41,16 +41,16 @@ GD_NAMESPACE_BEGIN
 
 				HRISemantic               const  Semantic = static_cast<HRISemantic>(SemanticIter);
 				HRISemanticDesc           const& SemanticDesc = HRISemanticGetDesc(Semantic);
-				HRIOGLVertexBuffer const* const  VertexBuffer = object_cast<HRIOGLVertexBuffer const*>(self->IndexedShape->GetVertexBuffer(Semantic));
+				HRIOGLVertexBuffer const* const  VertexBuffer = object_cast<HRIOGLVertexBuffer const*>(this->IndexedShape->GetVertexBuffer(Semantic));
 				if (VertexBuffer == nullptr) {
 					throw HRIOGLException("No vertex buffer for required semantic exists.");
 				}
 
 				GLsizei const VerticesCount = static_cast<GLsizei>(VertexBuffer->GetSize()) / GD_FORMAT_COUNT_EXTRACT(SemanticDesc.SlotFormat);
-				if (self->LinkingCache.VerticesCount == -1) {
-					self->LinkingCache.VerticesCount = VerticesCount;
+				if (this->LinkingCache.VerticesCount == -1) {
+					this->LinkingCache.VerticesCount = VerticesCount;
 				} else {
-					if (self->LinkingCache.VerticesCount != VerticesCount) {
+					if (this->LinkingCache.VerticesCount != VerticesCount) {
 						throw HRIOGLException("Invalid vertices count.");
 					}
 				}
@@ -65,35 +65,35 @@ GD_NAMESPACE_BEGIN
 			}
 			
 			// Index buffer.
-			HRIOGLIndexBuffer const* const IndexBuffer = object_cast<HRIOGLIndexBuffer const*>(self->IndexedShape->GetIndexBuffer());
+			HRIOGLIndexBuffer const* const IndexBuffer = object_cast<HRIOGLIndexBuffer const*>(this->IndexedShape->GetIndexBuffer());
 			if (IndexBuffer != nullptr) {
 				IndexBuffer->BindBuffer();
 				size_t const Stride = IndexBuffer->GetStride();
 				if (Stride == 2) {
-					self->LinkingCache.IndexType = GL_UNSIGNED_SHORT;
+					this->LinkingCache.IndexType = GL_UNSIGNED_SHORT;
 				} else if (Stride == 4) {
-					self->LinkingCache.IndexType = GL_UNSIGNED_INT;
+					this->LinkingCache.IndexType = GL_UNSIGNED_INT;
 				} else {
 					throw HRIOGLException("Unimplemented Index buffer Stride");
 				}
 			}
 		}
 
-		self->ShaderProgram->BindShaderProgram();
-		GL.BindVertexArray(self->LinkingCache.VertexArrayObject);
+		this->ShaderProgram->BindShaderProgram();
+		GL.BindVertexArray(this->LinkingCache.VertexArrayObject);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to bind Vertex Array Object");
 		
-		HRIOGLIndexBuffer const* const IndexBuffer = object_cast<HRIOGLIndexBuffer const*>(self->IndexedShape->GetIndexBuffer());
+		HRIOGLIndexBuffer const* const IndexBuffer = object_cast<HRIOGLIndexBuffer const*>(this->IndexedShape->GetIndexBuffer());
 		if (IndexBuffer != nullptr) {
-			GL.DrawElements(GL_TRIANGLES, static_cast<GLsizei>(IndexBuffer->GetSize()), self->LinkingCache.IndexType, nullptr);
+			GL.DrawElements(GL_TRIANGLES, static_cast<GLsizei>(IndexBuffer->GetSize()), this->LinkingCache.IndexType, nullptr);
 			GD_HRI_OGL_CHECK_ERRORS("Failed to Render indexed elements ('DrawElements' failed)");
 		} else {
-			GL.DrawArrays(GL_TRIANGLES, 0, self->LinkingCache.VerticesCount);
+			GL.DrawArrays(GL_TRIANGLES, 0, this->LinkingCache.VerticesCount);
 			GD_HRI_OGL_CHECK_ERRORS("Failed to Render vertex array ('DrawArrays' failed)");
 		}
 
 		GL.BindVertexArray(0);
-		self->ShaderProgram->UnbindShaderProgram();
+		this->ShaderProgram->UnbindShaderProgram();
 
 #if 0	// Debug code. Leave it be here for a while.
 		Float32 const static Vertices[] = {
@@ -115,7 +115,7 @@ GD_NAMESPACE_BEGIN
 			GL.GenVertexArrays(1, &vao);
 			GL.BindVertexArray(vao);
 		}
-		self->ShaderProgram->BindShaderProgram();
+		this->ShaderProgram->BindShaderProgram();
 		GL.EnableVertexAttribArray(0);
 		GD_HRI_OGL_CHECK_ERRORS("EnableVertexAttribArray");
 		vb->BindBuffer();
@@ -124,7 +124,7 @@ GD_NAMESPACE_BEGIN
 		ib->BindBuffer();
 		GL.DrawElements(GL_TRIANGLES, GD_ARRAY_SIZE(Indices), GL_UNSIGNED_SHORT, nullptr);
 		GD_HRI_OGL_CHECK_ERRORS("DrawArrays");
-		self->ShaderProgram->UnbindShaderProgram();
+		this->ShaderProgram->UnbindShaderProgram();
 #endif	// if 0	// Debug code.
 	}
 

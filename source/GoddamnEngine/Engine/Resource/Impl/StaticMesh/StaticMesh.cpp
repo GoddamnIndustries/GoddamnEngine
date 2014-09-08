@@ -12,13 +12,13 @@ GD_NAMESPACE_BEGIN
 	StaticMesh::StaticMesh(String const& identifier) :
 		Resource(identifier)
 	{
-		self->levelsOfDetails.PushLast(HRInterface::GetInstance().CreateIndexedShape());
-		self->bindedLevelOfDetails = 0;
+		this->levelsOfDetails.PushLast(HRInterface::GetInstance().CreateIndexedShape());
+		this->bindedLevelOfDetails = 0;
 	}
 
 	StaticMesh::~StaticMesh()
 	{
-		self->SetNumberOfLods(1);
+		this->SetNumberOfLods(1);
 	}
 
 	/// ==========================================================================================
@@ -27,58 +27,58 @@ GD_NAMESPACE_BEGIN
 
 	size_t StaticMesh::GetNumberOfLods() const
 	{
-		return self->levelsOfDetails.GetSize();
+		return this->levelsOfDetails.GetSize();
 	}
 
 	void StaticMesh::SetNumberOfLods(const size_t numberOfLods)
 	{
 		GD_ASSERT(numberOfLods >= 1, "Number of LODS should be in [1; +infinity)");
 
-		/**/ if (numberOfLods > self->GetNumberOfLods())
+		/**/ if (numberOfLods > this->GetNumberOfLods())
 		{
-			self->levelsOfDetails.Resize(numberOfLods);
-			for (size_t cnt = self->GetNumberOfLods(); cnt < numberOfLods; cnt += 1)
+			this->levelsOfDetails.Resize(numberOfLods);
+			for (size_t cnt = this->GetNumberOfLods(); cnt < numberOfLods; cnt += 1)
 			{
-				self->levelsOfDetails[cnt] = HRInterface::GetInstance().CreateIndexedShape();
+				this->levelsOfDetails[cnt] = HRInterface::GetInstance().CreateIndexedShape();
 			}
 		}
-		else if (numberOfLods < self->GetNumberOfLods())
+		else if (numberOfLods < this->GetNumberOfLods())
 		{
-			for (size_t cnt = numberOfLods; cnt < self->GetNumberOfLods(); cnt += 1)
+			for (size_t cnt = numberOfLods; cnt < this->GetNumberOfLods(); cnt += 1)
 			{
-				self->levelsOfDetails[cnt]->RemoveReference();
+				this->levelsOfDetails[cnt]->RemoveReference();
 			}
 
-			self->levelsOfDetails.Resize(numberOfLods);
+			this->levelsOfDetails.Resize(numberOfLods);
 		}
 	}
 
 	void StaticMesh::DestroyLodAt(const size_t lod)
 	{
 		GD_ASSERT((lod != 0), "Unable to delete LOD in level 0");
-		GD_ASSERT((lod < self->GetNumberOfLods()), "Unable to delete LOD in level 0");
+		GD_ASSERT((lod < this->GetNumberOfLods()), "Unable to delete LOD in level 0");
 
-		self->levelsOfDetails[lod]->RemoveReference();
-		self->levelsOfDetails.RemoveElementAt(lod);
+		this->levelsOfDetails[lod]->RemoveReference();
+		this->levelsOfDetails.RemoveElementAt(lod);
 	}
 
 	HRIIndexedShape* StaticMesh::GetLodAt(const size_t lod)
 	{
-		GD_ASSERT((lod < self->GetNumberOfLods()), "LOD at this level doesn't exists");
-		return self->levelsOfDetails[lod];
+		GD_ASSERT((lod < this->GetNumberOfLods()), "LOD at this level doesn't exists");
+		return this->levelsOfDetails[lod];
 	}
 
 	const HRIIndexedShape* StaticMesh::GetLodAt(const size_t lod) const
 	{
-		GD_ASSERT((lod < self->GetNumberOfLods()), "LOD at this level doesn't exists");
-		return self->levelsOfDetails[lod];
+		GD_ASSERT((lod < this->GetNumberOfLods()), "LOD at this level doesn't exists");
+		return this->levelsOfDetails[lod];
 	}
 		
 	void StaticMesh::SetLodAt(const size_t lod, const HRIIndexedShape* submesh)
 	{
-		/*GD_ASSERT((lod < self->GetNumberOfLods()), "LOD at this level doesn't exists");
+		/*GD_ASSERT((lod < this->GetNumberOfLods()), "LOD at this level doesn't exists");
 		
-		HRIIndexedShape* existingSubmesh = const_cast<HRIIndexedShape*>(self->GetLodAt(lod));
+		HRIIndexedShape* existingSubmesh = const_cast<HRIIndexedShape*>(this->GetLodAt(lod));
 		if (submesh == nullptr)
 		{
 			existingSubmesh->SetIndexData (                         nullptr, 0, 0);
@@ -98,8 +98,8 @@ GD_NAMESPACE_BEGIN
 
 	void StaticMesh::SwitchToLod(const size_t lod)
 	{
-		self->GetLodAt(lod);
-		self->bindedLevelOfDetails = lod;
+		this->GetLodAt(lod);
+		this->bindedLevelOfDetails = lod;
 	}
 
 	/// ==========================================================================================
@@ -177,8 +177,8 @@ GD_NAMESPACE_BEGIN
 
 		switch (shekeLHeader.version)
 		{
-		case ShekelVersion::Version01: { LoadShekel_01(InputResourceData, self->GetLodAt(0)); } break;
-		case ShekelVersion::Version10: { LoadShekel_10(InputResourceData, self->GetLodAt(0)); } break;
+		case ShekelVersion::Version01: { LoadShekel_01(InputResourceData, this->GetLodAt(0)); } break;
+		case ShekelVersion::Version10: { LoadShekel_10(InputResourceData, this->GetLodAt(0)); } break;
 		default: GD_ASSERT(false, "Unsupported Shekel(R) version");
 		}
 	}

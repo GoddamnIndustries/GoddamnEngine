@@ -31,6 +31,9 @@
 #	elif (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_X86))
 #		define GD_DEBUG_BREAK() (__asm__ __volatile__ ("int $3\n\t"))
 //	endif	// if (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_X86))
+#	elif (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_ARM32) || defined(GD_ARCHITECTURE_ARM64))
+#		define GD_DEBUG_BREAK() (__asm__ __volatile__ (".inst 0xE7F001F0\n\t"))
+//	endif	// if (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_ARM32) || defined(GD_ARCHITECTURE_ARM64))
 #	else	// *** Some other implementation ***
 #		include <csignal>
 #		define GD_DEBUG_BREAK() (::raise(SIGTRAP))

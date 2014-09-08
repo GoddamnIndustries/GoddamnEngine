@@ -1,10 +1,9 @@
-#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
 
 GD_NAMESPACE_BEGIN
 
 	GDINL void Screen::GetResolution(Resolution& resolution) const
 	{
-		resolution = LowLevelSystem::GetInstance().WindowResolution;
+	//	resolution = LowLevelSystem::GetInstance().WindowResolution;
 	}
 
 	GDINL Dimension Screen::GetResolutionWidth()

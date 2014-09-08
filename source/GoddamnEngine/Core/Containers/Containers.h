@@ -38,38 +38,38 @@ GD_NAMESPACE_BEGIN
 			GDINL ReverseIterator(ReverseIterator const& Other   ) : Iterator(Other.Iterator       ) { }
 
 			/// Increases/decreases iterator.
-			GDINL ReverseIterator& operator++ (int const) { --self->Iterator; return (*self); }
-			GDINL ReverseIterator& operator++ (         ) { --self->Iterator; return (*self); }
-			GDINL ReverseIterator& operator-- (int const) { ++self->Iterator; return (*self); }
-			GDINL ReverseIterator& operator-- (         ) { ++self->Iterator; return (*self); }
+			GDINL ReverseIterator& operator++ (int const) { --this->Iterator; return (*this); }
+			GDINL ReverseIterator& operator++ (         ) { --this->Iterator; return (*this); }
+			GDINL ReverseIterator& operator-- (int const) { ++this->Iterator; return (*this); }
+			GDINL ReverseIterator& operator-- (         ) { ++this->Iterator; return (*this); }
 
 			/// Increases/decreases iterator on specified value.
-			GDINL ReverseIterator& operator+= (ptrdiff_t const Offset)	     { self->Iterator -= Offset; return (*self); }
-			GDINL ReverseIterator& operator-= (ptrdiff_t const Offset)       { self->Iterator += Offset; return (*self); }
-			GDINL ReverseIterator  operator+  (ptrdiff_t const Offset) const { return ReverseContainerIterator(self->Iterator - Offset); }
-			GDINL ReverseIterator  operator-  (ptrdiff_t const Offset) const { return ReverseContainerIterator(self->Iterator + Offset); }
+			GDINL ReverseIterator& operator+= (ptrdiff_t const Offset)	     { this->Iterator -= Offset; return (*this); }
+			GDINL ReverseIterator& operator-= (ptrdiff_t const Offset)       { this->Iterator += Offset; return (*this); }
+			GDINL ReverseIterator  operator+  (ptrdiff_t const Offset) const { return ReverseContainerIterator(this->Iterator - Offset); }
+			GDINL ReverseIterator  operator-  (ptrdiff_t const Offset) const { return ReverseContainerIterator(this->Iterator + Offset); }
 
 			/// Computes difference between iterators.
-			GDINL ptrdiff_t operator- (ThisPtrType     const  Pointer ) const { return (self->Iterator - Pointer); }
-			GDINL ptrdiff_t operator- (IteratorType    const& Iterator) const { return (self->Iterator - Iterator); }
-			GDINL ptrdiff_t operator- (ReverseIterator const& Other   ) const { return (self->Iterator - Other.Iterator); }
+			GDINL ptrdiff_t operator- (ThisPtrType     const  Pointer ) const { return (this->Iterator - Pointer); }
+			GDINL ptrdiff_t operator- (IteratorType    const& Iterator) const { return (this->Iterator - Iterator); }
+			GDINL ptrdiff_t operator- (ReverseIterator const& Other   ) const { return (this->Iterator - Other.Iterator); }
 
 			/// Compares iterators.
-			GDINL bool operator== (ThisPtrType     const  Pointer ) const { return (self->Iterator == Pointer); }
-			GDINL bool operator== (IteratorType    const  Iterator) const { return (self->Iterator == Iterator); }
-			GDINL bool operator== (ReverseIterator const& Other   ) const { return (self->Iterator == Other.Iterator); }
-			GDINL bool operator!= (ThisPtrType     const  Pointer ) const { return (self->Iterator != Pointer); }
-			GDINL bool operator!= (IteratorType    const  Iterator) const { return (self->Iterator != Iterator); }
-			GDINL bool operator!= (ReverseIterator const& Other   ) const { return (self->Iterator != Other.Iterator); }
+			GDINL bool operator== (ThisPtrType     const  Pointer ) const { return (this->Iterator == Pointer); }
+			GDINL bool operator== (IteratorType    const  Iterator) const { return (this->Iterator == Iterator); }
+			GDINL bool operator== (ReverseIterator const& Other   ) const { return (this->Iterator == Other.Iterator); }
+			GDINL bool operator!= (ThisPtrType     const  Pointer ) const { return (this->Iterator != Pointer); }
+			GDINL bool operator!= (IteratorType    const  Iterator) const { return (this->Iterator != Iterator); }
+			GDINL bool operator!= (ReverseIterator const& Other   ) const { return (this->Iterator != Other.Iterator); }
 
 			/// Assigns this iterator other value.
-			GDINL ReverseIterator& operator= (ThisPtrType     const  Pointer ) { self->Iterator = Pointer;         return (*self); }
-			GDINL ReverseIterator& operator= (IteratorType    const  Iterator) { self->Iterator = Iterator;        return (*self); }
-			GDINL ReverseIterator& operator= (ReverseIterator const& Other   ) { self->Iterator = Other->Iterator; return (*self); }
+			GDINL ReverseIterator& operator= (ThisPtrType     const  Pointer ) { this->Iterator = Pointer;         return (*this); }
+			GDINL ReverseIterator& operator= (IteratorType    const  Iterator) { this->Iterator = Iterator;        return (*this); }
+			GDINL ReverseIterator& operator= (ReverseIterator const& Other   ) { this->Iterator = Other->Iterator; return (*this); }
 
 			/// (De)referensing iterator.
-			GDINL ThisRefType operator*  () const { return (self->Iterator.operator* ()); }
-			GDINL ThisPtrType operator-> () const { return (self->Iterator.operator->()); }
+			GDINL ThisRefType operator*  () const { return (this->Iterator.operator* ()); }
+			GDINL ThisPtrType operator-> () const { return (this->Iterator.operator->()); }
 		};	// struct ReverseContainerIterator
 
 		/// Reverses container Begin, End and ReverseBegin, ReverseEnd functions.
@@ -98,12 +98,12 @@ GD_NAMESPACE_BEGIN
 			GDINL ~ReverseContainerAdapter(                                        ) { }
 
 			/// Returns iterator that points to first child object.
-			GDINL  DirectIterator        Begin() const { return self->Container.ReverseBegin(); }
-			GDINL  DirectIterator        End  () const { return self->Container.ReverseEnd(); }
+			GDINL  DirectIterator        Begin() const { return this->Container.ReverseBegin(); }
+			GDINL  DirectIterator        End  () const { return this->Container.ReverseEnd(); }
 		
 			/// Returns iterator that points to last child object.
-			GDINL ReverseIterator ReverseBegin() const { return self->Container.Begin(); }
-			GDINL ReverseIterator ReverseEnd  () const { return self->Container.End  (); }
+			GDINL ReverseIterator ReverseBegin() const { return this->Container.Begin(); }
+			GDINL ReverseIterator ReverseEnd  () const { return this->Container.End  (); }
 
 #if (!defined(GD_DOCUMENTATION))
 		private /* STL compatibility */:	
