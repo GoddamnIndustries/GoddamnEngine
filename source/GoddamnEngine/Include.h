@@ -522,6 +522,7 @@
 
 #define GD_MONOLITHIC_ENGINE
 
+#define fallthrough
 #define abstract		= 0
 #define impl_abstract	abstract
 #define object_cast		static_cast
