@@ -32,13 +32,8 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HLSLParserErrorDesc(String const& Message) : ToolchainMessageDesc(Message) { }
 	};	// struct StreamedLexerErrorDesc
 
-	/// Fatal parsing error exception
-	class HLSLParserErrorException : public ToolchainException
-	{
-	public /*Public API*/:
-		GDINL explicit HLSLParserErrorException(String const& Message) : ToolchainException(Message.CStr()) { }
-		GDINL virtual ~HLSLParserErrorException() { }
-	};	// class ToolchainException
+	/// Fatal parsing error exception.
+	GD_DEFINE_EXCPETION_DERIVED_FINAL(HLSLParserErrorException, ToolchainException);
 
 	static StreamedLexerOptions const& GetDefaultOptionsForHLSL();
 	static HLSLSemanticType HLSLSemanticTypeFromString(String const& Semantic);

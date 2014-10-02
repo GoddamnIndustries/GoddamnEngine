@@ -30,39 +30,39 @@ GD_NAMESPACE_BEGIN
 		/// Returns message of thrown exception.
 		/// @returns Thrown error message.
 		GDINL virtual String const& GetErrorMessage() const { return this->Message; }
+
+		/// Returns type of exception was thrown.
+		/// @returns Type of exception was thrown.
+		GDINL virtual Str GetExceptionType() const { return "Exception"; }
 	};	// class Exception
 
+	// Defines new exception class with specified base class, inheritance attributes and overridden 'GetErrorMessage' proc.
+#define GD_DEFINE_EXCPETION_BAM(ExceptionClass, BaseExceptionClass, Attributes, MessageGetterFunc) \
+	class ExceptionClass Attributes : public BaseExceptionClass \
+	{ \
+	public /*Public API*/: \
+		GDINL explicit ExceptionClass(String const& ErrorMessage) : BaseExceptionClass(ErrorMessage) { } \
+		GDINL virtual ~ExceptionClass() { } \
+		GDINL virtual Str GetExceptionType() const override Attributes { return (#ExceptionClass); } \
+		MessageGetterFunc\
+	};	// class ExceptionClass
+
+#define GD_DEFINE_EXCPETION_DERIVED_FINAL(ExceptionClass, BaseExceptionClass) GD_DEFINE_EXCPETION_BAM(ExceptionClass, BaseExceptionClass, final, /**/)
+#define GD_DEFINE_EXCPETION_DERIVED(ExceptionClass, BaseExceptionClass) GD_DEFINE_EXCPETION_BAM(ExceptionClass, BaseExceptionClass, /**/, /**/)
+#define GD_DEFINE_EXCPETION_FINAL(ExceptionClass) GD_DEFINE_EXCPETION_BAM(ExceptionClass, Exception, final, /**/)
+#define GD_DEFINE_EXCPETION(ExceptionClass) GD_DEFINE_EXCPETION_BAM(ExceptionClass, Exception, /**/, /**/)
+
 	/// Runtime error that notifies that somerthing went wrong due programmer`s fault.
-	class LogicException : public Exception
-	{
-	public /*Public API*/:
-		GDINL explicit LogicException(Str const ErrorMessage) : Exception(ErrorMessage) { }
-		GDINL virtual ~LogicException() { }
-	};	// class LogicException
+	GD_DEFINE_EXCPETION_FINAL(LogicException);
 
 	/// Runtime error that notifies that some action is not supported.
-	class NotSupportedException : public Exception
-	{
-	public /*Public API*/:
-		GDINL explicit NotSupportedException(Str const ErrorMessage) : Exception(ErrorMessage) { }
-		GDINL virtual ~NotSupportedException() { }
-	};	// class NotSupportedException
+	GD_DEFINE_EXCPETION_FINAL(NotSupportedException);
 
 	/// Runtime error that notifies that some code part was not implemented.
-	class NotImplementedException : public Exception
-	{
-	public /*Public API*/:
-		GDINL explicit NotImplementedException(Str const ErrorMessage) : Exception(ErrorMessage) { }
-		GDINL virtual ~NotImplementedException() { }
-	};	// class NotImplementedException
+	GD_DEFINE_EXCPETION_FINAL(NotImplementedException);
 
 	/// Runtime error that notifies that some code part was not implemented.
-	class IndexOutOfBoundsException : public Exception
-	{
-	public /*Public API*/:
-		GDINL explicit IndexOutOfBoundsException(Str const ErrorMessage) : Exception(ErrorMessage) { }
-		GDINL virtual ~IndexOutOfBoundsException() { }
-	};	// class IndexOutOfBoundsException
+	GD_DEFINE_EXCPETION_FINAL(IndexOutOfBoundsException);
 
 	/// Throws exception of specified type on if condition is false.
 	/// @param Condition Condition on which exception would be thrown.
@@ -71,8 +71,9 @@ GD_NAMESPACE_BEGIN
 	GDINL void ConditionalThrow(bool const Condition, ExceptionConstructorArgumentTypes&&... Arguments)
 	{
 		static_assert(TypeTraits::IsBaseType<Exception, ExceptionType>::Value, "'ConditionalThrow<T>' error: specified type should be Exception-derived.");
-		if (!Condition)
+		if (!Condition) {
 			throw ExceptionType(Forward<ExceptionConstructorArgumentTypes>(Arguments)...);
+		}
 	}
 
 #if (defined(GD_RELEASE))

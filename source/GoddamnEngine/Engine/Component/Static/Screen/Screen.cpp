@@ -1,6 +1,5 @@
 #include <GoddamnEngine/Engine/Component/Static/Screen/Screen.h>
 #include <GoddamnEngine/Engine/Component/Static/DeviceConfiguration/DeviceConfiguration.h>
-#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>

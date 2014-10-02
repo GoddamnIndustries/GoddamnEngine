@@ -28,13 +28,8 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HLSLValidatorErrorDesc(String const& Message) : ToolchainMessageDesc(Message) { }
 	};	// struct StreamedLexerErrorDesc
 
-	/// Validation error exception
-	class HLSLValidatorErrorException : public ToolchainException
-	{
-	public /*Public API*/:
-		GDINL explicit HLSLValidatorErrorException(String const& Message) : ToolchainException(Message.CStr()) { }
-		GDINL virtual ~HLSLValidatorErrorException() { }
-	};	// class ToolchainException
+	/// Validation error exception.
+	GD_DEFINE_EXCPETION_DERIVED_FINAL(HLSLValidatorErrorException, ToolchainException);
 
 	/// ==========================================================================================
 	/// HLSLValidator class.

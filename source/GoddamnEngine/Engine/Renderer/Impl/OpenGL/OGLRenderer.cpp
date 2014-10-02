@@ -1,22 +1,33 @@
+/// ==========================================================================================
+/// OGLRenderer.cpp - OpenGL(ES) Hardware renderer implementation implementation.
+/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// 
+/// History:
+///		* 05.06.2014 - Created by James Jhuighuy
+/// ==========================================================================================
+
 #include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRenderer.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/Shader.h>
 #include <GoddamnEngine/Engine/Application/Application.h>
 
-#if (!defined(GD_HRI_OGL_ES))
-#	if (defined(GD_PLATFORM_WINDOWS))
-#		pragma comment(lib, "OpenGL32.lib")
-#		pragma comment(lib, "GLU32.lib")
-#		include <Windows.h>
-#		include <gl/GL.h>
-#		define GD_GL_GET_PROC_ADDRESS (::wglGetProcAddress)
-//	endif	//	if (defined(GD_PLATFORM_WINDOWS))
-#	else	// *** Platform Select ***
-#		error "'~~~Platform-Dependant-Includes~~~' error: Code for target platform is not implemented."
-#	endif	// *** Platform Select ***
-#else	// if (!defined(GD_HRI_OGL_ES))
-#	define GD_GL_GET_PROC_ADDRESS (::eglGetProcAddress)
-#endif	// if (!defined(GD_HRI_OGL_ES))
-	
+#if (defined(GD_PLATFORM_API_LIBSDL2))
+#else	// if (defined(GD_PLATFORM_API_LIBSDL2))
+#	if (!defined(GD_HRI_OGL_ES))
+#		if (defined(GD_PLATFORM_WINDOWS))
+#			pragma comment(lib, "OpenGL32.lib")
+#			pragma comment(lib, "GLU32.lib")
+#			include <Windows.h>
+#			include <gl/GL.h>
+#			define GD_GL_GET_PROC_ADDRESS (::wglGetProcAddress)
+//		endif	//	if (defined(GD_PLATFORM_WINDOWS))
+#		else	// *** Platform Select ***
+#			error "'~~~Platform-Dependant-Includes~~~' error: Code for target platform is not implemented."
+#		endif	// *** Platform Select ***
+#	else	// if (!defined(GD_HRI_OGL_ES))
+#		define GD_GL_GET_PROC_ADDRESS (::eglGetProcAddress)
+#	endif	// if (!defined(GD_HRI_OGL_ES))
+#endif	// if (defined(GD_PLATFORM_API_LIBSDL2))
+
 GD_NAMESPACE_BEGIN
 
 	GD_TYPEINFORMATION_IMPLEMENTATION(HROGLInterface, HRInterface, GDINT);
@@ -29,10 +40,14 @@ GD_NAMESPACE_BEGIN
 			/*throw HRIOGLException("Unable to map 'gl"#MethodName"' method.");*/ \
 			Debug::Warning("Unable to map 'gl"#MethodName"' method.");\
 		}
-#if (!defined(GD_HRI_OGL_ES))
-#	if (defined(GD_PLATFORM_WINDOWS))
+#if (defined(GD_PLATFORM_API_LIBSDL2))
+#else	// if (defined(GD_PLATFORM_API_LIBSDL2))
+#	if (!defined(GD_HRI_OGL_ES))
+#		if (defined(GD_PLATFORM_WINDOWS))
 		HWND const Window = reinterpret_cast<HWND>(Application::GetInstance().GetApplicationGameWindow()->GetWindowNativeHandle());
-		this->DeviceContext = GetDC(Window);
+		if ((this->DeviceContext = ::GetDC(Window)) == nullptr) {
+			throw HRIOGLException("Failed to obtain the windows's device context ('::GetDC' return nullptr)");
+		}
 
 		PIXELFORMATDESCRIPTOR PixelFormatDescriptor;
 		ZeroMemory(&PixelFormatDescriptor, sizeof(PIXELFORMATDESCRIPTOR));
@@ -87,18 +102,18 @@ GD_NAMESPACE_BEGIN
 			throw HRIOGLException("Failed to make generated context current ('::wglMakeCurrent' failed).");
 		}
 
-//	endif	// if (defined(GD_PLATFORM_WINDOWS))
-#	else	// *** Platform Select ***
-#		error "'HROGLInterface::CreateContex()' is not implemented for target platform (OpenGL desktop)."
-#	endif	// *** Platform Select ***
-#else	// if (!defined(GD_HRI_OGL_ES))
-#	if 0
-//	endif	// if 0
-#	else	// *** Platform Select ***
-#		error "'HROGLInterface::CreateContex()' is not implemented for target platform (OpenGL(ES))."
-#	endif	// *** Platform Select ***
-#endif	// if (!defined(GD_HRI_OGL_ES))
-		
+//		endif	// if (defined(GD_PLATFORM_WINDOWS))
+#		else	// *** Platform Select ***
+#			error "'HROGLInterface::CreateContex()' is not implemented for target platform (OpenGL desktop)."
+#		endif	// *** Platform Select ***
+#	else	// if (!defined(GD_HRI_OGL_ES))
+#		if 0
+//		endif	// if 0
+#		else	// *** Platform Select ***
+#			error "'HROGLInterface::CreateContex()' is not implemented for target platform (OpenGL(ES))."
+#		endif	// *** Platform Select ***
+#	endif	// if (!defined(GD_HRI_OGL_ES))
+#endif	// if (defined(GD_PLATFORM_API_LIBSDL2))
 		auto const& GL = HROGLInterface::GetInstance().Driver;
 		
 		// Lets check shader limits.

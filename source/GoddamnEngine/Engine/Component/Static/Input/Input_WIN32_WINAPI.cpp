@@ -1,5 +1,5 @@
 #include <GoddamnEngine/Engine/Component/Static/Input/Input.h>
-#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
+#include <GoddamnEngine/Core/Framework/Framework.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -78,6 +78,7 @@ GD_NAMESPACE_BEGIN
 
 	void Input_WIN32_WINAPI::OnInitializeSelf()
 	{
+#if 0
 		this->keyboardButtons.Resize(this->keyboardButtons.GetCapacity());
 		this->mouseButtons.Resize(this->mouseButtons.GetCapacity());
 
@@ -132,12 +133,12 @@ GD_NAMESPACE_BEGIN
 			Input_WIN32_WINAPI& input = (Input_WIN32_WINAPI&)Input::GetInstance();
 			input.upBindings.PushLast(&(input.mouseButtons[(size_t)keyState] = KeyState::Up));
 		});
+#endif
 	}
 
 	void Input_WIN32_WINAPI::OnUpdateSelf()
 	{
-		for (size_t cnt = 0; cnt < this->upBindings.GetSize(); cnt += 1)
-		{
+		for (size_t cnt = 0; cnt < this->upBindings.GetSize(); cnt += 1) {
 			*(this->upBindings[cnt]) = KeyState::None;
 		}
 

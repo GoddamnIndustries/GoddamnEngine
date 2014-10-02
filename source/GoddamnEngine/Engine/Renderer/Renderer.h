@@ -94,13 +94,8 @@ GD_NAMESPACE_BEGIN
 		GD_HRI_BUFFER_TYPES_COUNT    = GD_HRI_BUFFER_TYPE_UNKNOWN,
 	};	// enum HRIBufferType
 
-	/// Indicates about runtime error caused by renderer interface
-	class HRIException : public Exception
-	{
-	public /*Public API*/:
-		GDINL explicit HRIException(String const& Message) : Exception(Message.CStr()) { }
-		GDINL virtual ~HRIException() { }
-	};	// class HRIException
+	/// Indicates about runtime error caused by renderer interface.
+	GD_DEFINE_EXCPETION(HRIException);
 
 	/// ==========================================================================================
 	/// Semantics

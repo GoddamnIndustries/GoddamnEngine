@@ -38,11 +38,12 @@ GD_NAMESPACE_BEGIN
 	FileInputStream::FileInputStream(String const& FilePath)
 		: FilePath(FilePath)
 	{
-		if (access(this->FilePath.CStr(), F_OK) == -1)
+		if (access(this->FilePath.CStr(), F_OK) == -1) {
 			throw FileNotFoundException(String::Format("File with path '%s' was not found on disk ('access(F_OK)' failed).", FilePath.CStr()));
-		if (access(this->FilePath.CStr(), R_OK) == -1)
+		} else if (access(this->FilePath.CStr(), R_OK) == -1) {
 			throw IOException(String::Format("File with path '%s' cannon be opened for reading ('access(R_OK)' failed).", FilePath.CStr()));
-		
+		}
+
 		this->FileHandle = ::fopen(this->FilePath.CStr(), "rb");
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "File was validated with 'access' but 'fopen' has failed.");
 	}
@@ -142,6 +143,7 @@ GD_NAMESPACE_BEGIN
 			if (access(this->FilePath.CStr(), W_OK) == -1) {
 				throw IOException(String::Format("File with path '%s' cannon be opened for writing ('access(W_OK)' failed).", FilePath.CStr()));
 			}
+
 			this->FileHandle = ::fopen(this->FilePath.CStr(), "wb");
 			if (this->FileHandle == nullptr) {
 				throw IOException("Failed to open existing file for writing (fopen(\"wb\") returned nullptr).");
