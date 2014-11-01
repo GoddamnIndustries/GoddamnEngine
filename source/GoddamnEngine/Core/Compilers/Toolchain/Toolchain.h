@@ -20,12 +20,7 @@ GD_NAMESPACE_BEGIN
 	typedef char ToolchainMessage;
 
 	/// Runtime error that caused be some tool of toolchain.
-	class ToolchainException : public Exception
-	{
-	public /*Public API*/:
-		GDINL explicit ToolchainException(Str const ErrorMessage) : Exception(ErrorMessage) { }
-		GDINL virtual ~ToolchainException() { }
-	};	// class ToolchainException
+	GD_DEFINE_EXCPETION(ToolchainException);
 
 	struct ToolchainMessageDesc
 	{

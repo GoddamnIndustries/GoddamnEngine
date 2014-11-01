@@ -54,12 +54,7 @@ GD_NAMESPACE_BEGIN
 	};	// struct StreamedLexerErrorDesc
 
 	/// Compiling exception.
-	class GLSLCompilerErrorException : public ToolchainException
-	{
-	public /*Public API*/:
-		GDINL explicit GLSLCompilerErrorException(String const& Message) : ToolchainException(Message.CStr()) { }
-		GDINL virtual ~GLSLCompilerErrorException() { }
-	};	// class ToolchainException
+	GD_DEFINE_EXCPETION_DERIVED_FINAL(GLSLCompilerErrorException, ToolchainException);
 
 	namespace GLSLInsertations
 	{

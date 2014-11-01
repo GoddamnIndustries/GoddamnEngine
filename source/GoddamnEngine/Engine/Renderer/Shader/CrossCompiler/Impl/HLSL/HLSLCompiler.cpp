@@ -33,12 +33,7 @@ GD_NAMESPACE_BEGIN
 	};	// struct StreamedLexerErrorDesc
 
 	/// Compiling exception.
-	class HLSLCompilerErrorException : public ToolchainException
-	{
-	public /*Public API*/:
-		GDINL explicit HLSLCompilerErrorException(String const& Message) : ToolchainException(Message.CStr()) { }
-		GDINL virtual ~HLSLCompilerErrorException() { }
-	};	// class ToolchainException
+	GD_DEFINE_EXCPETION_DERIVED_FINAL(HLSLCompilerErrorException, ToolchainException);
 
 #if (!defined(GD_D3D_LINKED))
 	static pD3DCompile D3DCompile;

@@ -16,12 +16,7 @@
 GD_NAMESPACE_BEGIN
 
 	/// Represents Input/Output runtime error.
-	class IOException : public Exception
-	{
-	public /*Public API*/:
-		GDINL explicit IOException(String const& Message) : Exception(Message.CStr()) { }
-		GDINL virtual ~IOException() { }
-	};	// class IOException
+	GD_DEFINE_EXCPETION(IOException);
 
 GD_NAMESPACE_END
 

@@ -6,6 +6,8 @@
 utilities/ThirdPartyExecutables/
 _Dependencies/
 _Build/
+bin/
+lib/
 *.lib
 *.a
 *.dll

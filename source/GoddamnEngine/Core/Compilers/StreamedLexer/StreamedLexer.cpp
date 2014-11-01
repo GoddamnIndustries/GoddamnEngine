@@ -19,13 +19,8 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit StreamedLexerErrorDesc(String const& Message) : ToolchainMessageDesc(Message) { }
 	};	// struct StreamedLexerErrorDesc
 
-	/// Fatal parsing error exception
-	class StreamedLexerFatalErrorException : public ToolchainException
-	{
-	public /*Public API*/:
-		GDINL explicit StreamedLexerFatalErrorException(String const& Message) : ToolchainException(Message.CStr()) { }
-		GDINL virtual ~StreamedLexerFatalErrorException() { }
-	};	// class ToolchainException
+	/// Fatal parsing error exception.
+	GD_DEFINE_EXCPETION_DERIVED_FINAL(StreamedLexerFatalErrorException, ToolchainException);
 
 	/// Implementation of a basic streaming lexer. 
 	class BasicStreamedLexerImpl : public IToolchainTool

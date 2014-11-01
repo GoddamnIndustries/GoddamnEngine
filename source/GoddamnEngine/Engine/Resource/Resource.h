@@ -127,20 +127,10 @@ GD_NAMESPACE_BEGIN
 	};	// enum class RSState 
 
 	/// Runtime error that notifies that somerthing went wrong while loading some resource.
-	class RSLoadingException : public Exception
-	{
-	public /*Public API*/:
-		GDINL explicit RSLoadingException(Str const ErrorMessage) : Exception(ErrorMessage) { }
-		GDINL virtual ~RSLoadingException() { }
-	};	// class RSLoadingException
+	GD_DEFINE_EXCPETION_FINAL(RSLoadingException);
 
 	/// Runtime error that notifies that somerthing went wrong while cooking some resource.
-	class RSCookingException : public Exception
-	{
-	public /*Public API*/:
-		GDINL explicit RSCookingException(Str const ErrorMessage) : Exception(ErrorMessage) { }
-		GDINL virtual ~RSCookingException() { }
-	};	// class RSCookingException
+	GD_DEFINE_EXCPETION_FINAL(RSCookingException);
 
 	/// Describes interface of loadable object.
 	class Resource : public Object

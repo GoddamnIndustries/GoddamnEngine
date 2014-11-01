@@ -1,5 +1,5 @@
 /// ==========================================================================================
-/// OGLRenderer.h - OpenGL(ES) Hardware renderer implementation.
+/// OGLRenderer.h - OpenGL(ES) Hardware renderer implementation interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
