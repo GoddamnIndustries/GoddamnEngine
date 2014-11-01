@@ -2,6 +2,17 @@
 /// Include.h: Common definitions for all GoddamnEngine inner projects.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
+/// ------------------------------------------------------------------------------------------
+/// The project was created to kill the pain of the loss of some people I've tried to love.
+/// And it does not matter, who was guilty of my loneliness. All my mistakes have led me
+/// to the purpose of my whole life.
+///	
+/// But happiness can't just appear from nowhere, just like everything in this world.
+///	And now I am here, without any thoughts where to go, and no desire to step back.
+///	
+/// Oleg Butakov (James Jhuighuy).
+/// ------------------------------------------------------------------------------------------
+/// 
 /// History:
 ///		* Long time ago in galaxy far away - Created by James Jhuighuy.
 /// ==========================================================================================
@@ -116,7 +127,7 @@
 /// ------------------------------------------------------------------------------------------
 
 /// @todo Identify Sony PlayStation 4 here.
-#elif (defined(___SOME_VERY_SPECIFIC_PLAY_STATION4_MACRO___))
+#elif (defined(___SOME_VERY_SPECIFIC_PLAYSTATION4_MACRO___))
 #	define GD_PLATFORM_API_ORBIS		  (1)							///< PlayStation 4 runs orbis OS.
 #	define GD_PLATFORM_API_POSIX		  (1)							///< And also is POSIX-compatible.
 #	define GD_PLATFORM_PLAYSTATION4		  (1)							///< Building the XBox One game.
@@ -378,10 +389,10 @@
 // Aligment...
 #if (defined(GD_COMPILER_MSVC_COMPATIBLE))
 #	define GD_ALIGN_MSVC(Alignment) __declspec(align(Alignment))		///< Class would be aligned in MSVS compatible notation.
-#	define GD_ALIGN_GCC(Alignment)										///< Dummy class aligment for abstraction.
+#	define GD_ALIGN_GCC(Alignment)										///< Dummy class alignment  for abstraction.
 //endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
 #elif (defined(GD_COMPILER_GCC_COMPATIBLE))
-#	define GD_ALIGN_MSVC(Alignment)										///< Dummy class aligment for abstraction.
+#	define GD_ALIGN_MSVC(Alignment)										///< Dummy class alignment  for abstraction.
 #	define GD_ALIGN_GCC(Alignment) __attribute__((aligned(Alignment)))	///< Class would be aligned in MSVS compatible notation.
 //endif	// if (defined(GD_COMPILER_GCC_COMPATIBLE))
 #endif	// *** Aligment specifications. ***

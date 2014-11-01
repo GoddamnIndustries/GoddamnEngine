@@ -69,9 +69,9 @@ GD_NAMESPACE_BEGIN
 	typedef khronos_uint8_t GLubyte;
 	typedef void* GLeglImageOES;
 #endif	// if (defined(!GD_HRI_OGL_ES))
-	typedef void(*GLDEBUGPROCARB)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
-	typedef GLDEBUGPROCARB GLDEBUGPROCKHR;
-	typedef GLDEBUGPROCARB GLDEBUGPROC;
+	typedef void(*GLDEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
+	typedef GLDEBUGPROC GLDEBUGPROCKHR;
+	typedef GLDEBUGPROC GLDEBUGPROCARB;
 
 	/// Indicates about runtime error caused by renderer interface
 	class HRIOGLException : public HRIException

@@ -65,10 +65,13 @@ GD_NAMESPACE_BEGIN
 		template<typename IterationPredicateType>
 		inline void ForEach(IterationPredicateType const& IterationPredicate) const
 		{
-			for (auto const Element : this->Elements)
+			for (auto const Element : this->Elements) {
 				IterationPredicate(Element);
-			for (auto const InnerBlock : this->InnerBlocks)
+			}
+
+			for (auto const InnerBlock : this->InnerBlocks) {
 				InnerBlocks->ForEach(IterationPredicate);
+			}
 		}
 
 		/// Appends definition to this block.

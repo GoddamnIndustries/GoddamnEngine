@@ -56,7 +56,7 @@ GD_NAMESPACE_BEGIN
 		if (TemporaryContext == nullptr) {
 			throw HRIOGLException("Failed to create temporary OpenGL context ('::wglCreateContext' returned nullptr)");
 		}
-		if (wglMakeCurrent(this->DeviceContext, TemporaryContext) != TRUE) {
+		if (::wglMakeCurrent(this->DeviceContext, TemporaryContext) != TRUE) {
 			throw HRIOGLException("Failed to setup temorary OpenGL context ('::wglMakeCurrent' failed)");
 		}
 

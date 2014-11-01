@@ -152,7 +152,7 @@ GD_NAMESPACE_BEGIN
 			Unicode16,
 			Unknown,
 		};	// enum class StreamedLexerEscapeSequenceMode
-
+		  
 		size_t                      CurrentLexemFloatExponent   = 1;
 		Vector<String const*>       CurrentMatches              ;
 		StreamedLexerESMode			CurrentESMode				= StreamedLexerESMode::Unknown;
@@ -394,11 +394,12 @@ GD_NAMESPACE_BEGIN
 	void BasicStreamedLexerImpl::ProcessIntegerConstant()
 	{
 		switch (this->CurrentCharacterType) {
+			case StreamedLexerCharType::Digit: { } break;	// Just skipping digits.
 			case StreamedLexerCharType::Alphabetic: {	// Switching notation:
 				bool WasNotationSwitched = ((this->CurrentLexem->ProcessedDataInteger == 0) && (this->CurrentLexemIntegerNotation == StreamedLexerImpl::DefaultLexemIntegerNotation));
 				if (WasNotationSwitched) {	// Checking if notation switching is provided in format "0x...":
 					CharAnsi const UpperCaseCharacter = CharAnsiHelpers::ToUpperCase(this->CurrentCharacter);
-					/**/ if (UpperCaseCharacter == Options.IntegeRHexadecimalNotationDelimiter)	this->CurrentLexemIntegerNotation = 16;
+					/**/ if (UpperCaseCharacter == Options.IntegerHexadecimalNotationDelimiter)	this->CurrentLexemIntegerNotation = 16;
 					else if (UpperCaseCharacter == Options.IntegerOctalNotationDelimiter)		this->CurrentLexemIntegerNotation = 8;
 					else if (UpperCaseCharacter == Options.IntegerBinaryNotationDelimiter)		this->CurrentLexemIntegerNotation = 2;
 					else WasNotationSwitched = false;
@@ -542,7 +543,8 @@ GD_NAMESPACE_BEGIN
 	void StreamedLexerImpl::ProcessIntegerConstant()
 	{
 		this->BasicStreamedLexerImpl::ProcessIntegerConstant();
-		if (this->CurrentState == StreamedLexerState::ReadingConstantInteger) {	// Processing character if it is digit in current notation.
+		if ((this->CurrentState == StreamedLexerState::ReadingConstantInteger) && (this->CurrentCharacterType == StreamedLexerCharType::Digit)) {	
+			// Processing character if it is digit in current notation.
 			UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(this->CurrentCharacter);
 			this->CurrentLexem->ProcessedDataInteger *= this->CurrentLexemIntegerNotation;
 			this->CurrentLexem->ProcessedDataInteger += CurrentDigit;
@@ -655,8 +657,7 @@ GD_NAMESPACE_BEGIN
 
 				this->CurrentLexem->ProcessedDataCharacter *= CurrentNotation;
 				this->CurrentLexem->ProcessedDataCharacter += CurrentDigit;
-				return;
-			}
+			} return;
 		
 			default: {
 				throw NotImplementedException("Parsing this StreamedLexerImpl::CurrentESMode is not implemented");
@@ -874,7 +875,7 @@ GD_NAMESPACE_BEGIN
 		_In_ String	                    && SingleLineCommentDeclaration,
 		_In_ String	                    && MultipleLineCommentBeginning,
 		_In_ String	                    && MultipleLineCommentEnding,
-		_In_ CharAnsi const                IntegeRHexadecimalNotationDelimiter,
+		_In_ CharAnsi const                IntegerHexadecimalNotationDelimiter,
 		_In_ CharAnsi const                IntegerOctalNotationDelimiter,
 		_In_ CharAnsi const                IntegerBinaryNotationDelimiter,
 		_In_ CharAnsi const                FloatingPointDelimiter
@@ -883,15 +884,15 @@ GD_NAMESPACE_BEGIN
 		, SingleLineCommentDeclaration(Forward<String>(SingleLineCommentDeclaration))
 		, MultipleLineCommentBeginning(Forward<String>(MultipleLineCommentBeginning))
 		, MultipleLineCommentEnding(Forward<String>(MultipleLineCommentEnding))
-		, IntegeRHexadecimalNotationDelimiter((IntegeRHexadecimalNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegeRHexadecimalNotationDelimiter) : CharAnsi('\0'))
+		, IntegerHexadecimalNotationDelimiter((IntegerHexadecimalNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerHexadecimalNotationDelimiter) : CharAnsi('\0'))
 		, IntegerOctalNotationDelimiter((IntegerOctalNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerOctalNotationDelimiter) : CharAnsi('\0'))
 		, IntegerBinaryNotationDelimiter((IntegerBinaryNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerBinaryNotationDelimiter) : CharAnsi('\0'))
 		, FloatingPointDelimiter(FloatingPointDelimiter)
 	{
 		// Checking if all delimiters are alphabetic characters.
 		/// @todo Add check for all notation switching characters have unique or \0 values.
-		GD_DEBUG_ASSERT(((this->IntegeRHexadecimalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(this->IntegeRHexadecimalNotationDelimiter)),
-			"'IntegeRHexadecimalNotationDelimiter' should be alphabetic character. Recommended value is 'x'.");
+		GD_DEBUG_ASSERT(((this->IntegerHexadecimalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(this->IntegerHexadecimalNotationDelimiter)),
+			"'IntegerHexadecimalNotationDelimiter' should be alphabetic character. Recommended value is 'x'.");
 		GD_DEBUG_ASSERT(((this->IntegerOctalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(this->IntegerOctalNotationDelimiter)),
 			"'IntegerOctalNotationDelimiter' should be alphabetic character. Recommended value is 'c'.");
 		GD_DEBUG_ASSERT(((this->IntegerBinaryNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(this->IntegerBinaryNotationDelimiter)),

@@ -21,10 +21,19 @@
 
 #define GD_STRINGIFY(What) #What
 
+#define GD_REFLECTOR_WRITE(File, Message, ...) (::fprintf(File, Message, __VA_ARGS__))
+#define GD_REFLECTOR_LOG(Message, ...) GD_REFLECTOR_WRITE(stdout, Message, __VA_ARGS__)
+#define GD_REFLECTOR_ERROR(Message, ...) GD_REFLECTOR_WRITE(stderr, Message, __VA_ARGS__)
+
 GD_NAMESPACE_BEGIN
 
 	class InputStream;
 	class CPPCodeGenerator;
+
+	namespace CPPReflectorOptions
+	{
+		GDINT static bool IsSilent();
+	}	// namespace CPPReflectorOptions
 
 	enum CPPResult : UInt8
 	{

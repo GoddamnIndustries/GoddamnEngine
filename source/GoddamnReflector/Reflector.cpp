@@ -31,14 +31,10 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if lexem was succesfully read.
 	bool CPPBaseParser::TryReadNextLexem()
 	{
-		if (this->Lexer->GetNextLexem(&this->CurrentLexem))
-		{	// Reading succeded, we need to skip comments comments until read token.
-			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_COMMENT))
-			{	// Comment coming. Maybe we need to store it somewhere or ... 
+		if (this->Lexer->GetNextLexem(&this->CurrentLexem))	{	// Reading succeded, we need to skip comments comments until read token.
+			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_COMMENT)) {	// Comment coming. Maybe we need to store it somewhere or ... 
 				return this->TryReadNextLexem();
-			}
-			else if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_EOS))
-			{	// End-Of-Stream coming.
+			} else if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_EOS))	{	// End-Of-Stream coming.
 				return false;
 			}
 
@@ -78,8 +74,7 @@ GD_NAMESPACE_BEGIN
 	/// @param ContentType The expected lexem content type.
 	void CPPBaseParser::ExpectLexem(LexemContentType const ContentType)
 	{
-		if (!this->TryExpectLexem(ContentType))
-		{	// Unexpected lexem type.
+		if (!this->TryExpectLexem(ContentType))	{	// Unexpected lexem type.
 			CPPBaseParserErrorDesc static const UnexpectedLexemError("unexpected %s. Expected %s.");
 			throw CPPParsingException(UnexpectedLexemError.ToString(&this->CurrentLexem, LexemContentTypeToString(this->CurrentLexem.GetContentType()), LexemContentTypeToString(ContentType)));
 		}
@@ -91,9 +86,12 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if current lexem content type and parsed data ID mathes with specified one.
 	bool CPPBaseParser::TryExpectLexem(LexemContentType const ContentType, StreamedLexerID const ID)
 	{
-		if (this->TryExpectLexem(ContentType))
-			if (this->CurrentLexem.GetProcessedDataID() == ID)
+		if (this->TryExpectLexem(ContentType)) {
+			if (this->CurrentLexem.GetProcessedDataID() == ID) {
 				return true;
+			}
+		}
+
 		return false;
 	}
 
@@ -107,8 +105,7 @@ GD_NAMESPACE_BEGIN
 		this->ExpectLexem(ContentType);
 
 		// Next lexem exists and has expected content type.
-		if (this->CurrentLexem.GetProcessedDataID() != ID)
-		{	// Unexpected lexem value.
+		if (this->CurrentLexem.GetProcessedDataID() != ID) {	// Unexpected lexem value.
 			CPPBaseParserErrorDesc static const UnexpectedLexemValueError("unexpected '%s'.");
 			throw CPPParsingException(UnexpectedLexemValueError.ToString(&this->CurrentLexem, this->CurrentLexem.GetRawData().CStr()));
 		}
@@ -125,8 +122,7 @@ GD_NAMESPACE_BEGIN
 	/// If lexem does not exists then raises 'unexpected End-Of-Stream' error.
 	void CPPBaseParser::ExpectNextLexem()
 	{
-		if (!this->TryExpectNextLexem())
-		{	// Unexpected end of stream while reading lexem.
+		if (!this->TryExpectNextLexem()) {	// Unexpected end of stream while reading lexem.
 			CPPBaseParserErrorDesc static const EndOfStreamInVariableDeclError("unexpected End-Of-Stream.");
 			throw CPPParsingException(EndOfStreamInVariableDeclError.ToString(&this->CurrentLexem));
 		}
@@ -159,9 +155,12 @@ GD_NAMESPACE_BEGIN
 	/// @returns True if lexem was succesfully read and mathes with specified content type and specified parsed data ID.
 	bool CPPBaseParser::TryExpectNextLexem(LexemContentType const ContentType, StreamedLexerID const ID)
 	{
-		if (this->TryExpectNextLexem(ContentType))
-			if (this->CurrentLexem.GetProcessedDataID() == ID)
+		if (this->TryExpectNextLexem(ContentType)) {
+			if (this->CurrentLexem.GetProcessedDataID() == ID) {
 				return true;
+			}
+		}
+
 		return false;
 	}
 
@@ -191,35 +190,25 @@ GD_NAMESPACE_BEGIN
 		do
 		{	// Expression determination based on braces stack.
 			using namespace StreamedLexerDefaultOptions;
-			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR))
-			{	// Here is our operator. 
+			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR)) {	// Here is our operator. 
 				StreamedLexerID const PDID = this->GetCurrentLexem().GetProcessedDataID();
 				if (   (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_BEGIN) || (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_BEGIN  )
-					|| (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN) || (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN))
-				{	// Opening brace. 
+					|| (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN) || (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN))	{	// Opening brace. 
 					BracesStack.PushLast(PDID);
-				}
-				else if (!BracesStack.IsEmpty())
-				{	// In-stack closing braces.
+				} else if (!BracesStack.IsEmpty()) {	// In-stack closing braces.
 					if (   (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_END) || (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END  )
-						|| (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END) || (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END))
-					{	// Closing brace. Stack not empty -> matching braces balance.
+						|| (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END) || (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END))	{	// Closing brace. Stack not empty -> matching braces balance.
 						this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, *(BracesStack.End() - 1) + 1);
 						BracesStack.PopLast();
-					}
-					else if (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_RIGHT_SHIFT)
-					{	// >> Operator. Treating is as dual template closing brace.
+					} else if (PDID == GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_RIGHT_SHIFT) {	// >> Operator. Treating is as dual template closing brace.
 						if (   (*(BracesStack.End() - 2) != GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN)
-							|| (*(BracesStack.End() - 1) != GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN))
-						{	// <...< ... >> Mistmatch.
+							|| (*(BracesStack.End() - 1) != GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN))	{	// <...< ... >> Mistmatch.
 							this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END);
 						}
 
 						BracesStack.Resize(BracesStack.GetSize() - 2);
 					}
-				}
-				else
-				{	// Out of stack. This should be our end of expression.
+				} else {	// Out of stack. This should be our end of expression.
 					return;
 				}
 			}
@@ -241,15 +230,15 @@ GD_NAMESPACE_BEGIN
 
 		// Trying to analyze template parameters.
 		using namespace StreamedLexerDefaultOptions;
-		if (this->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN))
-		{	// Here comes template parameters. Inside template parameters are only types.
-			for (;;)
-			{	// Trying to parse existing template parameter.
-				if (!this->ParseComplexTypenameWithCVs(_CodeGenerator))
+		if (this->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_BEGIN)) {	// Here comes template parameters. Inside template parameters are only types.
+			for (;;) {	// Trying to parse existing template parameter.
+				if (!this->ParseComplexTypenameWithCVs(_CodeGenerator)) {
 					return false;
+				}
 
-				if (!this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA))
+				if (!this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA)) {
 					this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TEMPLATE_END);
+				}
 			
 				CodeGenerator->WriteLexem(&this->GetCurrentLexem());
 			}
@@ -274,23 +263,20 @@ GD_NAMESPACE_BEGIN
 		{	// Parsing CVs.
 			using namespace StreamedLexerDefaultOptions;
 			StreamedLexerID const PDID = this->GetCurrentLexem().GetProcessedDataID();
-			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_KEYWORD))
-			{	// Parsing all const-s, volatile-s, signess and etc.
+			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_KEYWORD)) {	// Parsing all const-s, volatile-s, signess and etc.
 				if (   (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONST    )
 					|| (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONSTEXPR)
 					|| (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_VOLATILE )
 					|| (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_SIGNED   )
-					|| (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_UNSIGNED ))
+					|| (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_UNSIGNED )) {
 					break;
-			}
-			else if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR))
-			{	// Parsing references and pointers.
+				}
+			} else if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR)) {	// Parsing references and pointers.
 				if (   (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_REFERENCING  )
-					|| (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_DEREFERENCING))
+					|| (PDID != GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_DEREFERENCING)) {
 					break;
-			}
-			else
-			{	// Something unexpected. Lets think that here complex type name ends.	
+				}
+			} else {	// Something unexpected. Lets think that here complex type name ends.	
 				break;
 			}
 
@@ -308,11 +294,12 @@ GD_NAMESPACE_BEGIN
 	/// @return True if skipped to next annotation otherwise false if next annotation was not found.
 	CPPResult CPPBaseParser::TrySkipToNextAnnotation(String const& ExpectedAnnotationPrefix /* = "$GD_" */)
 	{
-		do
-		{
-			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) // This is idenitifier lexem.
-				if (strncmp(this->CurrentLexem.GetRawData().CStr(), ExpectedAnnotationPrefix.CStr(), ExpectedAnnotationPrefix.GetSize()) == 0) // This lexem matches with prefix.
+		do {
+			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) { // This is idenitifier lexem.
+				if (strncmp(this->CurrentLexem.GetRawData().CStr(), ExpectedAnnotationPrefix.CStr(), ExpectedAnnotationPrefix.GetSize()) == 0) { // This lexem matches with prefix.
 					return GD_CPP_RESULT_SUCCEEDED;
+				}
+			}
 		} while (this->TryReadNextLexem());
 		return GD_CPP_RESULT_EMPTY;
 	}
@@ -323,12 +310,12 @@ GD_NAMESPACE_BEGIN
 	CPPResult CPPBaseParser::ParseAnnotation(handle const Args /* = nullptr */, String const& ExpectedAnnotationPrefix /* = "$GD_" */)
 	{
 		CPPResult const SkippingResult = this->TrySkipToNextAnnotation(ExpectedAnnotationPrefix);
-		if (SkippingResult != GD_CPP_RESULT_SUCCEEDED)
+		if (SkippingResult != GD_CPP_RESULT_SUCCEEDED) {
 			return SkippingResult;
+		}
 
 		SharedPtr<CPPAnnotationParser> AnnotationParser = CPPAnnotationParserSpawner::SpawnAnnotationParser(this->CurrentLexem.GetRawData(), Args);
-		if (AnnotationParser.GetPointer() != nullptr)
-		{	// Enabling full-featured parser.
+		if (AnnotationParser.GetPointer() != nullptr) {	// Enabling full-featured parser.
 			this->Lexer->SwitchMode(StreamedLexerMode::Advanced);
 			AnnotationParser->ParseAnnotation(this);
 			// Switching back to simple one.
@@ -354,45 +341,36 @@ GD_NAMESPACE_BEGIN
 		using namespace StreamedLexerDefaultOptions;
 
 		BaseParser->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_BEGIN);
-		if (!BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END))
-		{	// Annotation contains parameters
-			for (;;)
-			{	// Parsing annotation parameters.
+		if (!BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END))	{	// Annotation contains parameters
+			for (;;) {	// Parsing annotation parameters.
 				UniquePtr<CPPAnnotationParamParser> const AnnotationParamParser = this->SpawnParamParser(BaseParser->GetCurrentLexem().GetRawData());
-				if (AnnotationParamParser == nullptr)
-				{	// Failed to create argument parser.
+				if (AnnotationParamParser == nullptr) {	// Failed to create argument parser.
 					CPPBaseParserErrorDesc static const InvalidAnnotationParameterSpecified("invalid annotation parameter '%s' specified.");
 					throw CPPParsingException(InvalidAnnotationParameterSpecified.ToString(&BaseParser->GetCurrentLexem(), BaseParser->GetCurrentLexem().GetRawData().CStr()));
 				}
 
-				if ((BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN)))
-				{	// Found assigment expression.
-					BaseParser->ExpectNextLexem();
-					for (;;)
-					{	// Loop made to parse multiple paramaters with '|' operator.
+				if ((BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN))) {	// Found assigment expression.
+					BaseParser->ExpectNextLexem(); 
+					for (;;) {	// Loop made to parse multiple paramaters with '|' operator.
 						BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
 						AnnotationParamParser->ParseArgument(BaseParser, this, BaseParser->GetCurrentLexem().GetRawData());
-						if (!BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_OR)) break;
+						if (!BaseParser->TryExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_OR)) {
+							break;
+						}
+
 						BaseParser->ExpectNextLexem();
 					}
 				}
 
-				if (BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END))
-				{	// Annotation parametrs end here.
+				if (BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END)) {	// Annotation parametrs end here.
 					BaseParser->ExpectNextLexem();
-					return;
-				}
-				else
-				{	// Comma parameters separator (for values without assigment expression).
+				} else {	// Comma parameters separator (for values without assigment expression).
 					BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA);
 					BaseParser->ExpectNextLexem();
 				}
 			}
-		}
-		else
-		{	// Annotation does not contains parameters.
+		} else {	// Annotation does not contains parameters.
 			BaseParser->ExpectNextLexem();
-			return;
 		}
 	}
 
@@ -423,8 +401,9 @@ GD_NAMESPACE_BEGIN
 	void CPPAnnotationParserSpawner::RegisterAnnotationParser(String const& Name, CtorProc const Ctor)
 	{
 		HashCode const NameHash = Name.GetHashCode();
-		if (CPPAnnotationParserSpawner::AnnotationParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX)
+		if (CPPAnnotationParserSpawner::AnnotationParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX) {
 			GD_DEBUG_ASSERT_FALSE("Parser for annotation '%s' was already defined.", Name.CStr());
+		}
 
 		CPPAnnotationParserSpawner::AnnotationParsersRegistry.PushLast(NameHash, Ctor);
 	}
@@ -437,9 +416,11 @@ GD_NAMESPACE_BEGIN
 	{
 		HashCode const NameHash = Name.GetHashCode();
 		size_t const FoundIndex = CPPAnnotationParserSpawner::AnnotationParsersRegistry.FindFirstElement(NameHash);
-		if (FoundIndex != SIZE_MAX)
+		if (FoundIndex != SIZE_MAX) {
 			return CPPAnnotationParserSpawner::AnnotationParsersRegistry.GetElementAt(FoundIndex).Value(Args);
-		return SharedPtr<CPPAnnotationParser>(nullptr);
+		} else {
+			return SharedPtr<CPPAnnotationParser>(nullptr);
+		}
 	}
 
 	/// ==========================================================================================
@@ -459,8 +440,9 @@ GD_NAMESPACE_BEGIN
 	void CPPAnnotationParamParserSpawner::RegisterAnnotationParamParser(String const& Name, CtorProc const Ctor)
 	{
 		HashCode const NameHash = Name.GetHashCode();
-		if (this->AnnotationParamParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX)
+		if (this->AnnotationParamParsersRegistry.FindFirstElement(NameHash) != SIZE_MAX) {
 			GD_DEBUG_ASSERT_FALSE("Parser for paremeter of an annotation '%s' was already defined.", Name.CStr());
+		}
 
 		this->AnnotationParamParsersRegistry.PushLast(NameHash, Ctor);
 	}
@@ -473,9 +455,11 @@ GD_NAMESPACE_BEGIN
 	{
 		HashCode const NameHash = Name.GetHashCode();
 		size_t const FoundIndex = this->AnnotationParamParsersRegistry.FindFirstElement(NameHash);
-		if (FoundIndex != SIZE_MAX)
+		if (FoundIndex != SIZE_MAX) {
 			return this->AnnotationParamParsersRegistry.GetElementAt(FoundIndex).Value(Args);
-		return UniquePtr<CPPAnnotationParamParser>(nullptr);
+		} else {
+			return UniquePtr<CPPAnnotationParamParser>(nullptr);
+		}
 	}
 
 #if 0
@@ -580,8 +564,20 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
+/// ------------------------------------------------------------------------------------------
+/// The reflector's entry point.
+/// ------------------------------------------------------------------------------------------
+
+#define GD_REFLECTOR_SUCCEDED 0
+#define GD_REFLECTOR_FAILED 1
+
 #include <ctime>
 #include <GoddamnReflector/Enumeration/Enumeration.h>
+
+GD_NORETURN static void PrintUsageAndExit()
+{
+
+}
 
 int main(int const ArgumensCount, char const* const* const ParamsList)
 {
@@ -589,30 +585,54 @@ int main(int const ArgumensCount, char const* const* const ParamsList)
 	using namespace GD_NAMESPACE;
 #endif	// if (defined(GD_NAMESPACE))
 
-	static char const* const HeaderPath = R"(D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.h)";
-	
-	clock_t const StartTime = clock();
-//	try
-//	{
-		IToolchain static Toolchain;
-		CPPBaseParser static BaseParser(&Toolchain, new FileInputStream(HeaderPath));
-		for (;;)
-		{
-			if (BaseParser.TrySkipToNextAnnotation() == GD_CPP_RESULT_EMPTY)
+	// Parsing command-line arguments.
+	bool WasSuccesfullyParsed = false;
+	Str InputHeaderPath = nullptr;
+	Str OutputSourcePath = nullptr;
+	for (size_t CommandLineArgumentIndex = 1; (CommandLineArgumentIndex < ArgumensCount) && WasSuccesfullyParsed; ++CommandLineArgumentIndex) {
+		// ..
+		auto const CommandLineArgument = ParamsList[CommandLineArgumentIndex];
+		if (::strncmp(CommandLineArgument, "/in:", sizeof("/in:") - 1) == 0) {
+			InputHeaderPath  = CommandLineArgument + sizeof("/in:");
+		} else if (::strncmp(CommandLineArgument, "/out:", sizeof("/out:") - 1) == 0) {
+			OutputSourcePath = CommandLineArgument + sizeof("/out:");
+		} else if (::strcmp(CommandLineArgument, "/s") == 0) {
+			// Disable the console output.
+		} else {
+			GD_REFLECTOR_ERROR("\n\nUnknown parameter \"%s\" specified.", CommandLineArgument);
+			GD_REFLECTOR_ERROR("\n\nUsage: \"%s\" /in:FileName [/out:FileName] [..OPTIONS..]\n"
+				"    /in:FileName  Path to the C++ header that is required to be processed.    \n"
+				"    /out:FileName Path to the C++ source file to which generated reflection   \n"
+				"                  data would be written. If the file exists than it would be  \n"
+				"                  extended.                                                   \n"
+				"    /s            Specify it to disable console output.                       \n"
+				"", ParamsList[0]);
+			return GD_REFLECTOR_FAILED;
+		}
+	}
+	if (InputHeaderPath == nullptr) {
+
+	}
+
+	GD_REFLECTOR_LOG("\nGoddamnEngine C++ Reflection utility.\nCopyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.");
+
+	clock_t const StartTime = ::clock();
+	try {
+		IToolchain Toolchain;
+		CPPBaseParser BaseParser(&Toolchain, new FileInputStream(HeaderPath));
+		for (;;) {
+			if (BaseParser.TrySkipToNextAnnotation() == GD_CPP_RESULT_EMPTY) {
 				break;
+			}
 
 			BaseParser.ParseAnnotation();
 		}
-//	}
-//	catch (Exception const& Excp)
-//	{
-//		printf("\n%s", Excp.GetErrorMessage());
-//		return 1;
-//	}
+	} catch (Exception const& TheException) {
+		GD_REFLECTOR_ERROR("\nGeneration failed with following excpetion:\n%s", TheException.GetErrorMessage());
+		return GD_REFLECTOR_FAILED;
+	}
 
-	clock_t const TotalTime = clock() - StartTime;
-	printf("\nGeneration took %f seconds.", static_cast<float>(TotalTime) / 1000.0f);
-
-//	abort();
-	return 0;
+	clock_t const TotalTime = ::clock() - StartTime;
+	GD_REFLECTOR_LOG("\nGeneration took %f seconds.", static_cast<float>(TotalTime) / 1000.0f);
+	return GD_REFLECTOR_SUCCEDED;
 }

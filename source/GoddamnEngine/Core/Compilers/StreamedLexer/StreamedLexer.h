@@ -39,7 +39,7 @@ GD_NAMESPACE_BEGIN
 			               String  const MultipleLineCommentBeginning;	///< Multiple line comment declaration. '/*' or '<!--' basically 
 			               String  const MultipleLineCommentEnding;		///< Multiple line comment ending. '*/' or '-->' basically 
 
-		CharAnsi const IntegeRHexadecimalNotationDelimiter;	///< Character that provides translating this integer into hexadecimal notation. (E.g. 0xFF08A3)
+		CharAnsi const IntegerHexadecimalNotationDelimiter;	///< Character that provides translating this integer into hexadecimal notation. (E.g. 0xFF08A3)
 		CharAnsi const IntegerOctalNotationDelimiter;		///< Character that provides translating this integer into octal notation. (E.g. 0c166672)
 		CharAnsi const IntegerBinaryNotationDelimiter;		///< Character that provides translating this integer into binary notation.	(E.g. 0b10010110)
 
@@ -53,7 +53,7 @@ GD_NAMESPACE_BEGIN
 			_In_ String	                    && SingleLineCommentDeclaration,
 			_In_ String	                    && MultipleLineCommentBeginning,
 			_In_ String	                    && MultipleLineCommentEnding,
-			_In_ CharAnsi const                IntegeRHexadecimalNotationDelimiter,
+			_In_ CharAnsi const                IntegerHexadecimalNotationDelimiter,
 			_In_ CharAnsi const                IntegerOctalNotationDelimiter,
 			_In_ CharAnsi const                IntegerBinaryNotationDelimiter,
 			_In_ CharAnsi const                FloatingPointDelimiter

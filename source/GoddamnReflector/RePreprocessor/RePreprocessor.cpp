@@ -27,8 +27,9 @@ GD_NAMESPACE_BEGIN
 	/// @param PrependingDirective Preprocessor directive that prepends the definition.
 	bool CPPRePreprocessorDefinitions::ÑonsiderPreprocessorDirective(CPPBaseParser* const BaseParser)
 	{	// Checking if this actually is a directive.
-		if (!BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, StreamedLexerDefaultOptions::GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PREPROCESSOR))
+		if (!BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, StreamedLexerDefaultOptions::GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PREPROCESSOR)) {
 			return false;
+		}
 
 		// Reading all directive into a string.
 		BaseParser->ExpectNextLexem();
@@ -41,28 +42,24 @@ GD_NAMESPACE_BEGIN
 			}
 
 			PreprocessorDirectiveBuilder.Append(Character);
-		};
+		}
+
 		String const PreprocessorDirective = PreprocessorDirectiveBuilder.ToString();
 		BaseParser->ExpectNextLexem();
 
 		// '#endif' directive parsing.
-		if (strncmp(PreprocessorDirective.CStr(), "endif", sizeof("endif") - 1) == 0)
-		{	// Leaving this block.
+		if (strncmp(PreprocessorDirective.CStr(), "endif", sizeof("endif") - 1) == 0) {	// Leaving this block.
 			this->CurrentBlock->PostCondition = Move(PreprocessorDirective);
-			if ((this->CurrentBlock = this->CurrentBlock->ParentBlock) == nullptr)
-			{	// Unexpected '#endif' directive. No corresponding '#if' was not found.
+			if ((this->CurrentBlock = this->CurrentBlock->ParentBlock) == nullptr) {	// Unexpected '#endif' directive. No corresponding '#if' was not found.
 				CPPBaseParserErrorDesc static const UnexpectedEndifDirectiveError("unexpected '#endif' directive. No corresponding '#if' was not found.");
 				throw CPPParsingException(UnexpectedEndifDirectiveError.ToString(&BaseParser->GetCurrentLexem()));
 			}
 
 			return true;
-		} 
-
-		// '#if*', '#elif*' and '#else' directive parsing.
-		else if ((!this->CurrentBlock->Elements.IsEmpty()) || (!this->CurrentBlock->PreCondition.IsEmpty()) || (this->TopBlock == this->CurrentBlock))
-		{	// This block already has condition. Now lets see what we can do:
-			if (strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0)
-			{	// Creating a new block (in scope of current).
+		} else if ((!this->CurrentBlock->Elements.IsEmpty()) || (!this->CurrentBlock->PreCondition.IsEmpty()) || (this->TopBlock == this->CurrentBlock)) {
+			// '#if*', '#elif*' and '#else' directive parsing.
+			// This block already has condition. Now lets see what we can do:
+			if (strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0) {	// Creating a new block (in scope of current).
 				this->CurrentBlock->InnerBlocks.PushLast(SharedPtr<Block>(new Block()));
 				
 				Block* const NewBlock = this->CurrentBlock->InnerBlocks.GetLastElement().GetPointer();
@@ -71,11 +68,9 @@ GD_NAMESPACE_BEGIN
 				
 				this->CurrentBlock = NewBlock;
 				return true;
-			}
-			else if ((strncmp(PreprocessorDirective.CStr(), "else", sizeof("else") - 1) == 0) || (strncmp(PreprocessorDirective.CStr(), "elif", sizeof("elif") - 1) == 0))
-			{	// Creating a new block (sibling current).
-				if (this->TopBlock == this->CurrentBlock)
-				{	// We are in top block. We need to wrap it with other top.
+			} else if ((strncmp(PreprocessorDirective.CStr(), "else", sizeof("else") - 1) == 0) || (strncmp(PreprocessorDirective.CStr(), "elif", sizeof("elif") - 1) == 0)) {
+				// Creating a new block (sibling current).
+				if (this->TopBlock == this->CurrentBlock) {	// We are in top block. We need to wrap it with other top.
 					Block* const OldTopBlock = this->TopBlock.Release();
 					this->CurrentBlock = OldTopBlock;
 					this->TopBlock.Reset(new Block());
@@ -92,24 +87,22 @@ GD_NAMESPACE_BEGIN
 				this->CurrentBlock = NewBlock;
 				return true;
 			}
-		}
-		else
-		{	// Current block has empty pre-condition. Only '#if' is valid.
-			if ((strncmp(PreprocessorDirective.CStr(), "else", sizeof("else") - 1) == 0) || (strncmp(PreprocessorDirective.CStr(), "elif", sizeof("elif") - 1) == 0))
-			{	// Unexpected '#***' directive. No corresponding '#if' was not found.
+		} else {	// Current block has empty pre-condition. Only '#if' is valid.
+			if ((strncmp(PreprocessorDirective.CStr(), "else", sizeof("else") - 1) == 0) || (strncmp(PreprocessorDirective.CStr(), "elif", sizeof("elif") - 1) == 0)) {
+				// Unexpected '#***' directive. No corresponding '#if' was not found.
 				CPPBaseParserErrorDesc static const UnexpectedDirectiveError("unexpected '#%s' directive. No corresponding '#if' was not found.");
 				throw CPPParsingException(UnexpectedDirectiveError.ToString(&BaseParser->GetCurrentLexem()));
-			}
-			else if (strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0)
-			{
+			} else if (strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0) {
 				this->CurrentBlock->PreCondition = Move(PreprocessorDirective);
 				return true;
 			}
 		}
 
 		// Pushing unkown directive back.
-		for (auto const Character : PreprocessorDirective)
+		for (auto const Character : PreprocessorDirective) {
 			BaseParser->GetLexer()->RevertCharacter(Character);
+		}
+
 		return true;
 	}
 
@@ -121,7 +114,6 @@ GD_NAMESPACE_BEGIN
 		{
 		private:
 			size_t IdentsCount = SIZE_MAX;
-		public:
 			StringBuilder Builder;
 
 		public:
@@ -133,18 +125,20 @@ GD_NAMESPACE_BEGIN
 				Builder.AppendFormat("\n%s\tPreCondition : %s", Idents.CStr(), (!SomeBlock->PreCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PreCondition.CStr()).CStr() : "None"));
 				Builder.AppendFormat("\n%s\tPostCondition : %s", Idents.CStr(), (!SomeBlock->PostCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PostCondition.CStr()).CStr() : "None"));
 				Builder.AppendFormat("\n%s\tElements <Count %u> [", Idents.CStr(), SomeBlock->Elements.GetSize());
-				for (auto const Element : SomeBlock->Elements)
+				for (auto const Element : SomeBlock->Elements) {
 					Builder.AppendFormat("\n%s\t\t\"(0x%x)\",", Idents.CStr(), Element.GetPointer());
+				}
 				Builder.AppendFormat("\n%s\t]", Idents.CStr());
-				for (auto const InnerBlock : SomeBlock->InnerBlocks)
+				for (auto const InnerBlock : SomeBlock->InnerBlocks) {
 					this->WriteBlock(InnerBlock.GetPointer());
+				}
 				Builder.AppendFormat("\n%s}", Idents.CStr());
 				--this->IdentsCount;
 
 				return this->Builder;
 			}
 		};	// class CPPRePreprocessorDefinitionsWriter
-		printf("%s", CPPRePreprocessorDefinitionsWriter().WriteBlock(this->TopBlock.GetPointer()).GetPointer());
+		GD_REFLECTOR_LOG("%s", CPPRePreprocessorDefinitionsWriter().WriteBlock(this->TopBlock.GetPointer()).GetPointer());
 	}
 #endif	// if (defined(GD_DEBUG))
 

@@ -115,7 +115,10 @@ GD_NAMESPACE_BEGIN
 		/// Returns some ID data, located inside this lexem if this lexem can has ID.
 		GDINL StreamedLexerID  GetProcessedDataID()    const 
 		{ 
-			if ((this->GetContentType() != GD_LEXEM_CONTENT_TYPE_KEYWORD) && (this->GetContentType() != GD_LEXEM_CONTENT_TYPE_OPERATOR)) return 0;
+			if ((this->GetContentType() != GD_LEXEM_CONTENT_TYPE_KEYWORD) && (this->GetContentType() != GD_LEXEM_CONTENT_TYPE_OPERATOR)) {
+				return 0;
+			}
+
 			return this->ProcessedDataID;
 		}
 	};	// struct Lexem
