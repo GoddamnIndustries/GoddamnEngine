@@ -14,6 +14,7 @@
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 #include <GoddamnEngine/Core/Math/FastMath/FastMath.h>
 #include <GoddamnEngine/Core/Utility.h>
+
 #include <new>			// For placement new
 
 GD_NAMESPACE_BEGIN
@@ -22,315 +23,480 @@ GD_NAMESPACE_BEGIN
 	/// StackMemoryProvider class
 	/// ==========================================================================================
 
-	// To prevent a lot of copy-pastes in code.
-#define GD_STACK_MEMORY_PROVIDER_TEMPLATE() template<typename ElementType, size_t const _Capacity>
-#define GD_STACK_MEMORY_PROVIDER_CLASS()    VectorMemoryProviders::StackMemoryProvider<ElementType, _Capacity>
+	/// ------------------------------------------------------------------------------------------
+	/// Constructors/Destructor.
+	/// ------------------------------------------------------------------------------------------
 
-	/// @todo Move StackMemoryProvider implementation here
+	template<size_t const Capacity>
+	inline VectorMemoryProviders::StackMemoryProvider<Capacity>::StackMemoryProvider(size_t const TheCapacity)
+	{ 
+		GD_ASSERT((TheCapacity <= Capacity), "Stack memory provider size is out of range.");
+	}
 
-#undef GD_STACK_MEMORY_PROVIDER_TEMPLATE
-#undef GD_STACK_MEMORY_PROVIDER_CLASS
+	/// ------------------------------------------------------------------------------------------
+	/// Operators.
+	/// ------------------------------------------------------------------------------------------
+
+	template<size_t const Capacity>
+	inline VectorMemoryProviders::StackMemoryProvider<Capacity>& VectorMemoryProviders::StackMemoryProvider<Capacity>::operator= (StackMemoryProvider&& OtherStackMemoryProvider)
+	{
+		if ((&OtherStackMemoryProvider) != this) {
+			// This operator is quiet dangerous because it does not moves object into new places but just copies memory.
+			// And do we actually need to fill with zeros all moved memory? So leave it be how it is.
+			this->~StackMemoryProvider();
+			std::memcpy(&this->Memory[0], &OtherStackMemoryProvider.Memory[0],    sizeof(this->Memory));
+			std::memset(                  &OtherStackMemoryProvider.Memory[0], 0, sizeof(OtherStackMemoryProvider.Memory));
+		}
+
+		return (*this);
+	}
+
+	/// ------------------------------------------------------------------------------------------
+	/// Swap function.
+	/// ------------------------------------------------------------------------------------------
+
+	template<size_t const Capacity>
+	inline void Swap(VectorMemoryProviders::StackMemoryProvider<Capacity>& First, VectorMemoryProviders::StackMemoryProvider<Capacity>& Second)
+	{
+		if (&First != &Second) {
+			for (size_t BlockIndex = 0; BlockIndex < MemoryBlockSize; ++BlockIndex) {
+				Swap(First.Memory[BlockIndex], Second.Memory[BlockIndex]);
+			}
+		}
+	}
 
 	/// ==========================================================================================
 	/// HeapMemoryProvider class
 	/// ==========================================================================================
 
-	// To prevent a lot of copy-pastes in code.
-#define GD_HEAP_MEMORY_PROVIDER_TEMPLATE() template<typename ElementType>
-#define GD_HEAP_MEMORY_PROVIDER_CLASS()    VectorMemoryProviders::HeapMemoryProvider<ElementType>
+	/// ------------------------------------------------------------------------------------------
+	/// Constructors/Destructor.
+	/// ------------------------------------------------------------------------------------------
 
-	/// @todo Move HeapMemoryProvider implementation here
+	inline VectorMemoryProviders::HeapMemoryProvider::HeapMemoryProvider(size_t const Capacity)
+		: Capacity(Capacity)
+		, Memory(Allocator::AllocateMemory(Capacity))
+	{
+	}
 
-#undef GD_HEAP_MEMORY_PROVIDER_TEMPLATE
-#undef GD_HEAP_MEMORY_PROVIDER_CLASS
+	inline VectorMemoryProviders::HeapMemoryProvider::HeapMemoryProvider(HeapMemoryProvider&& OtherHeapMemoryProvider)
+		: Capacity(OtherHeapMemoryProvider.Capacity)
+		, Memory(OtherHeapMemoryProvider.Memory)
+	{
+		OtherHeapMemoryProvider.Memory = nullptr;
+		OtherHeapMemoryProvider.Capacity = 0;
+	}
+
+	inline VectorMemoryProviders::HeapMemoryProvider::~HeapMemoryProvider()
+	{
+		Allocator::DeallocateMemory(static_cast<handle>(this->Memory));
+		this->Memory = nullptr;
+	}
+
+	/// ------------------------------------------------------------------------------------------
+	/// Operators.
+	/// ------------------------------------------------------------------------------------------
+
+	inline VectorMemoryProviders::HeapMemoryProvider& VectorMemoryProviders::HeapMemoryProvider::operator= (HeapMemoryProvider&& OtherHeapMemoryProvider)
+	{
+		if ((&OtherHeapMemoryProvider) != this) {
+			this->~HeapMemoryProvider();
+			this->Capacity = OtherHeapMemoryProvider.Capacity;
+			this->Memory = OtherHeapMemoryProvider.Memory;
+			OtherHeapMemoryProvider.Capacity = 0;
+			OtherHeapMemoryProvider.Memory = nullptr;
+		}
+
+		return (*this);
+	}
+
+	/// ------------------------------------------------------------------------------------------
+	/// Swap function.
+	/// ------------------------------------------------------------------------------------------
+
+	inline void Swap(VectorMemoryProviders::HeapMemoryProvider& First, VectorMemoryProviders::HeapMemoryProvider& Second)
+	{
+		if (&First != &Second) {
+			Swap(First.Memory, Second.Memory);
+			Swap(First.Capacity, Second.Capacity);
+		}
+	}
 
 	/// ==========================================================================================
 	/// Vector class
 	/// ==========================================================================================
 
 	// To prevent a lot of copy-pastes in code.
-#define GD_VECTOR_TEMPLATE() template<typename ElementType, typename MemoryProviderType /*= VectorMemoryProviders::HeapMemoryProvider<ElementType>*/>
-#define GD_VECTOR_CLASS()	 Vector<ElementType, MemoryProviderType>
+#define GD_VECTOR_TEMPLATE template<typename ElementType, typename MemoryProviderType /*= VectorMemoryProviders::HeapMemoryProvider*/>
+#define GD_VECTOR_CLASS	   Vector<ElementType, MemoryProviderType>
 
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()::Vector(size_t const InitialElemntsCount /* = 0 */, size_t const Capacity /* = SIZE_MAX */)
-		: MemoryProviderInstance((Capacity != SIZE_MAX) ? Capacity : InitialElemntsCount) 
+	/// ------------------------------------------------------------------------------------------
+	/// Private methods.
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE template<typename OtherSourceIteratorType, typename OtherDestinationIteratorType>
+	inline void GD_VECTOR_CLASS::CopyFromRange(OtherSourceIteratorType const& StartSourceIterator, OtherSourceIteratorType const& EndSourceIterator, OtherDestinationIteratorType const& StartDestinationIterator)
 	{
-		this->Count = InitialElemntsCount;
-		for (MutableIterator Iterator = this->Begin(); Iterator != this->End(); Iterator += 1) {
-			new (&*Iterator) ElementType(/*InitialElement*/);
+		for (OtherSourceIteratorType Iterator = StartSourceIterator; Iterator != EndSourceIterator; ++Iterator) {
+			new (StartDestinationIterator + (Iterator - StartSourceIterator)) ElementType(*Iterator);
 		}
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()::Vector(ConstIterator const StartIterator, ConstIterator const EndIterator)
+	GD_VECTOR_TEMPLATE template<typename OtherSourceIteratorType, typename OtherDestinationIteratorType>
+	inline void GD_VECTOR_CLASS::MoveFromRange(OtherSourceIteratorType const& StartSourceIterator, OtherSourceIteratorType const& EndSourceIterator, OtherDestinationIteratorType const& StartDestinationIterator)
+	{
+		for (OtherSourceIteratorType Iterator = StartSourceIterator; Iterator != EndSourceIterator; ++Iterator) {
+			new (StartDestinationIterator + (Iterator - StartSourceIterator)) ElementType(Forward<ElementType>(*Iterator));
+		}
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::InitializeRange(PtrMutableIterator const StartIterator, PtrMutableIterator const EndIterator)
+	{
+		for (PtrMutableIterator Iterator = StartIterator; Iterator != EndIterator; ++Iterator) {
+			new (Iterator) ElementType();
+		}
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::DeinitializeRange(PtrMutableIterator const StartIterator, PtrMutableIterator const EndIterator)
+	{
+		for (PtrMutableIterator Iterator = StartIterator; Iterator != EndIterator; ++Iterator) {
+			Iterator->~ElementType();
+		}
+	}
+
+	GD_VECTOR_TEMPLATE template<typename ComparasionPredicateType>
+	inline bool GD_VECTOR_CLASS::CompareTo(Vector const& OtherVector, ComparasionPredicateType const& ComparasionPredicate)
+	{
+		size_t MinCount = Min(this->Count, OtherVector.GetSize());
+		for (size_t Index = 0; Index < MinCount; ++Index) {
+			if (!ComparasionPredicate(*(this->PtrBegin() + Index), *(OtherVector.PtrBegin() + Index))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/// ------------------------------------------------------------------------------------------
+	/// Constructors and destructor.
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS::Vector(size_t const InitialElemntsCount /* = 0 */, size_t const Capacity /* = SIZE_MAX */)
+		: MemoryProviderInstance(((Capacity != SIZE_MAX) ? Capacity : InitialElemntsCount) * sizeof(ElementType)) 
+	{
+		this->Count = InitialElemntsCount;
+		Vector::InitializeRange(this->PtrBegin(), this->PtrEnd());
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS::Vector(ConstIterator const StartIterator, ConstIterator const EndIterator)
 		: MemoryProviderInstance(static_cast<size_t>(EndIterator - StartIterator))
 	{
 		GD_DEBUG_ASSERT((EndIterator >= StartIterator), "Invalid iterators specified.");
 		this->Count = static_cast<size_t>(EndIterator - StartIterator);
-		for (ConstIterator Iterator = StartIterator; Iterator != EndIterator; Iterator += 1) {
-			new (&*this->Begin() + (Iterator - StartIterator)) ElementType(*Iterator);
-		}
+		Vector::CopyFromRange(StartIterator, EndIterator, this->PtrBegin());
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()::Vector(std::initializer_list<ElementType> const& InitializerList)
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS::Vector(std::initializer_list<ElementType> const& InitializerList)
 		: MemoryProviderInstance(InitializerList.size())
 	{
 		this->Count = InitializerList.size();
-		for (typename std::initializer_list<ElementType>::const_iterator Iterator = InitializerList.begin(); Iterator != InitializerList.end(); Iterator += 1) {
-			new (&*this->Begin() + (Iterator - InitializerList.begin())) ElementType(*Iterator);
-		}
+		Vector::CopyFromRange(InitializerList.begin(), InitializerList.end(), this->PtrBegin());
 	}
 
 #if (defined(__cplusplus_cli))
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()::Vector(array<ElementType>^ CliArray)
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS::Vector(array<ElementType>^ CliArray)
 		: MemoryProviderInstance(static_cast<size_t>(CliArray->Length))
 	{
 		this->Count = static_cast<size_t>(CliArray->Length);
-		for (ConstIterator Iterator = StartIterator; Iterator != EndIterator; Iterator += 1) {
-			new (&*this->Begin() + (Iterator - OtherVector.Begin()) ElementType(CliArray[Iterator - OtherVector.Begin()]);
-		}
+		pin_ptr<ElementType> CliArrayPtr = &CliArray[0];
+		PtrMutableIterator PtrCliArrayIteratorStart = CliArrayPtr;
+		Vector::CopyFromRange(PtrCliArrayIteratorStart, PtrCliArrayIteratorStart + this->Count, this->PtrBegin());
 	}
 #endif	// if (defined(__cplusplus_cli))
 
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()::Vector(Vector const& OtherVector)
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS::Vector(Vector const& OtherVector)
 		: MemoryProviderInstance(OtherVector.GetCapacity())
 	{
 		this->Count = OtherVector.Count;
-		for (ConstIterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); Iterator += 1) {
-			new (&*this->Begin() + (Iterator - OtherVector.Begin())) ElementType(*Iterator);
-		}
+		Vector::CopyFromRange(OtherVector.PtrBegin(), OtherVector.PtrEnd(), this->PtrBegin());
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()::Vector(Vector&& OtherVector)
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS::Vector(Vector&& OtherVector)
 		: MemoryProviderInstance(Move(OtherVector.MemoryProviderInstance))
 	{
 		this->Count	= OtherVector.Count;
 		OtherVector.Count = 0;
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()::~Vector()
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS::~Vector()
 	{
 		this->Clear();
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline size_t GD_VECTOR_CLASS()::GetSize() const
+	/// ------------------------------------------------------------------------------------------
+	/// Dynamic size management.
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE
+	inline size_t GD_VECTOR_CLASS::GetSize() const
 	{
 		return this->Count;
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline size_t GD_VECTOR_CLASS()::GetCapacity() const
+	GD_VECTOR_TEMPLATE
+	inline size_t GD_VECTOR_CLASS::GetCapacity() const
 	{
 		return this->MemoryProviderInstance.GetCapacity();
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::Resize(size_t const NewSize)
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::Resize(size_t const NewSize)
 	{
-		if (this->GetSize() != NewSize) {	// We do not need to resize our element with same size.
-			if (this->GetSize() < NewSize) {	// Increasing size of container, we need to initialize new elements with template value.
+		if (this->Count != NewSize) {	// We do not need to resize our element with same size.
+			if (this->Count < NewSize) {	// Increasing size of container, we need to initialize new elements with template value.
 				this->ReserveToSize(NewSize);
-				for (MutableIterator Iterator = this->End(); Iterator != (this->Begin() + NewSize); Iterator += 1) {
-					new (&*Iterator) ElementType();
-				}
+				Vector::InitializeRange(this->PtrEnd(), this->PtrBegin() + NewSize);
 			} else {	// Decreasing size of container, we need to destroy last elements there.
-				for (MutableIterator Iterator = (this->Begin() + NewSize); Iterator != this->End(); Iterator += 1) {
-					(*Iterator).~ElementType();
-				}
+				Vector::DeinitializeRange(this->PtrBegin() + NewSize, this->PtrEnd());
 			}
 
 			this->Count = NewSize;
 		}
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::Reserve(size_t const NewCapacity)
-	{	// Moving elements into other memory block. Note that elements outside range keep uninitialized.
-		if (this->GetCapacity() != NewCapacity)	{
-			MemoryProviderType NewMemoryProviderInstance(NewCapacity);
-			for (MutableIterator Iterator = this->Begin(); Iterator != (this->Begin() + Min(this->GetSize(), NewCapacity)); Iterator += 1) {
-				new (NewMemoryProviderInstance.GetPointer() + (Iterator - this->Begin())) ElementType(Move(*Iterator));
-			}
-			for (MutableIterator Iterator = this->Begin(); Iterator != this->End(); Iterator += 1) {
-				(*Iterator).~ElementType();
-			}
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::Reserve(size_t const NewCapacity)
+	{	
+		// Moving elements into other memory block. Note that elements outside range keep uninitialized.
+		if (MemoryProviderType::MaxCapacity == VectorMemoryProviders::FlexibleMaxCapacity) {
+			if (this->GetCapacity() != NewCapacity)	{
+				// Clamping contatiner size to capacity.
+				if (NewCapacity < this->Count) {
+					this->Resize(NewCapacity);
+				}
 
-			this->MemoryProviderInstance = Move(NewMemoryProviderInstance);
+				MemoryProviderType NewMemoryProviderInstance(NewCapacity * sizeof(ElementType));
+				Vector::MoveFromRange(this->PtrBegin(), this->PtrEnd(), reinterpret_cast<PtrMutableIterator>(NewMemoryProviderInstance.GetPointer()));
+				Vector::DeinitializeRange(this->PtrBegin(), this->PtrEnd());
+				this->MemoryProviderInstance = Move(NewMemoryProviderInstance);
+			}
+		} else {
+			GD_ASSERT(NewCapacity <= MemoryProviderType::MaxCapacity, "Unable to increase capacity. Max value reached.");
 		}
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::ReserveToSize(size_t const NewSize)
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::ReserveToSize(size_t const NewSize)
 	{
-		if (this->GetCapacity() < NewSize) {	// Changing capacity to make container not reallocate memory next time.
-			size_t const Exponent = /*IntegerMath::Log2(NewSize)*/static_cast<size_t>(log2f(float(NewSize)));
-			this->Reserve(size_t(1) << (Exponent + size_t(1)));
+		if (MemoryProviderType::MaxCapacity == VectorMemoryProviders::FlexibleMaxCapacity) {
+			if (NewSize > this->GetCapacity()) {
+				this->Reserve(Max(this->GetCapacity(), NewSize) * 13 / 10);
+			}
 		}
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::Emptify()
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::ShrinkToFit()
+	{
+		this->Reserve(this->Count);
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::Emptify()
 	{
 		this->Resize(0);
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::Clear()
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::Clear()
 	{
 		this->Reserve(0);
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline ElementType const& GD_VECTOR_CLASS()::GetElementAt(size_t const Index) const
+	/// ------------------------------------------------------------------------------------------
+	/// Elements access.
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE
+	inline ElementType const& GD_VECTOR_CLASS::GetElementAt(size_t const Index) const
 	{
-		GD_ASSERT((Index < this->GetSize()), "Index is out of bounds");
-		return *(this->Begin() + Index);
+		GD_ASSERT(Index < this->Count, "Index is out of bounds");
+		return (*(this->PtrBegin() + Index));
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline ElementType& GD_VECTOR_CLASS()::GetElementAt(size_t const Index)
+	GD_VECTOR_TEMPLATE
+	inline ElementType& GD_VECTOR_CLASS::GetElementAt(size_t const Index)
 	{
-		GD_ASSERT((Index < this->GetSize()), "Index is is out of bounds");
-		return *(this->Begin() + Index);
+		GD_ASSERT(Index < this->Count, "Index is is out of bounds");
+		return (*(this->PtrBegin() + Index));
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline ElementType const& GD_VECTOR_CLASS()::GetFirstElement() const
+	GD_VECTOR_TEMPLATE
+	inline ElementType const& GD_VECTOR_CLASS::GetFirstElement() const
 	{
 		return this->GetElementAt(0);
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline ElementType& GD_VECTOR_CLASS()::GetFirstElement()
+	GD_VECTOR_TEMPLATE
+	inline ElementType& GD_VECTOR_CLASS::GetFirstElement()
 	{
 		return this->GetElementAt(0);
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline ElementType const& GD_VECTOR_CLASS()::GetLastElement() const
+	GD_VECTOR_TEMPLATE
+	inline ElementType const& GD_VECTOR_CLASS::GetLastElement() const
 	{
-		return this->GetElementAt(this->GetSize() - 1);
+		return this->GetElementAt(this->Count - 1);
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline ElementType& GD_VECTOR_CLASS()::GetLastElement()
+	GD_VECTOR_TEMPLATE
+	inline ElementType& GD_VECTOR_CLASS::GetLastElement()
 	{
-		return this->GetElementAt(this->GetSize() - 1);
+		return this->GetElementAt(this->Count - 1);
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::SetElementAt(size_t const Index, ElementType&& Element)
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::SetElementAt(size_t const Index, ElementType&& Element)
 	{
-		this->GetElementAt(Index) = Forward<ElementType>(Element);
+		ElementType& ExistingElement = this->GetElementAt(Index);
+		ExistingElement.~ElementType();
+		new (&ExistingElement) ElementType(Forward<ElementType>(Element));
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::SetElementAt(size_t const Index, ElementType const& Element)
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::SetElementAt(size_t const Index, ElementType const& Element)
 	{
-		this->GetElementAt(Index) = Element;
+		this->SetElementAt(Move(ElementType(Element)));
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::InsertElementAt(size_t const Index, ElementType&& Element)
+	/// ------------------------------------------------------------------------------------------
+	/// Elements insertation and removal. 
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::InsertElementAt(size_t const Index, ElementType&& Element)
 	{
-		GD_ASSERT((Index <= this->GetSize()), "Index is out of bounds");
-		this->ReserveToSize(this->GetSize() + 1);
+		GD_ASSERT(Index <= this->Count, "Index is out of bounds");
+		this->ReserveToSize(this->Count + 1);
 		this->Count += 1;
-		for (MutableIterator Iterator = this->End() - 1; Iterator != this->Begin() + Index - 1; Iterator -= 1) {
+		for (PtrMutableIterator Iterator = this->PtrEnd() - 1; Iterator != this->PtrBegin() + Index - 1; --Iterator) {
 			*(Iterator - 1) = Move(*Iterator);
 		}
 
-		new (&*this->Begin() + Index) ElementType(Forward<ElementType>(Element));
+		new (this->PtrBegin() + Index) ElementType(Forward<ElementType>(Element));
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::InsertElementAt(size_t const Index, ElementType const& Element)
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::InsertElementAt(size_t const Index, ElementType const& Element)
 	{
 		this->InsertElementAt(Index, Move(ElementType(Element)));
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::RemoveElementAt(size_t const Index)
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::RemoveElementAt(size_t const Index)
 	{
-		GD_ASSERT((Index < this->GetSize()), "Index is out of bounds");
-		for (MutableIterator Iterator = this->Begin() + Index; Iterator != (this->End() - 1); Iterator += 1) {
+		GD_ASSERT(Index < this->Count, "Index is out of bounds");
+		for (PtrMutableIterator Iterator = this->PtrBegin() + Index; Iterator != (this->PtrEnd() - 1); ++Iterator) {
 			*Iterator = Move(*(Iterator + 1));
 		}
 
-		--this->Count;
-		(*this->End()).~ElementType();
+		this->Count -= 1;
+		this->PtrEnd()->~ElementType();
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::PushLast(ElementType&& NewElement /* = ElementType() */)
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::PushLast(ElementType&& NewElement /* = ElementType() */)
 	{
-		this->ReserveToSize(this->GetSize() + 1);
+		this->ReserveToSize(this->Count + 1);
+		new (this->PtrEnd()) ElementType(Forward<ElementType>(NewElement));
 		this->Count += 1;
-		new (&*this->End() - 1) ElementType(Forward<ElementType>(NewElement));
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::PushLast(ElementType const& NewElement /* = ElementType() */)
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::PushLast(ElementType const& NewElement)
 	{
 		this->PushLast(Move(ElementType(NewElement)));
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::PopLast()
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::PopLast()
 	{
-		GD_ASSERT((this->GetSize() != 0), "Container size is zero");
-		this->Resize(this->GetSize() - 1);
+		GD_ASSERT((this->Count != 0), "Container size is zero");
+		this->Resize(this->Count - 1);
 	}
 
-	GD_VECTOR_TEMPLATE() template<typename SearchingPredicateType>
-	inline size_t GD_VECTOR_CLASS()::FindFirstElement(SearchingPredicateType const& SearchingPredicate) const
+	/// ------------------------------------------------------------------------------------------
+	/// Searching of elements.
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE template<typename SearchingPredicateType>
+	inline size_t GD_VECTOR_CLASS::FindFirstElement(SearchingPredicateType const& SearchingPredicate) const
 	{
-		for (ConstIterator Iterator = this->Begin(); Iterator != this->End(); Iterator += 1) {
+		for (PtrConstIterator Iterator = this->PtrBegin(); Iterator != this->PtrEnd(); ++Iterator) {
 			if (SearchingPredicate(*Iterator)) {
-				return (Iterator - this->Begin());
+				return (Iterator - this->PtrBegin());
 			}
 		}
 
 		return SIZE_MAX;
 	}
 
-	GD_VECTOR_TEMPLATE() template<typename SearchingPredicateType>
-	inline size_t GD_VECTOR_CLASS()::FindLastElement(SearchingPredicateType const& SearchingPredicate) const
+	GD_VECTOR_TEMPLATE template<typename SearchingPredicateType>
+	inline size_t GD_VECTOR_CLASS::FindLastElement(SearchingPredicateType const& SearchingPredicate) const
 	{
-		for (ReverseConstIterator Iterator = this->ReverseBegin(); Iterator != this->ReverseEnd(); Iterator += 1) {
+		for (ReversePtrConstIterator Iterator = this->ReversePtrBegin(); Iterator != this->ReversePtrEnd(); ++Iterator) {
 			if (SearchingPredicate(*Iterator)) {
-				return (Iterator - this->ReverseEnd());
+				return (Iterator - this->ReversePtrEnd());
 			}
 		}
 
 		return SIZE_MAX;
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline size_t GD_VECTOR_CLASS()::FindFirstElement(ElementType const& Element) const
-	{	// Lets use lambda as our predicate
+	GD_VECTOR_TEMPLATE
+	inline size_t GD_VECTOR_CLASS::FindFirstElement(ElementType const& Element) const
+	{	
 		return this->FindFirstElement([&Element](ElementType const& OtherElement) {
 			return (OtherElement == Element);
 		});
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline size_t GD_VECTOR_CLASS()::FindLastElement(ElementType const& Element) const
-	{	// Lets use lambda as our predicate
+	GD_VECTOR_TEMPLATE
+	inline size_t GD_VECTOR_CLASS::FindLastElement(ElementType const& Element) const
+	{	
 		return this->FindFirstElement([&Element](ElementType const& OtherElement) {
 			return (OtherElement == Element);
 		});
 	}
 
-	GD_VECTOR_TEMPLATE() template<typename SortingPredicateType>
-	inline void GD_VECTOR_CLASS()::Sort(SortingPredicateType const& SortingPredicate, MutableIterator const _Left, MutableIterator const _Right)
+	GD_VECTOR_TEMPLATE template<typename SearchingPredicateType>
+	inline GD_VECTOR_CLASS GD_VECTOR_CLASS::FindAllElements(SearchingPredicateType const& SearchingPredicate) const
+	{
+		ThisVectorType SearchingResult;
+		for (PtrConstIterator Iterator = this->PtrBegin(); Iterator != this->PtrEnd(); ++Iterator) {
+			if (SearchingPredicate(*Iterator)) {
+				SearchingResult.PushLast(*Iterator);
+			}
+		}
+
+		return SearchingResult;
+	}
+
+	/// ------------------------------------------------------------------------------------------
+	/// Sorting elements.
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE template<typename SortingPredicateType>
+	inline void GD_VECTOR_CLASS::Sort(SortingPredicateType const& SortingPredicate, MutableIterator const _Left, MutableIterator const _Right)
 	{	// Sorting elements with quick sort implementation, provided here http://anandpandia.blogspot.ru/2012/08/quicksort-algorithm-and-example-in-c.html
 		/// @todo Implementation is a little broken if container includes equal values.
 		MutableIterator Left = _Left, Right = _Right;
@@ -349,22 +515,26 @@ GD_NAMESPACE_BEGIN
 		if ( Left < _Right) this->Sort(SortingPredicate,  Left, _Right);
 	}
 
-	GD_VECTOR_TEMPLATE() template<typename SortingPredicateType>
-	inline void GD_VECTOR_CLASS()::Sort(SortingPredicateType const& SortingPredicate)
+	GD_VECTOR_TEMPLATE template<typename SortingPredicateType>
+	inline void GD_VECTOR_CLASS::Sort(SortingPredicateType const& SortingPredicate)
 	{	// Sorting all container range.
 		this->Sort(SortingPredicate, this->Begin(), (this->End() - 1));
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline void GD_VECTOR_CLASS()::Sort()
+	GD_VECTOR_TEMPLATE
+	inline void GD_VECTOR_CLASS::Sort()
 	{	// Sorting all container range with default predicate.
 		this->Sort([](ElementType const& Right, ElementType const& Left) {
 			return (Right < Left);
 		});
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()& GD_VECTOR_CLASS()::operator= (Vector&& OtherVector)
+	/// ------------------------------------------------------------------------------------------
+	/// Assigment operators.
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS& GD_VECTOR_CLASS::operator= (Vector&& OtherVector)
 	{	
 		if ((&OtherVector) != this) {	// Check if we are not assigning container itself.
 			this->Clear();
@@ -376,16 +546,14 @@ GD_NAMESPACE_BEGIN
 		return (*this);
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()& GD_VECTOR_CLASS()::operator= (Vector const& OtherVector)
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS& GD_VECTOR_CLASS::operator= (Vector const& OtherVector)
 	{	
 		if ((&OtherVector) != this) {	// Check if we are not assigning container itself.
 			if (this->GetCapacity() >= OtherVector.GetSize()) {	// We have enough place here, so it is optimal to move is here without realloc.
 				this->Emptify();
 				this->Count = OtherVector.Count;
-				for (ConstIterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); Iterator += 1) {
-					new (this->Begin() + (Iterator - OtherVector.Begin())) ElementType(*Iterator);
-				}
+				Vector::CopyFromRange(OtherVector.PtrBegin(), OtherVector.PtrEnd(), this->PtrBegin());
 			} else {	// Not enough memory. Copying specified vector and moving it here.
 				(*this) = Move(Vector(OtherVector));
 			}
@@ -394,15 +562,13 @@ GD_NAMESPACE_BEGIN
 		return (*this);
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()& GD_VECTOR_CLASS()::operator= (std::initializer_list<ElementType> const& InitializerList)
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS& GD_VECTOR_CLASS::operator= (std::initializer_list<ElementType> const& InitializerList)
 	{	
 		if (this->GetCapacity() >= InitializerList.size()) {	// We have enough place here, so it is optimal to move is here without realloc.
 			this->Emptify();
 			this->Count = InitializerList.size();
-			for (typename std::initializer_list<ElementType>::const_iterator Iterator = InitializerList.begin(); Iterator != InitializerList.end(); Iterator += 1) {
-				new (this->Begin() + (Iterator - InitializerList.begin())) ElementType(*Iterator);
-			}
+			Vector::CopyFromRange(InitializerList.begin(), InitializerList.end(), this->PtrBegin());
 		} else {	// Not enough memory. Assigning itself a container created with specified initializer list.
 			(*this) = Move(Vector(InitializerList));
 		}
@@ -411,15 +577,15 @@ GD_NAMESPACE_BEGIN
 	}
 
 #if (defined(__cplusplus_cli))
-	GD_VECTOR_TEMPLATE()
-	inline GD_VECTOR_CLASS()& GD_VECTOR_CLASS()::operator= (array<ElementType>^ CliArray)
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS& GD_VECTOR_CLASS::operator= (array<ElementType>^ CliArray)
 	{
 		if (this->GetCapacity() >= static_cast<size_t>(CliArray->Length)) {	// We have enough place here, so it is optimal to move is here without realloc.
 			this->Emptify();
 			this->Count = static_cast<size_t>(CliArray->Length);
-			for (ConstIterator Iterator = StartIterator; Iterator != EndIterator; Iterator += 1) {
-				new (this->Begin() + (Iterator - OtherVector.Begin())) ElementType(CliArray[Iterator - OtherVector.Begin()]);
-			}
+			pin_ptr<ElementType> CliArrayPtr = &CliArray[0];
+			PtrMutableIterator PtrCliArrayIteratorStart = CliArrayPtr;
+			Vector::CopyFromRange(PtrCliArrayIteratorStart, PtrCliArrayIteratorStart + this->Count, this->PtrBegin());
 		} else {	// Not enough memory. Assigning itself a container created with CLI/C++ Array.
 			(*this) = Move(Vector(CliArray));
 		}
@@ -428,18 +594,130 @@ GD_NAMESPACE_BEGIN
 	}
 #endif	// if (defined(__cplusplus_cli))
 
-	GD_VECTOR_TEMPLATE()
-	inline ElementType const& GD_VECTOR_CLASS()::operator[] (size_t const Index) const
-	{	// Constant access operator.
+	/// ------------------------------------------------------------------------------------------
+	/// Comparasion operators.
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE
+	inline bool GD_VECTOR_CLASS::operator== (Vector const& OtherVector) const
+	{	// Vector with different sizes can't be equal. 
+		if (this->Count == OtherVector.GetSize()) {
+			return this->CompareTo([](ElementType const& First, ElementType const& Second) -> bool {
+				return (First == Second);
+			});
+		} else {
+			return false;
+		}
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline bool GD_VECTOR_CLASS::operator!= (Vector const& OtherVector) const
+	{	// Vector with same sizes can't be non-equal. 
+		if (this->Count != OtherVector.GetSize()) {
+			return this->CompareTo([](ElementType const& First, ElementType const& Second) -> bool {
+				return (First != Second);
+			});
+		} else {
+			return true;
+		}
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline bool GD_VECTOR_CLASS::operator< (Vector const& OtherVector) const
+	{
+		return this->CompareTo([](ElementType const& First, ElementType const& Second) -> bool {
+			return (First < Second);
+		});
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline bool GD_VECTOR_CLASS::operator> (Vector const& OtherVector) const
+	{
+		return this->CompareTo([](ElementType const& First, ElementType const& Second) -> bool {
+			return (First > Second);
+		});
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline bool GD_VECTOR_CLASS::operator<= (Vector const& OtherVector) const
+	{
+		return this->CompareTo([](ElementType const& First, ElementType const& Second) -> bool {
+			return (First <= Second);
+		});
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline bool GD_VECTOR_CLASS::operator>= (Vector const& OtherVector) const
+	{
+		return this->CompareTo([](ElementType const& First, ElementType const& Second) -> bool {
+			return (First >= Second);
+		});
+	}
+
+	/// ------------------------------------------------------------------------------------------
+	/// Appending operators.
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS& GD_VECTOR_CLASS::operator+= (Vector&& OtherVector)
+	{
+		this->ReserveToSize(this->Count + OtherVector.GetSize());
+		for (MutableIterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); ++Iterator) {
+			this->PushLast(Move(*Iterator));
+		}
+
+		return (*this);
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS& GD_VECTOR_CLASS::operator+= (Vector const& OtherVector)
+	{
+		return ((*this) += Move(Vector(OtherVector)));
+	}
+
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS GD_VECTOR_CLASS::operator+ (Vector&& OtherVector) const
+	{
+		return (Vector(*this) += Forward<Vector>(OtherVector));
+	}
+	
+	GD_VECTOR_TEMPLATE
+	inline GD_VECTOR_CLASS GD_VECTOR_CLASS::operator+(Vector const& OtherVector) const
+	{
+		return ((*this) + Move(Vector(OtherVector)));
+	}
+
+
+	/// ------------------------------------------------------------------------------------------
+	/// Access operators.
+	/// ------------------------------------------------------------------------------------------
+
+	GD_VECTOR_TEMPLATE
+	inline ElementType const& GD_VECTOR_CLASS::operator[] (size_t const Index) const
+	{	
 		return this->GetElementAt(Index);
 	}
 
-	GD_VECTOR_TEMPLATE()
-	inline ElementType& GD_VECTOR_CLASS()::operator[] (size_t const Index)
-	{	// Mutable access operator.
+	GD_VECTOR_TEMPLATE
+	inline ElementType& GD_VECTOR_CLASS::operator[] (size_t const Index)
+	{	
 		return this->GetElementAt(Index);
 	}
 
-#	undef GD_VECTOR_TEMPLATE
-#	undef GD_VECTOR_CLASS
+	/// ------------------------------------------------------------------------------------------
+	/// Swap function.
+	/// ------------------------------------------------------------------------------------------
+
+	template<typename ElementType, typename MemoryProviderType>
+	inline void Swap(Vector<ElementType, MemoryProviderType>& First, Vector<ElementType, MemoryProviderType>& Second)
+	{
+		if (&First != &Second) {
+			Swap(First.MemoryProviderInstance, Second.MemoryProviderInstance);
+			Swap(First.Count, Second.Count);
+		}
+	}
+
+#undef GD_VECTOR_TEMPLATE
+#undef GD_VECTOR_CLASS
+
 GD_NAMESPACE_END
