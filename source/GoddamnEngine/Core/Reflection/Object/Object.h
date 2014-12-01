@@ -4,6 +4,7 @@
 /// 
 /// History:
 ///		* --.12.2013 - Created by James Jhuighuy
+///		* 23.11.2014 - Refactored from scratch.
 /// ==========================================================================================
 
 #pragma once
@@ -11,8 +12,6 @@
 #define GD_CORE_OBJECT
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Reflection/Reflectable.h>
-#include <GoddamnEngine/Core/Containers/LockFree/LockFreeList.h>
 #include <GoddamnEngine/Core/Threading/Atomic/Atomic.h>
 
 GD_NAMESPACE_BEGIN
@@ -21,7 +20,7 @@ GD_NAMESPACE_BEGIN
 	typedef UInt8  ObjectTreeLockingFlags;
 
 	/// Basic Object class.
-	class Object : public IReflectable/*: public Lockable*/
+	class Object
 	{
 	public:
 		template<typename Tag, typename ObjectType = Object>
@@ -80,40 +79,18 @@ GD_NAMESPACE_BEGIN
 		template<typename ObjectType> using ReverseMutableIterator = MutableIterator<                                      ObjectType>;
 		template<typename ObjectType> using   ReverseConstIterator =   ConstIterator<                                      ObjectType>;
 
-		enum ObjectTreeLockingFlagsEnumeration : ObjectTreeLockingFlags
-		{
-			TreeLockingFlagsCheckValidity				= 1 << 0,	///< Do check object tree validity
-			TreeLockingFlagsAutomaticReferenceCounting	= 1 << 1,	///< Do automatically add/remove reference when attaching / detaching
-			TreeLockingFlagsDisableDetaching			= 1 << 2,	///< This object supports detaching from parent only one time 
-			TreeLockingFlagsDisableAttachingToObject	= 1 << 3,	///< This object supports attaching to parent only one time 
-			TreeLockingFlagsDisableAttachingObjects		= 1 << 4,	///< This object does not supports attaching objects to it
-			TreeLockingFlagsDisableSiblingSwapping		= 1 << 5,	///< This object does not supports swapping with sibling objects
-			TreeLockingFlagsDisableSiblingMoving		= 1 << 6,	///< This object does not supports moving to sibling objects
-
-			TreeLockingFlagsDefaultObject				= (TreeLockingFlagsCheckValidity | TreeLockingFlagsAutomaticReferenceCounting),
-			TreeLockingFlagsDefaultHRIObject			= (TreeLockingFlagsDefaultObject),
-			TreeLockingFlagsDefaultComponent			= (TreeLockingFlagsDefaultObject | TreeLockingFlagsDisableDetaching | TreeLockingFlagsDisableAttachingToObject | TreeLockingFlagsDisableAttachingObjects),
-			TreeLockingFlagsDefaultGameObject			= (TreeLockingFlagsDefaultComponent & (~TreeLockingFlagsDisableAttachingObjects)),
-			TreeLockingFlagsDefaultResource				= ((TreeLockingFlagsDefaultObject | TreeLockingFlagsDisableDetaching | TreeLockingFlagsDisableAttachingToObject) & (~TreeLockingFlagsAutomaticReferenceCounting)),
-
-			TreeLockingFlagsNone						= 0,		///< None 
-			TreeLockingFlagsAll							= 0xFF		///< All
-		};	// enum ObjectTreeLockingFlags
-
 	private:
-		GD_TYPEINFORMATION_DEFINITION(Object, NoBaseClass, GDAPI);
 		GD_CLASS_UNASSIGNABLE(Object);
 		GD_CLASS_UNSWAPPABLE (Object);
 		GD_CLASS_UNCOPIABLE  (Object);
 
-		mutable ObjectTreeLockingFlags TreeLockingFlags = TreeLockingFlagsDefaultObject;
 		mutable ObjectRefenceCount ReferenceCount = 1;
-		Object* ParentObject = nullptr;
-		Object* NextSiblingObject = nullptr;
+		Object* ParentObject          = nullptr;
+		Object* NextSiblingObject     = nullptr;
 		Object* PreviousSiblingObject = nullptr;
-		Object* FirstChildObject = nullptr;
-		Object* LastChildObject = nullptr;
-		UInt64 Guid = 0;
+		Object* FirstChildObject      = nullptr;
+		Object* LastChildObject       = nullptr;
+		UInt64  GUID = 0;
 
 	protected:
 		

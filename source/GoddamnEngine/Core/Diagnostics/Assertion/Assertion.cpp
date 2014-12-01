@@ -225,7 +225,7 @@ GD_NAMESPACE_BEGIN
 	{
 		DWORD Style;
 		DWORD StyleEx;
-		SHORT x, y, cx, cy;
+		SHORT X, Y, CX, CY;
 		WORD ID;
 		WORD SysClass;
 		WORD IDClass;
@@ -341,6 +341,7 @@ GD_NAMESPACE_BEGIN
 					case GD_ASSERTION_DLG_BTNREPORT_IDC: {
 					///	Instructions how to open the URL on Win32 API.
 					///	::ShellExecuteA(NULL, "open", "http://pornhub.com", NULL, NULL, SW_SHOWMAXIMIZED);
+						GD_NOT_IMPLEMENTED();
 						::EndDialog(HDialog, static_cast<INT_PTR>(AssertionState::Report));
 					} break;
 					case GD_ASSERTION_DLG_BTNBREAK_IDC: {

@@ -11,17 +11,17 @@ namespace GoddamnEngine.BuildSystem
             private static Project ProcessProjectConfigSource(string ProjectConfigLocation)
             {
                 string ProjectConfigPath = Path.Combine(ProjectConfigLocation, ".gdproj.cs");
-                foreach (var AsmTypeInfo in Compiler.CompileSourceFile(ProjectConfigPath).GetTypes())
+                foreach (var AsmTypeInfo in CSharpCompiler.CompileSourceFile(ProjectConfigPath).GetTypes())
                     if ((AsmTypeInfo.IsSubclassOf(typeof(Project))) && (!AsmTypeInfo.IsAbstract))
                     {
                         Project TheProject = Activator.CreateInstance(AsmTypeInfo) as Project;
                         TheProject._Location = ProjectConfigLocation;
-                        TheProject._SourceFiles.Add(new SourceFile(SourceFileType.SupportFile, ProjectConfigPath, ""));
+                        TheProject._SourceFiles.Add(new ProjectSourceFile(SourceFileType.SupportFile, ProjectConfigPath, ""));
                         TheProject.InitializeSelf();
                         return TheProject;
                     }
 
-                throw new ProjectException("\n\nSpecified project file does not contains any project definitions.");
+                throw new BuildSystemException("\n\nSpecified project file does not contains any project definitions.");
             }
 
             private static void ProcessSourceFilesInDirectory(Project TheProject, string CurrentSourceFilesDirectory)
@@ -42,7 +42,7 @@ namespace GoddamnEngine.BuildSystem
                 if (File.Exists(Path.Combine(CurrentSourceFilesDirectory, ".gdexclude")))
                 {   // This directory is excluded from build.
                     string ExcludeMarkAbsoluteFilePath = Path.Combine(CurrentSourceFilesDirectory, ".gdexclude");
-                    TheProject._SourceFiles.Add(new SourceFile(SourceFileType.SupportFile, ExcludeMarkAbsoluteFilePath, FolderRelativePath));
+                    TheProject._SourceFiles.Add(new ProjectSourceFile(SourceFileType.SupportFile, ExcludeMarkAbsoluteFilePath, FolderRelativePath));
                     TheProject._Checksumm += ExcludeMarkAbsoluteFilePath.GetHashCode();
                     return;
                 }
@@ -72,7 +72,7 @@ namespace GoddamnEngine.BuildSystem
                             break;
 
                         case ".inl":
-                            Type = SourceFileType.InlineImpl;
+                            Type = SourceFileType.InlineImplementation;
                             break;
 
                         case ".rc":
@@ -104,11 +104,11 @@ namespace GoddamnEngine.BuildSystem
                             break;
 
                         default:
-                            ConsoleOutput.WriteLine(SourceAbsoluteFilePath, "warning: skipping file '{0}' with unknown extension '{1}'", SourceAbsoluteFilePath, SourceFileExtension);
+                            Console.WriteLine(SourceAbsoluteFilePath, "warning: skipping file '{0}' with unknown extension '{1}'", SourceAbsoluteFilePath, SourceFileExtension);
                             continue;
                     }
 
-                    TheProject._SourceFiles.Add(new SourceFile(Type, SourceAbsoluteFilePath, FolderRelativePath));
+                    TheProject._SourceFiles.Add(new ProjectSourceFile(Type, SourceAbsoluteFilePath, FolderRelativePath));
                     TheProject._Checksumm += SourceAbsoluteFilePath.GetHashCode();
                 }
             }
@@ -136,7 +136,7 @@ namespace GoddamnEngine.BuildSystem
                             case "_DLLResources": goto ProcessProjectSubdirectoryLabel;
                             case "_Dependencies": DependenciesResolver.ProcessDirectory(TheProject, CurrentSubdirectory); continue;
                             default:
-                                throw new ProjectException(string.Format("Unparsed service directory '{0}' is located in '{1}'", ProjectSubdirectoryName, CurrentSubdirectory));
+                                throw new BuildSystemException(string.Format("Unparsed service directory '{0}' is located in '{1}'", ProjectSubdirectoryName, CurrentSubdirectory));
                         }
                     }
 
@@ -153,18 +153,18 @@ namespace GoddamnEngine.BuildSystem
                     try
                     {
                         int ProjectParsingStartTime = Environment.TickCount;
-                        ConsoleOutput.WriteLine(ProjectConfigPath, "log: parsing project file started...");
+                        Console.WriteLine(ProjectConfigPath, "log: parsing project file started...");
 
                         Project TheProject = ProcessProjectConfigSource(ProjectConfigLocation);
                         ProcessProjectSubdirectory(TheProject);
                         new VisualStudioTarget().GenerateProject(TheProject);
 
-                        ConsoleOutput.WriteLine(ProjectConfigPath, "parsing project file finished. Time: {0}ms", (Environment.TickCount - ProjectParsingStartTime).ToString());
+                        Console.WriteLine(ProjectConfigPath, "parsing project file finished. Time: {0}ms", (Environment.TickCount - ProjectParsingStartTime).ToString());
                     }
-                    catch (ProjectException PE)
+                    catch (BuildSystemException PE)
                     {   // Project building failed.
-                        ConsoleOutput.WriteLine(ProjectConfigPath, "error: parsing project failed with exception: \n{1}", ProjectConfigLocation, PE.ToString());
-                        throw new SolutionException(String.Format("Failed to process \"{0}\" project", ProjectConfigLocation));
+                        Console.WriteLine(ProjectConfigPath, "error: parsing project failed with exception: \n{1}", ProjectConfigLocation, PE.ToString());
+                        throw new BuildSystemException(String.Format("Failed to process \"{0}\" project", ProjectConfigLocation));
                     }
                 });
 

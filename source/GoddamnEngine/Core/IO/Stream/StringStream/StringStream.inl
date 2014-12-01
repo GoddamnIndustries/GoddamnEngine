@@ -10,16 +10,12 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	/// BaseStringInputStream class.
-	/// Specifies read-only stream that provides reading from reference on data.
 	/// ==========================================================================================
 
 	/// ------------------------------------------------------------------------------------------
-	/// Class implementation API:
+	/// Constructors/Destructor.
 	/// ------------------------------------------------------------------------------------------
 
-	/// Initializes StringInputStream using pointer to some memory.
-	/// @param SomeMemory       Pointer to input stream initial memory.
-	/// @param SomeMemoryLength Length of specified data memory length.
 	template<typename CharacterType>
 	GDINL BaseStringInputStream<CharacterType>::BaseStringInputStream(CharacterType const* SomeMemory, size_t const SomeMemoryLength)
 		: DataReference(reinterpret_cast<UInt8 const*>(SomeMemory))
@@ -28,8 +24,6 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT(this->DataReference != nullptr, "Nullptr data reference.");
 	}
 
-	/// Initializes StringInputStream using some String class instance.
-	/// @param SomeString InputStream data.
 	template<typename CharacterType>
 	GDINL BaseStringInputStream<CharacterType>::BaseStringInputStream(BaseString<CharacterType> const& SomeString)
 		: BaseStringInputStream(reinterpret_cast<CharacterType const*>(SomeString.CStr())
@@ -37,8 +31,6 @@ GD_NAMESPACE_BEGIN
 	{
 	}
 
-	/// Initializes StringInputStream using some StringBuilder class instance.
-	/// @param SomeStringBuilder InputStream data.
 	template<typename CharacterType>
 	GDINL BaseStringInputStream<CharacterType>::BaseStringInputStream(BaseStringBuilder<CharacterType> const& SomeStringBuilder)
 		: BaseStringInputStream(reinterpret_cast<CharacterType const*>(SomeStringBuilder.GetPointer())
@@ -46,8 +38,6 @@ GD_NAMESPACE_BEGIN
 	{
 	}
 
-	/// Initializes StringInputStream using some Vector of characters class instance.
-	/// @param SomeVector InputStream data.
 	template<typename CharacterType>
 	GDINL BaseStringInputStream<CharacterType>::BaseStringInputStream(Vector<CharacterType> const& SomeVector)
 		: BaseStringInputStream(reinterpret_cast<CharacterType const*>(&SomeVector.GetFirstElement())
@@ -61,7 +51,10 @@ GD_NAMESPACE_BEGIN
 		this->Close();
 	}
 
-	/// @see BaseStream::GetPosition()
+	/// ------------------------------------------------------------------------------------------
+	/// Class API.
+	/// ------------------------------------------------------------------------------------------
+
 	template<typename CharacterType>
 	GDINL size_t BaseStringInputStream<CharacterType>::GetPosition() const
 	{
@@ -69,7 +62,6 @@ GD_NAMESPACE_BEGIN
 		return this->DataReferencePosition;
 	}
 
-	/// @see BaseStream::GetSize()
 	template<typename CharacterType>
 	GDINL size_t BaseStringInputStream<CharacterType>::GetSize() const
 	{
@@ -77,7 +69,6 @@ GD_NAMESPACE_BEGIN
 		return this->DataReferenceLength;
 	}
 
-	/// @see InputStream::Close()
 	template<typename CharacterType>
 	GDINL void BaseStringInputStream<CharacterType>::Close()
 	{
@@ -87,64 +78,60 @@ GD_NAMESPACE_BEGIN
 		this->DataReferencePosition = SIZE_MAX;
 	}
 
-	/// @see InputStream::Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current)
 	template<typename CharacterType>
 	GDINL void BaseStringInputStream<CharacterType>::Seek(ptrdiff_t const Offset, SeekOrigin const Origin /* = SeekOrigin::Current */)
 	{
 		GD_DEBUG_ASSERT(this->DataReference != nullptr, "Nullptr data reference.");
-		switch (Origin)
-		{
-		case SeekOrigin::Begin:
-			this->DataReferencePosition = Offset;
-			break;
-		case SeekOrigin::Current:
-			this->DataReferencePosition += Offset;
-			break;
-		case SeekOrigin::End:
-			this->DataReferencePosition = this->DataReferenceLength + Offset;
-			break;
+		switch (Origin) {
+			case SeekOrigin::Begin: {
+				this->DataReferencePosition = Offset;
+			} break;
+			case SeekOrigin::Current: {
+				this->DataReferencePosition += Offset;
+			} break;
+			case SeekOrigin::End: {
+				this->DataReferencePosition = this->DataReferenceLength + Offset;
+			} break;
 		}
 
-		if (this->DataReferencePosition >= this->DataReferenceLength)
+		if (this->DataReferencePosition >= this->DataReferenceLength) {
 			throw IOException("Failed to seek inside data reference (position is out of bounds).");
+		}
 	}
 
-	/// @see InputStream::Read()
 	template<typename CharacterType>
 	GDINL UInt8 BaseStringInputStream<CharacterType>::Read()
 	{
 		GD_DEBUG_ASSERT(this->DataReference != nullptr, "Nullptr data reference.");
-		if (this->DataReferencePosition >= this->DataReferenceLength)
+		if (this->DataReferencePosition >= this->DataReferenceLength) {
 			throw IOException("Failed to read from data reference (position is out of bounds).");
+		}
 
 		UInt8 Result = (*(this->DataReference + this->DataReferencePosition));
-		++this->DataReferencePosition;
+		this->DataReferencePosition += 1;
 		return Result;
 	}
 
-	/// @see InputStream::Read(handle const Array, size_t const Count, size_t const Length)
 	template<typename CharacterType>
 	GDINL void BaseStringInputStream<CharacterType>::Read(handle const Array, size_t const Count, size_t const Length)
 	{
 		GD_DEBUG_ASSERT(this->DataReference != nullptr, "Nullptr data reference.");
-		if (this->DataReferencePosition + (Count * Length) > this->DataReferenceLength)
+		if (this->DataReferencePosition + (Count * Length) > this->DataReferenceLength) {
 			throw IOException("Failed to read from data reference (position is out of bounds).");
+		}
 
-		::memcpy(Array, this->DataReference, Count * Length);
+		std::memcpy(Array, this->DataReference, Count * Length);
 		this->DataReferencePosition += (Count * Length);
 	}
 
 	/// ==========================================================================================
 	/// BaseStringOutputStream class.
-	/// Specifies write-only stream that provides writing to reference on data (BaseStringBuilder).
 	/// ==========================================================================================
 
 	/// ------------------------------------------------------------------------------------------
-	/// Class implementation API:
+	/// Construtor/Destructor.
 	/// ------------------------------------------------------------------------------------------
 
-	/// Initializes new string output stream that points to some string builder.
-	/// @param Builder Builder in which output would be stored.
 	template<typename CharacterType>
 	GDINL BaseStringOutputStream<CharacterType>::BaseStringOutputStream(BaseStringBuilder<CharacterType>& Builder)
 		: Builder(&Builder)
@@ -157,34 +144,33 @@ GD_NAMESPACE_BEGIN
 		this->Close(); 
 	}
 
-	/// @see BaseStream::GetPosition()
+	/// ------------------------------------------------------------------------------------------
+	/// Class API:
+	/// ------------------------------------------------------------------------------------------
+
 	template<typename CharacterType>
 	GDINL size_t BaseStringOutputStream<CharacterType>::GetPosition() const
 	{	// Since we anly writing, our position is equal to decremented size.
 		return (this->GetSize() - 1);
 	}
 
-	/// @see BaseStream::GetSize()
 	template<typename CharacterType>
 	GDINL size_t BaseStringOutputStream<CharacterType>::GetSize() const
 	{
 		return this->Builder->GetSize();
 	}
 
-	/// @see OutputStream::Close()
 	template<typename CharacterType>
 	GDINL void BaseStringOutputStream<CharacterType>::Close()
 	{
 		this->Builder = nullptr;
 	}
 
-	/// @see OutputStream::Flush()
 	template<typename CharacterType>
 	GDINL void BaseStringOutputStream<CharacterType>::Flush()
 	{	// Enerything is already flushed.
 	}
 
-	/// @see OutputStream::Write(UInt8 const Byte)
 	template<typename CharacterType>
 	GDINL void BaseStringOutputStream<CharacterType>::Write(UInt8 const Byte)
 	{
@@ -192,7 +178,6 @@ GD_NAMESPACE_BEGIN
 		this->Builder->Append(*reinterpret_cast<CharacterType const*>(&Byte));
 	}
 
-	/// @see OutputStream::Write(chandle const Array, size_t const Count, size_t const Length)
 	template<typename CharacterType>
 	GDINL void BaseStringOutputStream<CharacterType>::Write(chandle const Array, size_t const Count, size_t const Length)
 	{

@@ -16,7 +16,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// Class key-value objects
+	/// Class key-value objects.
 	template<typename KeyType, typename ValueType>
 	struct Pair final
 	{

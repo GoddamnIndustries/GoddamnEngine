@@ -15,61 +15,96 @@
 
 GD_NAMESPACE_BEGIN
 	
+	/// Containers common alogorithms for containers interfaces
 	namespace ContainerDetails
 	{
 		struct IteratorTagConst   final { static const bool IsConst = true ; };
 		struct IteratorTagMutable final { static const bool IsConst = false; };
 
-		/// Constant reverse iterator type this container uses.
-		template<typename IteratorType>
-		struct ReverseIterator final
+		/// Iterator that may be used by all indexed containers.
+		template<typename IndexedContainerType, typename ElementType>
+		struct IndexedContainerIterator final
 		{
-		public:
-			typedef typename IteratorType::ThisElementType ThisElementType;
-			typedef typename IteratorType::ThisPtrType ThisPtrType;
-			typedef typename IteratorType::ThisRefType ThisRefType;
-
 		private:
-			IteratorType Iterator;
+			IndexedContainerType& Container;
+			size_t Index = 0;
 
 		public:
-			GDINL ReverseIterator(ThisPtrType     const  Pointer ) : Iterator(IteratorType(Pointer)) { }
-			GDINL ReverseIterator(IteratorType    const& Iterator) : Iterator(      Iterator       ) { }
-			GDINL ReverseIterator(ReverseIterator const& Other   ) : Iterator(Other.Iterator       ) { }
+			GDINL explicit IndexedContainerIterator(IndexedContainerType          & Container) : Container(      Container), Index(0) { }
+			GDINL          IndexedContainerIterator(IndexedContainerIterator const& Other    ) : Container(Other.Container), Index(Other.Index) { }
 
 			/// Increases/decreases iterator.
-			GDINL ReverseIterator& operator++ (int const) { --this->Iterator; return (*this); }
-			GDINL ReverseIterator& operator++ (         ) { --this->Iterator; return (*this); }
-			GDINL ReverseIterator& operator-- (int const) { ++this->Iterator; return (*this); }
-			GDINL ReverseIterator& operator-- (         ) { ++this->Iterator; return (*this); }
+			GDINL IndexedContainerIterator& operator++ (int const) { --this->Index; return (*this); }
+			GDINL IndexedContainerIterator& operator++ (         ) { --this->Index; return (*this); }
+			GDINL IndexedContainerIterator& operator-- (int const) { ++this->Index; return (*this); }
+			GDINL IndexedContainerIterator& operator-- (         ) { ++this->Index; return (*this); }
 
 			/// Increases/decreases iterator on specified value.
-			GDINL ReverseIterator& operator+= (ptrdiff_t const Offset)	     { this->Iterator -= Offset; return (*this); }
-			GDINL ReverseIterator& operator-= (ptrdiff_t const Offset)       { this->Iterator += Offset; return (*this); }
-			GDINL ReverseIterator  operator+  (ptrdiff_t const Offset) const { return ReverseContainerIterator(this->Iterator - Offset); }
-			GDINL ReverseIterator  operator-  (ptrdiff_t const Offset) const { return ReverseContainerIterator(this->Iterator + Offset); }
+			GDINL IndexedContainerIterator& operator+= (ptrdiff_t const Offset)	      { this->Index -= Offset; return (*this); }
+			GDINL IndexedContainerIterator& operator-= (ptrdiff_t const Offset)       { this->Index += Offset; return (*this); }
+			GDINL IndexedContainerIterator  operator+  (ptrdiff_t const Offset) const { return (IndexedContainerIterator(*this) -= Offset); }
+			GDINL IndexedContainerIterator  operator-  (ptrdiff_t const Offset) const { return (IndexedContainerIterator(*this) += Offset); }
 
 			/// Computes difference between iterators.
-			GDINL ptrdiff_t operator- (ThisPtrType     const  Pointer ) const { return (this->Iterator - Pointer); }
-			GDINL ptrdiff_t operator- (IteratorType    const& Iterator) const { return (this->Iterator - Iterator); }
-			GDINL ptrdiff_t operator- (ReverseIterator const& Other   ) const { return (this->Iterator - Other.Iterator); }
+			GDINL ptrdiff_t operator- (IndexedContainerIterator const& Other) const 
+			{ 
+				GD_ASSERT(&this->Container == &Other.Container, "Differencing two iterators pointing to different containers.");
+				return (this->Index - Other.Index); 
+			}
 
 			/// Compares iterators.
-			GDINL bool operator== (ThisPtrType     const  Pointer ) const { return (this->Iterator == Pointer); }
-			GDINL bool operator== (IteratorType    const  Iterator) const { return (this->Iterator == Iterator); }
-			GDINL bool operator== (ReverseIterator const& Other   ) const { return (this->Iterator == Other.Iterator); }
-			GDINL bool operator!= (ThisPtrType     const  Pointer ) const { return (this->Iterator != Pointer); }
-			GDINL bool operator!= (IteratorType    const  Iterator) const { return (this->Iterator != Iterator); }
-			GDINL bool operator!= (ReverseIterator const& Other   ) const { return (this->Iterator != Other.Iterator); }
+			GDINL bool operator== (IndexedContainerIterator const& Other) const { return (&this->Container == &Other.Container) && (this->Index == Other.Index); }
+			GDINL bool operator!= (IndexedContainerIterator const& Other) const { return (&this->Container != &Other.Container) || (this->Index != Other.Index); }
 
 			/// Assigns this iterator other value.
-			GDINL ReverseIterator& operator= (ThisPtrType     const  Pointer ) { this->Iterator = Pointer;         return (*this); }
-			GDINL ReverseIterator& operator= (IteratorType    const  Iterator) { this->Iterator = Iterator;        return (*this); }
-			GDINL ReverseIterator& operator= (ReverseIterator const& Other   ) { this->Iterator = Other->Iterator; return (*this); }
+			GDINL IndexedContainerIterator& operator= (IndexedContainerIterator const& Other)
+			{ 
+				GD_ASSERT(&this->Container == &Other.Container, "Assigining two iterators pointing to different containers.");
+				this->Index = Other->Index;
+				return (*this); 
+			}
 
 			/// (De)referensing iterator.
-			GDINL ThisRefType operator*  () const { return (this->Iterator.operator* ()); }
-			GDINL ThisPtrType operator-> () const { return (this->Iterator.operator->()); }
+			GDINL ElementType& operator*  () const { return ( this->Container[this->Index]); }
+			GDINL ElementType* operator-> () const { return (&this->Container[this->Index]); }
+		};	// struct IndexedContainerIterator
+
+		/// Adapter, that inverses iterator of a specified type.
+		template<typename DirectIteratorType>
+		struct ReverseIterator final
+		{
+		private:
+			DirectIteratorType DirectIterator;
+
+		public:
+			GDINL explicit ReverseIterator(DirectIteratorType const& DirectIterator) : DirectIterator(DirectIterator) { }
+			GDINL          ReverseIterator(ReverseIterator    const& Other         ) : DirectIterator(Other.DirectIterator) { }
+
+			/// Increases/decreases iterator.
+			GDINL ReverseIterator& operator++ (int const) { --this->DirectIterator; return (*this); }
+			GDINL ReverseIterator& operator++ (         ) { --this->DirectIterator; return (*this); }
+			GDINL ReverseIterator& operator-- (int const) { ++this->DirectIterator; return (*this); }
+			GDINL ReverseIterator& operator-- (         ) { ++this->DirectIterator; return (*this); }
+
+			/// Increases/decreases iterator on specified value.
+			GDINL ReverseIterator& operator+= (ptrdiff_t const Offset)	     { this->DirectIterator -= Offset; return (*this); }
+			GDINL ReverseIterator& operator-= (ptrdiff_t const Offset)       { this->DirectIterator += Offset; return (*this); }
+			GDINL ReverseIterator  operator+  (ptrdiff_t const Offset) const { return ReverseIterator(this->DirectIterator - Offset); }
+			GDINL ReverseIterator  operator-  (ptrdiff_t const Offset) const { return ReverseIterator(this->DirectIterator + Offset); }
+
+			/// Computes difference between iterators.
+			GDINL ptrdiff_t operator- (ReverseIterator const& Other) const { return (this->DirectIterator - Other.DirectIterator); }
+
+			/// Compares iterators.
+			GDINL bool operator== (ReverseIterator const& Other   ) const { return (this->DirectIterator == Other.DirectIterator); }
+			GDINL bool operator!= (ReverseIterator const& Other   ) const { return (this->DirectIterator != Other.DirectIterator); }
+
+			/// Assigns this iterator other value.
+			GDINL ReverseIterator& operator= (ReverseIterator const& Other) { this->DirectIterator = Other->DirectIterator; return (*this); }
+
+			/// (De)referensing iterator.
+			GDINL decltype(DeclValue<DirectIteratorType>().operator* ()) operator*  () const { return (this->DirectIterator.operator* ()); }
+			GDINL decltype(DeclValue<DirectIteratorType>().operator->()) operator-> () const { return (this->DirectIterator.operator->()); }
 		};	// struct ReverseContainerIterator
 
 		/// Reverses container Begin, End and ReverseBegin, ReverseEnd functions.

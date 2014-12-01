@@ -1,5 +1,5 @@
 /// ==========================================================================================
-/// String.h - Dynamically sized HeapMemory interface
+/// String.h - Dynamically sized string interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
@@ -8,155 +8,43 @@
 /// ==========================================================================================
 
 #pragma once
-#ifndef GD_CORE_CONTAINERS_STRING
-#define GD_CORE_CONTAINERS_STRING
+#ifndef GD_CORE_TEXT_STRING
+#define GD_CORE_TEXT_STRING
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Text/Hash/Hash.h>
+#include <GoddamnEngine/Core/Text/CharTraits.h>
 #include <GoddamnEngine/Core/Containers/Containers.h>
 #include <GoddamnEngine/Core/Containers/Vector/Vector.h>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
-#include <cstring>
-#include <cwctype>
-#include <cstdarg>
-#include <cwchar>
-#include <cctype>
-
-#pragma push_macro("GDINL")
-#undef  GDINL
-#define GDINL inline
-
 GD_NAMESPACE_BEGIN
 
-	typedef UInt32 HashValueType;
-
-	/// Represents hash summ that can not be implcilty casted to integer type. 
-	struct HashCode final
-	{
-	private:
-		HashValueType HashValue = 0;
-
-	public:
-		/// Initializes hash summ with precomputed integer value.
-		GDINL explicit HashCode(HashValueType const HashValue = 0) : HashValue(HashValue) { }
-
-		/// Returns integer representation of this hash summ.
-		GDINL HashValueType GetValue() const { return this->HashValue; }
-
-		/// Compares to hash summes.
-		GDINL bool operator== (HashCode const& HashCode) const { return (this->HashValue == HashCode.HashValue); }
-		GDINL bool operator!= (HashCode const& HashCode) const { return (this->HashValue != HashCode.HashValue); }
-	};	// struct HashCode
+	template<typename CharType>
+	class BaseString;
 
 	template<typename CharType>
-	struct CharTraits;
-
-	/// ANSI Character.
-	typedef char CharAnsi;
-	template<>
-	struct CharTraits<CharAnsi> final
-	{
-		GDINL static CharAnsi        ToLower  (CharAnsi const Character)                                                                { return static_cast<CharAnsi>(::tolower(Character)); }
-		GDINL static CharAnsi        ToUpper  (CharAnsi const Character)                                                                { return static_cast<CharAnsi>(::toupper(Character)); }
-		GDINL static size_t          StrLen   (CharAnsi const* const CString)                                                           { return (::strlen)(CString); }
-		GDINL static CharAnsi const* StrStr   (CharAnsi const* const First, CharAnsi const* const Second)                               { return (::strstr)(First, Second); }
-		GDINL static CharAnsi const* StrChr   (CharAnsi const* const CString, CharAnsi const Character)                                 { return (::strchr)(CString, Character); }
-		GDINL static CharAnsi const* StrRChr  (CharAnsi const* const CString, CharAnsi const Character)                                 { return (::strrchr)(CString, Character); }
-		GDINL static int             StrNCmp  (CharAnsi const* const First, CharAnsi const* const Second, size_t const MaxLength)       { return (::strncmp)(First, Second, MaxLength); }
-		GDINL static int             VSNPrintF(CharAnsi* CString, size_t const Count, CharAnsi const* const Format, va_list const Args) { return (::vsnprintf)(CString, Count, Format, Args); }
-	};	// struct CharTraits<CharAnsi>
-
-	/// Unicode Character.
-#if defined(GD_COMPILER_MSVC)
-	typedef wchar_t CharUtf16;
-#else	// if defined(GD_COMPILER_MSVC)
-	typedef char16_t CharUtf16;
-#endif	// if defined(GD_COMPILER_MSVC)
-	template<>
-	struct CharTraits<CharUtf16> final
-	{
-		GDINL static CharUtf16        ToLower  (CharUtf16 const Character)                                                                 { return static_cast<CharUtf16>(::towlower(Character)); }
-		GDINL static CharUtf16        ToUpper  (CharUtf16 const Character)                                                                 { return static_cast<CharUtf16>(::towupper(Character)); }
-		GDINL static size_t           StrLen   (CharUtf16 const* const CString)                                                            { return (::wcslen)(CString); }
-		GDINL static CharUtf16 const* StrStr   (CharUtf16 const* const First, CharUtf16 const* const Second)                               { return (::wcsstr)(First, Second); }
-		GDINL static CharUtf16 const* StrChr   (CharUtf16 const* const CString, CharUtf16 const Character)                                 { return (::wcschr)(CString, Character); }
-		GDINL static CharUtf16 const* StrRChr  (CharUtf16 const* const CString, CharUtf16 const Character)                                 { return (::wcsrchr)(CString, Character); }
-		GDINL static int              StrNCmp  (CharUtf16 const* const First, CharUtf16 const* const Second, size_t const MaxLength)       { return (::wcsncmp)(First, Second, MaxLength); }
-		GDINL static int              VSNPrintF(CharUtf16* CString, size_t const Count, CharUtf16 const* const Format, va_list const Args) { return (::vswprintf)(CString, Count, Format, Args); }
-	};	// struct CharTraits<CharUtf16>
-
-#if (defined(_UNICODE))
-#	define GD_TEXT(Text) L##Text
-	typedef CharUtf16 Char;
-#else	// if (defined(_UNICODE))
-#	define GD_TEXT(Text) Text
-	typedef CharAnsi Char;
-#endif	// if (defined(_UNICODE))
+	void Swap(BaseString<CharType>& First, BaseString<CharType>& Second);
 
 	template<typename CharType> 
 	class BaseString final
 	{
-		/// ------------------------------------------------------------------------------------------
-		/// Iterator type.
-		/// ------------------------------------------------------------------------------------------
-	private /*Class internal types.*/:
-		template<typename Tag>
-		struct Iterator final
-		{
-			typedef Char ThisElementType;
-			typedef typename Conditional<Tag::IsConst, Char const*, Char*>::Type ThisPtrType;
-			typedef typename Conditional<Tag::IsConst, Char const&, Char&>::Type ThisRefType;
+	public:
+		typedef CharType ThisCharType;
+		typedef BaseString<CharType> ThisBaseString;
 
-		private:
-			ThisPtrType Pointer = nullptr;
-
-		public:
-			GDINL  Iterator(ThisPtrType const  Pointer) : Pointer(Pointer) { }
-			GDINL  Iterator(Iterator    const& Iterator) : Pointer(Iterator.Pointer) { }
-			GDINL ~Iterator() { }
-
-			/// Increases/decreases iterator.
-			GDINL Iterator& operator++ (int const) { ++this->Pointer; return (*this); }
-			GDINL Iterator& operator++ (         ) { ++this->Pointer; return (*this); }
-			GDINL Iterator& operator-- (int const) { --this->Pointer; return (*this); }
-			GDINL Iterator& operator-- (         ) { --this->Pointer; return (*this); }
-
-			/// Increases/decreases iterator on specified value.
-			inline Iterator& operator+= (ptrdiff_t const Offset)	   { this->Pointer += Offset; return (*this); }
-			inline Iterator& operator-= (ptrdiff_t const Offset)       { this->Pointer -= Offset; return (*this); }
-			inline Iterator  operator+  (ptrdiff_t const Offset) const { return Iterator(this->Pointer + Offset); }
-			inline Iterator  operator-  (ptrdiff_t const Offset) const { return Iterator(this->Pointer - Offset); }
-
-			/// Computes difference between iterators.
-			inline ptrdiff_t operator- (Iterator const&       Iterator) const { return (this->Pointer - Iterator.Pointer); }
-			inline ptrdiff_t operator- (Char     const* const  Pointer) const { return (this->Pointer - Pointer); }
-
-			/// Compares iterators.
-			GDINL bool operator== (Iterator const&       Other  ) const { return (this->Pointer == Other.Pointer); }
-			GDINL bool operator!= (Iterator const&       Other  ) const { return (this->Pointer != Other.Pointer); }
-			GDINL bool operator== (Char     const* const Pointer) const { return (this->Pointer == Pointer); }
-			GDINL bool operator!= (Char     const* const Pointer) const { return (this->Pointer != Pointer); }
-
-			/// Assigns this iterator other value.
-			GDINL Iterator& operator= (ThisPtrType const  Pointer) { this->Pointer = Pointer; return (*this); }
-			GDINL Iterator& operator= (Iterator    const& Iterator) { this->Pointer = Iterator->Pointer; return (*this); }
-
-			/// (De)referensing iterator.
-			GDINL ThisRefType operator*  () const { return (*this->Pointer); }
-			GDINL ThisPtrType operator-> () const { return (this->Pointer); }
-		};	// struct Iterator
-	
-	public /*Class public types.*/:
-		/// Iterator type this container uses.
-		typedef Iterator<ContainerDetails::IteratorTagMutable> MutableIterator;
-		typedef Iterator<ContainerDetails::IteratorTagConst  > ConstIterator;
-
-		/// Reverse iterator type this container uses.
-		typedef ContainerDetails::ReverseIterator<MutableIterator> ReverseMutableIterator;
+		typedef ContainerDetails::IndexedContainerIterator<ThisBaseString const, CharType const> ConstIterator;
+		typedef ContainerDetails::IndexedContainerIterator<ThisBaseString,       CharType      > MutableIterator;
 		typedef ContainerDetails::ReverseIterator<ConstIterator  > ReverseConstIterator;
+		typedef ContainerDetails::ReverseIterator<MutableIterator> ReverseMutableIterator;
+
+		typedef ThisCharType const* PtrConstIterator;
+		typedef ThisCharType      * PtrMutableIterator;
+		typedef ContainerDetails::ReverseIterator<PtrConstIterator  > ReversePtrConstIterator;
+		typedef ContainerDetails::ReverseIterator<PtrMutableIterator> ReversePtrMutableIterator;
 
 	private /*Class members & API*/:
-		enum : size_t { StringMaxHeapSize = 16 };
+		size_t static const StringMaxHeapSize = 2 * (sizeof(handle) / sizeof(CharType));
 		size_t StringSize = 0;
 		union {
 			CharType  StringStackArray[StringMaxHeapSize];
@@ -536,524 +424,22 @@ GD_NAMESPACE_BEGIN
 			return !((*this) == Character);
 		}
 
-	private /**/:
-		/// ------------------------------------------------------------------------------------------
-		/// *** Range Operators. ***
-		/// ------------------------------------------------------------------------------------------
+	private /* STL compatibility */:
+		GDINL friend MutableIterator begin(BaseString      & some_string) { return some_string.PtrBegin(); }
+		GDINL friend   ConstIterator begin(BaseString const& some_string) { return some_string.PtrBegin(); }
+		GDINL friend MutableIterator end  (BaseString      & some_string) { return some_string.PtrEnd(); }
+		GDINL friend   ConstIterator end  (BaseString const& some_string) { return some_string.PtrEnd(); }
 
-		GDINL friend MutableIterator begin(BaseString      & some_string) { return some_string.Begin(); }
-		GDINL friend   ConstIterator begin(BaseString const& some_string) { return some_string.Begin(); }
-		GDINL friend MutableIterator end  (BaseString      & some_string) { return some_string.End(); }
-		GDINL friend   ConstIterator end  (BaseString const& some_string) { return some_string.End(); }
+		template<typename CharType>
+		inline friend void GD Swap(BaseString<CharType>& First, BaseString<CharType>& Second);
 	};	// class BaseString
 
-	typedef BaseString<CharAnsi > ANSIString;
-	typedef BaseString<CharUtf16> WideString;
-	typedef BaseString<Char     >     String;
-	 
-#if 0
-	/// @brief	Basic String class in GoddamnEngine
-	///			This class uses default C's character type. UTF-8 and UTF-16 characters are not supported.
-	///			Usage:
-	///			@code
-	///				String a("Hello,");
-	///				String b(L" World");
-	///				Debug::Log(a + b + "!");
-	///			@endcode
-	class String final
-	{
-	private:
-		bool IsOnHeap = true;
-		union {
-			struct {
-				Char*  HeapMemory;
-				size_t HeapSize;
-				size_t HeapCapacity;
-			};	// anonymous struct
-			struct {
-				enum : size_t { StackCapacity = (3 * sizeof(size_t) - 1) };
-				Char   StackMemory[StackCapacity];
-				UInt8  StackSize;
-			};	// anonymous struct
-		};	// anonymous union
-
-	public:
-		template<typename Tag>
-		struct Iterator final
-		{
-			typedef Char ThisElementType;
-			typedef typename Conditional<Tag::IsConst, Char const*, Char*>::Type ThisPtrType;
-			typedef typename Conditional<Tag::IsConst, Char const&, Char&>::Type ThisRefType;
-
-		private:
-			ThisPtrType Pointer = nullptr;
-
-		public:
-			GDINL  Iterator(ThisPtrType const  Pointer) : Pointer(Pointer) { }
-			GDINL  Iterator(Iterator    const& Iterator) : Pointer(Iterator.Pointer) { }
-			GDINL ~Iterator() { }
-
-			/// Increases/decreases iterator.
-			GDINL Iterator& operator++ (int const) { ++this->Pointer; return (*this); }
-			GDINL Iterator& operator++ () { ++this->Pointer; return (*this); }
-			GDINL Iterator& operator-- (int const) { --this->Pointer; return (*this); }
-			GDINL Iterator& operator-- () { --this->Pointer; return (*this); }
-
-			/// Increases/decreases iterator on specified value.
-			inline Iterator& operator+= (ptrdiff_t const Offset)	      { this->Pointer += Offset; return (*this); }
-			inline Iterator& operator-= (ptrdiff_t const Offset)       { this->Pointer -= Offset; return (*this); }
-			inline Iterator  operator+  (ptrdiff_t const Offset) const { return Iterator(this->Pointer + Offset); }
-			inline Iterator  operator-  (ptrdiff_t const Offset) const { return Iterator(this->Pointer - Offset); }
-
-			/// Computes difference between iterators.
-			inline ptrdiff_t operator- (Iterator const& Iterator) const { return (this->Pointer - Iterator.Pointer); }
-			inline ptrdiff_t operator- (Char     const* const  Pointer) const { return (this->Pointer - Pointer); }
-
-			/// Compares iterators.
-			GDINL bool operator== (Iterator const&       Other) const { return (this->Pointer == Other.Pointer); }
-			GDINL bool operator!= (Iterator const&       Other) const { return (this->Pointer != Other.Pointer); }
-			GDINL bool operator== (Char     const* const Pointer) const { return (this->Pointer == Pointer); }
-			GDINL bool operator!= (Char     const* const Pointer) const { return (this->Pointer != Pointer); }
-
-			/// Assigns this iterator other value.
-			GDINL Iterator& operator= (ThisPtrType const  Pointer) { this->Pointer = Pointer; return (*this); }
-			GDINL Iterator& operator= (Iterator    const& Iterator) { this->Pointer = Iterator->Pointer; return (*this); }
-
-			/// (De)referensing iterator.
-			GDINL ThisRefType operator*  () const { return (*this->Pointer); }
-			GDINL ThisPtrType operator-> () const { return (this->Pointer); }
-		};	// struct Iterator
-
-		/// Iterator type this container uses.
-		typedef Iterator<ContainerDetails::IteratorTagConst  >   ConstIterator;
-		typedef Iterator<ContainerDetails::IteratorTagMutable> MutableIterator;
-
-		/// Reverse iterator type this container uses.
-		typedef ContainerDetails::ReverseIterator<MutableIterator> ReverseMutableIterator;
-		typedef ContainerDetails::ReverseIterator<ConstIterator  > ReverseConstIterator;
-
-		/// @name String Format
-		/// @{
-
-		/// @brief			Builds 'String' from 'format'
-		/// @param format	Format to build 'String'
-		/// @param ...		Parameters to be passed to formatter:
-		///		@li @p '^'	-	IncrdibleEngine`s 'String'
-		///		@li @p 's' -	@p 'CharAnsi' pointer
-		///		@li @p 'w' -	@p 'CharUtf16' pointer
-		///		@li @p 'f' -	@p 'float' value
-		///		@li @p 'd' -	@p 'int' value
-		///		@li @p 'x' -	@p 'handle' value
-		///		@li @p 'c' -	@p 'CharAnsi' value
-		///		@li @p 'u' -	@p 'CharUtf16' value
-		///		@li @p 'U' -	@p 'CharUtf32' value
-		///		@li @p '\%' -	@p '\%' character
-		/// @n
-		///		Use this method instead of 'String' concatenation. It's faster,
-		///		and looks more effective and good.
-		/// @n
-		///		Usage:
-		///		@code
-		///			String a = String::Format("Hello, %s!", "World");
-		///		@endcode
-		GDAPI static String Format(const CharAnsi* format, ...);
-
-		/*/// @see Format(const CharAnsi* format, ...)
-		GDAPI static String&& Format(const CharUtf16* format, ...);
-
-		/// @see Format(const CharAnsi* format, ...)
-		GDAPI static String&& Format(const CharUtf32* format, ...);*/
-
-		/// @see Format(const CharAnsi* format, ...)
-		GDAPI static String FormatVa(Str const Format, va_list const List);
-
-		/// @}
-
-		/// @name BASE-64 encoding and decoding
-		/// @{
-
-		/// @brief				Encodes HeapMemory in BASE-64
-		/// @param data			Data to encode
-		/// @param output		Reference to resulting HeapMemory
-		GDAPI static void EncodeBase64(const Vector<UInt8>& data, String& output);
-
-		/// @brief				Decodes HeapMemory in BASE-64
-		/// @param base64		Encoded HeapMemory
-		/// @param output		Reference to resulting data vector
-		GDAPI static void DecodeBase64(Vector<UInt8>& output, const String& base64);
-
-		/// @}
-
-		/// @name Constructors / Destructor
-		/// @{
-
-		/// @brief				Allocates sized HeapMemory.
-		/// @param _nullptr		Should be 'nullptr'
-		/// @param HeapSize			Size for new String
-		GDAPI String(const nullptr_t _nullptr = nullptr, const size_t HeapSize = 0, Char const fillWith = '\0');
-
-		/// @brief				Copy constructor
-		/// @param HeapMemory		Copies from HeapMemory.
-		GDAPI String(const String& HeapMemory);
-		GDINL String(String&& HeapMemory)
-		{
-			this->HeapSize = HeapMemory.HeapSize;
-			this->HeapMemory = HeapMemory.HeapMemory;
-			HeapMemory.HeapMemory = nullptr;
-			HeapMemory.HeapSize = 0;
-		}
-
-		/// @brief				Copies data from 'Vector'
-		/// @param queue		Copies from Vector.
-		GDINL String(const Vector<CharAnsi>& vector);
-
-		/// @brief				Copies data from 'Vector'
-		/// @param queue		Copies from Vector.
-		GDINL String(const Vector<CharUtf16>& vector);
-
-		/// @brief				Copies data from 'Vector'
-		/// @param queue		Copies from Vector.
-		GDINL String(const Vector<CharUtf32>& vector);
-
-		/// @brief				Copies data from UTF-8 String
-		/// @param utf8			Pointer to character array
-		GDAPI String(const CharAnsi* utf8);
-
-		/// @brief				Copies data from UTF-16 String
-		/// @param utf16		Pointer to character array
-		GDAPI String(const CharUtf16* utf16);
-
-		/// @brief				Copies data from UTF-32 String
-		/// @param utf16		Pointer to character array
-		GDAPI String(const CharUtf32* utf32); 
-
-		/// @brief				Formats data from float
-		/// @param value		Float to copy from
-		GDAPI String(const int value);
-
-		/// @brief				Formats data from float
-		/// @param value		Float to copy from
-		GDAPI String(const float value);
-
-		/// @brief				Formats data from float
-		/// @param value		Pointer to copy from
-		GDAPI String(const handle value);
-
-		/// @brief				Formats data from UTF-8 character
-		/// @param value		Float to copy from
-		GDAPI String(const CharAnsi value);
-
-		/// @brief				Formats data from UTF-16 character
-		/// @param value		Float to copy from
-		GDAPI String(const CharUtf16 value);
-
-		/// @brief				Formats data from UTF-32 character
-		/// @param value		Float to copy from
-		GDAPI String(const CharUtf32 value);
-	
-		/// @brief				Destructs HeapMemory.
-		GDAPI ~String();
-
-		/// @}
-
-		GDINL Char const* CStr() const { return this->CStr(); }
-		GDINL Char      * CStr()       { return this->CStr(); }
-
-		GDINL MutableIterator Begin()       { return MutableIterator(this->CStr()); }
-		GDINL ConstIterator   Begin() const { return ConstIterator(this->CStr()); }
-		GDINL MutableIterator End()       { return MutableIterator(this->CStr() + this->GetSize()); }
-		GDINL ConstIterator   End() const { return ConstIterator(this->CStr() + this->GetSize()); }
-
-		/// Returns iterator that points to last container element.
-		GDINL ReverseMutableIterator ReverseBegin()       { return ReverseMutableIterator(MutableIterator(this->CStr() + (this->GetSize() - 1))); }
-		GDINL   ReverseConstIterator ReverseBegin() const { return   ReverseConstIterator(ConstIterator(this->CStr() + (this->GetSize() - 1))); }
-
-		/// Returns iterator that points to preceding the first container element
-		GDINL ReverseMutableIterator ReverseEnd()       { return ReverseMutableIterator(MutableIterator(this->CStr() - 1)); }
-		GDINL   ReverseConstIterator ReverseEnd() const { return   ReverseConstIterator(ConstIterator(this->CStr() - 1)); }
-
-		/// @name 'String'`s HeapSize
-		/// @{
-
-		/// @brief				Returns 'String'`s length
-		/// @returns			'String'`s length
-		GDINL size_t GetSize() const;
-
-		GDINL bool IsEmpty() const { return this->GetSize() == 0; }
-
-		/// @brief				Resizes a 'String'
-		/// @param HeapSize			New HeapSize
-		GDAPI void Resize(const size_t HeapSize);
-		GDINL void Emptify() { this->Resize(0); }
-
-		GDINL void SetLastElement(Char const C) { *(this->End() - 1) = C; }
-		GDINL Char const& GetLastElement() const { return (*(this->End() - 1)); }
-
-		/// @}
-
-		/// @name Trimming
-		/// @{
-
-		/// @brief				Removes all white spaces from 'String'`s beginning
-		/// @code
-		///					const String a(" \t\n\RHello, world   ");
-		///					const String b(a.TrimmLeft());	// 'b' now equals "Hello, world   "
-		/// @endcode
-		/// @returns			Trimmed from left-side HeapMemory
-		GDAPI String TrimmLeft() const;
-
-		/// @brief				Removes all white spaces from 'String'`s ending
-		/// @code
-		///					const String a(" \t\n\RHello, world   ");
-		///					const String b(a.TrimmRight());	// 'b' now equals " \t\n\RHello, world"
-		/// @endcode
-		/// @returns			Trimmed from right-side HeapMemory
-		GDAPI String TrimmRight() const;
-
-		/// @brief				Removes all white spaces from 'String'`s beginning and ending
-		/// @code
-		///					const String a(" \t\n\RHello, world   ");
-		///					const String b(a.Trimm());	// 'b' now equals "Hello, world"
-		/// @endcode
-		/// @returns			Trimmed HeapMemory
-		GDINL String Trimm() const;
-
-		/// @}
-
-		/// @name Substring
-		/// @{
-
-		/// @brief				Returns a substring from this 'String'
-		/// @param	from		Index of first character needed, including it
-		/// @param	to			Index of last character needed, not including it
-		/// @returns			A substring from this 'String'
-		GDAPI String GetSubstring(const size_t from, const size_t to) const;
-
-		/// @brief				Returns a substring from this 'String'
-		/// @param	from		Index of first character needed, including it
-		/// @returns			A substring from this 'String' from 'from' to last character
-		GDINL String GetSubstring(const size_t from) const;
-
-		/// @}
-
-		/// @name String Find
-		/// @{
-
-		GDAPI bool StartsWith(Str const Prefix) const
-		{
-			GD_UNUSED(Prefix);
-			return true;
-		}
-
-		GDAPI bool EndsWith(Str const Postfix) const
-		{
-			GD_UNUSED(Postfix);
-			return true;
-		}
-
-		/// @brief				Searches for any instances of HeapMemory and returns first index found
-		/// @param HeapMemory		String to search for
-		/// @returns			First index found or '-1' if found nothing
-		GDAPI size_t Find(const String& HeapMemory) const;
-
-		/// @brief				Searches for any instances of character and returns first index found
-		/// @param HeapMemory		String to search for
-		/// @returns			First index found or '-1' if found nothing
-		GDINL size_t Find(const Char character) const;
-
-		/// @brief				Searches for any instances of HeapMemory and returns last index found
-		/// @param HeapMemory		String to search for
-		/// @returns			Last index found or '-1' if found nothing
-		GDAPI size_t ReverseFind(const String& HeapMemory) const;
-
-		/// @brief				Searches for any instances of character and returns last index found
-		/// @param HeapMemory		String to search for
-		/// @returns			Last index found or '-1' if found nothing
-		GDAPI size_t ReverseFind(const Char character) const;
-
-		/// @}
-
-		/// @name String Split
-		/// @{
-
-		/// @brief				Splits 'String' into a 'Vector' by 'delimiter
-		/// @param delimiter	Delimiter to split with
-		/// @param include		Add delimiter to output vector
-		/// @returns			Splinted 'String' into a 'Vector' by 'delimiter
-		/// @code
-		///				String a("iPhone is better than every Android device");
-		///				Vector<String> splitted0 = a.Split(' ');		// 'splitted0' is now { "iPhone", "is", "better", ... }
-		///				Vector<String> splitted1 = a.Split(' ', true);	// 'splitted1' is now { "iPhone", " ", "is", " ", "better", ... }
-		/// @endcode
-		GDAPI Vector<String> Split(const Char delimiter, const bool include = false) const;
-
-		/// @brief			Spites 'String' by index
-		///					Spites 'String' by index
-		///					and assigns to this right part of this String, returns left part
-		/// @param index	Index to be slitted with
-		/// @returns		Substring of this 'String' from index
-		/// @code
-		///					String a("012345");
-		///					String b = a.Split(3);	// 'a' now is "012", 'b' is "345"
-		/// @endcode
-		GDAPI String Split(const size_t index);
-
-		/// @}
-
-		/// @name Converters
-		/// @{
-
-		/// @brief				Converts 'String' to float.
-		/// @returns			Float representation of String
-		GDAPI float ToFloat() const;
-
-		/// @brief				Converts 'String' to float.
-		/// @returns			Integer representation of String
-		GDAPI int ToInt() const;
-
-		/// @brief				Converts HeapMemory to upper-case
-		/// @returns			Upper-cased HeapMemory
-		GDAPI String ToUpper() const;
-
-		/// @brief				Converts HeapMemory to lower-case
-		/// @returns			Upper-cased HeapMemory
-		GDAPI String ToLower() const;
-
-		/// @}
-
-		/// @brief				Computes 'String'`s 'HashCode'
-		/// @returns			'String'`s 'HashCode'
-		GDAPI HashCode GetHashCode() const;
-
-		/// @brief				Adds element to 'String'
-		/// @param character	Char to add
-		GDINL void PushLast(const Char character);
-
-		/// @brief				Removes last character from 'String'
-		GDINL void PopLast();
-
-		/// @name Operators
-		/// @{
-
-		/// @brief			Accesses the character in 'String'
-		/// @param index	Index in 'String'
-		/// @returns		Character in 'String'
-		GDINL const Char& operator[] (const size_t index) const;
-
-		/// @brief			Accesses the character in 'String'
-		/// @param index	Index in 'String'
-		/// @returns		Reference on character in 'String'
-		GDINL Char& operator[] (const size_t index);
-		
-		/// @brief			Assignment operator
-		GDAPI String& operator=	(const String& HeapMemory);
-
-		/// @brief			Concatenation operator
-		GDAPI String operator+ (const String& HeapMemory) const;
-
-		/// @brief			Concatenation operator
-		GDINL String operator+ (const Char* HeapMemory) const;
-
-		/// @brief			Concatenation operator
-		GDINL String& operator+= (const String& HeapMemory);
-
-		/// @brief			Concatenation operator
-		GDINL String& operator+= (const Char* HeapMemory);
-		
-		/// @brief			Comparing operator
-		GDAPI bool operator== (const String& s) const;
-
-		/// @brief			Comparing operator
-		GDINL bool operator== (const HashCode& hash) const;
-
-		/// @brief			Comparing operator
-		GDINL bool operator!= (const String& HeapMemory) const;
-
-		/// @}
-
-	private:
-		GDINL friend MutableIterator begin(String      & some_string) { return some_string.Begin(); }
-		GDINL friend   ConstIterator begin(String const& some_string) { return some_string.Begin(); }
-		GDINL friend MutableIterator end  (String      & some_string) { return some_string.End(); }
-		GDINL friend   ConstIterator end  (String const& some_string) { return some_string.End(); }
-	};
-#endif	// if 0
-
-	/// Provides helper functions for processing ANSI characters.
-	namespace CharAnsiHelpers
-	{
-		/// Returns true if this character is valid digit in specified notation.
-		/// Currently supports notations range between 2 and 36.
-		/// Full list of supported characters: @c 0123456789
-		inline static bool IsDigit(CharAnsi const Character, size_t const Notation = 10)
-		{
-			GD_ASSERT((Notation >= 2) && (Notation <= static_cast<size_t>(('9' - '0') + ('Z' - 'A') + 2)), "This notation is invalid or not supported");
-			if (Notation > 10)
-			{
-				if ((Character >= CharAnsi('0')) && (Character <= CharAnsi('9')))
-					return true;
-				if (Character >= CharAnsi('A') && (Character <= (CharAnsi('A') + Notation - 10)))
-					return true;
-				if (Character >= CharAnsi('a') && (Character <= (CharAnsi('z') + Notation - 10)))
-					return true;
-
-				return false;
-			}
-			else
-				return (Character >= CharAnsi('0')) && (Character <= (CharAnsi('0') + Notation));
-		}
-
-		/// Returns true if this character can be used in identifier name.
-		/// Full list of supported characters: @c _$QqWwEeRrTtYyUuIiOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm
-		inline static bool IsAlphabetic(CharAnsi const Character)
-		{
-			if ((Character == CharAnsi('_')) || (Character == CharAnsi('$')))
-				return true;
-			if (Character >= CharAnsi('A') && (Character <= CharAnsi('Z')))
-				return true;
-			if (Character >= CharAnsi('a') && (Character <= CharAnsi('z')))
-				return true;
-			return false;
-		}
-
-		/// Returns true if this character is valid special character
-		/// Full list of supported characters: @c ~`!@#$%^&*()-_+={}[]:;"'|\<>,.?/
-		GDINL static bool IsSpecialCharacter(CharAnsi const Character)
-		{
-			static String const ValidSpecialCharacters(R"(~`!@#%^&*()-+={}[]:;"'|\<>,.?/)");
-			return (ValidSpecialCharacters.Find(Character) != -1);
-		}
-
-		/// Returns true if this character is valid special character
-		/// Full list of supported characters: space (@c ' '), tabulation (@c '\t') and end-of-line characters (@c '\n', '\r')
-		GDINL static bool IsSpace(CharAnsi const Character)
-		{
-			static String const SpaceCharacters(" \t\n\r");
-			return (SpaceCharacters.Find(Character) != -1);
-		}
-
-		/// Converts this character in specified notation to decimal one
-		/// Currently supports notations range between 2 and 36.
-		GDINL static UInt8 ToDigit(Char const Character)
-		{
-			return ((Character >= CharAnsi('0')) && (Character <= CharAnsi('9')))
-				  ? (Character  - CharAnsi('0')) : ((Character - CharAnsi('A')) + 10);
-		}
-
-		/// Converts this character into upper case
-		GDINL static UInt8 ToUpperCase(Char const Character)
-		{
-			GD_DEBUG_ASSERT(CharAnsiHelpers::IsAlphabetic(Character), "Invalid character specified");
-			return ((Character >= CharAnsi('a')) && (Character <= CharAnsi('z'))) ? (Character + (CharAnsi('A') - CharAnsi('a'))) : (Character);
-		}
-	}	// namespace CharAnsiHelpers
+	typedef BaseString<CharAnsi > StringAnsi;
+	typedef BaseString<CharUtf16> StringUtf16;
+	typedef BaseString<Char     > String;
 
 GD_NAMESPACE_END
 
-#if 0
-#	include <GoddamnEngine/Core/Text/String/String.inl>
-#endif	// if 0
+#include <GoddamnEngine/Core/Text/String/String.inl>
 
-#undef GDINL
-#pragma pop_macro("GDINL")
 #endif

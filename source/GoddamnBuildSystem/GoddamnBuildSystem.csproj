@@ -44,7 +44,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>$(GODDAMN_SDK)bin\ThirdParty\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -56,7 +56,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>$(GODDAMN_SDK)bin\ThirdParty\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -74,20 +74,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuildSystem.cs" />
-    <Compile Include="CommandLineArguments.cs" />
-    <Compile Include="Compiler.cs" />
-    <Compile Include="ConsoleOutput.cs" />
-    <Compile Include="Dependency.cs" />
-    <Compile Include="Project.DependenciesResolver.cs" />
-    <Compile Include="Project.Workflow.cs" />
+    <Compile Include="Source\BuildSystem.cs" />
+    <Compile Include="Source\Core\Extensions.cs" />
+    <Compile Include="Source\Core\Tree.cs" />
+    <Compile Include="Source\Project\Solution.cs" />
+    <Compile Include="Source\Core\CommandLineArguments.cs" />
+    <Compile Include="Source\Core\Compiler.cs" />
+    <Compile Include="Source\Project\Dependency.cs" />
+    <Compile Include="Source\Project\Project.Workflow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Project.cs" />
-    <Compile Include="SolutionException.cs" />
-    <Compile Include="Target\MakefileTarget.cs" />
-    <Compile Include="Target\QMakeTarget.cs" />
-    <Compile Include="Target\_Target.cs" />
-    <Compile Include="Target\VisualStudioTarget.cs" />
+    <Compile Include="Source\Project\Project.cs" />
+    <Compile Include="Source\Target\Make\MakefileTarget.cs" />
+    <Compile Include="Source\Target\QtCreator\QMakeTarget.cs" />
+    <Compile Include="Source\Target\Target.cs" />
+    <Compile Include="Source\Target\VisualStudio\VisualStudioTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\App.config" />
@@ -99,7 +99,9 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Source\Target\XCode\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

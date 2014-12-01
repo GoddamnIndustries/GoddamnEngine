@@ -12,7 +12,6 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/TypeTraits.h>
-#include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
 
 #include <crtdbg.h>
 

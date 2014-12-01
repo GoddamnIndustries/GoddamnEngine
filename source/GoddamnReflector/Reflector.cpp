@@ -296,7 +296,7 @@ GD_NAMESPACE_BEGIN
 	{
 		do {
 			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER)) { // This is idenitifier lexem.
-				if (strncmp(this->CurrentLexem.GetRawData().CStr(), ExpectedAnnotationPrefix.CStr(), ExpectedAnnotationPrefix.GetSize()) == 0) { // This lexem matches with prefix.
+				if (std::strncmp(this->CurrentLexem.GetRawData().CStr(), ExpectedAnnotationPrefix.CStr(), ExpectedAnnotationPrefix.GetSize()) == 0) { // This lexem matches with prefix.
 					return GD_CPP_RESULT_SUCCEEDED;
 				}
 			}
@@ -364,6 +364,7 @@ GD_NAMESPACE_BEGIN
 
 				if (BaseParser->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END)) {	// Annotation parametrs end here.
 					BaseParser->ExpectNextLexem();
+					break;
 				} else {	// Comma parameters separator (for values without assigment expression).
 					BaseParser->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA);
 					BaseParser->ExpectNextLexem();
@@ -617,8 +618,9 @@ int main(int const ArgumensCount, char const* const* const ParamsList)
 	GD_REFLECTOR_LOG("\nGoddamnEngine C++ Reflection utility.\nCopyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.");
 
 	clock_t const StartTime = ::clock();
-	try {
+//	try {
 		IToolchain Toolchain;
+		static char const* const HeaderPath = R"(D:\GoddamnEngine\source\GoddamnEngine\Engine\Renderer\Shader\Shader.h)";
 		CPPBaseParser BaseParser(&Toolchain, new FileInputStream(HeaderPath));
 		for (;;) {
 			if (BaseParser.TrySkipToNextAnnotation() == GD_CPP_RESULT_EMPTY) {
@@ -627,10 +629,10 @@ int main(int const ArgumensCount, char const* const* const ParamsList)
 
 			BaseParser.ParseAnnotation();
 		}
-	} catch (Exception const& TheException) {
-		GD_REFLECTOR_ERROR("\nGeneration failed with following excpetion:\n%s", TheException.GetErrorMessage());
-		return GD_REFLECTOR_FAILED;
-	}
+//	} catch (Exception const& TheException) {
+//		GD_REFLECTOR_ERROR("\nGeneration failed with following excpetion:\n%s", TheException.GetErrorMessage());
+//		return GD_REFLECTOR_FAILED;
+//	}
 
 	clock_t const TotalTime = ::clock() - StartTime;
 	GD_REFLECTOR_LOG("\nGeneration took %f seconds.", static_cast<float>(TotalTime) / 1000.0f);

@@ -2,7 +2,6 @@
 #define GD_INPUT
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Framework/Framework.h>
 #include <GoddamnEngine/Engine/Component/Static/StaticComponent.h>
 
 #define GD_INPUT_KEYS_SIZE		((size_t)(KeyCode::Unknown))

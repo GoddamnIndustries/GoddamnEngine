@@ -3,14 +3,8 @@
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// ------------------------------------------------------------------------------------------
-/// The project was created to kill the pain of the loss of some people I've tried to love.
-/// And it does not matter, who was guilty of my loneliness. All my mistakes have led me
-/// to the purpose of my whole life.
-///	
-/// But happiness can't just appear from nowhere, just like everything in this world.
-///	And now I am here, without any thoughts where to go, and no desire to step back.
-///	
-/// Oleg Butakov (James Jhuighuy).
+///	My life is just a collection of goals dubious reachability. This project is one of them.
+/// Oleg Butakov (James Jhuighuy, the engine master).
 /// ------------------------------------------------------------------------------------------
 /// 
 /// History:
@@ -24,8 +18,8 @@
 /// ==========================================================================================
 /// Version definitions
 #define ENGINE				GoddamnEngine	
-#define ENGINE_VERSION		0x05000001ui32
-#define ENGINE_VERSION_FULL	"5.0.0.1"
+#define ENGINE_VERSION		0x06000001ui32
+#define ENGINE_VERSION_FULL	"6.0.0.1"
 
 #define GD_ENGINE_NAME		"GoddamnEngine"
 #define GD_ENGINE_VERSION	"1/2"
@@ -64,7 +58,7 @@
 #		define GD_PLATFORM_API_LIBSDL2	  (1)							///< LibSDL2 supports target platform.
 #		define GD_PLATFORM_WINDOWS		  (1)							///< Macro to detect Windows-specific code
 #		define GD_PLATFORM_DESKTOP		  (1)			        		///< Building for desktop platform 
-//  endif	// if (WINAPI_FAMILY_PARTITIONWINAPI_FAMILY_DESKTOP_APP))
+//  endif	// if (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_DESKTOP_APP))
 #	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PHONE_APP))				//   Windows Phone 8 application.
 #		define GD_PLATFORM_WINDOWS_PHONE8 (1)							///< Macro to detect WindowsPhone 8-specific code
 #		define GD_PLATFORM_MOBILE		  (1)							///< Building for mobile platform.
@@ -459,12 +453,12 @@
 	// And exceptions are enabled.
 #	if (defined(GD_COMPILER_MSVC_COMPATIBLE))
 #		if (!(defined(_CPPUNWIND)))
-#			error "Excpetions should be enabled in MSVC compiler."
+#			error "Exceptions should be enabled in MSVC compiler."
 #		endif	// if (!(defined(_CPPUNWIND)))
 //	endif	// if (defined(GD_COMPILER_MSVC_COMPATIBLE))
 #	elif (defined(GD_COMPILER_GCC_COMPATIBLE))
 #		if (!(defined(__EXCEPTIONS)))
-#			error "Excpetions should be enabled in GCC compiler."
+#			error "Exceptions should be enabled in GCC compiler."
 #		endif	// if (!(defined(__EXCEPTIONS)))
 //	endif // if (defined(GD_COMPILER_GCC_COMPATIBLE))
 #	endif	// *** C++ exceptions check. ***
@@ -524,8 +518,13 @@
 /// Most common definitions.
 /// ==========================================================================================
 
-#include <cstddef>
-#include <cstdint>
+#if defined(__cplusplus)
+#	include <cstddef>
+#	include <cstdint>
+#else	// if defined(__cplusplus)
+#	include <stddef.h>
+#	include <stdint.h>
+#endif	// if defined(__cplusplus)
 
 /// ------------------------------------------------------------------------------------------
 /// C++ syntax "improvements" & useful macros.

@@ -607,14 +607,14 @@ GD_NAMESPACE_BEGIN
 				};
 
 				size_t RegisterIndex = RegistersTranslationTable.FindFirstElement(this->CurrentLexem.GetRawData()[0]);
-				if ((this->CurrentLexem.GetRawData().GetSize() == 2) ? ((RegisterIndex != SIZE_MAX) && (!CharAnsiHelpers::IsDigit(this->CurrentLexem.GetRawData()[1]))) : true)	{
+				if ((this->CurrentLexem.GetRawData().GetSize() == 2) ? ((RegisterIndex != SIZE_MAX) && (!CharAnsiTraits::IsDigit(this->CurrentLexem.GetRawData()[1]))) : true)	{
 					HLSLParserErrorDesc static const InvalidRegisterError("register '%s' is invalid.");
 					throw HLSLParserErrorException(InvalidRegisterError.ToString(&this->CurrentLexem, this->CurrentLexem.GetRawData().CStr()));
 				}
 
 				UniquePtr<HLSLRegister> Register(new HLSLRegister());
 				Register->Register   = RegistersTranslationTable.GetElementAt(RegisterIndex).Second;
-				Register->RegisterID = size_t(CharAnsiHelpers::ToDigit(this->CurrentLexem.GetRawData()[1]));
+				Register->RegisterID = size_t(CharAnsiTraits::ToDigit(this->CurrentLexem.GetRawData()[1]));
 
 				this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_PARAMS_END);
 				this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR                             );
@@ -631,8 +631,8 @@ GD_NAMESPACE_BEGIN
 			/// @todo Rewrite semantic name and ID extraction after 'String' class refactoring.
 			this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER);
 			UniquePtr<HLSLSemantic> Semantic(new HLSLSemantic());
-			bool const HasSemanticID = CharAnsiHelpers::IsDigit(this->CurrentLexem.GetRawData().GetLastElement());
-			Semantic->SemanticID = (HasSemanticID ? size_t(CharAnsiHelpers::ToDigit(this->CurrentLexem.GetRawData().GetLastElement())) : 0);
+			bool const HasSemanticID = CharAnsiTraits::IsDigit(this->CurrentLexem.GetRawData().GetLastElement());
+			Semantic->SemanticID = (HasSemanticID ? size_t(CharAnsiTraits::ToDigit(this->CurrentLexem.GetRawData().GetLastElement())) : 0);
 			Semantic->Semantic   = HLSLSemanticTypeFromString(this->CurrentLexem.GetRawData().GetSubstring(0, this->CurrentLexem.GetRawData().GetSize() - (HasSemanticID ? 1 : 0)));
 			/**/ if ( Semantic->Semantic == GD_HLSL_SEMANTIC_UNKNOWN) {	// Invalid semantic specified.
 				HLSLParserErrorDesc static const InvalidSemanticError("Unknown semantic '%s'.");

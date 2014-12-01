@@ -7,10 +7,8 @@
 /// ==========================================================================================
 
 #include <GoddamnReflector/RePreprocessor/RePreprocessor.h>
-
-#if (defined(GD_DEBUG))
-#	include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.h>
-#endif	// if (defined(GD_DEBUG))
+#include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.h>
+#include <GoddamnEngine/Core/Reflection/MethodInformation/MethodInformation.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -48,18 +46,16 @@ GD_NAMESPACE_BEGIN
 		BaseParser->ExpectNextLexem();
 
 		// '#endif' directive parsing.
-		if (strncmp(PreprocessorDirective.CStr(), "endif", sizeof("endif") - 1) == 0) {	// Leaving this block.
+		if (std::strncmp(PreprocessorDirective.CStr(), "endif", sizeof("endif") - 1) == 0) {	// Leaving this block.
 			this->CurrentBlock->PostCondition = Move(PreprocessorDirective);
 			if ((this->CurrentBlock = this->CurrentBlock->ParentBlock) == nullptr) {	// Unexpected '#endif' directive. No corresponding '#if' was not found.
 				CPPBaseParserErrorDesc static const UnexpectedEndifDirectiveError("unexpected '#endif' directive. No corresponding '#if' was not found.");
 				throw CPPParsingException(UnexpectedEndifDirectiveError.ToString(&BaseParser->GetCurrentLexem()));
 			}
-
-			return true;
 		} else if ((!this->CurrentBlock->Elements.IsEmpty()) || (!this->CurrentBlock->PreCondition.IsEmpty()) || (this->TopBlock == this->CurrentBlock)) {
 			// '#if*', '#elif*' and '#else' directive parsing.
 			// This block already has condition. Now lets see what we can do:
-			if (strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0) {	// Creating a new block (in scope of current).
+			if (std::strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0) {	// Creating a new block (in scope of current).
 				this->CurrentBlock->InnerBlocks.PushLast(SharedPtr<Block>(new Block()));
 				
 				Block* const NewBlock = this->CurrentBlock->InnerBlocks.GetLastElement().GetPointer();
@@ -67,8 +63,8 @@ GD_NAMESPACE_BEGIN
 				NewBlock->PreCondition = Move(PreprocessorDirective);
 				
 				this->CurrentBlock = NewBlock;
-				return true;
-			} else if ((strncmp(PreprocessorDirective.CStr(), "else", sizeof("else") - 1) == 0) || (strncmp(PreprocessorDirective.CStr(), "elif", sizeof("elif") - 1) == 0)) {
+			} else if ((std::strncmp(PreprocessorDirective.CStr(), "else", sizeof("else") - 1) == 0) 
+				    || (std::strncmp(PreprocessorDirective.CStr(), "elif", sizeof("elif") - 1) == 0)) {
 				// Creating a new block (sibling current).
 				if (this->TopBlock == this->CurrentBlock) {	// We are in top block. We need to wrap it with other top.
 					Block* const OldTopBlock = this->TopBlock.Release();
@@ -85,24 +81,23 @@ GD_NAMESPACE_BEGIN
 				NewBlock->PreCondition = Move(PreprocessorDirective);
 				
 				this->CurrentBlock = NewBlock;
-				return true;
 			}
 		} else {	// Current block has empty pre-condition. Only '#if' is valid.
-			if ((strncmp(PreprocessorDirective.CStr(), "else", sizeof("else") - 1) == 0) || (strncmp(PreprocessorDirective.CStr(), "elif", sizeof("elif") - 1) == 0)) {
+			if (   (std::strncmp(PreprocessorDirective.CStr(), "else", sizeof("else") - 1) == 0) 
+				|| (std::strncmp(PreprocessorDirective.CStr(), "elif", sizeof("elif") - 1) == 0)) {
 				// Unexpected '#***' directive. No corresponding '#if' was not found.
 				CPPBaseParserErrorDesc static const UnexpectedDirectiveError("unexpected '#%s' directive. No corresponding '#if' was not found.");
 				throw CPPParsingException(UnexpectedDirectiveError.ToString(&BaseParser->GetCurrentLexem()));
-			} else if (strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0) {
+			} else if (std::strncmp(PreprocessorDirective.CStr(), "if", sizeof("if") - 1) == 0) {
 				this->CurrentBlock->PreCondition = Move(PreprocessorDirective);
-				return true;
+			} else {
+				// Pushing unkown directive back.
+				for (auto const Character : PreprocessorDirective) {
+					BaseParser->GetLexer()->RevertCharacter(Character);
+				}
 			}
 		}
-
-		// Pushing unkown directive back.
-		for (auto const Character : PreprocessorDirective) {
-			BaseParser->GetLexer()->RevertCharacter(Character);
-		}
-
+		
 		return true;
 	}
 
@@ -110,35 +105,32 @@ GD_NAMESPACE_BEGIN
 	/// Prints parsed stuff to output.
 	void CPPRePreprocessorDefinitions::DebugVislualizeBlock()
 	{
-		class CPPRePreprocessorDefinitionsWriter final
-		{
-		private:
+		struct RecursiveBlockWriter final {
 			size_t IdentsCount = SIZE_MAX;
-			StringBuilder Builder;
-
-		public:
-			GDINT StringBuilder& WriteBlock(Block const* SomeBlock)
-			{
+			void RecursivelyWriteBlock(Block const* SomeBlock) {
 				++this->IdentsCount;
 				String const Idents(this->IdentsCount, Char('\t'));
-				Builder.AppendFormat("\n%sBlock <Level %u> {", Idents.CStr(), this->IdentsCount);
-				Builder.AppendFormat("\n%s\tPreCondition : %s", Idents.CStr(), (!SomeBlock->PreCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PreCondition.CStr()).CStr() : "None"));
-				Builder.AppendFormat("\n%s\tPostCondition : %s", Idents.CStr(), (!SomeBlock->PostCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PostCondition.CStr()).CStr() : "None"));
-				Builder.AppendFormat("\n%s\tElements <Count %u> [", Idents.CStr(), SomeBlock->Elements.GetSize());
-				for (auto const Element : SomeBlock->Elements) {
-					Builder.AppendFormat("\n%s\t\t\"(0x%x)\",", Idents.CStr(), Element.GetPointer());
-				}
-				Builder.AppendFormat("\n%s\t]", Idents.CStr());
-				for (auto const InnerBlock : SomeBlock->InnerBlocks) {
-					this->WriteBlock(InnerBlock.GetPointer());
-				}
-				Builder.AppendFormat("\n%s}", Idents.CStr());
-				--this->IdentsCount;
+				GD_REFLECTOR_LOG("\n%s/*", Idents.CStr());
+				GD_REFLECTOR_LOG("\n%sBlock <Level %u> {", Idents.CStr(), this->IdentsCount);
+				GD_REFLECTOR_LOG("\n%s\tPreCondition : %s", Idents.CStr(), (!SomeBlock->PreCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PreCondition.CStr()).CStr() : "None"));
+				GD_REFLECTOR_LOG("\n%s\tPostCondition : %s", Idents.CStr(), (!SomeBlock->PostCondition.IsEmpty() ? String::Format(R"("%s")", SomeBlock->PostCondition.CStr()).CStr() : "None"));
 
-				return this->Builder;
+				GD_REFLECTOR_LOG("\n%s\tElements <Count %u> [", Idents.CStr(), SomeBlock->Elements.GetSize());
+				for (auto const Element : SomeBlock->Elements) {
+					GD_REFLECTOR_LOG("\n%s\t\t\"(0x%x)\",", Idents.CStr(), reinterpret_cast<size_t>(Element.GetPointer()));
+				}
+				GD_REFLECTOR_LOG("\n%s\t]", Idents.CStr());
+
+				for (auto const InnerBlock : SomeBlock->InnerBlocks) {
+					this->RecursivelyWriteBlock(InnerBlock.GetPointer());
+				}
+
+				GD_REFLECTOR_LOG("\n%s}", Idents.CStr());
+				GD_REFLECTOR_LOG("\n%s*/", Idents.CStr());
+				--IdentsCount;
 			}
-		};	// class CPPRePreprocessorDefinitionsWriter
-		GD_REFLECTOR_LOG("%s", CPPRePreprocessorDefinitionsWriter().WriteBlock(this->TopBlock.GetPointer()).GetPointer());
+		};
+		RecursiveBlockWriter().RecursivelyWriteBlock(this->TopBlock.GetPointer());
 	}
 #endif	// if (defined(GD_DEBUG))
 

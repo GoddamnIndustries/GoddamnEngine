@@ -37,7 +37,7 @@ namespace GoddamnEngine.BuildSystem
                 case SourceFileType.HeaderFile:
                     Writer.WriteStartElement("ClInclude");
                     break;
-                case SourceFileType.InlineImpl:
+                case SourceFileType.InlineImplementation:
                     Writer.WriteStartElement("None");
                     break;
                 case SourceFileType.ResourceScript:
@@ -62,8 +62,7 @@ namespace GoddamnEngine.BuildSystem
         private static void GeneratesFiltersFile(Project TheProject)
         {
             Directory.CreateDirectory(Path.Combine(TheProject.Location, "_Build"));
-            using (XmlTextWriter FiltersConfig = new XmlTextWriter(string.Format("{0}/_Build/{1}.vcxproj.filters", TheProject.Location, TheProject.Name), null))
-            {
+            using (XmlTextWriter FiltersConfig = new XmlTextWriter(string.Format("{0}/_Build/{1}.vcxproj.filters", TheProject.Location, TheProject.Name), null)) {
                 FiltersConfig.Formatting = Formatting.Indented;
                 FiltersConfig.Indentation = 4;
                 FiltersConfig.WriteStartDocument();
@@ -72,8 +71,7 @@ namespace GoddamnEngine.BuildSystem
                 FiltersConfig.WriteAttributeString("ToolsVersion", "4.0");
 
                 FiltersConfig.WriteStartElement("ItemGroup");
-                foreach (var Folder in TheProject.Folders)
-                {   // Generating new filers
+                foreach (var Folder in TheProject.Folders) {   // Generating new filers
                     FiltersConfig.WriteStartElement("Filter");
                     FiltersConfig.WriteAttributeString("Include", Folder.Replace('/', '\\'));
                     FiltersConfig.WriteElementString("UniqueIdentifier", string.Format("{{{0}}}", Guid.NewGuid().ToString()));
@@ -82,13 +80,14 @@ namespace GoddamnEngine.BuildSystem
                 FiltersConfig.WriteEndElement();
 
                 FiltersConfig.WriteStartElement("ItemGroup");
-                foreach (var SourceFile in TheProject.SourceFiles)
-                {   // Generating new filers
+                foreach (var SourceFile in TheProject.SourceFiles) {   // Generating new filers
                     string FilterName = SourceFile.RelativeFileFolder;
                     CreateElementBySourceFileType(FiltersConfig, SourceFile.FileType);
                     FiltersConfig.WriteAttributeString("Include", SourceFile.AbsoluteFilePath.Replace('/', '\\'));
-                    if (!string.IsNullOrEmpty(FilterName))
+                    if (!string.IsNullOrEmpty(FilterName)) { 
                         FiltersConfig.WriteElementString("Filter", FilterName.Replace('/', '\\'));
+                    }
+
                     FiltersConfig.WriteEndElement();
                 }
                 FiltersConfig.WriteEndElement();
@@ -101,8 +100,7 @@ namespace GoddamnEngine.BuildSystem
         private static void GeneratesProjectFile(Project TheProject)
         {
             string Platform = GetPlatformString();
-            using (XmlTextWriter ProjectConfig = new XmlTextWriter(string.Format("{0}/_Build/{1}.vcxproj", TheProject.Location, TheProject.Name), null))
-            {
+            using (XmlTextWriter ProjectConfig = new XmlTextWriter(string.Format("{0}/_Build/{1}.vcxproj", TheProject.Location, TheProject.Name), null)) {
                 ProjectConfig.Formatting = Formatting.Indented;
                 ProjectConfig.Indentation = 4;
                 ProjectConfig.WriteStartDocument();
@@ -113,8 +111,7 @@ namespace GoddamnEngine.BuildSystem
 
                 ProjectConfig.WriteStartElement("ItemGroup");
                 ProjectConfig.WriteAttributeString("Label", "ProjectConfigurations");
-                foreach (var Configuration in Configurations)
-                {
+                foreach (var Configuration in Configurations) {
                     ProjectConfig.WriteStartElement("ProjectConfiguration");
                     ProjectConfig.WriteAttributeString("Include", new StringBuilder(Configuration.ToString()).Append('|').Append(Platform).ToString());
                     ProjectConfig.WriteElementString("Configuration", Configuration.ToString());
@@ -124,8 +121,7 @@ namespace GoddamnEngine.BuildSystem
                 ProjectConfig.WriteEndElement();
 
                 ProjectConfig.WriteStartElement("ItemGroup");
-                foreach (var SourceFile in TheProject.SourceFiles)
-                {
+                foreach (var SourceFile in TheProject.SourceFiles) {
                     CreateElementBySourceFileType(ProjectConfig, SourceFile.FileType);
                     ProjectConfig.WriteAttributeString("Include", SourceFile.AbsoluteFilePath.Replace('/', '\\'));
                     ProjectConfig.WriteEndElement();
@@ -143,8 +139,7 @@ namespace GoddamnEngine.BuildSystem
                 ProjectConfig.WriteEndElement();
 
                 // Global Project properties:
-                foreach (var Configuration in Configurations)
-                {
+                foreach (var Configuration in Configurations) {
                     ProjectConfig.WriteStartElement("PropertyGroup");
                     ProjectConfig.WriteAttributeString("Condition", GenerateCondition(Configuration));
                     ProjectConfig.WriteAttributeString("Label", "Configuration");
@@ -159,8 +154,7 @@ namespace GoddamnEngine.BuildSystem
                 ProjectConfig.WriteEndElement();
 
                 // Default property values.
-                foreach (var Configuration in Configurations)
-                {
+                foreach (var Configuration in Configurations) {
                     ProjectConfig.WriteStartElement("ImportGroup");
                     ProjectConfig.WriteAttributeString("Condition", GenerateCondition(Configuration));
                     ProjectConfig.WriteAttributeString("Label", "PropertySheets");
@@ -179,16 +173,17 @@ namespace GoddamnEngine.BuildSystem
                 ProjectConfig.WriteEndElement();
 
                 // Visual studio additional paths.
-                foreach (var Configuration in Configurations)
-                {
+                foreach (var Configuration in Configurations) {
                     ProjectConfig.WriteStartElement("PropertyGroup");
                     ProjectConfig.WriteAttributeString("Condition", GenerateCondition(Configuration));
                     ProjectConfig.WriteElementString("TargetName", TheProject.Name + ((Configuration == TargetConfiguration.Debug) ? ".Debug" : ""));
                     ProjectConfig.WriteElementString("OutDir", TheProject.BuildType == ProjectBuildType.StaticLibrary ? @"$(GODDAMN_SDK)lib\" : Path.Combine(@"$(GODDAMN_SDK)bin\", TheProject.RelativeOutputPath));
 
                     StringBuilder IncludePathes = new StringBuilder();
-                    foreach (var Dependency in TheProject.Dependencies)
-                        IncludePathes.Append(Dependency.HeaderLocations).Append(Path.PathSeparator);
+                    foreach (var Dependency in TheProject.Dependencies) { 
+               //         IncludePathes.Append(Dependency.HeaderLocations).Append(Path.PathSeparator);
+                    }
+
                     IncludePathes.Append(Path.Combine(BuildSystem.SDKPath, "source")).Append(Path.PathSeparator);
                     IncludePathes.Append(@"$(IncludePath)");
                     ProjectConfig.WriteElementString("IncludePath", IncludePathes.ToString());
@@ -196,21 +191,22 @@ namespace GoddamnEngine.BuildSystem
                 }
 
                 // C++ Compiler/Linker properties.
-                foreach (var Configuration in Configurations)
-                {
+                foreach (var Configuration in Configurations)  {
                     bool IsDebugConfiguration = (Configuration == TargetConfiguration.Debug);
                     ProjectConfig.WriteStartElement("ItemDefinitionGroup");
                     ProjectConfig.WriteAttributeString("Condition", GenerateCondition(Configuration));
                     ProjectConfig.WriteStartElement("ClCompile");
+                    
                     StringBuilder PreprocessorDefinitions = new StringBuilder();
-                    foreach (var PreprocessorDefinition in TheProject.PreprocessorDefinitions)
+                    foreach (var PreprocessorDefinition in TheProject.PreprocessorDefinitions) { 
                         PreprocessorDefinitions.Append(PreprocessorDefinition).Append(Path.PathSeparator);
+                    }
+                    if (TheProject.BuildType == ProjectBuildType.DynamicLibrary) { 
+                        PreprocessorDefinitions.Append("_WINDLL").Append(Path.PathSeparator);
+                    }
+                    PreprocessorDefinitions.Append(@"%(PreprocessorDefinition)");
                     PreprocessorDefinitions.Append(IsDebugConfiguration ? "_DEBUG" : "NDEBUG").Append(Path.PathSeparator);
                 //  PreprocessorDefinitions.Append("_HAS_EXCEPTIONS=0").Append(Path.PathSeparator);
-                    if (TheProject.BuildType == ProjectBuildType.DynamicLibrary)
-                        PreprocessorDefinitions.Append("_WINDLL").Append(Path.PathSeparator);
-
-                    PreprocessorDefinitions.Append(@"%(PreprocessorDefinition)");
                     ProjectConfig.WriteElementString("PreprocessorDefinitions", PreprocessorDefinitions.ToString());
 
                     ProjectConfig.WriteElementString("Optimization", IsDebugConfiguration ? "Disabled" : "Full");
@@ -226,17 +222,21 @@ namespace GoddamnEngine.BuildSystem
 
                     ProjectConfig.WriteStartElement("Link");
                     StringBuilder AdditionalDependencies = new StringBuilder();
-                    foreach (var AdditionalDependency in TheProject.Dependencies)
-                        AdditionalDependencies.Append(AdditionalDependency.ResolveDependency(Configuration)).Append(Path.PathSeparator);
+                    foreach (var AdditionalDependency in TheProject.Dependencies) { 
+                //        AdditionalDependencies.Append(AdditionalDependency.ResolveDependency(Configuration)).Append(Path.PathSeparator);
+                    }
                     AdditionalDependencies.Append(@"winmm.lib;imm32.lib;version.lib;");
                     AdditionalDependencies.Append(@"%(AdditionalDependencies)");
                     ProjectConfig.WriteElementString("AdditionalDependencies", AdditionalDependencies.ToString());
                     ProjectConfig.WriteElementString("GenerateDebugInformation", IsDebugConfiguration.ToString());
 
-                    if (TheProject.IsPlugin)
+                    if (TheProject.IsPlugin) { 
                         ProjectConfig.WriteElementString("AdditionalOptions", @"/EXPORT:EnginePluginEntry %(AdditionalOptions)");
-                    if (TheProject.BuildType == ProjectBuildType.DynamicLibrary)
+                    }
+                    if (TheProject.BuildType == ProjectBuildType.DynamicLibrary) { 
                         ProjectConfig.WriteElementString("ImportLibrary", @"$(GODDAMN_SDK)lib\$(TargetName).lib");
+                    }
+
                     ProjectConfig.WriteEndElement();
                     ProjectConfig.WriteEndElement();
                 }

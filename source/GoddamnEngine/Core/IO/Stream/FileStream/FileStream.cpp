@@ -26,15 +26,12 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	/// FileInputStream class.
-	/// Specifies read-only stream that provides reading from file.
 	/// ==========================================================================================
 
 	/// ------------------------------------------------------------------------------------------
 	/// Class implementation API:
 	/// ------------------------------------------------------------------------------------------
 
-	/// Opens input stream on file with specifed file path.
-	/// @param FilePath Path to file that is required to be read.
 	FileInputStream::FileInputStream(String const& FilePath)
 		: FilePath(FilePath)
 	{
@@ -44,7 +41,7 @@ GD_NAMESPACE_BEGIN
 			throw IOException(String::Format("File with path '%s' cannon be opened for reading ('access(R_OK)' failed).", FilePath.CStr()));
 		}
 
-		this->FileHandle = ::fopen(this->FilePath.CStr(), "rb");
+		this->FileHandle = std::fopen(this->FilePath.CStr(), "rb");
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "File was validated with 'access' but 'fopen' has failed.");
 	}
 
@@ -55,18 +52,17 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	/// @see BaseStream::GetPosition()
 	size_t FileInputStream::GetPosition() const
 	{
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
-		long const Position = ::ftell(this->FileHandle);
+		long const Position = std::ftell(this->FileHandle);
 		if (Position < 0l) {
 			throw IOException("Failed to get position of stream ('ftell' returned negative value).");
 		}
+
 		return static_cast<size_t>(Position);
 	}
 
-	/// @see BaseStream::GetSize()
 	size_t FileInputStream::GetSize() const
 	{
 		if (this->FileLength == SIZE_MAX) {	// Finiding out position.
@@ -80,19 +76,18 @@ GD_NAMESPACE_BEGIN
 		return this->FileLength;
 	}
 
-	/// @see InputStream::Close()
 	void FileInputStream::Close()
 	{
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fclose(this->FileHandle) != 0) {
+		if (std::fclose(this->FileHandle) != 0) {
 			throw IOException("Failed to close file ('fclose' returned non-zero value).");
 		}
-		this->FilePath.Emptify();
+
+		this->FilePath.Clear();
 		this->FileHandle = nullptr;
 		this->FileLength = SIZE_MAX;
 	}
 
-	/// @see InputStream::Seek(ptrdiff_t const Offset, SeekOrigin const Origin)
 	void FileInputStream::Seek(ptrdiff_t const Offset, SeekOrigin const Origin /*= SeekOrigin::Current*/)
 	{
 		int static const SeekOriginTable[] = {
@@ -103,12 +98,11 @@ GD_NAMESPACE_BEGIN
 
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
 		int const StandartOrigin = SeekOriginTable[static_cast<size_t>(Origin)];
-		if (::fseek(this->FileHandle, static_cast<long>(Offset), StandartOrigin) != 0) {
+		if (std::fseek(this->FileHandle, static_cast<long>(Offset), StandartOrigin) != 0) {
 			throw IOException("Failed to seek inside file ('fseek' returned non-zero value).");
 		}
 	}
 
-	/// @see InputStream::Read()
 	UInt8 FileInputStream::Read()
 	{
 		UInt8 Result = 0;
@@ -116,13 +110,12 @@ GD_NAMESPACE_BEGIN
 		return Result;
 	}
 
-	/// @see InputStream::Read(handle const Array, size_t const Count, size_t const Length)
 	void FileInputStream::Read(handle const Array, size_t const Count, size_t const Length)
 	{
 		GD_DEBUG_ASSERT(Count != 0, "Zero elements count specified");
 		GD_DEBUG_ASSERT(Length != 0, "Zero element length specified");
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fread(Array, Length, Count, this->FileHandle) != Count) {
+		if (std::fread(Array, Length, Count, this->FileHandle) != Count) {
 			throw IOException("Failed to read from file ('fread' returned invalid value).");
 		}
 	}
@@ -144,12 +137,12 @@ GD_NAMESPACE_BEGIN
 				throw IOException(String::Format("File with path '%s' cannon be opened for writing ('access(W_OK)' failed).", FilePath.CStr()));
 			}
 
-			this->FileHandle = ::fopen(this->FilePath.CStr(), "wb");
+			this->FileHandle = std::fopen(this->FilePath.CStr(), "wb");
 			if (this->FileHandle == nullptr) {
 				throw IOException("Failed to open existing file for writing (fopen(\"wb\") returned nullptr).");
 			}
 		} else {	// File does not exists.
-			this->FileHandle = ::fopen(this->FilePath.CStr(), "wb");
+			this->FileHandle = std::fopen(this->FilePath.CStr(), "wb");
 			if (this->FileHandle == nullptr) {
 				throw IOException("Failed to create new file for writing (fopen(\"wb\") returned nullptr).");
 			}
@@ -163,58 +156,52 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	/// @see BaseStream::GetPosition()
 	size_t FileOutputStream::GetPosition() const
 	{
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
-		long const Position = ::ftell(this->FileHandle);
+		long const Position = std::ftell(this->FileHandle);
 		if (Position < 0l) {
 			throw IOException("Failed to get position of stream ('ftell' returned negative value).");
 		}
 		return static_cast<size_t>(Position);
 	}
 
-	/// @see BaseStream::GetSize()
 	size_t FileOutputStream::GetSize() const
 	{	// Since we just rewrite files, each output stream size is it's position + 1.
 		return (this->GetPosition() + 1);
 	}
 
-	/// @see OutputStream::Close()
 	void FileOutputStream::Close()
 	{
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fclose(this->FileHandle) != 0) {
+		if (std::fclose(this->FileHandle) != 0) {
 			throw IOException("Failed to close file ('fclose' returned non-zero value).");
 		}
 
-		this->FilePath.Emptify();
+		this->FilePath.Clear();
 		this->FileHandle = nullptr;
 		this->FileLength = SIZE_MAX;
 	}
 
-	/// @see OutputStream::Flush()
 	void FileOutputStream::Flush()
 	{
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fflush(this->FileHandle) != 0) {
+		if (std::fflush(this->FileHandle) != 0) {
 			throw IOException("Failed to flush file ('fflush' returned non-zero value).");
 		}
 	}
 
-	/// @see OutputStream::Write(UInt8 const Byte)
 	void FileOutputStream::Write(UInt8 const Byte)
 	{
 		this->Write(&Byte, 1, sizeof(Byte));
 	}
 
-	/// @see OutputStream::Write(chandle const Array, size_t const Count, size_t const Length)
 	void FileOutputStream::Write(chandle const Array, size_t const Count, size_t const Length)
 	{
 		GD_DEBUG_ASSERT(Count != 0, "Zero elements count specified");
 		GD_DEBUG_ASSERT(Length != 0, "Zero element length specified");
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
-		if (::fwrite(Array, Length, Count, this->FileHandle) != Count) {
+		if (std::fwrite(Array, Length, Count, this->FileHandle) != Count) {
 			throw IOException("Failed to write wo file ('fwrite' returned invalid value).");
 		}
 	}

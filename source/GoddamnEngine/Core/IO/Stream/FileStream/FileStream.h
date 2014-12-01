@@ -7,24 +7,17 @@
 /// ==========================================================================================
 
 #pragma once
-#ifndef GD_CORE_IO_STREAM_FILESTREAM_FILESTREAM
-#define GD_CORE_IO_STREAM_FILESTREAM_FILESTREAM
+#ifndef GD_CORE_IO_STREAM_FILESTREAM
+#define GD_CORE_IO_STREAM_FILESTREAM
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/IO/Stream/Stream.h>
 #include <GoddamnEngine/Core/Text/String/String.h>
 
-#include <cstdio>
-
 GD_NAMESPACE_BEGIN
 
 	/// Represents runtime error that indicates that file with specified path does not exists.
-	class FileNotFoundException : public IOException
-	{
-	public /*Public API*/:
-		GDINL explicit FileNotFoundException(String const& Message) : IOException(Message.CStr()) { }
-		GDINL virtual ~FileNotFoundException() { }
-	};	// class IOException
+	GD_DEFINE_EXCPETION_DERIVED(FileNotFoundException, IOException);
 
 	/// Specifies read-only stream that provides reading from file.
 	class FileInputStream final : public InputStream

@@ -16,6 +16,7 @@
 #include <GoddamnEngine/Core/Utility.h>
 
 #include <new>			// For placement new
+#include <cstring>
 
 GD_NAMESPACE_BEGIN
 
@@ -453,7 +454,7 @@ GD_NAMESPACE_BEGIN
 	GD_VECTOR_TEMPLATE template<typename SearchingPredicateType>
 	inline size_t GD_VECTOR_CLASS::FindLastElement(SearchingPredicateType const& SearchingPredicate) const
 	{
-		for (ReversePtrConstIterator Iterator = this->ReversePtrBegin(); Iterator != this->ReversePtrEnd(); ++Iterator) {
+		for (PtrConstIterator Iterator = (this->PtrEnd() - 1); Iterator != (this->PtrBegin() - 1); --Iterator) {
 			if (SearchingPredicate(*Iterator)) {
 				return (Iterator - this->ReversePtrEnd());
 			}

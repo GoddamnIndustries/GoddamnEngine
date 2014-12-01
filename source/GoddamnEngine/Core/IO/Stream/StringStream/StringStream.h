@@ -7,14 +7,13 @@
 /// ==========================================================================================
 
 #pragma once
-#ifndef GD_CORE_IO_STREAM_STRINGSTREAM_STRINGSTREAM
-#define GD_CORE_IO_STREAM_STRINGSTREAM_STRINGSTREAM
+#ifndef GD_CORE_IO_STREAM_STRINGSTREAM
+#define GD_CORE_IO_STREAM_STRINGSTREAM
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/TypeTraits.h>
 #include <GoddamnEngine/Core/IO/Stream/Stream.h>
 #include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.h>
-
 
 GD_NAMESPACE_BEGIN
 

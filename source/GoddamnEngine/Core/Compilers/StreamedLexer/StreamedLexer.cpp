@@ -287,9 +287,9 @@ GD_NAMESPACE_BEGIN
 		this->GetNextCharacter();
 		this->CurrentCharacterType	// Searching in custom special symbols list and treating all others as valid identifier characters
 			= (this->Options.IsInSpecialCharactersAlphabet(this->CurrentCharacter))	                                                 ? StreamedLexerCharType::Special 
-			: (CharAnsiHelpers::IsAlphabetic(this->CurrentCharacter) || CharAnsiHelpers::IsSpecialCharacter(this->CurrentCharacter)) ? StreamedLexerCharType::Alphabetic
-			: (CharAnsiHelpers::IsDigit     (this->CurrentCharacter, this->CurrentLexemIntegerNotation))                             ? StreamedLexerCharType::Digit
-			: (CharAnsiHelpers::IsSpace     (this->CurrentCharacter))                                                                ? StreamedLexerCharType::Space : StreamedLexerCharType::Unknown; 
+			: (CharAnsiTraits::IsAlphabetic(this->CurrentCharacter) || CharAnsiTraits::IsSpecialCharacter(this->CurrentCharacter)) ? StreamedLexerCharType::Alphabetic
+			: (CharAnsiTraits::IsDigit     (this->CurrentCharacter, this->CurrentLexemIntegerNotation))                             ? StreamedLexerCharType::Digit
+			: (CharAnsiTraits::IsSpace     (this->CurrentCharacter))                                                                ? StreamedLexerCharType::Space : StreamedLexerCharType::Unknown; 
 		if ((this->CurrentCharacterType == StreamedLexerCharType::Space) && (PreviousCharacterType == StreamedLexerCharType::Unknown)) {	// Upcoming space that splits lexems. Just skipping it.
 			this->CurrentCharacterType = StreamedLexerCharType::Unknown;
 			return;
@@ -393,7 +393,7 @@ GD_NAMESPACE_BEGIN
 			case StreamedLexerCharType::Alphabetic: {	// Switching notation:
 				bool WasNotationSwitched = ((this->CurrentLexem->ProcessedDataInteger == 0) && (this->CurrentLexemIntegerNotation == StreamedLexerImpl::DefaultLexemIntegerNotation));
 				if (WasNotationSwitched) {	// Checking if notation switching is provided in format "0x...":
-					CharAnsi const UpperCaseCharacter = CharAnsiHelpers::ToUpperCase(this->CurrentCharacter);
+					CharAnsi const UpperCaseCharacter = CharAnsiTraits::ToUpper(this->CurrentCharacter);
 					/**/ if (UpperCaseCharacter == Options.IntegerHexadecimalNotationDelimiter)	this->CurrentLexemIntegerNotation = 16;
 					else if (UpperCaseCharacter == Options.IntegerOctalNotationDelimiter)		this->CurrentLexemIntegerNotation = 8;
 					else if (UpperCaseCharacter == Options.IntegerBinaryNotationDelimiter)		this->CurrentLexemIntegerNotation = 2;
@@ -540,7 +540,7 @@ GD_NAMESPACE_BEGIN
 		this->BasicStreamedLexerImpl::ProcessIntegerConstant();
 		if ((this->CurrentState == StreamedLexerState::ReadingConstantInteger) && (this->CurrentCharacterType == StreamedLexerCharType::Digit)) {	
 			// Processing character if it is digit in current notation.
-			UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(this->CurrentCharacter);
+			UInt8 const CurrentDigit = CharAnsiTraits::ToDigit(this->CurrentCharacter);
 			this->CurrentLexem->ProcessedDataInteger *= this->CurrentLexemIntegerNotation;
 			this->CurrentLexem->ProcessedDataInteger += CurrentDigit;
 		}
@@ -550,7 +550,7 @@ GD_NAMESPACE_BEGIN
 	void StreamedLexerImpl::ProcessFloatConstant()
 	{	
 		this->BasicStreamedLexerImpl::ProcessFloatConstant();
-		UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(this->CurrentCharacter);
+		UInt8 const CurrentDigit = CharAnsiTraits::ToDigit(this->CurrentCharacter);
 		this->CurrentLexem->ProcessedDataFloat += (static_cast<Float64>(CurrentDigit) / static_cast<Float64>(this->CurrentLexemFloatExponent));
 		this->CurrentLexemFloatExponent += 1;
 	}
@@ -616,7 +616,7 @@ GD_NAMESPACE_BEGIN
 					} return;
 
 					default: {
-						if (!CharAnsiHelpers::IsDigit(this->CurrentCharacter, 8)) {	// Unrecognized character escape sequence.
+						if (!CharAnsiTraits::IsDigit(this->CurrentCharacter, 8)) {	// Unrecognized character escape sequence.
 							StreamedLexerErrorDesc static const UnrecognizedCharacterEscapeSequenceError("unrecognized character escape sequence '\\%c' in string/character constant.");
 							throw StreamedLexerFatalErrorException(UnrecognizedCharacterEscapeSequenceError.ToString(this->CurrentLexem, this->CurrentCharacter));
 						}
@@ -632,7 +632,7 @@ GD_NAMESPACE_BEGIN
 			case StreamedLexerESMode::OctalCharacter:
 			case StreamedLexerESMode::HexadecimalCharacter: {	
 				UInt8 const CurrentNotation = ((this->CurrentESMode == StreamedLexerESMode::OctalCharacter) ? 8 : 16);
-				if (!CharAnsiHelpers::IsDigit(this->CurrentCharacter, CurrentNotation)) {	// Here is not a not a digit character.
+				if (!CharAnsiTraits::IsDigit(this->CurrentCharacter, CurrentNotation)) {	// Here is not a not a digit character.
 					if ((this->CurrentLexem->GetRawData().GetSize() < 2) && (CurrentNotation == 16)) {	// Hex constants must have at least one hex digit (now raw data contains string "'\").
 						StreamedLexerErrorDesc static const EmptyHexadecimalCharacterError("empty string/character constant with '\\x'");
 						throw StreamedLexerFatalErrorException(EmptyHexadecimalCharacterError.ToString(this->CurrentLexem));
@@ -644,7 +644,7 @@ GD_NAMESPACE_BEGIN
 				}
 
 				// Processing next character
-				UInt8 const CurrentDigit = CharAnsiHelpers::ToDigit(this->CurrentCharacter);
+				UInt8 const CurrentDigit = CharAnsiTraits::ToDigit(this->CurrentCharacter);
 				if ((static_cast<size_t>(this->CurrentLexem->ProcessedDataCharacter) * CurrentNotation + CurrentDigit) > UCHAR_MAX)	{	// Too big for character error.
 					StreamedLexerErrorDesc static const TooBigNumberForCharacterError("too big number for character.");
 					throw StreamedLexerFatalErrorException(TooBigNumberForCharacterError.ToString(this->CurrentLexem));
@@ -879,34 +879,34 @@ GD_NAMESPACE_BEGIN
 		, SingleLineCommentDeclaration(Forward<String>(SingleLineCommentDeclaration))
 		, MultipleLineCommentBeginning(Forward<String>(MultipleLineCommentBeginning))
 		, MultipleLineCommentEnding(Forward<String>(MultipleLineCommentEnding))
-		, IntegerHexadecimalNotationDelimiter((IntegerHexadecimalNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerHexadecimalNotationDelimiter) : CharAnsi('\0'))
-		, IntegerOctalNotationDelimiter((IntegerOctalNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerOctalNotationDelimiter) : CharAnsi('\0'))
-		, IntegerBinaryNotationDelimiter((IntegerBinaryNotationDelimiter != CharAnsi('\0')) ? CharAnsiHelpers::ToUpperCase(IntegerBinaryNotationDelimiter) : CharAnsi('\0'))
+		, IntegerHexadecimalNotationDelimiter((IntegerHexadecimalNotationDelimiter != CharAnsi('\0')) ? CharAnsiTraits::ToUpper(IntegerHexadecimalNotationDelimiter) : CharAnsi('\0'))
+		, IntegerOctalNotationDelimiter((IntegerOctalNotationDelimiter != CharAnsi('\0')) ? CharAnsiTraits::ToUpper(IntegerOctalNotationDelimiter) : CharAnsi('\0'))
+		, IntegerBinaryNotationDelimiter((IntegerBinaryNotationDelimiter != CharAnsi('\0')) ? CharAnsiTraits::ToUpper(IntegerBinaryNotationDelimiter) : CharAnsi('\0'))
 		, FloatingPointDelimiter(FloatingPointDelimiter)
 	{
 		// Checking if all delimiters are alphabetic characters.
 		/// @todo Add check for all notation switching characters have unique or \0 values.
-		GD_DEBUG_ASSERT(((this->IntegerHexadecimalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(this->IntegerHexadecimalNotationDelimiter)),
+		GD_DEBUG_ASSERT(((this->IntegerHexadecimalNotationDelimiter == '\0') || CharAnsiTraits::IsAlphabetic(this->IntegerHexadecimalNotationDelimiter)),
 			"'IntegerHexadecimalNotationDelimiter' should be alphabetic character. Recommended value is 'x'.");
-		GD_DEBUG_ASSERT(((this->IntegerOctalNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(this->IntegerOctalNotationDelimiter)),
+		GD_DEBUG_ASSERT(((this->IntegerOctalNotationDelimiter == '\0') || CharAnsiTraits::IsAlphabetic(this->IntegerOctalNotationDelimiter)),
 			"'IntegerOctalNotationDelimiter' should be alphabetic character. Recommended value is 'c'.");
-		GD_DEBUG_ASSERT(((this->IntegerBinaryNotationDelimiter == '\0') || CharAnsiHelpers::IsAlphabetic(this->IntegerBinaryNotationDelimiter)),
+		GD_DEBUG_ASSERT(((this->IntegerBinaryNotationDelimiter == '\0') || CharAnsiTraits::IsAlphabetic(this->IntegerBinaryNotationDelimiter)),
 			"'IntegerBinaryNotationDelimiter' should be alphabetic character. Recommended value is 'b'.");
 
 		// Validating value of floating pointer delimiter.
 		// We should not forget to append floating point delimiter either it would be treated as alphabetic character.
-		GD_DEBUG_ASSERT(((this->FloatingPointDelimiter == '\0') || CharAnsiHelpers::IsSpecialCharacter(this->FloatingPointDelimiter)),
+		GD_DEBUG_ASSERT(((this->FloatingPointDelimiter == '\0') || CharAnsiTraits::IsSpecialCharacter(this->FloatingPointDelimiter)),
 			"FloatingPointDelimiter should be special character. Recommended values are '.' or ','.");
 		this->AppendToSpecialCharactersAlphabet(this->FloatingPointDelimiter);
 
 		// Checking if all operators/comment declarators have unique values and extending alphabet.
 		GD_DEBUG_ASSERT((this->SingleLineCommentDeclaration != this->MultipleLineCommentBeginning), "Multiple line comment declaration should not be equal to single line comment declaration");
 		for (auto const Character : this->SingleLineCommentDeclaration) {	// Checking if single line comment contains only special characters and extending alphabet.
-			GD_DEBUG_ASSERT((CharAnsiHelpers::IsSpecialCharacter(Character)), "Single line comment string should contain only special characters");
+			GD_DEBUG_ASSERT((CharAnsiTraits::IsSpecialCharacter(Character)), "Single line comment string should contain only special characters");
 			this->AppendToSpecialCharactersAlphabet(Character);
 		}
 		for (auto const Character : this->MultipleLineCommentBeginning) {	// Checking if multiple line comment contains only special characters and extending alphabet.
-			GD_DEBUG_ASSERT((CharAnsiHelpers::IsSpecialCharacter(Character)), "Multiple line comment string should contain only special characters");
+			GD_DEBUG_ASSERT((CharAnsiTraits::IsSpecialCharacter(Character)), "Multiple line comment string should contain only special characters");
 			this->AppendToSpecialCharactersAlphabet(Character);
 		}
 
@@ -917,7 +917,7 @@ GD_NAMESPACE_BEGIN
 			GD_DEBUG_ASSERT((this->SingleLineCommentDeclaration != OperatorDeclarationString), "Operator declaration should not be equal to single line comment declaration");
 			GD_DEBUG_ASSERT((this->MultipleLineCommentBeginning != OperatorDeclarationString), "Operator declaration should not be equal to multiple line comment declaration");
 			for (auto const Character : OperatorDeclarationString) {	// Checking if operator contains only special characters
-				GD_DEBUG_ASSERT((CharAnsiHelpers::IsSpecialCharacter(Character)), "Operator string should contain only special characters");
+				GD_DEBUG_ASSERT((CharAnsiTraits::IsSpecialCharacter(Character)), "Operator string should contain only special characters");
 				this->AppendToSpecialCharactersAlphabet(Character);
 			}
 		}

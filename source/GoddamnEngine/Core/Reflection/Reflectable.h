@@ -25,6 +25,7 @@
 
 #define $GD_PROPERTY(...)
 #define $GD_FUNCTION(...) 
+#define $GD_FIELD(...)
 
 GD_NAMESPACE_BEGIN
 

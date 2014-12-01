@@ -16,13 +16,11 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// While parsing GoddamnC++ annotations we meet preprocessor directives. So we need to handle them.
-	/// But be cannot just preprocess macros - there are lots of compiler/enviroment/target dependent code,
-	/// so only real compiler with used in project flags may generate correct preprocessed code. But then
-	/// we have to support different compilers and etc. 
-	/// The common idea of this implementation is to store all conditional preprocessor directives 
-	/// and also output them to generated code.
-	/// @see "docs/RePreprocessor memory layout examples.txt" file for more detailed memory layout.
+	/// While parsing Goddamn C++ annotations we meet preprocessor directives. So we need to handle them. 
+	/// But be not just preprocessor the code - there are lots of compiler/environment/target-dependent branches, 
+	/// so only real compiler, that used in project, could generate correct preprocessed code. In order to preserve 
+	/// compatibility, reflectors parses all conditional preprocessor branches, and recreates them in the generated C++ code.
+	/// @see "docs/Preprocessor memory layout examples.txt" file for more detailed memory layout.
 
 	/// Represents internal memory layout for parsable code with preprocessor directoives inside.
 	class CPPRePreprocessorDefinitions final
@@ -35,7 +33,7 @@ GD_NAMESPACE_BEGIN
 			Vector<SharedPtr<CPPDefinition>> Elements;
 			Vector<SharedPtr<Block>> InnerBlocks;
 			Block* ParentBlock = nullptr;
-		};	// struct struct Block;
+		};	// struct Block;
 		UniquePtr<Block> TopBlock;
 		Block* CurrentBlock = nullptr;
 
@@ -49,6 +47,14 @@ GD_NAMESPACE_BEGIN
 		/// Forces block to consider some prepending preprocessor directive.
 		/// @param BaseParser Parser that provides low lever source parsing.
 		GDINT bool ÑonsiderPreprocessorDirective(CPPBaseParser* const BaseParser);
+
+		/// Forces block to consider all prepending preprocessor directive.
+		/// @param BaseParser Parser that provides low lever source parsing.
+		GDINL bool ÑonsiderPreprocessorDirectives(CPPBaseParser* const BaseParser)
+		{
+			while (this->ÑonsiderPreprocessorDirective(BaseParser));
+			return true;
+		}
 
 #if (defined(GD_DEBUG))
 		/// Prints parsed stuff to output.

@@ -71,7 +71,7 @@ GD_NAMESPACE_BEGIN
 	};	// enum HRIShaderLimits
 
 	/// Describes types of shaders.
-	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | GoddamnCase | Public)
+	$GD_ENUMERATION(Type = Enumeration, ExportPolicy = Internal)
 	enum HRIShaderType : size_t
 	{
 		GD_HRI_SHADER_TYPE_VERTEX,								///< Vertex shader type.
@@ -90,7 +90,7 @@ GD_NAMESPACE_BEGIN
 	};	// enum HRIShaderType
 
 	/// Describes type of shader parameter
-	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | AsIs | Internal)
+	$GD_ENUMERATION(Type = Enumeration, ExportPolicy = Internal)
 	enum HRIShaderParamDescType : size_t
 	{
 		GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE,				///< Type of parameter can be represented as Format.
@@ -104,7 +104,7 @@ GD_NAMESPACE_BEGIN
 	};	// enum HRIShaderParamDescType
 
 	/// Describing types of location of shader parameter
-	$GD_ENUMERATION(Type = Enumeration, Stringification = Chopped | AsIs | Internal)
+	$GD_ENUMERATION(Type = Enumeration, ExportPolicy = Internal)
 	enum HRIShaderParamLocationDescType : size_t
 	{
 		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES,		///< Parameter is resource.
@@ -115,7 +115,7 @@ GD_NAMESPACE_BEGIN
 	};	// enum HRIShaderParamLocationDescType
 
 	/// Describes shader public parameter
-	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
+	$GD_REFLECTABLE()
 	class HRIShaderParamDesc final : public HRIObject
 	{
 		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
@@ -130,7 +130,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		/// Name of this parameter.
-		$GD_PROPERTY(ReadOnly, DefinedAs = Field)
+		$GD_PROPERTY(ReadOnly)
 		String const ParamName;
 
 		/// Hash of parameter`s name.
@@ -138,15 +138,15 @@ GD_NAMESPACE_BEGIN
 		HashCode const ParamHash;
 
 		/// Type of this parameter.
-		$GD_PROPERTY(ReadOnly, DefinedAs = Field)
+		$GD_PROPERTY(ReadOnly)
 		HRIShaderParamDescType const ParamType;
 
 		/// Format of this parameter. Unknown if type is not GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE.
-		$GD_PROPERTY(ReadOnly, DefinedAs = Field)
+		$GD_PROPERTY(ReadOnly)
 		Format const ParamFormat;
 
 		/// If this variable was defined as a array, array length.
-		$GD_PROPERTY(ReadOnly, DefinedAs = Field)
+		$GD_PROPERTY(ReadOnly)
 		size_t const ParamArrayLength;
 
 		GDINL virtual ~HRIShaderParamDesc();

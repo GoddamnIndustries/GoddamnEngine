@@ -18,7 +18,7 @@
 extern "C" {
 #endif	// if (defined(__cplusplus))
 
-#define ATTO_INLINE inline
+#define ATTO_XML_INLINE inline
 
 #if (defined(__cplusplus))
 #	define ATTO_XML_NULL nullptr
@@ -42,7 +42,7 @@ extern "C" {
 	/// @param StringSlice Slice to compare.
 	/// @param String      Standalone string to compare.
 	/// @returns True if slice and string equals.
-	ATTO_INLINE bool AttoStringSliceEquals(AttoStringSlice const* const StringSlice, AttoChar const* const String);
+	ATTO_XML_INLINE bool AttoStringSliceEquals(AttoStringSlice const* const StringSlice, AttoChar const* const String);
 
 	/// Represents single XML attribute.
 	typedef struct AttoXMLAttribute {
@@ -84,7 +84,7 @@ extern "C" {
 	/// @param XMLContext Pointer to context into which data would be parsed or error description stored.
 	/// @param String     Source XML string.
 	/// @returns True if parseing finished successfully, false otherwise. If returned false, than error descrption is also stored inside context in ContextErrorText field.
-	ATTO_INLINE bool AttoXMLContextParse(AttoXMLContext* const XMLContext, AttoChar const* const String);
+	ATTO_XML_INLINE bool AttoXMLContextParse(AttoXMLContext* const XMLContext, AttoChar const* const String);
 
 	/// @brief Pointer to procedure that writes data to output.
 	/// @param String C String that requires to be written.
@@ -98,7 +98,7 @@ extern "C" {
 	/// @param WriteProc  Pointer to procedure that writes data to output.
 	/// @param Argument   Pointer to some useful object.
 	/// @returns True if written successfully.
-	ATTO_INLINE bool AttoXMLContextWrite(AttoXMLContext const* const XMLContext, AttoXMLContextWriteProc const WriteProc, void const* const Argument);
+	ATTO_XML_INLINE bool AttoXMLContextWrite(AttoXMLContext const* const XMLContext, AttoXMLContextWriteProc const WriteProc, void const* const Argument);
 
 #if (defined(__cplusplus))
 }

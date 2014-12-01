@@ -18,7 +18,7 @@
 GD_NAMESPACE_BEGIN
 
 	/// Dynamically sized associative vector
-	template<typename KeyType, typename ValueType, typename MemoryProviderType = VectorMemoryProviders::HeapMemoryProvider<Pair<KeyType, ValueType>>>
+	template<typename KeyType, typename ValueType, typename MemoryProviderType = VectorMemoryProviders::HeapMemoryProvider>
 	class UnorderedMap final : public Vector<Pair<KeyType, ValueType>, MemoryProviderType>
 	{
 	public /*Type definitions*/:
@@ -74,7 +74,7 @@ GD_NAMESPACE_BEGIN
 	using HeapUnorderedMap = UnorderedMap<KeyType, ValueType>;
 
 	template< typename KeyType, typename ValueType, size_t const Capacity>
-	using StackUnorderedMap = UnorderedMap<KeyType, ValueType, VectorMemoryProviders::StackMemoryProvider<Pair<KeyType, ValueType>, Capacity>>;
+	using StackUnorderedMap = UnorderedMap<KeyType, ValueType, VectorMemoryProviders::StackMemoryProvider<sizeof(Pair<KeyType, ValueType>) * Capacity>>;
 
 #if 0
 	template<typename KeyType, typename ValueType, typename MemoryProviderType = VectorMemoryProviders::HeapMemoryProvider<Pair<KeyType, ValueType>>>

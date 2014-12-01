@@ -18,7 +18,6 @@
 #include <GoddamnEngine/Core/Containers/Containers.h>
 
 #include <initializer_list>
-#include <cstring>
 
 GD_NAMESPACE_BEGIN
 
@@ -122,10 +121,12 @@ GD_NAMESPACE_BEGIN
 		typedef ElementType ThisElementType;
 		typedef MemoryProviderType ThisMemoryProviderType;
 		typedef Vector<ElementType, ThisMemoryProviderType> ThisVectorType;
+		
 		typedef ContainerDetails::IndexedContainerIterator<ThisVectorType const, ElementType const> ConstIterator;
 		typedef ContainerDetails::IndexedContainerIterator<ThisVectorType      , ElementType      > MutableIterator;
 		typedef ContainerDetails::ReverseIterator<ConstIterator  > ReverseConstIterator;
 		typedef ContainerDetails::ReverseIterator<MutableIterator> ReverseMutableIterator;
+		
 		typedef ThisElementType const* PtrConstIterator;
 		typedef ThisElementType      * PtrMutableIterator;
 		typedef ContainerDetails::ReverseIterator<PtrConstIterator  > ReversePtrConstIterator;
@@ -240,7 +241,7 @@ GD_NAMESPACE_BEGIN
 		GDINL size_t			 GetCapacity() const;
 
 		/// Returns true it this container is empty.
-		GDINL bool				 IsEmpty() const { return this->GetSize() == 0; }
+		GDINL bool				 IsEmpty() const { return (this->GetSize() == 0); }
 
 		/// Resizes vector to make it able to contain specified number of elements.
 		inline void				 Resize(size_t const NewElementsCount);
@@ -376,10 +377,10 @@ GD_NAMESPACE_BEGIN
 		/// @}
 
 	private /* STL compatibility */:	
-		GDINL friend MutableIterator begin(Vector      & some_vector) { return some_vector.Begin(); }
-		GDINL friend   ConstIterator begin(Vector const& some_vector) { return some_vector.Begin(); }
-		GDINL friend MutableIterator end  (Vector      & some_vector) { return some_vector.End(); }
-		GDINL friend   ConstIterator end  (Vector const& some_vector) { return some_vector.End(); }
+		GDINL friend PtrMutableIterator begin(Vector      & some_vector) { return some_vector.PtrBegin(); }
+		GDINL friend   PtrConstIterator begin(Vector const& some_vector) { return some_vector.PtrBegin(); }
+		GDINL friend PtrMutableIterator end  (Vector      & some_vector) { return some_vector.PtrEnd(); }
+		GDINL friend   PtrConstIterator end  (Vector const& some_vector) { return some_vector.PtrEnd(); }
 
 		template<typename ElementType, typename MemoryProviderType>
 		inline friend void GD Swap(Vector<ElementType, MemoryProviderType>& First, Vector<ElementType, MemoryProviderType>& Second);

@@ -37,8 +37,9 @@ GD_NAMESPACE_BEGIN
 
 	void Allocator::DeallocateMemory(handle const Memory)
 	{
-		if(Memory != nullptr)
+		if (Memory != nullptr) {
 			::free(Memory);
+		}
 	}
 
 	
