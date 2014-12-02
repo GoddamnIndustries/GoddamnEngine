@@ -1,16 +1,17 @@
-﻿/// ==========================================================================================
-/// Compiler.cs - Inline dynamic C# compiler.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-/// 
-/// History:
-///		* --.06.2014 - Created by James Jhuighuy
-///     * 25.11.2014 - Refactored.
-/// ==========================================================================================
+﻿//! ==========================================================================================
+//! Compiler.cs - Inline dynamic C# compiler.
+//! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+//! 
+//! History:
+//!		* --.06.2014 - Created by James Jhuighuy
+//!     * 25.11.2014 - Refactored.
+//! ==========================================================================================
 
 using System.Text;
 using System.Reflection;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
+using System;
 
 namespace GoddamnEngine.BuildSystem
 {
@@ -33,7 +34,7 @@ namespace GoddamnEngine.BuildSystem
         /// <summary>
         /// Compiles C# source file into Assembly object.
         /// </summary>
-        public static Assembly CompileSourceFile(string PathToSource)
+        internal static Assembly CompileSourceFile(string PathToSource)
         {
             lock (s_TemporaryAssemblyMutex) {
                 if (s_Parameters == null) { 
@@ -61,6 +62,22 @@ namespace GoddamnEngine.BuildSystem
 
                 return CompilingResults.CompiledAssembly;
             }
+        }
+
+        /// <summary>
+        /// Compiles source file into assembly, then checks if it contains a inheritant of specified type and instatiates it.
+        /// </summary>
+        internal static T InstantiateSourceFile<T>(string PathToSource) where T : new()
+        {
+            Assembly Asm = CSharpCompiler.CompileSourceFile(PathToSource);
+            foreach (Type InternalType in CSharpCompiler.CompileSourceFile(PathToSource).GetTypes()) {
+                if (InternalType.BaseType == typeof(T)) {
+                    return (T)Activator.CreateInstance(InternalType);
+                }
+            }
+
+        //  throw new BuildSystemException("No non-abstract {0}-derived type was located in \"{1}\"", typeof(T).Name, PathToSource);
+            return new T();
         }
     }   // class CSharpCompiler
 }   // namespace GoddamnEngine.BuildSystem

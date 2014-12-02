@@ -50,8 +50,8 @@ namespace GoddamnEngine.BuildSystem
 			{
 				m_RootNode = null;
 				m_Label = null;
- 
-				Tree.GetChildNodes().Add(this);
+
+                Tree.GetRootNode().GetChildNodes().Add(this);
 			}
  
 			//! ------------------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ namespace GoddamnEngine.BuildSystem
 		public Node GetRootNode()
 		{
 			if (m_RootNode == null) {
-                m_RootNode = new Node();
+                m_RootNode = new Node(this);
 			}
 
             return m_RootNode;

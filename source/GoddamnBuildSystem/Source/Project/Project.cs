@@ -8,9 +8,9 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 
 namespace GoddamnEngine.BuildSystem
 {
@@ -130,15 +130,14 @@ namespace GoddamnEngine.BuildSystem
     }   // class ProjectPreprocessorDefinition
 
     /// <summary>
-    /// Class represents some block of code that requires separate build.
+    /// Represents some block of code that requires separate build.
     /// </summary>
-    public partial class Project
+    public class Project
     {
         //! ------------------------------------------------------------------------------------------
         //! Fields.
         //! ------------------------------------------------------------------------------------------
 
-        private string m_Name = null;
         private string m_Location;
 
         //! ------------------------------------------------------------------------------------------
@@ -146,14 +145,37 @@ namespace GoddamnEngine.BuildSystem
         //! ------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Instantiates a new dependency.
+        /// Instantiates a new project.
         /// </summary>
-        /// <param name="Location">Location, where the dependency is located.</param>
-        protected Project(string Location = null) { m_Location = Location; }
+        public Project() { }
+        public Project(string Location) { m_Location = Location; }
 
         //! ------------------------------------------------------------------------------------------
         //! Virtual getters.
         //! ------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Returns the location of the project.
+        /// </summary>
+        public string GetLocation()
+        {
+            Debug.Assert(m_Location != null);
+
+            return m_Location;
+        }
+
+        /// <summary>
+        /// If is false, then this project is not added to solution project's list.
+        /// </summary>
+        /// <param name="Platform">Platform for which resolving is done.</param>
+        /// <param name="Configuration">Configuration for which resolving is done.</param>
+        public virtual bool GetIsSkipped(TargetPlatform Platform, TargetConfiguration Configuration)
+        {
+            Debug.Assert(TargetPlatform.Unknown != Platform);
+            Debug.Assert(TargetConfiguration.Unknown != Configuration);
+
+            return false;
+        }
 
         /// <summary>
         /// Returns name of this project.
@@ -166,11 +188,12 @@ namespace GoddamnEngine.BuildSystem
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
 
-            if (m_Name == null) {
-                m_Name = Path.GetFileNameWithoutExtension(m_Location);
+            string ProjectName = this.GetLocation();
+            while (!string.IsNullOrEmpty(Path.GetExtension(ProjectName))) {
+                ProjectName = Path.GetFileNameWithoutExtension(ProjectName);
             }
 
-            return m_Name;
+            return ProjectName;
         }
 
         /// <summary>
@@ -184,7 +207,92 @@ namespace GoddamnEngine.BuildSystem
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
 
-            return ProjectBuildType.DynamicLibrary;
+            return Target.IsDesktopPlatform(Platform) ? ProjectBuildType.DynamicLibrary : ProjectBuildType.StaticLibrary;
+        }
+
+        /// <summary>
+        /// Returns path to which compilation result would be stored.
+        /// By default, it is 'bin' subdirectory of GoddamnSDK installation location
+        /// </summary>
+        /// <param name="Platform">Platform for which resolving is done.</param>
+        /// <param name="Configuration">Configuration for which resolving is done.</param>
+        public virtual string GetOutputPath(TargetPlatform Platform, TargetConfiguration Configuration)
+        {
+            Debug.Assert(TargetPlatform.Unknown != Platform);
+            Debug.Assert(TargetConfiguration.Unknown != Configuration);
+
+            StringBuilder OutputPath = new StringBuilder(Path.Combine(BuildSystem.GetSDKLocation(), "bin", this.GetName(Platform, Configuration)));
+            if (Configuration != TargetConfiguration.Release) {
+                OutputPath.Append('.').Append(Configuration);
+            }
+
+            if (Target.IsWebPlatform(Platform)) {
+                OutputPath.Append(".js");
+            } else if (Target.IsWinAPIPlatform(Platform)) {
+                switch (this.GetBuildType(Platform, Configuration)) {
+                    case ProjectBuildType.Application:
+                        OutputPath.Append(".exe");
+                        break;
+                    case ProjectBuildType.DynamicLibrary:
+                        OutputPath.Append(".dll");
+                        break;
+                    case ProjectBuildType.StaticLibrary:
+                        OutputPath.Append(".lib");
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            } else if (Target.IsPosixPlatform(Platform)) {
+                switch (this.GetBuildType(Platform, Configuration)) {
+                    case ProjectBuildType.Application:
+                        switch (Platform) {
+                            case TargetPlatform.iOS:
+                            case TargetPlatform.OSX:
+                                // On OS X there is something like ".app" directory-file, and some other shit...
+                                throw new NotImplementedException();
+
+                            default:
+                                // No extension for executables.
+                                break;
+                        }
+                        break;
+                    case ProjectBuildType.DynamicLibrary:
+                        OutputPath.Append(".so");
+                        break;
+                    case ProjectBuildType.StaticLibrary:
+                        OutputPath.Append(".a");
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            } else {
+                throw new NotImplementedException();
+            }
+
+            return OutputPath.ToString();
+        }
+
+        /// <summary>
+        /// Returns path to which the import libary would be stored. Actual for Windows DLLs.
+        /// By default, it is 'lib' subdirectory of GoddamnSDK installation location
+        /// </summary>
+        /// <param name="Platform">Platform for which resolving is done.</param>
+        /// <param name="Configuration">Configuration for which resolving is done.</param>
+        public virtual string GetImportLibraryOutputPath(TargetPlatform Platform, TargetConfiguration Configuration)
+        {
+            Debug.Assert(TargetPlatform.Unknown != Platform);
+            Debug.Assert(TargetConfiguration.Unknown != Configuration);
+
+            if (Target.IsWinAPIPlatform(Platform)) { 
+                StringBuilder ImportLibraryOutputPath = new StringBuilder(Path.Combine(BuildSystem.GetSDKLocation(), "bin", this.GetName(Platform, Configuration)));
+                if (Configuration != TargetConfiguration.Release) {
+                    ImportLibraryOutputPath.Append('.').Append(Configuration);
+                }
+
+                return ImportLibraryOutputPath.Append(".lib").ToString();
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -204,18 +312,19 @@ namespace GoddamnEngine.BuildSystem
                 foreach (string ProjectSubdirectory in Directory.EnumerateFiles(ProjectDirectory)) {
                     string ProjectSubdirectoryName = Path.GetFileName(ProjectSubdirectory);
                     if (ProjectSubdirectoryName.ToLower() == "_dependencies") {
-                        Dependency.CreateDependenciesForDirectory(ref ProjectDependenciesRef, ProjectSubdirectory);
+                        foreach (string ProjectDependencySubdirectory in Directory.EnumerateFiles(ProjectDirectory)) {
+                            ProjectDependenciesRef.Add(Dependency.CreateDependencyForDirectory(ProjectDependencySubdirectory));
+                        }
                     }
                 }
             });
 
-            ProcessProjectDirectory(Path.GetDirectoryName(m_Location));
+            ProcessProjectDirectory(Path.GetDirectoryName(this.GetLocation()));
             ProjectDependencies.AddRange(ProjectDependenciesRef);
         }
 
         /// <summary>
         /// Returns list of addtional preprocessor definitions added to this project.
-        /// By default, dependencies are recursively listed in "_Dependencies" project subdirectories.
         /// </summary>
         /// <param name="Platform">Platform for which resolving is done.</param>
         /// <param name="Configuration">Configuration for which resolving is done.</param>
@@ -224,30 +333,37 @@ namespace GoddamnEngine.BuildSystem
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
 
+            if (Target.IsWinAPIPlatform(Platform)) {
+                if (this.GetBuildType(Platform, Configuration) == ProjectBuildType.DynamicLibrary) {
+                    ProjectPreprocessorDefinitions.Add(new ProjectPreprocessorDefinition("_WINDLL"));
+                }
+
+                // Something else here..
+            }
         }
 
         /// <summary>
         /// Returns list of files with source code, which would be added to generated project data.
         /// By default, it scans all subdirectories on files with specifiec extensions:
-        /// <list>
-        ///     <item>.H, .HH, .HPP, .HXX - C/C++ header files. Added as 'HeaderFile'.</item>
-        ///     <item>.C, .CC, .CPP, .CXX - C/C++ source files. Added as 'SourceCode'.</item>
-        ///     <item>.M, .MM, .SWIFT - Objective-C(++)/Swift source files. On Cocoa platforms added as 'SourceCode', 'SupportFile' on others.</item>
-        ///     <item>.JS - Javascript source files. On Web platforms added as 'SourceCode', 'SupportFile' on others.</item>
-        ///     <item>.INL - C/C++ inlined source code. Added as 'InlineImplementation'.</item>
-        ///     <item>.RC - C/C++ resource scripts. Added as 'ResourceScript' on WinAPI platforms, 'SupportFile' on others.</item>
-        ///     <item>.GD*.CS - BuildSystem project files. Added as 'SupportFile'.</item>
+        /// <list type="bullet">
+        ///     <item><term>.H, .HH, .HPP, .HXX</term><description>C/C++ header files. Added as 'HeaderFile'.</description></item>
+        ///     <item><term>.C, .CC, .CPP, .CXX</term><description>C/C++ source files. Added as 'SourceCode'.</description></item>
+        ///     <item><term>.M, .MM, .SWIFT</term><description>Objective-C(++)/Swift source files. On Cocoa platforms added as 'SourceCode', 'SupportFile' on others.</description></item>
+        ///     <item><term>.JS</term><description>Javascript source files. On Web platforms added as 'SourceCode', 'SupportFile' on others.</description></item>
+        ///     <item><term>.INL</term><description>C/C++ inlined source code. Added as 'InlineImplementation'.</description></item>
+        ///     <item><term>.RC</term><description>C/C++ resource scripts. Added as 'ResourceScript' on WinAPI platforms, 'SupportFile' on others.</description></item>
+        ///     <item><term>.GD*.CS</term><description>BuildSystem project files. Added as 'SupportFile'.</description></item>
         /// </list>
         /// </summary>
         /// <param name="Platform">Platform for which resolving is done.</param>
         /// <param name="Configuration">Configuration for which resolving is done.</param>
-        public virtual void GetSourceFiles(ref MultiTree<ProjectSourceFile> SourceFiles, TargetPlatform Platform, TargetConfiguration Configuration)
+        public virtual void GetSourceFiles(ref MultiTree<ProjectSourceFile> ProjectSourceFiles, TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
-
-            Stack<MultiTree<ProjectSourceFile>.Node> ProjectSources = new Stack<MultiTree<ProjectSourceFile>.Node>();
-            ProjectSources.Push(SourceFiles.GetRootNode());
+            
+            Stack<MultiTree<ProjectSourceFile>.Node> ProjectSourcesStack = new Stack<MultiTree<ProjectSourceFile>.Node>();
+            ProjectSourcesStack.Push(ProjectSourceFiles.GetRootNode());
 
             Action<string> ProcessProjectDirectory = null;
             ProcessProjectDirectory = new Action<string>(ProjectDirectory => {
@@ -318,7 +434,7 @@ namespace GoddamnEngine.BuildSystem
 
                     // Finally, adding file to project.
                     if (ProjectFileType != SourceFileType.Unknown) {
-                        ProjectSources.Peek().GetElements().Add(new ProjectSourceFile(ProjectFileName, ProjectFileType, ProjectFileIsExcluded));
+                        ProjectSourcesStack.Peek().GetElements().Add(new ProjectSourceFile(ProjectFileName, ProjectFileType, ProjectFileIsExcluded));
                     }
                 }
 
@@ -326,60 +442,48 @@ namespace GoddamnEngine.BuildSystem
                 foreach (string ProjectSubdirectory in Directory.EnumerateFiles(ProjectDirectory)) {
                     string ProjectSubdirectoryName = Path.GetFileName(ProjectSubdirectory);
 
-                    // Checking is this subdir is service subdir.
-                    if (ProjectSubdirectoryName[0] == '_') { 
-                        switch (ProjectSubdirectoryName.ToLower()) {
-                            case "_build":
-                            case "_dependencies":
-                            case "_dllresources":
-                                break;
-
-                            default:
-                                continue;
-                        }
+                    // Processing this subdirectory if is not service one.
+                    if (ProjectSubdirectoryName[0] != '_') {
+                        ProjectSourcesStack.Push(ProjectSourcesStack.Peek().CreateChildNode(ProjectSubdirectoryName));
+                        ProcessProjectDirectory(ProjectSubdirectory);
+                        ProjectSourcesStack.Pop();
                     }
-
-                    ProjectSources.Push(ProjectSources.Peek().CreateChildNode(ProjectSubdirectoryName));
-                    ProcessProjectDirectory(ProjectSubdirectory);
-                    ProjectSources.Pop();
                 }
             });
 
-            ProcessProjectDirectory(Path.GetDirectoryName(m_Location));
+            ProcessProjectDirectory(Path.GetDirectoryName(this.GetLocation()));
         }
 
         //! ------------------------------------------------------------------------------------------
-        //! Some other shit.
+        //! Class static API.
         //! ------------------------------------------------------------------------------------------
 
-        private int _Checksumm = 0;
-
-        private string _Location = null;
-        private StringCollection _Folders = new StringCollection();
-        private List<ProjectSourceFile> _SourceFiles = new List<ProjectSourceFile>();
-        private List<Dependency> _Dependencies = new List<Dependency>();
-        private StringCollection _PreprocessorDefinitions = new StringCollection();
-
-        public int Checksumm { get { return this._Checksumm; } }
-        public string Location { get { return this._Location; } }
-        public StringCollection Folders { get { return this._Folders; } }
-        public List<ProjectSourceFile> SourceFiles { get { return this._SourceFiles; } }
-        public List<Dependency> Dependencies { get { return this._Dependencies; } }
-        public StringCollection PreprocessorDefinitions { get { return this._PreprocessorDefinitions; } }
-
-        //public abstract string Name { get; }
-        //public abstract bool IsPlugin { get; }
-        //public abstract ProjectBuildType BuildType { get; }
-
-        public virtual string RelativeOutputPath { get { return ""; } }
-
-        protected virtual void InitializeSelf()
+        /// <summary>
+        /// Creates a Project object for specified configuration file.
+        /// </summary>
+        /// <param name="ProjectFile">Name of the project file, or path to directory in which project would be located. SCANNED NOT RECURSIVELY!</param>
+        internal static Project CreateProjectForDirectory(string ProjectFile)
         {
-        }
+            Project ProjectObject = CSharpCompiler.InstantiateSourceFile<Project>(ProjectFile);
+            ProjectObject.m_Location = ProjectFile;
 
-        internal static Project CreateProject(string ProjectFile)
-        {
-            throw new NotImplementedException();
+            return ProjectObject;
         }
-    }   // public class TheProject
+    }   // class Project
+
+    /// <summary>
+    /// Reprents C# project that would be also added to solution on Visual Studio platforms.
+    /// </summary>
+    internal sealed class CSharpProject : Project
+    {
+        //! ------------------------------------------------------------------------------------------
+        //! Constructor.
+        //! ------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Instantiates a new C# project.
+        /// </summary>
+        /// <param name="Location">Location, where the project files exist.</param>
+        internal CSharpProject(string Location = null) : base() { }
+    }   // class CSharpProject
 }   // namespace GoddamnEngine.BuildSystem

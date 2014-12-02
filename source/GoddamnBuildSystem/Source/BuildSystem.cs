@@ -1,11 +1,11 @@
-﻿/// ==========================================================================================
-/// BuildSystem.cs - GoddamnBuildSystem main source module.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-/// 
-/// History:
-///		* --.06.2014 - Created by James Jhuighuy
-///     * 24.11.2014 - Refactored.
-/// ==========================================================================================
+﻿//! ==========================================================================================
+//! BuildSystem.cs - GoddamnBuildSystem main source module.
+//! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+//! 
+//! History:
+//!		* --.06.2014 - Created by James Jhuighuy
+//!     * 24.11.2014 - Refactored.
+//! ==========================================================================================
 
 using System;
 using System.IO;
@@ -31,7 +31,6 @@ namespace GoddamnEngine.BuildSystem
         //! ------------------------------------------------------------------------------------------
         //! Internal types.
         //! ------------------------------------------------------------------------------------------
-        #region
 
         /// <summary>
         /// Interface to description of a single command-line property.
@@ -136,22 +135,16 @@ namespace GoddamnEngine.BuildSystem
             }
         }   // ValueProxy<T>
 
-        #endregion
-
         //! ------------------------------------------------------------------------------------------
         //! Static fields.
         //! ------------------------------------------------------------------------------------------
-        #region
 
         private static string s_SDKPath = null;
         private static List<ICommandLinePropertyProxy> s_CommandLineProperties = new List<ICommandLinePropertyProxy>();
 
-        #endregion
-
         //! ------------------------------------------------------------------------------------------
         //! Command-line parameters.
         //! ------------------------------------------------------------------------------------------
-        #region
 
         private static CommandLinePropertyProxy<bool> s_DoJustPrintHelp = new CommandLinePropertyProxy<bool>(
             false, "--help",
@@ -184,16 +177,13 @@ namespace GoddamnEngine.BuildSystem
             "By default, it is determined by the target platform/IDE installation.");
 
         private static CommandLinePropertyProxy<string> s_SolutionPath = new CommandLinePropertyProxy<string>(
-            null, "--solution",
+            string.Empty, "--solution",
             "Path to solution file for which generation is provided. " +
             "By default, it is determined by the GoddamnSDK installation location.");
-
-        #endregion
 
         //! ------------------------------------------------------------------------------------------
         //! Configuration properties.
         //! ------------------------------------------------------------------------------------------
-        #region
 
         /// <summary>
         /// Is the log output of the build system verbose.
@@ -264,18 +254,18 @@ namespace GoddamnEngine.BuildSystem
 
                     case TargetPlatform.iOS:
                     case TargetPlatform.OSX:
-                        /// @todo Check XCode installation.
+                        //! @todo Check XCode installation.
                         s_ProjectCompiler.SetValue(TargetProjectCompiler.XCode);
                         break;
 
                     case TargetPlatform.Linux:
                     case TargetPlatform.Android:
-                        /// @todo Check QtCreator installation.
+                        //! @todo Check QtCreator installation.
                         s_ProjectCompiler.SetValue(TargetProjectCompiler.QtCreator);
                         break;
 
                     case TargetPlatform.Emscripten:
-                        /// @todo Check Emscripten installation.
+                        //! @todo Check Emscripten installation.
                         s_ProjectCompiler.SetValue(TargetProjectCompiler.Make);
                         break;
 
@@ -301,12 +291,9 @@ namespace GoddamnEngine.BuildSystem
             return s_SolutionPath;
         }
 
-        #endregion
-
         //! ------------------------------------------------------------------------------------------
         //! Command-line interface.
         //! ------------------------------------------------------------------------------------------
-        #region
 
         /// <summary>
         /// Prints a line into specified output in specified color.
@@ -468,36 +455,28 @@ namespace GoddamnEngine.BuildSystem
             }
         }
 
-        #endregion
-
         //! ------------------------------------------------------------------------------------------
         //! Environmental properties.
         //! ------------------------------------------------------------------------------------------
-        #region
 
         /// <summary>
         /// Path to GoddamnSDK installation location.
         /// </summary>
-        public static string SDKPath 
+        public static string GetSDKLocation()
         { 
-            get {
+            if (s_SDKPath == null) {
+                s_SDKPath = Environment.GetEnvironmentVariable("GODDAMN_SDK");
                 if (s_SDKPath == null) {
-                    s_SDKPath = Environment.GetEnvironmentVariable("GODDAMN_SDK");
-                    if (s_SDKPath == null) {
-                        throw new BuildSystemException("Environmental variable 'GODDAMN_SDK' was not set. Is the SDK installed correctly?");
-                    }
+                    throw new BuildSystemException("Environmental variable 'GODDAMN_SDK' was not set. Is the SDK installed correctly?");
                 }
+            }
 
-                return s_SDKPath;
-            } 
+            return s_SDKPath;
         }
-
-        #endregion
 
         //! ------------------------------------------------------------------------------------------
         //! Entry point.
         //! ------------------------------------------------------------------------------------------
-        #region
 
         /// <summary>
         /// Application entry point.
@@ -514,14 +493,14 @@ namespace GoddamnEngine.BuildSystem
             } catch (BuildSystemException Exception) {
                 // Internal error in code.
                 Console.Error.WriteLine(Exception.Message);
+#if !DEBUG
             } catch (Exception Exception) {
                 Console.Error.WriteLine("Unhandled error cathed while generation project files. Sorry :(");
                 Console.Error.WriteLine(Exception.Message);
+#endif  // if !DEBUG
             }
 
             Environment.Exit(1);
         }
-
-        #endregion
     }   // class BuildSystem
 }   // namespace GoddamnEngine.BuildSystem

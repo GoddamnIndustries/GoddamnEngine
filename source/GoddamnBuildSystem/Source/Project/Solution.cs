@@ -1,47 +1,45 @@
-﻿/// ==========================================================================================
-/// Solution.cs - represents a solution (set of projects).
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-/// 
-/// History:
-///		* --.06.2014 - Created by James Jhuighuy
-///     * 24.11.2014 - Refactored.
-/// ==========================================================================================
+﻿//! ==========================================================================================
+//! Solution.cs - represents a solution (set of projects).
+//! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+//! 
+//! History:
+//!		* --.06.2014 - Created by James Jhuighuy
+//!     * 24.11.2014 - Refactored.
+//! ==========================================================================================
 
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace GoddamnEngine.BuildSystem
 {
     /// <summary>
-    /// Represents a solution (set of projects)
+    /// Represents a solution (set of projects).
     /// </summary>
-    public abstract class Solution
+    public class Solution
     {
         //! ------------------------------------------------------------------------------------------
         //! Fields.
         //! ------------------------------------------------------------------------------------------
 
         private string m_Location = null;
-        private MultiTree<Project> m_Projects = null;
-        private List<TargetConfiguration> m_Configurations = null;
 
         //! ------------------------------------------------------------------------------------------
         //! Constructor.
         //! ------------------------------------------------------------------------------------------
 
-        protected Solution() { }
+        /// <summary>
+        /// Instantiates a new solution.
+        /// </summary>
+        /// <param name="Location">Location, where the solution files exist.</param>
+        public Solution() { }
+        public Solution(string Location) { m_Location = Location; }
 
         //! ------------------------------------------------------------------------------------------
         //! Virtual getters.
         //! ------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Returns name of the solution.
-        /// </summary>
-        public abstract string GetName();
 
         /// <summary>
         /// Returns path to solution file.
@@ -52,60 +50,81 @@ namespace GoddamnEngine.BuildSystem
         }
 
         /// <summary>
-        /// Returns list of projects in solution.
+        /// Returns name of this solution.
+        /// By default, it is a name of directory, where solution is located or name of the solution file.
         /// </summary>
-        public virtual MultiTree<Project> GetProjects()
+        /// <param name="Platform">Platform for which resolving is done.</param>
+        public virtual string GetName(TargetPlatform Platform)
         {
-            if (m_Projects == null) {
-                m_Projects = new Tree<Project>();
+            Debug.Assert(TargetPlatform.Unknown != Platform);
 
-                Stack<TreeNode<Project>> ProjectNodes = new Stack<TreeNode<Project>>();
-                ProjectNodes.Push(m_Projects);
-
-                Action<string> ProcessSolutionDirectory = null;
-                ProcessSolutionDirectory = new Action<string>(CurrentSourceFilesDirectory => {
-                    TreeNode<Project> Node = new TreeNode<Project>() { m_Label = Path.GetFileName(CurrentSourceFilesDirectory.Substring(0, CurrentSourceFilesDirectory.Length - 1)) };
-                    ProjectNodes.Peek().m_Branches.Add(Node);
-                    ProjectNodes.Push(Node);
-
-                    foreach (string SolutionProjectFile in Directory.EnumerateFiles(CurrentSourceFilesDirectory)) {
-                        switch (Path.GetExtension(SolutionProjectFile).ToLower()) {
-                            case ".cs":
-                                break;
-
-                            case ".csproj":
-                                if ((BuildSystem.GetProjectCompiler() == TargetProjectCompiler.VisualStudio2013) || (BuildSystem.GetProjectCompiler() == TargetProjectCompiler.VisualStudio2014)) {
-                                    throw new NotFiniteNumberException();
-                                }
-                                break;
-                        }
-
-                        Node.m_Elements.Add(Project.CreateProject(ProjectFile));
-                    }
-
-                    foreach (string SolutionSubdirectory in Directory.GetDirectories(CurrentSourceFilesDirectory)) {
-                        ProcessSolutionDirectory(SolutionSubdirectory);
-                    }
-
-                    ProjectNodes.Pop();
-                });
-
-                ProcessSolutionDirectory(m_Location);
+            string SolutionName = m_Location;
+            while (!string.IsNullOrEmpty(Path.GetExtension(SolutionName))) {
+                SolutionName = Path.GetFileNameWithoutExtension(SolutionName);
             }
 
-            return m_Projects;
+            return SolutionName;
+        }
+
+        /// <summary>
+        /// Returns list of projects in solution.
+        /// By default, it scans all solution sub-directories for ones with .GDPROJ.CS and .CSPROJ files. 
+        /// </summary>
+        /// <param name="Platform">Platform for which resolving is done.</param>
+        public virtual void GetProjects(ref MultiTree<Project> SolutionProjects, TargetPlatform Platform)
+        {
+            Debug.Assert(TargetPlatform.Unknown != Platform);
+
+            Stack<MultiTree<Project>.Node> SolutionProjectsStack = new Stack<MultiTree<Project>.Node>();
+            SolutionProjectsStack.Push(SolutionProjects.GetRootNode());
+
+            Action<string> ProcessSolutionDirectory = null;
+            ProcessSolutionDirectory = new Action<string>(SolutionDirectory => { 
+                // Processing all project files in current directory
+                foreach (string SolutionProjectFile in Directory.EnumerateFiles(SolutionDirectory)) {
+                    string SolutionProjectFileExtension = Path.GetExtension(SolutionProjectFile).ToLower();
+                    switch (SolutionProjectFileExtension) {
+                        case ".csproj":
+                            SolutionProjectsStack.Peek().GetElements().Add(new CSharpProject(SolutionProjectFile));
+                            return;
+
+                        case ".cs":
+                            string SolutionProjectFileSecondExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(SolutionProjectFile)).ToLower();
+                            switch (SolutionProjectFileSecondExtension) {
+                                case ".gdproj":
+                                    SolutionProjectsStack.Peek().GetElements().Add(Project.CreateProjectForDirectory(SolutionProjectFile));
+                                    return;
+                            }
+
+                            break;
+                    }
+                }
+
+                // Processing all subdirectories in this directory.
+                foreach (string SolutionSubdirectory in Directory.EnumerateFiles(SolutionDirectory)) {
+                    string SolutionSubdirectoryName = Path.GetFileName(SolutionSubdirectory);
+
+                    // Processing this subdirectory if is not service one.
+                    if (SolutionSubdirectoryName[0] != '_') {
+                        SolutionProjectsStack.Push(SolutionProjectsStack.Peek().CreateChildNode(SolutionSubdirectoryName));
+                        ProcessSolutionDirectory(SolutionSubdirectory);
+                        SolutionProjectsStack.Pop();
+                    }
+                }
+            });
+
+            ProcessSolutionDirectory(Path.GetDirectoryName(this.GetLocation()));
         }
 
         /// <summary>
         /// Returns list of configurations in solution.
         /// </summary>
-        public virtual List<TargetConfiguration> GetConfigurations()
+        /// <param name="Platform">Platform for which resolving is done.</param>
+        public virtual void GetConfigurations(List<TargetConfiguration> SolutionConfigurations, TargetPlatform Platform)
         {
-            if (m_Configurations == null) {
-                m_Configurations = Enum.GetValues(typeof(TargetConfiguration)).Cast<TargetConfiguration>().ToList();
-            }
+            Debug.Assert(TargetPlatform.Unknown != Platform);
 
-            return m_Configurations;
+            SolutionConfigurations.AddRange(Enum.GetValues(typeof(TargetConfiguration)).Cast<TargetConfiguration>().ToList());
         }
 
         //! ------------------------------------------------------------------------------------------
@@ -115,19 +134,10 @@ namespace GoddamnEngine.BuildSystem
         /// <summary>
         /// Creates a solution object for specified location.
         /// </summary>
-        internal static Solution CreateSolutionForSource(string SolutionLocation)
+        /// <param name="SolutionFile">Name of the solution file, or path to directory in which project would be located.</param>
+        internal static Solution CreateSolutionForSource(string SolutionFile)
         {
-            Assembly SolutionAssembly = CSharpCompiler.CompileSourceFile(SolutionLocation);
-            Type[] SolutionAssembleTypes = (from T in SolutionAssembly.GetTypes() where (!T.IsAbstract) && (T.BaseType == typeof(Solution)) select T).ToArray();
-            if (SolutionAssembleTypes.Length == 0) {
-                throw new BuildSystemException("No appropriate type where found in {0}", SolutionAssembly);
-            } else if (SolutionAssembleTypes.Length != 1) {
-                throw new BuildSystemException("Multiple solution types where found in {0}", SolutionAssembly);
-            }
-
-            Solution CreatedSolution = (Solution)Activator.CreateInstance(SolutionAssembleTypes[0]);
-            CreatedSolution.m_Location = SolutionLocation;
-            return CreatedSolution;
+            throw new NotImplementedException();
         }
     }   // GoddamnEngine.BuildSystem
 }   // GoddamnEngine.BuildSystem

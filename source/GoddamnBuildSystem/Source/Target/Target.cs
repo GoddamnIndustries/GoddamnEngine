@@ -1,11 +1,11 @@
-﻿/// ==========================================================================================
-/// Target.cs - Build target class.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-/// 
-/// History:
-///		* --.06.2014 - Created by James Jhuighuy
-///     * 26.11.2014 - Refactored.
-/// ==========================================================================================
+﻿//! ==========================================================================================
+//! Target.cs - Build target class.
+//! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+//! 
+//! History:
+//!		* --.06.2014 - Created by James Jhuighuy
+//!     * 26.11.2014 - Refactored.
+//! ==========================================================================================
 
 using System;
 
@@ -132,6 +132,23 @@ namespace GoddamnEngine.BuildSystem
                 case TargetPlatform.WindowsRT:
                 case TargetPlatform.WindowsStore:
                 case TargetPlatform.WindowsPhone8:
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary> 
+        /// Returns true if specified platform is Posix compatible.
+        /// </summary>
+        public static bool IsPosixPlatform(TargetPlatform Platform)
+        {
+            switch (Platform) {
+                case TargetPlatform.iOS:
+                case TargetPlatform.OSX: 
+                case TargetPlatform.Linux:
+                case TargetPlatform.Android:
+                case TargetPlatform.PlayStation4:
                     return true;
             }
 
