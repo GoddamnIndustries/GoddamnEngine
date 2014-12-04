@@ -196,7 +196,7 @@ namespace GoddamnEngine.BuildSystem
         /// empty or with Dependency-derived class.
         /// </summary>
         /// <param name="DependencyLocation">Path do directory in which dependencies would be searched.</param>
-        internal static Dependency CreateDependencyForDirectory(string DependencyFile)
+        internal static Dependency CreateDependencyForSource(string DependencyFile)
         {
             Dependency DependencyObject = CSharpCompiler.InstantiateSourceFile<Dependency>(DependencyFile);
             DependencyObject.m_Location = DependencyFile;

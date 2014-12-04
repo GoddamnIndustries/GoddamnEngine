@@ -283,8 +283,8 @@ namespace GoddamnEngine.BuildSystem
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
 
-            if (Target.IsWinAPIPlatform(Platform)) { 
-                StringBuilder ImportLibraryOutputPath = new StringBuilder(Path.Combine(BuildSystem.GetSDKLocation(), "bin", this.GetName(Platform, Configuration)));
+            if (Target.IsWinAPIPlatform(Platform) && (this.GetBuildType(Platform, Configuration) == ProjectBuildType.DynamicLibrary)) { 
+                StringBuilder ImportLibraryOutputPath = new StringBuilder(Path.Combine(BuildSystem.GetSDKLocation(), "lib", this.GetName(Platform, Configuration)));
                 if (Configuration != TargetConfiguration.Release) {
                     ImportLibraryOutputPath.Append('.').Append(Configuration);
                 }
@@ -306,21 +306,10 @@ namespace GoddamnEngine.BuildSystem
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
 
-            List<Dependency> ProjectDependenciesRef = new List<Dependency>();
-            Action<string> ProcessProjectDirectory = null;
-            ProcessProjectDirectory = new Action<string>(ProjectDirectory => {
-                foreach (string ProjectSubdirectory in Directory.EnumerateFiles(ProjectDirectory)) {
-                    string ProjectSubdirectoryName = Path.GetFileName(ProjectSubdirectory);
-                    if (ProjectSubdirectoryName.ToLower() == "_dependencies") {
-                        foreach (string ProjectDependencySubdirectory in Directory.EnumerateFiles(ProjectDirectory)) {
-                            ProjectDependenciesRef.Add(Dependency.CreateDependencyForDirectory(ProjectDependencySubdirectory));
-                        }
-                    }
-                }
-            });
-
-            ProcessProjectDirectory(Path.GetDirectoryName(this.GetLocation()));
-            ProjectDependencies.AddRange(ProjectDependenciesRef);
+            string ProjectLocation = Path.GetFullPath(Path.GetDirectoryName(this.GetLocation()));
+            foreach (string ProjectDependency in Directory.EnumerateFiles(ProjectLocation, "*.gddep.cs", SearchOption.AllDirectories)) {
+                ProjectDependencies.Add(Dependency.CreateDependencyForSource(ProjectDependency));
+            }
         }
 
         /// <summary>
@@ -357,24 +346,24 @@ namespace GoddamnEngine.BuildSystem
         /// </summary>
         /// <param name="Platform">Platform for which resolving is done.</param>
         /// <param name="Configuration">Configuration for which resolving is done.</param>
-        public virtual void GetSourceFiles(ref MultiTree<ProjectSourceFile> ProjectSourceFiles, TargetPlatform Platform, TargetConfiguration Configuration)
+        public virtual void GetSourceFiles(ref List<ProjectSourceFile> ProjectSourceFiles, TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
-            
-            Stack<MultiTree<ProjectSourceFile>.Node> ProjectSourcesStack = new Stack<MultiTree<ProjectSourceFile>.Node>();
-            ProjectSourcesStack.Push(ProjectSourceFiles.GetRootNode());
 
-            Action<string> ProcessProjectDirectory = null;
-            ProcessProjectDirectory = new Action<string>(ProjectDirectory => {
-                // Processing all source files in current directory.
-                foreach (string ProjectFile in Directory.EnumerateFiles(ProjectDirectory)) {
-                    string ProjectFileExtension = Path.GetExtension(ProjectFile).ToLower();
-                    string ProjectFileName = Path.GetFileName(ProjectFile);
+            string ProjectLocation = Path.GetFullPath(Path.GetDirectoryName(this.GetLocation()));
+            foreach (string ProjectSubdirectory in Directory.EnumerateDirectories(ProjectLocation, "*", SearchOption.AllDirectories)) {
+                if (ProjectSubdirectory.Substring(ProjectLocation.Length).IndexOf('_') != -1) {
+                    continue;
+                }
+
+                foreach (string ProjectSourceFile in Directory.EnumerateFiles(ProjectSubdirectory)) {
+                    string ProjectSourceFileExtension = Path.GetExtension(ProjectSourceFile).ToLower();
+                    string ProjectSourceFileName = Path.GetFileName(ProjectSourceFile);
                     
                     // Determining a type of a file.
                     SourceFileType ProjectFileType = SourceFileType.Unknown;
-                    switch (ProjectFileExtension) {
+                    switch (ProjectSourceFileExtension) {
                         case ".h":
                         case ".hh":
                         case ".hpp":
@@ -408,7 +397,7 @@ namespace GoddamnEngine.BuildSystem
                             break;
 
                         case ".cs":
-                            string ProjectFileSecondExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(ProjectFile)).ToLower();
+                            string ProjectFileSecondExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(ProjectSourceFile)).ToLower();
                             if (!string.IsNullOrEmpty(ProjectFileSecondExtension)) {
                                 switch (ProjectFileSecondExtension) {
                                     case ".gdproj":
@@ -422,36 +411,24 @@ namespace GoddamnEngine.BuildSystem
                             break;
                     }
 
-                    // Trying to determine, if file is excluded by platform/configuration filters.
-                    bool ProjectFileIsExcluded = false;
-                    if ((ProjectFileType != SourceFileType.Unknown) && (ProjectFileType != SourceFileType.SupportFile)) {
-                        string ProjectFileExtensionless = Path.GetFileNameWithoutExtension(ProjectFile);
-                        string ProjectPlatform = Path.GetExtension(ProjectFileExtensionless);
-                        if (!string.IsNullOrEmpty(ProjectPlatform)) {
-                            ProjectFileIsExcluded = (ProjectPlatform != string.Concat('.', Platform));
+                    if (ProjectFileType != SourceFileType.Unknown) {
+                        // Trying to determine, if file is excluded by platform/configuration filters.
+                        bool ProjectFileIsExcluded = false;
+                        if (ProjectFileType != SourceFileType.SupportFile) {
+                            string ProjectFileExtensionless = Path.GetFileNameWithoutExtension(ProjectSourceFile);
+                            string ProjectPlatform = Path.GetExtension(ProjectFileExtensionless);
+                            if (!string.IsNullOrEmpty(ProjectPlatform)) {
+                                ProjectFileIsExcluded = (ProjectPlatform != string.Concat('.', Platform));
+                            }
+                        }
+
+                        // Finally, adding file to project.
+                        if (ProjectFileType != SourceFileType.Unknown) {
+                            ProjectSourceFiles.Add(new ProjectSourceFile(ProjectSourceFile, ProjectFileType, ProjectFileIsExcluded));
                         }
                     }
-
-                    // Finally, adding file to project.
-                    if (ProjectFileType != SourceFileType.Unknown) {
-                        ProjectSourcesStack.Peek().GetElements().Add(new ProjectSourceFile(ProjectFileName, ProjectFileType, ProjectFileIsExcluded));
-                    }
-                }
-
-                // Processing all subdirectories in this directory.
-                foreach (string ProjectSubdirectory in Directory.EnumerateFiles(ProjectDirectory)) {
-                    string ProjectSubdirectoryName = Path.GetFileName(ProjectSubdirectory);
-
-                    // Processing this subdirectory if is not service one.
-                    if (ProjectSubdirectoryName[0] != '_') {
-                        ProjectSourcesStack.Push(ProjectSourcesStack.Peek().CreateChildNode(ProjectSubdirectoryName));
-                        ProcessProjectDirectory(ProjectSubdirectory);
-                        ProjectSourcesStack.Pop();
-                    }
-                }
-            });
-
-            ProcessProjectDirectory(Path.GetDirectoryName(this.GetLocation()));
+                }   
+            }
         }
 
         //! ------------------------------------------------------------------------------------------
@@ -462,7 +439,7 @@ namespace GoddamnEngine.BuildSystem
         /// Creates a Project object for specified configuration file.
         /// </summary>
         /// <param name="ProjectFile">Name of the project file, or path to directory in which project would be located. SCANNED NOT RECURSIVELY!</param>
-        internal static Project CreateProjectForDirectory(string ProjectFile)
+        internal static Project CreateProjectForSource(string ProjectFile)
         {
             Project ProjectObject = CSharpCompiler.InstantiateSourceFile<Project>(ProjectFile);
             ProjectObject.m_Location = ProjectFile;

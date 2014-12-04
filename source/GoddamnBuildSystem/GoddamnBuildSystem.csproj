@@ -85,7 +85,6 @@
     <Compile Include="Source\BuildSystem.cs" />
     <Compile Include="Source\Support\Extensions.cs" />
     <Compile Include="Source\Support\Support.cs" />
-    <Compile Include="Source\Support\Tree.cs" />
     <Compile Include="Source\Project\Solution.cs" />
     <Compile Include="Source\Support\Compiler.cs" />
     <Compile Include="Source\Project\Dependency.cs" />
@@ -95,6 +94,7 @@
     <Compile Include="Source\Target\QtCreator\QMakeTarget.cs" />
     <Compile Include="Source\Target\Target.cs" />
     <Compile Include="Source\Target\VisualStudio\VisualStudioTarget.cs" />
+    <Compile Include="Source\Target\XCode\XCodeTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\App.config" />
@@ -106,9 +106,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Source\Target\XCode\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

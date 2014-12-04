@@ -73,9 +73,9 @@ namespace GoddamnEngine.BuildSystem
         /// <typeparam name="T">Real type of parameter</typeparam>
         private sealed class CommandLinePropertyProxy<T> : ICommandLinePropertyProxy
         {
+            private T m_Value;
             private string m_Name;
             private string m_Description;
-            private T m_Value;
 
             /// <summary>
             /// Constructs a proxy variable for command-line parameter.
@@ -88,9 +88,9 @@ namespace GoddamnEngine.BuildSystem
                 Debug.Assert(!string.IsNullOrWhiteSpace(Name));
                 Debug.Assert(!string.IsNullOrWhiteSpace(Description));
 
+                m_Value = Value;
                 m_Name = Name;
                 m_Description = Description;
-                m_Value = Value;
                 BuildSystem.s_CommandLineProperties.Add(this);
             }
 
@@ -285,7 +285,7 @@ namespace GoddamnEngine.BuildSystem
         public static string GetSolutionPath()
         {
             if (s_SolutionPath.GetValue() == null) {
-                s_SolutionPath.SetValue(Path.Combine(SDKPath, "source", "GoddamnEngine.gdsln.cs"));
+                s_SolutionPath.SetValue(Path.Combine(BuildSystem.GetSolutionPath(), "source", "GoddamnEngine.gdsln.cs"));
             }
 
             return s_SolutionPath;
@@ -487,6 +487,27 @@ namespace GoddamnEngine.BuildSystem
                 BuildSystem.ParseCommandLineArguments(Arguments);
                 if (s_IsVerboseOutput) {
                     BuildSystem.PrintCopyright();
+                }
+
+                Solution s = Solution.CreateSolutionForSource(@"D:\GoddamnEngine\source\GoddamnEngine.gdsln.cs");
+                List<Project> ps = new List<Project>();
+                s.GetProjects(ref ps, TargetPlatform.Windows);
+                foreach (Project p in ps) {
+                    List<Dependency> ds = new List<Dependency>();
+                    p.GetDependencies(ref ds, TargetPlatform.Windows, TargetConfiguration.Release);
+                    foreach (Dependency d in ds) {
+                        Console.Out.WriteLine(d.GetLocation());
+                    }
+
+                    List<ProjectSourceFile> cs = new List<ProjectSourceFile>();
+                    p.GetSourceFiles(ref cs, TargetPlatform.Windows, TargetConfiguration.Release);
+                    foreach (ProjectSourceFile c in cs) {
+                        Console.Out.WriteLine(c.GetFileName());
+                    }
+
+                    Console.Out.WriteLine();
+                    Console.Out.WriteLine();
+                    Console.Out.WriteLine();
                 }
 
                 Environment.Exit(0);

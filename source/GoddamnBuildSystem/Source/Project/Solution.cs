@@ -71,49 +71,30 @@ namespace GoddamnEngine.BuildSystem
         /// By default, it scans all solution sub-directories for ones with .GDPROJ.CS and .CSPROJ files. 
         /// </summary>
         /// <param name="Platform">Platform for which resolving is done.</param>
-        public virtual void GetProjects(ref MultiTree<Project> SolutionProjects, TargetPlatform Platform)
+        public virtual void GetProjects(ref List<Project> SolutionProjects, TargetPlatform Platform)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
 
-            Stack<MultiTree<Project>.Node> SolutionProjectsStack = new Stack<MultiTree<Project>.Node>();
-            SolutionProjectsStack.Push(SolutionProjects.GetRootNode());
+            // Processing all project files in current directory
+            string SolutionLocation = Path.GetFullPath(Path.GetDirectoryName(this.GetLocation()));
+            foreach (string SolutionProjectFile in Directory.EnumerateFiles(SolutionLocation, "*", SearchOption.AllDirectories)) {
+                string SolutionProjectFileExtension = Path.GetExtension(SolutionProjectFile).ToLower();
+                switch (SolutionProjectFileExtension) {
+                    case ".csproj":
+                        SolutionProjects.Add(new CSharpProject(SolutionProjectFile));
+                        return;
 
-            Action<string> ProcessSolutionDirectory = null;
-            ProcessSolutionDirectory = new Action<string>(SolutionDirectory => { 
-                // Processing all project files in current directory
-                foreach (string SolutionProjectFile in Directory.EnumerateFiles(SolutionDirectory)) {
-                    string SolutionProjectFileExtension = Path.GetExtension(SolutionProjectFile).ToLower();
-                    switch (SolutionProjectFileExtension) {
-                        case ".csproj":
-                            SolutionProjectsStack.Peek().GetElements().Add(new CSharpProject(SolutionProjectFile));
-                            return;
-
-                        case ".cs":
-                            string SolutionProjectFileSecondExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(SolutionProjectFile)).ToLower();
-                            switch (SolutionProjectFileSecondExtension) {
-                                case ".gdproj":
-                                    SolutionProjectsStack.Peek().GetElements().Add(Project.CreateProjectForDirectory(SolutionProjectFile));
-                                    return;
-                            }
-
-                            break;
-                    }
+                    case ".cs":
+                        string SolutionProjectFileSecondExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(SolutionProjectFile)).ToLower();
+                        switch (SolutionProjectFileSecondExtension) {
+                            case ".gdproj":
+                                SolutionProjects.Add(Project.CreateProjectForSource(SolutionProjectFile));
+                                return;
+                        }
+                        break;
                 }
+            }
 
-                // Processing all subdirectories in this directory.
-                foreach (string SolutionSubdirectory in Directory.EnumerateFiles(SolutionDirectory)) {
-                    string SolutionSubdirectoryName = Path.GetFileName(SolutionSubdirectory);
-
-                    // Processing this subdirectory if is not service one.
-                    if (SolutionSubdirectoryName[0] != '_') {
-                        SolutionProjectsStack.Push(SolutionProjectsStack.Peek().CreateChildNode(SolutionSubdirectoryName));
-                        ProcessSolutionDirectory(SolutionSubdirectory);
-                        SolutionProjectsStack.Pop();
-                    }
-                }
-            });
-
-            ProcessSolutionDirectory(Path.GetDirectoryName(this.GetLocation()));
         }
 
         /// <summary>
@@ -137,7 +118,10 @@ namespace GoddamnEngine.BuildSystem
         /// <param name="SolutionFile">Name of the solution file, or path to directory in which project would be located.</param>
         internal static Solution CreateSolutionForSource(string SolutionFile)
         {
-            throw new NotImplementedException();
+            Solution SolutionObject = CSharpCompiler.InstantiateSourceFile<Solution>(SolutionFile);
+            SolutionObject.m_Location = SolutionFile;
+
+            return SolutionObject;
         }
     }   // GoddamnEngine.BuildSystem
 }   // GoddamnEngine.BuildSystem
