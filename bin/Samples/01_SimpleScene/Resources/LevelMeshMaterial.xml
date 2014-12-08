@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<Material Shader="inline://plain-text?file://Resources/LevelMeshShader.vs.hlsl,file://Resources/LevelMeshShader.ps.hlsl">
-  <!--<MaterialParam Name="TestTexture" Value="file://Resources/LevelTexture.tiff"/>
-  <MaterialParam Name="TestCbufferColor" Value="1.0 1.0 0.5 1.0"/>
-  <MaterialParam Name="TestCbufferTint" Value="0.75"/>-->
-</Material>

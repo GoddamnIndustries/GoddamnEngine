@@ -7,11 +7,11 @@
 //!     * 25.11.2014 - Refactored.
 //! ==========================================================================================
 
+using System;
 using System.Text;
 using System.Reflection;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
-using System;
 
 namespace GoddamnEngine.BuildSystem
 {

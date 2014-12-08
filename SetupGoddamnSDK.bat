@@ -1,17 +1,34 @@
-echo off
+@echo off
 rem =========================================================================================
-rem SetupGoddamnSDK.batinstalls Goddamn Software Development Kit.
+rem SetupGoddamnSDK.bat - installs Goddamn Software Development Kit.
 rem Copyright (C) $(GODDAMN_DEV) 2011Present. All Rights Reserved.
 rem
 rem History:
 rem		* 03.11.2014 - Created by James Jhuighuy.
 rem =========================================================================================
 
-cls
-if "%1" == "--remove" ( 
-	goto RemoveGoddamnSDK
+rem Checking if script if executed from the source directory.. 
+if exist "source" if exist "utilities" if exist "SetupGoddamnSDK.bat" goto DirectoryTestPassed
+echo Installation script should be located and executed directly from the SDK root path.
+goto ExitOnFailure
+:DirectoryTestPassed
+
+rem Parsing command-line arguments..
+if "%1" == "---help" (
+	echo Installation/Removal script for the Goddamn SDK [Windows Edition].
+	echo Usage: SetupGoddamnSDK.bat [property] [other properties...]
+	echo Property:
+	echo  ---help   - Prints this help.
+	echo  ---remove - Removes the SDK.
+	echo Other properties are passed directly to the GoddamnBuildSystem executable.
+	goto ExitOnEndOfScript
 ) else (
-	goto InstallGoddamnSDK
+	cls
+	if "%1" == "---remove" ( 
+		goto RemoveGoddamnSDK
+	) else (
+		goto InstallGoddamnSDK
+	)
 )
 
 rem -----------------------------------------------------------------------------------------
@@ -19,17 +36,21 @@ rem Installation process.
 rem -----------------------------------------------------------------------------------------
 :InstallGoddamnSDK
 echo Installing the GoddamnSDK..
+echo Please, do not close this window.
+echo.
 
 rem Checking for Visual Studio 2014 / 2013 (with November CTP) been installed..
 if not "%VS140COMNTOOLS%" == "" ( 
-	set GODDAMN_SDK_COMPILER_VS=2014
-	set GODDAMN_SDK_COMPILER_VST="%VS140COMNTOOLS%"
+	set "GODDAMN_SDK_COMPILER_VS=2014"
+	set "GODDAMN_SDK_COMPILER_VSN=14"
+	set "GODDAMN_SDK_COMPILER_VST=%VS140COMNTOOLS%"
 ) else (
 	if not "%VS120COMNTOOLS%" == "" (
 		rem Visual Studio 2013 default compiler does not supports C++11. We need extended one.
-		if exist "%VS120COMNTOOLS%/../../../Microsoft Visual C++ Compiler Nov 2013 CTP" (
-			set GODDAMN_SDK_COMPILER_VS=2013
-			set GODDAMN_SDK_COMPILER_VST="%VS120COMNTOOLS%"
+		if exist "%VS120COMNTOOLS%\..\..\..\Microsoft Visual C++ Compiler Nov 2013 CTP" (
+			set "GODDAMN_SDK_COMPILER_VS=2013"
+			set "GODDAMN_SDK_COMPILER_VSN=12"
+			set "GODDAMN_SDK_COMPILER_VST=%VS120COMNTOOLS%"
 		) else (
 			echo Found Visual Studio 2013 installation, but no "Visual C++ Compiler Nov 2013 CTP" was located. Is it installed?
 			goto ExitOnFailure
@@ -41,9 +62,9 @@ if not "%VS140COMNTOOLS%" == "" (
 )
 
 rem Setting up debug visualizers for Visual Studio..
-copy /Y "%GODDAMN_SDK%utilities\Natvis\GoddamnTemplateLibrary.natvis" "%USERPROFILE%\My Documents\Visual Studio %GODDAMN_SDK_COMPILER_VS%\Visualizers\" 1>nul 2>nul
+copy /y "%GODDAMN_SDK%\utilities\Natvis\GoddamnTemplateLibrary.natvis" "%USERPROFILE%\My Documents\Visual Studio %GODDAMN_SDK_COMPILER_VS%\Visualizers\" 1>nul
 if %ERRORLEVEL% == 0 (
-	reg add "HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\12.0_Config\Debugger" /V "EnableNatvisDiagnostics" /T REG_DWORD /D "00000001" 1>nul 2>nul
+	reg add "HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\12.0_Config\Debugger" /v "EnableNatvisDiagnostics" /t REG_DWORD /d "00000001" /f 1>nul
 	if not %ERRORLEVEL% == 0 (
 		echo Failed to enable debugging in Visualizers.
 		goto ExitOnFailure
@@ -55,7 +76,7 @@ if %ERRORLEVEL% == 0 (
 
 rem Setting up environment..
 if "%GODDAMN_SDK%" == "" (
-	setx GODDAMN_SDK %CD%\ 1>nul 2>nul	
+	setx GODDAMN_SDK %CD%\ 1>nul	
 	if not %ERRORLEVEL% == 0 (
 		echo Failed to setup the evronmental variable.
 		goto ExitOnFailure
@@ -65,45 +86,64 @@ if "%GODDAMN_SDK%" == "" (
 	set GODDAMN_SDK=%CD%\
 )
 
-echo Building the GoddamnBuildSystem..
-call "%GODDAMN_SDK_COMPILER_VST%/../../VC/bin/x86_amd64/vcvarsx86_amd64.bat" 1>nul 2>nul
-msbuild /nologo /verbosity:quiet %GODDAMN_SDK%source\ThirdParty\GoddamnBuildSystem\GoddamnBuildSystem.csproj /property:Configuration=Release /property:Platform=AnyCPU
+rem Building the GoddamnBuildSystem..
+call "%GODDAMN_SDK_COMPILER_VST%\..\..\VC\bin\x86_amd64\vcvarsx86_amd64.bat" 1>nul
+msbuild /nologo /verbosity:quiet %GODDAMN_SDK%\source\GoddamnBuildSystem\GoddamnBuildSystem.csproj /property:Configuration=Release /property:Platform=AnyCPU 1>nul
 if not %ERRORLEVEL% == 0 (
 	echo Failed to compile GoddamnBuildSystem.
 	goto ExitOnFailure
 )
 
-echo Generating solution files..
+rem Generating solution files..
+call "%GODDAMN_SDK%\bin\ThirdParty\GoddamnBuildSystem.exe" %* 1>nul
+if not %ERRORLEVEL% == 0 (
+	echo.
+	echo GoddamnBuildSystem failed.
+	goto ExitOnFailure
+)
 
-echo.
-echo Now you can open the generated solution file and compile the engine SDK.
 goto ExitOnSuccess
 
 rem -----------------------------------------------------------------------------------------
-rem De-installation process.
+rem Removal process.
 rem -----------------------------------------------------------------------------------------
 :RemoveGoddamnSDK
 echo Removing the GoddamnSDK..
+echo Please, do not close this window.
 
-echo Not implemented.
-goto ExitOnFailure
+rem Removing the Visual Studio's visualizers..
+if not "%VS140COMNTOOLS%" == "" ( 
+	del "%USERPROFILE%\My Documents\Visual Studio 2014\Visualizers\GoddamnTemplateLibrary.natvis" 1>nul
+	reg delete "HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\14.0_Config\Debugger" /v "EnableNatvisDiagnostics" /f 1>nul
+) else (
+	if not "%VS120COMNTOOLS%" == "" (
+		del "%USERPROFILE%\My Documents\Visual Studio 2013\Visualizers\GoddamnTemplateLibrary.natvis" 1>nul
+		reg delete "HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\12.0_Config\Debugger" /v "EnableNatvisDiagnostics" /f 1>nul
+	) 
+)
 
-echo.
+rem Removing our environmental variables.
+if "%GODDAMN_SDK%" == "" (
+	reg delete /f "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v GODDAMN_SDK 1>nul
+)
+
 echo Now you can simply delete this folder to completely deinstall the engine SDK.
 goto ExitOnSuccess
 
 rem -----------------------------------------------------------------------------------------
-rem Finalizers.
+rem Exit points.
 rem -----------------------------------------------------------------------------------------
 
 :ExitOnFailure
-echo.
-echo Installation failed! Press any key to exit installer...
-pause 1>nul 2>nul
+echo Installer failed!
+echo Press any key to exit installer...
+pause 1>nul
 exit 1
 
 :ExitOnSuccess
-echo.
-echo Installation succeded! Press any key to exit installer...
-pause 1>nul 2>nul
-exit 0
+echo Installer succeded! 
+echo Press any key to exit installer...
+pause 1>nul
+rem exit 0
+
+:ExitOnEndOfScript

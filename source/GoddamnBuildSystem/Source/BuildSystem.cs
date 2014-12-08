@@ -87,6 +87,7 @@ namespace GoddamnEngine.BuildSystem
                 Debug.Assert((typeof(T) == typeof(bool)) || (typeof(T) == typeof(string)) || typeof(T).IsEnum);
                 Debug.Assert(!string.IsNullOrWhiteSpace(Name));
                 Debug.Assert(!string.IsNullOrWhiteSpace(Description));
+                Debug.Assert((!Name.StartsWith("---")) && Name.StartsWith("--"));
 
                 m_Value = Value;
                 m_Name = Name;
@@ -145,6 +146,12 @@ namespace GoddamnEngine.BuildSystem
         //! ------------------------------------------------------------------------------------------
         //! Command-line parameters.
         //! ------------------------------------------------------------------------------------------
+
+#if INCLUDE_GODDAMNSDK_SPECIFIC
+        private static CommandLinePropertyProxy<bool> s_PrintSkippersFromBuildScript = new CommandLinePropertyProxy<bool>(
+            false, "---*",
+            "All arguments, that starts from \"---\" are skipped.");
+#endif  // if INCLUDE_GODDAMNSDK_SPECIFIC
 
         private static CommandLinePropertyProxy<bool> s_DoJustPrintHelp = new CommandLinePropertyProxy<bool>(
             false, "--help",
@@ -405,6 +412,12 @@ namespace GoddamnEngine.BuildSystem
         private static void ParseCommandLineArguments(string[] Arguments)
         {
             foreach (string CommandLineProperty in Arguments) {
+#if INCLUDE_GODDAMNSDK_SPECIFIC
+                if (CommandLineProperty.StartsWith("---")) {
+                    continue;
+                }
+#endif  // if INCLUDE_GODDAMNSDK_SPECIFIC
+
                 ICommandLinePropertyProxy CommandLinePropertyProxy = s_CommandLineProperties.Find(
                     P => (P.GetName() == CommandLineProperty) || ((P.GetType() != typeof(bool)) && CommandLineProperty.StartsWith(P.GetName())));
 
