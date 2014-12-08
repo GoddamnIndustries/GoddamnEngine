@@ -1,17 +1,11 @@
 @echo off
 rem =========================================================================================
-rem SetupGoddamnSDK.bat - installs Goddamn Software Development Kit.
-rem Copyright (C) $(GODDAMN_DEV) 2011Present. All Rights Reserved.
+rem SetupGoddamnSDK.bat - installs the Goddamn Software Development Kit [Windows Edition].
+rem Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 rem
 rem History:
 rem		* 03.11.2014 - Created by James Jhuighuy.
 rem =========================================================================================
-
-rem Checking if script if executed from the source directory.. 
-if exist "source" if exist "utilities" if exist "SetupGoddamnSDK.bat" goto DirectoryTestPassed
-echo Installation script should be located and executed directly from the SDK root path.
-goto ExitOnFailure
-:DirectoryTestPassed
 
 rem Parsing command-line arguments..
 if "%1" == "---help" (
@@ -39,14 +33,26 @@ echo Installing the GoddamnSDK..
 echo Please, do not close this window.
 echo.
 
-rem Checking for Visual Studio 2014 / 2013 (with November CTP) been installed..
+rem Checking whether script if executed from the source directory.. 
+if exist "source" if exist "utilities" if exist "SetupGoddamnSDK.bat" goto DirectoryTestPassed
+echo Installation script should be located and executed directly from the SDK root path.
+goto ExitOnFailure
+:DirectoryTestPassed
+
+rem Checking whether all external data (that does not come from GIT) is installed..
+if exist "source\GoddamnEngine\Engine\_Dependencies\mcpp" goto ExternalDataInstallationTestPassed
+echo Missing files that should be extracted from the extra archive that comes with SDK.
+goto ExitOnFailure
+:ExternalDataInstallationTestPassed
+
+rem Checking whether Visual Studio 2014 / 2013 (with November CTP) is installed..
 if not "%VS140COMNTOOLS%" == "" ( 
 	set "GODDAMN_SDK_COMPILER_VS=2014"
 	set "GODDAMN_SDK_COMPILER_VSN=14"
 	set "GODDAMN_SDK_COMPILER_VST=%VS140COMNTOOLS%"
 ) else (
 	if not "%VS120COMNTOOLS%" == "" (
-		rem Visual Studio 2013 default compiler does not supports C++11. We need extended one.
+		rem Visual Studio 2013 default compiler does not support C++11. We need the extended one.
 		if exist "%VS120COMNTOOLS%\..\..\..\Microsoft Visual C++ Compiler Nov 2013 CTP" (
 			set "GODDAMN_SDK_COMPILER_VS=2013"
 			set "GODDAMN_SDK_COMPILER_VSN=12"
@@ -88,7 +94,7 @@ if "%GODDAMN_SDK%" == "" (
 
 rem Building the GoddamnBuildSystem..
 call "%GODDAMN_SDK_COMPILER_VST%\..\..\VC\bin\x86_amd64\vcvarsx86_amd64.bat" 1>nul
-msbuild /nologo /verbosity:quiet %GODDAMN_SDK%\source\GoddamnBuildSystem\GoddamnBuildSystem.csproj /property:Configuration=Release /property:Platform=AnyCPU 1>nul
+msbuild /nologo /verbosity:quiet %GODDAMN_SDK%\source\ThirdPatry\GoddamnBuildSystem\GoddamnBuildSystem.csproj /property:Configuration=Release /property:Platform=AnyCPU 1>nul
 if not %ERRORLEVEL% == 0 (
 	echo Failed to compile GoddamnBuildSystem.
 	goto ExitOnFailure
@@ -124,10 +130,10 @@ if not "%VS140COMNTOOLS%" == "" (
 
 rem Removing our environmental variables.
 if "%GODDAMN_SDK%" == "" (
-	reg delete /f "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v GODDAMN_SDK 1>nul
+	reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v GODDAMN_SDK /f 1>nul
 )
 
-echo Now you can simply delete this folder to completely deinstall the engine SDK.
+echo Now you can simply delete this folder to completely remove the engine SDK.
 goto ExitOnSuccess
 
 rem -----------------------------------------------------------------------------------------
@@ -141,7 +147,7 @@ pause 1>nul
 exit 1
 
 :ExitOnSuccess
-echo Installer succeded! 
+echo Installer succeed! 
 echo Press any key to exit installer...
 pause 1>nul
 rem exit 0

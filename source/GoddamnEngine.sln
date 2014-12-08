@@ -18,9 +18,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GoddamnEngine", "GoddamnEng
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", "{E5A9FDEC-6B5F-4E61-B701-EFDFDC3A0E6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoddamnBuildSystem", "GoddamnBuildSystem\GoddamnBuildSystem.csproj", "{A1A62CBD-D9A6-4E5B-9FAB-7B9E5255EDC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoddamnBuildSystem", "ThirdPatry\GoddamnBuildSystem\GoddamnBuildSystem.csproj", "{A1A62CBD-D9A6-4E5B-9FAB-7B9E5255EDC4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GoddamnReflector", "GoddamnReflector\_Build\GoddamnReflector.vcxproj", "{FAF67125-E855-4A62-A599-E06BD0CD28DA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GoddamnReflector", "ThirdPatry\GoddamnReflector\_Build\GoddamnReflector.vcxproj", "{FAF67125-E855-4A62-A599-E06BD0CD28DA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8AAE2B2C-9652-4F32-B0F2-076CC1BAB2CE} = {8AAE2B2C-9652-4F32-B0F2-076CC1BAB2CE}
 		{A1A62CBD-D9A6-4E5B-9FAB-7B9E5255EDC4} = {A1A62CBD-D9A6-4E5B-9FAB-7B9E5255EDC4}
@@ -36,7 +36,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_SimpleScene", "..\sample
 		{A1A62CBD-D9A6-4E5B-9FAB-7B9E5255EDC4} = {A1A62CBD-D9A6-4E5B-9FAB-7B9E5255EDC4}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoddamnOpenGLUtility", "GoddamnOpenGLUtility\GoddamnOpenGLUtility.csproj", "{89D7D0DB-8111-420A-BB05-0ECC20C950AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoddamnOpenGLUtility", "ThirdPatry\GoddamnOpenGLUtility\GoddamnOpenGLUtility.csproj", "{89D7D0DB-8111-420A-BB05-0ECC20C950AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
