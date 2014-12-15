@@ -15,9 +15,9 @@ using Microsoft.CSharp;
 
 namespace GoddamnEngine.BuildSystem
 {
-    /// <summary>
-    /// Inline dynamic C# compiler.
-    /// </summary>
+    //! <summary>
+    //! Inline dynamic C# compiler.
+    //! </summary>
     internal static class CSharpCompiler
     {
         //! ------------------------------------------------------------------------------------------
@@ -31,9 +31,9 @@ namespace GoddamnEngine.BuildSystem
         //! Class API.
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Compiles C# source file into Assembly object.
-        /// </summary>
+        //! <summary>
+        //! Compiles C# source file into Assembly object.
+        //! </summary>
         internal static Assembly CompileSourceFile(string PathToSource)
         {
             lock (s_TemporaryAssemblyMutex) {
@@ -64,9 +64,9 @@ namespace GoddamnEngine.BuildSystem
             }
         }
 
-        /// <summary>
-        /// Compiles source file into assembly, then checks if it contains a inheritant of specified type and instatiates it.
-        /// </summary>
+        //! <summary>
+        //! Compiles source file into assembly, then checks if it contains a inheritant of specified type and instatiates it.
+        //! </summary>
         internal static T InstantiateSourceFile<T>(string PathToSource) where T : new()
         {
             Assembly Asm = CSharpCompiler.CompileSourceFile(PathToSource);

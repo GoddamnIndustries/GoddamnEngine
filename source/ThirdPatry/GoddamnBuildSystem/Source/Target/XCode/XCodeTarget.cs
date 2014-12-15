@@ -19,28 +19,28 @@ namespace IncredibleEngine.BuildSystem.XCode
 {
     #region [-- XCode serialization Core --]
 
-    /// <summary>
-    /// This attribute marks all fields of XCodeObject that are going to be serialized
-    /// </summary>
+    //! <summary>
+    //! This attribute marks all fields of XCodeObject that are going to be serialized
+    //! </summary>
     [AttributeUsage(AttributeTargets.Field)]
     public sealed class XCodePropertyAttribute : Attribute
     {
-        /// <summary> Name of this property in XCode project file </summary>
+        //! <summary> Name of this property in XCode project file </summary>
         public readonly string PropertyName;
         public XCodePropertyAttribute(string PropertyName) { this.PropertyName = PropertyName; }
     }   // public sealed class XCodeProperty
 
-    /// <summary>
-    /// Class represents convertible to string reference for XCode project file
-    /// </summary>
+    //! <summary>
+    //! Class represents convertible to string reference for XCode project file
+    //! </summary>
     public sealed class XCodeReference
     {
-        /// <summary>Name of this reference</summary>
+        //! <summary>Name of this reference</summary>
         public readonly string ReferenceName;
         public XCodeReference(string ReferenceName) { this.ReferenceName = ReferenceName; }
 
-        /// <summary>Translates this reference into 96-bit XCode GUID string</summary>
-        /// <returns>String representation of this reference</returns>
+        //! <summary>Translates this reference into 96-bit XCode GUID string</summary>
+        //! <returns>String representation of this reference</returns>
         public sealed override string ToString()
         {
             string PropertyNameHash = this.ReferenceName.GetHashCode().ToString("X");
@@ -49,17 +49,17 @@ namespace IncredibleEngine.BuildSystem.XCode
         }
     }   // public sealed class XCodeReference
 
-    /// <summary>
-    /// Class contains instruments for properties serialization into XCode format
-    /// </summary>
+    //! <summary>
+    //! Class contains instruments for properties serialization into XCode format
+    //! </summary>
     public class XCodeObject
     {
-        /// <summary>Reference on this object</summary>
+        //! <summary>Reference on this object</summary>
         public readonly XCodeReference Reference;
         public XCodeObject(string ObjectUniqueIdenetifier) { this.Reference = new XCodeReference(ObjectUniqueIdenetifier); }
 
-        /// <summary>Serializes all object properties into XCode recognizable format</summary>
-        /// <returns>String representation of this object in XCode recognizable format</returns>
+        //! <summary>Serializes all object properties into XCode recognizable format</summary>
+        //! <returns>String representation of this object in XCode recognizable format</returns>
         public sealed override string ToString()
         {
             StringBuilder Builder = new StringBuilder();
@@ -80,15 +80,15 @@ namespace IncredibleEngine.BuildSystem.XCode
         }
     }   // public class XCodeObject
 
-    /// <summary>
-    /// Class represents serializable into XCode format list of object references
-    /// </summary>
+    //! <summary>
+    //! Class represents serializable into XCode format list of object references
+    //! </summary>
     public sealed class XCodeObjectRefList : List<XCodeReference>
     {
         public XCodeObjectRefList() { }
 
-        /// <summary>Serializes all object properties into XCode recognizable format</summary>
-        /// <returns>String representation of this object in XCode recognizable format</returns>
+        //! <summary>Serializes all object properties into XCode recognizable format</summary>
+        //! <returns>String representation of this object in XCode recognizable format</returns>
         public sealed override string ToString()
         {
             StringBuilder Builder = new StringBuilder().Append('(');
@@ -97,15 +97,15 @@ namespace IncredibleEngine.BuildSystem.XCode
         }
     }   // public sealed class XCodeObjectRefList
 
-    /// <summary>
-    /// Class represents serializable into XCode format list of objects
-    /// </summary>
+    //! <summary>
+    //! Class represents serializable into XCode format list of objects
+    //! </summary>
     public sealed class XCodeObjectList : List<XCodeObject>
     {
         public XCodeObjectList() { }
 
-        /// <summary>Serializes all object properties into XCode recognizable format</summary>
-        /// <returns>String representation of this object in XCode recognizable format</returns>
+        //! <summary>Serializes all object properties into XCode recognizable format</summary>
+        //! <returns>String representation of this object in XCode recognizable format</returns>
         public sealed override string ToString()
         {
             StringBuilder Builder = new StringBuilder().Append('{');
@@ -118,9 +118,9 @@ namespace IncredibleEngine.BuildSystem.XCode
 
     #region [-- XCode project file nodes --]
 
-    /// <summary>
-    /// Class provides information about file with source code that would be added to build
-    /// </summary>
+    //! <summary>
+    //! Class provides information about file with source code that would be added to build
+    //! </summary>
     public sealed class XCodeFileReference : XCodeObject
     {
         [XCodeProperty("isa")]

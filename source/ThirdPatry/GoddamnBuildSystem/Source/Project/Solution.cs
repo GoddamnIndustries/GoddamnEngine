@@ -2,9 +2,7 @@
 //! Solution.cs - represents a solution (set of projects).
 //! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 //! 
-//! History:
-//!		* --.06.2014 - Created by James Jhuighuy
-//!     * 24.11.2014 - Refactored.
+//! @author James Jhuighuy
 //! ==========================================================================================
 
 using System;
@@ -15,45 +13,48 @@ using System.Collections.Generic;
 
 namespace GoddamnEngine.BuildSystem
 {
-    /// <summary>
-    /// Represents a solution (set of projects).
-    /// </summary>
+    //! Represents a solution (set of projects).
     public class Solution
     {
         //! ------------------------------------------------------------------------------------------
-        //! Fields.
+        //! @name Fields.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
         private string m_Location = null;
 
+        //! @}
+
         //! ------------------------------------------------------------------------------------------
-        //! Constructor.
+        //! @name Constructors.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Instantiates a new solution.
-        /// </summary>
-        /// <param name="Location">Location, where the solution files exist.</param>
+        //! Instantiates a new solution.
+        //! @param Location Location, where the solution files exist.
         public Solution() { }
-        public Solution(string Location) { m_Location = Location; }
+        public Solution(string Location)
+        {
+            m_Location = Location;
+        }
 
-        //! ------------------------------------------------------------------------------------------
-        //! Virtual getters.
-        //! ------------------------------------------------------------------------------------------
+        //! @}
 
-        /// <summary>
-        /// Returns path to solution file.
-        /// </summary>
+        //! Returns path to solution file.
         public string GetLocation()
         {
             return m_Location;
         }
 
-        /// <summary>
-        /// Returns name of this solution.
-        /// By default, it is a name of directory, where solution is located or name of the solution file.
-        /// </summary>
-        /// <param name="Platform">Platform for which resolving is done.</param>
+        //! ------------------------------------------------------------------------------------------
+        //! @name Properties.
+        //! @{
+        //! ------------------------------------------------------------------------------------------
+
+
+        //! Returns name of this solution.
+        //! By default, it is a name of directory, where solution is located or name of the solution file.
+        //! @param Platform Platform for which resolving is done.
         public virtual string GetName(TargetPlatform Platform)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
@@ -66,12 +67,11 @@ namespace GoddamnEngine.BuildSystem
             return SolutionName;
         }
 
-        /// <summary>
-        /// Returns list of projects in solution.
-        /// By default, it scans all solution sub-directories for ones with .GDPROJ.CS and .CSPROJ files. 
-        /// </summary>
-        /// <param name="Platform">Platform for which resolving is done.</param>
-        public virtual void GetProjects(ref List<Project> SolutionProjects, TargetPlatform Platform)
+        //! Collects list of projects in solution.
+        //! By default, it scans all solution sub-directories for ones with .GDPROJ.CS and .CSPROJ files. 
+        //! @param SolutionProjects Output for collected projects.
+        //! @param Platform Platform for which resolving is done.
+        public virtual void GetProjects(ref List<BaseProject> SolutionProjects, TargetPlatform Platform)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
 
@@ -97,25 +97,24 @@ namespace GoddamnEngine.BuildSystem
 
         }
 
-        /// <summary>
-        /// Returns list of configurations in solution.
-        /// </summary>
-        /// <param name="Platform">Platform for which resolving is done.</param>
-        public virtual void GetConfigurations(List<TargetConfiguration> SolutionConfigurations, TargetPlatform Platform)
+        //! Returns list of configurations in solution.
+        //! @param Platform Platform for which resolving is done.
+        public virtual void GetConfigurations(ref List<TargetConfiguration> SolutionConfigurations, TargetPlatform Platform)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
 
             SolutionConfigurations.AddRange(Enum.GetValues(typeof(TargetConfiguration)).Cast<TargetConfiguration>().ToList());
         }
 
+        //! @}
+
         //! ------------------------------------------------------------------------------------------
-        //! Class static API.
+        //! @name Class static API.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Creates a solution object for specified location.
-        /// </summary>
-        /// <param name="SolutionFile">Name of the solution file, or path to directory in which project would be located.</param>
+        //! Creates a solution object for specified location.
+        //! @param SolutionFile Name of the solution file, or path to directory in which project would be located.
         internal static Solution CreateSolutionForSource(string SolutionFile)
         {
             Solution SolutionObject = CSharpCompiler.InstantiateSourceFile<Solution>(SolutionFile);
@@ -123,5 +122,7 @@ namespace GoddamnEngine.BuildSystem
 
             return SolutionObject;
         }
-    }   // GoddamnEngine.BuildSystem
-}   // GoddamnEngine.BuildSystem
+
+        //! @}
+    }   // class Solution
+}   // namespace GoddamnEngine.BuildSystem

@@ -2,45 +2,43 @@
 //! Dependency.cs - project's dependency class.
 //! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 //! 
-//! History:
-//!		* 24.11.2014 - Created by James Jhuighuy
+//! @author James Jhuighuy
 //! ==========================================================================================
 
 using System;
 using System.IO;
 using System.Diagnostics;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace GoddamnEngine.BuildSystem
 {
-    /// <summary>
-    /// Represents a single project's dependency.
-    /// </summary>
+    //! Represents a single project's dependency.
     public class Dependency
     {
         //! ------------------------------------------------------------------------------------------
-        //! Fields.
+        //! @name Fields.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
         private string m_Location = null;
 
+        //! @}
+
         //! ------------------------------------------------------------------------------------------
-        //! Constructor.
+        //! @name Constructors.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Instantiates a new dependency.
-        /// </summary>
+        //! Instantiates a new dependency.
         public Dependency() { }
-        public Dependency(string Location) { m_Location = Location; }
+        public Dependency(string Location)
+        {
+            m_Location = Location;
+        }
 
-        //! ------------------------------------------------------------------------------------------
-        //! Virtual getters.
-        //! ------------------------------------------------------------------------------------------
+        //! @}
 
-        /// <summary>
-        /// Returns the location of the dependency directory/source file.
-        /// </summary>
+        //! Returns the location of the dependency directory/source file.
         public string GetLocation()
         {
             Debug.Assert(m_Location != null);
@@ -48,11 +46,14 @@ namespace GoddamnEngine.BuildSystem
             return m_Location;
         }
 
-        /// <summary>
-        /// If is false, then this dependency is not added to project's dependencies list.
-        /// </summary>
-        /// <param name="Platform">Platform for which resolving is done.</param>
-        /// <param name="Configuration">Configuration for which resolving is done.</param>
+        //! ------------------------------------------------------------------------------------------
+        //! @name Properties.
+        //! @{
+        //! ------------------------------------------------------------------------------------------
+
+        //! If is false, then this dependency is not added to project's dependencies list.
+        //! @param Platform Platform for which resolving is done.
+        //! @param Configuration Configuration for which resolving is done.
         public virtual bool GetIsSkipped(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
@@ -61,122 +62,87 @@ namespace GoddamnEngine.BuildSystem
             return false;
         }
 
-        /// <summary>
-        /// Returns list of paths to direcories that should be included into project's include paths list.
-        /// By default, it is the subdirectory 'include' of dependency directory.
-        /// </summary>
-        /// <param name="Platform">Platform for which resolving is done.</param>
-        /// <param name="Configuration">Configuration for which resolving is done.</param>
-        public virtual void GetHeaderPaths(ref StringCollection HeaderPaths, TargetPlatform Platform, TargetConfiguration Configuration)
+        //! Collects list of paths to directories that should be included into project's include paths list.
+        //! By default, it is the subdirectory 'include' of dependency directory.
+        //! @param Platform Platform for which resolving is done.
+        //! @param Configuration Configuration for which resolving is done.
+        public virtual List<string> GetHeaderPaths(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
+
+            List<string> HeaderPaths = new List<string>();
 
             string StandartIncludePath = Path.Combine(this.GetLocation(), "include");
             if (Directory.Exists(StandartIncludePath)) {
                 HeaderPaths.Add(StandartIncludePath);
             }
+
+            return HeaderPaths;
         }
 
-        /// <summary>
-        /// Returns list of files that should be copied to project build output directory.
-        /// By default, this files are:
-        /// <list type="bullet">
-        ///     <item>
-        ///         <description>.DLL files on Windows desktop platform.</description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        /// <param name="Platform">Platform for which resolving is done.</param>
-        /// <param name="Configuration">Configuration for which resolving is done.</param>
-        public virtual void GetCopyFilesPaths(ref StringCollection CopyFilesPaths, TargetPlatform Platform, TargetConfiguration Configuration)
+        //! Collects list of files that should be copied to project build output directory.
+        //! By default, this files are:
+        //! @li .DLL files on Windows desktop platform.
+        //! @param Platform Platform for which resolving is done.
+        //! @param Configuration Configuration for which resolving is done.
+        public virtual List<string> GetCopyFilesPaths(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
+
+            List<string> CopyFilesPaths = new List<string>();
 
             if (Target.IsDesktopPlatform(Platform)) {
                 foreach (string DependencyFile in Directory.EnumerateFiles(this.GetLocation())) {
                     string DependencyFileExtension = Path.GetExtension(DependencyFile).ToLower();
                     switch (Platform) {
                         case TargetPlatform.Windows:
-                            switch (DependencyFileExtension) {
-                                case ".dll":
-                                    CopyFilesPaths.Add(DependencyFile);
-                                    break;
+                            if (DependencyFileExtension == ".dll") {
+                                CopyFilesPaths.Add(DependencyFile);
                             }
                             break;
                     }
                 }
-            } 
+            }
+
+            return CopyFilesPaths;
         }
 
-        /// <summary>
-        /// Returns list of paths to libraries that should be linked with project build file.
-        /// By default, they are the files in dependency directory that match following pattern: "SomeName[.{Platform}[.{Configuration}]].{Extension}", where:
-        /// <list type="bullet">
-        ///     <item><term>Platform</term><description>Name of the platform, for which current library source is built. Should be equal to target one.</description></item>
-        ///     <item><term>Configuration</term><description>Name of the configuration, for which current library source is built. Should be equal to target one.</description></item>
-        ///     <item><term>Extension</term><description>Extension specific to target platform. E.g. ".lib" for Windows.</description></item>
-        /// </list>
-        /// </summary>
-        /// <param name="Platform">Platform for which resolving is done.</param>
-        /// <param name="Configuration">Configuration for which resolving is done.</param>
-        public virtual void GetLibrariesPaths(ref StringCollection LibrariesPaths, TargetPlatform Platform, TargetConfiguration Configuration)
+        //! Collects list of paths to libraries that should be linked with project build file.
+        //! By default, they are the files in dependency directory that match following pattern: "SomeName[.{Platform}[.{Configuration}]].{Extension}", where:
+        //! @li Platform - Name of the platform, for which current library source is built. Should be equal to target one. 
+        //! @li Configuration - Name of the configuration, for which current library source is built. Should be equal to target one. 
+        //! @li Extension - Extension specific to target platform. E.g. ".lib" for Windows. 
+        //! @param Platform Platform for which resolving is done.
+        //! @param Configuration Configuration for which resolving is done.
+        public virtual List<string> GetLibrariesPaths(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
 
+            List<string> LibrariesPaths = new List<string>();
+
             foreach (string LibraryFile in Directory.EnumerateFiles(this.GetLocation())) {
                 bool IsLibraryFile = false;
                 string LibraryFileExtension = Path.GetExtension(LibraryFile).ToLower();
-                if (Target.IsWebPlatform(Platform)) { 
-                    switch (LibraryFileExtension) {
-                        case ".bc":
-                            IsLibraryFile = true;
-                            break;
-                    }
+                if (Target.IsWebPlatform(Platform)) {
+                    IsLibraryFile = (LibraryFileExtension == ".bc");
                 } else if (Target.IsWinAPIPlatform(Platform)) {
-                    switch (LibraryFileExtension) {
-                        case ".lib":
-                            IsLibraryFile = true;
-                            break;
-                    }
+                    IsLibraryFile = (LibraryFileExtension == ".lib");
                 } else if (Target.IsPosixPlatform(Platform)) {
-                    switch (LibraryFileExtension) {
-                        case ".a":
-                        case ".so":
-                            IsLibraryFile = true;
-                            break;
-                    }
+                    IsLibraryFile = (LibraryFileExtension == ".a") || (LibraryFileExtension == ".so");
                 } else {
                     throw new NotImplementedException();
                 }
 
-                if (IsLibraryFile) {
-                    string LibraryFileExtensionless = Path.GetFileNameWithoutExtension(LibraryFile);
-                    string LibraryPlatform = Path.GetExtension(LibraryFileExtensionless);
-                    if (!string.IsNullOrEmpty(LibraryPlatform)) {
-                        // Checking if platform information is defined and it is of type TargetPlatform.
-                        if (LibraryPlatform == string.Concat('.', Platform)) {
-                            string LibraryConfiguration = Path.GetExtension(Path.GetFileNameWithoutExtension(LibraryFileExtensionless));
-                            if (!string.IsNullOrEmpty(LibraryConfiguration)) {
-                                // Checking if platform information is defined and it is of type TargetConfiguration.
-                                IsLibraryFile = (LibraryConfiguration == string.Concat('.', Configuration));
-                            }
-                        } else {
-                            // Library filename contains some platform information, but it not matches target platform.
-                            IsLibraryFile = false;
-                        }
-                    }
-                }
-
-                if (IsLibraryFile) {
+                if (IsLibraryFile && Target.MatchesPlatformConfiguration(LibraryFile, Platform, Configuration)) {
                     LibrariesPaths.Add(LibraryFile);
                 }
             }
 
             // On Apple platforms we also have '.framework' directories that are treated as libraries.
-            if (Target.IsCocoaPlatform(Platform)) { 
+            if (Target.IsCocoaPlatform(Platform)) {
                 foreach (string FrameworkFile in Directory.EnumerateDirectories(this.GetLocation())) {
                     if (Path.GetExtension(FrameworkFile).ToLower() == ".framework") {
                         //  LibrariesPaths.Add(FrameworkFile);
@@ -184,18 +150,21 @@ namespace GoddamnEngine.BuildSystem
                     }
                 }
             }
+
+            return LibrariesPaths;
         }
 
+        //! @}
+
         //! ------------------------------------------------------------------------------------------
-        //! Class static API.
+        //! @name Class static API.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Creates a depenedency object for specified location.
-        /// Dependency-configuration file should be located in the directory. It should be an .GDDEP.CS file: 
-        /// empty or with Dependency-derived class.
-        /// </summary>
-        /// <param name="DependencyLocation">Path do directory in which dependencies would be searched.</param>
+        //! Creates a dependency object for specified location.
+        //! Dependency-configuration file should be located in the directory. It should be an .GDDEP.CS file: 
+        //! empty or with Dependency-derived class.
+        //! @param DependencyLocation Path do directory in which dependencies would be searched.
         internal static Dependency CreateDependencyForSource(string DependencyFile)
         {
             Dependency DependencyObject = CSharpCompiler.InstantiateSourceFile<Dependency>(DependencyFile);
@@ -203,78 +172,88 @@ namespace GoddamnEngine.BuildSystem
 
             return DependencyObject;
         }
+
+        //! @}
     }   // class Dependency
+}   // namespace GoddamnEngine.BuildSystem
 
 // GoddamnSDK specific dependencies code.
 #if INCLUDE_GODDAMNSDK_SPECIFIC
-
-    /// <summary>
-    /// Represents a dependency of some GoddamnSDK libary.
-    /// </summary>
+namespace GoddamnEngine.BuildSystem.GoddamnSpecific
+{
+    //! <summary>
+    //! Represents a dependency of some GoddamnSDK library.
+    //! </summary>
     public class GoddamnDependency : Dependency
     {
         //! ------------------------------------------------------------------------------------------
-        //! Fields.
+        //! @name Fields.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
         private string m_ComponentName = null;
 
-        //! ------------------------------------------------------------------------------------------
-        //! Constructor.
-        //! ------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Instantiates a GoddamnSDK dependency. Location is set to default SDK location.
-        /// </summary>
-        internal GoddamnDependency(string ComponentName) : base(BuildSystem.GetSDKLocation()) { m_ComponentName = ComponentName; }
+        //! @}
 
         //! ------------------------------------------------------------------------------------------
-        //! Virtual getters.
+        //! @name Constructor.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Adds standart GoddamnSDK headers location into header paths.
-        /// </summary>
-        /// <param name="HeaderPaths">Output for header paths.</param>
-        /// <param name="Platform">Platform for which resolving is done.</param>
-        /// <param name="Configuration">Configuration for which resolving is done.</param>
-        public sealed override void GetHeaderPaths(ref StringCollection HeaderPaths, TargetPlatform Platform, TargetConfiguration Configuration)
+        //! Instantiates a GoddamnSDK dependency. Location is set to default SDK location.
+        internal GoddamnDependency(string ComponentName)
+            : base(BuildSystem.GetSDKLocation())
+        {
+            m_ComponentName = ComponentName;
+        }
+
+        //! @}
+
+        //! ------------------------------------------------------------------------------------------
+        //! @name Properties.
+        //! @{
+        //! ------------------------------------------------------------------------------------------
+
+        //! Adds standard GoddamnSDK headers location into header paths.
+        //! @param Platform Platform for which resolving is done.
+        //! @param Configuration Configuration for which resolving is done.
+        public sealed override List<string> GetHeaderPaths(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
 
+            List<string> HeaderPaths = new List<string>();
             string CoreHeadersPath = Path.Combine(BuildSystem.GetSDKLocation(), "source");
             if (Directory.Exists(CoreHeadersPath)) {
                 HeaderPaths.Add(CoreHeadersPath);
             } else {
                 throw new BuildSystemException("Headers path for GoddamnSDK where not found. Was it installed correctly?");
             }
+
+            return HeaderPaths;
         }
 
-        /// <summary>
-        /// Does nothing. All internally dependent file would be automatically installed during the build of SDK projects.
-        /// </summary>
-        /// <param name="CopyFilesPaths">Output for copied files.</param>
-        /// <param name="Platform">Platform for which resolving is done.</param>
-        /// <param name="Configuration">Configuration for which resolving is done.</param>
-        public sealed override void GetCopyFilesPaths(ref StringCollection CopyFilesPaths, TargetPlatform Platform, TargetConfiguration Configuration)
+        //! Does nothing. All internally dependent file would be automatically installed during the build of SDK projects.
+        //! @param Platform Platform for which resolving is done.
+        //! @param Configuration Configuration for which resolving is done.
+        public sealed override List<string> GetCopyFilesPaths(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
 
-            // Yes, really nothing here.
+            return new List<string>();
         }
 
-        /// <summary>
-        /// Adds standart GoddamnSDK libaries (and frameworks) locations into additional libaries paths.
-        /// </summary>
-        /// <param name="LibrariesPaths">Output for libraries paths.</param>
-        /// <param name="Platform">Platform for which resolving is done.</param>
-        /// <param name="Configuration">Configuration for which resolving is done.</param>
-        public sealed override void GetLibrariesPaths(ref StringCollection LibrariesPaths, TargetPlatform Platform, TargetConfiguration Configuration)
+        //! Adds standard GoddamnSDK libraries (and frameworks) locations into additional libraries paths.
+        //! @param LibrariesPaths Output for libraries paths.
+        //! @param Platform Platform for which resolving is done.
+        //! @param Configuration Configuration for which resolving is done.
+        public sealed override List<string> GetLibrariesPaths(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
             Debug.Assert(TargetConfiguration.Unknown != Configuration);
+
+            List<string> LibrariesPaths = new List<string>();
 
             string SDKLibrariesLocation = Path.Combine(BuildSystem.GetSDKLocation(), "lib");
             string SDKLibraryPattern = m_ComponentName.ToLower();
@@ -286,24 +265,17 @@ namespace GoddamnEngine.BuildSystem
             foreach (string SDKLibrary in Directory.EnumerateFiles(SDKLibrariesLocation)) {
                 if (Path.GetFileName(SDKLibrary.ToLower()) == SDKLibraryPattern) {
                     string SDKLibraryExtension = Path.GetExtension(SDKLibrary).ToLower();
-                    if (Target.IsWebPlatform(Platform)) { 
-                        switch (SDKLibraryExtension) {
-                            case ".bc":
-                                LibrariesPaths.Add(SDKLibrary);
-                                break;
+                    if (Target.IsWebPlatform(Platform)) {
+                        if (SDKLibraryExtension == ".bc") {
+                            LibrariesPaths.Add(SDKLibrary);
                         }
                     } else if (Target.IsWinAPIPlatform(Platform)) {
-                        switch (SDKLibraryExtension) {
-                            case ".lib":
-                                LibrariesPaths.Add(SDKLibrary);
-                                break;
+                        if (SDKLibraryExtension == ".lib") {
+                            LibrariesPaths.Add(SDKLibrary);
                         }
                     } else if (Target.IsPosixPlatform(Platform)) {
-                        switch (SDKLibraryExtension) {
-                            case ".a":
-                            case ".so":
-                                LibrariesPaths.Add(SDKLibrary);
-                                break;
+                        if ((SDKLibraryExtension == ".a") || (SDKLibraryExtension == ".so")) {
+                            LibrariesPaths.Add(SDKLibrary);
                         }
                     } else {
                         throw new NotImplementedException();
@@ -312,39 +284,44 @@ namespace GoddamnEngine.BuildSystem
             }
 
             // On Apple platforms we also have '.framework' directories that are treated as libraries.
-            if (Target.IsCocoaPlatform(Platform)) { 
+            if (Target.IsCocoaPlatform(Platform)) {
                 foreach (string SDKFramework in Directory.EnumerateDirectories(SDKLibrariesLocation)) {
                     if (Path.GetFileName(SDKFramework.ToLower()) == SDKLibraryPattern) {
                         if (Path.GetExtension(SDKFramework).ToLower() == ".framework") {
-                        //  LibrariesPaths.Add(FrameworkFile);
+                            //  LibrariesPaths.Add(FrameworkFile);
                             throw new NotImplementedException("Using frameworks is not implemented.");
                         }
                     }
                 }
             }
+
+            return LibrariesPaths;
         }
+        //! @}
     }   // class GoddamnDependency
 
-    /// <summary>
-    /// Represents a SDK dependency, which should be linked and cannot be build as plugin.
-    /// This means, that this dependency would be never skipped on any platform.
-    /// </summary>
+    //! Represents a SDK dependency, which should be linked and cannot be build as plugin.
+    //! This means, that this dependency would be never skipped on any platform.
     public class GoddamnNotPluginDependency : Dependency
     {
         //! ------------------------------------------------------------------------------------------
-        //! Constructor.
+        //! @name Constructor.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Instantiates a GoddamnSDK dependency. Location is set to default SDK location.
-        /// </summary>
+        //! Instantiates a GoddamnSDK dependency. Location is set to default SDK location.
         internal GoddamnNotPluginDependency(string ComponentName) : base(ComponentName) { }
 
-        /// <summary>
-        /// Returns false on all platforms.
-        /// </summary>
-        /// <param name="Platform">Platform for which resolving is done.</param>
-        /// <param name="Configuration">Configuration for which resolving is done.</param>
+        //! @}
+
+        //! ------------------------------------------------------------------------------------------
+        //! @name Properties.
+        //! @{
+        //! ------------------------------------------------------------------------------------------
+
+        //! Returns false on all platforms.
+        //! @param Platform Platform for which resolving is done.
+        //! @param Configuration Configuration for which resolving is done.
         public sealed override bool GetIsSkipped(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(TargetPlatform.Unknown != Platform);
@@ -352,40 +329,34 @@ namespace GoddamnEngine.BuildSystem
 
             return false;
         }
+
+        //! @}
     }   // class GoddamnNotPluginDependency
 
-    /// <summary>
-    /// Represents dependency on GoddamnCore library.
-    /// </summary>
+    //! Represents dependency on GoddamnCore library.
     public sealed class GoddamnCoreDependency : GoddamnNotPluginDependency
     {
-        /// <summary>
-        /// Instantiates a new GoddamnCore library dependency.
-        /// </summary>
+        //! Instantiates a new GoddamnCore library dependency.
         public GoddamnCoreDependency() : base("GoddamnCore") { }
     }   // class GoddamnCoreDependency
 
-    /// <summary>
-    /// Represents dependency on GoddamnEngine library.
-    /// </summary>
+    //! Represents dependency on GoddamnEngine library.
     public sealed class GoddamnEngineDependency : GoddamnNotPluginDependency
     {
-        /// <summary>
-        /// Instantiates a new GoddamnEngine library dependency.
-        /// </summary>
+        //! Instantiates a new GoddamnEngine library dependency.
         public GoddamnEngineDependency() : base("GoddamnEngine") { }
     }   // class EngineProjectDependency
-#endif  // if INCLUDE_GODDAMNSDK_SPECIFIC
+}   // namespace GoddamnEngine.BuildSystem.GoddamnSpecific
+#endif  // INCLUDE_GODDAMNSDK_SPECIFIC
 
-    // Some additional dependencies code.
-#if INCLUDE_ADDITIONALS && FALSE
-
-    /// <summary>
-    /// Represents a dependency in NVidia PhysX (C) engine.
-    /// </summary>
+// Some additional dependencies code.
+#if INCLUDE_ADDITIONALS
+namespace GoddamnEngine.BuildSystem.Additinals
+{
+    //! Represents a dependency in NVidia PhysX (C) engine.
     public sealed class NVidiaPhysXDependency : Dependency
     {
         private const string s_X64DefaultPath = @"C:\Program Files (x86)\NVIDIA Corporation\PhysX";
     }   // class NVidiaPhysXDependency
+}   // namespace GoddamnEngine.BuildSystem.Additinals
 #endif  // if INCLUDE_ADDITIONALS
-}   // namespace GoddamnEngine.BuildSystem

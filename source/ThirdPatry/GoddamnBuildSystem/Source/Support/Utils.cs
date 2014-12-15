@@ -1,5 +1,5 @@
 ﻿//! ==========================================================================================
-//! Support.cs - some very common API.
+//! Utils.cs - some very common API.
 //! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 //! 
 //! History:
@@ -10,26 +10,26 @@ using System.IO;
 
 namespace GoddamnEngine.BuildSystem
 {
-    /// <summary>
-    /// Some very common API.
-    /// </summary>
-    internal static class Support
+    //! <summary>
+    //! Some very common API.
+    //! </summary>
+    internal static class Utils
     {
         //! ------------------------------------------------------------------------------------------
-        //! Filesystem API.
+        //! File system API.
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Checks if specified file is empty.
-        /// </summary>
+        //! <summary>
+        //! Checks if specified file is empty.
+        //! </summary>
         internal static bool IsFileEmpty(string Location)
         {
             return (new FileInfo(Location).Length == 0);
         }
 
-        /// <summary>
-        /// Creates a new empty file at specified path.
-        /// </summary>
+        //! <summary>
+        //! Creates a new empty file at specified path.
+        //! </summary>
         internal static void CreateEmptyFile(string Location)
         {
             File.Create(Location).Dispose();

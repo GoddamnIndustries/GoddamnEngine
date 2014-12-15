@@ -2,9 +2,7 @@
 //! BuildSystem.cs - GoddamnBuildSystem main source module.
 //! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 //! 
-//! History:
-//!		* --.06.2014 - Created by James Jhuighuy
-//!     * 24.11.2014 - Refactored.
+//! @author James Jhuighuy
 //! ==========================================================================================
 
 using System;
@@ -15,79 +13,64 @@ using System.Collections.Generic;
 
 namespace GoddamnEngine.BuildSystem
 {
-    /// <summary>
-    /// Represents an exception, thrown by BuildSystem code.
-    /// </summary>
+    //! Represents an exception, thrown by BuildSystem code.
     public sealed class BuildSystemException : Exception
     {
-        public BuildSystemException(string Format, params object[] Arguments) : base(string.Format(Format, Arguments)) { }
+        //! Constructs the build system exception with a string.
+        //! @param Format Format string.
+        //! @param Arguments Formatting arguments.
+        public BuildSystemException(string Format, params object[] Arguments)
+            : base(string.Format(Format, Arguments)) { }
     }   // class ProjectException
 
-    /// <summary>
-    /// Main class of build system.
-    /// </summary>
+    //! Main class of build system.
     public static class BuildSystem
     {
         //! ------------------------------------------------------------------------------------------
-        //! Internal types.
+        //! @name Internal types.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Interface to description of a single command-line property.
-        /// All command-line properties would be stored in 's_CommandLineArguments' variable.
-        /// </summary>
+        //! Interface to description of a single command-line property.
+        //! All command-line properties would be stored in 's_CommandLineArguments' variable.
         private abstract class ICommandLinePropertyProxy
         {
-            /// <summary>
-            /// Returns name of command-line parameter.
-            /// </summary>
+            //! Returns name of command-line parameter.
             public abstract string GetName();
 
-            /// <summary>
-            /// Returns description of command-line parameter.
-            /// </summary>
+            //! Returns description of command-line parameter.
             public abstract string GetDescription();
 
-            /// <summary>
-            /// Returns value of command-line parameter.
-            /// </summary>
+            //! Returns value of command-line parameter.
             public abstract object GetValue();
 
-            /// <summary>
-            /// Assigns new value to command-line parameter.
-            /// </summary>
+            //! Assigns new value to command-line parameter.
             public abstract void SetValue(object Value);
 
-            /// <summary>
-            /// Returns type of command-line parameter.
-            /// </summary>
+            //! Returns type of command-line parameter.
             public new Type GetType()
             {
                 return this.GetValue().GetType();
             }
         }   // interface ICommandLinePropertyProxy
 
-        /// <summary>
-        /// Proxy for a command-line parameter.
-        /// </summary>
-        /// <typeparam name="T">Real type of parameter</typeparam>
+        //! Proxy for a command-line parameter.
+        //! @tparam T Real type of parameter
         private sealed class CommandLinePropertyProxy<T> : ICommandLinePropertyProxy
         {
             private T m_Value;
             private string m_Name;
             private string m_Description;
 
-            /// <summary>
-            /// Constructs a proxy variable for command-line parameter.
-            /// </summary>
-            /// <param name="Value"></param>
-            /// <param name="Description"></param>
+            //! Constructs a proxy variable for command-line parameter.
+            //! @param Value 
+            //! @param Description 
             public CommandLinePropertyProxy(T Value, String Name, String Description)
             {
                 Debug.Assert((typeof(T) == typeof(bool)) || (typeof(T) == typeof(string)) || typeof(T).IsEnum);
                 Debug.Assert(!string.IsNullOrWhiteSpace(Name));
                 Debug.Assert(!string.IsNullOrWhiteSpace(Description));
-                Debug.Assert((!Name.StartsWith("---")) && Name.StartsWith("--"));
+                //  Debug.Assert((!Name.StartsWith("---")) && Name.StartsWith("--"));
 
                 m_Value = Value;
                 m_Name = Name;
@@ -95,92 +78,81 @@ namespace GoddamnEngine.BuildSystem
                 BuildSystem.s_CommandLineProperties.Add(this);
             }
 
-            /// <summary>
-            /// Returns name of command-line parameter.
-            /// </summary>
+            //! Returns name of command-line parameter.
             public sealed override string GetName()
             {
                 return m_Name;
             }
 
-            /// <summary>
-            /// Returns description of command-line parameter.
-            /// </summary>
+            //! Returns description of command-line parameter.
             public sealed override string GetDescription()
             {
                 return m_Description;
             }
 
-            /// <summary>
-            /// Returns value of command-line parameter.
-            /// </summary>
+            //! Returns value of command-line parameter.
             public sealed override object GetValue()
             {
                 return m_Value;
             }
 
-            /// <summary>
-            /// Assigns new value to command-line parameter.
-            /// </summary>
+            //! Assigns new value to command-line parameter.
             public sealed override void SetValue(object Value)
             {
                 m_Value = (T)Value;
             }
 
-            /// <summary>
-            /// Implicit cast to real type.
-            /// </summary>
+            //! Implicit cast to real type.
             public static implicit operator T(CommandLinePropertyProxy<T> ValueProxy)
             {
                 return ValueProxy.m_Value;
             }
         }   // ValueProxy<T>
 
+        //! @}
+
         //! ------------------------------------------------------------------------------------------
-        //! Static fields.
+        //! @name Static fields.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
         private static string s_SDKPath = null;
         private static List<ICommandLinePropertyProxy> s_CommandLineProperties = new List<ICommandLinePropertyProxy>();
 
-        //! ------------------------------------------------------------------------------------------
-        //! Command-line parameters.
-        //! ------------------------------------------------------------------------------------------
+        //! @}
 
-#if INCLUDE_GODDAMNSDK_SPECIFIC
-        private static CommandLinePropertyProxy<bool> s_PrintSkippersFromBuildScript = new CommandLinePropertyProxy<bool>(
-            false, "---*",
-            "All arguments, that starts from \"---\" are skipped.");
-#endif  // if INCLUDE_GODDAMNSDK_SPECIFIC
+        //! ------------------------------------------------------------------------------------------
+        //! @name Command-line parameters.
+        //! @{
+        //! ------------------------------------------------------------------------------------------
 
         private static CommandLinePropertyProxy<bool> s_DoJustPrintHelp = new CommandLinePropertyProxy<bool>(
             false, "--help",
             "Prints this help.");
 
         private static CommandLinePropertyProxy<bool> s_IsVerboseOutput = new CommandLinePropertyProxy<bool>(
-#if DEBUG
-            // Force verbose output for debug builds.
-            true,
-#else   // if DEBUG
-            false, 
-#endif  // if DEBUG
-            "--verbose",
+            true, "--verbose",
             "If is specified, then all BuildSystem's logs, warnings and errors would be printed to output. " +
             "Disabled by default.");
-        
+
+        private static CommandLinePropertyProxy<TargetAction> s_Action = new CommandLinePropertyProxy<TargetAction>(
+            TargetAction.Unknown, "--action",
+            "Performs an action on the source code. Can generate project/solution files or archive dependencies." +
+            "By default, it is set to generate project files.");
+
         private static CommandLinePropertyProxy<bool> s_IsMonolithicBuild = new CommandLinePropertyProxy<bool>(
             false, "--monolithic",
-            "If is specified, then the whole solution would be compiled into sinlge executable/static library. " +
+            "If is specified, then the whole solution would be compiled into single executable/static library. " +
             "Disabled by default.");
-        
+
         private static CommandLinePropertyProxy<TargetPlatform> s_Platform = new CommandLinePropertyProxy<TargetPlatform>(
             TargetPlatform.Unknown, "--platform",
-            "Target platform for which project file would be generated. " + 
+            "Target platform for which project file would be generated. " +
             "By default, it is determined by host OS.");
-        
+
         private static CommandLinePropertyProxy<TargetProjectCompiler> s_ProjectCompiler = new CommandLinePropertyProxy<TargetProjectCompiler>(
             TargetProjectCompiler.Unknown, "--ide",
-            "Target compiler/IDE for which project files would be generated. " + 
+            "Target compiler/IDE for which project files would be generated. " +
             "By default, it is determined by the target platform/IDE installation.");
 
         private static CommandLinePropertyProxy<string> s_SolutionPath = new CommandLinePropertyProxy<string>(
@@ -188,29 +160,44 @@ namespace GoddamnEngine.BuildSystem
             "Path to solution file for which generation is provided. " +
             "By default, it is determined by the GoddamnSDK installation location.");
 
+#if INCLUDE_GODDAMNSDK_SPECIFIC
+        // This one is used just to print information about --- parameters.
+        private static CommandLinePropertyProxy<bool> s_PrintSkippersFromBuildScript = new CommandLinePropertyProxy<bool>(
+            false, "---*",
+            "All arguments, that start from \"---\" are skipped (are referred as setup script parameters).");
+#endif  // INCLUDE_GODDAMNSDK_SPECIFIC
+
+
+        //! @}
+
         //! ------------------------------------------------------------------------------------------
-        //! Configuration properties.
+        //! @name Configuration properties.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Is the log output of the build system verbose.
-        /// </summary>
+        //! Is the log output of the build system verbose.
         public static bool GetIsVerboseOutput()
         {
             return s_IsVerboseOutput;
         }
 
-        /// <summary>
-        /// Is the engine built into single executable/static library.
-        /// </summary>
+        //! Returns an action that should be done by the build system.
+        public static TargetAction GetAction()
+        {
+            if (s_Action == TargetAction.Unknown) {
+                s_Action.SetValue(TargetAction.GenerateSolutionFiles);
+            }
+
+            return s_Action;
+        }
+
+        //! Is the engine built into single executable/static library.
         public static bool GetIsMonolithicBuild()
         {
             return s_IsVerboseOutput;
         }
 
-        /// <summary>
-        /// Target platform of the build.
-        /// </summary>
+        //! Returns target platform of the build.
         public static TargetPlatform GetPlatform()
         {
             if (s_Platform == TargetPlatform.Unknown) {
@@ -234,20 +221,18 @@ namespace GoddamnEngine.BuildSystem
             return s_Platform;
         }
 
-        /// <summary>
-        /// Target build system for which project/solution files are generated.
-        /// </summary>
+        //! Returns target build system for which project/solution files are generated.
         public static TargetProjectCompiler GetProjectCompiler()
         {
             if (s_ProjectCompiler == TargetProjectCompiler.Unknown) {
                 switch (BuildSystem.GetPlatform()) {
                     case TargetPlatform.XBoxOne:
                     case TargetPlatform.Windows:
-                    case TargetPlatform.WindowsPhone8:
                     case TargetPlatform.WindowsRT:
                     case TargetPlatform.WindowsStore:
+                    case TargetPlatform.WindowsPhone8:
                         if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VS140COMNTOOLS"))) {
-                            s_ProjectCompiler.SetValue(TargetProjectCompiler.VisualStudio2014);
+                            s_ProjectCompiler.SetValue(TargetProjectCompiler.VisualStudio2015);
                         } else if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VS120COMNTOOLS"))) {
                             s_ProjectCompiler.SetValue(TargetProjectCompiler.VisualStudio2013);
                             if (s_Platform == TargetPlatform.WindowsPhone8) {
@@ -286,9 +271,7 @@ namespace GoddamnEngine.BuildSystem
             return s_ProjectCompiler;
         }
 
-        /// <summary>
-        /// Path to solution file for which generation is provided.
-        /// </summary>
+        //! Returns path to solution file for which generation is provided.
         public static string GetSolutionPath()
         {
             if (s_SolutionPath.GetValue() == null) {
@@ -298,13 +281,14 @@ namespace GoddamnEngine.BuildSystem
             return s_SolutionPath;
         }
 
+        //! @}
+
         //! ------------------------------------------------------------------------------------------
-        //! Command-line interface.
+        //! @name Command-line interface.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Prints a line into specified output in specified color.
-        /// </summary>
+        //! Prints a line into specified output in specified color.
         private static void PrintLineWithColor(ConsoleColor Color, TextWriter Output, string Message, params object[] Args)
         {
             ConsoleColor OldColor = Console.ForegroundColor;
@@ -316,33 +300,25 @@ namespace GoddamnEngine.BuildSystem
             Console.ForegroundColor = OldColor;
         }
 
-        /// <summary>
-        /// Prints a message string into stdout.
-        /// </summary>
-        public static void PrintMessage(string Message, params object[] Args) 
+        //! Prints a message string into stdout.
+        public static void PrintMessage(string Message, params object[] Args)
         {
             BuildSystem.PrintLineWithColor(Console.ForegroundColor, Console.Out, Message, Args);
         }
 
-        /// <summary>
-        /// Prints a warning string into stdout.
-        /// </summary>
-        public static void PrintWarning(string Message, params object[] Args) 
+        //! Prints a warning string into stdout.
+        public static void PrintWarning(string Message, params object[] Args)
         {
             BuildSystem.PrintLineWithColor(ConsoleColor.Yellow, Console.Out, Message, Args);
         }
 
-        /// <summary>
-        /// Prints a error string into stderr.
-        /// </summary>
-        public static void PrintError(string Message, params object[] Args) 
+        //! Prints a error string into stderr.
+        public static void PrintError(string Message, params object[] Args)
         {
             BuildSystem.PrintLineWithColor(ConsoleColor.Red, Console.Error, Message, Args);
         }
 
-        /// <summary>
-        /// Prints copyright message.
-        /// </summary>
+        //! Prints copyright message.
         private static void PrintCopyright()
         {
             Console.WriteLine("GoddamnBuildSystem project/solution files generation system.");
@@ -350,9 +326,7 @@ namespace GoddamnEngine.BuildSystem
             Console.WriteLine();
         }
 
-        /// <summary>
-        /// Prints help to command-line interface of the BuildSystem.
-        /// </summary>
+        //! Prints help to command-line interface of the BuildSystem.
         private static void PrintHelp()
         {
             string BuildSystemExecutableName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
@@ -366,8 +340,8 @@ namespace GoddamnEngine.BuildSystem
             Console.WriteLine(" Properties:");
             foreach (var CommandLineProperty in s_CommandLineProperties) {
                 // Creating padding to each property.
-                string CommandLinePropertyKey = string.Format("  {0,-12} -", CommandLineProperty.GetName());
-                string CommandLinePropertyPadding = new string(' ', CommandLinePropertyKey.Length - 1);
+                var CommandLinePropertyKey = string.Format("  {0,-12} -", CommandLineProperty.GetName());
+                var CommandLinePropertyPadding = new string(' ', CommandLinePropertyKey.Length - 1);
                 Console.Write(CommandLinePropertyKey);
 
                 // Generating full description for enum elements.
@@ -385,11 +359,11 @@ namespace GoddamnEngine.BuildSystem
                 // Splitting all description to match padding.
                 int CommandLinePropertyPartLengthInit = Console.WindowWidth - CommandLinePropertyPadding.Length - 1;
                 if (CommandLinePropertyDescription.Length >= CommandLinePropertyPartLengthInit) {
-                    while(CommandLinePropertyDescription.Length > CommandLinePropertyPartLengthInit) {
+                    while (CommandLinePropertyDescription.Length > CommandLinePropertyPartLengthInit) {
                         int CommandLinePropertyDescPartLength = CommandLinePropertyPartLengthInit;
                         do {
                             CommandLinePropertyDescPartLength -= 1;
-                        } while (" :,.!?\n\r\t".IndexOf(CommandLinePropertyDescription[CommandLinePropertyDescPartLength]) == -1);
+                        } while (" ,.:!?\t\n\r".IndexOf(CommandLinePropertyDescription[CommandLinePropertyDescPartLength]) == -1);
 
                         Console.Write("{0}\n{1}", CommandLinePropertyDescription.Substring(0, CommandLinePropertyDescPartLength), CommandLinePropertyPadding);
                         CommandLinePropertyDescription = CommandLinePropertyDescription.Substring(CommandLinePropertyDescPartLength + 1).TrimStart();
@@ -406,9 +380,7 @@ namespace GoddamnEngine.BuildSystem
             Console.WriteLine(" {0} --monolithic --platform=iOS Game.gdsln.cs", BuildSystemExecutableName);
         }
 
-        /// <summary>
-        /// Parses command-line arguments.
-        /// </summary>
+        //! Parses command-line arguments.
         private static void ParseCommandLineArguments(string[] Arguments)
         {
             foreach (string CommandLineProperty in Arguments) {
@@ -468,32 +440,38 @@ namespace GoddamnEngine.BuildSystem
             }
         }
 
+        //! @}
+
         //! ------------------------------------------------------------------------------------------
-        //! Environmental properties.
+        //! @name Environmental properties.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Path to GoddamnSDK installation location.
-        /// </summary>
+        //! Path to GoddamnSDK installation location.
         public static string GetSDKLocation()
-        { 
+        {
             if (s_SDKPath == null) {
-                s_SDKPath = Environment.GetEnvironmentVariable("GODDAMN_SDK");
-                if (s_SDKPath == null) {
-                    throw new BuildSystemException("Environmental variable 'GODDAMN_SDK' was not set. Is the SDK installed correctly?");
-                }
+                s_SDKPath = @"D:\GoddamnEngine";
+                //s_SDKPath = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+                //string BuildSystemLocationInsideSDK = Path.Combine("GoddamnEngine", "bin", "ThirdParty");
+                //if (!s_SDKPath.EndsWith(BuildSystemLocationInsideSDK)) {
+                //    throw new BuildSystemException("Environmental variable 'GODDAMN_SDK' was not set. Is the SDK installed correctly?");
+                //}
+
+                //s_SDKPath = s_SDKPath.Substring(0, s_SDKPath.Length - BuildSystemLocationInsideSDK.Length);
             }
 
             return s_SDKPath;
         }
 
+        //! @}
+
         //! ------------------------------------------------------------------------------------------
-        //! Entry point.
+        //! @name Entry point.
+        //! @{
         //! ------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Application entry point.
-        /// </summary>
+        //! Application entry point.
         private static void Main(string[] Arguments)
         {
             try {
@@ -502,26 +480,8 @@ namespace GoddamnEngine.BuildSystem
                     BuildSystem.PrintCopyright();
                 }
 
-                Solution s = Solution.CreateSolutionForSource(@"D:\GoddamnEngine\source\GoddamnEngine.gdsln.cs");
-                List<Project> ps = new List<Project>();
-                s.GetProjects(ref ps, TargetPlatform.Windows);
-                foreach (Project p in ps) {
-                    List<Dependency> ds = new List<Dependency>();
-                    p.GetDependencies(ref ds, TargetPlatform.Windows, TargetConfiguration.Release);
-                    foreach (Dependency d in ds) {
-                        Console.Out.WriteLine(d.GetLocation());
-                    }
-
-                    List<ProjectSourceFile> cs = new List<ProjectSourceFile>();
-                    p.GetSourceFiles(ref cs, TargetPlatform.Windows, TargetConfiguration.Release);
-                    foreach (ProjectSourceFile c in cs) {
-                        Console.Out.WriteLine(c.GetFileName());
-                    }
-
-                    Console.Out.WriteLine();
-                    Console.Out.WriteLine();
-                    Console.Out.WriteLine();
-                }
+                Project C = Project.CreateProjectForSource(@"D:\GoddamnEngine\source\GoddamnEngine\Core\GoddamnCore.gdproj.cs");
+                new VisualStudio.VisualStudio2013Target().GenerateProjectFiles(C, GetPlatform(), new TargetConfiguration[] { TargetConfiguration.Debug, TargetConfiguration.Release });
 
                 Environment.Exit(0);
             } catch (BuildSystemException Exception) {
@@ -529,12 +489,14 @@ namespace GoddamnEngine.BuildSystem
                 Console.Error.WriteLine(Exception.Message);
 #if !DEBUG
             } catch (Exception Exception) {
-                Console.Error.WriteLine("Unhandled error cathed while generation project files. Sorry :(");
+                Console.Error.WriteLine("Unhanded error caught while generation project files. Sorry :(");
                 Console.Error.WriteLine(Exception.Message);
-#endif  // if !DEBUG
+#endif  // !DEBUG
             }
 
             Environment.Exit(1);
         }
+
+        //! @}
     }   // class BuildSystem
 }   // namespace GoddamnEngine.BuildSystem

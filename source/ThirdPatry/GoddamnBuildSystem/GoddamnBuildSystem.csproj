@@ -62,7 +62,7 @@
     <OutputPath>$(GODDAMN_SDK)bin\ThirdParty\</OutputPath>
     <DefineConstants>TRACE;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>2</WarningLevel>
+    <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -84,16 +84,18 @@
   <ItemGroup>
     <Compile Include="Source\BuildSystem.cs" />
     <Compile Include="Source\Support\Extensions.cs" />
-    <Compile Include="Source\Support\Support.cs" />
+    <Compile Include="Source\Support\Utils.cs" />
     <Compile Include="Source\Project\Solution.cs" />
     <Compile Include="Source\Support\Compiler.cs" />
     <Compile Include="Source\Project\Dependency.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Project\Project.cs" />
-    <Compile Include="Source\Target\Make\MakefileTarget.cs" />
+    <Compile Include="Source\Target\Makefile\MakefileTarget.cs" />
     <Compile Include="Source\Target\QtCreator\QMakeTarget.cs" />
-    <Compile Include="Source\Target\Target.cs" />
     <Compile Include="Source\Target\VisualStudio\VisualStudioTarget.cs" />
+    <Compile Include="Source\Target\VisualStudio\VisualStudioTarget.Solution.cs" />
+    <Compile Include="Source\Target\Target.cs" />
+    <Compile Include="Source\Target\VisualStudio\VisualStudioTarget.Project.cs" />
     <Compile Include="Source\Target\XCode\XCodeTarget.cs" />
   </ItemGroup>
   <ItemGroup>
