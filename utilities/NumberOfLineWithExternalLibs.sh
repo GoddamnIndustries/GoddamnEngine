@@ -7,5 +7,5 @@
 #		* 04.07.2014 - Created by James Jhuighuy.
 ##########################################################################
 
-./ThirdPartyExecutables/cloc-1.60 ../source/Goddamn*
+./ThirdPartyExecutables/cloc-1.60 ./../source/*
 read -rsp 'Press enter to continue...'

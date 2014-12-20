@@ -7,5 +7,5 @@
 #		* 04.07.2014 - Created by James Jhuighuy.
 ##########################################################################
 
-./ThirdPartyExecutables/cloc-1.60 ../source/Goddamn* --exclude-dir="_Dependencies","_DLLResources","_Build"
+./ThirdPartyExecutables/cloc-1.60 ./../source/* --exclude-dir="Dependencies","DLLResources","Build"
 read -rsp 'Press enter to continue...'
