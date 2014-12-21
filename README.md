@@ -11,11 +11,6 @@ Features
  - Advanced rendering pipeline: DirectX ~~12~~ and 11, ~~AMD Mantle~~, ~~Apple Metal~~, OpenGL and OpenGL(ES).
  - Entirely written in native languages: C/C++11, Objective-C/C++.
 
-License
--------
-GoddamnEngine is free for noncommercial usage and for independent developers with monthly revenue less then 10K$.
-For more detailed information see ["LICENSE.txt"](https://github.com/GoddamnIndustries/GoddamnEngine/blob/master/LICENSE.txt) or visit our [licensing page](http://goddamnengine.com/licensing).
-
 Installation
 ------------
  - Download [**the source code**](https://github.com/GoddamnIndustries/GoddamnEngine). You can do it by forking the official repository on GitHub.
@@ -29,6 +24,3 @@ Installation
 ### OS X & Linux.
  - Make sure you have [Mono Development Kit (MDK)](http://www.mono-project.com/) installed.
  - Execute from a terminal **SetupGoddamnSDK.sh** inside the _GoddamnEngine_ directory. It should take less than a minute to generate the project files.
-
-### Cross-compilation and etc.
-Setup script 
