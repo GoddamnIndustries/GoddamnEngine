@@ -29,9 +29,9 @@ namespace GoddamnEngine.BuildSystem
 
         //! Collects list of files that should be copied to project build output directory.
         //! @param Platform One of the target platforms.
-        public virtual IEnumerable<string> EnumerateCopyFiles(TargetPlatform Platform)
+        public virtual IEnumerable<string> EnumerateCopyFiles(TargetPlatforms Platform)
         {
-            Debug.Assert(Platform != TargetPlatform.Unknown);
+            Debug.Assert(Platform != TargetPlatforms.Unknown);
             if (Target.IsDesktopPlatform(Platform)) {
                 foreach (string CopyFile in Directory.EnumerateFiles(GetLocation())) {
                     string CopyFileExtension = Path.GetExtension(CopyFile).ToLowerInvariant();
@@ -46,9 +46,9 @@ namespace GoddamnEngine.BuildSystem
 
         //! Collects list of libraries that should be linked with project build file.
         //! @param Platform One of the target platforms.
-        public virtual IEnumerable<string> EnumerateLinkedLibraries(TargetPlatform Platform)
+        public virtual IEnumerable<string> EnumerateLinkedLibraries(TargetPlatforms Platform)
         {
-            Debug.Assert(Platform != TargetPlatform.Unknown);
+            Debug.Assert(Platform != TargetPlatforms.Unknown);
             foreach (string LibraryFile in Directory.EnumerateFiles(this.GetLocation())) {
                 string LibraryFileExtension = Path.GetExtension(LibraryFile).ToLowerInvariant();
                 if (Target.IsWebPlatform(Platform)) {
@@ -80,8 +80,8 @@ namespace GoddamnEngine.BuildSystem
     public sealed class DependencyCache : TargetCollectorCache
     {
         public readonly string[] m_CachedHeaderDirectories;
-        public readonly Dictionary<TargetPlatform, string[]> m_CachedCopyFiles;
-        public readonly Dictionary<TargetPlatform, string[]> m_CachedLinkedLibraries;
+        public readonly Dictionary<TargetPlatforms, string[]> m_CachedCopyFiles;
+        public readonly Dictionary<TargetPlatforms, string[]> m_CachedLinkedLibraries;
 
         //! Generates cache for specified dependency.
         public DependencyCache(Dependency DependencyObject)
@@ -89,9 +89,9 @@ namespace GoddamnEngine.BuildSystem
         {
             if (m_IsSupported) {
                 m_CachedHeaderDirectories = DependencyObject.EnumerateHeaderDirectories().ToArray();
-                m_CachedCopyFiles = new Dictionary<TargetPlatform, string[]>();
-                m_CachedLinkedLibraries = new Dictionary<TargetPlatform, string[]>();
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
+                m_CachedCopyFiles = new Dictionary<TargetPlatforms, string[]>();
+                m_CachedLinkedLibraries = new Dictionary<TargetPlatforms, string[]>();
+                foreach (TargetPlatforms Platform in Target.EnumerateAllPlatforms()) {
                     m_CachedCopyFiles.Add(Platform, DependencyObject.EnumerateCopyFiles(Platform).ToArray());
                     m_CachedLinkedLibraries.Add(Platform, DependencyObject.EnumerateCopyFiles(Platform).ToArray());
                 }

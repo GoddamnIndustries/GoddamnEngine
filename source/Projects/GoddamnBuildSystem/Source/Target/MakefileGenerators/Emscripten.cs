@@ -21,11 +21,11 @@ namespace GoddamnEngine.BuildSystem.Emscripten
             // ==========================================================================================
             // Generating makefile..
             // ==========================================================================================
-            string MakefilePath = string.Concat(base.GenerateMakefile(Project), TargetPlatform.Emscripten);
+            string MakefilePath = string.Concat(base.GenerateMakefile(Project), TargetPlatforms.Emscripten);
             using (StreamWriter Makefile = new StreamWriter(MakefilePath)) {
                 Makefile.WriteLine("CC=\"C:\\Program Files\\Emscripten\\emscripten\\1.27.0\\emcc.bat\"");
                 Makefile.WriteLine("CFLAGS=-std=c++11 -fno-rtti -O3 -Wno-warn-absolute-paths");
-                Makefile.WriteLine("TARGET= {0}", Project.m_CachedOutputPathDelegate[TargetPlatform.Emscripten](TargetConfiguration.Debug));
+                Makefile.WriteLine("TARGET= {0}", Project.m_CachedOutputPathDelegates[TargetPlatforms.Emscripten](TargetConfigurations.Debug));
                 Makefile.WriteLine("SOURCES= \\");
                 foreach (var ProjectSource in Project.m_CachedSourceFiles) {
                     if (ProjectSource.m_FileType == ProjectSourceFileType.SourceCode) {

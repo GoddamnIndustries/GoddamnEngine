@@ -13,7 +13,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0143FDE6-53F3-4E20-822C-E12E78514AE4}</ProjectGuid>
+    <ProjectGuid>{2EF5F756-F36B-4400-A0D6-E07843D24B78}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GoddamnEngine.BuildSystem</RootNamespace>
@@ -43,7 +43,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(GODDAMN_SDK)bin\ThirdParty\</OutputPath>
+    <OutputPath>..\..\..\bin\ThirdParty\</OutputPath>
     <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -59,7 +59,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(GODDAMN_SDK)bin\ThirdParty\</OutputPath>
+    <OutputPath>..\..\..\bin\ThirdParty\</OutputPath>
     <DefineConstants>TRACE;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\BuildSystem.cs" />
+    <Compile Include="Source\Support\CommandLineUI.cs" />
     <Compile Include="Source\Support\Extensions.cs" />
     <Compile Include="Source\Support\Utils.cs" />
     <Compile Include="Source\Target\Collectors\Solution.cs" />
@@ -90,9 +91,12 @@
     <Compile Include="Source\Target\Collectors\Dependency.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Target\Collectors\Project.cs" />
+    <Compile Include="Source\Target\Information\ConfigurationInformation.cs" />
+    <Compile Include="Source\Target\Information\PlatformInformation.cs" />
+    <Compile Include="Source\Target\ProjectGenerators\QtCreator.cs" />
     <Compile Include="Source\Target\Target.cs" />
-    <Compile Include="Source\Target\IDEGenerators\VisualStudio.cs" />
-    <Compile Include="Source\Target\IDEGenerators\XCode.cs" />
+    <Compile Include="Source\Target\ProjectGenerators\VisualStudio.cs" />
+    <Compile Include="Source\Target\ProjectGenerators\XCode.cs" />
     <Compile Include="Source\Target\MakefileGenerators\Emscripten.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -34,16 +34,18 @@ echo Please, do not close this window.
 echo.
 
 rem Checking whether script if executed from the source directory.. 
-if exist "source" if exist "utilities" if exist "SetupGoddamnSDK.bat" goto DirectoryTestPassed
-echo Installation script should be located and executed directly from the SDK root path.
-goto ExitOnFailure
-:DirectoryTestPassed
+if exist "Source" if exist "Utilities" if exist "SetupGoddamnSDK.bat" set "DirectoryTestPassed=True"
+if "%DirectoryTestPassed%" == "" (
+	echo Installation script should be located and executed directly from the SDK root path.
+	goto ExitOnFailure
+)
 
 rem Checking whether all external data (that does not come from GIT) is installed..
-if exist "source\GoddamnEngine\Engine\_Dependencies\mcpp" goto ExternalDataInstallationTestPassed
-echo Missing files that should be extracted from the extra archive that comes with SDK.
-goto ExitOnFailure
-:ExternalDataInstallationTestPassed
+if exist "Source\Projects\GoddamnEngine\Dependencies\mcpp" set "ExternalDataInstallationTestPassed=True"
+if "%DirectoryTestPassed%" == "" (
+	echo Missing files that should be extracted from the extra archive that comes with SDK.
+	goto ExitOnFailure
+)
 
 rem Checking whether Visual Studio 2015 / 2013 (with November CTP) is installed..
 if not "%VS140ComnTools%" == "" ( 
@@ -69,10 +71,10 @@ if not "%VS140ComnTools%" == "" (
 )
 
 rem Setting up debug visualizers for Visual Studio..
-mkdir "%UserProfile%\My Documents\Visual Studio %VSCompilerYear%\Visualizers\" 1>nul
-copy /y ".\utilities\Natvis\GoddamnTemplateLibrary.natvis" "%UserProfile%\My Documents\Visual Studio %VSCompilerYear%\Visualizers\" 1>nul
+mkdir "%UserProfile%\My Documents\Visual Studio %VSCompilerYear%\Visualizers\" 1>nul 2>nul
+copy /y ".\utilities\Natvis\GoddamnTemplateLibrary.natvis" "%UserProfile%\My Documents\Visual Studio %VSCompilerYear%\Visualizers\" 1>nul 2>nul
 if %ErrorLevel% == 0 (
-	reg add "HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\%VSCompilerVersion%.0_Config\Debugger" /v "EnableNatvisDiagnostics" /t REG_DWORD /d "00000001" /f 1>nul
+	reg add "HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\%VSCompilerVersion%.0_Config\Debugger" /v "EnableNatvisDiagnostics" /t REG_DWORD /d "00000001" /f 1>nul 2>nul
 	if not %ErrorLevel% == 0 (
 		echo Failed to enable debugging in Visualizers.
 		goto ExitOnFailure
@@ -84,7 +86,7 @@ if %ErrorLevel% == 0 (
 
 rem Building the GoddamnBuildSystem..
 call "%VSCompilerTools%\..\..\VC\bin\x86_amd64\vcvarsx86_amd64.bat" 1>nul
-msbuild /nologo /verbosity:quiet ".\source\ThirdPatry\GoddamnBuildSystem\GoddamnBuildSystem.csproj" /property:Configuration=Release /property:Platform=AnyCPU 1>nul
+msbuild /nologo /verbosity:quiet ".\source\Projects\GoddamnBuildSystem\GoddamnBuildSystem.csproj" /property:Configuration=Release /property:Platform=AnyCPU
 if not %ErrorLevel% == 0 (
 	echo Failed to compile GoddamnBuildSystem.
 	goto ExitOnFailure

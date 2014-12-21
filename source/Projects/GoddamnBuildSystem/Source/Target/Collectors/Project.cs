@@ -47,7 +47,7 @@ namespace GoddamnEngine.BuildSystem
     public sealed class ProjectSourceFile
     {
         //! Returns true if this file is excluded on some platform.
-        public delegate bool IsExcludedDelegate(TargetPlatform Platform);
+        public delegate bool IsExcludedDelegate(TargetPlatforms Platform);
         private readonly IsExcludedDelegate s_NotExcludedDelegate = (Platform => false);
         public readonly string m_FileName;
         public readonly ProjectSourceFileType m_FileType;
@@ -78,7 +78,7 @@ namespace GoddamnEngine.BuildSystem
         //! Returns string version of this definition in format "NAME=VALUE".
         public override string ToString()
         {
-            return (m_Value != null) ? string.Concat(m_Name, '=', m_Value) : m_Name;
+            return (m_Value != null) ? (m_Name + '=' + m_Value) : m_Name;
         }
     }   // class ProjectMacro
 
@@ -86,7 +86,7 @@ namespace GoddamnEngine.BuildSystem
     public class Project : TargetCollector
     {
         //! Returns path for specified configuration.
-        public delegate string PathDelegate(TargetConfiguration Configuration);
+        public delegate string PathDelegate(TargetConfigurations Configuration);
 
         //! Returns name of the filter of this project in generated solution.
         //! May return null if no filter is required.
@@ -103,17 +103,17 @@ namespace GoddamnEngine.BuildSystem
 
         //! Returns type of compiler/linker output.
         //! @param Platform One of the target platforms.
-        public virtual ProjectBuildType GetBuildType(TargetPlatform Platform)
+        public virtual ProjectBuildType GetBuildType(TargetPlatforms Platform)
         {
-            Debug.Assert(Platform != TargetPlatform.Unknown);
+            Debug.Assert(Platform != TargetPlatforms.Unknown);
             return Target.IsDesktopPlatform(Platform) ? ProjectBuildType.DynamicLibrary : ProjectBuildType.StaticLibrary;
         }
 
         //! Returns path to which compilation result would be stored.
         //! @param Platform One of the target platforms.
-        public virtual PathDelegate GetOutputPathDelegate(TargetPlatform Platform)
+        public virtual PathDelegate GetOutputPathDelegate(TargetPlatforms Platform)
         {
-            Debug.Assert(Platform != TargetPlatform.Unknown);
+            Debug.Assert(Platform != TargetPlatforms.Unknown);
             string OutputDirectory = Path.Combine(BuildSystem.GetSDKLocation(), "bin", this.GetName());
             string OutputExtension = null;
             if (Target.IsWebPlatform(Platform)) {
@@ -161,7 +161,7 @@ namespace GoddamnEngine.BuildSystem
                 throw new NotImplementedException();
             }
 
-            return (Configuration => Configuration != TargetConfiguration.Release
+            return (Configuration => Configuration != TargetConfigurations.Release
                 ? OutputDirectory + Configuration.ToString() + OutputExtension
                 : OutputDirectory + OutputExtension
             );
@@ -169,12 +169,12 @@ namespace GoddamnEngine.BuildSystem
 
         //! Returns path to which the import library would be stored (only actual for Windows DLLs), or null if no import library needs to be generated.
         //! @param Platform One of the target platforms.
-        public virtual PathDelegate GetImportLibraryOutputPathDelegate(TargetPlatform Platform)
+        public virtual PathDelegate GetImportLibraryOutputPathDelegate(TargetPlatforms Platform)
         {
-            Debug.Assert(Platform != TargetPlatform.Unknown);
+            Debug.Assert(Platform != TargetPlatforms.Unknown);
             if (Target.IsWinAPIPlatform(Platform) && (GetBuildType(Platform) == ProjectBuildType.DynamicLibrary)) {
                 string ImportLibraryOutputDirectory = Path.Combine(BuildSystem.GetSDKLocation(), "lib", this.GetName());
-                return (Configuration => Configuration != TargetConfiguration.Release
+                return (Configuration => Configuration != TargetConfigurations.Release
                     ? ImportLibraryOutputDirectory + Configuration.ToString() + ".lib"
                     : ImportLibraryOutputDirectory + ".lib"
                 );
@@ -268,7 +268,7 @@ namespace GoddamnEngine.BuildSystem
 
         //! Collects list of additional preprocessor definitions added to this project.
         //! @param Platform One of the target platforms.
-        public virtual IEnumerable<ProjectMacro> EnumerateMacros(TargetPlatform Platform)
+        public virtual IEnumerable<ProjectMacro> EnumerateMacros(TargetPlatforms Platform)
         {
             if (Target.IsWinAPIPlatform(Platform)) {
                 if (GetBuildType(Platform) == ProjectBuildType.DynamicLibrary) {
@@ -311,19 +311,19 @@ namespace GoddamnEngine.BuildSystem
         }
 
         /// @warning Method is not supported for a build tool.
-        public sealed override ProjectBuildType GetBuildType(TargetPlatform Platform)
+        public sealed override ProjectBuildType GetBuildType(TargetPlatforms Platform)
         {
             throw new NotSupportedException();
         }
 
         /// @warning Method is not supported for a build tool.
-        public sealed override PathDelegate GetOutputPathDelegate(TargetPlatform Platform)
+        public sealed override PathDelegate GetOutputPathDelegate(TargetPlatforms Platform)
         {
             throw new NotSupportedException();
         }
 
         /// @warning Method is not supported for a build tool.
-        public sealed override PathDelegate GetImportLibraryOutputPathDelegate(TargetPlatform Platform)
+        public sealed override PathDelegate GetImportLibraryOutputPathDelegate(TargetPlatforms Platform)
         {
             throw new NotSupportedException();
         }
@@ -347,7 +347,7 @@ namespace GoddamnEngine.BuildSystem
         }
 
         /// @warning Method is not supported for a build tool.
-        public sealed override IEnumerable<ProjectMacro> EnumerateMacros(TargetPlatform Platform)
+        public sealed override IEnumerable<ProjectMacro> EnumerateMacros(TargetPlatforms Platform)
         {
             throw new NotSupportedException();
         }
@@ -357,18 +357,18 @@ namespace GoddamnEngine.BuildSystem
     //! Represents a collection of cached data that was collected by project object.
     public sealed class ProjectCache : TargetCollectorCache
     {
-        public Dictionary<TargetPlatform, string> m_MakefilePath;
+        public Dictionary<TargetPlatforms, string> m_MakefilePathes;
         public string m_GeneratorOutputPath;
         public readonly bool m_IsBuildTool;
         public readonly string m_CachedFilter;
         public readonly ProjectPriority m_CachedPriority;
-        public readonly Dictionary<TargetPlatform, ProjectBuildType> m_CachedBuildType;
-        public readonly Dictionary<TargetPlatform, Project.PathDelegate> m_CachedOutputPathDelegate;
-        public readonly Dictionary<TargetPlatform, Project.PathDelegate> m_CachedImportLibraryOutputPathDelegate;
+        public readonly Dictionary<TargetPlatforms, ProjectBuildType> m_CachedBuildTypes;
+        public readonly Dictionary<TargetPlatforms, Project.PathDelegate> m_CachedOutputPathDelegates;
+        public readonly Dictionary<TargetPlatforms, Project.PathDelegate> m_CachedImportLibraryOutputPathDelegates;
         public readonly string m_CachedSourcesFilterOrigin;
         public readonly ProjectSourceFile[] m_CachedSourceFiles;
         public readonly DependencyCache[] m_CachedDependencies;
-        public readonly Dictionary<TargetPlatform, ProjectMacro[]> m_CachedMacros;
+        public readonly Dictionary<TargetPlatforms, ProjectMacro[]> m_CachedMacros;
 
         //! Generates cache for specified project.
         public ProjectCache(Project ProjectObject)
@@ -379,19 +379,19 @@ namespace GoddamnEngine.BuildSystem
                 m_CachedPriority = ProjectObject.GetPriority();
                 m_IsBuildTool = ProjectObject is BuildToolProject;
                 if (!m_IsBuildTool) {
-                    m_MakefilePath = new Dictionary<TargetPlatform, string>();
-                    m_CachedBuildType = new Dictionary<TargetPlatform, ProjectBuildType>();
-                    m_CachedOutputPathDelegate = new Dictionary<TargetPlatform, Project.PathDelegate>();
-                    m_CachedImportLibraryOutputPathDelegate = new Dictionary<TargetPlatform, Project.PathDelegate>();
+                    m_MakefilePathes = new Dictionary<TargetPlatforms, string>();
+                    m_CachedBuildTypes = new Dictionary<TargetPlatforms, ProjectBuildType>();
+                    m_CachedOutputPathDelegates = new Dictionary<TargetPlatforms, Project.PathDelegate>();
+                    m_CachedImportLibraryOutputPathDelegates = new Dictionary<TargetPlatforms, Project.PathDelegate>();
                     m_CachedSourcesFilterOrigin = ProjectObject.GetSourceFiltersOrigin();
                     m_CachedSourceFiles = ProjectObject.EnumerateSourceFiles().ToArray();
                     m_CachedDependencies = ProjectObject.EnumerateDependencies().ToArray();
-                    m_CachedMacros = new Dictionary<TargetPlatform, ProjectMacro[]>();//ProjectObject.EnumerateMacros().ToArray();
+                    m_CachedMacros = new Dictionary<TargetPlatforms, ProjectMacro[]>();//ProjectObject.EnumerateMacros().ToArray();
 
-                    foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
-                        m_CachedBuildType.Add(Platform, ProjectObject.GetBuildType(Platform));
-                        m_CachedOutputPathDelegate.Add(Platform, ProjectObject.GetOutputPathDelegate(Platform));
-                        m_CachedImportLibraryOutputPathDelegate.Add(Platform, ProjectObject.GetImportLibraryOutputPathDelegate(Platform));
+                    foreach (TargetPlatforms Platform in Target.EnumerateAllPlatforms()) {
+                        m_CachedBuildTypes.Add(Platform, ProjectObject.GetBuildType(Platform));
+                        m_CachedOutputPathDelegates.Add(Platform, ProjectObject.GetOutputPathDelegate(Platform));
+                        m_CachedImportLibraryOutputPathDelegates.Add(Platform, ProjectObject.GetImportLibraryOutputPathDelegate(Platform));
                         m_CachedMacros.Add(Platform, ProjectObject.EnumerateMacros(Platform).ToArray());
                     }
                 } else {

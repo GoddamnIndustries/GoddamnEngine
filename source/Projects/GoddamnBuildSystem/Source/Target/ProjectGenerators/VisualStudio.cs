@@ -55,22 +55,24 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
 
         //! Converts target platform into MSBuild compatible one.
         //! @param Platform Some platform.
-        private static string ConvertPlatformToMSBuildPlatform(TargetPlatform Platform)
+        private static string ConvertPlatformToMSBuildPlatform(TargetPlatforms Platform)
         {
             switch (Platform) {
-                case TargetPlatform.iOS:
-                case TargetPlatform.Android:
-                case TargetPlatform.Emscripten:
+                case TargetPlatforms.iOS:
+                case TargetPlatforms.Android:
+                case TargetPlatforms.Emscripten:
                     return "Win32";
 
-                case TargetPlatform.Windows:
-                case TargetPlatform.WindowsStore:
-                case TargetPlatform.OSX:
-                case TargetPlatform.Linux:
+                case TargetPlatforms.Windows:
+                case TargetPlatforms.WindowsStore:
+                case TargetPlatforms.OSX:
+                case TargetPlatforms.Linux:
+                case TargetPlatforms.XBoxOne:
+                case TargetPlatforms.PlayStation4:
                     return "x64";
 
-                case TargetPlatform.WindowsRT:
-                case TargetPlatform.WindowsPhone:
+                case TargetPlatforms.WindowsRT:
+                case TargetPlatforms.WindowsPhone:
                     return "ARM";
 
                 default:
@@ -80,15 +82,15 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
 
         //! Checks if specified platform is natively supported by VS.
         //! @param Platform Some platform.
-        public override bool IsPlatformNativelySupported(TargetPlatform Platform)
+        public override bool IsPlatformNativelySupported(TargetPlatforms Platform)
         {
             switch (Platform) {
-                case TargetPlatform.Windows:
-                case TargetPlatform.WindowsStore:
-                case TargetPlatform.WindowsRT:
-                case TargetPlatform.WindowsPhone:
-                case TargetPlatform.XBoxOne:
-                case TargetPlatform.PlayStation4:
+                case TargetPlatforms.Windows:
+                case TargetPlatforms.WindowsStore:
+                case TargetPlatforms.WindowsRT:
+                case TargetPlatforms.WindowsPhone:
+                case TargetPlatforms.XBoxOne:
+                case TargetPlatforms.PlayStation4:
                     return true;
             }
 
@@ -102,9 +104,6 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
         public sealed override string GenerateProjectFiles(ProjectCache Project)
         {
             string ProjectDirectoryPath = Path.Combine(base.GenerateProjectFiles(Project), Project.m_CachedName);
-            bool PlatformRequiresCLI = false;
-            bool PlatformDoesNotRequiresRTTI = PlatformRequiresCLI;
-            bool PlatformDoesNotRequiresExceptions = false;
 
             // ==========================================================================================
             // Generating VCXPROJ files.
@@ -125,12 +124,12 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                 // ------------------------------------------------------------------------------------------
                 VCXProj.WriteStartElement("ItemGroup");
                 VCXProj./**/WriteAttributeString("Label", "ProjectConfigurations");
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
+                foreach (TargetPlatforms Platform in Target.EnumerateAllPlatforms()) {
                     string PlatformString = ConvertPlatformToMSBuildPlatform(Platform);
-                    foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations()) {
+                    foreach (TargetConfigurations Configuration in Target.EnumerateAllConfigurations()) {
                         string ConfigurationName = string.Concat(Configuration, Platform);
                         VCXProj./**/WriteStartElement("ProjectConfiguration");
-                        VCXProj./**//**/WriteAttributeString("Include", string.Concat(ConfigurationName, '|', PlatformString));
+                        VCXProj./**//**/WriteAttributeString("Include", ConfigurationName + '|' + PlatformString);
                         VCXProj./**//**/WriteElementString("Configuration", ConfigurationName);
                         VCXProj./**//**/WriteElementString("Platform", PlatformString);
                         VCXProj./**/WriteEndElement();
@@ -145,9 +144,9 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                 foreach (var ProjectSource in Project.m_CachedSourceFiles) {
                     VCXProj./**/WriteStartElement(ConvertFileTypeToVCXProjElement(ProjectSource.m_FileType));
                     VCXProj./**//**/WriteAttributeString("Include", ProjectSource.m_FileName);
-                    foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
+                    foreach (TargetPlatforms Platform in Target.EnumerateAllPlatforms()) {
                         string PlatformString = ConvertPlatformToMSBuildPlatform(Platform);
-                        foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations()) {
+                        foreach (TargetConfigurations Configuration in Target.EnumerateAllConfigurations()) {
                             if (Target.MatchesPlatformConfiguration(ProjectSource.m_FileName, Platform, Configuration)
                                 && (!ProjectSource.m_IsExcludedDelegate(Platform))) {
                                 continue;
@@ -155,7 +154,7 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
 
                             string ConfigurationName = string.Concat(Configuration, Platform);
                             VCXProj./**//**/WriteStartElement("ExcludedFromBuild");
-                            VCXProj./**//**//**/WriteAttributeString("Condition", string.Format(@"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString));
+                            VCXProj./**//**//**/WriteAttributeStringFormat("Condition", @"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
                             VCXProj./**//**//**/WriteString("true");
                             VCXProj./**//**/WriteEndElement();
                         }
@@ -167,9 +166,10 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                 // ------------------------------------------------------------------------------------------
                 // Overriding global project properties.
                 // ------------------------------------------------------------------------------------------
+                Project.m_AdditionalCache.m_GUID = CreateMSBuildGUID();
                 VCXProj.WriteStartElement("PropertyGroup");
                 VCXProj./**/WriteAttributeString("Label", "Globals");
-                VCXProj./**/WriteElementString("ProjectGuid", CreateMSBuildGUID());
+                VCXProj./**/WriteElementString("ProjectGuid", Project.m_AdditionalCache.m_GUID);
                 VCXProj./**/WriteElementString("RootNamespace", Project.m_CachedName);
                 VCXProj.WriteEndElement();
 
@@ -180,37 +180,34 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                 // ------------------------------------------------------------------------------------------
                 // Overriding main configuration properties.
                 // ------------------------------------------------------------------------------------------
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
+                foreach (TargetPlatforms Platform in Target.EnumerateAllPlatforms()) {
                     string PlatformString = ConvertPlatformToMSBuildPlatform(Platform);
                     string PlatformToolset = null;
                     switch (Platform) {
-                        case TargetPlatform.Windows:
-                        case TargetPlatform.WindowsRT:
-                        case TargetPlatform.WindowsStore:
+                        case TargetPlatforms.Windows:
+                        case TargetPlatforms.WindowsRT:
+                        case TargetPlatforms.WindowsStore:
                             PlatformToolset = "CTP_Nov2013";
                             break;
-                        case TargetPlatform.WindowsPhone:
+                        case TargetPlatforms.WindowsPhone:
                             PlatformToolset = "v120_wp81";
                             break;
-                            // These are not supported, setting up some generic toolset.
-                        case TargetPlatform.Android:
-                        case TargetPlatform.Emscripten:
+                        // These are not supported, setting up some generic toolset.
+                        default:
                             PlatformToolset = "v120";
                             break;
-                        default:
-                            throw new NotImplementedException();
                     }
 
-                    foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations()) {
+                    foreach (TargetConfigurations Configuration in Target.EnumerateAllConfigurations()) {
                         string ConfigurationName = string.Concat(Configuration, Platform);
                         VCXProj.WriteStartElement("PropertyGroup");
-                        VCXProj./**/WriteAttributeString("Condition", string.Format(@"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString));
+                        VCXProj./**/WriteAttributeStringFormat("Condition", @"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
                         VCXProj./**/WriteAttributeString("Label", "Configuration");
                         VCXProj./**/WriteElementString("PlatformToolset", PlatformToolset);
                         if (IsPlatformNativelySupported(Platform)) {
-                            VCXProj./**/WriteElementString("ConfigurationType", Project.m_CachedBuildType[Platform].ToString());
+                            VCXProj./**/WriteElementString("ConfigurationType", Project.m_CachedBuildTypes[Platform].ToString());
                             VCXProj./**/WriteElementString("CharacterSet", "MultiByte");
-                            if (PlatformRequiresCLI) {
+                            if (TargetPlatformInformation.Get(Platform).m_RequiresRTTI) {
                                 VCXProj./**/WriteElementString("CLRSupport", "true");
                             }
                         } else {
@@ -238,8 +235,10 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                 // ------------------------------------------------------------------------------------------
                 // Overriding VC++ directories (and sometimes NMake commands).
                 // ------------------------------------------------------------------------------------------
-                StringBuilder ProjectIncludePathesBuilder = new StringBuilder()
-                    .Append(Path.Combine(Project.m_CachedLocation, "Source")).Append(Path.PathSeparator);
+
+                // Building list of header directories.
+                StringBuilder ProjectIncludePathesBuilder = new StringBuilder();
+                ProjectIncludePathesBuilder.Append(Path.Combine(Project.m_CachedLocation, "Source")).Append(Path.PathSeparator);
                 Array.ForEach(Project.m_CachedDependencies, ProjectDependency =>
                     Array.ForEach(ProjectDependency.m_CachedHeaderDirectories, ProjectDependencyIncludePath =>
                         ProjectIncludePathesBuilder.Append(ProjectDependencyIncludePath).Append(Path.PathSeparator)
@@ -252,13 +251,13 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                 VCXProj./**/WriteElementString("NMakeAssemblySearchPath", "$(NMakeAssemblySearchPath)");
                 VCXProj./**/WriteElementString("NMakeForcedUsingAssemblies", "$(NMakeForcedUsingAssemblies)");
                 VCXProj.WriteEndElement();
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
+                foreach (TargetPlatforms Platform in Target.EnumerateAllPlatforms()) {
                     string PlatformString = ConvertPlatformToMSBuildPlatform(Platform);
-                    foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations()) {
+                    foreach (TargetConfigurations Configuration in Target.EnumerateAllConfigurations()) {
                         string ConfigurationName = string.Concat(Configuration, Platform);
-                        string ProjectOutputPath = Project.m_CachedOutputPathDelegate[Platform](Configuration);
+                        string ProjectOutputPath = Project.m_CachedOutputPathDelegates[Platform](Configuration);
                         VCXProj.WriteStartElement("PropertyGroup");
-                        VCXProj./**/WriteAttributeString("Condition", string.Format(@"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString));
+                        VCXProj./**/WriteAttributeStringFormat("Condition", @"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
                         VCXProj./**/WriteElementString("OutDir", Path.GetDirectoryName(ProjectOutputPath) + Path.DirectorySeparatorChar);
                         if (IsPlatformNativelySupported(Platform)) {
                             VCXProj./**/WriteElementString("TargetName", Path.GetFileNameWithoutExtension(ProjectOutputPath));
@@ -271,21 +270,32 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                 }
 
                 // ------------------------------------------------------------------------------------------
-                // Overriding VC++ compiler and linker properties.
+                // Overriding VC++ compiler and linker properties OR NMake commands.
                 // ------------------------------------------------------------------------------------------
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
+                foreach (TargetPlatforms Platform in Target.EnumerateAllPlatforms()) {
+                    TargetPlatformInformation PlatformInformation = TargetPlatformInformation.Get(Platform);
                     string PlatformString = ConvertPlatformToMSBuildPlatform(Platform);
 
+                    // Defining macros.
                     StringBuilder MacrosBuilder = new StringBuilder();
-                    Array.ForEach(Project.m_CachedMacros[Platform], ProjectPreprocessorDefinition =>
-                        MacrosBuilder.Append(ProjectPreprocessorDefinition.ToString()).Append(Path.PathSeparator)
-                    );
+                    Array.ForEach(Project.m_CachedMacros[Platform], Macro => MacrosBuilder.Append(Macro.ToString()).Append(Path.PathSeparator));
 
-                    foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations()) {
-                        bool IsDebugConfiguration = (Configuration == TargetConfiguration.Debug);
+                    // Overriding default paths.
+                    string StandartLibrariesPaths;
+                    if (IsPlatformNativelySupported(Platform) && (PlatformInformation.m_StandartHeadersPathes != null)) {
+                        StringBuilder StandartLibrariesPathsBuilder = new StringBuilder();
+                        Array.ForEach(PlatformInformation.m_StandartHeadersPathes, StandartHeadersPath => StandartLibrariesPathsBuilder.Append(StandartHeadersPath).Append(Path.PathSeparator));
+                        StandartLibrariesPaths = StandartLibrariesPathsBuilder.ToString();
+                    } else {
+                        StandartLibrariesPaths = "$(NMakeIncludeSearchPath)";
+                    }
+
+                    foreach (TargetConfigurations Configuration in Target.EnumerateAllConfigurations()) {
+                        TargetConfigurationInformation ConfigurationInformation = TargetConfigurationInformation.Get(Configuration);
+
                         string ConfigurationName = string.Concat(Configuration, Platform);
                         string Macros = MacrosBuilder.ToString();
-                        if (IsDebugConfiguration) {
+                        if (ConfigurationInformation.m_IsDebug) {
                             Macros += "_DEBUG";
                         } else {
                             Macros += "NDEBUG";
@@ -296,31 +306,26 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                             // Defining VC++ compiler properties.
                             // ------------------------------------------------------------------------------------------
                             VCXProj.WriteStartElement("ItemDefinitionGroup");
-                            VCXProj./**/WriteAttributeString("Condition", string.Format(@"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString));
+                            VCXProj./**/WriteAttributeStringFormat("Condition", @"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
                             VCXProj./**/WriteStartElement("ClCompile");
-                            VCXProj./**//**/WriteElementString("PreprocessorDefinitions", Macros + "%(PreprocessorDefinition)");
-                            VCXProj./**//**/WriteElementString("Optimization", IsDebugConfiguration ? "Disabled" : "Full");
-                            VCXProj./**//**/WriteElementString("WarningLevel", "Level4");
-                            VCXProj./**//**/WriteElementString("TreatWarningAsError", "true");
+                            VCXProj./**//**/WriteElementString("FavorSizeOrSpeed", "Speed");
                             VCXProj./**//**/WriteElementString("PrecompiledHeader", "NotUsing");
                             VCXProj./**//**/WriteElementString("CallingConvention", "FastCall");
-                            VCXProj./**//**/WriteElementString("FavorSizeOrSpeed", "Speed");
-                            if (PlatformDoesNotRequiresRTTI) {
-                                VCXProj./**//**/WriteElementString("RuntimeTypeInfo", "false");
-                            }
-                            if (PlatformDoesNotRequiresExceptions) {
-                                VCXProj./**//**/WriteElementString("ExceptionHandling", "false");
-                            }
+                            VCXProj./**//**/WriteElementString("WarningLevel", "Level" + TargetCppCompilerInformation.s_WarningLevel);
+                            VCXProj./**//**/WriteElementString("TreatWarningAsError", TargetCppCompilerInformation.s_WarningsAreErrors.ToString());
+                            VCXProj./**//**/WriteElementString("PreprocessorDefinitions", Macros + "%(PreprocessorDefinition)");
+                            VCXProj./**//**/WriteElementString("Optimization", ConfigurationInformation.m_Optimize ? "Full" : "Disabled");
+                            VCXProj./**//**/WriteElementString("RuntimeTypeInfo", PlatformInformation.m_RequiresRTTI.ToString());
+                            VCXProj./**//**/WriteElementString("ExceptionHandling", PlatformInformation.m_RequiresExceptions.ToString());
                             VCXProj./**/WriteEndElement();    // </ VC++ COMPILER PROPERTIES
 
                             // ------------------------------------------------------------------------------------------
                             // Defining VC++ linker properties.
                             // ------------------------------------------------------------------------------------------
-                            StringBuilder ProjectLinkedLibraries = new StringBuilder()
-                                .Append("%(AdditionalDependencies)").Append(Path.PathSeparator)
-                                .Append("winmm.lib").Append(Path.PathSeparator)
-                                .Append("imm32.lib").Append(Path.PathSeparator)
-                                .Append("version.lib").Append(Path.PathSeparator);
+
+                            // Collecting linked libraries..
+                            StringBuilder ProjectLinkedLibraries = new StringBuilder();
+                            Array.ForEach(PlatformInformation.m_DefaultLibraries, Library => ProjectLinkedLibraries.Append(Library).Append(Path.PathSeparator));
                             Array.ForEach(Project.m_CachedDependencies, ProjectDependency =>
                                 Array.ForEach(ProjectDependency.m_CachedLinkedLibraries[Platform], ProjectDependencyLibraryPath =>
                                     ProjectLinkedLibraries.Append(ProjectDependencyLibraryPath).Append(Path.PathSeparator)
@@ -328,20 +333,23 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                             );
 
                             VCXProj./**/WriteStartElement("Link");
-                            VCXProj./**//**/WriteElementString("AdditionalDependencies", ProjectLinkedLibraries.ToString());
-                            VCXProj./**//**/WriteElementString("GenerateDebugInformation", IsDebugConfiguration.ToString());
-                            if (Project.m_CachedBuildType[Platform] == ProjectBuildType.DynamicLibrary) {
-                                VCXProj./**//**/WriteElementString("ImportLibrary", Project.m_CachedImportLibraryOutputPathDelegate[Platform](Configuration));
+                            VCXProj./**//**/WriteElementString("AdditionalDependencies", ProjectLinkedLibraries.Append("%(AdditionalDependencies)").ToString());
+                            VCXProj./**//**/WriteElementString("GenerateDebugInformation", ConfigurationInformation.m_GenerateDebugInformation.ToString());
+                            if (Project.m_CachedBuildTypes[Platform] == ProjectBuildType.DynamicLibrary) {
+                                VCXProj./**//**/WriteElementString("ImportLibrary", Project.m_CachedImportLibraryOutputPathDelegates[Platform](Configuration));
                             }
                             VCXProj./**/WriteEndElement();
                             VCXProj.WriteEndElement();
                         } else {
-                            string NMakeCommand = string.Format("nmake -f {0}", Project.m_MakefilePath[Platform]);
+                            string NMakeCommand = string.Format("nmake -f {0}", Project.m_MakefilePathes[Platform]);
 
+                            // ------------------------------------------------------------------------------------------
+                            // Defining NMake properties.
+                            // ------------------------------------------------------------------------------------------
                             VCXProj.WriteStartElement("PropertyGroup");
-                            VCXProj./**/WriteAttributeString("Condition", string.Format(@"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString));
-                            VCXProj./**/WriteElementString("NMakePreprocessorDefinitions", Macros + "$(NMakePreprocessorDefinitions)".ToString());
-                            VCXProj./**/WriteElementString("NMakeIncludeSearchPath", ProjectIncludePathesBuilder + "$(NMakeIncludeSearchPath)");
+                            VCXProj./**/WriteAttributeStringFormat("Condition", @"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
+                            VCXProj./**/WriteElementString("NMakePreprocessorDefinitions", Macros + "$(NMakePreprocessorDefinitions)");
+                            VCXProj./**/WriteElementString("NMakeIncludeSearchPath", ProjectIncludePathes + StandartLibrariesPaths);
                             VCXProj./**/WriteElementString("NMakeBuildCommandLine", NMakeCommand);
                             VCXProj./**/WriteElementString("NMakeReBuildCommandLine", NMakeCommand + " --rebuild");
                             VCXProj./**/WriteElementString("NMakeCleanCommandLine", NMakeCommand + " --clean");
@@ -374,9 +382,10 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                 HashSet<string> ProjectFoldersCache = new HashSet<string>();
                 foreach (var ProjectSourceFile in Project.m_CachedSourceFiles) {
                     string ProjectSourceFileDirectory = Path.GetDirectoryName(ProjectSourceFile.m_FileName);
+                    string ProjectSourceFilter;
 
                     // Checking if this source can have a filter: it is located in project directory and it not in it's root.
-                    string ProjectSourceFilter;
+                    // We also add "Source" to each filter to separate config and source files.  
                     if (ProjectSourceFileDirectory.StartsWith(Project.m_CachedSourcesFilterOrigin, StringComparison.InvariantCultureIgnoreCase)
                         && (ProjectSourceFileDirectory.Length > (Project.m_CachedSourcesFilterOrigin.Length + 1))) {
                         ProjectSourceFilter = "Source\\" + ProjectSourceFileDirectory.Substring(Project.m_CachedSourcesFilterOrigin.Length + 1);
@@ -438,13 +447,19 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                 // ------------------------------------------------------------------------------------------
                 var SolutionFiltersGUIDCache = new Dictionary<int, string>();
                 foreach (var SolutionProject in Solution.m_CachedProjects) {
-                    SolutionProject.m_AdditionalCache.m_GUID = CreateMSBuildGUID();
+                    // Looking for cached project's GUID.
+                    if (string.IsNullOrEmpty(SolutionProject.m_AdditionalCache.m_GUID)) {
+                        SolutionProject.m_AdditionalCache.m_GUID = CreateMSBuildGUID();
+                    }
+                    // Looking for projects with filters which we have not already cached.
                     if (!string.IsNullOrEmpty(SolutionProject.m_CachedFilter)) {
                         int SolutionProjectFilterHash = SolutionProject.m_CachedFilter.GetHashCode();
                         if (!SolutionFiltersGUIDCache.ContainsKey(SolutionProjectFilterHash)) {
+                            // Generating and caching filter GUIDS.
                             SolutionProject.m_AdditionalCache.m_FilterGUID = CreateMSBuildGUID();
                             SolutionFiltersGUIDCache.Add(SolutionProjectFilterHash, SolutionProject.m_AdditionalCache.m_FilterGUID);
 
+                            // E.g. 'Project({Filter-GUID}) = "Name", "Name", "Filter-GUID"'
                             SLN.WriteLine("Project(\"{0}\") = \"{1}\", \"{1}\", \"{2}\"", s_SLNFilterProjectGUID, SolutionProject.m_CachedFilter, SolutionProject.m_AdditionalCache.m_FilterGUID);
                             SLN.WriteLine("EndProject");
                         } else {
@@ -457,44 +472,68 @@ namespace GoddamnEngine.BuildSystem.VisualStudio
                 // Defining Solution projects.
                 // ------------------------------------------------------------------------------------------
                 foreach (var SolutionProject in Solution.m_CachedProjects) {
+                    // E.g. 'Project({Type-GUID}) = "Name", "Path-ToProject-File", "Project-GUID"'
                     SLN.WriteLine("Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"",
                         SolutionProject.m_IsBuildTool ? s_SLNCSProjProjectGUID : s_SLNVCProjProjectGUID,
                         SolutionProject.m_CachedName, SolutionProject.m_GeneratorOutputPath,
                         SolutionProject.m_AdditionalCache.m_GUID);
+                    // Defining projects this one depends.
                     SLN.WriteLine("\tProjectSection(ProjectDependencies) = postProject");
                     foreach (var SolutionDependentProject in Solution.m_CachedProjects) {
-                        if (SolutionDependentProject.m_CachedPriority <= SolutionProject.m_CachedPriority) {
-                            continue;
+                        // Writing projects with higher priority as ones we depend from.
+                        if (SolutionDependentProject.m_CachedPriority > SolutionProject.m_CachedPriority) {
+                            SLN.WriteLine("\t\t{0} = {0}", SolutionDependentProject.m_AdditionalCache.m_GUID);
                         }
-
-                        SLN.WriteLine("\t\t{0} = {0}", SolutionDependentProject.m_AdditionalCache.m_GUID);
                     }
                     SLN.WriteLine("\tEndProjectSection");
                     SLN.WriteLine("EndProject");
                 }
 
-                // ------------------------------------------------------------------------------------------
-                // Defining platforms/configurations.
-                // ------------------------------------------------------------------------------------------
                 SLN.WriteLine("Global");
 
+                // ------------------------------------------------------------------------------------------
+                // Linking platforms & configurations.
+                // ------------------------------------------------------------------------------------------
                 SLN.WriteLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
-                    foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations()) {
-                        SLN.WriteLine("\t\t{0}|{1} = {0}|{1}", Configuration, Platform);
+                foreach (TargetPlatforms Platform in Target.EnumerateAllPlatforms()) {
+                    TargetPlatformInformation PlatformInformation = TargetPlatformInformation.Get(Platform);
+                    foreach (TargetConfigurations Configuration in Target.EnumerateAllConfigurations()) {
+                        TargetConfigurationInformation ConfigurationInformation = TargetConfigurationInformation.Get(Configuration);
+                        // E.g. \tConfiguration-Name|Platform-Name = Configuration-Name|Platform-Name
+                        SLN.WriteLine("\t\t{0}|{1} = {0}|{1}", ConfigurationInformation.m_HumanReadableName, PlatformInformation.m_HumanReadableName);
                     }
                 }
                 SLN.WriteLine("\tEndGlobalSection");
 
                 SLN.WriteLine("\tGlobalSection(ProjectConfigurationPlatforms) = postSolution");
                 foreach (var SolutionProject in Solution.m_CachedProjects) {
-                    foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
-                        foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations()) {
-                            string PlatformString = SolutionProject.m_IsBuildTool ? "Any CPU" : ConvertPlatformToMSBuildPlatform(Platform);
-                            string PlatfromConfig = string.Format("\t\t{0}.{1}|{2}.* = {1}{2}|{3}", SolutionProject.m_AdditionalCache.m_GUID, Configuration, Platform, PlatformString);
-                            
+                    foreach (TargetPlatforms Platform in Target.EnumerateAllPlatforms()) {
+                        TargetPlatformInformation PlatformInformation = TargetPlatformInformation.Get(Platform);
+                        foreach (TargetConfigurations Configuration in Target.EnumerateAllConfigurations()) {
+                            TargetConfigurationInformation ConfigurationInformation = TargetConfigurationInformation.Get(Configuration);
+                            string PlatfromConfig = null;
+                            if (SolutionProject.m_IsBuildTool) {
+                                // C# projects have only Debug/Release configurations. 
+                                // If we specify others - projects would not be enabled in the configuration dispatcher.
+                                // E.g. \t{Project-GUID}.Configuration-Name|Platform-Name.* = Configuration|Any CPU
+                                PlatfromConfig = string.Format("\t\t{0}.{1}|{2}.* = {3}|Any CPU",
+                                    /* 0 */ SolutionProject.m_AdditionalCache.m_GUID,                                               // GUID
+                                    /*1,2*/ ConfigurationInformation.m_HumanReadableName, PlatformInformation.m_HumanReadableName,  // Human readable names
+                                    /* 3 */ ConfigurationInformation.m_IsDebug ? "Debug" : "Release"                                // Configuration.
+                                );
+                            } else {
+                                // E.g. \t{Project-GUID}.Configuration-Name|Platform-Name.* = Configuration|MSBuild-Plaform
+                                PlatfromConfig = string.Format("\t\t{0}.{1}|{2}.* = {3}{4}|{5}",
+                                    /* 0 */ SolutionProject.m_AdditionalCache.m_GUID,                                               // GUID
+                                    /*1,2*/ ConfigurationInformation.m_HumanReadableName, PlatformInformation.m_HumanReadableName,  // Human readable names
+                                    /*3,4*/ Configuration, Platform,                                                                // Internal names
+                                    /* 5 */ ConvertPlatformToMSBuildPlatform(Platform)                                              // MSBuild platform
+                                );
+                            }
+
                             SLN.WriteLine(PlatfromConfig.Replace("*", "ActiveCfg"));
                             SLN.WriteLine(PlatfromConfig.Replace("*", "Build.0"));
+                            //SLN.WriteLine(PlatfromConfig.Replace("*", "Deploy.0"));   // @todo Do something with deployment..
                         }
                     }
                 }

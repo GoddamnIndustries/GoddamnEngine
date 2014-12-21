@@ -1,5 +1,5 @@
 ﻿//! ==========================================================================================
-//! Target.cs - Build target class.
+//! Target.cs - description for target platforms, confutations, etc.
 //! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 //! 
 //! @author James Jhuighuy
@@ -16,7 +16,7 @@ using System.Reflection;
 namespace GoddamnEngine.BuildSystem
 {
     //! List of supported target platforms.
-    public enum TargetPlatform : byte
+    public enum TargetPlatforms : byte
     {
         Unknown,
         Windows,
@@ -30,26 +30,97 @@ namespace GoddamnEngine.BuildSystem
         Android,
         Linux,
         Emscripten,
-    }   // enum TargetPlatform
+    }   // enum TargetPlatforms
 
-    //! List of supported target make systems.
-    public enum TargetIDE : byte
+    //! List of properties for specific platform.
+    public class TargetPlatformInformation
     {
-        Unknown,
-        VisualStudio,
-        QtCreator,
-        XCode,
-    }   //enum TargetBuildSystem
+        private static Dictionary<TargetPlatforms, TargetPlatformInformation> s_CachedInformation;
+        public readonly TargetPlatforms m_Platform;
+        public string m_HumanReadableName { get; protected set; }
+        public string[] m_StandartHeadersPathes { get; protected set; }
+        public string[] m_DefaultLibraries { get; protected set; }
+        public bool m_RequiresExceptions { get; protected set; }
+        public bool m_RequiresRTTI { get; protected set; }
+
+        //! Instantiates a platform information. Should setup properties.
+        protected TargetPlatformInformation()
+        {
+        }
+
+        //! Returns the information for specific platform.
+        //! @param ThePlatform Desired platform.
+        public static TargetPlatformInformation Get(TargetPlatforms ThePlatform)
+        {
+            if (s_CachedInformation == null) {
+                s_CachedInformation = new Dictionary<TargetPlatforms, TargetPlatformInformation>();
+                foreach (TargetPlatforms Platform in Target.EnumerateAllPlatforms()) {
+                    Type PlatformInformationType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(T => T.Name.EndsWith(Platform + "PlatformInformation"));
+                    if (PlatformInformationType == null) {
+                        throw new BuildSystemException("Not platform information exists for platform {0}.", Platform);
+                    }
+
+                    TargetPlatformInformation PlatformInformation = (TargetPlatformInformation)Activator.CreateInstance(PlatformInformationType);
+                    s_CachedInformation.Add(Platform, PlatformInformation);
+                }
+            }
+
+            return s_CachedInformation[ThePlatform]; 
+        }
+    }   // class TargetPlatformInformation
 
     //! List of supported target configurations.
-    public enum TargetConfiguration : byte
+    public enum TargetConfigurations : byte
     {
         Unknown,
         Debug,
         Release,
         Development,
         Shipping,
-    }   // enum Configuration
+    }   // enum TargetConfigurations
+
+    //! List of properties for specific configuration.
+    public class TargetConfigurationInformation
+    {
+        private static Dictionary<TargetConfigurations, TargetConfigurationInformation> s_CachedInformation;
+        public readonly TargetConfigurations m_Configuration;
+        public string m_HumanReadableName { get; protected set; }
+        public bool m_IsDebug { get; protected set; }
+        public bool m_GenerateDebugInformation { get; protected set; }
+        public bool m_Optimize { get; protected set; }
+
+        //! Instantiates a configuration information. Should setup properties.
+        protected TargetConfigurationInformation()
+        {
+        }
+
+        //! Returns the information for specific platform.
+        //! @param TheConfiguration Desired configuration.
+        public static TargetConfigurationInformation Get(TargetConfigurations TheConfiguration)
+        {
+            if (s_CachedInformation == null) {
+                s_CachedInformation = new Dictionary<TargetConfigurations, TargetConfigurationInformation>();
+                foreach (TargetConfigurations Configuration in Target.EnumerateAllConfigurations()) {
+                    Type ConfigurationInformationType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(T => T.Name.EndsWith(Configuration + "ConfigurationInformation"));
+                    if (ConfigurationInformationType == null) {
+                        throw new BuildSystemException("Not сonfiguration information exists for сonfiguration {0}.", Configuration);
+                    }
+
+                    TargetConfigurationInformation ConfigurationInformation = (TargetConfigurationInformation)Activator.CreateInstance(ConfigurationInformationType);
+                    s_CachedInformation.Add(Configuration, ConfigurationInformation);
+                }
+            }
+
+            return s_CachedInformation[TheConfiguration];
+        }
+    }   // class TargetConfigurationInformation
+
+    //! List of properties for C++ compiler.
+    public static class TargetCppCompilerInformation
+    {
+        public const int s_WarningLevel = 4;
+        public const bool s_WarningsAreErrors = true;
+    }   // class TargetCppCompilerInformation
 
     //! Represents an abstract data collector.
     public abstract class TargetCollector
@@ -149,12 +220,21 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class TargetCollectorFactory<TCollector, TCache>
 
+    //! List of supported target make systems.
+    public enum TargetProjectGenerators : byte
+    {
+        Unknown,
+        VisualStudio,
+        QtCreator,
+        XCode,
+    }   //enum TargetBuildSystem
+
     //! Represents a project generation algorithm interface.
     public abstract class TargetProjectGenerator
     {
         //! Checks if specified platform is natively supported by IDE.
         //! @param Platform Some platform.
-        public virtual bool IsPlatformNativelySupported(TargetPlatform Platform)
+        public virtual bool IsPlatformNativelySupported(TargetPlatforms Platform)
         {
             return false;
         }
@@ -188,27 +268,27 @@ namespace GoddamnEngine.BuildSystem
         //! Constructs new IDE project files generator instance.
         public static TargetProjectGenerator Create()
         {
-            TargetIDE IDEGeneratorType;
+            TargetProjectGenerators ProjectGenerator;
             switch (Environment.OSVersion.Platform) {
                 case PlatformID.Win32NT:
-                    IDEGeneratorType = TargetIDE.VisualStudio;
+                    ProjectGenerator = TargetProjectGenerators.VisualStudio;
                     break;
                 case PlatformID.MacOSX:
-                    IDEGeneratorType = TargetIDE.XCode;
+                    ProjectGenerator = TargetProjectGenerators.XCode;
                     break;
                 case PlatformID.Unix:
-                    IDEGeneratorType = TargetIDE.QtCreator;
+                    ProjectGenerator = TargetProjectGenerators.QtCreator;
                     break;
                 default:
                     throw new BuildSystemException("Unable to determine IDE for this platform");
             }
 
-            Type IDEType = Assembly.GetExecutingAssembly().GetTypes().Where(Tp => Tp.Name.EndsWith(string.Concat(IDEGeneratorType, "ProjectGenerator"))).FirstOrDefault();
-            if (IDEType != null) {
-                return (TargetProjectGenerator)Activator.CreateInstance(IDEType);
-            } else {
-                throw new BuildSystemException("No generator for {0} IDE exists.", IDEGeneratorType);
+            Type ProjectGeneratorType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(T => T.Name.EndsWith(ProjectGenerator + "ProjectGenerator"));
+            if (ProjectGeneratorType == null) {
+                throw new BuildSystemException("No generator for {0} IDE exists.", ProjectGenerator);
             }
+
+            return (TargetProjectGenerator)Activator.CreateInstance(ProjectGeneratorType);
         }
     }   // class TargetProjectGeneratorFactory
 
@@ -229,14 +309,14 @@ namespace GoddamnEngine.BuildSystem
     public static class TargetMakefileGeneratorFactory
     {
         //! Constructs new makefile generator instance.
-        public static TargetMakefileGenerator Create(TargetPlatform Platform)
+        public static TargetMakefileGenerator Create(TargetPlatforms Platform)
         {
-            Type MakefileGeneratorType = Assembly.GetExecutingAssembly().GetTypes().Where(Tp => Tp.Name.EndsWith(string.Concat(Platform, "MakefileGenerator"))).FirstOrDefault();
-            if (MakefileGeneratorType != null) {
-                return (TargetMakefileGenerator)Activator.CreateInstance(MakefileGeneratorType);
-            } else {
+            Type MakefileGeneratorType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(Tp => Tp.Name.EndsWith(Platform + "MakefileGenerator"));
+            if (MakefileGeneratorType == null) {
                 throw new BuildSystemException("No generator for {0}'s makefiles exists.", Platform);
             }
+
+            return (TargetMakefileGenerator)Activator.CreateInstance(MakefileGeneratorType);
         }
     }   // class TargetMakefileGeneratorFactory
 
@@ -244,37 +324,46 @@ namespace GoddamnEngine.BuildSystem
     public static class Target
     {
         //! Enumerates all supported and implemented target platforms.
-        public static IEnumerable<TargetPlatform> EnumerateAllPlatforms()
+        public static IEnumerable<TargetPlatforms> EnumerateAllPlatforms()
         {
-            yield return TargetPlatform.Windows;
-            //yield return TargetPlatform.WindowsRT;
-            //yield return TargetPlatform.WindowsStore;
-            //yield return TargetPlatform.WindowsPhone;
-            //yield return TargetPlatform.XBoxOne;
-            //yield return TargetPlatform.PlayStation4;
-            //yield return TargetPlatform.OSX;
-            //yield return TargetPlatform.iOS;
-            //yield return TargetPlatform.Linux;
-            //yield return TargetPlatform.Android;
-            yield return TargetPlatform.Emscripten;
+            switch (Environment.OSVersion.Platform) {
+                case PlatformID.Win32NT:
+                    yield return TargetPlatforms.Windows;
+                    //yield return TargetPlatforms.WindowsRT;
+                    //yield return TargetPlatforms.WindowsStore;
+                    //yield return TargetPlatforms.WindowsPhone;
+                    //yield return TargetPlatforms.XBoxOne;
+                    //yield return TargetPlatforms.PlayStation4;   // Not sure here..
+                    break;
+                case PlatformID.MacOSX:
+                    //yield return TargetPlatforms.OSX;
+                    //yield return TargetPlatforms.iOS;
+                    break;
+                case PlatformID.Unix:
+                    //yield return TargetPlatforms.Linux;
+                    break;
+            }
+
+            //yield return TargetPlatforms.Android;
+            //yield return TargetPlatforms.Emscripten;
         }
 
         //! Enumerates all supported and implemented target configurations.
-        public static IEnumerable<TargetConfiguration> EnumerateAllConfigurations()
+        public static IEnumerable<TargetConfigurations> EnumerateAllConfigurations()
         {
-            yield return TargetConfiguration.Debug;
-            yield return TargetConfiguration.Release;
-            yield return TargetConfiguration.Development;
-            yield return TargetConfiguration.Shipping;
+            yield return TargetConfigurations.Debug;
+            yield return TargetConfigurations.Release;
+            yield return TargetConfigurations.Development;
+            yield return TargetConfigurations.Shipping;
         }
 
         //! Returns true if target platform is desktop.
-        public static bool IsDesktopPlatform(TargetPlatform Platform)
+        public static bool IsDesktopPlatform(TargetPlatforms Platform)
         {
             switch (Platform) {
-                case TargetPlatform.OSX:
-                case TargetPlatform.Linux:
-                case TargetPlatform.Windows:
+                case TargetPlatforms.OSX:
+                case TargetPlatforms.Linux:
+                case TargetPlatforms.Windows:
                     return true;
             }
 
@@ -282,14 +371,14 @@ namespace GoddamnEngine.BuildSystem
         }
 
         //! Returns true if target platform is mobile.
-        public static bool IsMobilePlatform(TargetPlatform Platform)
+        public static bool IsMobilePlatform(TargetPlatforms Platform)
         {
             switch (Platform) {
-                case TargetPlatform.iOS:
-                case TargetPlatform.Android:
-                case TargetPlatform.WindowsRT:
-                case TargetPlatform.WindowsStore:
-                case TargetPlatform.WindowsPhone:
+                case TargetPlatforms.iOS:
+                case TargetPlatforms.Android:
+                case TargetPlatforms.WindowsRT:
+                case TargetPlatforms.WindowsStore:
+                case TargetPlatforms.WindowsPhone:
                     return true;
             }
 
@@ -297,11 +386,11 @@ namespace GoddamnEngine.BuildSystem
         }
 
         //! Returns true if target platform is console.
-        public static bool IsConsolePlatform(TargetPlatform Platform)
+        public static bool IsConsolePlatform(TargetPlatforms Platform)
         {
             switch (Platform) {
-                case TargetPlatform.XBoxOne:
-                case TargetPlatform.PlayStation4:
+                case TargetPlatforms.XBoxOne:
+                case TargetPlatforms.PlayStation4:
                     return true;
             }
 
@@ -309,10 +398,10 @@ namespace GoddamnEngine.BuildSystem
         }
 
         //! Returns true if specified platform is Web
-        public static bool IsWebPlatform(TargetPlatform Platform)
+        public static bool IsWebPlatform(TargetPlatforms Platform)
         {
             switch (Platform) {
-                case TargetPlatform.Emscripten:
+                case TargetPlatforms.Emscripten:
                     return true;
             }
 
@@ -320,14 +409,14 @@ namespace GoddamnEngine.BuildSystem
         }
 
         //! Returns true if target platform`s native API is WinAPI.
-        public static bool IsWinAPIPlatform(TargetPlatform Platform)
+        public static bool IsWinAPIPlatform(TargetPlatforms Platform)
         {
             switch (Platform) {
-                case TargetPlatform.XBoxOne:
-                case TargetPlatform.Windows:
-                case TargetPlatform.WindowsRT:
-                case TargetPlatform.WindowsStore:
-                case TargetPlatform.WindowsPhone:
+                case TargetPlatforms.XBoxOne:
+                case TargetPlatforms.Windows:
+                case TargetPlatforms.WindowsRT:
+                case TargetPlatforms.WindowsStore:
+                case TargetPlatforms.WindowsPhone:
                     return true;
             }
 
@@ -335,14 +424,14 @@ namespace GoddamnEngine.BuildSystem
         }
 
         //! Returns true if target platform is POSIX compatible.
-        public static bool IsPosixPlatform(TargetPlatform Platform)
+        public static bool IsPosixPlatform(TargetPlatforms Platform)
         {
             switch (Platform) {
-                case TargetPlatform.iOS:
-                case TargetPlatform.OSX:
-                case TargetPlatform.Linux:
-                case TargetPlatform.Android:
-                case TargetPlatform.PlayStation4:
+                case TargetPlatforms.iOS:
+                case TargetPlatforms.OSX:
+                case TargetPlatforms.Linux:
+                case TargetPlatforms.Android:
+                case TargetPlatforms.PlayStation4:
                     return true;
             }
 
@@ -350,11 +439,11 @@ namespace GoddamnEngine.BuildSystem
         }
 
         //! Returns true if target platform`s native API is Cocoa.
-        public static bool IsCocoaPlatform(TargetPlatform Platform)
+        public static bool IsCocoaPlatform(TargetPlatforms Platform)
         {
             switch (Platform) {
-                case TargetPlatform.iOS:
-                case TargetPlatform.OSX:
+                case TargetPlatforms.iOS:
+                case TargetPlatforms.OSX:
                     return true;
             }
 
@@ -362,7 +451,7 @@ namespace GoddamnEngine.BuildSystem
         }
 
         //! Returns true if object on specified path has platform/configuration data and matches it.
-        public static bool MatchesPlatformConfiguration(string ObjectPath, TargetPlatform Platform, TargetConfiguration Configuration)
+        public static bool MatchesPlatformConfiguration(string ObjectPath, TargetPlatforms Platform, TargetConfigurations Configuration)
         {
             string ObjectPathExtensionless = Path.GetFileNameWithoutExtension(ObjectPath);
             string ObjectPlatform = Path.GetExtension(ObjectPathExtensionless);
