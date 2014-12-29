@@ -12,11 +12,11 @@
 GD_NAMESPACE_BEGIN
 
 	/// Defines color of the Red-Black Tree node.
-    enum class RedBlackTreeNodeColor : UInt8
-    {
-        Red,
-        Black
-    };	// enum class RedBlackTreeNodeColor
+	enum class RedBlackTreeNodeColor : UInt8
+	{
+		Red,
+		Black
+	};	// enum class RedBlackTreeNodeColor
 
 	/// Defines a single node of the Red-Black Tree.
 	struct RedBlackTreeNode
@@ -32,8 +32,8 @@ GD_NAMESPACE_BEGIN
 	/// Red-Black Tree data structure. Contains fundamental tree management algorithms.
 	/// @see http://en.wikipedia.org/wiki/Red–black_tree
 	/// @see http://web.mit.edu/~emin/www.old/source_code/red_black_tree/index.html
-    class RedBlackTree
-    {
+	class RedBlackTree
+	{
 	private:
 		RedBlackTreeNode static* NullNode;
 		RedBlackTreeNode* RootNode = nullptr;
@@ -41,14 +41,14 @@ GD_NAMESPACE_BEGIN
 
 	protected:
 
-        /// @brief Initializes a new Red-Black Tree.
+		/// @brief Initializes a new Red-Black Tree.
 		GDAPI RedBlackTree();
 
-        /// @brief Moves other Red-Black Tree here.
-        /// @param[in] Other Other tree to move here.
+		/// @brief Moves other Red-Black Tree here.
+		/// @param[in] Other Other tree to move here.
 		GDAPI RedBlackTree(RedBlackTree&& Other);
 
-        /// @brief Deinitializes a Red-Black Tree and destroys all internal data.
+		/// @brief Deinitializes a Red-Black Tree and destroys all internal data.
 		GDAPI ~RedBlackTree();
 
 		/// @brief Extracts a comparand object from the specified node.
@@ -78,15 +78,15 @@ GD_NAMESPACE_BEGIN
 		GDAPI RedBlackTreeNode const* GetLastNode() const;
 		GDINL RedBlackTreeNode* GetLastNode();
 
-        /// @brief Returns next node to specified one or null.
-        /// @param[in] TheNode Some node.
-        /// @returns Next node to this one or null node if not exists.
+		/// @brief Returns next node to specified one or null.
+		/// @param[in] TheNode Some node.
+		/// @returns Next node to this one or null node if not exists.
 		GDAPI RedBlackTreeNode const* GetNextNode(RedBlackTreeNode const* const TheNode) const;
 		GDINL RedBlackTreeNode* GetNextNode(RedBlackTreeNode* const TheNode);
 
-        /// @brief Returns previous node to specified one or null.
-        /// @param[in] TheNode Some node.
-        /// @returns Previous node to this one or null node if not exists.
+		/// @brief Returns previous node to specified one or null.
+		/// @param[in] TheNode Some node.
+		/// @returns Previous node to this one or null node if not exists.
 		GDAPI RedBlackTreeNode const* GetPrevNode(RedBlackTreeNode const* const TheNode) const;
 		GDINL RedBlackTreeNode* GetPrevNode(RedBlackTreeNode* const TheNode);
 
@@ -110,12 +110,12 @@ GD_NAMESPACE_BEGIN
 		/// @param[in] TheNode Node that is going to be destroyed.
 		GDAPI void InternalDestroyNode(RedBlackTreeNode* const TheNode);
 
-        /// @brief Performs a left rotation of the tree.
-        /// @param[in] TheNode The node to rotate on.
+		/// @brief Performs a left rotation of the tree.
+		/// @param[in] TheNode The node to rotate on.
 		GDAPI void RotateLeft(RedBlackTreeNode* const TheNode);
 
-        /// @brief Performs a right rotation of the tree.
-        /// @param[in] TheNode The node to rotate on.
+		/// @brief Performs a right rotation of the tree.
+		/// @param[in] TheNode The node to rotate on.
 		GDAPI void RotateRight(RedBlackTreeNode* const TheNode);
 
 		/// @brief Fixes the tree and restores it's red-black properties.
@@ -128,8 +128,8 @@ GD_NAMESPACE_BEGIN
 		/// @param[in] NewNode The node that would be inserted. Should be already created.
 		GDAPI void Insert(RedBlackTreeNode* const NewNode);
 
-        /// @brief Deletes the node from the tree.
-        /// @param[in] TheNode Node that would be deleted. Should be manually deleted.
+		/// @brief Deletes the node from the tree.
+		/// @param[in] TheNode Node that would be deleted. Should be manually deleted.
 		GDAPI void Delete(RedBlackTreeNode* const TheNode);
 
 		/// @brief Searches for node with specified key.
