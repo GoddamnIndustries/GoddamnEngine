@@ -218,19 +218,19 @@ GD_NAMESPACE_BEGIN
 		inline ValueType const&			GetValueWithKey(KeyTypeConstRef Key) const;
 		inline ValueType	  &			GetValueWithKey(KeyTypeConstRef Key);
 
-		/// @brief 						Assigns new element into place in container with specified index.
+		/// @brief						Assigns new element into place in container with specified index.
 		/// @param[in] Key				Key we are looking for.
 		/// @param[in] Value			Value that would be assigned.
 		inline void						SetValueWithKey(KeyTypeConstRef Key, ValueType      && Value);
 		inline void						SetValueWithKey(KeyTypeConstRef Key, ValueTypeConstRef Value);
 
-		/// @brief 						Inserts specified element into collection at desired index.
+		/// @brief						Inserts specified element into collection at desired index.
 		/// @param[in] Key				Key of the element that is going to be inserted.
 		/// @param[in] Value			Value of the element that is going to be inserted.
 		inline void						InsertKeyValue(KeyType      && Key, ValueType      && Value);
 		inline void						InsertKeyValue(KeyTypeConstRef Key, ValueTypeConstRef Value);
 
-		/// @brief 						Removes existing element from array at specified index.
+		/// @brief						Removes existing element from array at specified index.
 		/// @param[in] Key				Key of the element that is going to be removed.
 		inline void						RemoveElementAt(KeyTypeConstRef Key);
 
