@@ -1,9 +1,6 @@
 /// ==========================================================================================
 /// Allocator.h: memory allocator interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-/// 
-/// History:
-///		* 12.06.2014 - Created by James Jhuighuy
 /// ==========================================================================================
 
 #pragma once
@@ -43,24 +40,22 @@ GD_NAMESPACE_END
 
 GDINL void* operator new(size_t const Size)
 {
-	return GD Allocator::AllocateMemory(Size);
+	return GD::Allocator::AllocateMemory(Size);
 }
 
 GDINL void  operator delete(void* const Pointer)
 {
-	GD Allocator::DeallocateMemory(Pointer);
+	GD::Allocator::DeallocateMemory(Pointer);
 }
 
 GDINL void* operator new[](size_t const Size)
 {
-	return GD Allocator::AllocateMemory(Size);
+	return GD::Allocator::AllocateMemory(Size);
 }
 
 GDINL void  operator delete[](void* const Pointer)
 {
-	GD Allocator::DeallocateMemory(Pointer);
+	GD::Allocator::DeallocateMemory(Pointer);
 }
-
-// #include <GoddamnEngine/Core/Allocator/Allocator.inl>
 
 #endif

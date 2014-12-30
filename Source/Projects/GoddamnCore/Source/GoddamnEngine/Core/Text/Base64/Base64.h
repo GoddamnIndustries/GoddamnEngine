@@ -11,8 +11,8 @@
 #define GD_CORE_TEXT_BASE64
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
-#include <GoddamnEngine/Core/Containers/Vector/Vector.h>
+#include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Containers/Vector.h>
 
 GD_NAMESPACE_BEGIN
 	

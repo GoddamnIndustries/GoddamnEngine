@@ -19,8 +19,8 @@ GD_NAMESPACE_BEGIN
 
 	/// Three-dimensional vector class.
 	///  Y ^
-	///    | / Z
-	///    |/
+	/// | / Z
+	/// |/
 	/// ---0------> X
 	///   /|
 	template<typename ElementType>
@@ -33,9 +33,9 @@ GD_NAMESPACE_BEGIN
 		union {
 			ElementType Elements[ThisComponentsCount];
 			struct { ElementType Width, Height, Depth; }; ///< Representation as dimensional system
-			struct { ElementType x,     y,      z;     }; ///< Representation in XYZ coordinate system
-			struct { ElementType r,     g,      b;     }; ///< Representation in RGB color system
-			struct { ElementType u,     v,      w;     }; ///< Representation in UVW coordinate system
+			struct { ElementType x,  y,   z;  }; ///< Representation in XYZ coordinate system
+			struct { ElementType r,  g,   b;  }; ///< Representation in RGB color system
+			struct { ElementType u,  v,   w;  }; ///< Representation in UVW coordinate system
 			struct { ElementType _0, _1, _2; };
 		};	// anonymous union
 

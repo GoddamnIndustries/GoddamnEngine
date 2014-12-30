@@ -7,9 +7,9 @@
 #include <GoddamnEngine/Core/Format/Format.h>
 
 #define GD_SPECIFY_FORMAT_SELECTOR(Type, FormatDecl) \
-	template<> struct FormatTypeSelector<Type               > final { static Format const SpecifiedFormat = FormatDecl; }; \
-	template<> struct FormatTypeSelector<Type          const> final { static Format const SpecifiedFormat = FormatDecl; }; \
-	template<> struct FormatTypeSelector<Type volatile      > final { static Format const SpecifiedFormat = FormatDecl; }; \
+	template<> struct FormatTypeSelector<Type      > final { static Format const SpecifiedFormat = FormatDecl; }; \
+	template<> struct FormatTypeSelector<Type    const> final { static Format const SpecifiedFormat = FormatDecl; }; \
+	template<> struct FormatTypeSelector<Type volatile   > final { static Format const SpecifiedFormat = FormatDecl; }; \
 	template<> struct FormatTypeSelector<Type volatile const> final { static Format const SpecifiedFormat = FormatDecl; };
 
 GD_NAMESPACE_BEGIN

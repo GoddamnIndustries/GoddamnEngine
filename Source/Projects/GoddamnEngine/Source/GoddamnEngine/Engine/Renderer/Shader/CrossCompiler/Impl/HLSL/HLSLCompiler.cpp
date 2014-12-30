@@ -55,17 +55,17 @@ GD_NAMESPACE_BEGIN
 
 			// No compiler DLL or compile method was found. Lets emulate it via call to 'fxc.exe' utility.
 			D3DCompile = [](
-				LPCVOID                         pSrcData,
-				SIZE_T                          SrcDataSize,
-				LPCSTR                          pFileName,
-				CONST D3D_SHADER_MACRO*         pDefines,
-				ID3DInclude*                    pInclude,
-				LPCSTR                          pEntrypoint,
-				LPCSTR                          pTarget,
-				UINT                            Flags1,
-				UINT                            Flags2,
-				ID3DBlob**                      ppCode,
-				ID3DBlob**                      ppErrorMsgs) -> HRESULT
+				LPCVOID       pSrcData,
+				SIZE_T        SrcDataSize,
+				LPCSTR        pFileName,
+				CONST D3D_SHADER_MACRO*   pDefines,
+				ID3DInclude*     pInclude,
+				LPCSTR        pEntrypoint,
+				LPCSTR        pTarget,
+				UINT       Flags1,
+				UINT       Flags2,
+				ID3DBlob**       ppCode,
+				ID3DBlob**       ppErrorMsgs) -> HRESULT
 			{
 #if (defined(GD_PLATFORM_64BIT))
 				static char const FXCPath[] = R"("%DXSDK_DIR%Utilities\bin\x64\fxc.exe ")";
@@ -99,7 +99,7 @@ GD_NAMESPACE_BEGIN
 	{
 	public:
 		GDINL  HLSLGenerator(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
-		GDINL ~HLSLGenerator(                           ) { }
+		GDINL ~HLSLGenerator(         ) { }
 		GDINT void GenerateShader(StringBuilder& Builder, HLSLScope const* const ShaderParsedData);
 	private:
 		GDINT void GenerateShaderStruct(HLSLStruct const* const Struct, StringBuilder& Builder);
@@ -204,7 +204,7 @@ GD_NAMESPACE_BEGIN
 		} else if (StaticVariable->ExprColon != nullptr) {
 			HLSLRegister const* const StaticVariableRegister = static_cast<HLSLRegister const*>(StaticVariable->ExprColon);
 			Builder.AppendFormat(" : register(%c%d)", ((StaticVariableRegister->Register == GD_HLSL_REGISTER_T) ? 't' : 's'),	// Only 't'/'s' registers can be located here. 
-								       static_cast<int>(StaticVariableRegister->RegisterID));
+								    static_cast<int>(StaticVariableRegister->RegisterID));
 		}
 
 		Builder.Append(';');
@@ -244,10 +244,10 @@ GD_NAMESPACE_BEGIN
 	/// ------------------------------------------------------------------------------------------
 
 	void HLSLCompiler::GenerateAndCompileShader(
-		UniquePtr<OutputStream>      const&       ShaderByteCodeOutputStream,
-		HLSLScope                    const* const ShaderParsedData,
-		HRIShaderType                const        ShaderType,
-		String                       const&       ShaderEntryName
+		UniquePtr<OutputStream>   const&    ShaderByteCodeOutputStream,
+		HLSLScope     const* const ShaderParsedData,
+		HRIShaderType    const  ShaderType,
+		String        const&    ShaderEntryName
 	)
 	{
 		StringBuilder HLSLGeneratorOutput;
@@ -265,9 +265,9 @@ GD_NAMESPACE_BEGIN
 
 		LPCSTR static const D3DCompileProfiles[] = {
 			/* GD_HRI_SHADER_TYPE_VERTEX   = */ "vs_5_0",
-			/* GD_HRI_SHADER_TYPE_HULL     = */ "hs_5_0",
+			/* GD_HRI_SHADER_TYPE_HULL  = */ "hs_5_0",
 			/* GD_HRI_SHADER_TYPE_DOMAIN   = */ "ds_5_0",
-			/* GD_HRI_SHADER_TYPE_PIXEL    = */ "ps_5_0",
+			/* GD_HRI_SHADER_TYPE_PIXEL = */ "ps_5_0",
 			/* GD_HRI_SHADER_TYPE_COMPUTE  = */ "cs_5_0",
 			/* GD_HRI_SHADER_TYPE_GEOMETRY = */ "gs_5_0",
 		};

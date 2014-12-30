@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINL String ToString(Lexem const* const CurrentLexem, ...) const
 		{
-			va_list List = nullptr; va_start(List, CurrentLexem);
+			va_list List; va_start(List, CurrentLexem);
 			String FormattedMessage = String::FormatVa(this->Message.CStr(), List);
 			va_end(List);
 

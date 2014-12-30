@@ -51,7 +51,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if (defined(GD_DEBUG))
 
 	protected:
-		GDINT          PhysicsInterface();
+		GDINT    PhysicsInterface();
 		GDINT virtual ~PhysicsInterface();
 
 		//GDINT virtual void OnInitializeSelf();

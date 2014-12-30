@@ -10,9 +10,9 @@ using GoddamnEngine.BuildSystem;
 
 public sealed class GoddamnEngineProject : Project
 {
-    public sealed override string GetSourceFiltersOrigin()
-    {
-        return Path.Combine(base.GetSourceFiltersOrigin(), "Engine");
-    }
+ public sealed override string GetSourceFiltersOrigin()
+ {
+  return Path.Combine(base.GetSourceFiltersOrigin(), "Engine");
+ }
 }   // class GoddamnEngineProject
-    
+ 

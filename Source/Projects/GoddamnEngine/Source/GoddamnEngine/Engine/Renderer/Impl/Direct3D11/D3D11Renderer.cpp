@@ -79,7 +79,7 @@ GD_NAMESPACE_BEGIN
 		SwapChainDesc.SampleDesc.Count					 = 1;
 		SwapChainDesc.SampleDesc.Quality				 = 0;
 
-		D3D_FEATURE_LEVEL       CreatedFeatureLevel    = D3D_FEATURE_LEVEL(0);
+		D3D_FEATURE_LEVEL    CreatedFeatureLevel = D3D_FEATURE_LEVEL(0);
 		D3D_FEATURE_LEVEL static const FeatureLevels[] = {
 			D3D_FEATURE_LEVEL_11_1,
 			D3D_FEATURE_LEVEL_11_0,
@@ -94,10 +94,10 @@ GD_NAMESPACE_BEGIN
 			GD_ARRAY_SIZE(FeatureLevels),	/*  UINT FeatureLevels */
 			D3D11_SDK_VERSION,				/*  UINT SDKVersion */
 			&SwapChainDesc,					/*  const DXGI_SWAP_CHAIN_DESC *pSwapChainDesc */
-			&this->SwapChain,	            /* _Out_  IDXGISwapChain **ppSwapChain */
-			&this->Device,		            /* _Out_  ID3D11Device **ppDevice */
-			&CreatedFeatureLevel,			/* _Out_  D3D_FEATURE_LEVEL *pFeatureLevel */
-			&this->Context)) {	            /* _Out_  ID3D11DeviceContext **ppImmediateContext */
+			&this->SwapChain,	   /*  IDXGISwapChain **ppSwapChain */
+			&this->Device,		   /*  ID3D11Device **ppDevice */
+			&CreatedFeatureLevel,			/*  D3D_FEATURE_LEVEL *pFeatureLevel */
+			&this->Context)) {	   /*  ID3D11DeviceContext **ppImmediateContext */
 			throw HRID3D11Exception("Failed to create DirectX Device and Swap Chain");
 		}
 		
@@ -115,17 +115,17 @@ GD_NAMESPACE_BEGIN
 		/*Create depth buffer*/ {
 			D3D11_TEXTURE2D_DESC DepthBufferDescription; 
 			ZeroMemory(&DepthBufferDescription, sizeof(DepthBufferDescription));
-			DepthBufferDescription.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
-			DepthBufferDescription.Height             = static_cast<UINT>(this->ContextRectagle.Height);
-			DepthBufferDescription.Width              = static_cast<UINT>(this->ContextRectagle.Width);
-			DepthBufferDescription.MipLevels          = 1;
-			DepthBufferDescription.ArraySize          = 1;
+			DepthBufferDescription.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			DepthBufferDescription.Height    = static_cast<UINT>(this->ContextRectagle.Height);
+			DepthBufferDescription.Width     = static_cast<UINT>(this->ContextRectagle.Width);
+			DepthBufferDescription.MipLevels    = 1;
+			DepthBufferDescription.ArraySize    = 1;
 			DepthBufferDescription.SampleDesc.Count   = 1;
 			DepthBufferDescription.SampleDesc.Quality = 0;
-			DepthBufferDescription.Usage              = D3D11_USAGE_DEFAULT;
-			DepthBufferDescription.BindFlags          = D3D11_BIND_DEPTH_STENCIL;
-			DepthBufferDescription.CPUAccessFlags     = 0;
-			DepthBufferDescription.MiscFlags          = 0;
+			DepthBufferDescription.Usage     = D3D11_USAGE_DEFAULT;
+			DepthBufferDescription.BindFlags    = D3D11_BIND_DEPTH_STENCIL;
+			DepthBufferDescription.CPUAccessFlags  = 0;
+			DepthBufferDescription.MiscFlags    = 0;
 
 			if (FAILED(Result = this->Device->CreateTexture2D(&DepthBufferDescription, nullptr, &this->DepthStencilBuffer))) {
 				throw HRID3D11Exception("Creation of Depth buffer failed.");
@@ -135,20 +135,20 @@ GD_NAMESPACE_BEGIN
 		/*Depth stencil description*/ {
 			D3D11_DEPTH_STENCIL_DESC DepthStencilDesc; 
 			ZeroMemory(&DepthStencilDesc, sizeof(DepthStencilDesc));
-			DepthStencilDesc.DepthEnable                  = TRUE;
-			DepthStencilDesc.DepthWriteMask               = D3D11_DEPTH_WRITE_MASK_ALL;
-			DepthStencilDesc.DepthFunc                    = D3D11_COMPARISON_LESS;
-			DepthStencilDesc.StencilEnable                = TRUE;
-			DepthStencilDesc.StencilReadMask              = UINT8(0xFF);
-			DepthStencilDesc.StencilWriteMask             = UINT8(0xFF);
+			DepthStencilDesc.DepthEnable      = TRUE;
+			DepthStencilDesc.DepthWriteMask      = D3D11_DEPTH_WRITE_MASK_ALL;
+			DepthStencilDesc.DepthFunc     = D3D11_COMPARISON_LESS;
+			DepthStencilDesc.StencilEnable    = TRUE;
+			DepthStencilDesc.StencilReadMask     = UINT8(0xFF);
+			DepthStencilDesc.StencilWriteMask    = UINT8(0xFF);
 			DepthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-			DepthStencilDesc.FrontFace.StencilFailOp      = D3D11_STENCIL_OP_KEEP;
-			DepthStencilDesc.FrontFace.StencilPassOp      = D3D11_STENCIL_OP_KEEP;
-			DepthStencilDesc.FrontFace.StencilFunc        = D3D11_COMPARISON_ALWAYS;
+			DepthStencilDesc.FrontFace.StencilFailOp   = D3D11_STENCIL_OP_KEEP;
+			DepthStencilDesc.FrontFace.StencilPassOp   = D3D11_STENCIL_OP_KEEP;
+			DepthStencilDesc.FrontFace.StencilFunc  = D3D11_COMPARISON_ALWAYS;
 			DepthStencilDesc.BackFace.StencilDepthFailOp  = D3D11_STENCIL_OP_DECR;
-			DepthStencilDesc.BackFace.StencilFailOp       = D3D11_STENCIL_OP_KEEP;
-			DepthStencilDesc.BackFace.StencilPassOp       = D3D11_STENCIL_OP_KEEP;
-			DepthStencilDesc.BackFace.StencilFunc         = D3D11_COMPARISON_ALWAYS;
+			DepthStencilDesc.BackFace.StencilFailOp    = D3D11_STENCIL_OP_KEEP;
+			DepthStencilDesc.BackFace.StencilPassOp    = D3D11_STENCIL_OP_KEEP;
+			DepthStencilDesc.BackFace.StencilFunc   = D3D11_COMPARISON_ALWAYS;
 
 			if (FAILED(Result = this->Device->CreateDepthStencilState(&DepthStencilDesc, &this->DepthStencilState))) {
 				throw HRID3D11Exception("DepthStencilState creation failed");
@@ -158,7 +158,7 @@ GD_NAMESPACE_BEGIN
 		/*Depth stencil view description*/ {
 			D3D11_DEPTH_STENCIL_VIEW_DESC DepthStencilViewDesc; 
 			ZeroMemory(&DepthStencilViewDesc, sizeof(DepthStencilViewDesc));
-			DepthStencilViewDesc.Format        = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			DepthStencilViewDesc.Format  = DXGI_FORMAT_D24_UNORM_S8_UINT;
 			DepthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 			DepthStencilViewDesc.Texture2D.MipSlice = 0;
 
@@ -171,15 +171,15 @@ GD_NAMESPACE_BEGIN
 			D3D11_RASTERIZER_DESC RasterizerDesc; 
 			ZeroMemory(&RasterizerDesc, sizeof(RasterizerDesc));
 			RasterizerDesc.AntialiasedLineEnable = FALSE;
-			RasterizerDesc.CullMode              = D3D11_CULL_BACK;
-			RasterizerDesc.DepthBias             = 0;
-			RasterizerDesc.DepthBiasClamp        = 0.0f;
-			RasterizerDesc.DepthClipEnable       = TRUE;
-			RasterizerDesc.FillMode              = D3D11_FILL_SOLID;
+			RasterizerDesc.CullMode     = D3D11_CULL_BACK;
+			RasterizerDesc.DepthBias    = 0;
+			RasterizerDesc.DepthBiasClamp  = 0.0f;
+			RasterizerDesc.DepthClipEnable    = TRUE;
+			RasterizerDesc.FillMode     = D3D11_FILL_SOLID;
 			RasterizerDesc.SlopeScaledDepthBias  = 0.0f;
 			RasterizerDesc.FrontCounterClockwise = FALSE;
-			RasterizerDesc.MultisampleEnable     = FALSE;
-			RasterizerDesc.ScissorEnable         = FALSE;
+			RasterizerDesc.MultisampleEnable  = FALSE;
+			RasterizerDesc.ScissorEnable   = FALSE;
 
 			if (FAILED(Result = this->Device->CreateRasterizerState(&RasterizerDesc, &this->SolidRasterizerState))) {
 				throw HRID3D11Exception("Rasterizer State creation failed");
@@ -189,7 +189,7 @@ GD_NAMESPACE_BEGIN
 		/*Setting up default viewport*/ {
 			D3D11_VIEWPORT DefaultViewport; 
 			ZeroMemory(&DefaultViewport, sizeof(DefaultViewport));
-			DefaultViewport.Width    = FLOAT(this->ContextRectagle.Width);
+			DefaultViewport.Width = FLOAT(this->ContextRectagle.Width);
 			DefaultViewport.Height   = FLOAT(this->ContextRectagle.Height);
 			DefaultViewport.TopLeftX = 0.0f;
 			DefaultViewport.TopLeftY = 0.0f;
@@ -206,20 +206,20 @@ GD_NAMESPACE_BEGIN
 	{
 		this->SwapChain->SetFullscreenState(FALSE, nullptr);
 		this->SolidRasterizerState.Reset();
-		this->DepthStencilView    .Reset();
+		this->DepthStencilView .Reset();
 		this->DepthStencilState   .Reset();
 		this->DepthStencilBuffer  .Reset();
-		this->RenderTargetView    .Reset();
-		this->Context             .Reset();
-		this->Device              .Reset();
-		this->SwapChain           .Reset();
+		this->RenderTargetView .Reset();
+		this->Context    .Reset();
+		this->Device     .Reset();
+		this->SwapChain     .Reset();
 
 		return true;
 	}
 
 	void HRD3D11Interface::ClearContext(Rectangle const& ClearingViewport, Color const& ClearColor, bool const DoClearDepth /* = true */) 
 	{
-		GD_UNUSED(ClearingViewport);
+		GD_NOT_USED(ClearingViewport);
 		if (DoClearDepth) {
 			this->Context->ClearDepthStencilView(this->DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 		}
@@ -236,14 +236,14 @@ GD_NAMESPACE_END
 
 #if (!defined(GD_MONOLITHIC_ENGINE))
 /// ==========================================================================================
-GDEXP extern bool EnginePluginEntry(GD PluginDescription* const Description)
+GDEXP extern bool EnginePluginEntry(GD::PluginDescription* const Description)
 {
 #if (defined(GD_NAMESPACE))
 	using namespace GD_NAMESPACE;
 #endif	// if (defined(GD_NAMESPACE))
 
-	Description->Type                  = GD_PLUGIN_TYPE_RENDERER;
-	Description->Description           = "Default GoddamnEngine`s Direct3D11 Renderer";
+	Description->Type      = GD_PLUGIN_TYPE_RENDERER;
+	Description->Description     = "Default GoddamnEngine`s Direct3D11 Renderer";
 	Description->PluginTypeInformation = HRD3D11Interface::GetClassTypeInformation();
 
 	return true;

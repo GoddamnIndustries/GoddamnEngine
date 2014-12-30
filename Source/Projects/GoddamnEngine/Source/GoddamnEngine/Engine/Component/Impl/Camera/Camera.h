@@ -29,7 +29,7 @@ GD_NAMESPACE_BEGIN
 		///			corresponding camera would be changed 
 		/// @param	param Unused parameter
 		GDAPI virtual void OnProjectionMatrixChanged(
-			_In_ Camera const* const camera
+			Camera const* const camera
 		) abstract;
 	};
 
@@ -97,7 +97,7 @@ GD_NAMESPACE_BEGIN
 		GD_SERIALIZATION_END();
 
 		//StackVector<RenderTexture*, (size_t)/*RenderTargetTexture::Unknown*/1> RenderTextures;
-        HRIRenderTarget* RenderTarget;
+  HRIRenderTarget* RenderTarget;
 
 		Matrix4x4 ProjectionMatrix;
 		Matrix4x4 ViewMatrix;
@@ -124,7 +124,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Changes projection mode of this camera
 		GDINL void SetProjection(
-			_In_ CameraProjection const projection
+			CameraProjection const projection
 		)
 		{ 
 			this->Projection = projection; 
@@ -142,7 +142,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Changes viewport rectangle this camera is rendering to
 		GDINL void SetViewport(
-			_In_ Rectangle const& viewport
+			Rectangle const& viewport
 		)
 		{ 
 			this->Viewport = viewport; 
@@ -160,7 +160,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Changes color this camera is clearing screen to
 		GDINL void SetClearColor(
-			_In_ Color const& clearColor
+			Color const& clearColor
 		)
 		{ 
 			this->ClearColor = clearColor; 
@@ -191,7 +191,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Changes field of view of this camera
 		GDINL void SetFieldOFView(
-			_In_ float const fieldOfView
+			float const fieldOfView
 		)
 		{ 
 			this->FieldOfView = fieldOfView;  
@@ -209,7 +209,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Changes type how camera is clearing the screen
 		GDINL void SetClearType(
-			_In_ CameraClearType const clearType
+			CameraClearType const clearType
 		) 
 		{ 
 			this->ClearType = clearType; 
@@ -243,7 +243,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL bool IsUsingRenderTarget() const 
 		{
-            return (this->RenderTarget != nullptr);
+   return (this->RenderTarget != nullptr);
 		}
 
 		GDAPI void UseRenderTarget(const bool useRenderTarget);
@@ -262,11 +262,11 @@ GD_NAMESPACE_BEGIN
 
 		// Slots
 		GDAPI virtual void OnTransformed(
-			_In_ Component* const transformer
+			Component* const transformer
 		);
 
 		GDAPI virtual void OnProjectionMatrixChanged(
-			_In_ Camera const* const camera
+			Camera const* const camera
 		);
 	};
 

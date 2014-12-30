@@ -3,7 +3,7 @@
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
 /// History:
-///     * 21.05.2014 - Created by James Jhuighuy.
+///  * 21.05.2014 - Created by James Jhuighuy.
 /// ==========================================================================================
 
 #if (!defined(GD_HRI_API))
@@ -40,8 +40,8 @@ GD_DEFINE_HRI_METHOD(
 GD_DEFINE_HRI_METHOD(
 	void, ClearContext,
 	Rectangle const& ClearingViewport,
-	Color     const& ClearColor,
-	bool      const  DoClearDepth = true
+	Color  const& ClearColor,
+	bool   const  DoClearDepth = true
 	)
 
 /// Swaps dual screen buffers.
@@ -53,18 +53,18 @@ GD_DEFINE_HRI_METHOD(
 /// Creates new vertex buffer.
 /// @param   Data Pointer to initial vertex data.
 /// @param   Size Number of floats in initial data.
-/// @returns      New vertex buffer.
+/// @returns   New vertex buffer.
 GD_DEFINE_HRI_METHOD(
 	HRIVertexBuffer*, CreateVertexBuffer,
 	Float32 const* const Data, 
-	size_t  const        Size
+	size_t  const  Size
 	)
 
 /// Creates new index buffer.
 /// @param Data   Pointer to initial vertex data.
 /// @param Size	  Number of elements in initial data.
 /// @param Stride Size of one element in initial data.
-/// @returns      New index buffer.
+/// @returns   New index buffer.
 GD_DEFINE_HRI_METHOD(
 	HRIIndexBuffer*, CreateIndexBuffer,
 	chandle const Data, 
@@ -74,7 +74,7 @@ GD_DEFINE_HRI_METHOD(
 
 /// Creates new constant buffer.
 /// @param   Size Number of elements in initial data.
-/// @returns      New constant buffer.
+/// @returns   New constant buffer.
 GD_DEFINE_HRI_METHOD(
 	HRIConstantBuffer*, CreateConstantBuffer,
 	size_t const Size
@@ -89,10 +89,10 @@ GD_DEFINE_HRI_METHOD(
 	)
 
 /// Creates new 2D texture.
-/// @param CtorInfo          2D texture construction information.
-/// @param InitialData       Pointer to texture`s initial data.
+/// @param CtorInfo    2D texture construction information.
+/// @param InitialData    Pointer to texture`s initial data.
 /// @param InitialDataLength Size of textures`s initial data.
-/// @returns                 New 2D texture.
+/// @returns     New 2D texture.
 GD_DEFINE_HRI_METHOD(
 	HRITexture2D*, CreateTexture2D,
 	HRITexture2DCtorInfo const& CtorInfo, 
@@ -102,10 +102,10 @@ GD_DEFINE_HRI_METHOD(
 
 #if 0
 /// Creates new Cube map texture.
-/// @param CtorInfo          Cube map construction information.
-/// @param InitialData       Pointer to texture`s initial data.
+/// @param CtorInfo    Cube map construction information.
+/// @param InitialData    Pointer to texture`s initial data.
 /// @param InitialDataLength Size of textures`s initial data.
-/// @returns                 New Cube map.
+/// @returns     New Cube map.
 GD_DEFINE_HRI_METHOD(
 	HRITextureCube*, CreateTextureCube,
 	HRITextureCubeCtorInfo const& CtorInfo, 
@@ -148,7 +148,7 @@ GD_DEFINE_HRI_METHOD(
 /// @param LocationDesc   Description of this location.
 GD_DEFINE_HRI_METHOD(
 	HRIShaderParamLocation*, CreateShaderParamLocationConstantBuffer,
-	HRIShaderInstance               * const ShaderInstance,
+	HRIShaderInstance      * const ShaderInstance,
 	HRIShaderParamLocationDesc const* const LocationDesc
 	)
 
@@ -157,13 +157,13 @@ GD_DEFINE_HRI_METHOD(
 /// @param LocationDesc   Description of this location.
 GD_DEFINE_HRI_METHOD(
 	HRIShaderParamLocation*, CreateShaderParamLocationResources,
-	HRIShaderInstance               * const ShaderInstance,
+	HRIShaderInstance      * const ShaderInstance,
 	HRIShaderParamLocationDesc const* const LocationDesc
 	)
 
 /// Creates new vertex shader.
 /// @param CtorInfo Vertex shader construction information.
-/// @returns        New vertex shader.
+/// @returns  New vertex shader.
 GD_DEFINE_HRI_METHOD(
 	HRIVertexShader*, CreateVertexShader,
 	HRIShaderCtorInfo const& CtorInfo
@@ -171,7 +171,7 @@ GD_DEFINE_HRI_METHOD(
 
 /// Creates new hull shader.
 /// @param CtorInfo Hull shader construction information.
-/// @returns        New hull shader.
+/// @returns  New hull shader.
 GD_DEFINE_HRI_METHOD(
 	HRIHullShader*, CreateHullShader,
 	HRIShaderCtorInfo const& CtorInfo
@@ -179,7 +179,7 @@ GD_DEFINE_HRI_METHOD(
 
 /// Creates new domain shader.
 /// @param CtorInfo Domain shader construction information.
-/// @returns        New domain shader.
+/// @returns  New domain shader.
 GD_DEFINE_HRI_METHOD(
 	HRIDomainShader*, CreateDomainShader,
 	HRIShaderCtorInfo const& CtorInfo
@@ -187,7 +187,7 @@ GD_DEFINE_HRI_METHOD(
 
 /// Creates new pixel shader.
 /// @param CtorInfo Pixel shader construction information.
-/// @returns        New pixel shader.
+/// @returns  New pixel shader.
 GD_DEFINE_HRI_METHOD(
 	HRIPixelShader*, CreatePixelShader,
 	HRIShaderCtorInfo const& CtorInfo

@@ -1,8 +1,8 @@
 #include <GoddamnEngine/Engine/Component/Component.h>
 #include <GoddamnEngine/Engine/Resource/Resource.h>
 #include <GoddamnEngine/Core/Containers/Map/Map.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
-#include <GoddamnEngine/Core/Containers/Vector/Vector.h>
+#include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Containers/Vector.h>
 
 GD_NAMESPACE_BEGIN
 

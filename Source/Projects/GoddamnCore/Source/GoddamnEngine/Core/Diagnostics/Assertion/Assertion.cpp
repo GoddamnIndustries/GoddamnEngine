@@ -16,7 +16,7 @@
 
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 #include <GoddamnEngine/Core/Threading/CriticalSection/CriticalSection.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
+#include <GoddamnEngine/Core/Containers/String.h>
 
 /// ------------------------------------------------------------------------------------------
 /// We are inside assertion implementation source, so we cannot use our asserts in order 
@@ -32,10 +32,10 @@
 
 #if (defined(GD_PLATFORM_API_WINAPI))
 #	define GD_PLATFORM_LINEBREAK "\r\n"
-#	define GD_PLATFORM_SLASH     "\\"
+#	define GD_PLATFORM_SLASH  "\\"
 #else	// if (defined(GD_PLATFORM_API_WINAPI))
 #	define GD_PLATFORM_LINEBREAK "\n"
-#	define GD_PLATFORM_SLASH     "/"
+#	define GD_PLATFORM_SLASH  "/"
 #endif	// if (defined(GD_PLATFORM_API_WINAPI))
 
 /// ------------------------------------------------------------------------------------------
@@ -59,10 +59,11 @@ GD_NAMESPACE_BEGIN
 
 	struct AssertionCache;
 
-	/// Should show UI that notifies user about assertion failure and would request a decision from him.
+	/// @brief Should show UI that notifies user about assertion failure and would request a decision from him.
 	GDINT static AssertionState HandleAssertionImpl(AssertionCache const* const TheAssertionCache);
 
-	/// Should report about a bug to developers and return false on failure.
+	/// @brief Should report about a bug to developers and return false on failure.
+	/// @returns False on reporting failure.
 	GDINT static bool ReportAssertionImpl(AssertionCache const* const TheAssertionCache);
 
 	/// ------------------------------------------------------------------------------------------	
@@ -84,7 +85,7 @@ GD_NAMESPACE_BEGIN
 	{
 		Str const EngineSDKLocation = std::strstr(FileName, GD_PLATFORM_SLASH "GoddamnEngine" GD_PLATFORM_SLASH "source");
 		if (EngineSDKLocation != nullptr) {
-			if (std::strstr(EngineSDKLocation, GD_PLATFORM_SLASH "_Dependencies") != nullptr) {
+			if (std::strstr(EngineSDKLocation, GD_PLATFORM_SLASH "Dependencies") != nullptr) {
 				return AssertionLocation::DependencyCode;
 			} else {
 				return AssertionLocation::EngineCode;
@@ -119,7 +120,7 @@ GD_NAMESPACE_BEGIN
 	/// Fatal assertion mechanisms.
 	/// ------------------------------------------------------------------------------------------
 
-	void HandleFatalAssertionVa(FatalAssertionData const* const Data, va_list const Args)
+	void HandleFatalAssertionVa(FatalAssertionData const* const Data, va_list Args)
 	{
 		CriticalSection static CriticalAssertionCriticalSection;
 		CriticalAssertionCriticalSection.Enter();
@@ -147,7 +148,7 @@ GD_NAMESPACE_BEGIN
 	/// Regular assertion mechanisms.
 	/// ------------------------------------------------------------------------------------------
 
-	AssertionState HandleRegularAssertionVa(RegularAssertionData* const Data, va_list const Args)
+	AssertionState HandleRegularAssertionVa(RegularAssertionData* const Data, va_list Args)
 	{
 		bool static ShouldIgnoreAllRegularAssertions = false;
 		if (!ShouldIgnoreAllRegularAssertions) {

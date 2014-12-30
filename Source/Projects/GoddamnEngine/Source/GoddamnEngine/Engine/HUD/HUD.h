@@ -35,9 +35,9 @@ GD_NAMESPACE_BEGIN
 
 		/// ==========================================================================================
 		GDINL HUDTextureAtlas(
-			_In_ HRITexture2D const* const AtlasTexture,
-			_In_ UInt32x2  const&		AtlasDimensions,
-			_In_ Vector2   const&		AtlasFixedZone
+			HRITexture2D const* const AtlasTexture,
+			UInt32x2  const&		AtlasDimensions,
+			Vector2   const&		AtlasFixedZone
 		) : HRIObject(),
 			AtlasTexture(AtlasTexture), AtlasDimensions(AtlasDimensions), AtlasFixedZone(AtlasFixedZone)
 		{ }
@@ -61,9 +61,9 @@ GD_NAMESPACE_BEGIN
 
 		/// ==========================================================================================
 		GDINL HUDCharactersAtlas(
-			_In_ HRITexture2D const* const AtlasTexture,
-			_In_ UInt32x2  const&		AtlasDimensions,
-			_In_ float	   const		AtlasCharacterAspect
+			HRITexture2D const* const AtlasTexture,
+			UInt32x2  const&		AtlasDimensions,
+			float	   const		AtlasCharacterAspect
 		) : HRIObject(),
 			AtlasTexture(AtlasTexture), AtlasDimensions(AtlasDimensions), AtlasCharacterAspect(AtlasCharacterAspect)
 		{ }
@@ -115,12 +115,12 @@ GD_NAMESPACE_BEGIN
 
 		// Pixel shader parameters
 		//	Texture parameters
-		UInt32    ElementTextureIndex		= 0;
+		UInt32 ElementTextureIndex		= 0;
 		/// @todo Add more texture customization here
 		//	Character parameters
-		String    ElementCharactersString	= String("Dummy Text");
+		String ElementCharactersString	= String("Dummy Text");
 		Float32	  ElementCharactersFontSize = Float32(1.0f);
-		Color     ElementCharactersColor	= Color(0.96f, 0.96f, 1.0f, 1.0f);
+		Color  ElementCharactersColor	= Color(0.96f, 0.96f, 1.0f, 1.0f);
 		Vector2	  ElementCharactersPadding	= Vector2(0.0f, 0.15f);
 
 	public:
@@ -146,17 +146,17 @@ GD_NAMESPACE_BEGIN
 		/// Position and scale of panel.
 		/// Coordinate system is: down left corner is origin, Y - axis up, X - left.
 		GDINL Rectangle const& GetElementRectangle() const { return this->ElementRectangle; }
-		GDAPI void			   SetElementRectangle(_In_ Rectangle const& ElementRectangle);
+		GDAPI void			   SetElementRectangle(Rectangle const& ElementRectangle);
 
 		/// Rotation in Z axis of panel in degrees.
 		/// Positive value is clockwise rotation, negative - counterclockwise.
 		GDINL Float32		   GetElementRotationDegrees() const { return this->ElementRotationDegrees; }
-		GDAPI void			   SetElementRotationDegrees(_In_ Float32 const ElementRotationDegrees);
+		GDAPI void			   SetElementRotationDegrees(Float32 const ElementRotationDegrees);
 
 		/// Z coordinate of this panel. Higher value - deeper panel.
 		/// On GPU this values if converted in format (depth + 500.0f) / 1000.0f
 		GDINL Int32			   GetElementDepth() const { return this->ElementDepth; }
-		GDAPI void			   SetElementDepth(_In_ Int32 const ElementDepth);
+		GDAPI void			   SetElementDepth(Int32 const ElementDepth);
 
 		/// @}
 		/// ==========================================================================================
@@ -173,7 +173,7 @@ GD_NAMESPACE_BEGIN
 	protected:
 		/// Id of the texture inside atlas
 		GDINL UInt32		   GetElementTextureIndex() const { return this->ElementTextureIndex; }
-		GDAPI void			   SetElementTextureIndex(_In_ UInt32 const ElementTextureIndex);
+		GDAPI void			   SetElementTextureIndex(UInt32 const ElementTextureIndex);
 
 	private:
 		GDINT void			   SetElementCharactersAtlas();
@@ -181,26 +181,26 @@ GD_NAMESPACE_BEGIN
 	protected:
 		/// String containment of panel text. Note, that max length of this string is 64 characters
 		GDINL String		   GetElementCharactersString() const { return this->ElementCharactersString; }
-		GDAPI void			   SetElementCharactersString(_In_ String const& ElementCharactersString);
+		GDAPI void			   SetElementCharactersString(String const& ElementCharactersString);
 
 		/// Size multiplier of each character in text.
 		GDINL Float32		   GetElementCharactersFontSize() const { return this->ElementCharactersFontSize; }
-		GDAPI void			   SetElementCharactersFontSize(_In_ Float32 const ElementCharactersFontSize);
+		GDAPI void			   SetElementCharactersFontSize(Float32 const ElementCharactersFontSize);
 
 		/// The color of text in the panel
 		GDINL Color const&	   GetElementCharactersColor() const { return this->ElementCharactersColor; }
-		GDAPI void			   SetElementCharactersColor(_In_ Color const& ElementCharactersColor);
+		GDAPI void			   SetElementCharactersColor(Color const& ElementCharactersColor);
 
 		/// Text starting position inside panel
 		GDINL Vector2 const&   GetElementCharactersPadding() const { return this->ElementCharactersPadding; }
-		GDAPI void			   SetElementCharactersPadding(_In_ Vector2 const& ElementCharactersPadding);
+		GDAPI void			   SetElementCharactersPadding(Vector2 const& ElementCharactersPadding);
 
 		/// @}
 		/// ==========================================================================================
 		/// ==========================================================================================
 
 	private: // Dummy methods for event system 
-		GDINL void OnDepthParamChanged(chandle const Unused)     { this->SetElementDepth(this->GetElementDepth()); }
+		GDINL void OnDepthParamChanged(chandle const Unused)  { this->SetElementDepth(this->GetElementDepth()); }
 		GDINL void OnRotationParamChanged(chandle const Unused)  { this->SetElementRotationDegrees(this->GetElementRotationDegrees()); }
 		GDINL void OnRectangleParamChanged(chandle const Unused) { this->SetElementRectangle(this->GetElementRectangle()); // Recomputing char size because it depends on rectangle
 																   this->SetElementCharactersFontSize(this->GetElementCharactersFontSize()); }

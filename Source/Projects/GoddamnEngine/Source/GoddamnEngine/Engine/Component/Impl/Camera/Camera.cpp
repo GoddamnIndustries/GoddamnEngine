@@ -3,7 +3,7 @@
 #include <GoddamnEngine/Engine/Component/Impl/MeshRenderer/MeshRenderer.h>
 #include <GoddamnEngine/Engine/Component/Impl/Transform/Transform.h>
 #include <GoddamnEngine/Engine/Component/Static/Input/Input.h>
-#include <GoddamnEngine/Core/Containers/Vector/Vector.h>
+#include <GoddamnEngine/Core/Containers/Vector.h>
 
 #include <GoddamnEngine/Engine/Renderer/Renderer.h>
 #include <GoddamnEngine/Engine/Scene/Scene.h>
@@ -49,9 +49,9 @@ GD_NAMESPACE_BEGIN
 
 		/// ==========================================================================================
 		GDINL ImageEffectPass(
-			_In_ ImageEffectBase* const passImageEffect,
-			_In_ HRIRenderTargetCtorInfo const& passRenderTargetInfo,
-			_In_ HRIShaderProgram* const passShaderProgram
+			ImageEffectBase* const passImageEffect,
+			HRIRenderTargetCtorInfo const& passRenderTargetInfo,
+			HRIShaderProgram* const passShaderProgram
 		);
 
 		/// ==========================================================================================
@@ -66,9 +66,9 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	ImageEffectPass::ImageEffectPass(
-		_In_ ImageEffectBase* const passImageEffect,
-		_In_ HRIRenderTargetCtorInfo const& passRenderTargetInfo,
-		_In_ HRIShaderProgram* const passShaderProgram
+		ImageEffectBase* const passImageEffect,
+		HRIRenderTargetCtorInfo const& passRenderTargetInfo,
+		HRIShaderProgram* const passShaderProgram
 	) : HRIObject(HRIObject::TreeLockingFlagsAll, passImageEffect),
 		PassShaderProgram(passShaderProgram)
 	{
@@ -102,7 +102,7 @@ GD_NAMESPACE_BEGIN
 		}*/
 	}
 
-    static ImageEffectBase* const imageEffect = nullptr;
+ static ImageEffectBase* const imageEffect = nullptr;
 
 	/// ==========================================================================================
 	ImageEffectPass::~ImageEffectPass(
@@ -134,7 +134,7 @@ GD_NAMESPACE_BEGIN
 		this->Projection			= GD_CAMERA_PROJECTION_PERSPECTIVE;
 		this->ClearType				= GD_CAMERA_CLEAR_TYPE_ALL;
 		this->ClippingPlanes		= CameraClippingPlanes(0.3f, 1000.0f);
-        this->RenderTarget    		= nullptr;
+  this->RenderTarget 		= nullptr;
 		this->FieldOfView			= 60.0f;
 		this->AspectRatio			= 1.0f;
 		this->ProjectionMatrix		= Matrix4x4(1.0f);
@@ -265,7 +265,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	void Camera::OnTransformed(
-		_In_ Component* const transformer
+		Component* const transformer
 	)
 	{
 		RefPtr<Transform const> const  TheTransform(this->GetGameObject()->GetTransform());
@@ -279,7 +279,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	void Camera::OnProjectionMatrixChanged(
-		_In_ Camera const* const camera 
+		Camera const* const camera 
 	)
 	{
 		switch (this->Projection)

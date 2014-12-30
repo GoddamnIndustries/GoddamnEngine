@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual ~HRIOGLVertexBuffer();
 
 		GDINL virtual  handle GetNativePointer() const final { return const_cast<GLuint*>(&this->VertexBufferObject); }
-		GDINL          GLuint GetBufferID     () const       { return                      this->VertexBufferObject ; }
+		GDINL    GLuint GetBufferID  () const    { return       this->VertexBufferObject ; }
 		GDINT void BindBuffer() const;
 		GDINT void UnbindBuffer() const;
 	};	// class HRIOGLVertexBuffer
@@ -42,7 +42,7 @@ GD_NAMESPACE_BEGIN
 		GDINL virtual ~HRIOGLIndexBuffer();
 		
 		GDINL virtual  handle GetNativePointer() const final { return const_cast<GLuint*>(&this->IndexBufferObject); }
-		GDINL          GLuint GetBufferID     () const       { return                      this->IndexBufferObject ; }
+		GDINL    GLuint GetBufferID  () const    { return       this->IndexBufferObject ; }
 		GDINT void BindBuffer() const;
 		GDINT void UnbindBuffer() const;
 	};	// class HRIOGLIndexBuffer
@@ -58,10 +58,10 @@ GD_NAMESPACE_BEGIN
 		GDINL virtual ~HRIOGLConstantBuffer();
 		
 		GDINT virtual void CopyDataTo  ( handle const Data) const final;
-		GDINT virtual void CopyDataFrom(chandle const Data)       final;
+		GDINT virtual void CopyDataFrom(chandle const Data)    final;
 		
 		GDINL virtual  handle GetNativePointer() const final { return const_cast<GLuint*>(&this->UniformBufferObject); }
-		GDINL          GLuint GetBufferID     () const       { return                      this->UniformBufferObject ; }
+		GDINL    GLuint GetBufferID  () const    { return       this->UniformBufferObject ; }
 		GDINT void BindBuffer() const;
 		GDINT void UnbindBuffer() const;
 	};	// class HRIOGLConstantBuffer

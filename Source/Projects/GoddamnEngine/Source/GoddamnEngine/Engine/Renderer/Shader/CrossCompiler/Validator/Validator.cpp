@@ -56,13 +56,13 @@ GD_NAMESPACE_BEGIN
 			} else if (TextureObject->Type->Class == GD_HLSL_TYPE_CLASS_TEXTURECUBE) {
 				TextureObjectType = GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE;
 			} else {
-                if (TextureObject->Type->Class != GD_HLSL_TYPE_CLASS_SAMPLER) {
-                    HLSLVariable const* const StaticVariable = TextureObject;
-                    if (StaticVariable->ExprColon != nullptr) {	// Some static variable contains after-colon expression.
-                        HLSLValidatorErrorDesc static const HasExprColonError("static variable '%s' cannot have after-colon-experssion.");
-                        throw HLSLValidatorErrorException(HasExprColonError.ToString(nullptr, TextureObject->Name.CStr()));
-                    }
-                }
+    if (TextureObject->Type->Class != GD_HLSL_TYPE_CLASS_SAMPLER) {
+     HLSLVariable const* const StaticVariable = TextureObject;
+     if (StaticVariable->ExprColon != nullptr) {	// Some static variable contains after-colon expression.
+      HLSLValidatorErrorDesc static const HasExprColonError("static variable '%s' cannot have after-colon-experssion.");
+      throw HLSLValidatorErrorException(HasExprColonError.ToString(nullptr, TextureObject->Name.CStr()));
+     }
+    }
 
 				continue;
 			}
@@ -200,12 +200,12 @@ GD_NAMESPACE_BEGIN
 				}
 
 				HRIShaderParamDescType ParamType = GD_HRI_SHADER_PARAM_DESC_TYPE_UNKNOWN;
-				Format                 ParamFormat = GD_FORMAT_UNKNOWN;
+				Format     ParamFormat = GD_FORMAT_UNKNOWN;
 				if ((ConstantBufferParam->Type->Class == GD_HLSL_TYPE_CLASS_SCALAR) || (ConstantBufferParam->Type->Class == GD_HLSL_TYPE_CLASS_VECTOR)) {
 					HLSLVectorType const* const VectorType = HLSLDynamicCast<HLSLVectorType const*>(ConstantBufferParam->Type);
-					HLSLTypeDataType      const DataType   = ((VectorType != nullptr) ? VectorType->DataType : static_cast<HLSLScalarType const*>(ConstantBufferParam->Type)->DataType);
+					HLSLTypeDataType   const DataType   = ((VectorType != nullptr) ? VectorType->DataType : static_cast<HLSLScalarType const*>(ConstantBufferParam->Type)->DataType);
 
-					size_t     ParamFormatSize = GD_FORMAT_SIZE_UNKNOWN;
+					size_t  ParamFormatSize = GD_FORMAT_SIZE_UNKNOWN;
 					FormatType ParamFormatType = GD_FORMAT_TYPE_UNKNOWN;
 					switch (DataType) {
 						case GD_HLSL_TYPE_DATA_TYPE_bool: {
@@ -356,9 +356,9 @@ GD_NAMESPACE_BEGIN
 	HRIShaderInstanceDesc* HLSLValidator::ValidateAndGenerateDescription(HLSLScope const* const ParsedData, String const& EntryPointName)
 	{
 		RefPtr<HRIShaderInstanceDesc> ShaderInstanceDesc(nullptr);
-		this->ValidateEntryPoint               (ParsedData, EntryPointName, ShaderInstanceDesc);
+		this->ValidateEntryPoint      (ParsedData, EntryPointName, ShaderInstanceDesc);
 		this->ValidateConstantBuffersParameters(ParsedData, ShaderInstanceDesc.GetPointer());
-		this->ValidateResourceParameters       (ParsedData, ShaderInstanceDesc.GetPointer());
+		this->ValidateResourceParameters    (ParsedData, ShaderInstanceDesc.GetPointer());
 
 		return ShaderInstanceDesc.Release();
 	}

@@ -89,18 +89,18 @@ R"(
 #define const
 #define Texture2D   sampler2D
 #define TextureCube samplerCube
-#define bool2     bvec2
-#define bool3     bvec3
-#define bool4     bvec4
-#define int2      ivec2
-#define int3      ivec3
-#define int4      ivec4
-#define uint2     uvec2
-#define uint3     uvec3
-#define uint4     uvec4
-#define float2     vec2
-#define float3     vec3
-#define float4     vec4
+#define bool2  bvec2
+#define bool3  bvec3
+#define bool4  bvec4
+#define int2   ivec2
+#define int3   ivec3
+#define int4   ivec4
+#define uint2  uvec2
+#define uint3  uvec3
+#define uint4  uvec4
+#define float2  vec2
+#define float3  vec3
+#define float4  vec4
 #define double2   dvec2
 #define double3   dvec3
 #define double4   dvec4
@@ -272,7 +272,7 @@ R"(
 		int LastUsedSemanticIn = 0, LastUsedSemanticOut = 0;
 		for (auto const& Argument : EntryPoint->Arguments) {
 			Str const ArgumentAccessType = ((Argument->AccsessType == GD_HLSL_ARGUMENT_IN) ? "in " : "out");
-			int&      LastUsedSemantic   = ((Argument->AccsessType == GD_HLSL_ARGUMENT_IN) ? LastUsedSemanticIn : LastUsedSemanticOut);
+			int&   LastUsedSemantic   = ((Argument->AccsessType == GD_HLSL_ARGUMENT_IN) ? LastUsedSemanticIn : LastUsedSemanticOut);
 
 			if (Argument->Type->Class == GD_HLSL_TYPE_CLASS_STRUCT) {
 				if (Argument->AccsessType == GD_HLSL_ARGUMENT_IN) {
@@ -354,11 +354,11 @@ R"(
 	}
 
 	void GLSLCompiler::GenerateAndCompileShader(
-		UniquePtr<OutputStream>      const&       ShaderByteCodeOutputStream,
-		HLSLScope                    const* const ShaderParsedData,
-		HRIShaderType                const        ShaderType,
-		String                       const&       ShaderEntryName,
-		HRIShaderCrossCompilerTarget const        ShaderTargetPlatform
+		UniquePtr<OutputStream>   const&    ShaderByteCodeOutputStream,
+		HLSLScope     const* const ShaderParsedData,
+		HRIShaderType    const  ShaderType,
+		String        const&    ShaderEntryName,
+		HRIShaderCrossCompilerTarget const  ShaderTargetPlatform
 	)
 	{
 		StringBuilder GLSLGeneratorBuilder;
@@ -384,7 +384,7 @@ R"(
 		// We use mcpp preprocessor because it is faster than our one.
 		String const MCPPSourceFilePath = Path::GetTemporaryFileName();
 		String const MCPPOutputFilePath = Path::GetTemporaryFileName();
-		Str    const MCPPArguments[]    = { nullptr, "-P", MCPPSourceFilePath.CStr(), MCPPOutputFilePath.CStr() };
+		Str const MCPPArguments[] = { nullptr, "-P", MCPPSourceFilePath.CStr(), MCPPOutputFilePath.CStr() };
 
 		// Saving output to some temporary file to make is accessable from MCPP
 		FileOutputStream MCPPSourceFile(MCPPSourceFilePath);
@@ -460,12 +460,12 @@ R"(
 			} static const GLSLangInitializer;
 
 			static EShLanguage const HRI2GLSLangShaderType[] = {
-				/* GD_HRI_SHADER_TYPE_VERTEX                  = */ EShLangVertex,         
-				/* GD_HRI_SHADER_TYPE_TESSELLATION_CONTROL    = */ EShLangTessControl,    
+				/* GD_HRI_SHADER_TYPE_VERTEX      = */ EShLangVertex,   
+				/* GD_HRI_SHADER_TYPE_TESSELLATION_CONTROL = */ EShLangTessControl, 
 				/* GD_HRI_SHADER_TYPE_TESSELLATION_EVALUATION = */ EShLangTessEvaluation, 
-				/* GD_HRI_SHADER_TYPE_FRAGMENT                = */ EShLangFragment,
-				/* GD_HRI_SHADER_TYPE_COMPUTE                 = */ EShLangCompute,
-				/* GD_HRI_SHADER_TYPE_GEOMETRY                = */ EShLangGeometry,
+				/* GD_HRI_SHADER_TYPE_FRAGMENT    = */ EShLangFragment,
+				/* GD_HRI_SHADER_TYPE_COMPUTE     = */ EShLangCompute,
+				/* GD_HRI_SHADER_TYPE_GEOMETRY    = */ EShLangGeometry,
 			};
 
 			char const* const GLSLOptimizerBuilderPtr = GLSLOptimizerBuilder.GetPointer();

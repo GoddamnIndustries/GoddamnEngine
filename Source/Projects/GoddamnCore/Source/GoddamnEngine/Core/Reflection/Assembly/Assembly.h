@@ -11,8 +11,8 @@
 #define GD_CORE_REFLECTION_ASSEMBLY
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
-#include <GoddamnEngine/Core/Containers/Vector/Vector.h>
+#include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Containers/Vector.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -44,7 +44,7 @@ GD_NAMESPACE_BEGIN
 		/// Loads assembly from path
 		GDAPI static Assembly const* LoadAssemblyFromPath(String const& Path) { return new Assembly(Path); }
 
-		GDAPI Assembly(_In_ String const& FileName);
+		GDAPI Assembly(String const& FileName);
 		GDAPI virtual ~Assembly();
 
 	public:
@@ -64,7 +64,7 @@ GD_NAMESPACE_BEGIN
 		GDAPI Vector<ITypeInformation const*> const& GetTypes() const;
 
 		/// Returns pointer of native method that is located in this assembly or nullptr if it was not found
-		GDAPI chandle GetNativeMethod(_In_ String const& MethodName) const;
+		GDAPI chandle GetNativeMethod(String const& MethodName) const;
 	};	// class Assembly 
 
 GD_NAMESPACE_END

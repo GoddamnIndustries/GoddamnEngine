@@ -33,19 +33,19 @@ GD_NAMESPACE_BEGIN
 			ThisPtrType Pointer;
 
 		public:
-			GDINL  Iterator(ThisPtrType const  Pointer ) : Pointer(         Pointer) { }
-			GDINL  Iterator(Iterator    const& Iterator) : Pointer(Iterator.Pointer) { }
+			GDINL  Iterator(ThisPtrType const  Pointer ) : Pointer(   Pointer) { }
+			GDINL  Iterator(Iterator const& Iterator) : Pointer(Iterator.Pointer) { }
 			GDINL ~Iterator() { }
 			
 			/// Compares iterators.
-			GDINL bool operator== (Iterator   const&       Other  ) const { return (this->Pointer == Other.Pointer); }
-			GDINL bool operator!= (Iterator   const&       Other  ) const { return (this->Pointer != Other.Pointer); }
+			GDINL bool operator== (Iterator   const&    Other  ) const { return (this->Pointer == Other.Pointer); }
+			GDINL bool operator!= (Iterator   const&    Other  ) const { return (this->Pointer != Other.Pointer); }
 			GDINL bool operator== (ObjectType const* const Pointer) const { return (this->Pointer == Pointer); }
 			GDINL bool operator!= (ObjectType const* const Pointer) const { return (this->Pointer != Pointer); }
 
 			/// Assigns this iterator other value.
-			GDINL Iterator& operator= (ThisPtrType const  Pointer ) { this->Pointer =           Pointer; return (*this); }
-			GDINL Iterator& operator= (Iterator    const& Iterator) { this->Pointer = Iterator->Pointer; return (*this); }
+			GDINL Iterator& operator= (ThisPtrType const  Pointer ) { this->Pointer =     Pointer; return (*this); }
+			GDINL Iterator& operator= (Iterator const& Iterator) { this->Pointer = Iterator->Pointer; return (*this); }
 
 			/// (De)referensing iterator.
 			GDINL ThisPtrType operator*  () const { return (this->Pointer); }
@@ -57,7 +57,7 @@ GD_NAMESPACE_BEGIN
 
 			/// Increases iterator.
 			GDINL Iterator& operator++ (int const) { return ++(*this); }
-			GDINL Iterator& operator++ (         )
+			GDINL Iterator& operator++ (   )
 			{
 				GD_DEBUG_ASSERT(this->Pointer != nullptr, "nullptr iterator increment.");
 				this->Pointer = object_cast<ThisPtrType>(this->Pointer->GetNextSiblingObject());
@@ -66,7 +66,7 @@ GD_NAMESPACE_BEGIN
 
 			/// Decreases iterator.
 			GDINL Iterator& operator-- (int const) { return --(*this); }
-			GDINL Iterator& operator-- (         )
+			GDINL Iterator& operator-- (   )
 			{
 				GD_DEBUG_ASSERT(this->Pointer != nullptr, "nullptr iterator decrement.");
 				this->Pointer = object_cast<ThisPtrType>(this->Pointer->GetPreviousSiblingObject());
@@ -74,10 +74,10 @@ GD_NAMESPACE_BEGIN
 			}
 		};	// struct Iterator
 
-		template<typename ObjectType> using        MutableIterator =        Iterator<ContainerDetails::IteratorTagMutable, ObjectType>;
-		template<typename ObjectType> using          ConstIterator =        Iterator<ContainerDetails::IteratorTagConst,   ObjectType>;
-		template<typename ObjectType> using ReverseMutableIterator = MutableIterator<                                      ObjectType>;
-		template<typename ObjectType> using   ReverseConstIterator =   ConstIterator<                                      ObjectType>;
+		template<typename ObjectType> using  Iterator =  Iterator<IteratorTagMutable, ObjectType>;
+		template<typename ObjectType> using    ConstIterator =  Iterator<IteratorTagConst,   ObjectType>;
+		template<typename ObjectType> using ReverseContainerIterator = Iterator<           ObjectType>;
+		template<typename ObjectType> using   ReverseConstIterator =   ConstIterator<           ObjectType>;
 
 	private:
 		GD_CLASS_UNASSIGNABLE(Object);
@@ -85,11 +85,11 @@ GD_NAMESPACE_BEGIN
 		GD_CLASS_UNCOPIABLE  (Object);
 
 		mutable ObjectRefenceCount ReferenceCount = 1;
-		Object* ParentObject          = nullptr;
-		Object* NextSiblingObject     = nullptr;
+		Object* ParentObject    = nullptr;
+		Object* NextSiblingObject  = nullptr;
 		Object* PreviousSiblingObject = nullptr;
-		Object* FirstChildObject      = nullptr;
-		Object* LastChildObject       = nullptr;
+		Object* FirstChildObject   = nullptr;
+		Object* LastChildObject    = nullptr;
 		UInt64  GUID = 0;
 
 	protected:
@@ -135,7 +135,7 @@ GD_NAMESPACE_BEGIN
 		///	All this object are going to be counter-decremented on Objects deletion.
 		///	@code
 		///		MyObjectType* const myObject = ...;
-		///     
+		///  
 		///		for (MyOtherObjectType* 
 		///			 myChildObject = (MyOtherObjectType*)myObject->GetLastChildObject(); myChildObject != nullptr
 		///			 myChildObject = (MyOtherObjectType*)myChildObject->GetPreviousSiblingObject())
@@ -153,40 +153,40 @@ GD_NAMESPACE_BEGIN
 		/// Returns flags Describing flags for object edit-ability in object tree.
 		GDINL ObjectTreeLockingFlags GetTreeLockingFlags() const { return this->TreeLockingFlags; }
 		
-		template<typename ObjectType> GDINL        MutableIterator<ObjectType>        Begin()       { return        MutableIterator<ObjectType>(object_cast<ObjectType      *>(this->GetFirstChildObject())); }
-		template<typename ObjectType> GDINL          ConstIterator<ObjectType>        Begin() const { return          ConstIterator<ObjectType>(object_cast<ObjectType const*>(this->GetFirstChildObject())); }
-		template<typename ObjectType> GDINL        MutableIterator<ObjectType>        End  ()       { return        MutableIterator<ObjectType>(nullptr); }
-		template<typename ObjectType> GDINL          ConstIterator<ObjectType>        End  () const { return          ConstIterator<ObjectType>(nullptr); }
-		template<typename ObjectType> GDINL ReverseMutableIterator<ObjectType> ReverseBegin()       { return ReverseMutableIterator<ObjectType>(object_cast<ObjectType      *>(this->GetFirstChildObject())); }
+		template<typename ObjectType> GDINL  Iterator<ObjectType>  Begin()    { return  Iterator<ObjectType>(object_cast<ObjectType   *>(this->GetFirstChildObject())); }
+		template<typename ObjectType> GDINL    ConstIterator<ObjectType>  Begin() const { return    ConstIterator<ObjectType>(object_cast<ObjectType const*>(this->GetFirstChildObject())); }
+		template<typename ObjectType> GDINL  Iterator<ObjectType>  End  ()    { return  Iterator<ObjectType>(nullptr); }
+		template<typename ObjectType> GDINL    ConstIterator<ObjectType>  End  () const { return    ConstIterator<ObjectType>(nullptr); }
+		template<typename ObjectType> GDINL ReverseContainerIterator<ObjectType> ReverseBegin()    { return ReverseContainerIterator<ObjectType>(object_cast<ObjectType   *>(this->GetFirstChildObject())); }
 		template<typename ObjectType> GDINL   ReverseConstIterator<ObjectType> ReverseBegin() const { return   ReverseConstIterator<ObjectType>(object_cast<ObjectType const*>(this->GetFirstChildObject())); }
-		template<typename ObjectType> GDINL ReverseMutableIterator<ObjectType> ReverseEnd  ()       { return ReverseMutableIterator<ObjectType>(nullptr); }
+		template<typename ObjectType> GDINL ReverseContainerIterator<ObjectType> ReverseEnd  ()    { return ReverseContainerIterator<ObjectType>(nullptr); }
 		template<typename ObjectType> GDINL   ReverseConstIterator<ObjectType> ReverseEnd  () const { return   ReverseConstIterator<ObjectType>(nullptr); }
 
 		/// Returns next object in list of parent`s child objects.
 		/// @returns Pointer to object or nullptr if is last child.
-		GDINL Object const* GetNextSiblingObject    () const { return this->NextSiblingObject; }
-		GDINL Object      * GetNextSiblingObject    ()       { return this->NextSiblingObject; }
+		GDINL Object const* GetNextSiblingObject () const { return this->NextSiblingObject; }
+		GDINL Object   * GetNextSiblingObject ()    { return this->NextSiblingObject; }
 		
 		/// Returns previous object in list of parent`s child objects.
 		/// @returns Pointer to object or nullptr is is first child.
 		GDINL Object const* GetPreviousSiblingObject() const { return this->PreviousSiblingObject; }
-		GDINL Object      * GetPreviousSiblingObject()       { return this->PreviousSiblingObject; }
+		GDINL Object   * GetPreviousSiblingObject()    { return this->PreviousSiblingObject; }
 		
 		/// Returns first object attached to this.
 		/// @returns Pointer to object or nullptr if no child existing.
-		GDINL Object const* GetFirstChildObject     () const { return this->FirstChildObject; }
-		GDINL Object      * GetFirstChildObject     ()       { return this->FirstChildObject; }
+		GDINL Object const* GetFirstChildObject  () const { return this->FirstChildObject; }
+		GDINL Object   * GetFirstChildObject  ()    { return this->FirstChildObject; }
 		
 		/// Returns last object attached to this.
 		/// @returns Pointer to object or nullptr if no child existing.
-		GDINL Object const* GetLastChildObject      () const { return this->LastChildObject; }
-		GDINL Object      * GetLastChildObject      ()       { return this->LastChildObject; }
+		GDINL Object const* GetLastChildObject   () const { return this->LastChildObject; }
+		GDINL Object   * GetLastChildObject   ()    { return this->LastChildObject; }
 		
 		/// Returns object this object is attached to.
 		///	For game objects returns scene this game object is attached to, for components this functions returns owner game object, for other objects read the specifications.
 		/// @returns Pointer to object or nullptr if is not attached to any objects.
-		GDINL Object const* GetParentObject         () const { return this->ParentObject; }
-		GDINL Object      * GetParentObject         ()       { return this->ParentObject; }
+		GDINL Object const* GetParentObject   () const { return this->ParentObject; }
+		GDINL Object   * GetParentObject   ()    { return this->ParentObject; }
 
 		/// @}
 
@@ -198,14 +198,14 @@ GD_NAMESPACE_BEGIN
 		template<typename ObjectType, typename SearchingPredicateType>
 		GDINL ObjectType const* FindFirstChildObject(SearchingPredicateType const& Predicate) const;
 		template<typename ObjectType, typename SearchingPredicateType>
-		GDINL ObjectType      * FindFirstChildObject(SearchingPredicateType const& Predicate);
+		GDINL ObjectType   * FindFirstChildObject(SearchingPredicateType const& Predicate);
 		
 		/// Searches for first object with specified searching function.
 		/// @returns Pointer to last found child object.
 		template<typename ObjectType, typename SearchingPredicateType>
 		GDINL ObjectType const* FindLastChildObject(SearchingPredicateType const& Predicate) const;
 		template<typename ObjectType, typename SearchingPredicateType>
-		GDINL ObjectType      * FindLastChildObject(SearchingPredicateType const& Predicate);
+		GDINL ObjectType   * FindLastChildObject(SearchingPredicateType const& Predicate);
 
 		/// @}
 		
@@ -214,16 +214,16 @@ GD_NAMESPACE_BEGIN
 
 	private:
 		GDAPI void DetachFromParentObject(ObjectTreeLockingFlags const CustomTreeLockingFlags);
-		GDAPI void AttachToObject        (Object* const ParentObject,  ObjectTreeLockingFlags const CustomTreeLockingFlags);
+		GDAPI void AttachToObject  (Object* const ParentObject,  ObjectTreeLockingFlags const CustomTreeLockingFlags);
 		GDAPI void SwapToSiblingObject   (Object* const SiblingObject, ObjectTreeLockingFlags const CustomTreeLockingFlags);
 		GDAPI void MoveToSiblingObject   (Object* const SiblingObject, ObjectTreeLockingFlags const CustomTreeLockingFlags);
 		
 	public:
 		/// Removes this object from parent object`s list.
-		GDINL void DetachFromParentObject(                           ) { this->DetachFromParentObject(            this->GetTreeLockingFlags()); }
+		GDINL void DetachFromParentObject(         ) { this->DetachFromParentObject(   this->GetTreeLockingFlags()); }
 		
 		/// Attaches object to specified parent.
-		GDINL void AttachToObject        (Object* const ParentObject ) { this->AttachToObject(ParentObject,       this->GetTreeLockingFlags()); }
+		GDINL void AttachToObject  (Object* const ParentObject ) { this->AttachToObject(ParentObject,    this->GetTreeLockingFlags()); }
 		
 		/// Swaps object`s places is parent's list to.
 		/// @param SiblingObject Sibling object to swap with.
@@ -238,10 +238,10 @@ GD_NAMESPACE_BEGIN
 
 #if (defined(GD_DEBUG) || defined(GD_DOCUMENTATION))
 		/// Prints object tree to debug output
-		GDAPI void DumpTreeData(_Out_ String& DumpedTreeData) const;
+		GDAPI void DumpTreeData(String& DumpedTreeData) const;
 #else
 		/// Dummy
-		GDINL void DumpTreeData(_Out_ String& DumpedTreeData) const { }
+		GDINL void DumpTreeData(String& DumpedTreeData) const { }
 #endif
 	};	// class Object
 
@@ -255,8 +255,8 @@ GD_NAMESPACE_BEGIN
 	public /*Inner types*/:
 		/// Provides iteration of constant sibling objects.
 		typedef typename Conditional<Tag::IsConst, Object const*, Object*>::Type ThisPtrType;
-		typedef typename Conditional<Tag::IsConst, typename Object::ConstIterator<ObjectType>, typename Object::MutableIterator<ObjectType>>::Type Iterator;
-		typedef typename Conditional<Tag::IsConst, typename Object::ReverseConstIterator<ObjectType>, typename Object::ReverseMutableIterator<ObjectType>>::Type ReverseIterator;
+		typedef typename Conditional<Tag::IsConst, typename Object::ConstIterator<ObjectType>, typename Object::Iterator<ObjectType>>::Type Iterator;
+		typedef typename Conditional<Tag::IsConst, typename Object::ReverseConstIterator<ObjectType>, typename Object::ReverseContainerIterator<ObjectType>>::Type ReverseContainerIterator;
 
 	private:
 		GD_CLASS_UNASSIGNABLE(ObjectIterationAdapter);
@@ -264,17 +264,17 @@ GD_NAMESPACE_BEGIN
 		ThisPtrType TheBaseObject;
 
 	public /*Class API*/:
-		GDINL explicit ObjectIterationAdapter(ThisPtrType            const  TheBaseObject) : TheBaseObject(      TheBaseObject) { }
-		GDINL          ObjectIterationAdapter(ObjectIterationAdapter const& Other        ) : TheBaseObject(Other.TheBaseObject) { }
-		GDINL         ~ObjectIterationAdapter(                                           ) { }
+		GDINL explicit ObjectIterationAdapter(ThisPtrType   const  TheBaseObject) : TheBaseObject(   TheBaseObject) { }
+		GDINL    ObjectIterationAdapter(ObjectIterationAdapter const& Other  ) : TheBaseObject(Other.TheBaseObject) { }
+		GDINL   ~ObjectIterationAdapter(             ) { }
 
 		/// Returns iterator that points to first child object.
-		GDINL Iterator               Begin() const { return this->TheBaseObject->Begin<ObjectType>(); }
-		GDINL Iterator               End  () const { return this->TheBaseObject->End  <ObjectType>(); }
+		GDINL Iterator      Begin() const { return this->TheBaseObject->Begin<ObjectType>(); }
+		GDINL Iterator      End  () const { return this->TheBaseObject->End  <ObjectType>(); }
 
 		/// Returns iterator that points to last child object.
-		GDINL ReverseIterator ReverseBegin() const { return this->TheBaseObject->ReverseBegin<ObjectType>(); }
-		GDINL ReverseIterator ReverseEnd  () const { return this->TheBaseObject->ReverseEnd  <ObjectType>(); }
+		GDINL ReverseContainerIterator ReverseBegin() const { return this->TheBaseObject->ReverseBegin<ObjectType>(); }
+		GDINL ReverseContainerIterator ReverseEnd  () const { return this->TheBaseObject->ReverseEnd  <ObjectType>(); }
 
 #if (!defined(GD_DOCUMENTATION)) 
 	private /* STL compatibility */:
@@ -285,14 +285,14 @@ GD_NAMESPACE_BEGIN
 
 	/// Returns version of this object that can be used in ranged for loops.
 	template<typename ObjectType>
-	ObjectIterationAdapter<ObjectType, ContainerDetails::IteratorTagConst> IterateChildObjects(Object const* const TheObject)
+	ObjectIterationAdapter<ObjectType, IteratorTagConst> IterateChildObjects(Object const* const TheObject)
 	{	// Returning object wrapped with iteration adapter.
-		return ObjectIterationAdapter<ObjectType, ContainerDetails::IteratorTagConst>(TheObject);
+		return ObjectIterationAdapter<ObjectType, IteratorTagConst>(TheObject);
 	}
 	template<typename ObjectType>
-	ObjectIterationAdapter<ObjectType, ContainerDetails::IteratorTagMutable> IterateChildObjects(Object* const TheObject)
+	ObjectIterationAdapter<ObjectType, IteratorTagMutable> IterateChildObjects(Object* const TheObject)
 	{	// Returning object wrapped with iteration adapter.
-		return ObjectIterationAdapter<ObjectType, ContainerDetails::IteratorTagMutable>(TheObject);
+		return ObjectIterationAdapter<ObjectType, IteratorTagMutable>(TheObject);
 	}
 
 	/// Increases specified object`s reference count if it exists.

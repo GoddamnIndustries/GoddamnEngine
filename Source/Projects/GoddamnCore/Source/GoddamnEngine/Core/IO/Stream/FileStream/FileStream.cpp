@@ -28,10 +28,6 @@ GD_NAMESPACE_BEGIN
 	/// FileInputStream class.
 	/// ==========================================================================================
 
-	/// ------------------------------------------------------------------------------------------
-	/// Class implementation API:
-	/// ------------------------------------------------------------------------------------------
-
 	FileInputStream::FileInputStream(String const& FilePath)
 		: FilePath(FilePath)
 	{
@@ -65,7 +61,7 @@ GD_NAMESPACE_BEGIN
 
 	size_t FileInputStream::GetLength() const
 	{
-		if (this->FileLength == SIZE_MAX) {	// Finiding out position.
+		if (this->FileLength == SIZE_MAX) {	// Finding out position.
 			FileInputStream* const MutableSelf = const_cast<FileInputStream*>(this);
 			size_t const CurrentPosition = MutableSelf->GetPosition();
 			MutableSelf->Seek(0, SeekOrigin::End);
@@ -83,7 +79,7 @@ GD_NAMESPACE_BEGIN
 			throw IOException("Failed to close file ('fclose' returned non-zero value).");
 		}
 
-		this->FilePath.Clear();
+		this->FilePath = "";
 		this->FileHandle = nullptr;
 		this->FileLength = SIZE_MAX;
 	}
@@ -93,7 +89,7 @@ GD_NAMESPACE_BEGIN
 		int static const SeekOriginTable[] = {
 			/* SeekOrigin::Begin   = */ SEEK_SET,
 			/* SeekOrigin::Current = */ SEEK_CUR,
-			/* SeekOrigin::End     = */ SEEK_END
+			/* SeekOrigin::End  = */ SEEK_END
 		};
 
 		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
@@ -124,10 +120,6 @@ GD_NAMESPACE_BEGIN
 	/// FileOutputStream class.
 	/// Specifies write-only stream that provides writing to file.
 	/// ==========================================================================================
-
-	/// ------------------------------------------------------------------------------------------
-	/// Class implementation API:
-	/// ------------------------------------------------------------------------------------------
 
 	FileOutputStream::FileOutputStream(String const& FilePath)
 		: FilePath(FilePath)
@@ -178,7 +170,7 @@ GD_NAMESPACE_BEGIN
 			throw IOException("Failed to close file ('fclose' returned non-zero value).");
 		}
 
-		this->FilePath.Clear();
+		this->FilePath = "";
 		this->FileHandle = nullptr;
 		this->FileLength = SIZE_MAX;
 	}

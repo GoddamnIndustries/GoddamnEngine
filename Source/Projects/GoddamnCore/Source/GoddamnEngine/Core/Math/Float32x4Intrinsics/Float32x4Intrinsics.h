@@ -14,8 +14,11 @@
 
 #if (defined(GD_PLATFORM_DESKTOP) || defined(GD_PLATFORM_CONSOLE))	// We have SSE support
 #	include <GoddamnEngine/Core/Math/Float32x4Intrinsics/Float32x4IntrinsicsSSE.inl>
-#endif	// if (defined(GD_PLATFORM_DESKTOP) || defined(GD_PLATFORM_CONSOLE))	// We have SSE support
+#else
+#	define GD_NO_FLOAT32X4INTRINSICS
+#endif
 
+#if (!defined(GD_NO_FLOAT32X4INTRINSICS))
 GD_NAMESPACE_BEGIN
 
 	/// Contains abstraction layer on Float32x4 vector intrinsics.
@@ -35,10 +38,10 @@ GD_NAMESPACE_BEGIN
 		/// Creates a vector through selecting two components from each vector via a shuffle mask. 
 		/// @param Register0 First source vector.
 		/// @param Register1 Second source vector.
-		/// @param x         Index for which component of first vector to use for X (literal 0-3)
-		/// @param y         Index for which component to first vector to use for Y (literal 0-3)
-		/// @param z         Index for which component to second vector to use for Z (literal 0-3)
-		/// @param w         Index for which component to second vector to use for W (literal 0-3)
+		/// @param x   Index for which component of first vector to use for X (literal 0-3)
+		/// @param y   Index for which component to first vector to use for Y (literal 0-3)
+		/// @param z   Index for which component to second vector to use for Z (literal 0-3)
+		/// @param w   Index for which component to second vector to use for W (literal 0-3)
 		GDINT VectorRegisterType VectorShuffle(VectorRegisterType const Register0, VectorRegisterType const Register1, unsigned const x, unsigned const y, unsigned const z, unsigned const w);
 
 		/// Returns swizzling result of all components of a specified vector.
@@ -99,6 +102,7 @@ GD_NAMESPACE_BEGIN
 	}	// namespace Float32x4Intrinsics
 
 	GD_NAMESPACE_END
+#endif	// if (!defined(GD_NO_FLOAT32X4INTRINSICS))
 
 #if (!defined(GD_NO_FLOAT32X4INTRINSICS))
 #	define GD_HAS_FLOAT32X4INTRINSICS 1

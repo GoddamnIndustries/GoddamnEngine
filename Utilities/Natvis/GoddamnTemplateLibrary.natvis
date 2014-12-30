@@ -31,13 +31,13 @@
 	</Type>
 	<!-- Vector class -->
 	<Type Name="Goddamn::Vector&lt;*&gt;">
-		<DisplayString>{{ Count = {Count} }}</DisplayString>
+		<DisplayString>{{ Length = {Length} }}</DisplayString>
 		<Expand>
-			<Item Name="Size">Count</Item>
-			<Item Name="Capacity">MemoryProviderInstance.Capacity</Item>
+			<Item Name="Length">Length</Item>
+			<Item Name="Capacity">Capacity</Item>
 			<ArrayItems>
-				<Size>Count</Size>
-				<ValuePointer>MemoryProviderInstance.Memory</ValuePointer>
+				<Size>Length</Size>
+				<ValuePointer>Memory</ValuePointer>
 			</ArrayItems>
 		</Expand>
 	</Type>

@@ -8,13 +8,13 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	/// ==========================================================================================
 	Assembly::Assembly(
-		_In_ String const& FileName
+		String const& FileName
 	) : NativePointer(nullptr)
 	{
 		size_t const DLLPathExtentionIndex = FileName.ReverseFind('.');
 		if (DLLPathExtentionIndex != -1)
 		{
-			String const DLLExtention = FileName.GetSubstring(DLLPathExtentionIndex + 1);
+			String const DLLExtention = FileName.Subtring(DLLPathExtentionIndex + 1);
 			if (DLLExtention.ToUpper() == "DLL") {
 				// Disabling errors for DLL opening when system throws message box
 #if (defined(GD_DEBUG)) && (defined(GD_COMPILER_MSVC))
@@ -40,7 +40,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	/// ==========================================================================================
-	chandle Assembly::GetNativeMethod(_In_ String const& FunctionName) const
+	chandle Assembly::GetNativeMethod(String const& FunctionName) const
 	{
 		GD_ASSERT((this->WasSuccessfullyLoaded()),
 			"Library was not loaded, but attempted to obtain procedure address");

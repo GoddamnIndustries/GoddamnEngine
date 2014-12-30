@@ -65,7 +65,7 @@ if not "%VS140ComnTools%" == "" (
 			goto ExitOnFailure
 		)
 	) else (
-		echo No suitable compiler/IDE was located on this machine. Is Visual Studio 2014/2013 installed?
+		echo No suitable compiler/IDE was located on this machine. Is Visual Studio 2015 / 2013 installed?
 		goto ExitOnFailure
 	)
 )

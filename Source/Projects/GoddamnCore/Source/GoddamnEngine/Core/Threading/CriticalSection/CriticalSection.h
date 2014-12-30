@@ -84,13 +84,13 @@ GD_NAMESPACE_BEGIN
 		{	// Creating a recursive mutex here.
 			::pthread_mutexattr_t NativeCriticalSectionAttributes;
 			::pthread_mutexattr_init   (&NativeCriticalSectionAttributes);
-			::pthread_mutexattr_settype(&NativeCriticalSectionAttributes, ::PTHREAD_MUTEX_RECURSIVE);
+			::pthread_mutexattr_settype(&NativeCriticalSectionAttributes, PTHREAD_MUTEX_RECURSIVE);
 			::pthread_mutex_init(&this->NativeCriticalSection, &NativeCriticalSectionAttributes);
 		}
 
 		GDINL ~CriticalSection() 
 		{	// Destroying mutex here.
-			::pthread_mutex_destroy(&this->Mutex); 
+			::pthread_mutex_destroy(&this->NativeCriticalSection); 
 		}
 
 		GDINL void Enter() { ::pthread_mutex_lock  (&this->NativeCriticalSection); }

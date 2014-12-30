@@ -28,7 +28,7 @@ GD_NAMESPACE_BEGIN
 		mutable struct LinkageCache final {
 			GLuint  VertexArrayObject =  0;
 			GLsizei VerticesCount	  = -1;
-			GLenum  IndexType         = GL_FALSE;
+			GLenum  IndexType   = GL_FALSE;
 		} LinkingCache;
 	public:
 		GDINL explicit HRIOGLLinkagePoint() { }

@@ -101,10 +101,10 @@ GD_NAMESPACE_BEGIN
 			GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE(); \
 		} \
 	} static const _Name
-	GD_HLSL_DEFINE_BASIC_TYPE(HLSLVoid,         "void",         GD_HLSL_TYPE_CLASS_VOID       );
-	GD_HLSL_DEFINE_BASIC_TYPE(HLSLTexture2D,    "Texture2D",    GD_HLSL_TYPE_CLASS_TEXTURE2D  );
+	GD_HLSL_DEFINE_BASIC_TYPE(HLSLVoid,   "void",   GD_HLSL_TYPE_CLASS_VOID    );
+	GD_HLSL_DEFINE_BASIC_TYPE(HLSLTexture2D, "Texture2D", GD_HLSL_TYPE_CLASS_TEXTURE2D  );
 	GD_HLSL_DEFINE_BASIC_TYPE(HLSLTextureCube,  "TextureCube",  GD_HLSL_TYPE_CLASS_TEXTURECUBE);
-	GD_HLSL_DEFINE_BASIC_TYPE(HLSLSamplerState, "SamplerState", GD_HLSL_TYPE_CLASS_SAMPLER    );
+	GD_HLSL_DEFINE_BASIC_TYPE(HLSLSamplerState, "SamplerState", GD_HLSL_TYPE_CLASS_SAMPLER );
 #undef GD_HLSL_DEFINE_BASIC_TYPE
 
 	// Scalar types.
@@ -117,7 +117,7 @@ GD_NAMESPACE_BEGIN
 		} \
 	} static const _Name
 	GD_HLSL_DEFINE_SCALAR_TYPE(HLSLBool   , bool  );
-	GD_HLSL_DEFINE_SCALAR_TYPE(HLSLInt    , int   );
+	GD_HLSL_DEFINE_SCALAR_TYPE(HLSLInt , int   );
 	GD_HLSL_DEFINE_SCALAR_TYPE(HLSLUInt   , uint  );
 	GD_HLSL_DEFINE_SCALAR_TYPE(HLSLFloat  , float );
 	GD_HLSL_DEFINE_SCALAR_TYPE(HLSLDouble , double);
@@ -139,7 +139,7 @@ GD_NAMESPACE_BEGIN
 	GD_HLSL_DEFINE_VECTOR_TYPE(_Name, _DataType, 3); \
 	GD_HLSL_DEFINE_VECTOR_TYPE(_Name, _DataType, 2) 
 	GD_HLSL_DEFINE_VECTOR_TYPES(HLSLBool   , bool  );
-	GD_HLSL_DEFINE_VECTOR_TYPES(HLSLInt    , int   );
+	GD_HLSL_DEFINE_VECTOR_TYPES(HLSLInt , int   );
 	GD_HLSL_DEFINE_VECTOR_TYPES(HLSLUInt   , uint  );
 	GD_HLSL_DEFINE_VECTOR_TYPES(HLSLFloat  , float );
 	GD_HLSL_DEFINE_VECTOR_TYPES(HLSLDouble , double);
@@ -196,42 +196,42 @@ GD_NAMESPACE_BEGIN
 		GDINT HLSLScope const* ParseShader();
 
 	private:
-		GDINT bool TryReadNextLexem  (                                                            );
-		GDINT bool TryExpectLexem    (LexemContentType const ContentType                          );
-		GDINT void    ExpectLexem    (LexemContentType const ContentType                          );
-		GDINT bool TryExpectLexem    (LexemContentType const ContentType, StreamedLexerID const ID);
-		GDINT void    ExpectLexem    (LexemContentType const ContentType, StreamedLexerID const ID);
-		GDINT bool TryExpectNextLexem(                                                            );
-		GDINT void    ExpectNextLexem(                                                            );
-		GDINT bool TryExpectNextLexem(LexemContentType const ContentType                          );
-		GDINT void    ExpectNextLexem(LexemContentType const ContentType                          );
+		GDINT bool TryReadNextLexem  (               );
+		GDINT bool TryExpectLexem (LexemContentType const ContentType        );
+		GDINT void ExpectLexem (LexemContentType const ContentType        );
+		GDINT bool TryExpectLexem (LexemContentType const ContentType, StreamedLexerID const ID);
+		GDINT void ExpectLexem (LexemContentType const ContentType, StreamedLexerID const ID);
+		GDINT bool TryExpectNextLexem(               );
+		GDINT void ExpectNextLexem(               );
+		GDINT bool TryExpectNextLexem(LexemContentType const ContentType        );
+		GDINT void ExpectNextLexem(LexemContentType const ContentType        );
 		GDINT bool TryExpectNextLexem(LexemContentType const ContentType, StreamedLexerID const ID);
-		GDINT void    ExpectNextLexem(LexemContentType const ContentType, StreamedLexerID const ID);
+		GDINT void ExpectNextLexem(LexemContentType const ContentType, StreamedLexerID const ID);
 
 		// Scope management:
 		GDINL void EnterScope(HLSLScope* const CurrentScope) { this->GlobalScopesStack.PushLast(CurrentScope); }
-		GDINL void LeaveScope(                             ) { this->GlobalScopesStack.PopLast(); }
+		GDINL void LeaveScope(        ) { this->GlobalScopesStack.PopLast(); }
 
 		GDINT HLSLDefinition const* FindDefinitionInScope(String const& DefinitionName) const;
-		GDINT HLSLDefinition const* FindDefinition       (String const& DefinitionName) const;
-		GDINT HLSLType       const* FindTypeInScope      (String const& TypeName      ) const;
-		GDINT HLSLType       const* FindType             (String const& TypeName      ) const;
+		GDINT HLSLDefinition const* FindDefinition    (String const& DefinitionName) const;
+		GDINT HLSLType    const* FindTypeInScope   (String const& TypeName   ) const;
+		GDINT HLSLType    const* FindType    (String const& TypeName   ) const;
 		GDINT HLSLVariable   const* FindVariableInScope  (String const& VariableName  ) const;
-		GDINT HLSLVariable   const* FindVariable         (String const& VariableName  ) const;
+		GDINT HLSLVariable   const* FindVariable   (String const& VariableName  ) const;
 		GDINT HLSLFunction   const* FindFunctionInScope  (String const& FunctionName  ) const;
-		GDINT HLSLFunction   const* FindFunction         (String const& FunctionName  ) const;
+		GDINT HLSLFunction   const* FindFunction   (String const& FunctionName  ) const;
 		
 		GDINT void ValidateIdentifier(String const& Identifier);
 
-		GDINT HLSLExpression const* ParseExpression(HLSLExpressionType const ExpectedExperssions                                           );
-		GDINT HLSLDefinition const* ParseDefinition(HLSLDefinitionType const ExpectedDefinitions                                           );
-		GDINT void                  ParseScope     (HLSLDefinitionType const ExpectedDefinitions, HLSLScope* const Scope = nullptr         );
-		GDINT HLSLType       const* ParseType      (HLSLDefinitionType const ExpectedDefinitions, bool* const IsDefinition = nullptr       );
-		GDINT HLSLType       const* ParseTypeName  (                                              bool  const DoIgnoreUndefinedType = false);
-		GDINT HLSLCBuffer    const* ParseCBuffer   (                                                                                       );
-		GDINT HLSLVariable   const* ParseVariable  (HLSLDefinition&& PrependingDefinition, bool const DoExpectSemicolon = true             );
-		GDINT HLSLFunction   const* ParseFunction  (HLSLDefinition&& PrependingDefinition                                                  );
-		GDINT HLSLExprColon  const* ParseExprColon (HLSLExprColonType const ExpectedExprColons                                             );
+		GDINT HLSLExpression const* ParseExpression(HLSLExpressionType const ExpectedExperssions             );
+		GDINT HLSLDefinition const* ParseDefinition(HLSLDefinitionType const ExpectedDefinitions             );
+		GDINT void      ParseScope  (HLSLDefinitionType const ExpectedDefinitions, HLSLScope* const Scope = nullptr   );
+		GDINT HLSLType    const* ParseType   (HLSLDefinitionType const ExpectedDefinitions, bool* const IsDefinition = nullptr    );
+		GDINT HLSLType    const* ParseTypeName  (             bool  const DoIgnoreUndefinedType = false);
+		GDINT HLSLCBuffer const* ParseCBuffer   (                        );
+		GDINT HLSLVariable   const* ParseVariable  (HLSLDefinition&& PrependingDefinition, bool const DoExpectSemicolon = true    );
+		GDINT HLSLFunction   const* ParseFunction  (HLSLDefinition&& PrependingDefinition              );
+		GDINT HLSLExprColon  const* ParseExprColon (HLSLExprColonType const ExpectedExprColons            );
 	};	// class HLSLParserImpl
 
 	/// ==========================================================================================
@@ -274,7 +274,7 @@ GD_NAMESPACE_BEGIN
 	void HLSLParserImpl::ParseScope(HLSLDefinitionType const ExpectedDefinitions, HLSLScope* const Scope /* = nullptr */)
 	{
 		this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_SCOPE_BEGIN);
-		this->ExpectNextLexem(                                                        );
+		this->ExpectNextLexem(              );
 		for (;;) {	// Scanning our definition
 			UniquePtr<HLSLDefinition const> Definition;
 			if (this->TryExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_SCOPE_END)) {
@@ -462,8 +462,8 @@ GD_NAMESPACE_BEGIN
 			}
 
 			this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_INDEX_END);
-			this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR                            );
-		} else if (this->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_COLON) {	    // Pasring variable semantic, register and pack offset here.
+			this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR       );
+		} else if (this->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_COLON) {	 // Pasring variable semantic, register and pack offset here.
 			HLSLExprColonType ExpectedColonExprs = HLSLExprColonType(GD_HLSL_EXPRCOLON_TYPE_REGISTER | GD_HLSL_EXPRCOLON_TYPE_PACKOFFSET);
 			if ((Variable->Type->Class == GD_HLSL_TYPE_CLASS_SCALAR) || (Variable->Type->Class == GD_HLSL_TYPE_CLASS_VECTOR))
 				ExpectedColonExprs = HLSLExprColonType(GD_HLSL_EXPRCOLON_TYPE_SEMANTIC | ExpectedColonExprs);
@@ -478,7 +478,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		if (this->CurrentLexem.GetRawData() == '=')	{	// Parsing default values here.
-			//     Variable->InitialValue = this->ParseExpression(GD_HLSL_EXPRESSION_UNKNOWN); // ???
+			//  Variable->InitialValue = this->ParseExpression(GD_HLSL_EXPRESSION_UNKNOWN); // ???
 			// if (Variable->InitialValue == nullptr;
 			GD_NOT_IMPLEMENTED();
 			return nullptr;
@@ -486,7 +486,7 @@ GD_NAMESPACE_BEGIN
 
 		if (DoExpectSemicolon) {	
 			this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_SEMICOLON);
-			this->ExpectNextLexem(                                                      );
+			this->ExpectNextLexem(               );
 		}
 
 		return Variable.Release();
@@ -506,7 +506,7 @@ GD_NAMESPACE_BEGIN
 			if ((this->CurrentLexem.GetContentType() == GD_LEXEM_CONTENT_TYPE_KEYWORD ) && (GD_HLSL_IS_KEYWORD_OF_TYPE(this->CurrentLexem.GetProcessedDataID(), ARGUMENTS)))
 			{	// Here we have a keyword that describes argument access type: 
 				StackUnorderedMap<StreamedLexerKeyword, HLSLArgumentAccessType, 3> AccessTypeTranslationTable = {
-					{ GD_HLSL_KEYWORD_IN   , GD_HLSL_ARGUMENT_IN    },
+					{ GD_HLSL_KEYWORD_IN   , GD_HLSL_ARGUMENT_IN },
 					{ GD_HLSL_KEYWORD_OUT  , GD_HLSL_ARGUMENT_OUT   },
 					{ GD_HLSL_KEYWORD_INOUT, GD_HLSL_ARGUMENT_INOUT },
 				};
@@ -531,7 +531,7 @@ GD_NAMESPACE_BEGIN
 				throw HLSLParserErrorException(VoidFunctionSemanticError.ToString(&this->CurrentLexem));
 			}
 
-		    Function->Semantic = static_cast<HLSLSemantic const*>(this->ParseExprColon(GD_HLSL_EXPRCOLON_TYPE_SEMANTIC));
+		 Function->Semantic = static_cast<HLSLSemantic const*>(this->ParseExprColon(GD_HLSL_EXPRCOLON_TYPE_SEMANTIC));
 			this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR);
 		}
 
@@ -565,9 +565,9 @@ GD_NAMESPACE_BEGIN
 		ConstantBuffer->Name = this->CurrentLexem.GetRawData();
 
 		this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR);
-		if (this->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_COLON) {	    // Pasring constant buffer registeRHere.
-			    ConstantBuffer->Register = static_cast<HLSLRegister const*>(this->ParseExprColon(GD_HLSL_EXPRCOLON_TYPE_REGISTER));
-			if (ConstantBuffer->Register == nullptr)                return nullptr;
+		if (this->CurrentLexem.GetProcessedDataID() == GD_HLSL_OPERATOR_COLON) {	 // Pasring constant buffer registeRHere.
+			 ConstantBuffer->Register = static_cast<HLSLRegister const*>(this->ParseExprColon(GD_HLSL_EXPRCOLON_TYPE_REGISTER));
+			if (ConstantBuffer->Register == nullptr)    return nullptr;
 			if (ConstantBuffer->Register->Register != GD_HLSL_REGISTER_B)
 			{	// Constant buffers may locate only in 'b' registers.
 				HLSLParserErrorDesc static const InvalidCBufferRegisterError("constant buffers may locate only in 'b' registers.");
@@ -577,8 +577,8 @@ GD_NAMESPACE_BEGIN
 		}
 
 		this->ExpectLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_SCOPE_BEGIN);
-		this->ParseScope (GD_HLSL_DEFINITION_VARIABLE, ConstantBuffer.GetPointer()    ); 
-		this->ExpectNextLexem(                                                        );
+		this->ParseScope (GD_HLSL_DEFINITION_VARIABLE, ConstantBuffer.GetPointer() ); 
+		this->ExpectNextLexem(              );
 		return ConstantBuffer.Release();
 	}
 
@@ -597,7 +597,7 @@ GD_NAMESPACE_BEGIN
 				}
 
 				this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_PARAMS_BEGIN);
-				this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER                             );
+				this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_IDENTIFIER        );
 				
 				static StackUnorderedMap<CharAnsi, HLSLRegisterType, 4> const RegistersTranslationTable = {
 					{ 'b', GD_HLSL_REGISTER_B },
@@ -617,7 +617,7 @@ GD_NAMESPACE_BEGIN
 				Register->RegisterID = size_t(CharAnsiTraits::ToDigit(this->CurrentLexem.GetRawData()[1]));
 
 				this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR, GD_HLSL_OPERATOR_PARAMS_END);
-				this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR                             );
+				this->ExpectNextLexem(GD_LEXEM_CONTENT_TYPE_OPERATOR        );
 				return Register.Release();
 			} else if (this->CurrentLexem.GetProcessedDataID() == GD_HLSL_KEYWORD_PACKOFFSET) {	// Here is register. Lets check if it was expected and parse it.
 				if ((ExpectedExprColons & GD_HLSL_EXPRCOLON_TYPE_PACKOFFSET) == 0) {	// Registers are not allowed here.
@@ -633,7 +633,7 @@ GD_NAMESPACE_BEGIN
 			UniquePtr<HLSLSemantic> Semantic(new HLSLSemantic());
 			bool const HasSemanticID = CharAnsiTraits::IsDigit(this->CurrentLexem.GetRawData().GetLastElement());
 			Semantic->SemanticID = (HasSemanticID ? size_t(CharAnsiTraits::ToDigit(this->CurrentLexem.GetRawData().GetLastElement())) : 0);
-			Semantic->Semantic   = HLSLSemanticTypeFromString(this->CurrentLexem.GetRawData().GetSubstring(0, this->CurrentLexem.GetRawData().GetLength() - (HasSemanticID ? 1 : 0)));
+			Semantic->Semantic   = HLSLSemanticTypeFromString(this->CurrentLexem.GetRawData().Subtring(0, this->CurrentLexem.GetRawData().GetLength() - (HasSemanticID ? 1 : 0)));
 			/**/ if ( Semantic->Semantic == GD_HLSL_SEMANTIC_UNKNOWN) {	// Invalid semantic specified.
 				HLSLParserErrorDesc static const InvalidSemanticError("Unknown semantic '%s'.");
 				throw HLSLParserErrorException(InvalidSemanticError.ToString(&this->CurrentLexem, this->CurrentLexem.GetRawData().CStr()));
@@ -926,17 +926,17 @@ GD_NAMESPACE_BEGIN
 	//		 GD_HLSL_DEFINE_SEMANTIC(SV_InstanceID),
 	//		 GD_HLSL_DEFINE_SEMANTIC(SV_PrimitiveID),
 	//		 GD_HLSL_DEFINE_SEMANTIC(SV_VertexID),
-#	undef    GD_HLSL_DEFINE_SEMANTIC
+#	undef GD_HLSL_DEFINE_SEMANTIC
 		};
 
 		size_t const SemanticIndex  = SemanticsList.FindFirstElement(Semantic.GetHashCode());
-		return     ((SemanticIndex != SIZE_MAX) ? SemanticsList.GetElementAt(SemanticIndex).Second : GD_HLSL_SEMANTIC_UNKNOWN);
+		return  ((SemanticIndex != SIZE_MAX) ? SemanticsList.GetElementAt(SemanticIndex).Second : GD_HLSL_SEMANTIC_UNKNOWN);
 	}
 
 	extern HRISemantic HLSLSemanticToHRI(HLSLSemanticType const Semantic)
 	{
 		static HRISemantic const HLSL2HRITranslationsTable[] = {
-			GD_HRI_SEMANTIC_UNKNOWN,    // GD_HLSL_SEMANTIC_UNKNOWN
+			GD_HRI_SEMANTIC_UNKNOWN, // GD_HLSL_SEMANTIC_UNKNOWN
 			GD_HRI_SEMANTIC_BINORMAL,
 			GD_HRI_SEMANTIC_BLENDINDICES,
 			GD_HRI_SEMANTIC_BLENDWEIGHT,
@@ -999,30 +999,30 @@ GD_NAMESPACE_BEGIN
 #if (!defined(__INTELLISENSE__)) // IntelliSence marks following code with errors. Just let in not parse it.
 		static StreamedLexerOptions const HlslLexerOptions(
 			StreamedLexerKeywordsList({
-				{ GD_HLSL_KEYWORD_STRUCT,                     "struct" },
-				{ GD_HLSL_KEYWORD_TYPEDEF,                    "typedef" },
-				{ GD_HLSL_KEYWORD_CBUFFER,                    "cbuffer" },
-				{ GD_HLSL_KEYWORD_TYPE_MODIFIER_CONST,        "const" },
-				{ GD_HLSL_KEYWORD_TYPE_MODIFIER_ROW_MAJOR,    "row_major" },
+				{ GD_HLSL_KEYWORD_STRUCT,      "struct" },
+				{ GD_HLSL_KEYWORD_TYPEDEF,     "typedef" },
+				{ GD_HLSL_KEYWORD_CBUFFER,     "cbuffer" },
+				{ GD_HLSL_KEYWORD_TYPE_MODIFIER_CONST,  "const" },
+				{ GD_HLSL_KEYWORD_TYPE_MODIFIER_ROW_MAJOR, "row_major" },
 				{ GD_HLSL_KEYWORD_TYPE_MODIFIER_COLUMN_MAJOR, "column_major" },
-				{ GD_HLSL_KEYWORD_IN,                         "in" },
-				{ GD_HLSL_KEYWORD_OUT,                        "out" },
-				{ GD_HLSL_KEYWORD_INOUT,                      "inout" },
-				{ GD_HLSL_KEYWORD_REGISTER,                   "register" },
-				{ GD_HLSL_KEYWORD_PACKOFFSET,                 "packoffset" },
+				{ GD_HLSL_KEYWORD_IN,       "in" },
+				{ GD_HLSL_KEYWORD_OUT,      "out" },
+				{ GD_HLSL_KEYWORD_INOUT,       "inout" },
+				{ GD_HLSL_KEYWORD_REGISTER,       "register" },
+				{ GD_HLSL_KEYWORD_PACKOFFSET,     "packoffset" },
 			}),
 			StreamedLexerOperatorsList({
-				{ GD_HLSL_OPERATOR_INDEX_BEGIN,    "[" },
-				{ GD_HLSL_OPERATOR_INDEX_END,      "]" },
-				{ GD_HLSL_OPERATOR_SCOPE_BEGIN,    "{" },
-				{ GD_HLSL_OPERATOR_SCOPE_END,      "}" },
+				{ GD_HLSL_OPERATOR_INDEX_BEGIN, "[" },
+				{ GD_HLSL_OPERATOR_INDEX_END,   "]" },
+				{ GD_HLSL_OPERATOR_SCOPE_BEGIN, "{" },
+				{ GD_HLSL_OPERATOR_SCOPE_END,   "}" },
 				{ GD_HLSL_OPERATOR_PARAMS_BEGIN,   "(" },
-				{ GD_HLSL_OPERATOR_PARAMS_END,     ")" },
+				{ GD_HLSL_OPERATOR_PARAMS_END,  ")" },
 				{ GD_HLSL_OPERATOR_TEMPLATE_BEGIN, "<" },
 				{ GD_HLSL_OPERATOR_TEMPLATE_END,   ">" },
-				{ GD_HLSL_OPERATOR_COLON,          ":" },
-				{ GD_HLSL_OPERATOR_SEMICOLON,      ";" },
-				{ GD_HLSL_OPERATOR_COMMA,          "," },
+				{ GD_HLSL_OPERATOR_COLON,    ":" },
+				{ GD_HLSL_OPERATOR_SEMICOLON,   ";" },
+				{ GD_HLSL_OPERATOR_COMMA,    "," },
 			}),
 			"//", "/*", "*/",
 			'x', '\0', 'b', '.'

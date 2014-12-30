@@ -11,121 +11,121 @@ using System.IO;
 
 namespace GoddamnEngine.OpenGLUtility
 {
-    internal abstract class OpenGLHeader
-    {
-        public readonly static string SDKLocation = Environment.GetEnvironmentVariable("GODDAMN_SDK");
-        public readonly static string RendererLocation = Path.Combine(SDKLocation, "source", "GoddamnEngine", "Engine", "Renderer", "Impl", "OpenGL");
-        public readonly static string ESAPILocation = Path.Combine(RendererLocation, "OpenGL_API");
-        
-        protected readonly string HeaderLocation;
-        protected OpenGLHeader(string HeaderFileName)
-        {
-            this.HeaderLocation = Path.Combine(ESAPILocation, HeaderFileName);
+ internal abstract class OpenGLHeader
+ {
+  public readonly static string SDKLocation = Environment.GetEnvironmentVariable("GODDAMN_SDK");
+  public readonly static string RendererLocation = Path.Combine(SDKLocation, "source", "GoddamnEngine", "Engine", "Renderer", "Impl", "OpenGL");
+  public readonly static string ESAPILocation = Path.Combine(RendererLocation, "OpenGL_API");
+  
+  protected readonly string HeaderLocation;
+  protected OpenGLHeader(string HeaderFileName)
+  {
+   this.HeaderLocation = Path.Combine(ESAPILocation, HeaderFileName);
+  }
+
+  public virtual void Parse(StreamWriter GeneratedMethodsWriter, StreamWriter GeneratedDefinesWriter)
+  {
+   using (StreamReader HeaderReader = new StreamReader(this.HeaderLocation)) {
+    GeneratedDefinesWriter.WriteLine();
+    GeneratedDefinesWriter.WriteLine(string.Format("// Defininitions coming from {0}.h", Path.GetFileNameWithoutExtension(this.HeaderLocation)));
+    for (string Line = null; (Line = HeaderReader.ReadLine()) != null; ) {
+     if (Line.Trim().StartsWith("#define GL")) {
+      // Macro definition here.
+      GeneratedDefinesWriter.WriteLine(Line);
+     } else if (Line.Trim().StartsWith("GL")) {
+      // API function definition here.
+      Line = Line.Replace(" * ", " *");
+      int ParamsBegin = Line.IndexOf('(');
+      string MethodDefinition = Line.Substring(0, ParamsBegin - 1);
+      string[] MethodDefinitionLexems = MethodDefinition.Split(' ', '\t');
+      string MethodDefinitionTypeName = null;
+      string MethodDefinitionType = MethodDefinitionLexems[1];
+      if (MethodDefinitionType == "const") {
+       MethodDefinitionType = MethodDefinitionLexems[2] + " const*";
+       MethodDefinitionTypeName = MethodDefinitionLexems[4];
+      } else {
+       MethodDefinitionTypeName = MethodDefinitionLexems[3];
+      }
+
+      string ParamsDefinition = Line.Substring(ParamsBegin + 1, Line.Length - ParamsBegin - ");".Length - 1);
+      string[] ParamsDefinitionParams = ParamsDefinition.Split(',');
+
+      GeneratedMethodsWriter.WriteLine();
+      GeneratedMethodsWriter.WriteLine(string.Format("// {0} {1}({2});", MethodDefinitionType, MethodDefinitionTypeName, ParamsDefinition));
+      if(ParamsDefinitionParams.Length <= 10) {
+       if (ParamsDefinitionParams[0] != "void") {
+        GeneratedMethodsWriter.WriteLine(string.Format("GD_DEFINE_OGL_METHOD_{0}(", ParamsDefinitionParams.Length));
+        GeneratedMethodsWriter.WriteLine(string.Format("\t{0}, {1}", MethodDefinitionType, MethodDefinitionTypeName.Substring("gl".Length)));
+        foreach (var ParamDefinition in ParamsDefinitionParams) {
+         int ParamDefinitionLastSpace = ParamDefinition.LastIndexOf(' ');
+         string ParamDefinitionType = ParamDefinition.Substring(0, ParamDefinitionLastSpace).Trim();
+         string ParamDefinitionName = ParamDefinition.Substring(ParamDefinitionLastSpace).Trim();
+
+         // Pointer argument type.
+         int ParamDefinitionNamePointerIndex = ParamDefinitionName.LastIndexOf('*');
+         if (ParamDefinitionNamePointerIndex != -1) {
+          ParamDefinitionType += ParamDefinitionName.Substring(0, ParamDefinitionNamePointerIndex + 1);
+          ParamDefinitionName  = ParamDefinitionName.Substring(ParamDefinitionNamePointerIndex + 1);
+         }
+         GeneratedMethodsWriter.WriteLine(string.Format("\t, {0} const, {1}", ParamDefinitionType, ParamDefinitionName));
         }
+       } else {
+        GeneratedMethodsWriter.WriteLine(string.Format("GD_DEFINE_OGL_METHOD_0(", ParamsDefinitionParams.Length));
+        GeneratedMethodsWriter.WriteLine(string.Format("\t{0}, {1}", MethodDefinitionType, MethodDefinitionTypeName.Substring("gl".Length)));
+        GeneratedMethodsWriter.WriteLine("\t/**** NO ARGUMENTS ****/");
+       }
+       GeneratedMethodsWriter.WriteLine("\t)");
+      } else {
+       GeneratedMethodsWriter.WriteLine("// ***** SKIPPED DUE ARGUMENTS COUNT LIMITATION *****");
+      }
+     }
+    }
+   }
+  }
+ }   // class OpenGLHeader
 
-        public virtual void Parse(StreamWriter GeneratedMethodsWriter, StreamWriter GeneratedDefinesWriter)
-        {
-            using (StreamReader HeaderReader = new StreamReader(this.HeaderLocation)) {
-                GeneratedDefinesWriter.WriteLine();
-                GeneratedDefinesWriter.WriteLine(string.Format("// Defininitions coming from {0}.h", Path.GetFileNameWithoutExtension(this.HeaderLocation)));
-                for (string Line = null; (Line = HeaderReader.ReadLine()) != null; ) {
-                    if (Line.Trim().StartsWith("#define GL")) {
-                        // Macro definition here.
-                        GeneratedDefinesWriter.WriteLine(Line);
-                    } else if (Line.Trim().StartsWith("GL")) {
-                        // API function definition here.
-                        Line = Line.Replace(" * ", " *");
-                        int ParamsBegin = Line.IndexOf('(');
-                        string MethodDefinition = Line.Substring(0, ParamsBegin - 1);
-                        string[] MethodDefinitionLexems = MethodDefinition.Split(' ', '\t');
-                        string MethodDefinitionTypeName = null;
-                        string MethodDefinitionType = MethodDefinitionLexems[1];
-                        if (MethodDefinitionType == "const") {
-                            MethodDefinitionType = MethodDefinitionLexems[2] + " const*";
-                            MethodDefinitionTypeName = MethodDefinitionLexems[4];
-                        } else {
-                            MethodDefinitionTypeName = MethodDefinitionLexems[3];
-                        }
+ internal sealed class OpenGLESCoreHeader : OpenGLHeader
+ {
+  public const string CoreHeaderFileName = "OpenGL_ES_3.0.Non-Source-C-Header";
+  public OpenGLESCoreHeader()
+   : base(CoreHeaderFileName)
+  {
+  }
+ }   // class OpenGLESCoreHeader
 
-                        string ParamsDefinition = Line.Substring(ParamsBegin + 1, Line.Length - ParamsBegin - ");".Length - 1);
-                        string[] ParamsDefinitionParams = ParamsDefinition.Split(',');
+ internal sealed class OpenGLESExtensionsHeader : OpenGLHeader
+ {
+  public const string ExtensionsHeaderFileName = "OpenGL_ES_2.0.Extensions.Non-Source-C-Header";
+  public OpenGLESExtensionsHeader()
+   : base(ExtensionsHeaderFileName)
+  {
+  }
+ }   // class OpenGLESExtensionsHeader
 
-                        GeneratedMethodsWriter.WriteLine();
-                        GeneratedMethodsWriter.WriteLine(string.Format("// {0} {1}({2});", MethodDefinitionType, MethodDefinitionTypeName, ParamsDefinition));
-                        if(ParamsDefinitionParams.Length <= 10) {
-                            if (ParamsDefinitionParams[0] != "void") {
-                                GeneratedMethodsWriter.WriteLine(string.Format("GD_DEFINE_OGL_METHOD_{0}(", ParamsDefinitionParams.Length));
-                                GeneratedMethodsWriter.WriteLine(string.Format("\t{0}, {1}", MethodDefinitionType, MethodDefinitionTypeName.Substring("gl".Length)));
-                                foreach (var ParamDefinition in ParamsDefinitionParams) {
-                                    int ParamDefinitionLastSpace = ParamDefinition.LastIndexOf(' ');
-                                    string ParamDefinitionType = ParamDefinition.Substring(0, ParamDefinitionLastSpace).Trim();
-                                    string ParamDefinitionName = ParamDefinition.Substring(ParamDefinitionLastSpace).Trim();
+ internal sealed class OpenGL430Header : OpenGLHeader
+ {
+  public const string _430FileName = "OpenGL_Desktop_4.3.Non-Source-C-Header";
+  public OpenGL430Header()
+   : base(_430FileName)
+  {
+  }
+ }   // class OpenGLESExtensionsHeader
 
-                                    // Pointer argument type.
-                                    int ParamDefinitionNamePointerIndex = ParamDefinitionName.LastIndexOf('*');
-                                    if (ParamDefinitionNamePointerIndex != -1) {
-                                        ParamDefinitionType += ParamDefinitionName.Substring(0, ParamDefinitionNamePointerIndex + 1);
-                                        ParamDefinitionName  = ParamDefinitionName.Substring(ParamDefinitionNamePointerIndex + 1);
-                                    }
-                                    GeneratedMethodsWriter.WriteLine(string.Format("\t, {0} const, {1}", ParamDefinitionType, ParamDefinitionName));
-                                }
-                            } else {
-                                GeneratedMethodsWriter.WriteLine(string.Format("GD_DEFINE_OGL_METHOD_0(", ParamsDefinitionParams.Length));
-                                GeneratedMethodsWriter.WriteLine(string.Format("\t{0}, {1}", MethodDefinitionType, MethodDefinitionTypeName.Substring("gl".Length)));
-                                GeneratedMethodsWriter.WriteLine("\t/**** NO ARGUMENTS ****/");
-                            }
-                            GeneratedMethodsWriter.WriteLine("\t)");
-                        } else {
-                            GeneratedMethodsWriter.WriteLine("// ***** SKIPPED DUE ARGUMENTS COUNT LIMITATION *****");
-                        }
-                    }
-                }
-            }
-        }
-    }   // class OpenGLHeader
+ internal static class OpenGLUtility
+ {
+  private static void WriteCopyrightMessage(StreamWriter SomeGeneratedHeader)
+  {
+   SomeGeneratedHeader.WriteLine("/// ==========================================================================================");
+   SomeGeneratedHeader.WriteLine(string.Format("/// {0} - Generated header.", Path.GetFileName((SomeGeneratedHeader.BaseStream as FileStream).Name)));
+   SomeGeneratedHeader.WriteLine("/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.");
+   SomeGeneratedHeader.WriteLine("/// ");
+   SomeGeneratedHeader.WriteLine("/// History:");
+   SomeGeneratedHeader.WriteLine("/// \t* Generated by GoddamnOpenGLUtility.");
+   SomeGeneratedHeader.WriteLine("/// ==========================================================================================");
+  }
 
-    internal sealed class OpenGLESCoreHeader : OpenGLHeader
-    {
-        public const string CoreHeaderFileName = "OpenGL_ES_3.0.Non-Source-C-Header";
-        public OpenGLESCoreHeader()
-            : base(CoreHeaderFileName)
-        {
-        }
-    }   // class OpenGLESCoreHeader
-
-    internal sealed class OpenGLESExtensionsHeader : OpenGLHeader
-    {
-        public const string ExtensionsHeaderFileName = "OpenGL_ES_2.0.Extensions.Non-Source-C-Header";
-        public OpenGLESExtensionsHeader()
-            : base(ExtensionsHeaderFileName)
-        {
-        }
-    }   // class OpenGLESExtensionsHeader
-
-    internal sealed class OpenGL430Header : OpenGLHeader
-    {
-        public const string _430FileName = "OpenGL_Desktop_4.3.Non-Source-C-Header";
-        public OpenGL430Header()
-            : base(_430FileName)
-        {
-        }
-    }   // class OpenGLESExtensionsHeader
-
-    internal static class OpenGLUtility
-    {
-        private static void WriteCopyrightMessage(StreamWriter SomeGeneratedHeader)
-        {
-            SomeGeneratedHeader.WriteLine("/// ==========================================================================================");
-            SomeGeneratedHeader.WriteLine(string.Format("/// {0} - Generated header.", Path.GetFileName((SomeGeneratedHeader.BaseStream as FileStream).Name)));
-            SomeGeneratedHeader.WriteLine("/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.");
-            SomeGeneratedHeader.WriteLine("/// ");
-            SomeGeneratedHeader.WriteLine("/// History:");
-            SomeGeneratedHeader.WriteLine("/// \t* Generated by GoddamnOpenGLUtility.");
-            SomeGeneratedHeader.WriteLine("/// ==========================================================================================");
-        }
-
-        #region Methods header code
-        private const string MethodsBegin = @"
+  #region Methods header code
+  private const string MethodsBegin = @"
 #if (!defined(GD_ENGINE_RENDERER_IMPL_OGL_RENDERER))
 #	error 'This header should be included inside ""OGLRenderer.h""'
 #endif	// if (!defined(GD_ENGINE_RENDERER_IMPL_OGL_RENDERER))
@@ -242,7 +242,7 @@ namespace GoddamnEngine.OpenGLUtility
 /// ==========================================================================================
 ";
 
-        private const string MethodsEnd = @"
+  private const string MethodsEnd = @"
 #if (defined(GD_PLATFORM_API_WINAPI))
 #	pragma pop_macro(""MemoryBarrier"")
 #	pragma pop_macro(""near"")
@@ -264,45 +264,45 @@ namespace GoddamnEngine.OpenGLUtility
 #undef GD_DEFINE_OGL_METHOD_11
 #undef GD_DEFINE_OGL_METHOD_GLUE_ARGS
 ";
-        #endregion  // Methods header code
+  #endregion  // Methods header code
 
-        private static void Main(string[] Args)
-        {
-            try {
-                string GeneratedOpenGLMethodsHeaderLocation = Path.Combine(OpenGLHeader.RendererLocation, "OGLRendererMethods.h");
-                string GeneratedOpenGLDefinesHeaderLocation = Path.Combine(OpenGLHeader.RendererLocation, "OGLRendererDefines.h");
-                using (StreamWriter GeneratedOpenGLMethodsHeader = new StreamWriter(GeneratedOpenGLMethodsHeaderLocation),
-                                    GeneratedOpenGLDefinesHeader = new StreamWriter(GeneratedOpenGLDefinesHeaderLocation)) {
-                    // Writing Copyright.
-                    WriteCopyrightMessage(GeneratedOpenGLMethodsHeader);
-                    WriteCopyrightMessage(GeneratedOpenGLDefinesHeader);
-                    
-                    // Writing beginning code.
-                    GeneratedOpenGLMethodsHeader.Write(MethodsBegin);
-                    GeneratedOpenGLMethodsHeader.WriteLine("#if (defined(GD_HRI_OGL_ES))");
-                    GeneratedOpenGLDefinesHeader.WriteLine("#if (defined(GD_HRI_OGL_ES))");
+  private static void Main(string[] Args)
+  {
+   try {
+    string GeneratedOpenGLMethodsHeaderLocation = Path.Combine(OpenGLHeader.RendererLocation, "OGLRendererMethods.h");
+    string GeneratedOpenGLDefinesHeaderLocation = Path.Combine(OpenGLHeader.RendererLocation, "OGLRendererDefines.h");
+    using (StreamWriter GeneratedOpenGLMethodsHeader = new StreamWriter(GeneratedOpenGLMethodsHeaderLocation),
+         GeneratedOpenGLDefinesHeader = new StreamWriter(GeneratedOpenGLDefinesHeaderLocation)) {
+     // Writing Copyright.
+     WriteCopyrightMessage(GeneratedOpenGLMethodsHeader);
+     WriteCopyrightMessage(GeneratedOpenGLDefinesHeader);
+     
+     // Writing beginning code.
+     GeneratedOpenGLMethodsHeader.Write(MethodsBegin);
+     GeneratedOpenGLMethodsHeader.WriteLine("#if (defined(GD_HRI_OGL_ES))");
+     GeneratedOpenGLDefinesHeader.WriteLine("#if (defined(GD_HRI_OGL_ES))");
 
-                    // Writing OpenGL(ES) code.
-                    OpenGLESCoreHeader CoreHeader = new OpenGLESCoreHeader();
-                    OpenGLESExtensionsHeader ExtensionsHeader = new OpenGLESExtensionsHeader();
-                    CoreHeader.Parse(GeneratedOpenGLMethodsHeader, GeneratedOpenGLDefinesHeader);
-                    ExtensionsHeader.Parse(GeneratedOpenGLMethodsHeader, GeneratedOpenGLDefinesHeader);
+     // Writing OpenGL(ES) code.
+     OpenGLESCoreHeader CoreHeader = new OpenGLESCoreHeader();
+     OpenGLESExtensionsHeader ExtensionsHeader = new OpenGLESExtensionsHeader();
+     CoreHeader.Parse(GeneratedOpenGLMethodsHeader, GeneratedOpenGLDefinesHeader);
+     ExtensionsHeader.Parse(GeneratedOpenGLMethodsHeader, GeneratedOpenGLDefinesHeader);
 
-                    // Writing conditional code.
-                    GeneratedOpenGLDefinesHeader.WriteLine("#else\t// if (defined(GD_HRI_OGL_ES))");
-                    GeneratedOpenGLMethodsHeader.WriteLine("#else\t// if (defined(GD_HRI_OGL_ES))");
+     // Writing conditional code.
+     GeneratedOpenGLDefinesHeader.WriteLine("#else\t// if (defined(GD_HRI_OGL_ES))");
+     GeneratedOpenGLMethodsHeader.WriteLine("#else\t// if (defined(GD_HRI_OGL_ES))");
 
-                    OpenGL430Header _430Header = new OpenGL430Header();
-                    _430Header.Parse(GeneratedOpenGLMethodsHeader, GeneratedOpenGLDefinesHeader);
+     OpenGL430Header _430Header = new OpenGL430Header();
+     _430Header.Parse(GeneratedOpenGLMethodsHeader, GeneratedOpenGLDefinesHeader);
 
-                    // Writing ending code.
-                    GeneratedOpenGLDefinesHeader.WriteLine("#endif\t// if (defined(GD_HRI_OGL_ES))");
-                    GeneratedOpenGLMethodsHeader.WriteLine("#endif\t// if (defined(GD_HRI_OGL_ES))");
-                    GeneratedOpenGLMethodsHeader.Write(MethodsEnd);
-                }
-            } catch(IOException/*IOE*/) {
-                Environment.Exit(1);
-            }
-        }
-    }   // static sealed class OpenGLUtility
+     // Writing ending code.
+     GeneratedOpenGLDefinesHeader.WriteLine("#endif\t// if (defined(GD_HRI_OGL_ES))");
+     GeneratedOpenGLMethodsHeader.WriteLine("#endif\t// if (defined(GD_HRI_OGL_ES))");
+     GeneratedOpenGLMethodsHeader.Write(MethodsEnd);
+    }
+   } catch(IOException/*IOE*/) {
+    Environment.Exit(1);
+   }
+  }
+ }   // static sealed class OpenGLUtility
 }   // namespace GoddamnEngine.OpenGLUtility

@@ -4,7 +4,7 @@
 /// 
 /// History:
 ///		* --.01.2014 - Created by James Jhuighuy
-///     * 05.05.2014 - Rewritten to match cross compiler
+///  * 05.05.2014 - Rewritten to match cross compiler
 /// ==========================================================================================
 
 #include <GoddamnEngine/Engine/Renderer/Renderer.h>
@@ -16,9 +16,9 @@ GD_NAMESPACE_BEGIN
 	{
 		Str static const HRIShaderTypeToStrTable[] = {
 			/* GD_HRI_SHADER_TYPE_VERTEX   = */ "vertex",
-			/* GD_HRI_SHADER_TYPE_HULL     = */ "hull",
+			/* GD_HRI_SHADER_TYPE_HULL  = */ "hull",
 			/* GD_HRI_SHADER_TYPE_DOMAIN   = */ "domain",
-			/* GD_HRI_SHADER_TYPE_PIXEL    = */ "pixel",
+			/* GD_HRI_SHADER_TYPE_PIXEL = */ "pixel",
 			/* GD_HRI_SHADER_TYPE_COMPUTE  = */ "compute",
 			/* GD_HRI_SHADER_TYPE_GEOMETRY = */ "geometry",
 		};
@@ -31,10 +31,10 @@ GD_NAMESPACE_BEGIN
 	{
 		if (strncmp(ShaderType.CStr(), "compute",   sizeof("compute")  ) == 0) return GD_HRI_SHADER_TYPE_COMPUTE;
 		if (strncmp(ShaderType.CStr(), "geometry",  sizeof("geometry") ) == 0) return GD_HRI_SHADER_TYPE_GEOMETRY;
-		if (strncmp(ShaderType.CStr(), "vertex",    sizeof("vertex")   ) == 0) return GD_HRI_SHADER_TYPE_VERTEX;
-		if (strncmp(ShaderType.CStr(), "hull",      sizeof("hull")     ) == 0) return GD_HRI_SHADER_TYPE_HULL;
-		if (strncmp(ShaderType.CStr(), "domain",    sizeof("domain")   ) == 0) return GD_HRI_SHADER_TYPE_DOMAIN;
-		if (strncmp(ShaderType.CStr(), "pixel",     sizeof("pixel")    ) == 0) return GD_HRI_SHADER_TYPE_PIXEL;
+		if (strncmp(ShaderType.CStr(), "vertex", sizeof("vertex")   ) == 0) return GD_HRI_SHADER_TYPE_VERTEX;
+		if (strncmp(ShaderType.CStr(), "hull",   sizeof("hull")  ) == 0) return GD_HRI_SHADER_TYPE_HULL;
+		if (strncmp(ShaderType.CStr(), "domain", sizeof("domain")   ) == 0) return GD_HRI_SHADER_TYPE_DOMAIN;
+		if (strncmp(ShaderType.CStr(), "pixel",  sizeof("pixel") ) == 0) return GD_HRI_SHADER_TYPE_PIXEL;
 #if (defined(GD_HRI_SHADER_OPENGL_ALISASING))
 		if (strncmp(ShaderType.CStr(), "tess_ctrl", sizeof("tess_ctrl")) == 0) return GD_HRI_SHADER_TYPE_HULL;
 		if (strncmp(ShaderType.CStr(), "tess_eval", sizeof("tess_eval")) == 0) return GD_HRI_SHADER_TYPE_DOMAIN;
@@ -79,7 +79,7 @@ GD_NAMESPACE_BEGIN
 				case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURE2D:
 				case GD_HRI_SHADER_PARAM_DESC_TYPE_TEXTURECUBE:	{
 					HRIObject*  const NewValue = *reinterpret_cast<HRIObject* const*>(ParamValue);
-					HRIObject*&       OldValue = *reinterpret_cast<HRIObject*      *>(&this->ParamValue);
+					HRIObject*&    OldValue = *reinterpret_cast<HRIObject*   *>(&this->ParamValue);
 					SafeRelease(OldValue);
 					SafeObtain (OldValue = NewValue);
 				} break;
@@ -93,7 +93,7 @@ GD_NAMESPACE_BEGIN
 
 				case GD_HRI_SHADER_PARAM_DESC_TYPE_STRING: {
 					GD_DEBUG_ASSERT(this->ParamPointer != nullptr, "Param points to nullptr data");
-					Str            NewString = reinterpret_cast<Str>(ParamValue) - 1;
+					Str   NewString = reinterpret_cast<Str>(ParamValue) - 1;
 					HRIShaderChar* OldString = reinterpret_cast<HRIShaderChar*>(this->ParamPointer) - 1;
 					::memset(OldString, 0, this->ParamDesc->GetParamSize());
 					while ((*(++OldString) = HRIShaderChar(*(++NewString))) != HRIShaderChar('\0'));
@@ -126,7 +126,7 @@ GD_NAMESPACE_BEGIN
 //	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamLocation, HRIObject, GDAPI, nullptr);
 
 	HRIShaderParamLocation::HRIShaderParamLocation(
-		HRIShaderInstance               * const HRIShaderInstance,
+		HRIShaderInstance      * const HRIShaderInstance,
 		HRIShaderParamLocationDesc const* const LocationDesc)
 		: HRIObject(HRIObject::TreeLockingFlagsAll, HRIShaderInstance)
 		, LocationDesc(LocationDesc)

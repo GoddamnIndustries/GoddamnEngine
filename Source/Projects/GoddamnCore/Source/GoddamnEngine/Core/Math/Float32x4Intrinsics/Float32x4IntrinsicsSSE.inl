@@ -178,7 +178,7 @@ GD_NAMESPACE_BEGIN
 			__m128   Row0 = _mm_setzero_ps(),   Row1 = _mm_setzero_ps(),   Row2 = _mm_setzero_ps(),   Row3 = _mm_setzero_ps();
 			__m128 Determinant = _mm_setzero_ps(), Temp = _mm_setzero_ps();
 
-			Temp = _mm_loadh_pi(_mm_loadl_pi(Temp, reinterpret_cast<__m64 const*>(Input    )), reinterpret_cast<__m64 const*>(Input + 4 ));
+			Temp = _mm_loadh_pi(_mm_loadl_pi(Temp, reinterpret_cast<__m64 const*>(Input )), reinterpret_cast<__m64 const*>(Input + 4 ));
 			Row1 = _mm_loadh_pi(_mm_loadl_pi(Row1, reinterpret_cast<__m64 const*>(Input + 8)), reinterpret_cast<__m64 const*>(Input + 12));
 			Row0 = _mm_shuffle_ps(Temp, Row1, GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(0, 2, 0, 2));
 			Row1 = _mm_shuffle_ps(Row1, Temp, GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(1, 3, 1, 3));
@@ -249,7 +249,7 @@ GD_NAMESPACE_BEGIN
 			Determinant = _mm_sub_ss(_mm_add_ss(Temp, Temp), _mm_mul_ss(Determinant, _mm_mul_ss(Temp, Temp)));
 			Determinant = _mm_shuffle_ps(Determinant, Determinant, GD_FLOAT32X4INTRINSICS_SSE_SHUFFLEMASK(0, 0, 0, 0));
 			Minor0 = _mm_mul_ps(Determinant, Minor0);
-			_mm_storel_pi(reinterpret_cast<__m64*>(Matrix     ), Minor0);
+			_mm_storel_pi(reinterpret_cast<__m64*>(Matrix  ), Minor0);
 			_mm_storeh_pi(reinterpret_cast<__m64*>(Matrix + 2 ), Minor0);
 			Minor1 = _mm_mul_ps(Determinant, Minor1);
 			_mm_storel_pi(reinterpret_cast<__m64*>(Matrix + 4 ), Minor1);

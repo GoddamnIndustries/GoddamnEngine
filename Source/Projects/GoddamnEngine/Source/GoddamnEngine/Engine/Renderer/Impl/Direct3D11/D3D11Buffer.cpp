@@ -17,7 +17,7 @@ GD_NAMESPACE_BEGIN
 		D3D11_BUFFER_DESC VertexBufferDescription;
 		ZeroMemory(&VertexBufferDescription, sizeof(VertexBufferDescription));
 		VertexBufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		VertexBufferDescription.Usage     = D3D11_USAGE_IMMUTABLE;
+		VertexBufferDescription.Usage  = D3D11_USAGE_IMMUTABLE;
 		VertexBufferDescription.ByteWidth = static_cast<UINT>(Size * sizeof(Data[0]));
 		VertexBufferDescription.StructureByteStride = 0;
 		VertexBufferDescription.CPUAccessFlags = 0;
@@ -50,7 +50,7 @@ GD_NAMESPACE_BEGIN
 		D3D11_BUFFER_DESC IndexBufferDescription;
 		ZeroMemory(&IndexBufferDescription, sizeof(IndexBufferDescription));
 		IndexBufferDescription.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		IndexBufferDescription.Usage     = D3D11_USAGE_IMMUTABLE;
+		IndexBufferDescription.Usage  = D3D11_USAGE_IMMUTABLE;
 		IndexBufferDescription.ByteWidth = static_cast<UINT>(Size * Stride);
 		IndexBufferDescription.StructureByteStride = 0;
 		IndexBufferDescription.CPUAccessFlags = 0;
@@ -75,7 +75,7 @@ GD_NAMESPACE_BEGIN
 		D3D11_BUFFER_DESC ConstantBufferDescription;
 		ZeroMemory(&ConstantBufferDescription, sizeof(ConstantBufferDescription));
 		ConstantBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		ConstantBufferDescription.Usage     = D3D11_USAGE_DYNAMIC;
+		ConstantBufferDescription.Usage  = D3D11_USAGE_DYNAMIC;
 		ConstantBufferDescription.ByteWidth = static_cast<UINT>(this->GetLength());
 		ConstantBufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;// | D3D11_CPU_ACCESS_READ;
 		ConstantBufferDescription.StructureByteStride = 0;
@@ -118,8 +118,8 @@ GD_NAMESPACE_BEGIN
 		HRD3D11Interface::GetInstance().Context->Unmap(this->Buffer.Get(), 0);
 	}
 
-	HRIVertexBuffer  * HRD3D11Interface::CreateVertexBuffer  (Float32 const* const Data, size_t const Size                     ) { return new HRID3D11VertexBuffer  (Data, Size        ); }
-	HRIIndexBuffer   * HRD3D11Interface::CreateIndexBuffer   (chandle const        Data, size_t const Size, size_t const Stride) { return new HRID3D11IndexBuffer   (Data, Size, Stride); } 
-	HRIConstantBuffer* HRD3D11Interface::CreateConstantBuffer(                           size_t const Size                     ) { return new HRID3D11ConstantBuffer(      Size        ); }
+	HRIVertexBuffer  * HRD3D11Interface::CreateVertexBuffer  (Float32 const* const Data, size_t const Size      ) { return new HRID3D11VertexBuffer  (Data, Size  ); }
+	HRIIndexBuffer   * HRD3D11Interface::CreateIndexBuffer   (chandle const  Data, size_t const Size, size_t const Stride) { return new HRID3D11IndexBuffer   (Data, Size, Stride); } 
+	HRIConstantBuffer* HRD3D11Interface::CreateConstantBuffer(         size_t const Size      ) { return new HRID3D11ConstantBuffer(   Size  ); }
 
 GD_NAMESPACE_END

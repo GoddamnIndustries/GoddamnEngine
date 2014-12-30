@@ -25,7 +25,7 @@ GD_NAMESPACE_BEGIN
 					continue;
 				}
 
-				HRISemantic     const  Semantic = static_cast<HRISemantic>(SemanticIter);
+				HRISemantic  const  Semantic = static_cast<HRISemantic>(SemanticIter);
 				HRISemanticDesc const& SemanticDesc = HRISemanticGetDesc(Semantic);
 				HRIVertexBuffer const* const VertexBuffer = this->IndexedShape->GetVertexBuffer(Semantic);
 				if (VertexBuffer == nullptr) {
@@ -42,13 +42,13 @@ GD_NAMESPACE_BEGIN
 				}
 
 				this->LinkingCache.Buffers.PushLast(reinterpret_cast<ID3D11Buffer*>(VertexBuffer->GetNativePointer()));
-				this->LinkingCache.Strides.PushLast(     static_cast<UINT         >(GD_FORMAT_SIZEOF(SemanticDesc.SlotFormat)));
+				this->LinkingCache.Strides.PushLast(  static_cast<UINT   >(GD_FORMAT_SIZEOF(SemanticDesc.SlotFormat)));
 				this->LinkingCache.Offsets.PushLast(0);
 				this->LinkingCache.SlotsTotalCount += 1;
 			}
 		}
 
-		ID3D11DeviceContext      * const Context = HRD3D11Interface::GetInstance().Context.Get();
+		ID3D11DeviceContext   * const Context = HRD3D11Interface::GetInstance().Context.Get();
 		HRID3D11IndexBuffer const* const Buffer  = object_cast<HRID3D11IndexBuffer const*>(this->IndexedShape->GetIndexBuffer());
 		Context->IASetVertexBuffers(0, this->LinkingCache.SlotsTotalCount, &this->LinkingCache.Buffers[0], &this->LinkingCache.Strides[0], &this->LinkingCache.Offsets[0]);
 		if (Buffer != nullptr) {	// We have indices.

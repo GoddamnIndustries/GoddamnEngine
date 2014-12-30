@@ -24,12 +24,11 @@ GD_NAMESPACE_BEGIN
 	typedef char CharAnsi;
 
 	/// Unicode Character.
-	static_assert(sizeof(wchar_t) == 2, "Error in 'wchar_t' size.");
-	typedef wchar_t CharUtf16;
+	typedef wchar_t CharUnicode;
 
 #if (defined(_UNICODE))
 #	define GD_TEXT(Text) L##Text
-	typedef CharUtf16 Char;
+	typedef CharUnicode Char;
 #else	// if (defined(_UNICODE))
 #	define GD_TEXT(Text) Text
 	typedef CharAnsi Char;
@@ -40,13 +39,13 @@ GD_NAMESPACE_BEGIN
 	struct CharTraitsBase
 	{
 		/// Analog for standards 'to[w]lower' function for specified character type.
-		GDINL static CharAnsi        ToLower(CharAnsi const Character);
+		GDINL static CharAnsi  ToLower(CharAnsi const Character);
 
 		/// Analog for standards 'to[w]upper' function for specified character type.
-		GDINL static CharAnsi        ToUpper(CharAnsi const Character);
+		GDINL static CharAnsi  ToUpper(CharAnsi const Character);
 
 		/// Analog for standards '[str|wcs]len' function for specified character type.
-		GDINL static size_t          StrLen(CharAnsi const* const CString);
+		GDINL static size_t    StrLen(CharAnsi const* const CString);
 
 		/// Analog for standards '[str|wcs]chr' function for specified character type.
 		GDINL static CharAnsi const* StrChr(CharAnsi const* const CString, CharAnsi const Character);
@@ -58,10 +57,10 @@ GD_NAMESPACE_BEGIN
 		GDINL static CharAnsi const* StrStr(CharAnsi const* const First, CharAnsi const* const Second);
 
 		/// Analog for standards '[str|wcs]ncmp' function for specified character type.
-		GDINL static int             StrNCmp(CharAnsi const* const First, CharAnsi const* const Second, size_t const MaxLength);
+		GDINL static int    StrNCmp(CharAnsi const* const First, CharAnsi const* const Second, size_t const MaxLength);
 
 		/// Analog for standards 'vs[n|w]printf' function for specified character type.
-		GDINL static int             VSNPrintF(CharAnsi* CString, size_t const Count, CharAnsi const* const Format, va_list const Args);
+		GDINL static int    VSNPrintF(CharAnsi* CString, size_t const Count, CharAnsi const* const Format, va_list const Args);
 	};
 #else	// if (defined(GD_DOCUMENTATION))
 	template<typename CharType>
@@ -70,28 +69,28 @@ GD_NAMESPACE_BEGIN
 	template<>
 	struct CharTraitsBase<CharAnsi>
 	{
-		GDINL static CharAnsi         ToLower  (CharAnsi const Character)                                                                  { return static_cast<CharAnsi>(std::tolower(Character)); }
-		GDINL static CharAnsi         ToUpper  (CharAnsi const Character)                                                                  { return static_cast<CharAnsi>(std::toupper(Character)); }
-		GDINL static size_t           StrLen   (CharAnsi const* const CString)                                                             { return std::strlen(CString); }
-		GDINL static CharAnsi  const* StrChr   (CharAnsi const* const CString, CharAnsi const Character)                                   { return std::strchr(CString, Character); }
-		GDINL static CharAnsi  const* StrRChr  (CharAnsi const* const CString, CharAnsi const Character)                                   { return std::strrchr(CString, Character); }
-		GDINL static CharAnsi  const* StrStr   (CharAnsi const* const First, CharAnsi const* const Second)                                 { return std::strstr(First, Second); }
-		GDINL static int              StrNCmp  (CharAnsi const* const First, CharAnsi const* const Second, size_t const MaxLength)         { return std::strncmp(First, Second, MaxLength); }
-		GDINL static int              VSNPrintF(CharAnsi* CString, size_t const Count, CharAnsi const* const Format, va_list const Args)   { return /*std*/::vsnprintf(CString, Count, Format, Args); }
+		GDINL static CharAnsi   ToLower  (CharAnsi const Character)                  { return static_cast<CharAnsi>(::tolower(Character)); }
+		GDINL static CharAnsi   ToUpper  (CharAnsi const Character)                  { return static_cast<CharAnsi>(::toupper(Character)); }
+		GDINL static size_t     StrLen   (CharAnsi const* const CString)                { return ::strlen(CString); }
+		GDINL static CharAnsi  const* StrChr   (CharAnsi const* const CString, CharAnsi const Character)           { return ::strchr(CString, Character); }
+		GDINL static CharAnsi  const* StrRChr  (CharAnsi const* const CString, CharAnsi const Character)           { return ::strrchr(CString, Character); }
+		GDINL static CharAnsi  const* StrStr   (CharAnsi const* const First, CharAnsi const* const Second)         { return ::strstr(First, Second); }
+		GDINL static int     StrNCmp  (CharAnsi const* const First, CharAnsi const* const Second, size_t const MaxLength)   { return ::strncmp(First, Second, MaxLength); }
+		GDINL static int     VSNPrintF(CharAnsi* CString, size_t const Count, CharAnsi const* const Format, va_list Args)		   { return ::vsnprintf(CString, Count, Format, Args); }
 	};	// struct CharTraitsBase<CharAnsi>
 
 	template<>
-	struct CharTraitsBase<CharUtf16>
+	struct CharTraitsBase<CharUnicode>
 	{
-		GDINL static CharUtf16        ToLower  (CharUtf16 const Character)                                                                 { return static_cast<CharUtf16>(std::towlower(Character)); }
-		GDINL static CharUtf16        ToUpper  (CharUtf16 const Character)                                                                 { return static_cast<CharUtf16>(std::towupper(Character)); }
-		GDINL static size_t           StrLen   (CharUtf16 const* const CString)                                                            { return std::wcslen(CString); }
-		GDINL static CharUtf16 const* StrChr   (CharUtf16 const* const CString, CharUtf16 const Character)                                 { return std::wcschr(CString, Character); }
-		GDINL static CharUtf16 const* StrRChr  (CharUtf16 const* const CString, CharUtf16 const Character)                                 { return std::wcsrchr(CString, Character); }
-		GDINL static CharUtf16 const* StrStr   (CharUtf16 const* const First, CharUtf16 const* const Second)                               { return std::wcsstr(First, Second); }
-		GDINL static int              StrNCmp  (CharUtf16 const* const First, CharUtf16 const* const Second, size_t const MaxLength)       { return std::wcsncmp(First, Second, MaxLength); }
-		GDINL static int              VSNPrintF(CharUtf16* CString, size_t const Count, CharUtf16 const* const Format, va_list const Args) { return std::vswprintf(CString, Count, Format, Args); }
-	};	// struct CharTraitsBase<CharUtf16>
+		GDINL static CharUnicode  ToLower  (CharUnicode const Character)                 { return static_cast<CharUnicode>(::towlower(Character)); }
+		GDINL static CharUnicode  ToUpper  (CharUnicode const Character)                 { return static_cast<CharUnicode>(::towupper(Character)); }
+		GDINL static size_t     StrLen   (CharUnicode const* const CString)               { return ::wcslen(CString); }
+		GDINL static CharUnicode const* StrChr   (CharUnicode const* const CString, CharUnicode const Character)         { return ::wcschr(CString, Character); }
+		GDINL static CharUnicode const* StrRChr  (CharUnicode const* const CString, CharUnicode const Character)         { return ::wcsrchr(CString, Character); }
+		GDINL static CharUnicode const* StrStr   (CharUnicode const* const First, CharUnicode const* const Second)          { return ::wcsstr(First, Second); }
+		GDINL static int     StrNCmp  (CharUnicode const* const First, CharUnicode const* const Second, size_t const MaxLength)    { return ::wcsncmp(First, Second, MaxLength); }
+		GDINL static int     VSNPrintF(CharUnicode* CString, size_t const Count, CharUnicode const* const Format, va_list Args)	   { return ::vswprintf(CString, Count, Format, Args); }
+	};	// struct CharTraitsBase<CharUnicode>
 #endif	// if (defined(GD_DOCUMENTATION))
 
 	/// Provides helper functions for processing ANSI characters.
@@ -121,7 +120,7 @@ GD_NAMESPACE_BEGIN
 	};	// struct CharAnsiTraits
 
 	typedef CharTraits<CharAnsi> CharAnsiTraits;
-	typedef CharTraits<CharUtf16> CharUtf16Traits;
+	typedef CharTraits<CharUnicode> CharUnicodeTraits;
 
 GD_NAMESPACE_END
 

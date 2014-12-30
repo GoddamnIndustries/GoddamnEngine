@@ -11,8 +11,8 @@
 #define GD_CORE_COMPILERS_STREAMED_PREPROCESSOR
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
-#include <GoddamnEngine/Core/Containers/Vector/Vector.h>
+#include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Compilers/Toolchain/Toolchain.h>
 #include <GoddamnEngine/Core/Compilers/StreamedLexer/StreamedLexer.h>
 
@@ -21,8 +21,8 @@ GD_NAMESPACE_BEGIN
 	/// Contains codes of exceptions that streamed lexer throws.
 	enum StreamedPreprocessorExceptionCodes : ToolchainException
 	{
-		GD_PREPROCESSOR_EXCEPTION_MODULE =  100L,							       ///< Streamed lexer module.
-		GD_PREPROCESSOR_EXCEPTION_EOS    = -GD_PREPROCESSOR_EXCEPTION_MODULE - 1L, ///< End-Of-Stream.
+		GD_PREPROCESSOR_EXCEPTION_MODULE =  100L,							    ///< Streamed lexer module.
+		GD_PREPROCESSOR_EXCEPTION_EOS = -GD_PREPROCESSOR_EXCEPTION_MODULE - 1L, ///< End-Of-Stream.
 		GD_PREPROCESSOR_EXCEPTION_COMMIT = -GD_PREPROCESSOR_EXCEPTION_MODULE - 2L, ///< Token was commited.
 		GD_PREPROCESSOR_EXCEPTION_SYNTAX = +GD_PREPROCESSOR_EXCEPTION_MODULE + 1L, ///< Syntax error.
 	};	// enum StreamedPreprocessorExceptionCodes

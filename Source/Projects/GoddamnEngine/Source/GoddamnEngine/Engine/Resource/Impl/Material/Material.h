@@ -25,7 +25,7 @@ GD_NAMESPACE_BEGIN
 
 		/// ==========================================================================================
 		GDINL Material(
-			_In_ String const& identifier
+			String const& identifier
 		) : Resource(identifier) { }
 
 		/// ==========================================================================================
@@ -61,7 +61,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Searches for property by name
 		GDINL HRIShaderParam* GetProperty(
-			_In_ String const& propertyName
+			String const& propertyName
 		) const
 		{
 			if (this->MaterialInstance != nullptr)
@@ -76,8 +76,8 @@ GD_NAMESPACE_BEGIN
 		/// Copies all prosperities from other material
 		/// @param swapShader		Use the shader from other material
 		GDAPI void CopyPropertiesFrom(
-			_In_ Material* const material, 
-			_In_ bool const swapShader = true
+			Material* const material, 
+			bool const swapShader = true
 		);
 
 		/// @}

@@ -80,9 +80,9 @@ inline void _AttoXMLContextInitEmpty(AttoXMLContext* const XMLContext) {
 }
 
 typedef struct _AttoXMLContextInternals {
-	jmp_buf         ContextExceptionEnv;
-	AttoChar const* ContextData;	                                                    ///<
-	short unsigned  ContextNodesCount;	                                                ///<
+	jmp_buf   ContextExceptionEnv;
+	AttoChar const* ContextData;	             ///<
+	short unsigned  ContextNodesCount;	            ///<
 } _AttoXMLContextInternals;
 
 inline AttoChar _AttoXMLContextNextExpectCharacter(AttoXMLContext* const XMLContext, _AttoXMLContextInternals* const XMLContextInternals) {

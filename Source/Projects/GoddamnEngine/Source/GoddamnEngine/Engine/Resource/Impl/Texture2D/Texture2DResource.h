@@ -15,7 +15,7 @@ GD_NAMESPACE_BEGIN
 
 		/// ==========================================================================================
 		GDINL Texture2DResource(
-			_In_ String const& identifier
+			String const& identifier
 		) : Resource(identifier) { }
 
 		/// ==========================================================================================
@@ -32,7 +32,7 @@ GD_NAMESPACE_BEGIN
 
 		/// ==========================================================================================
 		GDINL virtual void OnResourceLoad(
-			_In_ UniquePtr<InputStream> const& InputResourceData
+			UniquePtr<InputStream> const& InputResourceData
 		);
 
 		/// ==========================================================================================

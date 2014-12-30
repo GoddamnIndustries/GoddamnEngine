@@ -42,14 +42,14 @@ GD_NAMESPACE_BEGIN
 
 	void HRID3D11RenderTarget::BindRenderTarget() const
 	{
-		ID3D11DeviceContext   * const Context          = HRD3D11Interface::GetInstance().Context.Get();
+		ID3D11DeviceContext   * const Context    = HRD3D11Interface::GetInstance().Context.Get();
 		ID3D11DepthStencilView* const DepthStencilView = HRD3D11Interface::GetInstance().DepthStencilView.Get();
 		Context->OMSetRenderTargets(static_cast<UINT>(this->RenderTargetRenderTargets.GetLength()), &this->RenderTargetRenderTargets[0], DepthStencilView);
 	}
 
 	void HRID3D11RenderTarget::UnbindRenderTarget() const
 	{
-		ID3D11DeviceContext   * const Context          = HRD3D11Interface::GetInstance().Context.Get();
+		ID3D11DeviceContext   * const Context    = HRD3D11Interface::GetInstance().Context.Get();
 		ID3D11DepthStencilView* const DepthStencilView = HRD3D11Interface::GetInstance().DepthStencilView.Get();
 		ID3D11RenderTargetView* const RenderTargetView = HRD3D11Interface::GetInstance().RenderTargetView.Get();
 		Context->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);

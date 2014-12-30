@@ -74,7 +74,7 @@ GD_NAMESPACE_BEGIN
 		size_t const CommaIndex = ShaderPathes.Find(',');
 		IToolchain Toolchain;
 		{	// Creating vertex shader.
-			String const VertexShaderPath = ShaderPathes.GetSubstring(0, CommaIndex);
+			String const VertexShaderPath = ShaderPathes.Subtring(0, CommaIndex);
 			StringBuilder VertexShaderOutput;
 			Vector<UInt8> const VertexShaderData = RSStreamer::GetInstance().LoadImmediately<RSBinary>(VertexShaderPath)->BinaryData;
 			UniquePtr<InputStream> VertexShaderInputStream(new StringInputStream(reinterpret_cast<CharAnsi const*>(&VertexShaderData[0]), VertexShaderData.GetLength()));
@@ -84,7 +84,7 @@ GD_NAMESPACE_BEGIN
 			HRInterface::GetInstance().CreateVertexShader(VertexShaderCtorInfo);
 		}
 		{	// Creating vertex shader.
-			String const PixelShaderPath = ShaderPathes.GetSubstring(CommaIndex + 1);
+			String const PixelShaderPath = ShaderPathes.Subtring(CommaIndex + 1);
 			StringBuilder PixelShaderOutput;
 			Vector<UInt8> const PixelShaderData = RSStreamer::GetInstance().LoadImmediately<RSBinary>(PixelShaderPath)->BinaryData;
 			UniquePtr<InputStream> PixelShaderInputStream(new StringInputStream(reinterpret_cast<CharAnsi const*>(&PixelShaderData[0]), PixelShaderData.GetLength()));

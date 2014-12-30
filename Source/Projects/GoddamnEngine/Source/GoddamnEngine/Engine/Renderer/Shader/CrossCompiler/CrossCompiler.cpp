@@ -23,16 +23,16 @@
 GD_NAMESPACE_BEGIN
 
 	RefPtr<HRIShaderInstanceDesc> HRIShaderCrossCompiler::CrossCompileShader(
-		UniquePtr<InputStream >          && ShaderSourceInputStream, 
-		UniquePtr<OutputStream>      const& ShaderByteCodeOutputStream,
-		HRIShaderType                const  ShaderType,
+		UniquePtr<InputStream >    && ShaderSourceInputStream, 
+		UniquePtr<OutputStream>   const& ShaderByteCodeOutputStream,
+		HRIShaderType    const  ShaderType,
 		HRIShaderCrossCompilerTarget const  ShaderTargetPlatform,
-		String                       const& ShaderEntryPointName
+		String        const& ShaderEntryPointName
 	)
 	{	// Parsing shader source.
 		GD_DEBUG_ASSERT(ShaderSourceInputStream != nullptr, "Nullptr input stream specified");
 		try {
-			UniquePtr<HLSLScope const>    const ShaderParsedData(HLSLParser(this->Toolchain).ParseShader(Forward<UniquePtr<InputStream>>(ShaderSourceInputStream)));
+			UniquePtr<HLSLScope const> const ShaderParsedData(HLSLParser(this->Toolchain).ParseShader(Forward<UniquePtr<InputStream>>(ShaderSourceInputStream)));
 			RefPtr<HRIShaderInstanceDesc> const ShaderInstanceDesc(HLSLValidator(this->Toolchain).ValidateAndGenerateDescription(ShaderParsedData.GetPointer(), ShaderEntryPointName));
 
 			if (ShaderByteCodeOutputStream != nullptr) {	// If required, compiling shader.

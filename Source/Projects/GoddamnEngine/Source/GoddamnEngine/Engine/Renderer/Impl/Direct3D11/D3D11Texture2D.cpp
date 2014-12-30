@@ -49,7 +49,7 @@ GD_NAMESPACE_BEGIN
 				if (textureGenerateMipMaps)
 				{
 					texture2DDescription.MipLevels  = 0;
-					texture2DDescription.Usage	    = D3D11_USAGE_DEFAULT;
+					texture2DDescription.Usage	 = D3D11_USAGE_DEFAULT;
 					texture2DDescription.MiscFlags  = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 					texture2DDescription.BindFlags  = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 				}

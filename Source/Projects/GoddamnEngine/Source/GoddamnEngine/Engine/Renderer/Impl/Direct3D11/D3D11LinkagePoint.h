@@ -29,8 +29,8 @@ GD_NAMESPACE_BEGIN
 			UINT SlotsTotalCount = 0;
 			UINT VerticesCount   = UINT_MAX;
 			StackVector<ID3D11Buffer*, GD_HRI_SEMANTICS_COUNT> Buffers;
-			StackVector<UINT,          GD_HRI_SEMANTICS_COUNT> Offsets;
-			StackVector<UINT,          GD_HRI_SEMANTICS_COUNT> Strides;
+			StackVector<UINT,    GD_HRI_SEMANTICS_COUNT> Offsets;
+			StackVector<UINT,    GD_HRI_SEMANTICS_COUNT> Strides;
 		} LinkingCache;
 
 	public:

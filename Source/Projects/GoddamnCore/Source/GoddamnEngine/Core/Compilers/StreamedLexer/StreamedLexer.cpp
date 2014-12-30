@@ -10,6 +10,8 @@
 #include <GoddamnEngine/Core/IO/Stream/Stream.h>
 #include <GoddamnEngine/Core/Utility.h>
 
+#include <climits>
+
 GD_NAMESPACE_BEGIN
 
 	/// Represents lexer error description.
@@ -54,17 +56,17 @@ GD_NAMESPACE_BEGIN
 		UniquePtr<InputStream>		Stream						;
 
 		bool						WasLexemCommited			= false;
-		Lexem*                      CurrentLexem                = nullptr;						// Lexem state & info
-		size_t                      CurrentLine                 = 1;					    	// Lexem location
-		size_t                      CurrentSymbol               = 0;
-		CharAnsi                    RewindedCharacter			= CharAnsi('\0');	
+		Lexem*       CurrentLexem    = nullptr;						// Lexem state & info
+		size_t       CurrentLine     = 1;					 	// Lexem location
+		size_t       CurrentSymbol      = 0;
+		CharAnsi     RewindedCharacter			= CharAnsi('\0');	
 
-		StreamedLexerState          CurrentState                = StreamedLexerState::Unknown;
-		CharAnsi                    CurrentCharacter            = CharAnsi('\0');				// Character meta
-		StreamedLexerCharType       CurrentCharacterType        = StreamedLexerCharType::Unknown;
-		size_t static constexpr     DefaultLexemIntegerNotation = 10;							// Numeric meta
-		size_t                      CurrentLexemIntegerNotation = DefaultLexemIntegerNotation;
-		size_t                      CurrentMatchingIndex        = 0;				 			// Operators and comments meta
+		StreamedLexerState    CurrentState    = StreamedLexerState::Unknown;
+		CharAnsi     CurrentCharacter   = CharAnsi('\0');				// Character meta
+		StreamedLexerCharType    CurrentCharacterType  = StreamedLexerCharType::Unknown;
+		size_t static constexpr  DefaultLexemIntegerNotation = 10;							// Numeric meta
+		size_t       CurrentLexemIntegerNotation = DefaultLexemIntegerNotation;
+		size_t       CurrentMatchingIndex  = 0;				 			// Operators and comments meta
 
 	public:
 		GDINL BasicStreamedLexerImpl(IToolchain* const Toolchain, StreamedLexerOptions const& Options, UniquePtr<InputStream>&& Stream)
@@ -75,7 +77,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		GDINL BasicStreamedLexerImpl(BasicStreamedLexerImpl const& Other) = delete;
-		GDINL BasicStreamedLexerImpl(BasicStreamedLexerImpl     && Other)
+		GDINL BasicStreamedLexerImpl(BasicStreamedLexerImpl  && Other)
 			: IToolchainTool(Other.Toolchain)
 			, Stream(Forward<UniquePtr<InputStream>>(Other.Stream))
 			, RewindedCharacter(Other.RewindedCharacter)
@@ -148,8 +150,8 @@ GD_NAMESPACE_BEGIN
 			Unknown,
 		};	// enum class StreamedLexerEscapeSequenceMode
 		  
-		size_t                      CurrentLexemFloatExponent   = 1;
-		Vector<String const*>       CurrentMatches              ;
+		size_t       CurrentLexemFloatExponent   = 1;
+		Vector<String const*>    CurrentMatches     ;
 		StreamedLexerESMode			CurrentESMode				= StreamedLexerESMode::Unknown;
 		bool						CurrentlyWasCharWritten		= false;
 
@@ -160,7 +162,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		GDINL StreamedLexerImpl(BasicStreamedLexerImpl const& Other) = delete;
-		GDINL StreamedLexerImpl(BasicStreamedLexerImpl     && Other)
+		GDINL StreamedLexerImpl(BasicStreamedLexerImpl  && Other)
 			: BasicStreamedLexerImpl(Forward<BasicStreamedLexerImpl>(Other))
 		{
 		}
@@ -208,11 +210,11 @@ GD_NAMESPACE_BEGIN
 	void BasicStreamedLexerImpl::Reset()
 	{
 		this->WasLexemCommited			  = false;
-		this->CurrentState                = StreamedLexerState::Unknown;
-		this->CurrentCharacter            = CharAnsi('\0');				
-		this->CurrentCharacterType        = StreamedLexerCharType::Unknown;
+		this->CurrentState    = StreamedLexerState::Unknown;
+		this->CurrentCharacter   = CharAnsi('\0');				
+		this->CurrentCharacterType  = StreamedLexerCharType::Unknown;
 		this->CurrentLexemIntegerNotation = DefaultLexemIntegerNotation;
-		this->CurrentMatchingIndex        = 0;			
+		this->CurrentMatchingIndex  = 0;			
 	}
 
 	/// Reads next character from input stream. If stream ends, that returns '\0'. Also handles '\n' and '\r' sequences.
@@ -286,10 +288,10 @@ GD_NAMESPACE_BEGIN
 		StreamedLexerCharType const PreviousCharacterType = this->CurrentCharacterType;
 		this->GetNextCharacter();
 		this->CurrentCharacterType	// Searching in custom special symbols list and treating all others as valid identifier characters
-			= (this->Options.IsInSpecialCharactersAlphabet(this->CurrentCharacter))	                                                 ? StreamedLexerCharType::Special 
+			= (this->Options.IsInSpecialCharactersAlphabet(this->CurrentCharacter))	             ? StreamedLexerCharType::Special 
 			: (CharAnsiTraits::IsAlphabetic(this->CurrentCharacter) || CharAnsiTraits::IsSpecialCharacter(this->CurrentCharacter)) ? StreamedLexerCharType::Alphabetic
-			: (CharAnsiTraits::IsDigit     (this->CurrentCharacter, this->CurrentLexemIntegerNotation))                             ? StreamedLexerCharType::Digit
-			: (CharAnsiTraits::IsSpace     (this->CurrentCharacter))                                                                ? StreamedLexerCharType::Space : StreamedLexerCharType::Unknown; 
+			: (CharAnsiTraits::IsDigit  (this->CurrentCharacter, this->CurrentLexemIntegerNotation))        ? StreamedLexerCharType::Digit
+			: (CharAnsiTraits::IsSpace  (this->CurrentCharacter))                ? StreamedLexerCharType::Space : StreamedLexerCharType::Unknown; 
 		if ((this->CurrentCharacterType == StreamedLexerCharType::Space) && (PreviousCharacterType == StreamedLexerCharType::Unknown)) {	// Upcoming space that splits lexems. Just skipping it.
 			this->CurrentCharacterType = StreamedLexerCharType::Unknown;
 			return;
@@ -318,10 +320,10 @@ GD_NAMESPACE_BEGIN
 
 		struct LexemStatesDesc final { bool RequiresClosingStatement; void (BasicStreamedLexerImpl::* SpecialProcessorPtr)(); };
 		static LexemStatesDesc const LexemStatesDescTable[LexerStatesCount] = {
-			/* StreamedLexerState::ReadingConstantString	  */ {  true, &BasicStreamedLexerImpl::ProcessStringConstant      },
+			/* StreamedLexerState::ReadingConstantString	  */ {  true, &BasicStreamedLexerImpl::ProcessStringConstant   },
 			/* StreamedLexerState::ReadingConstantCharacter   */ {  true, &BasicStreamedLexerImpl::ProcessCharacterConstant   },
-			/* StreamedLexerState::ReadingConstantInteger	  */ { false, &BasicStreamedLexerImpl::ProcessIntegerConstant     },
-			/* StreamedLexerState::ReadingConstantFloat	      */ { false, &BasicStreamedLexerImpl::ProcessFloatConstant       },
+			/* StreamedLexerState::ReadingConstantInteger	  */ { false, &BasicStreamedLexerImpl::ProcessIntegerConstant  },
+			/* StreamedLexerState::ReadingConstantFloat	   */ { false, &BasicStreamedLexerImpl::ProcessFloatConstant    },
 			/* StreamedLexerState::ReadingCommentOrOperator   */ { false, &BasicStreamedLexerImpl::ProcessOperatorOrComment   },
 			/* StreamedLexerState::ReadingCommentSingleLine   */ { false, &BasicStreamedLexerImpl::ProcessSingleLineComment   },
 			/* StreamedLexerState::ReadingCommentMultipleLine */ {  true, &BasicStreamedLexerImpl::ProcessMultipleLineComment },
@@ -801,8 +803,8 @@ GD_NAMESPACE_BEGIN
 
 	/// Initializes new streamed lexer.
 	/// @param Toolchain   Corresponding toolchain.
-	/// @param Stream      Input stream on which lexer would work.
-	/// @param Options     Packed lexing options list.
+	/// @param Stream   Input stream on which lexer would work.
+	/// @param Options  Packed lexing options list.
 	StreamedLexer::StreamedLexer(IToolchain* const Toolchain, UniquePtr<InputStream>&& Stream, StreamedLexerOptions const& Options, StreamedLexerMode const LexerMode /* = GD_LEXER_MODE_DEFAULT */)
 		: IToolchainTool(Toolchain)
 		, ImplementationMode(LexerMode)
@@ -810,7 +812,7 @@ GD_NAMESPACE_BEGIN
 	{
 		this->Implementation = ((this->ImplementationMode == StreamedLexerMode::Basic) 
 			? new BasicStreamedLexerImpl(Toolchain, Options, Forward<UniquePtr<InputStream>>(Stream))
-			: new      StreamedLexerImpl(Toolchain, Options, Forward<UniquePtr<InputStream>>(Stream)));
+			: new   StreamedLexerImpl(Toolchain, Options, Forward<UniquePtr<InputStream>>(Stream)));
 	}
 
 	StreamedLexer::~StreamedLexer()
@@ -826,7 +828,7 @@ GD_NAMESPACE_BEGIN
 			this->ImplementationMode = LexerMode;
 			this->Implementation = ((LexerMode == StreamedLexerMode::Basic)
 				? new BasicStreamedLexerImpl(Move(*this->Implementation)) 
-				: new      StreamedLexerImpl(Move(*this->Implementation)));
+				: new   StreamedLexerImpl(Move(*this->Implementation)));
 		}
 	}
 
@@ -865,15 +867,15 @@ GD_NAMESPACE_BEGIN
 	/// ------------------------------------------------------------------------------------------
 
 	StreamedLexerOptions::StreamedLexerOptions(
-		_In_ StreamedLexerKeywordsList  && KeywordsDeclarations,
-		_In_ StreamedLexerOperatorsList && OperatorDeclarations,
-		_In_ String	                    && SingleLineCommentDeclaration,
-		_In_ String	                    && MultipleLineCommentBeginning,
-		_In_ String	                    && MultipleLineCommentEnding,
-		_In_ CharAnsi const                IntegerHexadecimalNotationDelimiter,
-		_In_ CharAnsi const                IntegerOctalNotationDelimiter,
-		_In_ CharAnsi const                IntegerBinaryNotationDelimiter,
-		_In_ CharAnsi const                FloatingPointDelimiter
+		StreamedLexerKeywordsList  && KeywordsDeclarations,
+		StreamedLexerOperatorsList && OperatorDeclarations,
+		String	     && SingleLineCommentDeclaration,
+		String	     && MultipleLineCommentBeginning,
+		String	     && MultipleLineCommentEnding,
+		CharAnsi const    IntegerHexadecimalNotationDelimiter,
+		CharAnsi const    IntegerOctalNotationDelimiter,
+		CharAnsi const    IntegerBinaryNotationDelimiter,
+		CharAnsi const    FloatingPointDelimiter
 	)	: KeywordsDeclarations(Forward<StreamedLexerKeywordsList>(KeywordsDeclarations))
 		, OperatorDeclarations(Forward<StreamedLexerOperatorsList>(OperatorDeclarations))
 		, SingleLineCommentDeclaration(Forward<String>(SingleLineCommentDeclaration))
@@ -933,128 +935,128 @@ GD_NAMESPACE_BEGIN
 #if (!defined(__INTELLISENSE__))
 		static StreamedLexerOptions const CppLexerOptions(
 			StreamedLexerKeywordsList({
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_ASM,              "asm" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_AUTO,             "auto" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_BOOL,             "bool" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_BREAK,            "break" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CASE,             "case" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CATCH,            "catch" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CHAR,             "char" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CLASS,            "class" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONST,            "const" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONSTEXPR,        "constexpr" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONST_CAST,       "const_cast" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONTINUE,         "continue" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DECLTYPE,         "decltype" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DEFAULT,          "default" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DELETE,           "delete" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DO,               "do" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DOUBLE,           "double" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DYNAMIC_CAST,     "dynamic_cast" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_ELSE,             "else" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_ENUM,             "enum" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_EXPLICIT,         "explicit" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_EXPORT,           "export" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_EXTERN,           "extern" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FALSE,            "false" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FINAL,            "final" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FINALLY,          "finally" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FOR,              "for" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FRGDND,           "friend" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_GOTO,             "goto" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_IF,               "if" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_INLINE,           "inline" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_INT,              "int" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_LONG,             "long" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_MUTABLE,          "mutable" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_NAMESPACE,        "namespace" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_NEW,              "new" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_NOEXPECT,         "noexpect" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_NULLPTR,          "nullptr" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_OPERATOR,         "operator" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_PRIVATE,          "private" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_PROTECTED,        "protected" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_PUBLIC,           "public" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_REGISTER,         "register" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_ASM,     "asm" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_AUTO,    "auto" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_BOOL,    "bool" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_BREAK,   "break" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CASE,    "case" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CATCH,   "catch" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CHAR,    "char" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CLASS,   "class" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONST,   "const" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONSTEXPR,  "constexpr" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONST_CAST,    "const_cast" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_CONTINUE,   "continue" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DECLTYPE,   "decltype" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DEFAULT,    "default" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DELETE,     "delete" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DO,      "do" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DOUBLE,     "double" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_DYNAMIC_CAST,  "dynamic_cast" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_ELSE,    "else" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_ENUM,    "enum" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_EXPLICIT,   "explicit" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_EXPORT,     "export" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_EXTERN,     "extern" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FALSE,   "false" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FINAL,   "final" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FINALLY,    "finally" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FOR,     "for" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_FRGDND,     "friend" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_GOTO,    "goto" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_IF,      "if" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_INLINE,     "inline" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_INT,     "int" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_LONG,    "long" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_MUTABLE,    "mutable" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_NAMESPACE,  "namespace" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_NEW,     "new" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_NOEXPECT,   "noexpect" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_NULLPTR,    "nullptr" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_OPERATOR,   "operator" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_PRIVATE,    "private" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_PROTECTED,  "protected" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_PUBLIC,     "public" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_REGISTER,   "register" },
 				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_REINTERPRET_CAST, "reinterpet_cast" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_RETURN,           "return" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_SHORT,            "short" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_SIGNED,           "signed" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_SIZEOF,           "sizeof" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_STATIC,           "static" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_STATIC_ASSERT,    "static_assert" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_STATIC_CAST,      "static_cast" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_STRUCT,           "struct" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_SWITCH,           "switch" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TEMPLATE,         "template" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_THIS,             "this" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_THREAD_LOCAL,     "thread_local" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_THROW,            "throw" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TRUE,             "true" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TRY,              "try" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TYPEDEF,          "typedef" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TYPEID,           "typeid" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TYPENAME,         "typename" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_UNION,            "union" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_UNSIGNED,         "unsigned" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_USING,            "using" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_VIRTUAL,          "virtual" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_VOID,             "void" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_VOLATILE,         "volatile" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_WHILE,            "while" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_RETURN,     "return" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_SHORT,   "short" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_SIGNED,     "signed" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_SIZEOF,     "sizeof" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_STATIC,     "static" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_STATIC_ASSERT, "static_assert" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_STATIC_CAST,   "static_cast" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_STRUCT,     "struct" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_SWITCH,     "switch" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TEMPLATE,   "template" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_THIS,    "this" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_THREAD_LOCAL,  "thread_local" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_THROW,   "throw" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TRUE,    "true" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TRY,     "try" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TYPEDEF,    "typedef" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TYPEID,     "typeid" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_TYPENAME,   "typename" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_UNION,   "union" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_UNSIGNED,   "unsigned" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_USING,   "using" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_VIRTUAL,    "virtual" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_VOID,    "void" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_VOLATILE,   "volatile" },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_KEYWORD_WHILE,   "while" },
 			}),
 			StreamedLexerOperatorsList({
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN,                    "="   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ADD,                       "+"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SUB,                       "-"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MUL,                       "*"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_DIV,                       "/"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MOD,                       "%"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INC,                       "++"  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_DEC,                       "--"  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_EQUALS,                    "=="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_NOT_EQUALS,                "!="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_GREATER,                   "<"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_LESS,                      ">"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_GREATER_EQUAL,             "<="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_LESS_EQUALS,               ">="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_NOT,                       "!"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_AND,                       "&&"  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_OR,                        "||"  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_NOT,               "~"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_AND,               "&"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_OR,                "|"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_XOR,               "^"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_LEFT_SHIFT,        "<<"  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_RIGHT_SHIFT,       ">>"  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ADD_ASSIGN,                "+="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SUB_ASSIGN,                "-="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MUL_ASSIGN,                "*="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_DIV_ASSIGN,                "/="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MOD_ASSIGN,                "%="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_AND_ASSIGN,        "&="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_OR_ASSIGN,         "|="  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_XOR_ASSIGN,        "^="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ASSIGN,     "="   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ADD,        "+"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SUB,        "-"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MUL,        "*"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_DIV,        "/"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MOD,        "%"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INC,        "++"  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_DEC,        "--"  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_EQUALS,     "=="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_NOT_EQUALS,    "!="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_GREATER,       "<"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_LESS,       ">"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_GREATER_EQUAL,    "<="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_LESS_EQUALS,      ">="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_NOT,        "!"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_AND,        "&&"  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_OR,      "||"  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_NOT,      "~"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_AND,      "&"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_OR,    "|"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_XOR,      "^"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_LEFT_SHIFT,  "<<"  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_RIGHT_SHIFT,    ">>"  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_ADD_ASSIGN,    "+="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SUB_ASSIGN,    "-="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MUL_ASSIGN,    "*="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_DIV_ASSIGN,    "/="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MOD_ASSIGN,    "%="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_AND_ASSIGN,  "&="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_OR_ASSIGN,   "|="  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_XOR_ASSIGN,  "^="  },
 				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_LEFT_SHIFT_ASSIGN, "<<=" },
 				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_BITWISE_RIGHT_SHIFT_ASSIGN,">>=" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_BEGIN,               "["   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_END,                 "]"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN,               "{"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END,                 "}"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_BEGIN,              "("   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END,                ")"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_STRUCT_DEREFERENCING,      "->"  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_STRUCT_REFERENCING,        "."   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_BEGIN,      "["   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_INDEX_END,     "]"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_BEGIN,      "{"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_END,     "}"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_BEGIN,     "("   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAMS_END,    ")"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_STRUCT_DEREFERENCING,   "->"  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_STRUCT_REFERENCING,  "."   },
 				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MEMBER_PTR_DEREFERENCING,  "->*" },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MEMBER_PTR_REFERENCING,    ".*"  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA,                     ","   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COLON,                     ":"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SEMICOLON,                 ";"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TERNARY,                   "?"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_RESOLUTION,          "::"  },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAM_PACK,                "..." },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PREPROCESSOR,              "#"   },
-				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PREPROCESSOR_GLUE,         "##"  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_MEMBER_PTR_REFERENCING, ".*"  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COMMA,      ","   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_COLON,      ":"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SEMICOLON,     ";"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_TERNARY,       "?"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_SCOPE_RESOLUTION,    "::"  },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PARAM_PACK,    "..." },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PREPROCESSOR,     "#"   },
+				{ GD_STREAMED_LEXER_OPTIONS_CPP_OPERATOR_PREPROCESSOR_GLUE,   "##"  },
 			}),
 			"//", "/*", "*/", 
 			'x', '\0', 'b', '.'

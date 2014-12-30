@@ -1,7 +1,7 @@
 #include <GoddamnEngine/Core/Reflection/TypeInformation/TypeInformation.h>
 #include <GoddamnEngine/Core/Threading/CriticalSection/CriticalSection.h>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
-#include <GoddamnEngine/Core/Object/Object.h>
+#include <GoddamnEngine/Core/Reflection/Object/Object.h>
 
 GD_NAMESPACE_BEGIN
 

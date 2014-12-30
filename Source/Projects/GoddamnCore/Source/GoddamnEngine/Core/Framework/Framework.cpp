@@ -15,7 +15,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	Str       const Window::DefaultWindowTitle     = "Goddamn motherfucken Window!";
+	Str    const Window::DefaultWindowTitle  = "Goddamn motherfucken Window!";
 	Rectangle const Window::DefaultWindowRectangle = Rectangle(100, 100, 1600, 900);
 
 GD_NAMESPACE_END
@@ -28,5 +28,5 @@ GD_NAMESPACE_END
 #	include "Framework.SDL2.inl"
 //endif	// if (defined(GD_PLATFORM_API_LIBSDL2))
 #else	// *** Selecting best-suiting API ***
-#	error "Framework code is not implemented on target platform"
+//#	error "Framework code is not implemented on target platform"
 #endif	// *** Selecting best-suiting API ***

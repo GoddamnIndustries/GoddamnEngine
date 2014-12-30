@@ -30,8 +30,8 @@ GD_NAMESPACE_BEGIN
 		union {
 			ElementType Elements[ThisComponentsCount];
 			struct { ElementType Left, Top, Width, Height; }; ///< Compatibility with Rectangle
-			struct { ElementType x,    y,   z,     w;      }; ///< Representation in XYZW coordinate system
-			struct { ElementType r,    g,   b,     a;      }; ///< Representation in RGBA color system
+			struct { ElementType x, y,   z,  w;   }; ///< Representation in XYZW coordinate system
+			struct { ElementType r, g,   b,  a;   }; ///< Representation in RGBA color system
 			struct { ElementType _0, _1, _2, _3; };
 		};	// anonymous union
 
@@ -358,8 +358,8 @@ GD_NAMESPACE_BEGIN
 			Float32x4Intrinsics::VectorRegisterType ElementsVector;
 			Float32 Elements[ThisComponentsCount];
 			struct { Float32 Left, Top, Width, Height; };
-			struct { Float32 x,    y,   z,     w;      };
-			struct { Float32 r,    g,   b,     a;      };
+			struct { Float32 x, y,   z,  w;   };
+			struct { Float32 r, g,   b,  a;   };
 			struct { Float32 _0, _1, _2, _3; };
 		};	// anonymous union
 

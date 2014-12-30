@@ -17,18 +17,18 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 
 	GD_TYPEINFORMATION_IMPLEMENTATION(PhysicsInterface, StaticComponent, GDAPI);
-	GD_SINGLETON_IMPLEMENTATION      (PhysicsInterface                         );
+	GD_SINGLETON_IMPLEMENTATION   (PhysicsInterface       );
 
 	PhysicsInterface::PhysicsInterface() : StaticComponent(StaticComponentPriority::Low)
 	{
 		using namespace physx;
 		this->Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, 
-			*(this->DefaultCallbackAllocator = new PxDefaultAllocator    ),
-			*(this->DefaultCallbackError     = new PxDefaultErrorCallback)
+			*(this->DefaultCallbackAllocator = new PxDefaultAllocator ),
+			*(this->DefaultCallbackError  = new PxDefaultErrorCallback)
 		);
 
 		this->PhysicsSdk = PxCreatePhysics(PX_PHYSICS_VERSION, *this->Foundation, PxTolerancesScale());
-		this->Chief      = PxCreateCooking(PX_PHYSICS_VERSION, *this->Foundation, PxCookingParams(this->PhysicsSdk->getTolerancesScale()));
+		this->Chief   = PxCreateCooking(PX_PHYSICS_VERSION, *this->Foundation, PxCookingParams(this->PhysicsSdk->getTolerancesScale()));
 		
 		PxInitExtensions(*this->PhysicsSdk);
 

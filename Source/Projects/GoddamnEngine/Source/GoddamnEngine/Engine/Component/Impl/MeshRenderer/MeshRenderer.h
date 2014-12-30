@@ -24,7 +24,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		///
 		GDAPI virtual void OnMeshRendererParamChanged(
-			_In_ Component* const component
+			Component* const component
 		) abstract;
 	};
 
@@ -47,11 +47,11 @@ GD_NAMESPACE_BEGIN
 			GD_FIELD(bool,			RendererRecieveShadows); 
 		GD_SERIALIZATION_END();
 
-		HRILinkagePoint  * RendererLinkagePoint         = nullptr;
+		HRILinkagePoint  * RendererLinkagePoint   = nullptr;
 		HRIShaderInstance* RendererVertexShaderInstance = nullptr;
-		HRIShaderParam   * RendererMatrixMvp            = nullptr;
-		HRIShaderParam   * RendererMatrixModel          = nullptr;
-		HRIShaderParam   * RendererMatrixNormal         = nullptr;
+		HRIShaderParam   * RendererMatrixMvp   = nullptr;
+		HRIShaderParam   * RendererMatrixModel    = nullptr;
+		HRIShaderParam   * RendererMatrixNormal   = nullptr;
 
 	protected:
 		GDINT MeshRenderer();
@@ -73,7 +73,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Makes mesh cast if this enabled
 		GDINL void SetCastShadows(
-			_In_ bool const castShadows
+			bool const castShadows
 		) { this->RendererCastShadows = castShadows; /*this->OnParameterChanged.TriggerEvent();*/ }
 
 		/// ==========================================================================================
@@ -84,7 +84,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Makes mesh receive shadows on it's surface if this enabled
 		GDINL void SetReceiveShadows(
-			_In_ bool const receiveShadows
+			bool const receiveShadows
 		) { this->RendererRecieveShadows = receiveShadows; /*this->OnParameterChanged.TriggerEvent();*/ } 	
 
 		/// ==========================================================================================

@@ -2,8 +2,7 @@
 /// StringStream.h - String stream interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
-/// History:
-///		* 18.06.2014 - Created by James Jhuighuy
+/// @author James Jhuighuy
 /// ==========================================================================================
 
 #pragma once
@@ -25,85 +24,103 @@ GD_NAMESPACE_BEGIN
 
 	private /* Class members. */:
 		UInt8 const* DataReference = nullptr;
-		size_t       DataReferenceLength = 0;
-		size_t       DataReferencePosition = 0;
+		size_t    DataReferenceLength = 0;
+		size_t    DataReferencePosition = 0;
 
-	public /*Implemented interface API*/:
-		/// Initializes StringInputStream using pointer to some memory.
-		/// @param SomeMemory       Pointer to input stream initial memory.
-		/// @param SomeMemoryLength Length of specified data memory length.
-		GDINL BaseStringInputStream(CharacterType const* SomeMemory, size_t const SomeMemoryLength);
+	public:
+		/// @brief					Initializes StringInputStream using pointer to some memory.
+		/// @param Memory    Pointer to input stream initial memory.
+		/// @param MemoryLength Length of specified data memory length.
+		GDINL						BaseStringInputStream(CharacterType const* Memory, size_t const MemoryLength);
 
-		/// Initializes StringInputStream using some String class instance.
-		/// @param SomeString InputStream data.
-		GDINL explicit BaseStringInputStream(BaseString<CharacterType> const& SomeString);
+		/// @brief					Initializes StringInputStream using some String class instance.
+		/// @param SomeString		InputStream data.
+		GDINL explicit				BaseStringInputStream(BaseString<CharacterType> const& SomeString);
 
-		/// Initializes StringInputStream using some StringBuilder class instance.
-		/// @param SomeStringBuilder InputStream data.
-		GDINL explicit BaseStringInputStream(BaseStringBuilder<CharacterType> const& SomeStringBuilder);
+		/// @brief					Initializes StringInputStream using some StringBuilder class instance.
+		/// @param SomeBuilder	InputStream data.
+		GDINL explicit				BaseStringInputStream(BaseStringBuilder<CharacterType> const& SomeBuilder);
 
-		/// Initializes StringInputStream using some Vector of characters class instance.
-		/// @param SomeVector InputStream data.
-		GDINL explicit BaseStringInputStream(Vector<CharacterType> const& SomeVector);
+		/// @brief					Initializes StringInputStream using some Vector of characters class instance.
+		/// @param SomeVector	InputStream data.
+		GDINL explicit				BaseStringInputStream(Vector<CharacterType> const& SomeVector);
 
-		GDINL virtual ~BaseStringInputStream();
+		/// @brief					Closes this stream.
+		GDINL virtual				~BaseStringInputStream();
 		
-		/// @see BaseStream::GetPosition()
-		GDINL virtual size_t GetPosition() const override final;
+		/// @brief					Returns current position in stream.
+		/// @returns				Current position in stream.
+		GDINT virtual size_t		GetPosition() const override final;
 
-		/// @see BaseStream::GetLength()
-		GDINL virtual size_t GetLength() const override final;
+		/// @brief					Returns size of data that stream handles.
+		/// @returns				Size of data that stream handles.
+		GDINT virtual size_t		GetLength() const override final;
 
-		/// @see InputStream::Close()
-		GDINL virtual void Close() override final;
+		/// @brief					Closes this stream and releases all resources associated with this stream.
+		GDINT virtual void			Close() override final;
 
-		/// @see InputStream::Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current)
-		GDINL virtual void Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current) override final;
+		/// @brief					Reposition this stream to new specified position.
+		/// @param Offset		Offset in bytes from specified origin.
+		/// @param Origin		Defines origin from which point make offset.
+		GDINT virtual void			Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current) override final;
 
-		/// @see InputStream::Read()
-		GDINL virtual UInt8 Read() override final;
+		/// @brief					Reads next element from input stream. Full endian abstraction is provided.
+		/// @returns				Read element from stream.
+		GDINT virtual UInt8			Read() override final;
 
-		/// @see InputStream::Read(handle const Array, size_t const Count, size_t const Length)
-		GDINL virtual void Read(handle const Array, size_t const Count, size_t const Length) override final;
+		/// @brief					Reads several elements from input stream.
+		/// @param Array		Output memory to which data would be written.
+		/// @param  Count		Length of one element
+		/// @param  Length		Length of memory in elements.
+		GDAPI virtual void			Read(handle const Array, size_t const Count, size_t const Length) override final;
 	};	// class BaseStringInputStream
 	
-	/// Shortcut for StringInputStream for Char type.
-	typedef BaseStringInputStream<Char> StringInputStream;
-
 	/// Specifies write-only stream that provides writing to reference on data (BaseStringBuilder).
 	template<typename CharacterType>
 	class BaseStringOutputStream final : public OutputStream
 	{
 		static_assert(TypeTraits::IsCharacter<CharacterType>::Value, "'BaseStringOutputStream<T>' error: T should be character type.");
 
-	private /*Class members*/:
+	private:
 		BaseStringBuilder<CharacterType>* Builder = nullptr;
 
-	public /*Implemented interface API*/:
-		/// Initializes new string output stream that points to some string builder.
-		/// @param Builder Builder in which output would be stored.
-		GDINL explicit BaseStringOutputStream(BaseStringBuilder<CharacterType>& Builder);
-		GDINL virtual ~BaseStringOutputStream();
-		
-		/// @see BaseStream::GetPosition()
-		GDINL virtual size_t GetPosition() const override final;
+	public:
+		/// @brief					Initializes new string output stream that points to some string builder.
+		/// @param Builder		Builder in which output would be stored.
+		GDINL explicit				BaseStringOutputStream(BaseStringBuilder<CharacterType>& Builder);
 
-		/// @see BaseStream::GetLength()
-		GDINL virtual size_t GetLength() const override final;
+		/// @brief					Closes this stream.
+		GDAPI virtual				~FileOutputStream();
 
-		/// @see OutputStream::Close()
-		GDINL virtual void Close() override final;
+		/// @brief					Returns current position in stream.
+		/// @returns				Current position in stream.
+		GDINT virtual size_t		GetPosition() const override final;
 
-		/// @see OutputStream::Flush()
-		GDINL virtual void Flush() override final;
+		/// @brief					Returns size of data that stream handles.
+		/// @returns				Size of data that stream handles.
+		GDINT virtual size_t		GetLength() const override final;
 
-		/// @see OutputStream::Write(UInt8 const Byte)
-		GDINL virtual void Write(UInt8 const Byte) override final;
+		/// @brief					Closes this stream and releases all resources associated with this stream.
+		GDINT virtual void			Close() override final;
 
-		/// @see OutputStream::Write(chandle const Array, size_t const Count, size_t const Length)
-		GDINL virtual void Write(chandle const Array, size_t const Count, size_t const Length) override final;
+		/// @brief					Writes all unsaved to the resource.
+		GDINT virtual void			Flush() override final;
+
+		/// @brief					Writes a byte into output.
+		/// @param				Byte Byte that would be written to output.
+		GDINT virtual void			Write(UInt8 const Byte) override final;
+
+		/// @brief					Writes several elements to output.
+		/// @param Array		Input elements that would be written.
+		/// @param Count		Length of one element.
+		/// @param Length		Length of memory in elements.
+		GDINL virtual void			Write(chandle const Array, size_t const Count, size_t const Length) override final;
 	};	// class StringOutputStream
 	
+
+	/// Shortcut for StringInputStream for Char type.
+	typedef BaseStringInputStream<Char> StringInputStream;
+
 	/// Shortcut for StringOutputStream for Char type.
 	typedef BaseStringOutputStream<Char> StringOutputStream;
 

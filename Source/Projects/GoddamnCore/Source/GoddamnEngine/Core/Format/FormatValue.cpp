@@ -5,11 +5,11 @@ GD_NAMESPACE_BEGIN
 	///// ==========================================================================================
 	///// ==========================================================================================
 	//extern void FormatAbstractValueFromString(
-	//	_In_ String const& valueString,
-	//	_In_ size_t const valueElementSize,
-	//	_In_ size_t const valueElementsCount,
-	//	_In_ FormatType const valueFormatType,
-	//	_In_ handle const value
+	//	String const& valueString,
+	//	size_t const valueElementSize,
+	//	size_t const valueElementsCount,
+	//	FormatType const valueFormatType,
+	//	handle const value
 	//)
 	//{
 	//	String formatString = "";
@@ -57,16 +57,16 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	/// ==========================================================================================
 	/*extern String FormatAbstractValueToString(
-		_In_ size_t const valueElementSize,
-		_In_ size_t const valueElementCount,
-		_In_ FormatType const valueFormatType,
-		_In_ chandle const value
+		size_t const valueElementSize,
+		size_t const valueElementCount,
+		FormatType const valueFormatType,
+		chandle const value
 	)
 	{
-		GD_UNUSED(valueElementSize);
-		GD_UNUSED(valueElementCount);
-		GD_UNUSED(valueFormatType);
-		GD_UNUSED(value);
+		GD_NOT_USED(valueElementSize);
+		GD_NOT_USED(valueElementCount);
+		GD_NOT_USED(valueFormatType);
+		GD_NOT_USED(value);
 		GD_NOT_IMPLEMENTED();
 		return "";
 	}*/

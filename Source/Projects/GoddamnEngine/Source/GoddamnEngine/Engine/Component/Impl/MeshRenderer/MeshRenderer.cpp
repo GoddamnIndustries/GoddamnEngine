@@ -13,7 +13,7 @@ GD_NAMESPACE_BEGIN
 	MeshRenderer::MeshRenderer() 
 		: GD_EXTENDS_SERIALIZABLE(Component)
 		, OnMeshRendererParamChangedEvent(&IOnMeshRendererParamChangedListener::OnMeshRendererParamChanged)
-		, RendererLinkagePoint           ( HRInterface::GetInstance().CreateLinkagePoint()                )
+		, RendererLinkagePoint     ( HRInterface::GetInstance().CreateLinkagePoint()    )
 	{
 	}
 
@@ -42,11 +42,11 @@ GD_NAMESPACE_BEGIN
 		this->RendererLinkagePoint->SetIndexedShape (this->GetStaticMesh()->GetLodAt(0));
 		this->RendererLinkagePoint->SetShaderProgram(this->GetMaterial()->GetShaderProgram().GetPointer());
 
-		this->RendererMatrixMvp    = this->RendererVertexShaderInstance->GetParamByName("VertexMvpMatrix");
+		this->RendererMatrixMvp = this->RendererVertexShaderInstance->GetParamByName("VertexMvpMatrix");
 		this->RendererMatrixModel  = this->RendererVertexShaderInstance->GetParamByName("VertexModelMatrix");
 		this->RendererMatrixNormal = this->RendererVertexShaderInstance->GetParamByName("VertexNormalMatrix");
 		
-		GD_ASSERT((this->RendererMatrixMvp    != nullptr), "'VertexMvpMatrix' was not found in vertex shader");
+		GD_ASSERT((this->RendererMatrixMvp != nullptr), "'VertexMvpMatrix' was not found in vertex shader");
 		GD_ASSERT((this->RendererMatrixModel  != nullptr), "'VertexModelMatrix' was not found in vertex shader");
 		GD_ASSERT((this->RendererMatrixNormal != nullptr), "'VertexNormalMatrix' was not found in vertex shader");
 
@@ -80,7 +80,7 @@ GD_NAMESPACE_BEGIN
 	{
 		if (this->RendererVertexShaderInstance != nullptr) {
 			Matrix4x4 const& MatrixModel  = this->GetGameObject()->GetTransform()->GetTransformMatrix();
-			Matrix4x4 const  MatrixMVP    = MatrixModel * TheCamera->GetViewMatrix() * TheCamera->GetProjectionMatrix();
+			Matrix4x4 const  MatrixMVP = MatrixModel * TheCamera->GetViewMatrix() * TheCamera->GetProjectionMatrix();
 		//	Matrix3   const  MatrixNormal = Matrix3(Matrix4x4(MatrixModel).Inverse()).Transpose();
 
 		//	using namespace DirectX;

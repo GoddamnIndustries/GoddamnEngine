@@ -5,7 +5,7 @@
 /// History:
 ///		* --.01.2014 - Created by James Jhuighuy
 ///		* 06.02.2014 - Rewritten from scratch by James Jhuighuy
-///     * 05.05.2014 - Rewritten to match cross compiler
+///  * 05.05.2014 - Rewritten to match cross compiler
 /// ==========================================================================================
 
 #include <GoddamnEngine/Core/IO/Stream/Stream.h>
@@ -20,11 +20,11 @@ GD_NAMESPACE_BEGIN
 
 	GDINL HRIShaderParamDesc::HRIShaderParamDesc(
 		HRIShaderParamLocationDesc* const  ParamLocationDesc,
-		String                      const& ParamName,
-		HRIShaderParamDescType      const  ParamType,
-		Format                      const  ParamFormat      /* = GD_FORMAT_UNKNOWN                   */,
-		size_t                      const  ParamArrayLength /* = 1                                   */,
-		HRIShaderParamID            const  ParamID          /* = GD_HRI_SHADER_PARAM_DESC_ID_UNKNOWN */)
+		String       const& ParamName,
+		HRIShaderParamDescType   const  ParamType,
+		Format       const  ParamFormat   /* = GD_FORMAT_UNKNOWN       */,
+		size_t       const  ParamArrayLength /* = 1           */,
+		HRIShaderParamID   const  ParamID    /* = GD_HRI_SHADER_PARAM_DESC_ID_UNKNOWN */)
 		: HRIObject(HRIObject::TreeLockingFlagsAll, ParamLocationDesc)
 		, ParamName(ParamName), ParamHash  (ParamName.GetHashCode())
 		, ParamType(ParamType), ParamFormat(ParamFormat), ParamArrayLength(ParamArrayLength)
@@ -236,21 +236,21 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 
 	GDINL HRIShaderCtorInfo::HRIShaderCtorInfo(
-		HRIShaderProgram*     const  CreationShaderProgram,
-		chandle               const  CreationData,
-		size_t                const  CreationDataSize,
+		HRIShaderProgram*  const  CreationShaderProgram,
+		chandle      const  CreationData,
+		size_t    const  CreationDataSize,
 		HRIShaderInstanceDesc const* CreationInstanceDesc)
 		: CreationShaderProgram(CreationShaderProgram)
-		, CreationData         (CreationData         )
-		, CreationDataSize     (CreationDataSize     )
+		, CreationData   (CreationData   )
+		, CreationDataSize  (CreationDataSize  )
 		, CreationInstanceDesc (CreationInstanceDesc )
 	{	
 	}
 
 	GDINL HRIShaderCtorInfo::HRIShaderCtorInfo(HRIShaderCtorInfo const& CtorInfo) 
 		: CreationShaderProgram(CtorInfo.CreationShaderProgram)
-		, CreationData         (CtorInfo.CreationData         )
-		, CreationDataSize     (CtorInfo.CreationDataSize     )
+		, CreationData   (CtorInfo.CreationData   )
+		, CreationDataSize  (CtorInfo.CreationDataSize  )
 		, CreationInstanceDesc (CtorInfo.CreationInstanceDesc )
 	{
 	}

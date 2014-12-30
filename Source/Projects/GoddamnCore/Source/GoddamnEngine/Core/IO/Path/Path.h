@@ -1,9 +1,6 @@
 /// ==========================================================================================
 /// Path.h - Path management utility interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-/// 
-/// History:
-///		* 27.04.2014 - Created by James Jhuighuy
 /// ==========================================================================================
 
 #pragma once
@@ -11,7 +8,7 @@
 #define GD_CORE_IO_PATH
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
+#include <GoddamnEngine/Core/Containers/String.h>
 
 GD_NAMESPACE_BEGIN
 	

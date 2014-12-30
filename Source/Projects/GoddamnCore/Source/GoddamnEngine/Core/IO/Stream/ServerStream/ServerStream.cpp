@@ -7,7 +7,7 @@
 /// ==========================================================================================
 
 #include <GoddamnEngine/Core/IO/Stream/ServerStream/ServerStream.h>
-#include <curl/curl.h>
+//#include <curl/curl.h>
 
 GD_NAMESPACE_BEGIN
 GD_NAMESPACE_END

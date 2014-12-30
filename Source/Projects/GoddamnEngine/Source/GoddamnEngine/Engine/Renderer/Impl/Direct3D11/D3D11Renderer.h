@@ -43,14 +43,14 @@ GD_NAMESPACE_BEGIN
 		D3D11PointerType* Pointer;
 
 	public:
-		GDINL  D3D11RefPtr(D3D11PointerType* const Pointer = nullptr) : Pointer(Pointer)          { }
-		GDINL  D3D11RefPtr(D3D11RefPtr          && OtherPtr         ) : Pointer(OtherPtr.Pointer) { OtherPtr.Pointer = nullptr; }
-		GDINL ~D3D11RefPtr()                                                                      { if (Pointer != nullptr) this->Pointer->Release(); }
+		GDINL  D3D11RefPtr(D3D11PointerType* const Pointer = nullptr) : Pointer(Pointer)    { }
+		GDINL  D3D11RefPtr(D3D11RefPtr    && OtherPtr   ) : Pointer(OtherPtr.Pointer) { OtherPtr.Pointer = nullptr; }
+		GDINL ~D3D11RefPtr()                   { if (Pointer != nullptr) this->Pointer->Release(); }
 
 		GDINL D3D11PointerType* Get() const { return this->Pointer; }
 
 		GDINL D3D11PointerType* const* GetAddressOf() const { return  (&this->Pointer); }
-		GDINL D3D11PointerType*      * GetAddressOf()       { return  (&this->Pointer); }
+		GDINL D3D11PointerType*   * GetAddressOf()    { return  (&this->Pointer); }
 
 		GDINL D3D11PointerType* Reset()
 		{
@@ -61,7 +61,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		GDINL D3D11RefPtr& operator= (D3D11RefPtr const& OtherPtr) = delete;
-		GDINL D3D11RefPtr& operator= (D3D11RefPtr     && OtherPtr)
+		GDINL D3D11RefPtr& operator= (D3D11RefPtr  && OtherPtr)
 		{
 			if ((&OtherPtr) != this) {
 				this->~D3D11RefPtr();
@@ -73,11 +73,11 @@ GD_NAMESPACE_BEGIN
 		}
 
 		GDINL D3D11PointerType* const* operator&  () const { return  (&this->Pointer); }
-		GDINL D3D11PointerType*      * operator&  ()       { return  (&this->Pointer); }
+		GDINL D3D11PointerType*   * operator&  ()    { return  (&this->Pointer); }
 		GDINL D3D11PointerType&  operator*  () const { return  (*this->Get()); }
 		GDINL D3D11PointerType*  operator-> () const { return  ( this->Get()); }
-		GDINL bool               operator== (D3D11PointerType const* const OtherPointer) const { return  (this->Get() == OtherPointer); }
-		GDINL bool               operator!= (D3D11PointerType const* const OtherPointer) const { return !((*this) == OtherPointer); }
+		GDINL bool      operator== (D3D11PointerType const* const OtherPointer) const { return  (this->Get() == OtherPointer); }
+		GDINL bool      operator!= (D3D11PointerType const* const OtherPointer) const { return !((*this) == OtherPointer); }
 	};	// class D3D11RefPtr
 
 	class HRD3D11Interface final : public HRInterface
@@ -87,11 +87,11 @@ GD_NAMESPACE_BEGIN
 		GD_SINGLETON_OVERRIDE(HRD3D11Interface, HRInterface);
 
 	public:
-		D3D11RefPtr<ID3D11Device           > Device;
-		D3D11RefPtr<ID3D11DeviceContext    > Context;
-		D3D11RefPtr<IDXGISwapChain         > SwapChain;
+		D3D11RefPtr<ID3D11Device     > Device;
+		D3D11RefPtr<ID3D11DeviceContext > Context;
+		D3D11RefPtr<IDXGISwapChain   > SwapChain;
 		D3D11RefPtr<ID3D11RenderTargetView > RenderTargetView;
-		D3D11RefPtr<ID3D11Texture2D        > DepthStencilBuffer;
+		D3D11RefPtr<ID3D11Texture2D  > DepthStencilBuffer;
 		D3D11RefPtr<ID3D11DepthStencilState> DepthStencilState;
 		D3D11RefPtr<ID3D11DepthStencilView > DepthStencilView;
 		D3D11RefPtr<ID3D11RasterizerState  > SolidRasterizerState;
@@ -100,7 +100,7 @@ GD_NAMESPACE_BEGIN
 		GDINL virtual ~HRD3D11Interface() { }
 
 #define GD_HRI_API  GDINT virtual
-#define GD_HRI_SPEC       override final
+#define GD_HRI_SPEC    override final
 #include <GoddamnEngine/Engine/Renderer/RendererMethods.h>
 	};
 

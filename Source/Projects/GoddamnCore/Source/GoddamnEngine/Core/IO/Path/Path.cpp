@@ -39,13 +39,13 @@ GD_NAMESPACE_BEGIN
 		extern String GetDirectoryName(String const& SomePath)
 		{
 			size_t const LastSlashLocation = Path::GetLastSlashLocation(SomePath);
-			return ((LastSlashLocation != SIZE_MAX) ? SomePath.GetSubstring(0, LastSlashLocation) : SomePath);
+			return ((LastSlashLocation != SIZE_MAX) ? SomePath.Subtring(0, LastSlashLocation) : SomePath);
 		}
 		
 		extern String GetFileName(String const& SomePath)
 		{
 			size_t const LastSlashLocation = Path::GetLastSlashLocation(SomePath);
-			return ((LastSlashLocation != SIZE_MAX) ? SomePath.GetSubstring(LastSlashLocation) : SomePath);
+			return ((LastSlashLocation != SIZE_MAX) ? SomePath.Subtring(LastSlashLocation) : SomePath);
 		}
 
 		extern String GetDirectoryAndFileNameWithoutExtension(String const& SomePath)
@@ -55,7 +55,7 @@ GD_NAMESPACE_BEGIN
 				return SomePath;
 			}
 
-			return SomePath.GetSubstring(0, Index - 1);
+			return SomePath.Subtring(0, Index - 1);
 		}
 
 		extern String GetFileNameWithoutExtension(String const& SomePath)
@@ -65,7 +65,7 @@ GD_NAMESPACE_BEGIN
 
 		extern String GetTemporaryFileName()
 		{
-			String TemporaryFileName(L_tmpnam);
+			String TemporaryFileName(L_tmpnam, '\0');
 			GD_ASSERT(tmpnam(TemporaryFileName.CStr()) != nullptr, "Failed to create temporary file name.");
 			return Path::GetTemporaryPath() + TemporaryFileName;
 		}

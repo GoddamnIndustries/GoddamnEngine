@@ -4,7 +4,7 @@
 /// 
 /// History:
 ///		* --.01.2014 - Created by James Jhuighuy
-///     * 16.05.2014 - Some staff got fixed.
+///  * 16.05.2014 - Some staff got fixed.
 /// ==========================================================================================
 
 #pragma once
@@ -52,7 +52,7 @@ GD_NAMESPACE_BEGIN
 	/// Describes support of Vertical Synchronization (VSync) by hardware
 	enum HRIVSyncDescription : UInt8
 	{
-		GD_HRI_VSYNC_MODE_UNKNOWN            = 0,
+		GD_HRI_VSYNC_MODE_UNKNOWN   = 0,
 		GD_HRI_VSYNC_MODE_HARDWARE_SUPPORTED = GD_BIT(0),	///< Is VSync supported by hardware
 		GD_HRI_VSYNC_MODE_SOFTWARE_SUPPORTED = GD_BIT(1),	///< Is custom VSync implemented in renderer 
 		GD_HRI_VSYNC_MODE_IS_ENABLED		 = GD_BIT(2),	///< Is VSync enabled
@@ -61,7 +61,7 @@ GD_NAMESPACE_BEGIN
 	/// Describes of fullscreen/windowed mode by hardware / OS
 	enum HRIScreenModeDescription : UInt8
 	{
-		GD_HRI_SCREEN_MODE_UNKNOWN              = 0,
+		GD_HRI_SCREEN_MODE_UNKNOWN     = 0,
 		GD_HRI_SCREEN_MODE_FULLSCREEN_SUPPORTED = GD_BIT(0),
 		GD_HRI_SCREEN_MODE_WINDOWED_SUPPORTED	= GD_BIT(1),
 		GD_HRI_SCREEN_MODE_IS_FULLSCREEN		= GD_BIT(2),
@@ -70,17 +70,17 @@ GD_NAMESPACE_BEGIN
 	/// List of semantics used by engine.
 	enum HRISemantic : UInt8
 	{
-		GD_HRI_SEMANTIC_POSITION,      ///< Semantic for Vertex position
+		GD_HRI_SEMANTIC_POSITION,   ///< Semantic for Vertex position
 		GD_HRI_SEMANTIC_NORMAL,		   ///< Semantic for Normals
-		GD_HRI_SEMANTIC_TANGENT,       ///< Semantic for tangents of vertices
-		GD_HRI_SEMANTIC_BINORMAL,      ///< Semantic for Bitangents/Binormals
-		GD_HRI_SEMANTIC_TEXCOORD,      ///< Semantic for texture coordinates (UV coordinates)
+		GD_HRI_SEMANTIC_TANGENT,    ///< Semantic for tangents of vertices
+		GD_HRI_SEMANTIC_BINORMAL,   ///< Semantic for Bitangents/Binormals
+		GD_HRI_SEMANTIC_TEXCOORD,   ///< Semantic for texture coordinates (UV coordinates)
 		GD_HRI_SEMANTIC_BLENDINDICES,  ///< Semantic for Blending indices
 		GD_HRI_SEMANTIC_BLENDWEIGHT,   ///< Semantic for Blending masses of bones
-		GD_HRI_SEMANTIC_COLOR,         ///< Semantic for Vertex colors
+		GD_HRI_SEMANTIC_COLOR,   ///< Semantic for Vertex colors
 		GD_HRI_SEMANTIC_UNKNOWN,	   ///< Semantic for texture coordinates (UV coordinates)
-		GD_HRI_SEMANTIC_FIRST          = GD_HRI_SEMANTIC_POSITION,
-		GD_HRI_SEMANTICS_COUNT         = GD_HRI_SEMANTIC_UNKNOWN
+		GD_HRI_SEMANTIC_FIRST    = GD_HRI_SEMANTIC_POSITION,
+		GD_HRI_SEMANTICS_COUNT   = GD_HRI_SEMANTIC_UNKNOWN
 	};	// enum HRISemantic
 
 	/// Describes types of buffers
@@ -90,7 +90,7 @@ GD_NAMESPACE_BEGIN
 		GD_HRI_BUFFER_TYPE_INDEX,	 ///< Buffer contains vertex indices data
 		GD_HRI_BUFFER_TYPE_CONSTANT, ///< Buffer contains data for constant buffer
 		GD_HRI_BUFFER_TYPE_UNKNOWN,	 ///< Unknown buffer
-		GD_HRI_BUFFER_TYPES_COUNT    = GD_HRI_BUFFER_TYPE_UNKNOWN,
+		GD_HRI_BUFFER_TYPES_COUNT = GD_HRI_BUFFER_TYPE_UNKNOWN,
 	};	// enum HRIBufferType
 
 	/// Indicates about runtime error caused by renderer interface.
@@ -102,7 +102,7 @@ GD_NAMESPACE_BEGIN
 	
 	struct HRISemanticDesc final
 	{
-		Str    Name;
+		Str Name;
 		Format SlotFormat;
 	};	// struct HRISemanticDesc
 
@@ -120,9 +120,9 @@ GD_NAMESPACE_BEGIN
 		HRIBufferType BufferType = GD_HRI_BUFFER_TYPE_UNKNOWN;
 	protected:
 		GDINL explicit HRIBuffer(HRIBufferType const BufferType) : BufferType(BufferType) { }
-		GDINL virtual ~HRIBuffer(                              )                          { }
+		GDINL virtual ~HRIBuffer(         )        { }
 	public:
-		GDINL HRIBufferType  GetType()          const { return this->BufferType; }
+		GDINL HRIBufferType  GetType()    const { return this->BufferType; }
 		GDAPI virtual handle GetNativePointer() const abstract;
 	};	// class HRIBuffer
 
@@ -132,13 +132,13 @@ GD_NAMESPACE_BEGIN
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRIVertexBuffer, HRIBuffer, GDAPI);
 		Float32 const* Data = nullptr;
-		size_t         Size = 0;
+		size_t   Size = 0;
 	protected:
 		GDINL explicit HRIVertexBuffer(Float32 const* const Data, size_t const Size) : HRIBuffer(GD_HRI_BUFFER_TYPE_VERTEX), Data(Data), Size(Size) { }
-		GDINL virtual ~HRIVertexBuffer(                                            ) { }
+		GDINL virtual ~HRIVertexBuffer(           ) { }
 	public:
 		GDINL Float32 const* GetData() const { return this->Data; }
-		GDINL size_t         GetLength() const { return this->Size; }
+		GDINL size_t   GetLength() const { return this->Size; }
 	};	// class HRIVertexBuffer
 
 	/// Provides interaction of Index data with GPU.
@@ -151,7 +151,7 @@ GD_NAMESPACE_BEGIN
 		size_t  Stride = 2;
 	protected:
 		GDINL explicit HRIIndexBuffer(chandle const Data, size_t const Size, size_t const Stride) : HRIBuffer(GD_HRI_BUFFER_TYPE_VERTEX), Data(Data), Size(Size), Stride(Stride) { }
-		GDINL virtual ~HRIIndexBuffer(                                                          ) { }
+		GDINL virtual ~HRIIndexBuffer(                ) { }
 	public:
 		GDINL chandle GetData  () const { return this->Data; }
 		GDINL size_t  GetSize  () const { return this->Size; }
@@ -166,11 +166,11 @@ GD_NAMESPACE_BEGIN
 		size_t Size = 0;
 	protected:
 		GDINL explicit HRIConstantBuffer(size_t const Size) : HRIBuffer(GD_HRI_BUFFER_TYPE_CONSTANT), Size(Size) { }
-		GDINL virtual ~HRIConstantBuffer(                 ) { }
+		GDINL virtual ~HRIConstantBuffer(     ) { }
 	public:
 		GDINL size_t GetLength() const { return this->Size; }
 		GDAPI virtual void CopyDataTo  ( handle const Data) const abstract;
-		GDAPI virtual void CopyDataFrom(chandle const Data)       abstract;
+		GDAPI virtual void CopyDataFrom(chandle const Data)    abstract;
 	};	// class HRIConstantBuffer
 
 	/// ==========================================================================================
@@ -198,18 +198,18 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HRIIndexedShape() : VertexBuffers(GD_HRI_SEMANTICS_COUNT) { }
 		GDINL virtual ~HRIIndexedShape() { }
 	public:
-		GDAPI virtual HRITopologyType GetTopologyType(                                  ) const { return this->TopologyType;                }
-		GDAPI virtual void            SetTopologyType(HRITopologyType const TopologyType)       {        this->TopologyType = TopologyType; }
-		GDAPI virtual void SetVertexData(HRISemantic const Semantic, Float32 const* const Data, size_t const Size                     );
-		GDAPI virtual void SetIndexData (                            chandle        const Data, size_t const Size, size_t const Stride);
+		GDAPI virtual HRITopologyType GetTopologyType(          ) const { return this->TopologyType;    }
+		GDAPI virtual void   SetTopologyType(HRITopologyType const TopologyType)    {  this->TopologyType = TopologyType; }
+		GDAPI virtual void SetVertexData(HRISemantic const Semantic, Float32 const* const Data, size_t const Size      );
+		GDAPI virtual void SetIndexData (       chandle  const Data, size_t const Size, size_t const Stride);
 		GDAPI virtual HRIIndexBuffer  const* GetIndexBuffer() const { return this->IndexBuffer.GetPointer(); }
-		GDAPI virtual HRIIndexBuffer       * GetIndexBuffer()       { return this->IndexBuffer.GetPointer(); }
+		GDAPI virtual HRIIndexBuffer    * GetIndexBuffer()    { return this->IndexBuffer.GetPointer(); }
 		GDAPI virtual HRIVertexBuffer const* GetVertexBuffer(HRISemantic const Semantic) const 
 		{ 
 			return this->VertexBuffers[static_cast<size_t>(Semantic)].GetPointer(); 
 		}
 		
-		GDAPI virtual HRIVertexBuffer* GetVertexBuffer(HRISemantic const Semantic)       
+		GDAPI virtual HRIVertexBuffer* GetVertexBuffer(HRISemantic const Semantic)    
 		{ 
 			return const_cast<HRIVertexBuffer*>(const_cast<HRIIndexedShape const*>(this)->GetVertexBuffer(Semantic)); 
 		}
@@ -230,8 +230,8 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDAPI virtual HRIShaderProgram const* GetShaderProgram() const abstract;
 		GDAPI virtual HRIIndexedShape  const* GetIndexedShape () const abstract;
-		GDINL         HRIShaderProgram      * GetShaderProgram() { return const_cast<HRIShaderProgram*>(const_cast<HRILinkagePoint const*>(this)->GetShaderProgram()); }
-		GDINL         HRIIndexedShape       * GetIndexedShape () { return const_cast<HRIIndexedShape *>(const_cast<HRILinkagePoint const*>(this)->GetIndexedShape ()); }
+		GDINL   HRIShaderProgram   * GetShaderProgram() { return const_cast<HRIShaderProgram*>(const_cast<HRILinkagePoint const*>(this)->GetShaderProgram()); }
+		GDINL   HRIIndexedShape    * GetIndexedShape () { return const_cast<HRIIndexedShape *>(const_cast<HRILinkagePoint const*>(this)->GetIndexedShape ()); }
 		GDAPI virtual void SetShaderProgram(HRIShaderProgram const* const Effect) abstract;
 		GDAPI virtual void SetIndexedShape (HRIIndexedShape  const* const IndexedShape ) abstract;
 		GDAPI virtual void RenderSelf() const abstract;
@@ -244,11 +244,11 @@ GD_NAMESPACE_BEGIN
 	/// Describes modes of creating texture.
 	enum HRITexture2DMode : UInt8
 	{
-		GD_HRI_TEXTURE_2D_MODE_STATIC,		        ///< This texture is statically created from data.
-		GD_HRI_TEXTURE_2D_MODE_DYNAMIC,	            ///< Read-write texture. 
-		GD_HRI_TEXTURE_2D_MODE_RenderTarget,         ///< Texture that can be binded to frame buffer.
-		GD_HRI_TEXTURE_2D_MODE_UNKNOWN,		        ///< Unknown texture mode (internal usage only).
-		GD_HRI_TEXTURE_2D_MODES_COUNT		        = GD_HRI_TEXTURE_2D_MODE_UNKNOWN,
+		GD_HRI_TEXTURE_2D_MODE_STATIC,		  ///< This texture is statically created from data.
+		GD_HRI_TEXTURE_2D_MODE_DYNAMIC,	   ///< Read-write texture. 
+		GD_HRI_TEXTURE_2D_MODE_RenderTarget,   ///< Texture that can be binded to frame buffer.
+		GD_HRI_TEXTURE_2D_MODE_UNKNOWN,		  ///< Unknown texture mode (internal usage only).
+		GD_HRI_TEXTURE_2D_MODES_COUNT		  = GD_HRI_TEXTURE_2D_MODE_UNKNOWN,
 	};	// enum HRITexture2DMode
 
 	/// Describes texture filtering type.
@@ -264,10 +264,10 @@ GD_NAMESPACE_BEGIN
 	/// Describes texture wrap mode.
 	enum HRITexture2DWrapMode : UInt8
 	{
-		GD_HRI_TEXTURE_2D_WRAP_MODE_REPEAT,         ///< Texture would be tiled if UV goes out of bounds.
-		GD_HRI_TEXTURE_2D_WRAP_MODE_CLAMP,          ///< UV would be clamped in [0, 1].
-		GD_HRI_TEXTURE_2D_WRAP_MODE_UNKNOWN,        ///< Unknown texture warp mode (internal usage only).
-		GD_HRI_TEXTURE_2D_WRAP_MODES_COUNT          = GD_HRI_TEXTURE_2D_WRAP_MODE_UNKNOWN,
+		GD_HRI_TEXTURE_2D_WRAP_MODE_REPEAT,   ///< Texture would be tiled if UV goes out of bounds.
+		GD_HRI_TEXTURE_2D_WRAP_MODE_CLAMP,    ///< UV would be clamped in [0, 1].
+		GD_HRI_TEXTURE_2D_WRAP_MODE_UNKNOWN,  ///< Unknown texture warp mode (internal usage only).
+		GD_HRI_TEXTURE_2D_WRAP_MODES_COUNT    = GD_HRI_TEXTURE_2D_WRAP_MODE_UNKNOWN,
 	};	// enum HRITexture2DWrapMode
 
 	/// Describes single texture.
@@ -276,17 +276,17 @@ GD_NAMESPACE_BEGIN
 	private:
 		GD_CLASS_UNASSIGNABLE(HRITexture2DCtorInfo);
 	public:
-		Resolution                const TheResolution; ///< Resolution of this texture
-		Format                    const PixelFormat;   ///< Pixel format of this texture
-		HRITexture2DMode          const Mode;		   ///< Type of texture
-		HRITexture2DWrapMode      const WrapMode;	   ///< Texture wrapping mode, specifies how UVs would behave when come out ouf bounds
+		Resolution    const TheResolution; ///< Resolution of this texture
+		Format     const PixelFormat;   ///< Pixel format of this texture
+		HRITexture2DMode    const Mode;		   ///< Type of texture
+		HRITexture2DWrapMode   const WrapMode;	   ///< Texture wrapping mode, specifies how UVs would behave when come out ouf bounds
 		HRITexture2DFilteringMode const FilteringMode; ///< Texture filtering mode, specifies support of per-pixel interpolation and mip-mapping
 		GDINL HRITexture2DCtorInfo(HRITexture2DCtorInfo const& CtorInfo);
 		GDINL HRITexture2DCtorInfo(
-			Resolution                const& TheResolution,
-			Format                    const  PixelFormat   = GD_FORMAT_R8G8B8A8_UINT,
-			HRITexture2DMode          const  Mode          = GD_HRI_TEXTURE_2D_MODE_DYNAMIC,
-			HRITexture2DWrapMode      const  WrapMode	   = GD_HRI_TEXTURE_2D_WRAP_MODE_CLAMP,
+			Resolution    const& TheResolution,
+			Format     const  PixelFormat   = GD_FORMAT_R8G8B8A8_UINT,
+			HRITexture2DMode    const  Mode    = GD_HRI_TEXTURE_2D_MODE_DYNAMIC,
+			HRITexture2DWrapMode   const  WrapMode	   = GD_HRI_TEXTURE_2D_WRAP_MODE_CLAMP,
 			HRITexture2DFilteringMode const  FilteringMode = GD_HRI_TEXTURE_2D_FILTERING_MODE_POINT
 		);
 	};	// class HRITexture2DCtorInfo
@@ -301,8 +301,8 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit HRITexture2D(HRITexture2DCtorInfo const& CtorInfo, chandle const InitialData, size_t const InitialDataLength) 
 			: HRITexture2DCtorInfo(CtorInfo) 
 		{
-			GD_UNUSED(InitialData);
-			GD_UNUSED(InitialDataLength);
+			GD_NOT_USED(InitialData);
+			GD_NOT_USED(InitialDataLength);
 		}
 	public:
 		GDAPI virtual handle GetNativePointer() const abstract;
@@ -336,7 +336,7 @@ GD_NAMESPACE_BEGIN
 		GD_TYPEINFORMATION_DEFINITION(HRIRenderTarget, HRIObject, GDAPI);
 	protected:
 		GDINL explicit HRIRenderTarget(HRIRenderTargetCtorInfo const& CtorInfo) : HRIRenderTargetCtorInfo(CtorInfo) { }
-		GDINL virtual ~HRIRenderTarget(                                      ) { }
+		GDINL virtual ~HRIRenderTarget(           ) { }
 	public:
 		GDAPI virtual handle GetNativePointer() const abstract;
 		GDAPI virtual void   BindRenderTarget() const abstract;
@@ -377,21 +377,21 @@ GD_NAMESPACE_BEGIN
 #		include <GoddamnEngine/Engine/Renderer/RendererMethods.h>
 	};	// class HRInterface
 #else	// if (defined(GD_HRI_DYNAMIC))
-#		define GD_HRI_API              GDAPI extern
+#		define GD_HRI_API     GDAPI extern
 #		define GD_HRI_NAME_MODIF(Name) HRI##Name
 #		include <GoddamnEngine/Engine/Renderer/RendererMethods.h>
 #endif	// if (defined(GD_HRI_DYNAMIC))
 
 	GDINL HRITexture2DCtorInfo::HRITexture2DCtorInfo(
-		Resolution                const& TheResolution,
-		Format                    const  PixelFormat   /* = GD_FORMAT_R8G8B8A8_UINT */,
-		HRITexture2DMode          const  Mode          /* = GD_HRI_TEXTURE_2D_MODE_DYNAMIC */,
-		HRITexture2DWrapMode      const  WrapMode      /* = GD_HRI_TEXTURE_2D_WRAP_MODE_CLAMP */,
+		Resolution    const& TheResolution,
+		Format     const  PixelFormat   /* = GD_FORMAT_R8G8B8A8_UINT */,
+		HRITexture2DMode    const  Mode    /* = GD_HRI_TEXTURE_2D_MODE_DYNAMIC */,
+		HRITexture2DWrapMode   const  WrapMode   /* = GD_HRI_TEXTURE_2D_WRAP_MODE_CLAMP */,
 		HRITexture2DFilteringMode const  FilteringMode /* = GD_HRI_TEXTURE_2D_FILTERING_MODE_POINT */)
 	 : TheResolution(TheResolution)
 	 , PixelFormat  (PixelFormat  )
-	 , Mode         (Mode         )
-	 , WrapMode     (WrapMode     )
+	 , Mode   (Mode   )
+	 , WrapMode  (WrapMode  )
 	 , FilteringMode(FilteringMode)
 	{
 	}
@@ -399,8 +399,8 @@ GD_NAMESPACE_BEGIN
 	GDINL HRITexture2DCtorInfo::HRITexture2DCtorInfo(HRITexture2DCtorInfo const& CtorInfo)
 	 : TheResolution(CtorInfo.TheResolution)
 	 , PixelFormat  (CtorInfo.PixelFormat  )
-	 , Mode         (CtorInfo.Mode         )
-	 , WrapMode     (CtorInfo.WrapMode     )
+	 , Mode   (CtorInfo.Mode   )
+	 , WrapMode  (CtorInfo.WrapMode  )
 	 , FilteringMode(CtorInfo.FilteringMode)
 	{
 	}

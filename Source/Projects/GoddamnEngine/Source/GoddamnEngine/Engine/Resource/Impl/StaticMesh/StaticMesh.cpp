@@ -81,7 +81,7 @@ GD_NAMESPACE_BEGIN
 		HRIIndexedShape* existingSubmesh = const_cast<HRIIndexedShape*>(this->GetLodAt(lod));
 		if (submesh == nullptr)
 		{
-			existingSubmesh->SetIndexData (                         nullptr, 0, 0);
+			existingSubmesh->SetIndexData (       nullptr, 0, 0);
 			existingSubmesh->SetVertexData(GD_HRI_SEMANTIC_UNKNOWN, nullptr, 0   );
 			return;
 		}

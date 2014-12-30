@@ -28,10 +28,10 @@
 #		include <crtdbg.h>
 #		define GD_DEBUG_BREAK() (::_CrtDbgBreak())
 //	endif	// if (defined(GD_PLATFORM_API_WINAPI))
-#	elif (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_X86))
+#	elif (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_X86)))
 #		define GD_DEBUG_BREAK() (__asm__ __volatile__ ("int $3\n\t"))
 //	endif	// if (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_X86))
-#	elif (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_ARM32) || defined(GD_ARCHITECTURE_ARM64))
+#	elif (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_ARM32) || defined(GD_ARCHITECTURE_ARM64)))
 #		define GD_DEBUG_BREAK() (__asm__ __volatile__ (".inst 0xE7F001F0\n\t"))
 //	endif	// if (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_ARM32) || defined(GD_ARCHITECTURE_ARM64))
 #	else	// *** Some other implementation ***
@@ -46,28 +46,28 @@
 /// Fatal Assertation mechanisms.
 /// ------------------------------------------------------------------------------------------
 
-/// Defines a disabled fatal assertion.
-/// Does nothing.
+/// @brief Defines a disabled fatal assertion. 
+/// 	   Does nothing.
+/// @param Message Dummy message.
 #define GD_DISABLED_FALSE_ASSERT(Message, ...) \
 	do { \
 		(static_cast<void>(false)); \
 	} while (false)
 
-/// Defines an enabled fatal assertion.
-/// Reports a failure via message box (if is available on target platform) and asks if user wants
-/// to send it to tracker.
+/// @brief Defines an enabled fatal assertion. 
+/// 	   Reports a failure via message box (if is available on target platform) and asks if user wants to send it to tracker.
+/// @param Message Message string that describes what is going on, is formatable.
 #define GD_ENABLED_FALSE_ASSERT(Message, ...) \
 	do { \
 		GD_USING_NAMESPACE; \
 		FatalAssertionData static const TheAssertionData(__FILE__, __FUNCTION__, __LINE__); \
-		HandleFatalAssertion(&TheAssertionData, __VA_ARGS__);  \
+		HandleFatalAssertion(&TheAssertionData, ##__VA_ARGS__);  \
 	} while (false)
 
 #if (!defined(GD_DOCUMENTATION))
 GD_NAMESPACE_BEGIN
 
-	/// Storing the whole assertion data in a single structure. Saving more stack space on 
-	/// failure reporter call.
+	/// Storing the whole assertion data in a single structure. Saves more stack space on failure reporter call.
 	struct FatalAssertionData
 	{
 		GD_CLASS_UNASSIGNABLE(FatalAssertionData);
@@ -83,14 +83,17 @@ GD_NAMESPACE_BEGIN
 		}
 	};	// struct FatalAssertionData
 
-	/// Provides inner functionality for handling fatal assertions.
-	/// Should not be invoked directly.
+	/// @brief Provides inner functionality for handling fatal assertions. Should not be invoked directly.
+	/// @param Data Pointer to assertion description data structure.
+	/// @param Args Arguments for formating message string.
+	/// @{
 	GD_NORETURN GDAPI extern void HandleFatalAssertionVa(FatalAssertionData const* const Data, va_list const Args);
 	GD_NORETURN GDINL extern void HandleFatalAssertion(FatalAssertionData const* const Data, ...)
 	{
 		va_list Args; va_start(Args, Data);
 		HandleFatalAssertionVa(Data, Args);
 	}
+	/// @}
 
 GD_NAMESPACE_END
 #endif	// if (!defined(GD_DOCUMENTATION))
@@ -99,24 +102,28 @@ GD_NAMESPACE_END
 /// Regular Assertation mechanisms.
 /// ------------------------------------------------------------------------------------------
 
-/// Defines a disabled assertion.
-/// Does nothing, just validates expression at compile-time.
+/// @brief Defines a disabled assertion.
+/// 	   Does nothing, just validates expression at compile-time.
+/// @param Expression The expression that would be evaluated.
+/// @param Message Message string that describes what is going on, is formatable.
 #define GD_DISABLED_ASSERT(Expression, Message, ...) \
 	do { \
 		GD_USING_NAMESPACE; \
 		static_cast<void>(sizeof(Expression)); \
 	} while (false)
 
-/// Defines a enabled assertion.
-/// Reports a failure via message box (if is available on target platform) and asks if user wants
-/// to abort application (control is redirected to failure reporter then with provide of feedback via tracker),
-/// or to debug application, or to just to ignore this assertion once or forever during this launch.
+/// @brief Defines a enabled assertion. 
+/// 	   Reports a failure via message box (if is available on target platform) and asks if user wants 
+/// 	   to abort application (control is redirected to failure reporter then with provide of feedback via tracker), 
+/// 	   or to debug application, or to just to ignore this assertion once or forever during this launch.
+/// @param Expression The expression that would be evaluated.
+/// @param Message Message string that describes what is going on, is formatable.
 #define GD_ENABLED_ASSERT(Expression, Message, ...) \
 	do { \
 		GD_USING_NAMESPACE; \
 		RegularAssertionData static TheAssertionData(__FILE__, __FUNCTION__, __LINE__, #Expression, Message); \
 		while ((!(Expression)) && (!TheAssertionData.ShouldAlwaysIgnoreThisAssertion)) { \
-			AssertionState const TheAssertionState = HandleRegularAssertion(&TheAssertionData, __VA_ARGS__); \
+			AssertionState const TheAssertionState = HandleRegularAssertion(&TheAssertionData, ##__VA_ARGS__); \
 			if (TheAssertionState == AssertionState::Break) { \
 				GD_DEBUG_BREAK(); \
 			} else if (TheAssertionState != AssertionState::Retry) { \
@@ -128,8 +135,7 @@ GD_NAMESPACE_END
 #if (!defined(GD_DOCUMENTATION))
 GD_NAMESPACE_BEGIN
 
-	/// Storing the whole assertion data in a single structure. Saving more stack space on 
-	/// failure reporter call.
+	/// Storing the whole assertion data in a single structure. Saves more stack space on failure reporter call.
 	struct RegularAssertionData final : public FatalAssertionData
 	{
 		Str const Expression;
@@ -156,14 +162,18 @@ GD_NAMESPACE_BEGIN
 		Invalid
 	};	// enum class AssertionState
 
-	/// Provides inner functionality for handling regular assertions.
-	/// Should not be invoked directly.
+	/// @brief Provides inner functionality for handling regular assertions.
+	///        Should not be invoked directly.
+	/// @param Expression The expression that would be evaluated.
+	/// @param Message Message string that describes what is going on, is formatable.
+	/// @{
 	GDAPI extern AssertionState HandleRegularAssertionVa(RegularAssertionData* const Data, va_list const Args);
 	GDINL extern AssertionState HandleRegularAssertion(RegularAssertionData* const Data, ...)
 	{
 		va_list Args; va_start(Args, Data);
 		return HandleRegularAssertionVa(Data, Args);
 	}
+	/// @}
 
 GD_NAMESPACE_END
 #endif	// if (!defined(GD_DOCUMENTATION))
@@ -216,7 +226,8 @@ GD_NAMESPACE_END
 /// ------------------------------------------------------------------------------------------
 
 // Code block is not implemented.
-#define GD_NOT_IMPLEMENTED() GD_DEBUG_ASSERT_FALSE("A part or whole '"__FUNCTION__"' not implemented (and probably never would be :[)")
+#define GD_NOT_IMPLEMENTED() GD_DEBUG_ASSERT_FALSE("A part or whole '" /*## __FUNCTION__  ##*/ "' not implemented (and probably never would be :[).")
+#define GD_NOT_SUPPORTED() GD_DEBUG_ASSERT_FALSE("A part or whole '" /*## __FUNCTION__  ##*/ "' is not supported.")
 
 // Messegeless assertions.
 #define GD_ASSERTION_DEFAULT_MESSAGE ("*** Someone is too lazy to write a message for every assert ***")

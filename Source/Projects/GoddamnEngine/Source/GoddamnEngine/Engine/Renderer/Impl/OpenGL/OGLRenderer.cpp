@@ -51,8 +51,8 @@ GD_NAMESPACE_BEGIN
 
 		PIXELFORMATDESCRIPTOR PixelFormatDescriptor;
 		ZeroMemory(&PixelFormatDescriptor, sizeof(PIXELFORMATDESCRIPTOR));
-		PixelFormatDescriptor.nSize      = sizeof(PIXELFORMATDESCRIPTOR);
-		PixelFormatDescriptor.dwFlags    = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
+		PixelFormatDescriptor.nSize   = sizeof(PIXELFORMATDESCRIPTOR);
+		PixelFormatDescriptor.dwFlags = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
 		PixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
 		PixelFormatDescriptor.iPixelType = PFD_TYPE_RGBA;
 		PixelFormatDescriptor.cColorBits = 32;
@@ -202,7 +202,7 @@ GD_NAMESPACE_END
 
 #if (!defined(GD_MONOLITHIC_ENGINE))
 /// ==========================================================================================
-GDEXP extern bool EnginePluginEntry(GD PluginDescription* const Description)
+GDEXP extern bool EnginePluginEntry(GD::PluginDescription* const Description)
 {
 #if (defined(GD_NAMESPACE))
 	using namespace GD_NAMESPACE;

@@ -10,8 +10,8 @@
 #define GD_CORE_REFLECTION_MEMBERINFORMATION
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
-#include <GoddamnEngine/Core/Containers/Vector/Vector.h>
+#include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Containers/Vector.h>
 
 #define GD_MEMBERINFORMATION_IMPLEMENT_NAME(ThisType)					virtual String const& GetName() const { static String const TypeInfoName(#ThisType); return TypeInfoName; }
 #define GD_MEMBERINFORMATION_IMPLEMENT_ATTRIBUTES(ThisType, Attributes)	virtual MemberAttributes GetAttributes() const { return MemberAttributes((Attributes)); }
@@ -28,10 +28,10 @@ GD_NAMESPACE_BEGIN
 
 	enum MemberAttributes : UInt64
 	{
-		GD_MEMBER_ATTRIBUTE_IS_CONST     = GD_BIT(0),
+		GD_MEMBER_ATTRIBUTE_IS_CONST  = GD_BIT(0),
 		GD_MEMBER_ATTRIBUTE_IS_PROTECTED = GD_BIT(1),
-		GD_MEMBER_ATTRIBUTE_IS_PUBLIC    = GD_BIT(1) | GD_MEMBER_ATTRIBUTE_IS_PROTECTED,
-		GD_MEMBER_ATTRIBUTE_IS_STATIC    = GD_BIT(2),
+		GD_MEMBER_ATTRIBUTE_IS_PUBLIC = GD_BIT(1) | GD_MEMBER_ATTRIBUTE_IS_PROTECTED,
+		GD_MEMBER_ATTRIBUTE_IS_STATIC = GD_BIT(2),
 	};	// enum MemberAttributes
 
 	/// Obtains information about the attributes of a member
@@ -53,10 +53,10 @@ GD_NAMESPACE_BEGIN
 	{
 	public:
 		/// Copies value of the field to output.
-		GDAPI virtual void GetValue(_In_ IReflectable const* const Reflectable, _Out_ handle const OutputValuePtr) const abstract;
+		GDAPI virtual void GetValue(IReflectable const* const Reflectable, handle const OutputValuePtr) const abstract;
 
 		/// Copies value of input into field.
-		GDAPI virtual void SetValue(_In_ IReflectable* const Reflectable, _In_ handle const InputValuePtr) const abstract;
+		GDAPI virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const abstract;
 	};	// class IAccessableMemberInformation
 
 GD_NAMESPACE_END

@@ -13,7 +13,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2EF5F756-F36B-4400-A0D6-E07843D24B78}</ProjectGuid>
+    <ProjectGuid>{7F33DDFE-2186-4EB8-AA7E-DBAF2C7DF966}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GoddamnEngine.BuildSystem</RootNamespace>
@@ -60,7 +60,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\bin\ThirdParty\</OutputPath>
-    <DefineConstants>TRACE;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS</DefineConstants>
+    <DefineConstants>TRACE;CODE_ANALYSIS;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -71,6 +71,9 @@
     </DocumentationFile>
     <NoWarn>
     </NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Reources\Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -83,21 +86,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\BuildSystem.cs" />
-    <Compile Include="Source\Support\CommandLineUI.cs" />
-    <Compile Include="Source\Support\Extensions.cs" />
-    <Compile Include="Source\Support\Utils.cs" />
-    <Compile Include="Source\Target\Collectors\Solution.cs" />
-    <Compile Include="Source\Support\Compiler.cs" />
-    <Compile Include="Source\Target\Collectors\Dependency.cs" />
+    <Compile Include="Source\System\Modules\ProjectCompiler\ProjectCompiler.cs" />
+    <Compile Include="Source\System\Support\CommandLineUI.cs" />
+    <Compile Include="Source\System\Support\Extensions.cs" />
+    <Compile Include="Source\System\Collectors\Collector.cs" />
+    <Compile Include="Source\System\Collectors\Solution.cs" />
+    <Compile Include="Source\System\Support\Compiler.cs" />
+    <Compile Include="Source\System\Collectors\Dependency.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\Target\Collectors\Project.cs" />
-    <Compile Include="Source\Target\Information\ConfigurationInformation.cs" />
-    <Compile Include="Source\Target\Information\PlatformInformation.cs" />
-    <Compile Include="Source\Target\ProjectGenerators\QtCreator.cs" />
-    <Compile Include="Source\Target\Target.cs" />
-    <Compile Include="Source\Target\ProjectGenerators\VisualStudio.cs" />
-    <Compile Include="Source\Target\ProjectGenerators\XCode.cs" />
-    <Compile Include="Source\Target\MakefileGenerators\Emscripten.cs" />
+    <Compile Include="Source\System\Collectors\Project.cs" />
+    <Compile Include="Source\System\Target\Configuration.cs" />
+    <Compile Include="Source\System\Target\Platform.cs" />
+    <Compile Include="Source\System\Target\Toolchain.cs" />
+    <Compile Include="Source\System\Modules\ProjectGenerator\ProjectGenerator.cs" />
+    <Compile Include="Source\System\Target\Target.cs" />
+    <Compile Include="Source\System\Modules\ProjectGenerator\VisualStudio.cs" />
+    <Compile Include="Source\System\Modules\ProjectGenerator\XCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\App.config" />
@@ -109,7 +113,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Reources\Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Source\System\Modules\CopyrightVerifier\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -18,7 +18,7 @@
 #	define GD_VECTOR3_FAST_IMPL Float32x4 // Float32 intrinsics instructions set.
 #else	// if (defined(GD_SUPPORT_SSE))
 #	include<GoddamnEngine/Core/Math/Vector3.h>
-#	define GD_VECTOR3_FAST_IMPL Float32x3 GD_ALIGN(16) // No SSE instructions set.
+#	define GD_VECTOR3_FAST_IMPL Float32x3 // No SSE instructions set.
 #endif	// if (defined(GD_SUPPORT_SSE))
 
 GD_NAMESPACE_BEGIN

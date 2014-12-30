@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 
 	enum HLSLExpressionType : UInt8
 	{
-		GD_HLSL_EXPRESSION_UNKNOWN     = 0,
+		GD_HLSL_EXPRESSION_UNKNOWN  = 0,
 		GD_HLSL_EXPRESSION_DEFINITION  = GD_BIT(0),
 		GD_HLSL_EXPRESSION_AFTERCOLON  = GD_BIT(1),
 		GD_HLSL_EXPRESSION_FLOWCONTROL = GD_BIT(2),
@@ -40,14 +40,14 @@ GD_NAMESPACE_BEGIN
 
 	enum HLSLDefinitionType : UInt8
 	{
-		GD_HLSL_DEFINITION_UNKNOWN        = 0,
-		GD_HLSL_DEFINITION_VARIABLE       = GD_BIT(0),
-		GD_HLSL_DEFINITION_FUNCTION       = GD_BIT(1),
-		GD_HLSL_DEFINITION_ARGUMENT       = GD_BIT(2),
-		GD_HLSL_DEFINITION_ATTRIBUTE      = GD_BIT(3),
+		GD_HLSL_DEFINITION_UNKNOWN  = 0,
+		GD_HLSL_DEFINITION_VARIABLE    = GD_BIT(0),
+		GD_HLSL_DEFINITION_FUNCTION    = GD_BIT(1),
+		GD_HLSL_DEFINITION_ARGUMENT    = GD_BIT(2),
+		GD_HLSL_DEFINITION_ATTRIBUTE   = GD_BIT(3),
 		GD_HLSL_DEFINITION_CONSTANTBUFFER = GD_BIT(4),
-		GD_HLSL_DEFINITION_TYPEDEF        = GD_BIT(5),
-		GD_HLSL_DEFINITION_TYPE           = GD_BIT(6),
+		GD_HLSL_DEFINITION_TYPEDEF  = GD_BIT(5),
+		GD_HLSL_DEFINITION_TYPE     = GD_BIT(6),
 	};	// enum HLSLDefinitionType
 	
 	enum HLSLTypeClass : UInt8
@@ -84,15 +84,15 @@ GD_NAMESPACE_BEGIN
 
 	enum HLSLTypeModifier : UInt8
 	{
-		GD_HLSL_TYPE_MODIFIER_UNKNOWN      = 0,
-		GD_HLSL_TYPE_MODIFIER_CONST        = GD_BIT(0),
-		GD_HLSL_TYPE_MODIFIER_ROW_MAJOR    = GD_BIT(1),
+		GD_HLSL_TYPE_MODIFIER_UNKNOWN   = 0,
+		GD_HLSL_TYPE_MODIFIER_CONST  = GD_BIT(0),
+		GD_HLSL_TYPE_MODIFIER_ROW_MAJOR = GD_BIT(1),
 		GD_HLSL_TYPE_MODIFIER_COLUMN_MAJOR = GD_BIT(2),
 	};	// enum HLSLTypeModifier
 
 	enum HLSLExprColonType : UInt8
 	{
-		GD_HLSL_EXPRCOLON_TYPE_UNKNOWN    = 0,
+		GD_HLSL_EXPRCOLON_TYPE_UNKNOWN = 0,
 		GD_HLSL_EXPRCOLON_TYPE_SEMANTIC   = GD_BIT(0),
 		GD_HLSL_EXPRCOLON_TYPE_REGISTER   = GD_BIT(1),
 		GD_HLSL_EXPRCOLON_TYPE_PACKOFFSET = GD_BIT(2),
@@ -150,8 +150,8 @@ GD_NAMESPACE_BEGIN
 	enum HLSLArgumentAccessType : UInt8
 	{
 		GD_HLSL_ARGUMENT_UNKNOWN =  0,
-		GD_HLSL_ARGUMENT_IN      =  GD_BIT(0),
-		GD_HLSL_ARGUMENT_OUT     =  GD_BIT(1),
+		GD_HLSL_ARGUMENT_IN   =  GD_BIT(0),
+		GD_HLSL_ARGUMENT_OUT  =  GD_BIT(1),
 		GD_HLSL_ARGUMENT_INOUT   = (GD_HLSL_ARGUMENT_IN | GD_HLSL_ARGUMENT_OUT),
 	};	// enum HLSLArgumentAccessType
 
@@ -162,18 +162,18 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		HLSLExpressionType const ExpressionType;
-		GDINL virtual ~HLSLExpression(                                                                    )                                  { }
+		GDINL virtual ~HLSLExpression(                 )          { }
 		GDINL explicit HLSLExpression(HLSLExpressionType const ExpressionType = GD_HLSL_EXPRESSION_UNKNOWN) : ExpressionType(ExpressionType) { }
 	};	// struct HLSLExpression
 
 	struct HLSLDefinition : public HLSLExpression
 	{
 		HLSLDefinitionType const  DefinitionType;
-		HLSLType           const* Type         = nullptr;
-		HLSLTypeModifier          TypeModifier = GD_HLSL_TYPE_MODIFIER_UNKNOWN;
-		String                    Name;
+		HLSLType     const* Type   = nullptr;
+		HLSLTypeModifier    TypeModifier = GD_HLSL_TYPE_MODIFIER_UNKNOWN;
+		String     Name;
 		GDINL virtual ~HLSLDefinition() { }
-		GDINL explicit HLSLDefinition(                             HLSLDefinitionType const DefinitionType = GD_HLSL_DEFINITION_UNKNOWN) : HLSLExpression(GD_HLSL_EXPRESSION_DEFINITION), DefinitionType(DefinitionType) { }
+		GDINL explicit HLSLDefinition(        HLSLDefinitionType const DefinitionType = GD_HLSL_DEFINITION_UNKNOWN) : HLSLExpression(GD_HLSL_EXPRESSION_DEFINITION), DefinitionType(DefinitionType) { }
 		GDINL explicit HLSLDefinition(HLSLDefinition&& Definition, HLSLDefinitionType const DefinitionType = GD_HLSL_DEFINITION_UNKNOWN) : HLSLExpression(GD_HLSL_EXPRESSION_DEFINITION)
 			, DefinitionType(DefinitionType)
 			, Type(Definition.Type)
@@ -195,20 +195,20 @@ GD_NAMESPACE_BEGIN
 		GDINT HLSLDefinition const* FindDefinition(String const& Name) const;
 		GDINT HLSLVariable   const* FindVariable  (String const& Name) const;
 		GDINT HLSLFunction   const* FindFunction  (String const& Name) const;
-		GDINT HLSLType       const* FindType      (String const& Name) const;
+		GDINT HLSLType    const* FindType   (String const& Name) const;
 	};	// struct HLSLScope
 
 	struct HLSLExprColon : public HLSLExpression
 	{
 		HLSLExprColonType const Type;
-		GDINL virtual ~HLSLExprColon(                            )                                                             { }
+		GDINL virtual ~HLSLExprColon(       )                { }
 		GDINL explicit HLSLExprColon(HLSLExprColonType const Type) : HLSLExpression(GD_HLSL_EXPRESSION_AFTERCOLON), Type(Type) { }
 	};	// struct HLSLExprColon
 
 	struct HLSLSemantic final : public HLSLExprColon
 	{
 		HLSLSemanticType Semantic   = GD_HLSL_SEMANTIC_UNKNOWN;
-		size_t           SemanticID = 0;
+		size_t     SemanticID = 0;
 		GDINL virtual ~HLSLSemantic() { }
 		GDINL explicit HLSLSemantic() : HLSLExprColon(GD_HLSL_EXPRCOLON_TYPE_SEMANTIC) { }
 	};	// struct HLSLSemantic
@@ -216,7 +216,7 @@ GD_NAMESPACE_BEGIN
 	struct HLSLRegister final : public HLSLExprColon
 	{
 		HLSLRegisterType Register   = GD_HLSL_REGISTER_UNKNOWN;
-		size_t           RegisterID = 0;
+		size_t     RegisterID = 0;
 		GDINL virtual ~HLSLRegister() { }
 		GDINL explicit HLSLRegister() : HLSLExprColon(GD_HLSL_EXPRCOLON_TYPE_REGISTER) { }
 	};	// struct HLSLRegister
@@ -230,7 +230,7 @@ GD_NAMESPACE_BEGIN
 	struct HLSLType : public HLSLDefinition
 	{
 		HLSLTypeClass const Class;
-		GDINL virtual ~HLSLType(                         ) { }
+		GDINL virtual ~HLSLType(       ) { }
 		GDINL explicit HLSLType(HLSLTypeClass const Class) : HLSLDefinition(GD_HLSL_DEFINITION_TYPE), Class(Class) { this->Type = this; }
 	};	// struct HLSLType
 
@@ -243,17 +243,17 @@ GD_NAMESPACE_BEGIN
 
 	struct HLSLVectorType : public HLSLType
 	{
-		HLSLTypeDataType DataType         = GD_HLSL_TYPE_DATA_TYPE_UNKNOWN;
-		size_t           ComponentsNumber = 0;
+		HLSLTypeDataType DataType   = GD_HLSL_TYPE_DATA_TYPE_UNKNOWN;
+		size_t     ComponentsNumber = 0;
 		GDINL virtual ~HLSLVectorType() { }
 		GDINL explicit HLSLVectorType() : HLSLType(GD_HLSL_TYPE_CLASS_VECTOR) { }
 	};	// struct HLSLVectorType
 
 	struct HLSLMatrixType : public HLSLType
 	{
-		HLSLTypeDataType DataType      = GD_HLSL_TYPE_DATA_TYPE_UNKNOWN;
-		size_t           RowsNumber    = 0;
-		size_t           ColumnsNumber = 0;
+		HLSLTypeDataType DataType   = GD_HLSL_TYPE_DATA_TYPE_UNKNOWN;
+		size_t     RowsNumber = 0;
+		size_t     ColumnsNumber = 0;
 		GDINL virtual ~HLSLMatrixType() { }
 		GDINL explicit HLSLMatrixType() : HLSLType(GD_HLSL_TYPE_CLASS_MATRIX) { }
 	};	// struct HLSLMatrixType
@@ -273,18 +273,18 @@ GD_NAMESPACE_BEGIN
 
 	struct HLSLVariable : public HLSLDefinition
 	{
-		HLSLExprColon  const* ExprColon    = nullptr;
+		HLSLExprColon  const* ExprColon = nullptr;
 		HLSLExpression const* InitialValue = nullptr;
-		size_t                ArrayIndex   = 0;
-		GDINL virtual ~HLSLVariable(                           ) { }
-		GDINL explicit HLSLVariable(                           ) : HLSLDefinition(            GD_HLSL_DEFINITION_VARIABLE) { }
+		size_t    ArrayIndex   = 0;
+		GDINL virtual ~HLSLVariable(         ) { }
+		GDINL explicit HLSLVariable(         ) : HLSLDefinition(   GD_HLSL_DEFINITION_VARIABLE) { }
 		GDINL explicit HLSLVariable(HLSLDefinition&& Definition) : HLSLDefinition(Forward<HLSLDefinition>(Definition), GD_HLSL_DEFINITION_VARIABLE) { }
 		GDINL explicit HLSLVariable(HLSLVariable  && Variable  ) : HLSLDefinition(Forward<HLSLVariable  >(Variable),   GD_HLSL_DEFINITION_ARGUMENT)
 			, InitialValue(Variable.InitialValue)
 			, ExprColon   (Variable.ExprColon)
 			, ArrayIndex  (Variable.ArrayIndex)
 		{
-			Variable.ExprColon    = nullptr;
+			Variable.ExprColon = nullptr;
 			Variable.InitialValue = nullptr;
 			Variable.ArrayIndex   = 0;
 		}
@@ -293,18 +293,18 @@ GD_NAMESPACE_BEGIN
 	struct HLSLArgument final : public HLSLVariable
 	{
 		HLSLArgumentAccessType AccsessType = GD_HLSL_ARGUMENT_UNKNOWN;
-		GDINL virtual ~HLSLArgument(                                 ) { }
-		GDINL explicit HLSLArgument(                                 ) { }
+		GDINL virtual ~HLSLArgument(         ) { }
+		GDINL explicit HLSLArgument(         ) { }
 		GDINL explicit HLSLArgument(HLSLVariable&& DrependingArgument) : HLSLVariable(Forward<HLSLVariable>(DrependingArgument)) { }
 	};	// struct HLSLArgument
 
 	struct HLSLFunction final : public HLSLDefinition
 	{
-		String					    Body;
-		HLSLSemantic        const*  Semantic = nullptr;
+		String					 Body;
+		HLSLSemantic  const*  Semantic = nullptr;
 		Vector<HLSLArgument const*> Arguments;
-		GDINL virtual ~HLSLFunction(                           ) { }
-		GDINL explicit HLSLFunction(                           ) : HLSLDefinition(                                     GD_HLSL_DEFINITION_FUNCTION) { }
+		GDINL virtual ~HLSLFunction(         ) { }
+		GDINL explicit HLSLFunction(         ) : HLSLDefinition(          GD_HLSL_DEFINITION_FUNCTION) { }
 		GDINL explicit HLSLFunction(HLSLDefinition&& Definition) : HLSLDefinition(Forward<HLSLDefinition>(Definition), GD_HLSL_DEFINITION_FUNCTION) { }
 	};	// struct HLSLFunction
 
@@ -313,16 +313,16 @@ GD_NAMESPACE_BEGIN
 	{
 	public /*Class API*/:
 		GDINL  HLSLParser(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
-		GDINL ~HLSLParser(                           )                             { }
+		GDINL ~HLSLParser(         )        { }
 
 		/// Returns the Abstract syntax tree of specified shader
 		GDAPI HLSLScope const* ParseShader(UniquePtr<InputStream>&& InputStream);
 	};	// class HLSLParserImpl
 
-	GDINT extern Str              HLSLSemanticToStr     (HLSLSemanticType const  Semantic);
-	GDINT extern HLSLSemanticType HLSLSemanticFromString(String           const& SemanticString);
-	GDINT extern HRISemantic      HLSLSemanticToHRI     (HLSLSemanticType const  Semantic);
-	GDINT extern HLSLSemanticType HLSLSemanticFromHRI   (HRISemantic      const  Semantic);
+	GDINT extern Str     HLSLSemanticToStr  (HLSLSemanticType const  Semantic);
+	GDINT extern HLSLSemanticType HLSLSemanticFromString(String     const& SemanticString);
+	GDINT extern HRISemantic   HLSLSemanticToHRI  (HLSLSemanticType const  Semantic);
+	GDINT extern HLSLSemanticType HLSLSemanticFromHRI   (HRISemantic   const  Semantic);
 
 	/// ==========================================================================================
 	// ~~~ DYNAMIC CASTS ~~~
@@ -333,13 +333,13 @@ GD_NAMESPACE_BEGIN
 	template<typename CastToType>
 	GDINL CastToType HLSLDynamicCast(chandle const InvalidPointer)
 	{
-		GD_UNUSED(InvalidPointer);
+		GD_NOT_USED(InvalidPointer);
 		return nullptr;
 	}
 
 	// ~~~ EXPR COLON ~~~
 	template<typename CastToType>
-	GDINL CastToType HLSLDynamicCast(HLSLExprColon      * const ExprColon);
+	GDINL CastToType HLSLDynamicCast(HLSLExprColon   * const ExprColon);
 	template<typename CastToType>
 	GDINL CastToType HLSLDynamicCast(HLSLExprColon const* const ExprColon);
 
@@ -378,7 +378,7 @@ GD_NAMESPACE_BEGIN
 
 	// ~~~ TYPES ~~~
 	template<typename CastToType>
-	GDINL CastToType HLSLDynamicCast(HLSLType      * const Type);
+	GDINL CastToType HLSLDynamicCast(HLSLType   * const Type);
 	template<typename CastToType>
 	GDINL CastToType HLSLDynamicCast(HLSLType const* const Type);
 
@@ -429,7 +429,7 @@ GD_NAMESPACE_BEGIN
 	// ~~~ DEFINITION ~~~
 
 	template<typename CastToType>
-	GDINL CastToType HLSLDynamicCast(HLSLDefinition      * const Definition);
+	GDINL CastToType HLSLDynamicCast(HLSLDefinition   * const Definition);
 	template<typename CastToType>
 	GDINL CastToType HLSLDynamicCast(HLSLDefinition const* const Definition);
 

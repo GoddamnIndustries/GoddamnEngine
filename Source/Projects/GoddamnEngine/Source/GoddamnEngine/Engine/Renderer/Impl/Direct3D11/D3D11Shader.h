@@ -37,13 +37,13 @@ GD_NAMESPACE_BEGIN
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRID3D11ShaderParamLocationResources, HRIShaderParamLocationResources, GDINT);
 		typedef StackVector<ID3D11ShaderResourceView*, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> HRIShaderResourceViewsVector;
-		typedef StackVector<ID3D11SamplerState      *, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> HRIShaderSampleStatesVector;
+		typedef StackVector<ID3D11SamplerState   *, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> HRIShaderSampleStatesVector;
 		HRIShaderResourceViewsVector ShaderResourceViews;
 		HRIShaderSampleStatesVector  ShaderSampleStates;
 
 	public:
 		GDINT explicit HRID3D11ShaderParamLocationResources(HRIShaderInstance* const ShaderInstance, HRIShaderParamLocationDesc const* const LocationDesc);
-		GDINL virtual ~HRID3D11ShaderParamLocationResources(                                                                                             ) { }
+		GDINL virtual ~HRID3D11ShaderParamLocationResources(                        ) { }
 
 		GDINL HRIShaderResourceViewsVector const& GetShaderResourceViews() const { return this->ShaderResourceViews; }
 		GDINL HRIShaderSampleStatesVector  const& GetShaderSampleStates () const { return this->ShaderSampleStates; }
@@ -61,7 +61,7 @@ GD_NAMESPACE_BEGIN
 		StackVector<ID3D11Buffer const*, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> ShaderConstantBuffers;
 
 		GDINT explicit HRID3D11ShaderInstance(HRIShaderInstanceDesc const* const InstanceDesc);
-		GDINL virtual ~HRID3D11ShaderInstance(                                               ) { }
+		GDINL virtual ~HRID3D11ShaderInstance(              ) { }
 	};	// class HRID3D11ShaderInstance
 
 	/// Vertex shader implementation for D3D11.
@@ -71,17 +71,17 @@ GD_NAMESPACE_BEGIN
 		GD_TYPEINFORMATION_DEFINITION(HRID3D11VertexShader, HRIVertexShader, GDINT);
 		D3D11RefPtr<ID3D11VertexShader> VertexShader;
 		D3D11RefPtr<ID3D11InputLayout > InputLayout;
-		D3D11RefPtr<ID3DBlob          > CompiledData;
+		D3D11RefPtr<ID3DBlob    > CompiledData;
 
 	private:
-		GDINT void CreateShader     (HRIShaderCtorInfo const& CtorInfo);
+		GDINT void CreateShader  (HRIShaderCtorInfo const& CtorInfo);
 		GDINT void CreateInputLayout(HRIShaderCtorInfo const& CtorInfo);
 
 	public:
 		GDINT explicit HRID3D11VertexShader(HRIShaderCtorInfo const& CtorInfo);
-		GDINL virtual ~HRID3D11VertexShader(                                 ) { }
+		GDINL virtual ~HRID3D11VertexShader(         ) { }
 		GDINT virtual void BindShader  (HRIShaderInstance const* const ShaderInstance) const final;
-		GDINT virtual void UnbindShader(                                             ) const final;
+		GDINT virtual void UnbindShader(            ) const final;
 	};	// class HRID3D11VertexShader
 
 	/// Hull shader implementation for D3D11.
@@ -90,13 +90,13 @@ GD_NAMESPACE_BEGIN
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRID3D11HullShader, HRIHullShader, GDINT);
 		D3D11RefPtr<ID3D11HullShader> HullShader;
-		D3D11RefPtr<ID3DBlob        > CompiledData;
+		D3D11RefPtr<ID3DBlob  > CompiledData;
 
 	public:
 		GDINT explicit HRID3D11HullShader(HRIShaderCtorInfo const& CtorInfo);
-		GDINL virtual ~HRID3D11HullShader(                                 ) { }
+		GDINL virtual ~HRID3D11HullShader(         ) { }
 		GDINT virtual void BindShader  (HRIShaderInstance const* const ShaderInstance) const final;
-		GDINT virtual void UnbindShader(                                             ) const final;
+		GDINT virtual void UnbindShader(            ) const final;
 	};	// class HRID3D11HullShader
 
 	/// Domain shader implementation for D3D11.
@@ -105,13 +105,13 @@ GD_NAMESPACE_BEGIN
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRID3D11DomainShader, HRIDomainShader, GDINT);
 		D3D11RefPtr<ID3D11DomainShader> DomainShader;
-		D3D11RefPtr<ID3DBlob          > CompiledData;
+		D3D11RefPtr<ID3DBlob    > CompiledData;
 
 	public:
 		GDINT explicit HRID3D11DomainShader(HRIShaderCtorInfo const& CtorInfo);
-		GDINL virtual ~HRID3D11DomainShader(                                 ) { }
+		GDINL virtual ~HRID3D11DomainShader(         ) { }
 		GDINT virtual void BindShader  (HRIShaderInstance const* const ShaderInstance) const final;
-		GDINT virtual void UnbindShader(                                             ) const final;
+		GDINT virtual void UnbindShader(            ) const final;
 	};	// class HRID3D11DomainShader
 
 	/// Pixel shader implementation for D3D11.
@@ -120,13 +120,13 @@ GD_NAMESPACE_BEGIN
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRID3D11PixelShader, HRIPixelShader, GDINT);
 		D3D11RefPtr<ID3D11PixelShader> PixelShader;
-		D3D11RefPtr<ID3DBlob         > CompiledData;
+		D3D11RefPtr<ID3DBlob   > CompiledData;
 
 	public:
 		GDINT explicit HRID3D11PixelShader(HRIShaderCtorInfo const& CtorInfo);
-		GDINL virtual ~HRID3D11PixelShader(                                 ) { }
+		GDINL virtual ~HRID3D11PixelShader(         ) { }
 		GDINT virtual void BindShader  (HRIShaderInstance const* const ShaderInstance) const final;
-		GDINT virtual void UnbindShader(                                             ) const final;
+		GDINT virtual void UnbindShader(            ) const final;
 	};	// class HRID3D11PixelShader
 
 GD_NAMESPACE_END

@@ -11,7 +11,7 @@
 #define GD_CORE_DIAGNOSTICS_EXCEPTION
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
+#include <GoddamnEngine/Core/Containers/String.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -52,7 +52,7 @@ GD_NAMESPACE_BEGIN
 #define GD_DEFINE_EXCPETION_FINAL(ExceptionClass) GD_DEFINE_EXCPETION_BAM(ExceptionClass, Exception, final, /**/)
 #define GD_DEFINE_EXCPETION(ExceptionClass) GD_DEFINE_EXCPETION_BAM(ExceptionClass, Exception, /**/, /**/)
 
-	/// Runtime error that notifies that somerthing went wrong due programmer`s fault.
+	/// Runtime error that notifies that something went wrong due programmer`s fault.
 	GD_DEFINE_EXCPETION_FINAL(LogicException);
 
 	/// Runtime error that notifies that some action is not supported.
@@ -63,29 +63,6 @@ GD_NAMESPACE_BEGIN
 
 	/// Runtime error that notifies that some code part was not implemented.
 	GD_DEFINE_EXCPETION_FINAL(IndexOutOfBoundsException);
-
-	/// Throws exception of specified type on if condition is false.
-	/// @param Condition Condition on which exception would be thrown.
-	/// @param Arguments Exception construction arguments.
-	template<typename ExceptionType, typename... ExceptionConstructorArgumentTypes>
-	GDINL void ConditionalThrow(bool const Condition, ExceptionConstructorArgumentTypes&&... Arguments)
-	{
-		static_assert(TypeTraits::IsBaseType<Exception, ExceptionType>::Value, "'ConditionalThrow<T>' error: specified type should be Exception-derived.");
-		if (!Condition) {
-			throw ExceptionType(Forward<ExceptionConstructorArgumentTypes>(Arguments)...);
-		}
-	}
-
-#if (defined(GD_RELEASE))
-	/// Throws exception of specified type on if condition is false.
-	/// @param Condition Condition on which exception would be thrown.
-	/// @param Arguments Exception construction arguments.
-	template<typename... ExceptionConstructorArgumentTypes>
-	GDINL void ConditionalThrow<LogicException, ExceptionConstructorArgumentTypes...>(bool const Condition, ExceptionConstructorArgumentTypes&&... Arguments)
-	{	// We do not need assertions in release build.
-		GD_UNUSED(Condition, Arguments...);
-	}
-#endif	// if (defined(GD_RELEASE))
 
 GD_NAMESPACE_END
 

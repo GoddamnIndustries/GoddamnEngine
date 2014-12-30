@@ -53,16 +53,16 @@
 /// ------------------------------------------------------------------------------------------
 
 #if (defined(_WIN32))
-#	define _USE_MATH_DEFINES       // <| M_PI and others
+#	define _USE_MATH_DEFINES    // <| M_PI and others
 #	define _CRT_SECURE_NO_WARNINGS // <| Using printf and others
-#	define  WIN32_LEAN_AND_MEAN    // <| We do not need whole WinAPI header.
+#	define  WIN32_LEAN_AND_MEAN // <| We do not need whole WinAPI header.
 #	define  VC_EXTRALEAN		   //  |
 #	include <winapifamily.h>
 #	define GD_PLATFORM_API_WINAPI		  (1)							///< Obviously Windows platforms run on WinAPI.
 #	if (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_DESKTOP_APP))				//   Windows Desktop application.
 #		define GD_PLATFORM_API_LIBSDL2	  (1)							///< LibSDL2 supports target platform.
 #		define GD_PLATFORM_WINDOWS		  (1)							///< Macro to detect Windows-specific code
-#		define GD_PLATFORM_DESKTOP		  (1)			        		///< Building for desktop platform 
+#		define GD_PLATFORM_DESKTOP		  (1)			  		///< Building for desktop platform 
 #	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PHONE_APP))				//   Windows Phone 8 application.
 #		define GD_PLATFORM_WINDOWS_PHONE8 (1)							///< Macro to detect WindowsPhone 8-specific code
 #		define GD_PLATFORM_MOBILE		  (1)							///< Building for mobile platform.
@@ -74,7 +74,7 @@
 #			error "Building for this platform is not implemented."
 #		else	// if (defined(__WRL_WINRT_STRICT__))					//   Windows Desktop application.
 #			define GD_PLATFORM_WINDOWS	  (1)							///< Macro to detect Windows-specific code
-#			define GD_PLATFORM_DESKTOP	  (1)			        		///< Building for desktop platform 
+#			define GD_PLATFORM_DESKTOP	  (1)			  		///< Building for desktop platform 
 #			error "Building for this platform is not implemented."
 #		endif	// if (defined(__WRL_WINRT_STRICT__))
 #	else	// elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_***))
@@ -104,7 +104,7 @@
 #	define GD_PLATFORM_API_POSIX		  (1)							///< And also are POSIX-compatible.
 #	define GD_PLATFORM_API_LIBSDL2		  (1)							///< LibSDL2 supports target platform.
 #	if (defined(TARGET_OS_MAC))
-#		define GD_PLATFORM_DESKTOP		  (1)			        		///< Building for desktop platform 
+#		define GD_PLATFORM_DESKTOP		  (1)			  		///< Building for desktop platform 
 #		define GD_PLATFORM_OSX			  (1)							///< OS X application.
 #		error "Building for this platform is not implemented."
 #	elif (defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_IPHONE) || defined(TARGET_OS_IPAD))
@@ -146,7 +146,7 @@
 /// ------------------------------------------------------------------------------------------
 
 #if (defined(__linux__))
-#	define GD_PLATFORM_DESKTOP			  (1)			        		///< Building for desktop platform 
+#	define GD_PLATFORM_DESKTOP			  (1)			  		///< Building for desktop platform 
 #	define GD_PLATFORM_API_POSIX		  (1)							///< GNU/Linux is POSIX-compatible.
 #	define GD_PLATFORM_API_LIBSDL2		  (1)							///< LibSDL2 supports target platform.
 #	define GD_PLATFORM_GNU_LINUX		  (1)							///< GNU/Linux application.
@@ -158,7 +158,7 @@
 /// ------------------------------------------------------------------------------------------
 
 #if (defined(__EMSCRIPTEN__))
-#	define GD_PLATFORM_WEB				  (1)			        		///< Building a web-application. 
+#	define GD_PLATFORM_WEB				  (1)			  		///< Building a web-application. 
 #	define GD_PLATFORM_HTML5			  (1)							///< Building an HTML5 web-application.
 #endif	// if (defined(__EMSCRIPTEN__))
 
@@ -263,9 +263,9 @@
 /// ------------------------------------------------------------------------------------------
 
 #if (defined(GD_PLATFORM_HTML5))
-#		define GD_ARCHITECTURE_X86		    (1)					///< Target processor is simulated to be x86.
-#		define GD_ARCHITECTURE_ASMJS	    (1)					///< Target processor is JavaScript Virtual machine.
-#		define GD_ENDIANITY_LITTLE		    (1)					///< Target processor is little-endian.
+#		define GD_ARCHITECTURE_X86		 (1)					///< Target processor is simulated to be x86.
+#		define GD_ARCHITECTURE_ASMJS	 (1)					///< Target processor is JavaScript Virtual machine.
+#		define GD_ENDIANITY_LITTLE		 (1)					///< Target processor is little-endian.
 #else	// if (defined(GD_PLATFORM_HTML5))
 #	if (defined(GD_COMPILER_MSVC_COMPATIBLE))
 /// @todo Check for ARM64 processors in MSVC Compiler.
@@ -489,12 +489,12 @@
 #	if (defined(GD_NAMESPACE))
 #		define GD_NAMESPACE_BEGIN namespace GD_NAMESPACE {		///< Declaration of the namespace where entire API is located.
 #		define GD_NAMESPACE_END   }	// namespace GD_NAMESPACE  	///< End of main namespace declaration.
-#		define GD				  ::GD_NAMESPACE::
-#		define GD_USING_NAMESPACE using namespace ::GD_NAMESPACE
+#		define GD				  ::GD_NAMESPACE
+#		define GD_USING_NAMESPACE using namespace GD
 #	else	// if (defined(GD_NAMESPACE))
 #		define GD_NAMESPACE_BEGIN								///< Dummy for namespace begin.
 #		define GD_NAMESPACE_END									///< Dummy for namespace end.
-#		define GD ::
+#		define GD::::
 #		define GD_USING_NAMESPACE
 #	endif	// if (defined(GD_NAMESPACE))
 #endif	// if defined(__cplusplus)
@@ -511,7 +511,7 @@
 #define object_cast		static_cast
 #define Min(a, b)		(((a) < (b)) ? (a) : (b)) 
 #define Max(a, b)		(((a) > (b)) ? (a) : (b)) 
-#define GD_UNUSED(Argument) (static_cast<void>(Argument))
+#define GD_NOT_USED(Argument) (static_cast<void>(Argument))
 
 /// Some glue magic.
 #define GD_GLUE_(A, B) A ## B
@@ -524,10 +524,10 @@
 #if defined(__cplusplus)
 #	define GD_BIT(Bit)		(TypeTraits::RemoveAllModifiers<decltype((Bit))>::Type(1) << (Bit))
 #	define GD_CLASS_UNASSIGNABLE(Class)		private: GDINT Class& operator= (Class const&) = delete; \
-											private: GDINT Class& operator= (Class     &&) = delete;
-#	define GD_CLASS_UNSWAPPABLE(Class)		///@todo: GCC does not compiles this: private: GDINT friend void Swap(Class&, Class&) = delete;
+											private: GDINT Class& operator= (Class  &&) = delete;
+#	define GD_CLASS_UNSWAPPABLE(Class)		/// @todo: GCC does not compiles this: private: GDINT friend void Swap(Class&, Class&) = delete;
 #	define GD_CLASS_UNCOPIABLE(Class)		private: GDINT Class(Class const&) = delete;
-#	define GD_CLASS_UNMOVABLE(Class)		private: GDINT Class(Class     &&) = delete;
+#	define GD_CLASS_UNMOVABLE(Class)		private: GDINT Class(Class  &&) = delete;
 #endif	// if defined(__cplusplus)
 
 /// ------------------------------------------------------------------------------------------
@@ -590,7 +590,7 @@ GD_NAMESPACE_BEGIN
 
 	typedef char const* Str;
 	typedef void const* chandle;
-	typedef void      *  handle;
+	typedef void   *  handle;
 
 GD_NAMESPACE_END
 #	include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>

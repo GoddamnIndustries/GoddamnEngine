@@ -12,7 +12,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Events/Event.h>
-#include <GoddamnEngine/Core/Object/Object.h>
+#include <GoddamnEngine/Core/Reflection/Object/Object.h>
 #include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
 
 /// Legacy macros
@@ -50,7 +50,7 @@ GD_NAMESPACE_BEGIN
 		bool Enabled;
 
 	protected:
-		GDINL          Component() { }
+		GDINL    Component() { }
 		GDINL virtual ~Component() { }
 
 	public /*Class API*/:
@@ -65,7 +65,7 @@ GD_NAMESPACE_BEGIN
 		/// Returns GameObject this Component attached to.
 		/// @returns GameObject this Component attached to.
 		GDINL RefPtr<GameObject const> GetGameObject() const;
-		GDINL RefPtr<GameObject      > GetGameObject();
+		GDINL RefPtr<GameObject   > GetGameObject();
 
 	protected/*Class Messages Set*/:
 		/// Method being called after component was constructed, 
@@ -102,7 +102,7 @@ GD_NAMESPACE_BEGIN
 		String Name;
 		String Tag;
 
-		GDINL          GameObject();
+		GDINL    GameObject();
 		GDINL virtual ~GameObject() { }
 
 		/// Disables all components that are attached to this enity.
@@ -120,14 +120,14 @@ GD_NAMESPACE_BEGIN
 		/// Searches for attached components with specified type information
 		/// @param typeinfo Type information for required component type
 		/// @returns		Component attached to this object of this type or nullptr if nothing found
-		GDAPI RefPtr<Component      > GetComponent(ITypeInformation const* const TypeInfo);
+		GDAPI RefPtr<Component   > GetComponent(ITypeInformation const* const TypeInfo);
 		GDINL RefPtr<Component const> GetComponent(ITypeInformation const* const TypeInfo) const
 		{
 			return const_cast<GameObject const*>(this)->GetComponent(TypeInfo);
 		}
 
 		GDINL RefPtr<Transform const> GetTransform() const;
-		GDINL RefPtr<Transform      > GetTransform();
+		GDINL RefPtr<Transform   > GetTransform();
 
 		template<typename ComponentType>
 		GDINL RefPtr<ComponentType> GetComponent()

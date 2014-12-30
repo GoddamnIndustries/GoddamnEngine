@@ -86,7 +86,7 @@ GD_NAMESPACE_BEGIN
 	{
 		SDL_Rect SDLRectangle;
 		SDL_GetWindowPosition(this->Impl->WindowHandle, &SDLRectangle.x, &SDLRectangle.w);
-		SDL_GetWindowSize    (this->Impl->WindowHandle, &SDLRectangle.y, &SDLRectangle.h);
+		SDL_GetWindowSize (this->Impl->WindowHandle, &SDLRectangle.y, &SDLRectangle.h);
 
 		return Rectangle(Float32(SDLRectangle.x), Float32(SDLRectangle.y), Float32(SDLRectangle.w), Float32(SDLRectangle.h));
 	}

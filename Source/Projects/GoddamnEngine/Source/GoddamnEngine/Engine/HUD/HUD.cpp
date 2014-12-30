@@ -46,7 +46,7 @@ GD_NAMESPACE_BEGIN
 		{	// Connecting to base panel to detect it repositioning
 			ElementBasePanel->OnRectangleParamChangedEvent += this;
 			ElementBasePanel->OnRotationParamChangedEvent  += this;
-			ElementBasePanel->OnDepthParamChangedEvent     += this;
+			ElementBasePanel->OnDepthParamChangedEvent  += this;
 		}
 
 		if ((this->ElementTextureAtlas.GetPointer() != nullptr) || (this->ElementCharactersAtlas.GetPointer() != nullptr))
@@ -159,7 +159,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	static String const ElementTextureIndexName("HUDElementTextureIndexName");
-	void HUDElementPanel::SetElementTextureIndex(_In_ UInt32 const ElementTextureIndex)
+	void HUDElementPanel::SetElementTextureIndex(UInt32 const ElementTextureIndex)
 	{
 		GD_DEBUG_ASSERT((this->ElementTextureAtlas.GetPointer() != nullptr), "No texture atlas specified");
 		
@@ -181,7 +181,7 @@ GD_NAMESPACE_BEGIN
 	/// ==========================================================================================
 	static String const ElementCharactersStringName("HUDElementCharactersString");
 	static String const ElementCharactersStringLengthName("HUDElementCharactersStringLength");
-	void HUDElementPanel::SetElementCharactersString(_In_ String const& ElementCharactersString)
+	void HUDElementPanel::SetElementCharactersString(String const& ElementCharactersString)
 	{
 		GD_DEBUG_ASSERT((this->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
 		
@@ -192,7 +192,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	static String const HUDElementCharactersSizeName("HUDElementCharactersSize");
-	void HUDElementPanel::SetElementCharactersFontSize(_In_ Float32 const ElementCharactersFontSize)
+	void HUDElementPanel::SetElementCharactersFontSize(Float32 const ElementCharactersFontSize)
 	{
 		GD_DEBUG_ASSERT((this->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
 		static Vector2 const ElementCharactersDefaultSize(0.0055f, 0.0105f);
@@ -205,7 +205,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	static String const HUDElementCharactersColorName("HUDElementCharactersColor");
-	void HUDElementPanel::SetElementCharactersColor(_In_ Color const& ElementCharactersColor)
+	void HUDElementPanel::SetElementCharactersColor(Color const& ElementCharactersColor)
 	{
 		GD_DEBUG_ASSERT((this->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
 		
@@ -215,7 +215,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	static String const ElementCharactersPaddingName("HUDElementCharactersPadding");
-	void HUDElementPanel::SetElementCharactersPadding(_In_ Vector2 const& ElementCharactersPadding)
+	void HUDElementPanel::SetElementCharactersPadding(Vector2 const& ElementCharactersPadding)
 	{
 		GD_DEBUG_ASSERT((this->ElementCharactersAtlas.GetPointer() != nullptr), "No font atlas specified");
 
@@ -263,8 +263,8 @@ GD_NAMESPACE_BEGIN
 		};
 
 		HRIIndexedShape* Shape = HRInterface::GetInstance().CreateIndexedShape();
-		Shape->SetVertexData(GD_HRI_SEMANTIC_POSITION, HUDElementMeshVertices, GD_ARRAY_SIZE(HUDElementMeshVertices)                                  );
-		Shape->SetIndexData(                           HUDElementMeshIndices,  GD_ARRAY_SIZE(HUDElementMeshIndices ), sizeof(HUDElementMeshIndices[0]));
+		Shape->SetVertexData(GD_HRI_SEMANTIC_POSITION, HUDElementMeshVertices, GD_ARRAY_SIZE(HUDElementMeshVertices)          );
+		Shape->SetIndexData(         HUDElementMeshIndices,  GD_ARRAY_SIZE(HUDElementMeshIndices ), sizeof(HUDElementMeshIndices[0]));
 		this->HUDMountingPoint->SetIndexedShape(Shape);
 	}
 

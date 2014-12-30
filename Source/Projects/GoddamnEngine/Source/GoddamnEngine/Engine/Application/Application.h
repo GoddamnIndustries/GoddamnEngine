@@ -3,9 +3,9 @@
 
 #include <GoddamnEngine/Include.h>
 
-#include <GoddamnEngine/Core/Object/Object.h>
+#include <GoddamnEngine/Core/Reflection/Object/Object.h>
 #include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
+#include <GoddamnEngine/Core/Containers/String.h>
 #include <GoddamnEngine/Core/Containers/Map/Map.h>
 #include <GoddamnEngine/Core/Containers/Pointer/SharedPtr.h>
 #include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
@@ -45,7 +45,7 @@ GD_NAMESPACE_BEGIN
 		UniquePtr<PluginManager> ThePluginManager;
 		UniquePtr<RSStreamer   > TheResourceStreamer;
 
-		SharedPtr<Window       > TheGameWindow;
+		SharedPtr<Window    > TheGameWindow;
 
 	//	RefPtr<LowLevelSystem> lowLevelSystem;
 	//	RefPtr<SceneManager> sceneManager;
@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 		size_t LoadedScene;
 
 	public:
-		int                const CMDArgsCount;
+		int    const CMDArgsCount;
 		char const* const* const CMDArgsList;
 
 		/// @name Application termination

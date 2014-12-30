@@ -113,7 +113,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if ((!defined(GD_HRI_OGL_ES)) && (defined(GD_PLATFORM_WINDOWS)))
 
 #define GD_HRI_API  GDINT virtual
-#define GD_HRI_SPEC       override final
+#define GD_HRI_SPEC    override final
 #include <GoddamnEngine/Engine/Renderer/RendererMethods.h>
 	};	// class HROGLInterface
 

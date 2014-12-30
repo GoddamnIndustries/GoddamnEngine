@@ -26,13 +26,13 @@ GD_NAMESPACE_BEGIN
 	{
 	public:
 		GDINL  GLSLCompiler(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
-		GDINL ~GLSLCompiler(                           ) { }
+		GDINL ~GLSLCompiler(         ) { }
 		GDAPI void GenerateAndCompileShader(
-			UniquePtr<OutputStream>      const&       ShaderByteCodeOutputStream,
-			HLSLScope                    const* const ShaderParsedData,
-			HRIShaderType                const        ShaderType,
-			String                       const&       ShaderEntryName,
-			HRIShaderCrossCompilerTarget const        ShaderTargetPlatform
+			UniquePtr<OutputStream>   const&    ShaderByteCodeOutputStream,
+			HLSLScope     const* const ShaderParsedData,
+			HRIShaderType    const  ShaderType,
+			String        const&    ShaderEntryName,
+			HRIShaderCrossCompilerTarget const  ShaderTargetPlatform
 		);
 	};	// class GLSLCompiler
 

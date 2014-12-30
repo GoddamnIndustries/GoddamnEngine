@@ -32,15 +32,15 @@ GD_NAMESPACE_BEGIN
 			GD_HRI_OGL_CHECK_ERRORS("Failed to bind Vertex Array Object");
 
 			// Vertex attributes.
-			GLuint       ShapeVertexAttribute = 0;
+			GLuint    ShapeVertexAttribute = 0;
 			UInt64 const ShapeVertexFormat = this->GetShaderProgram()->GetProgramVertexShader()->ShaderDesc->InstanceInputFormat;
 			for (size_t SemanticIter = GD_HRI_SEMANTIC_FIRST; SemanticIter != GD_HRI_SEMANTIC_UNKNOWN; SemanticIter += 1) {	// Setting up all upcoming semantic from shader.
 				if ((ShapeVertexFormat & GD_BIT(SemanticIter + 1)) == 0) {	// This semantic is not used, we not need to mention it in layout.
 					continue;
 				}
 
-				HRISemantic               const  Semantic = static_cast<HRISemantic>(SemanticIter);
-				HRISemanticDesc           const& SemanticDesc = HRISemanticGetDesc(Semantic);
+				HRISemantic      const  Semantic = static_cast<HRISemantic>(SemanticIter);
+				HRISemanticDesc     const& SemanticDesc = HRISemanticGetDesc(Semantic);
 				HRIOGLVertexBuffer const* const  VertexBuffer = object_cast<HRIOGLVertexBuffer const*>(this->IndexedShape->GetVertexBuffer(Semantic));
 				if (VertexBuffer == nullptr) {
 					throw HRIOGLException("No vertex buffer for required semantic exists.");

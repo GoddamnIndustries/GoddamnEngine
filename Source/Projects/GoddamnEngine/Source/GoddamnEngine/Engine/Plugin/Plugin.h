@@ -2,7 +2,7 @@
 #define GD_ENGINE_PLUGIN_PLUGIN
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Object/Object.h>
+#include <GoddamnEngine/Core/Reflection/Object/Object.h>
 #include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
 
 GD_NAMESPACE_BEGIN
@@ -13,7 +13,7 @@ GD_NAMESPACE_BEGIN
 		GD_PLUGIN_TYPE_UNKNOWN = 0,	///< Unknown plugin type. Do not use this 
 		GD_PLUGIN_TYPE_RENDERER,	///< This plugin provides custom renderer for GD
 		GD_PLUGIN_TYPE_PHYSICS,		///< This plugin provides custom physics for GD
-		GD_PLUGIN_TYPE_WEB,			///< This plugin provides custom web services for GD 
+		GD_PLUGIN_TYPE_WEB,			///< This plugin provides custom web services for GD::
 		GD_PLUGIN_TYPE_EDITOR,		///< This plugin is for editor
 		GD_PLUGIN_TYPES_CUSTOM,		///< This is custom plugin
 		GD_PLUGIN_TYPES_COUNT		///< Total number of plugin types available

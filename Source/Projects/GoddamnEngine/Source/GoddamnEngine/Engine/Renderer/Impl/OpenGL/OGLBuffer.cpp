@@ -125,13 +125,13 @@ GD_NAMESPACE_BEGIN
 
 	void HRIOGLConstantBuffer::CopyDataTo(handle const Data) const
 	{
-		GD_UNUSED(Data);
+		GD_NOT_USED(Data);
 		GD_NOT_IMPLEMENTED();
 	}
 
-	HRIVertexBuffer  * HROGLInterface::CreateVertexBuffer  (Float32 const* const Data, size_t const Size                     ) { return new HRIOGLVertexBuffer  (Data, Size        ); }
-	HRIIndexBuffer   * HROGLInterface::CreateIndexBuffer   (chandle const        Data, size_t const Size, size_t const Stride) { return new HRIOGLIndexBuffer   (Data, Size, Stride); } 
-	HRIConstantBuffer* HROGLInterface::CreateConstantBuffer(                           size_t const Size                     ) 
+	HRIVertexBuffer  * HROGLInterface::CreateVertexBuffer  (Float32 const* const Data, size_t const Size      ) { return new HRIOGLVertexBuffer  (Data, Size  ); }
+	HRIIndexBuffer   * HROGLInterface::CreateIndexBuffer   (chandle const  Data, size_t const Size, size_t const Stride) { return new HRIOGLIndexBuffer   (Data, Size, Stride); } 
+	HRIConstantBuffer* HROGLInterface::CreateConstantBuffer(         size_t const Size      ) 
 	{ 
 #if (!defined(GD_HRI_OGL_ES))
 		return new HRIOGLConstantBuffer(Size);

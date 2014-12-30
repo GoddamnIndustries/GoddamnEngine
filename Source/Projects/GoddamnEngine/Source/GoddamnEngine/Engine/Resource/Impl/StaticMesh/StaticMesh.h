@@ -57,7 +57,7 @@ GD_NAMESPACE_BEGIN
 		/// ==========================================================================================
 		/// Returns LOD containing in mesh
 		GDAPI const HRIIndexedShape* GetLodAt(size_t const lod) const;
-		GDAPI       HRIIndexedShape* GetLodAt(size_t const lod)      ;
+		GDAPI    HRIIndexedShape* GetLodAt(size_t const lod)   ;
 
 		/// ==========================================================================================
 		/// Copies data to LOD at specified level. LOD at level may not exist.

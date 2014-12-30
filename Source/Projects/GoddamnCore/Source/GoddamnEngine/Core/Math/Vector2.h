@@ -18,25 +18,25 @@ GD_NAMESPACE_BEGIN
 
 	/// Two-dimensional vector class.
 	///  Y ^ 
-	///    |
-	///    |
+	/// |
+	/// |
 	/// ---0------> X
-	///    |
+	/// |
 	template<typename ElementType>
 	struct Vector2t final
 	{
 		typedef typename Conditional<TypeTraits::IsPodType<ElementType>::Value, ElementType, ElementType const&>::Type ElementTypeConstRef;
-		typedef typename Conditional<TypeTraits::IsPodType<ElementType>::Value, ElementType, ElementType      &>::Type ElementTypeMutRef;
+		typedef typename Conditional<TypeTraits::IsPodType<ElementType>::Value, ElementType, ElementType&>::Type ElementTypeMutRef;
 		enum : size_t { ThisComponentsCount = 2 };
 
 		union {
 			ElementType Elements[ThisComponentsCount];
-			struct { ElementType _0,   _1;    }; ///< Compatibility with D3D Math.
+			struct { ElementType _0,   _1; }; ///< Compatibility with D3D Math.
 			struct { ElementType Width, Height; }; ///< Representation as dimensional system
-			struct { ElementType Min,   Max;    }; ///< Representation as range
-			struct { ElementType x,     y;      }; ///< Representation in XY coordinate system
-			struct { ElementType r,     g;      }; ///< Representation in RG color system
-			struct { ElementType u,     v;      }; ///< Representation in UV coordinate system
+			struct { ElementType Min,   Max; }; ///< Representation as range
+			struct { ElementType x,  y;   }; ///< Representation in XY coordinate system
+			struct { ElementType r,  g;   }; ///< Representation in RG color system
+			struct { ElementType u,  v;   }; ///< Representation in UV coordinate system
 		};	// anonymous union
 
 	public /* Constructors */:
@@ -87,9 +87,12 @@ GD_NAMESPACE_BEGIN
 
 		GDINL bool operator== (Vector2t const& Other) const
 		{
-			if (this->x == Other.x)
-				if (this->y == Other.y)
+			if (this->x == Other.x) {
+				if (this->y == Other.y) {
 					return true;
+				}
+			}
+
 			return false;
 		}
 

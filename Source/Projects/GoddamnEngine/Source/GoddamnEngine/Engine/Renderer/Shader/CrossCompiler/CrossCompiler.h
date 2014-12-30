@@ -33,8 +33,8 @@ GD_NAMESPACE_BEGIN
 		GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3,	///< GLSL(ES) 3.0 Shading language (OpenGL embedded, with constant buffers).
 		GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES2,	///< GLSL(ES) 2.0 Shading language (OpenGL embedded, without constant buffers).
 		GD_HRI_SHADERCC_COMPILER_TARGET_METAL,		///< Metal Shading language (Apple plaforms).
-		GD_HRI_SHADERCC_COMPILER_TARGET_UNKNOWN,    ///< Unknown shading language (internal usage only). 
-		GD_HRI_SHADERCC_COMPILER_TARGETS_COUNT      = GD_HRI_SHADERCC_COMPILER_TARGET_UNKNOWN,
+		GD_HRI_SHADERCC_COMPILER_TARGET_UNKNOWN, ///< Unknown shading language (internal usage only). 
+		GD_HRI_SHADERCC_COMPILER_TARGETS_COUNT   = GD_HRI_SHADERCC_COMPILER_TARGET_UNKNOWN,
 	};	// enum HRIShaderCrossCompilerTarget
 
 	/// Provides compilation of some subset of HLSL code into HLSL, PSSL and Metal bytecode and 
@@ -58,21 +58,21 @@ GD_NAMESPACE_BEGIN
 
 	public /*Class public API*/:
 		GDINL explicit HRIShaderCrossCompiler(IToolchain* const Toolchain) : IToolchainTool(Toolchain) { }
-		GDINL virtual ~HRIShaderCrossCompiler(                           ) { }
+		GDINL virtual ~HRIShaderCrossCompiler(         ) { }
 
 		/// @brief   Compiles HLSL shader into some specific platform implementation bytecode.
-		/// @param   ShaderSourceInputStream    Input stream that contains shader source code.
+		/// @param   ShaderSourceInputStream Input stream that contains shader source code.
 		/// @param   ShaderByteCodeOutputStream Output stream that would contain shader compiled bytecode. If specified as null then no code is generated/compiled.
-		/// @param   ShaderType                 Type of shader. Vertex, pixel, etc.
-		/// @param   ShaderTargetPlatform       Target platfrom for which shader would be generated.
-		/// @param   ShaderEntryPointName       Name of shader entry point.
+		/// @param   ShaderType     Type of shader. Vertex, pixel, etc.
+		/// @param   ShaderTargetPlatform    Target platfrom for which shader would be generated.
+		/// @param   ShaderEntryPointName    Name of shader entry point.
 		/// @returns Shader instance decription, genereated using provided data on success, or nullptr on fail.
 		GDAPI RefPtr<HRIShaderInstanceDesc> CrossCompileShader(
-			UniquePtr<InputStream>           && ShaderSourceInputStream, 
-			UniquePtr<OutputStream>      const& ShaderByteCodeOutputStream,
-			HRIShaderType                const  ShaderType,
+			UniquePtr<InputStream>     && ShaderSourceInputStream, 
+			UniquePtr<OutputStream>   const& ShaderByteCodeOutputStream,
+			HRIShaderType    const  ShaderType,
 			HRIShaderCrossCompilerTarget const  ShaderTargetPlatform,
-			String                       const& ShaderEntryPointName
+			String        const& ShaderEntryPointName
 		);
 	};	// class HRIShaderCrossCompiler
 

@@ -11,13 +11,13 @@
 #define GD_CORE_REFLECTION_METHODINFORMATION
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
-#include <GoddamnEngine/Core/Containers/Vector/Vector.h>
+#include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.h>
 #include <GoddamnEngine/Core/Reflection/MemberInformation.h>
 
 #include <cstdarg>  // For variadic arguments
-#include <tuple>    // For std::tuple
+#include <tuple> // For std::tuple
 
 GD_NAMESPACE_BEGIN
 
@@ -57,7 +57,7 @@ GD_NAMESPACE_BEGIN
 		// GDAPI virtual bool DoesContainsVariableArguments() const abstract;
 
 		/// Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
-		GDAPI virtual void Invoke(_In_ IReflectable* const Instance, handle const ReturnValueOutputPtr, ...) abstract;
+		GDAPI virtual void Invoke(IReflectable* const Instance, handle const ReturnValueOutputPtr, ...) abstract;
 	};	// class IMethodInformation
 
 	/// Namespace includes some support stuff for working on methods reflections.
@@ -107,7 +107,7 @@ GD_NAMESPACE_BEGIN
 				GDINL virtual IMethodTraitsBase const* Clone() const { return new MethodTraits<ReturnType(*)(ArgumentTypes...)>(this->MethodPtr); }
 				GDINL virtual ReturnType Invoke(handle const Instance, ArgumentTypes&&... Arguments) const
 				{
-					GD_UNUSED(Instance); // Since no instance is required to be used while invocation of static function
+					GD_NOT_USED(Instance); // Since no instance is required to be used while invocation of static function
 					return (*this->MethodPtr)(Forward<ArgumentTypes>(Arguments)...);
 				}
 			};	// struct MethodTraits<ReturnType(*)(ArgumentTypes...)>
@@ -183,7 +183,7 @@ GD_NAMESPACE_BEGIN
 			{	GD_METHOD_INV_CTORS();
 				GDINL ReturnType Invoke(handle const Instance, va_list ArgumentsList) const 
 				{
-					GD_UNUSED(ArgumentsList);
+					GD_NOT_USED(ArgumentsList);
 					return (*this)(Instance); 
 				}
 			};	// struct MethodInvBase<0>
@@ -274,7 +274,7 @@ GD_NAMESPACE_BEGIN
 
 			GDINL void Invoke(handle const Instance, handle const ReturnValueOutputPtr, va_list ArgumentsList) const
 			{
-				GD_UNUSED(ReturnValueOutputPtr);
+				GD_NOT_USED(ReturnValueOutputPtr);
 				this->ThisMethodExBaseType::Invoke(Instance, ArgumentsList);
 			}
 		};	// struct MethodEx<void>
@@ -303,7 +303,7 @@ GD_NAMESPACE_BEGIN
 				return ArgumentTypesList;
 			}
 
-			GDINL virtual void Invoke(_In_ IReflectable* const Instance, handle const ReturnValueOutputPtr, ...) final
+			GDINL virtual void Invoke(IReflectable* const Instance, handle const ReturnValueOutputPtr, ...) final
 			{
 				va_list ArgumentsList = nullptr; 
 				va_start(ArgumentsList, ReturnValueOutputPtr);
@@ -373,7 +373,7 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual ITypeInformation const* GetReturnType() const final;
 		GDINT virtual ITypeInformation const* GetOwnerType()  const final;
 		GDINT virtual Vector<ITypeInformation const*> const& GetArgumentsTypes() const final;
-		GDINT virtual void Invoke(_In_ IReflectable* const Instance, handle const ReturnValueOutputPtr, ...) final;
+		GDINT virtual void Invoke(IReflectable* const Instance, handle const ReturnValueOutputPtr, ...) final;
 		GDINT virtual bool IsStatic() const final;
 		GDINT virtual bool IsConst()  const final;
 	};	// class MethodInformation

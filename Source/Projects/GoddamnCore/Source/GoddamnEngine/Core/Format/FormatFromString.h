@@ -2,7 +2,7 @@
 #define GD_CORE_FORMAT_FROM_STRING
 
 #include <GoddamnEngine/Core/Format/Format.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
+#include <GoddamnEngine/Core/Containers/String.h>
 
 GD_NAMESPACE_BEGIN
 

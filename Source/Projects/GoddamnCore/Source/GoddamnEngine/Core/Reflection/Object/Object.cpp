@@ -1,4 +1,4 @@
-#include <GoddamnEngine/Core/Object/Object.h>
+#include <GoddamnEngine/Core/Reflection/Object/Object.h>
 #include <GoddamnEngine/Core/Reflection/FieldInformation/FieldInformation.h>
 
 GD_NAMESPACE_BEGIN
@@ -29,10 +29,10 @@ GD_NAMESPACE_BEGIN
 
 		for (auto const ChildObject : IterateChildObjects<Object>(this))
 		{
-			ChildObject->ParentObject          = nullptr;
-			ChildObject->NextSiblingObject     = nullptr;
+			ChildObject->ParentObject    = nullptr;
+			ChildObject->NextSiblingObject  = nullptr;
 			ChildObject->PreviousSiblingObject = nullptr;
-			ChildObject->LastChildObject       = nullptr;
+			ChildObject->LastChildObject    = nullptr;
 			ChildObject->RemoveReference();
 		}
 	}
@@ -114,14 +114,14 @@ GD_NAMESPACE_BEGIN
 			this->GetNextSiblingObject()->PreviousSiblingObject = this->GetPreviousSiblingObject();
 
 		this->PreviousSiblingObject = nullptr;
-		this->NextSiblingObject     = nullptr;
-		this->ParentObject          = nullptr;
+		this->NextSiblingObject  = nullptr;
+		this->ParentObject    = nullptr;
 	}
 
 	/// ==========================================================================================
 	void Object::SwapToSiblingObject(
-		_In_ Object* const SiblingObject, 
-		_In_ ObjectTreeLockingFlags const CustomTreeLockingFlags
+		Object* const SiblingObject, 
+		ObjectTreeLockingFlags const CustomTreeLockingFlags
 	)
 	{
 		GD_ASSERT((SiblingObject != nullptr),
@@ -163,8 +163,8 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	void Object::MoveToSiblingObject(
-		_In_ Object* const SiblingObject,
-		_In_ ObjectTreeLockingFlags const CustomTreeLockingFlags
+		Object* const SiblingObject,
+		ObjectTreeLockingFlags const CustomTreeLockingFlags
 	)
 	{
 		GD_ASSERT((SiblingObject != nullptr),

@@ -12,7 +12,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/IO/Stream/Stream.h>
-#include <GoddamnEngine/Core/Object/Object.h>
+#include <GoddamnEngine/Core/Reflection/Object/Object.h>
 #include <GoddamnEngine/Core/Threading/CriticalSection/CriticalSection.h>
 #include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
 #include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.h>
@@ -70,7 +70,7 @@ GD_NAMESPACE_BEGIN
 	public /*Constructor / Destructor*/:
 		/// Parses RSURI
 		GDAPI explicit RSURI(String const& URI);
-		GDAPI         ~RSURI() { }
+		GDAPI   ~RSURI() { }
 
 	public /*Class API*/:
 		/// Returns input stream that reads this resource.
@@ -89,7 +89,7 @@ GD_NAMESPACE_BEGIN
 		/// Returns string value for path to file, where this resource is located.
 		/// @code
 		///		"package://packs/my_package.gdp?my_file"
-		///		           |------------------| // <- Path to file 
+		///		     |------------------| // <- Path to file 
 		/// @endcode
 		/// @note This function is allowed only for real and virtual file URI types.
 		GDINL String const& GetPathToFile() const;
@@ -97,7 +97,7 @@ GD_NAMESPACE_BEGIN
 		/// Returns string value for path in file, where this resource is located.
 		/// @code
 		///		"package://packs/my_package.gdp?some_dir/my_file.ext"
-		///		                               |------------------| // <- Path to file 'some_dir/my_file.ext' inside package 'packs/my_package.gdp'
+		///		          |------------------| // <- Path to file 'some_dir/my_file.ext' inside package 'packs/my_package.gdp'
 		/// @endcode
 		/// @note This function is allowed only for virtual file URI type.
 		GDINL String const& GetPathInFile() const;
@@ -105,7 +105,7 @@ GD_NAMESPACE_BEGIN
 		/// Returns data stored in this URI if it is inlined data.
 		/// @code
 		///		"inline://bytecode-bas64?R05VIFN1Y2tzIQ=="
-		///			                     |--------------| // <- Data, inlined in this source.
+		///			      |--------------| // <- Data, inlined in this source.
 		/// @endcode
 		/// @note This function is allowed only for inline data URI type.
 		GDINL StringBuilder const& GetInlinedData() const;
@@ -200,13 +200,13 @@ GD_NAMESPACE_BEGIN
 		ResourceStreamerMode StreamerMode = ResourceStreamerMode::NotLaunched;
 
 	public /*Constructor/Destructor*/:
-		GDINL          RSStreamer() { }
+		GDINL    RSStreamer() { }
 		GDINL virtual ~RSStreamer() { }
 
 	private /*Class API*/:
 		/// Searches for resource with specified identifier in list and returns it if found nullptr otherwise. 
-		/// @param ID                 Idenitifer of the reqiured resource.
-		/// @param TypeInformation    Type informartion of type that would be created if original was not found. 
+		/// @param ID     Idenitifer of the reqiured resource.
+		/// @param TypeInformation Type informartion of type that would be created if original was not found. 
 		/// @param DoSearchInRequests If is set, then searching is also done in requests list.
 		/// @returns First found resource that matches specified criteria or nullptr.
 		GDAPI RefPtr<Resource> FindOrCreateResource(String const& ID, ITypeInformation const* const TypeInformation);
@@ -218,7 +218,7 @@ GD_NAMESPACE_BEGIN
 		GDAPI RefPtr<Resource>&& LoadImmediately(RefPtr<Resource>&& TheResource);
 
 		/// Creates resource (or uses existing found by identifier) and loads it.
-		/// @param ID              Idenitifer of the reqiured resource.
+		/// @param ID     Idenitifer of the reqiured resource.
 		/// @param TypeInformation Type informartion of type that would be created. 
 		/// @returns Possible created or found immediately loaded resource.
 		GDAPI RefPtr<Resource> LoadImmediately(String const& ID, ITypeInformation const* const TypeInformation);

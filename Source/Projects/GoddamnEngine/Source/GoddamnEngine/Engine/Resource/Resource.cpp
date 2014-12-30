@@ -29,8 +29,8 @@ GD_NAMESPACE_BEGIN
 	/// ------------------------------------------------------------------------------------------
 
 	/// Searches for resource with specified identifier in list and returns it if found nullptr otherwise. 
-	/// @param ID                 Idenitifer of the reqiured resource.
-	/// @param TypeInformation    Type informartion of type that would be created if original was not found. 
+	/// @param ID     Idenitifer of the reqiured resource.
+	/// @param TypeInformation Type informartion of type that would be created if original was not found. 
 	/// @param DoSearchInRequests If is set, then searching is also done in requests list.
 	/// @returns First found resource that matches specified criteria or nullptr.
 	GDAPI RefPtr<Resource> RSStreamer::FindOrCreateResource(String const& ID, ITypeInformation const* const TypeInformation) 
@@ -140,9 +140,9 @@ GD_NAMESPACE_BEGIN
 	extern Str RSURIProtocolTypeToStr(RSURIProtocolType const Protocol)
 	{	
 		Str static const RSURIProtocolType2Str[] = {
-			/* RSURIProtocolType::File    = */ "file",
+			/* RSURIProtocolType::File = */ "file",
 			/* RSURIProtocolType::Package = */ "package",
-			/* RSURIProtocolType::HTTP    = */ "http",
+			/* RSURIProtocolType::HTTP = */ "http",
 			/* RSURIProtocolType::HTTPS   = */ "https",
 			/* RSURIProtocolType::Inline  = */ "inline",
 		};
@@ -153,9 +153,9 @@ GD_NAMESPACE_BEGIN
 
 	extern RSURIProtocolType RSURIProtocolTypeFromStr(Str const RSURIProtocolTypeStr)
 	{
-		if (strncmp(RSURIProtocolTypeStr, "file",    sizeof("file")   ) == 0) return RSURIProtocolType::File;
+		if (strncmp(RSURIProtocolTypeStr, "file", sizeof("file")   ) == 0) return RSURIProtocolType::File;
 		if (strncmp(RSURIProtocolTypeStr, "package", sizeof("package")) == 0) return RSURIProtocolType::Package;
-		if (strncmp(RSURIProtocolTypeStr, "http",    sizeof("http")   ) == 0) return RSURIProtocolType::HTTP;
+		if (strncmp(RSURIProtocolTypeStr, "http", sizeof("http")   ) == 0) return RSURIProtocolType::HTTP;
 		if (strncmp(RSURIProtocolTypeStr, "https",   sizeof("https")  ) == 0) return RSURIProtocolType::HTTPS;
 		if (strncmp(RSURIProtocolTypeStr, "inline",  sizeof("inline") ) == 0) return RSURIProtocolType::Inline;
 		return RSURIProtocolType::Unknown;
@@ -164,16 +164,16 @@ GD_NAMESPACE_BEGIN
 	RSURI::RSURI(String const& URI)
 	{
 		String static const ProtocolDelimiterString = "://";
-		size_t        const ProtocolDelimiter = URI.Find(ProtocolDelimiterString.CStr());
+		size_t  const ProtocolDelimiter = URI.Find(ProtocolDelimiterString.CStr());
 		GD_ASSERT((ProtocolDelimiter != -1), "URI parsing failed: string doesn't matches 'protocol://value0[?value1]'");
 
 		this->Hash = URI.GetHashCode();
-		this->Protocol = RSURIProtocolTypeFromStr(URI.GetSubstring(0, ProtocolDelimiter).CStr());
+		this->Protocol = RSURIProtocolTypeFromStr(URI.Subtring(0, ProtocolDelimiter).CStr());
 		switch (this->Protocol)
 		{
 			case RSURIProtocolType::File: {
 				this->IdentifierType = RSURIType::PathToRealFile;
-				this->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.GetSubstring(ProtocolDelimiter + ProtocolDelimiterString.GetLength());
+				this->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.Subtring(ProtocolDelimiter + ProtocolDelimiterString.GetLength());
 				this->PathInFile = "/";
 			}	break;
 
@@ -182,8 +182,8 @@ GD_NAMESPACE_BEGIN
 				GD_ASSERT((QueryDelimiter != -1), "URI parsing failed: specified 'package' protocol, but no virtual path specified");
 
 				this->IdentifierType = RSURIType::PathToVirtualFile;
-				this->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.GetSubstring(ProtocolDelimiter + ProtocolDelimiterString.GetLength(), QueryDelimiter);
-				this->PathInFile = URI.GetSubstring(QueryDelimiter + 1);
+				this->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.Subtring(ProtocolDelimiter + ProtocolDelimiterString.GetLength(), QueryDelimiter);
+				this->PathInFile = URI.Subtring(QueryDelimiter + 1);
 			}	break;
 
 			case RSURIProtocolType::HTTP:
@@ -197,8 +197,8 @@ GD_NAMESPACE_BEGIN
 					this->IdentifierType = RSURIType::InlinedData;
 					size_t const QueryDelimiter = URI.Find('?');
 					size_t const DataTextSize   = URI.GetLength() - (ProtocolDelimiter + ProtocolDelimiterString.GetLength());
-					Str    const DataText       = URI.CStr() + ((QueryDelimiter != -1) ? (QueryDelimiter + 1) : (ProtocolDelimiter + ProtocolDelimiterString.GetLength()));
-					Str    const DataType       =               (QueryDelimiter != -1) ? URI.CStr() + ProtocolDelimiter + ProtocolDelimiterString.GetLength() : "";
+					Str const DataText    = URI.CStr() + ((QueryDelimiter != -1) ? (QueryDelimiter + 1) : (ProtocolDelimiter + ProtocolDelimiterString.GetLength()));
+					Str const DataType    =      (QueryDelimiter != -1) ? URI.CStr() + ProtocolDelimiter + ProtocolDelimiterString.GetLength() : "";
 
 					if (strncmp(DataType, "bytecode-raw", sizeof("bytecode-raw") - 1) == 0)	{
 						GD_ASSERT((DataTextSize % 2) == 0, "Invalid inline data length: unable to parse plain bytecode");

@@ -3,7 +3,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Format/Format.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
+#include <GoddamnEngine/Core/Containers/String.h>
 
 GD_NAMESPACE_BEGIN
 

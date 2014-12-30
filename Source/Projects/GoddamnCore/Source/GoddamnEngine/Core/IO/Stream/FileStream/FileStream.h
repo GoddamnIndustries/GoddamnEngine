@@ -2,8 +2,7 @@
 /// FileStream.h - File IO stream interface.
 /// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 /// 
-/// History:
-///		* 18.06.2014 - Created by James Jhuighuy
+/// @author James Jhuighuy
 /// ==========================================================================================
 
 #pragma once
@@ -12,7 +11,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/IO/Stream/Stream.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
+#include <GoddamnEngine/Core/Containers/String.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -28,28 +27,38 @@ GD_NAMESPACE_BEGIN
 		size_t FileLength = SIZE_MAX;
 
 	public /*Class implementation API*/:
-		/// Opens input stream on file with specifed file path.
+		/// @brief				Opens input stream on file with specified file path.
 		/// @param FilePath Path to file that is required to be read.
-		GDAPI explicit FileInputStream(String const& FilePath);
-		GDAPI virtual ~FileInputStream();
+		GDAPI explicit			FileInputStream(String const& FilePath);
 
-		/// @see BaseStream::GetPosition()
-		GDAPI virtual size_t GetPosition() const override final;
+		/// @brief				Closes this stream.
+		GDAPI virtual			~FileInputStream();
 
-		/// @see BaseStream::GetLength()
-		GDAPI virtual size_t GetLength() const override final;
+		/// @brief				Returns current position in stream.
+		/// @returns			Current position in stream.
+		GDINT virtual size_t	GetPosition() const override final;
 
-		/// @see InputStream::Close()
-		GDAPI virtual void Close() override final;
+		/// @brief				Returns size of data that stream handles.
+		/// @returns			Size of data that stream handles.
+		GDINT virtual size_t	GetLength() const override final;
 
-		/// @see InputStream::Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current)
-		GDAPI virtual void Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current) override final;
+		/// @brief				Closes this stream and releases all resources associated with this stream.
+		GDINT virtual void		Close() override final;
 
-		/// @see InputStream::Read()
-		GDAPI virtual UInt8 Read() override final;
+		/// @brief				Reposition this stream to new specified position.
+		/// @param Offset	Offset in bytes from specified origin.
+		/// @param Origin	Defines origin from which point make offset.
+		GDINT virtual void		Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current) override final;
 
-		/// @see InputStream::Read(handle const Array, size_t const Count, size_t const Length)
-		GDAPI virtual void Read(handle const Array, size_t const Count, size_t const Length) override final;
+		/// @brief				Reads next element from input stream. Full endian abstraction is provided.
+		/// @returns			Read element from stream.
+		GDINT virtual UInt8		Read() override final;
+
+		/// @brief				Reads several elements from input stream.
+		/// @param Array	Output memory to which data would be written.
+		/// @param  Count	Length of one element
+		/// @param  Length	Length of memory in elements.
+		GDAPI virtual void		Read(handle const Array, size_t const Count, size_t const Length) override final;
 	};	// class FileInputStream
 
 	/// Specifies write-only stream that provides writing to file.
@@ -60,29 +69,37 @@ GD_NAMESPACE_BEGIN
 		FILE*  FileHandle = nullptr;
 		size_t FileLength = 0;
 
-	public /*Class implementation API*/:
-		/// Opens output stream on file with specifed file path.
+	public:
+		/// @brief				Opens output stream on file with specified file path.
 		/// @param FilePath Path to file that is required to be written.
 		GDAPI explicit FileOutputStream(String const& FilePath);
-		GDAPI virtual ~FileOutputStream();
 
-		/// @see BaseStream::GetPosition()
-		GDAPI virtual size_t GetPosition() const override final;
+		/// @brief				Closes this stream.
+		GDAPI virtual			~FileOutputStream();
 
-		/// @see BaseStream::GetLength()
-		GDAPI virtual size_t GetLength() const override final;
+		/// @brief				Returns current position in stream.
+		/// @returns			Current position in stream.
+		GDINT virtual size_t	GetPosition() const override final;
 
-		/// @see OutputStream::Close()
-		GDAPI virtual void Close() override final;
+		/// @brief				Returns size of data that stream handles.
+		/// @returns			Size of data that stream handles.
+		GDINT virtual size_t	GetLength() const override final;
 
-		/// @see OutputStream::Flush()
-		GDAPI virtual void Flush() override final;
+		/// @brief				Closes this stream and releases all resources associated with this stream.
+		GDINT virtual void		Close() override final;
 
-		/// @see OutputStream::Write(UInt8 const Byte)
-		GDAPI virtual void Write(UInt8 const Byte) override final;
+		/// @brief				Writes all unsaved to the resource.
+		GDINT virtual void		Flush() override final;
 
-		/// @see OutputStream::Write(chandle const Array, size_t const Count, size_t const Length)
-		GDAPI virtual void Write(chandle const Array, size_t const Count, size_t const Length) override final;
+		/// @brief				Writes a byte into output.
+		/// @param			Byte Byte that would be written to output.
+		GDINT virtual void		Write(UInt8 const Byte) override final;
+
+		/// @brief				Writes several elements to output.
+		/// @param Array	Input elements that would be written.
+		/// @param Count	Length of one element.
+		/// @param Length	Length of memory in elements.
+		GDINL virtual void		Write(chandle const Array, size_t const Count, size_t const Length) override final;
 	};	// class FileOutputStream
 
 GD_NAMESPACE_END

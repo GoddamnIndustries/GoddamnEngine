@@ -2,7 +2,7 @@
 //#define GD_CORE_REFLECTION_TYPEINFORMATION
 //
 //#include <GoddamnEngine/Include.h>
-//#include <GoddamnEngine/Core/Text/String/String.h>
+//#include <GoddamnEngine/Core/Containers/String.h>
 //
 //#include <GoddamnEngine/Core/Reflection/MemberInformation.h>
 //
@@ -67,7 +67,7 @@
 //	enum TypeAttributes : UInt64
 //	{
 //		GD_MEMBER_ATTRIBUTE_TYPE_IS_POD		 = GD_BIT(8),	///< This type is Plain-Old-Data structure
-//		GD_MEMBER_ATTRIBUTE_TYPE_IS_CLASS    = GD_BIT(7),	///< This type is class
+//		GD_MEMBER_ATTRIBUTE_TYPE_IS_CLASS = GD_BIT(7),	///< This type is class
 //		GD_MEMBER_ATTRIBUTE_TYPE_IS_ATOMIC	 = GD_BIT(5),	///< This type is core atomic
 //		GD_MEMBER_ATTRIBUTE_TYPE_IS_STRUCT	 = GD_BIT(6),	///< This type is structure
 //		GD_MEMBER_ATTRIBUTE_TYPE_IS_SEALED	 = GD_BIT(3),	///< This type does not allows to inherit from this type
@@ -118,7 +118,7 @@
 #define GD_CORE_OBJECT_TYPEINFORMATION
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
+#include <GoddamnEngine/Core/Containers/String.h>
 
 #define TypeInformation ITypeInformation
 
@@ -134,7 +134,7 @@ public:																										\
 	typedef Type	 __ThisType;																			\
 	typedef BaseType __ThisBaseType;																		\
 private:																									\
-    friend Object* __VirtualConstructor_##Type(Object* const parent, handle const argument);            	\
+ friend Object* __VirtualConstructor_##Type(Object* const parent, handle const argument);   	\
 public:																										\
 	ExpSpec static TypeInformation const* GetClassTypeInformation();										\
 	GDINL virtual TypeInformation const* GetTypeInformation() const	{ return Type::GetClassTypeInformation(); }
@@ -166,8 +166,8 @@ public:																										\
 	static_assert((!TypeTraits::IsAbstractType<Type>::Value),												\
 		"'GD_SERIALIZABLE_IMPLEMENTATION' error: sepcified type can not be abstract. "						\
 		"Use 'GD_SERIALIZABLE_IMPLEMENTATION_C' to specify virtual constructor.");							\
-	GDINL Object* __VirtualConstructor_##Type(Object* const Parent, handle const Argument) {			    \
-		GD_UNUSED(Parent); GD_UNUSED(Argument); return new Type(__VA_ARGS__); }								\
+	GDINL Object* __VirtualConstructor_##Type(Object* const Parent, handle const Argument) {			 \
+		GD_NOT_USED(Parent); GD_NOT_USED(Argument); return new Type(__VA_ARGS__); }								\
 	GD_TYPEINFORMATION_IMPLEMENTATION_GC(Type, BaseType, ExpSpec, TypeInformationClass,						\
 		(TypeVirtualConstructor)(&__VirtualConstructor_##Type))
 #pragma endregion
@@ -179,8 +179,8 @@ public:																										\
 	static_assert((!TypeTraits::IsAbstractType<Type>::Value),												\
 		"'GD_SERIALIZABLE_IMPLEMENTATION' error: sepcified type can not be abstract. "						\
 		"Use 'GD_SERIALIZABLE_IMPLEMENTATION_C' to specify virtual constructor.");							\
-	GDINL Object* __VirtualConstructor_##Type(Object* const Parent, handle const Argument) {		    	\
-		GD_UNUSED(Parent); GD_UNUSED(Argument); return new Type(__VA_ARGS__); }								\
+	GDINL Object* __VirtualConstructor_##Type(Object* const Parent, handle const Argument) {		 	\
+		GD_NOT_USED(Parent); GD_NOT_USED(Argument); return new Type(__VA_ARGS__); }								\
 	GD_TYPEINFORMATION_IMPLEMENTATION_C(Type, BaseType, ExpSpec,											\
 		(TypeVirtualConstructor)(&__VirtualConstructor_##Type))
 #pragma endregion

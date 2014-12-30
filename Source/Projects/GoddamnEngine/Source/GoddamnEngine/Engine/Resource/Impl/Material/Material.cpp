@@ -28,8 +28,8 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	void Material::CopyPropertiesFrom(
-		_In_ Material* const material, 
-		_In_ bool const swapShader /* = true */)
+		Material* const material, 
+		bool const swapShader /* = true */)
 	{
 		GD_NOT_IMPLEMENTED();
 	}

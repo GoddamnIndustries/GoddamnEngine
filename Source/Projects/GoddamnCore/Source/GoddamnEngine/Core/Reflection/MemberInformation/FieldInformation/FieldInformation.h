@@ -11,8 +11,8 @@
 #define GD_CORE_REFLECTION_FIELDINFORMATION
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Text/String/String.h>
-#include <GoddamnEngine/Core/Containers/Vector/Vector.h>
+#include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Containers/Vector.h>
 
 #include <GoddamnEngine/Core/Reflection/MemberInformation.h>
 
@@ -69,7 +69,7 @@ GD_NAMESPACE_BEGIN
 		public:
 			GDINL FieldInformationReadable(ThisFieldPtrType const FieldPtr) : FieldPtr(FieldPtr) { }
 			GDINL virtual bool IsStatic() const final { return true; }
-            GDINL virtual void GetValue(IReflectable const* const Reflectable, handle const OutputValuePtr) const final
+   GDINL virtual void GetValue(IReflectable const* const Reflectable, handle const OutputValuePtr) const final
 			{
 				typedef typename Base::ThisFieldTypeClassNonConst ThisFieldTypeClassNonConst;
 				ThisFieldTypeClassNonConst& OutputValueReference = *(reinterpret_cast<ThisFieldTypeClassNonConst*>(OutputValuePtr));
@@ -82,16 +82,16 @@ GD_NAMESPACE_BEGIN
 		class FieldInformationReadable<FieldValueType FieldOwnerClass::*> : public BasicFieldInformation<FieldOwnerClass, FieldValueType>
 		{
 		protected:
-            typedef BasicFieldInformation<FieldOwnerClass, FieldValueType> Base;
+   typedef BasicFieldInformation<FieldOwnerClass, FieldValueType> Base;
 			typedef FieldValueType FieldOwnerClass::* ThisFieldPtrType;
 			ThisFieldPtrType const FieldPtr = nullptr;
 
 		public:
 			GDINL FieldInformationReadable(ThisFieldPtrType const FieldPtr) : FieldPtr(FieldPtr) { }
 			GDINL virtual bool IsStatic() const final { return false; }
-            GDINL virtual void GetValue(IReflectable const* const Reflectable, handle const OutputValuePtr) const final
+   GDINL virtual void GetValue(IReflectable const* const Reflectable, handle const OutputValuePtr) const final
 			{
-                typedef typename Base::ThisFieldTypeClassNonConst ThisFieldTypeClassNonConst;
+    typedef typename Base::ThisFieldTypeClassNonConst ThisFieldTypeClassNonConst;
 				ThisFieldTypeClassNonConst& OutputValueReference = *(reinterpret_cast<ThisFieldTypeClassNonConst*>(OutputValuePtr));
 				OutputValueReference = Forward<ThisFieldTypeClassNonConst>(const_cast<ThisFieldTypeClassNonConst&>(object_cast<FieldOwnerClass const*>(Reflectable)->*this->FieldPtr));
 			}
@@ -107,7 +107,7 @@ GD_NAMESPACE_BEGIN
 			template<typename FieldSignatureType>
 			GDINL FieldInformationWriteble(FieldSignatureType const FieldPtr) : FieldInformationReadable<FieldValueType*>(FieldPtr) { }
 			GDINL virtual bool IsReadOnly() const final { return false; }
-            GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final
+   GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final
 			{
 				FieldValueType& FieldReference = (*this->FieldPtr);
 				FieldReference = Forward<FieldValueType>(*(reinterpret_cast<FieldValueType*>(InputValuePtr)));
@@ -121,7 +121,7 @@ GD_NAMESPACE_BEGIN
 		public:
 			template<typename FieldSignatureType>
 			GDINL FieldInformationWriteble(FieldSignatureType const FieldPtr) : FieldInformationReadable<FieldValueType const*>(FieldPtr) { }
-            GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final { GD_DEBUG_ASSERT_FALSE("Attempt to write value to read only field"); }
+   GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final { GD_DEBUG_ASSERT_FALSE("Attempt to write value to read only field"); }
 			GDINL virtual bool IsReadOnly() const final { return true; }
 		};	// class FieldInformationWriteble<FieldValueType const*>
 
@@ -133,7 +133,7 @@ GD_NAMESPACE_BEGIN
 			template<typename FieldSignatureType>
 			GDINL FieldInformationWriteble(FieldSignatureType const FieldPtr) : FieldInformationReadable<FieldValueType FieldOwnerClass::*>(FieldPtr) { }
 			GDINL virtual bool IsReadOnly() const final { return false; }
-            GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final
+   GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final
 			{
 				FieldValueType& FieldReference = (object_cast<FieldOwnerClass*>(Reflectable)->*this->FieldPtr);
 				FieldReference = Forward<FieldValueType>(*(reinterpret_cast<FieldValueType*>(InputValuePtr)));
@@ -147,7 +147,7 @@ GD_NAMESPACE_BEGIN
 		public:
 			template<typename FieldSignatureType>
 			GDINL FieldInformationWriteble(FieldSignatureType const FieldPtr) : FieldInformationReadable<FieldValueType const FieldOwnerClass::*>(FieldPtr) { }
-            GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final { GD_DEBUG_ASSERT_FALSE("Attempt to write value to read only field"); }
+   GDINL virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final { GD_DEBUG_ASSERT_FALSE("Attempt to write value to read only field"); }
 			GDINL virtual bool IsReadOnly() const final { return true; }
 		};	// class FieldInformationWriteble<FieldValueType const FieldValueType::*>
 	}	// namespace FieldInformationPrivate
@@ -171,8 +171,8 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual ITypeInformation const* GetOwnerType() const final;
 		GDINT virtual bool IsStatic() const final;
 		GDINT virtual bool IsReadOnly() const final;
-        GDINT virtual void GetValue(IReflectable const* const Reflectable, handle const OutputValuePtr) const final;
-        GDINT virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final;
+  GDINT virtual void GetValue(IReflectable const* const Reflectable, handle const OutputValuePtr) const final;
+  GDINT virtual void SetValue(IReflectable* const Reflectable, handle const InputValuePtr) const final;
 	};	// class FieldInformation
 #endif	// if (!defined(GD_DOCUMENTATION))
 
