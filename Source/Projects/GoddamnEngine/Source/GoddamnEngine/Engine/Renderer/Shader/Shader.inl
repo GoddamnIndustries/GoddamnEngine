@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// HRIShader.inl: shader inline implementation
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2014 - Created by James Jhuighuy
@@ -9,8 +9,8 @@
 /// ==========================================================================================
 
 #include <GoddamnEngine/Core/IO/Stream/Stream.h>
-#include <GoddamnEngine/Core/Format/FormatFromString.h>
-#include <GoddamnEngine/Core/Format/FormatSelector.h>
+#include <GoddamnEngine/Engine/Renderer/Format/FormatFromString.h>
+#include <GoddamnEngine/Engine/Renderer/Format/FormatSelector.h>
 
 GD_NAMESPACE_BEGIN
 

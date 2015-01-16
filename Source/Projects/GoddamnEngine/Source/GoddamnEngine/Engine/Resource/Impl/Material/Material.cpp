@@ -5,7 +5,7 @@
 #include <GoddamnEngine/Engine/Renderer/Renderer.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/Shader.h>
 
-#include <GoddamnEngine/Core/Format/FormatValue.h>
+#include <GoddamnEngine/Engine/Renderer/Format/Format.h>
 #include <mxml.h>
 
 GD_NAMESPACE_BEGIN

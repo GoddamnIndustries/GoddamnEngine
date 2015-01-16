@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Component.inl - Base compinent class inline implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.06.2012 - Created by James Jhuighuy.

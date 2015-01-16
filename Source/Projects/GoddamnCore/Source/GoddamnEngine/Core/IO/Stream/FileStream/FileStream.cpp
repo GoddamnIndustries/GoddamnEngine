@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// FileStream.cpp - File IO stream implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 18.06.2014 - Created by James Jhuighuy
@@ -62,11 +62,11 @@ GD_NAMESPACE_BEGIN
 	size_t FileInputStream::GetLength() const
 	{
 		if (this->FileLength == SIZE_MAX) {	// Finding out position.
-			FileInputStream* const MutableSelf = const_cast<FileInputStream*>(this);
-			size_t const CurrentPosition = MutableSelf->GetPosition();
-			MutableSelf->Seek(0, SeekOrigin::End);
-			MutableSelf->FileLength = MutableSelf->GetPosition();
-			MutableSelf->Seek(CurrentPosition, SeekOrigin::Begin);
+			FileInputStream* const Mutablethis = const_cast<FileInputStream*>(this);
+			size_t const CurrentPosition = Mutablethis->GetPosition();
+			Mutablethis->Seek(0, SeekOrigin::End);
+			Mutablethis->FileLength = Mutablethis->GetPosition();
+			Mutablethis->Seek(CurrentPosition, SeekOrigin::Begin);
 		}
 
 		return this->FileLength;

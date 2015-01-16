@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Vector2.h: Two-dimensional vector class
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 07.06.2014  - Rewritten from scratch by James Jhuighuy,
@@ -11,7 +11,7 @@
 #define GD_CORE_MATH_VECTOR2
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/TypeTraits.h>
+#include <GoddamnEngine/Core/Templates/TypeTraits.h>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
 GD_NAMESPACE_BEGIN
@@ -25,8 +25,8 @@ GD_NAMESPACE_BEGIN
 	template<typename ElementType>
 	struct Vector2t final
 	{
-		typedef typename Conditional<TypeTraits::IsPodType<ElementType>::Value, ElementType, ElementType const&>::Type ElementTypeConstRef;
-		typedef typename Conditional<TypeTraits::IsPodType<ElementType>::Value, ElementType, ElementType&>::Type ElementTypeMutRef;
+		typedef typename Conditional<TypeTraits::IsPOD<ElementType>::Value, ElementType, ElementType const&>::Type ElementTypeConstRef;
+		typedef typename Conditional<TypeTraits::IsPOD<ElementType>::Value, ElementType, ElementType&>::Type ElementTypeMutRef;
 		enum : size_t { ThisComponentsCount = 2 };
 
 		union {

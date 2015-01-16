@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Framework.cpp - Framework implementation selector (non-Cocoa) source file.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 10.06.2014 - Created by James Jhuighuy
@@ -21,7 +21,7 @@ GD_NAMESPACE_BEGIN
 GD_NAMESPACE_END
 
 /// ==========================================================================================
-/// Including platform-dependant solutions.
+/// Including platform-dependent solutions.
 /// ==========================================================================================
 
 #if (defined(GD_PLATFORM_API_LIBSDL2))

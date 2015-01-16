@@ -2,8 +2,6 @@
 rem =========================================================================================
 rem SetupGoddamnSDK.bat - installs the Goddamn Software Development Kit [Windows Edition].
 rem Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-rem
-rem Author: James Jhuighuy.
 rem =========================================================================================
 
 rem Parsing command-line arguments..

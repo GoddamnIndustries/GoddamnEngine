@@ -1,9 +1,6 @@
 /// ==========================================================================================
 /// GLSLCompiler.cpp: Some GLSLang suff.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-/// 
-/// History:
-///		* 14.06.2014 - Created by James Jhuighuy.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 // We have Warning 4 level, but not glslang.

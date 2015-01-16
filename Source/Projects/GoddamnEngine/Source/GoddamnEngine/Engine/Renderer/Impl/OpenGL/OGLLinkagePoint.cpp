@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// OGLLinkagePoint.cpp: Linkage point OGL implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 21.05.2014  - Created by James Jhuighuy
@@ -12,13 +12,10 @@
 GD_NAMESPACE_BEGIN
 	GD_TYPEINFORMATION_IMPLEMENTATION(HRIOGLLinkagePoint, HRILinkagePoint, GDINT);
 
-	HRIOGLVertexBuffer* vb = nullptr;
-	HRIOGLIndexBuffer* ib = nullptr;
-	bool static Init = false;
-
 	void HRIOGLLinkagePoint::RenderSelf() const
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
+#if 0	// Debug code. Leave it be here for a while.
 		if (this->IsRelinkingRequired) {
 			this->IsRelinkingRequired = false;
 			if (this->LinkingCache.VertexArrayObject != 0) {	// Linked previous time, vertex array exists.
@@ -39,8 +36,8 @@ GD_NAMESPACE_BEGIN
 					continue;
 				}
 
-				HRISemantic      const  Semantic = static_cast<HRISemantic>(SemanticIter);
-				HRISemanticDesc     const& SemanticDesc = HRISemanticGetDesc(Semantic);
+				HRISemantic        const  Semantic = static_cast<HRISemantic>(SemanticIter);
+				HRISemanticDesc    const& SemanticDesc = HRISemanticGetDesc(Semantic);
 				HRIOGLVertexBuffer const* const  VertexBuffer = object_cast<HRIOGLVertexBuffer const*>(this->IndexedShape->GetVertexBuffer(Semantic));
 				if (VertexBuffer == nullptr) {
 					throw HRIOGLException("No vertex buffer for required semantic exists.");
@@ -94,8 +91,14 @@ GD_NAMESPACE_BEGIN
 
 		GL.BindVertexArray(0);
 		this->ShaderProgram->UnbindShaderProgram();
+#endif	// if 0	// Debug code. Leave it be here for a while.
 
-#if 0	// Debug code. Leave it be here for a while.
+#if 1	// Debug code. Leave it be here for a while.
+
+		static HRIOGLVertexBuffer* vb = nullptr;
+		static HRIOGLIndexBuffer* ib = nullptr;
+		bool static Init = false;
+
 		Float32 const static Vertices[] = {
 			0.0f, 0.0f, 0.5f,
 			1.0f, 0.0f, 0.5f,
@@ -115,16 +118,21 @@ GD_NAMESPACE_BEGIN
 			GL.GenVertexArrays(1, &vao);
 			GL.BindVertexArray(vao);
 		}
-		this->ShaderProgram->BindShaderProgram();
-		GL.EnableVertexAttribArray(0);
-		GD_HRI_OGL_CHECK_ERRORS("EnableVertexAttribArray");
-		vb->BindBuffer();
-		GL.VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-		GD_HRI_OGL_CHECK_ERRORS("VertexAttribPointer");
-		ib->BindBuffer();
-		GL.DrawElements(GL_TRIANGLES, GD_ARRAY_SIZE(Indices), GL_UNSIGNED_SHORT, nullptr);
-		GD_HRI_OGL_CHECK_ERRORS("DrawArrays");
-		this->ShaderProgram->UnbindShaderProgram();
+		try {
+			this->ShaderProgram->BindShaderProgram();
+			GL.EnableVertexAttribArray(0);
+			GD_HRI_OGL_CHECK_ERRORS("EnableVertexAttribArray");
+			vb->BindBuffer();
+			GL.VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+			GD_HRI_OGL_CHECK_ERRORS("VertexAttribPointer");
+			ib->BindBuffer();
+			GL.DrawElements(GL_TRIANGLES, GD_ARRAY_SIZE(Indices), GL_UNSIGNED_SHORT, nullptr);
+			GD_HRI_OGL_CHECK_ERRORS("DrawArrays");
+			this->ShaderProgram->UnbindShaderProgram();
+		} catch (Exception const& E) {
+			throw E;
+		}
+
 #endif	// if 0	// Debug code.
 	}
 

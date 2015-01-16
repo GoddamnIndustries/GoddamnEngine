@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// D3D11Shader.h: Direct3D 11 shaders implementation interface. 
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.02.2014  - Created by James Jhuighuy
@@ -36,8 +36,8 @@ GD_NAMESPACE_BEGIN
 	{
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRID3D11ShaderParamLocationResources, HRIShaderParamLocationResources, GDINT);
-		typedef StackVector<ID3D11ShaderResourceView*, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> HRIShaderResourceViewsVector;
-		typedef StackVector<ID3D11SamplerState   *, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> HRIShaderSampleStatesVector;
+		typedef StaticVector<ID3D11ShaderResourceView*, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> HRIShaderResourceViewsVector;
+		typedef StaticVector<ID3D11SamplerState   *, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> HRIShaderSampleStatesVector;
 		HRIShaderResourceViewsVector ShaderResourceViews;
 		HRIShaderSampleStatesVector  ShaderSampleStates;
 
@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 		GD_TYPEINFORMATION_DEFINITION(HRID3D11ShaderInstance, HRIShaderInstance, GDINT);
 
 	public:
-		StackVector<ID3D11Buffer const*, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> ShaderConstantBuffers;
+		StaticVector<ID3D11Buffer const*, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> ShaderConstantBuffers;
 
 		GDINT explicit HRID3D11ShaderInstance(HRIShaderInstanceDesc const* const InstanceDesc);
 		GDINL virtual ~HRID3D11ShaderInstance(              ) { }

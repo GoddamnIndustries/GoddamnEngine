@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// HLSLCompiler.cpp: HLSL compiler generator and compiler implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 13.06.2014 - Created by James Jhuighuy.
@@ -12,7 +12,7 @@
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Impl/HLSL/HLSLCompiler.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.h>
-#include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.h>
+#include <GoddamnEngine/Core/Containers/StringBuilder.h>
 #if (!defined(GD_D3D_LINKED))
 #	include <GoddamnEngine/Core/Reflection/Assembly/Assembly.h>
 #	include <cstdio>
@@ -225,8 +225,8 @@ GD_NAMESPACE_BEGIN
 
 			Builder.Append(", ");
 		}
-		*(Builder.GetPointer() + Builder.GetLength() - 2) = ')';	// Replacing trailing comma.
-		*(Builder.GetPointer() + Builder.GetLength() - 1) = ' ';	// Replacing trailing space.
+		*(Builder.CStr() + Builder.GetLength() - 2) = ')';	// Replacing trailing comma.
+		*(Builder.CStr() + Builder.GetLength() - 1) = ' ';	// Replacing trailing space.
 
 		if (StaticFunction->Semantic != nullptr) {
 			Builder.AppendFormat(": %s%d", HLSLSemanticToStr(StaticFunction->Semantic->Semantic), static_cast<int>(StaticFunction->Semantic->SemanticID));
@@ -275,7 +275,7 @@ GD_NAMESPACE_BEGIN
 		LPCSTR const D3DCompileProfile = D3DCompileProfiles[ShaderType];
 
 		ID3DBlob *OutputBlob = nullptr, *ErrorBlob = nullptr;	// Note: D3DCompile is thread-safe.
-		HRESULT const Result = D3DCompile(HLSLGeneratorOutput.GetPointer(), HLSLGeneratorOutput.GetLength(),
+		HRESULT const Result = D3DCompile(HLSLGeneratorOutput.CStr(), HLSLGeneratorOutput.GetLength(),
 			nullptr,  nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, ShaderEntryName.CStr(),
 			D3DCompileProfile, D3DCompileFlags, 0, &OutputBlob, &ErrorBlob
 		);
@@ -283,7 +283,7 @@ GD_NAMESPACE_BEGIN
 		if (FAILED(Result)) {	// Compiling failed.
 			if (ErrorBlob != nullptr) {	// And we know what happened.
 				HLSLCompilerErrorDesc static const D3DCompilerError("D3DCompile returned error: \n%s\nGenerated code:\n%s");
-				throw HLSLCompilerErrorException(D3DCompilerError.ToString(nullptr, reinterpret_cast<Str>(ErrorBlob->GetBufferPointer()), HLSLGeneratorOutput.GetPointer()));
+				throw HLSLCompilerErrorException(D3DCompilerError.ToString(nullptr, reinterpret_cast<Str>(ErrorBlob->GetBufferPointer()), HLSLGeneratorOutput.CStr()));
 			} else {
 				HLSLCompilerErrorDesc static const D3DUnknownError("unknown error occured while compiling shader.");
 				throw HLSLCompilerErrorException(D3DUnknownError.ToString(nullptr));

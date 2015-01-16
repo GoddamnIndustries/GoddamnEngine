@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// D3D11LinkagePoint.h: Linkage point D3D11 implementation interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 21.05.2014  - Created by James Jhuighuy
@@ -28,9 +28,9 @@ GD_NAMESPACE_BEGIN
 		mutable struct LinkageCache final {
 			UINT SlotsTotalCount = 0;
 			UINT VerticesCount   = UINT_MAX;
-			StackVector<ID3D11Buffer*, GD_HRI_SEMANTICS_COUNT> Buffers;
-			StackVector<UINT,    GD_HRI_SEMANTICS_COUNT> Offsets;
-			StackVector<UINT,    GD_HRI_SEMANTICS_COUNT> Strides;
+			StaticVector<ID3D11Buffer*, GD_HRI_SEMANTICS_COUNT> Buffers;
+			StaticVector<UINT,    GD_HRI_SEMANTICS_COUNT> Offsets;
+			StaticVector<UINT,    GD_HRI_SEMANTICS_COUNT> Strides;
 		} LinkingCache;
 
 	public:

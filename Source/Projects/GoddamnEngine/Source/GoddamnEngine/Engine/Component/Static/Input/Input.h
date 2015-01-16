@@ -2,21 +2,13 @@
 #define GD_INPUT
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Framework/Framework.h>
 #include <GoddamnEngine/Engine/Component/Static/StaticComponent.h>
 
-#define GD_INPUT_KEYS_SIZE		((size_t)(KeyCode::Unknown))
-#define GD_INPUT_MOUSE_SIZE		((size_t)(MouseButton::Unknown))
+#define GD_INPUT_KEYS_SIZE		((size_t)(KeyCode::Count))
+#define GD_INPUT_MOUSE_SIZE		((size_t)(MouseButton::Count))
 
 GD_NAMESPACE_BEGIN
-
-	/// @brief			Enumeration describing state of touch on touch screen
-	enum class TouchState : UInt8
-	{
-		None,		///< Not touched
-		Pressed,	///< Screen is just touched and finger is holden steel
-		Moved,		///< Finger was moved
-		Released	///< User has released this touch
-	};	// enum class TouchState
 
 	enum class Device
 	{

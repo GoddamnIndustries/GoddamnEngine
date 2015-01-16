@@ -1,6 +1,6 @@
 ﻿//! ==========================================================================================
 //! BuildSystem.cs - GoddamnBuildSystem main source module.
-//! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 //! 
 //! @author James Jhuighuy
 //! ==========================================================================================
@@ -10,11 +10,11 @@ using System.IO;
 
 namespace GoddamnEngine.BuildSystem
 {
-    //! Represents an exception, thrown by BuildSystem code.
+    //! @brief Represents an exception, thrown by BuildSystem code.
     [Serializable]
     public class BuildSystemException : Exception
     {
-        //! Constructs the build system exception with a String.
+        //! @brief Constructs the build system exception with a String.
         //! @param Format Format String.
         //! @param Arguments Formatting arguments.
         public BuildSystemException(String Format, params object[] Arguments)
@@ -23,7 +23,7 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class ProjectException
 
-    //! Represents a attribute of a build system module.
+    //! @brief Represents a attribute of a build system module.
     [AttributeUsage(AttributeTargets.Class)]
     internal sealed class BuildSystemModuleAttribute : Attribute
     {
@@ -34,22 +34,23 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class BuildSystemModuleAttribute
 
-    //! Represents a module of a build system.
+    //! @brief Represents a module of a build system.
     public abstract class BuildSystemModule
     {
-        //! Entry point of a module.
+        //! @brief Entry point of a module.
         public virtual int Execute(String[] Arguments)
         {
             return 0;
         }
     }   // class BuildSystemModule
 
-    //! Main class of build system.
+    //! @brief Main class of build system.
     public static class BuildSystem
     {
         private static String s_SDKPath = null;
 
-        //! Path to GoddamnSDK installation location.
+        //! @brief Returns path to GoddamnSDK installation location.
+        //! @returns Path to GoddamnSDK installation location.
         public static String GetSDKLocation()
         {
             if (s_SDKPath == null) {
@@ -66,7 +67,7 @@ namespace GoddamnEngine.BuildSystem
             return s_SDKPath;
         }
 
-        //! Application entry point.
+        //! @brief Application entry point.
         private static void Main(String[] Arguments)
         {
             try {
@@ -107,6 +108,5 @@ namespace GoddamnEngine.BuildSystem
             Environment.Exit(1);
         }
 
-        //! @}
     }   // class BuildSystem
 }   // namespace GoddamnEngine.BuildSystem

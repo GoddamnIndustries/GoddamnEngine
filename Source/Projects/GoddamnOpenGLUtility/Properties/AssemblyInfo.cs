@@ -1,6 +1,6 @@
 ﻿/// ==========================================================================================
 /// AssemblyInfo.cs - OpenGL utility assembly information.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 28.07.2014 - Created by James Jhuighuy
@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("GoddamnOpenGLUtility")]
 [assembly: AssemblyDescription("GoddamnEngine OpenGL Header utility")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("(C) $(GODDAMN_DEV)")]
+[assembly: AssemblyCompany("(C) Goddamn Industries")]
 [assembly: AssemblyProduct("GoddamnBuildSystem")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("GoddamnEngine")]

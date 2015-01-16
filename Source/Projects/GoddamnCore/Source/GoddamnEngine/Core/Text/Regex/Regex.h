@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Regex.h: Regular expressions interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2014  - Created by James Jhuighuy
@@ -11,7 +11,7 @@
 #define GD_CORE_TEXT_REGEX
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Containers/Pointer/SharedPtr.h>
+#include <GoddamnEngine/Core/Templates/SharedPtr.h>
 
 GD_NAMESPACE_BEGIN
 

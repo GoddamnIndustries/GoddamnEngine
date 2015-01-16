@@ -4,7 +4,7 @@ GD_NAMESPACE_BEGIN
 
 	GDINL Object* CreateInput(Object* parent, handle const argument)
 	{
-		TypeInformation const* const inputTypeInfo = TypeInformation::FindType("Input_WIN32_WINAPI");
+		ITypeInformation const* const inputTypeInfo = ITypeInformation::FindType("Input_WIN32_WINAPI");
 		GD_ASSERT((inputTypeInfo != nullptr), "No input class specified");
 
 		return inputTypeInfo->VirtualConstructor(parent, argument);

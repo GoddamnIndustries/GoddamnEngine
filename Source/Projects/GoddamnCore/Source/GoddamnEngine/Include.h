@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Include.h: Common definitions for all GoddamnEngine inner projects.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// ------------------------------------------------------------------------------------------
 ///	My life is just a collection of goals dubious reachability. This project is one of them.
@@ -22,7 +22,7 @@
 #define GD_ENGINE_NAME					L"GoddamnEngine"
 #define GD_ENGINE_TITLE					L"GoddamnEngine"
 #define GD_ENGINE_ASSEMBLY_DESCRIPTION	L"GoddamnEngine"
-#define GD_ENGINE_ASSEMBLY_COMPANY		L"(C) $(GODDAMN_DEV)"
+#define GD_ENGINE_ASSEMBLY_COMPANY		L"(C) Goddamn Industries"
 #define GD_ENGINE_ASSEMBLY_PRODUCT		L"GoddamnEngine"
 #define GD_ENGINE_ASSEMBLY_COPYRIGHT	L"Copyright \0xA9 2014"
 #define GD_ENGINE_ASSEMBLY_TRADEMARK	L"GoddamnEngine"
@@ -53,29 +53,26 @@
 /// ------------------------------------------------------------------------------------------
 
 #if (defined(_WIN32))
-#	define _USE_MATH_DEFINES    // <| M_PI and others
-#	define _CRT_SECURE_NO_WARNINGS // <| Using printf and others
-#	define  WIN32_LEAN_AND_MEAN // <| We do not need whole WinAPI header.
-#	define  VC_EXTRALEAN		   //  |
+#	define _USE_MATH_DEFINES    										// <| M_PI and others
+#	define _CRT_SECURE_NO_WARNINGS 										// <| Using printf and others
+#	define  WIN32_LEAN_AND_MEAN											// <| We do not need whole WinAPI header.
+#	define  VC_EXTRALEAN												//  |
 #	include <winapifamily.h>
 #	define GD_PLATFORM_API_WINAPI		  (1)							///< Obviously Windows platforms run on WinAPI.
 #	if (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_DESKTOP_APP))				//   Windows Desktop application.
 #		define GD_PLATFORM_API_LIBSDL2	  (1)							///< LibSDL2 supports target platform.
 #		define GD_PLATFORM_WINDOWS		  (1)							///< Macro to detect Windows-specific code
-#		define GD_PLATFORM_DESKTOP		  (1)			  		///< Building for desktop platform 
+#		define GD_PLATFORM_DESKTOP		  (1)			  				///< Building for desktop platform 
 #	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PHONE_APP))				//   Windows Phone 8 application.
 #		define GD_PLATFORM_WINDOWS_PHONE8 (1)							///< Macro to detect WindowsPhone 8-specific code
 #		define GD_PLATFORM_MOBILE		  (1)							///< Building for mobile platform.
-#		error "Building for this platform is not implemented."
 #	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PC_APP))				//   Windows Store application (Windows Desktop or Windows RT)
 #		if (defined(__WRL_WINRT_STRICT__))								//   Windows RT application.
 #			define GD_PLATFORM_WINDOWS_RT (1)							///< Macro to detect Windows RT-specific code
 #			define GD_PLATFORM_MOBILE	  (1)							///< Building for mobile platform 
-#			error "Building for this platform is not implemented."
 #		else	// if (defined(__WRL_WINRT_STRICT__))					//   Windows Desktop application.
 #			define GD_PLATFORM_WINDOWS	  (1)							///< Macro to detect Windows-specific code
-#			define GD_PLATFORM_DESKTOP	  (1)			  		///< Building for desktop platform 
-#			error "Building for this platform is not implemented."
+#			define GD_PLATFORM_DESKTOP	  (1)			  				///< Building for desktop platform 
 #		endif	// if (defined(__WRL_WINRT_STRICT__))
 #	else	// elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_***))
 #		error "Unsupported Windows target platform."
@@ -91,7 +88,6 @@
 #	define GD_PLATFORM_API_WINAPI		  (1)							///< Obviously Windows platforms run on WinAPI.
 #	define GD_PLATFORM_XBOX_ONE			  (1)							///< Building the XBox One game.
 #	define GD_PLATFORM_CONSOLE			  (1)							///< Building the console game.
-#	error "Building for this platform is not implemented."
 #endif	// if (defined(___SOME_VERY_SPECIFIC_XBOX_ONE_MACRO___))
 
 /// ------------------------------------------------------------------------------------------
@@ -106,11 +102,9 @@
 #	if (defined(TARGET_OS_MAC))
 #		define GD_PLATFORM_DESKTOP		  (1)			  		///< Building for desktop platform 
 #		define GD_PLATFORM_OSX			  (1)							///< OS X application.
-#		error "Building for this platform is not implemented."
 #	elif (defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_IPHONE) || defined(TARGET_OS_IPAD))
 #		define GD_PLATFORM_MOBILE		  (1)							///< Building for mobile platform 
 #		define GD_PLATFORM_IOS			  (1)							///< iOS application.
-#		error "Building for this platform is not implemented."
 #	else	// *** Apple Platform selection ***
 #		error "Unsupported Apple target platform."
 #	endif	// *** Apple Platform selection ***
@@ -126,7 +120,6 @@
 #	define GD_PLATFORM_API_POSIX		  (1)							///< And also is POSIX-compatible.
 #	define GD_PLATFORM_PLAYSTATION4		  (1)							///< Building the XBox One game.
 #	define GD_PLATFORM_CONSOLE			  (1)							///< Building the console game.
-#	error "Building for this platform is not implemented."
 #endif	// if (defined(___SOME_VERY_SPECIFIC_PLAY_STATION4_MACRO___))
 
 /// ------------------------------------------------------------------------------------------
@@ -138,7 +131,6 @@
 #	define GD_PLATFORM_API_POSIX		  (1)							///< Android runs on GNU/Linux which POSIX-compatible.
 #	define GD_PLATFORM_API_LIBSDL2		  (1)							///< LibSDL2 supports target platform.
 #	define GD_PLATFORM_ANDROID			  (1)							///< Android application.
-#	error "Building for this platform is not implemented."
 #endif	// if (defined(__ANDROID__))
 
 /// ------------------------------------------------------------------------------------------
@@ -147,10 +139,9 @@
 
 #if (defined(__linux__))
 #	define GD_PLATFORM_DESKTOP			  (1)			  		///< Building for desktop platform 
-#	define GD_PLATFORM_API_POSIX		  (1)							///< GNU/Linux is POSIX-compatible.
-#	define GD_PLATFORM_API_LIBSDL2		  (1)							///< LibSDL2 supports target platform.
-#	define GD_PLATFORM_GNU_LINUX		  (1)							///< GNU/Linux application.
-#	error "Building for this platform is not implemented."
+#	define GD_PLATFORM_API_POSIX		  (1)					///< GNU/Linux is POSIX-compatible.
+#	define GD_PLATFORM_API_LIBSDL2		  (1)					///< LibSDL2 supports target platform.
+#	define GD_PLATFORM_GNU_LINUX		  (1)					///< GNU/Linux application.
 #endif	// if (defined(__linux__))
 
 /// ------------------------------------------------------------------------------------------
@@ -159,8 +150,14 @@
 
 #if (defined(__EMSCRIPTEN__))
 #	define GD_PLATFORM_WEB				  (1)			  		///< Building a web-application. 
-#	define GD_PLATFORM_HTML5			  (1)							///< Building an HTML5 web-application.
+#	define GD_PLATFORM_HTML5			  (1)					///< Building an HTML5 web-application.
+#	define GD_PLATFORM_API_LIBSDL1		  (1)					///< LibSDL1 supports target platform.
 #endif	// if (defined(__EMSCRIPTEN__))
+
+/// Currently only HTML5 does not support multithreading.
+#if (!defined(GD_PLATFORM_HTML5))
+#	define GD_PLATFORM_HAS_MULTITHREADING (1)
+#endif	// if (!defined(GD_PLATFORM_HTML5))
 
 // Checking if there is actually a single platform selected.
 #if (!(0 \
@@ -187,9 +184,9 @@
 /// ==========================================================================================
 /// Compiler Determination.
 /// Supported compilers:
-///		@li Microsoft Visual C++ compiler version 2012 CTP and above - Windowses and XBox One, defined as GD_COMPILER_MSVC.
-/// Planned to support:
+///		@li Microsoft Visual C++ compiler version 2013 CTP and above - Windows and XBox One, defined as GD_COMPILER_MSVC.
 ///		@li Apple's Clang compiler - Apple platforms, HTML5, defined as GD_COMPILER_CLANG.
+/// Planned to support:
 ///		@li GNU Compilers Collection's C++ compiler - Windows, GNU/Linux, Android, PlayStation 4, defined as GD_COMPILER_GCC.
 ///		@li Intel C Compiler - Windows, OS X and GNU/Linux, defined as GD_COMPILER_INTEL + default platform compiler.
 /// ==========================================================================================
@@ -258,7 +255,7 @@
 /// ==========================================================================================
 
 /// ------------------------------------------------------------------------------------------
-/// Target architecture decls.
+/// Target architecture declarations.
 /// Thanks to this (http://sourceforge.net/p/predef/wiki/Architectures/) article.
 /// ------------------------------------------------------------------------------------------
 
@@ -342,13 +339,13 @@
 #	define GDINL inline											///< Inline method.
 #else	// if (defined(GD_NO_FORCE_INLINE))
 #	if (defined(GD_COMPILER_MSVC_COMPATIBLE))
-#		define GDINL __forceinline								///< Method would be forcely inlined.
+#		define GDINL __forceinline								///< Method would be forcedly inlined.
 #	elif (defined(GD_COMPILER_GCC_COMPATIBLE))
-#		define GDINL __attribute__((always_inline)) inline		///< Method would be forcely inlined.
+#		define GDINL __attribute__((always_inline)) inline		///< Method would be forcedly inlined.
 #	endif	// *** Force inline specification. ***
 #endif	// if (defined(GD_NO_FORCE_INLINE))
 
-// Aligment...
+// Alignment...
 #if (defined(GD_COMPILER_MSVC_COMPATIBLE))
 #	define GD_ALIGN_MSVC(Alignment) __declspec(align(Alignment))		///< Class would be aligned in MSVS compatible notation.
 #	define GD_ALIGN_GCC(Alignment)										///< Dummy class alignment  for abstraction.
@@ -364,6 +361,14 @@
 #	define GD_NORETURN __attribute__((noreturn))		///< Method would terminate the application.
 #endif	// *** Noreturn specifications. ***
 
+// Thread-local...
+/// @todo Remove this when MSVC supports thread_local
+#if (defined(GD_COMPILER_MSVC_COMPATIBLE))
+#	define GD_THREAD_LOCAL __declspec(thread)
+#elif (defined(GD_COMPILER_GCC_COMPATIBLE))
+#	define GD_THREAD_LOCAL thread_local
+#endif	// *** Thread-local specifications. ***
+
 // Deprecation...
 #if (defined(GD_COMPILER_MSVC_COMPATIBLE))
 #	define GD_DEPRECATED __declspec(deprecated)			///< Following definitions is declared deprecated.
@@ -373,9 +378,9 @@
 
 // Printf-like functions...
 #if (defined(GD_COMPILER_MSVC_COMPATIBLE))
-#	define GD_PRINTF_LIKE(StringIndex, FirstToCheck)	///< Following functions smells like printf. Does some real static analyzis on GCC-compatible compilers.
+#	define GD_PRINTF_LIKE(StringIndex, FirstToCheck)	///< Following functions smells like printf. Does some real static analysis on GCC-compatible compilers.
 #elif (defined(GD_COMPILER_GCC_COMPATIBLE))
-#	define GD_PRINTF_LIKE(StringIndex, FirstToCheck) __attribute__((format (printf, StringIndex, FirstToCheck)))	///< Following functions smells like printf. Does some real static analyzis on GCC-compatible compilers.
+#	define GD_PRINTF_LIKE(StringIndex, FirstToCheck) __attribute__((format(printf, StringIndex, FirstToCheck)))	///< Following functions smells like printf. Does some real static analysis on GCC-compatible compilers.
 #endif	// *** Printf-like functions. ***
 
 // // For future expansion...
@@ -427,14 +432,15 @@
 
 // Disabled warnings.
 #if (defined(GD_COMPILER_MSVC_COMPATIBLE))
-//#	pragma warning(disable : 4100)
+#	pragma warning(disable : 4100)	// unreferenced formal parameter. Actually, this should not be disabled.
 #	pragma warning(disable : 4127)	// conditional expression is constant
 //#	pragma warning(disable : 4189)
 #	pragma warning(disable : 4201)	// nonstandard extension used : nameless struct/union
 //#	pragma warning(disable : 4301)
+#	pragma warning(disable : 4324)	// structure was padded due to __declspec(align())
 //#	pragma warning(disable : 4456)
 //#	pragma warning(disable : 4458)
-//#	pragma warning(disable : 4505)	
+#	pragma warning(disable : 4505)	// unreferenced local function has been removed. Actually, this should not be disabled.
 #	pragma warning(disable : 4714)	// function '...' marked as __forceinline not inlined. Actually, this should not be disabled.
 #elif (defined(GD_COMPILER_GCC_COMPATIBLE))
 #endif	// *** Warning. ***
@@ -509,8 +515,6 @@
 #define abstract		= 0
 #define impl_abstract	abstract
 #define object_cast		static_cast
-#define Min(a, b)		(((a) < (b)) ? (a) : (b)) 
-#define Max(a, b)		(((a) > (b)) ? (a) : (b)) 
 #define GD_NOT_USED(Argument) (static_cast<void>(Argument))
 
 /// Some glue magic.
@@ -522,7 +526,7 @@
 #define GD_WIDEN(String) GD_WIDEN_(String)
 
 #if defined(__cplusplus)
-#	define GD_BIT(Bit)		(TypeTraits::RemoveAllModifiers<decltype((Bit))>::Type(1) << (Bit))
+#	define GD_BIT(Bit)						(TypeTraits::RemoveAllModifiers<decltype((Bit))>::Type(1) << (Bit))
 #	define GD_CLASS_UNASSIGNABLE(Class)		private: GDINT Class& operator= (Class const&) = delete; \
 											private: GDINT Class& operator= (Class  &&) = delete;
 #	define GD_CLASS_UNSWAPPABLE(Class)		/// @todo: GCC does not compiles this: private: GDINT friend void Swap(Class&, Class&) = delete;

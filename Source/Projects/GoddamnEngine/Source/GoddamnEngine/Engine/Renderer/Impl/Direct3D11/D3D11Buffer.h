@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// D3D11Buffer.h - HRI Buffer Direct3D 11 implementation interfaces.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 16.05.2014 - Created by James Jhuighuy

@@ -12,7 +12,7 @@ GD_NAMESPACE_BEGIN
 
 	void StaticComponent::InitializeAsHandler(GameObject* const TheGameObject)
 	{
-		for (ITypeInformation const* TypeInfo = TypeInformation::GetLastRegistered(); TypeInfo != nullptr; TypeInfo = TypeInfo->PreviousType) {
+		for (ITypeInformation const* TypeInfo = ITypeInformation::GetLastRegistered(); TypeInfo != nullptr; TypeInfo = TypeInfo->PreviousType) {
 			if ((TypeInfo->BaseType != StaticComponent::GetClassTypeInformation()) || (TypeInfo->VirtualConstructor == nullptr)) {
 				continue;
 			}

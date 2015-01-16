@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Assertion.h: Assertion mechanism implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2014  - Created by James Jhuighuy
@@ -111,9 +111,7 @@ GD_NAMESPACE_BEGIN
 
 	void ReportAssertion(AssertionCache const* const TheAssertionCache)
 	{
-		if (!ReportAssertionImpl(TheAssertionCache)) {
-			GD_DEBUG_ASSERT_FALSE("Failed to report an error");
-		}
+		GD_DEBUG_ASSERT(ReportAssertionImpl(TheAssertionCache), "Failed to report an error");
 	}
 
 	/// ------------------------------------------------------------------------------------------
@@ -133,8 +131,8 @@ GD_NAMESPACE_BEGIN
 			"At: " GD_PLATFORM_LINEBREAK
 			"[File]: %s" GD_PLATFORM_LINEBREAK
 			"[Line]: %u" GD_PLATFORM_LINEBREAK
-			"[Function]: %s" GD_PLATFORM_LINEBREAK
-			), Data->FileName, Data->Line, Data->FunctionName);
+			"[Function]: %s" GD_PLATFORM_LINEBREAK GD_PLATFORM_LINEBREAK
+			"%s"), Data->FileName, Data->Line, Data->FunctionName, String::FormatVa(Data->Message, Args).CStr());
 
 		AssertionState const TheAssertionState = HandleAssertionImpl(&TheAssertionCache);
 		if (TheAssertionState == AssertionState::Report) {
@@ -207,6 +205,7 @@ GD_NAMESPACE_END
 /// Win32 API Dialog implementation.
 /// Here comes real hardcore inlined dialog box programming. God is with us!
 /// ==========================================================================================
+
 #if (defined(GD_PLATFORM_WINDOWS))
 #include <Windows.h>
 
@@ -357,8 +356,7 @@ GD_NAMESPACE_BEGIN
 					} break;
 					case GD_ASSERTION_DLG_BTNREPORT_IDC: {
 						///	Instructions how to open the URL on Win32 API.
-						///	::ShellExecuteA(NULL, "open", "http://pornhub.com", NULL, NULL, SW_SHOWMAXIMIZED);
-						GD_NOT_IMPLEMENTED();
+						/// ::ShellExecuteA(NULL, "open", "http://pornhub.com", NULL, NULL, SW_SHOWMAXIMIZED);
 						::EndDialog(HDialog, static_cast<INT_PTR>(AssertionState::Report));
 					} break;
 					case GD_ASSERTION_DLG_BTNBREAK_IDC: {
@@ -514,6 +512,7 @@ GD_NAMESPACE_BEGIN
 
 	static bool ReportAssertionImpl(AssertionCache const* const TheAssertionCache)
 	{
+		GD_NOT_USED(TheAssertionCache);
 		GD_NOT_IMPLEMENTED();
 		//	static const char ReportFileName[] = "BugReport.txt";
 		//	::fprintf(stdout, GD_PLATFORM_LINEBREAK "Hey, Bro! You are using a very specific system, so we are unable to send a report message back here.");

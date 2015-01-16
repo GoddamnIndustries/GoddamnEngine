@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Vector.h - Dynamically sized array class.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once
@@ -8,6 +8,7 @@
 #define GD_CORE_CONTAINERS_VECTOR
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Templates/Algorithm.h>
 #include <GoddamnEngine/Core/Containers/Containers.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>
 
@@ -17,8 +18,9 @@
 GD_NAMESPACE_BEGIN
 
 	/// @brief Dynamic array implementation.
-	template<typename ElementType>
-	class Vector : public ContainerIteratableTag, public ContainerReverseIteratableTag, public ContainerPtrIteratableTag, public ContainerPtrReverseIteratableTag
+	/// @tparam ElementType Container element type.
+ 	template<typename ElementType>
+	class Vector final : public ContainerIteratableTag, public ContainerReverseIteratableTag, public ContainerPtrIteratableTag, public ContainerPtrReverseIteratableTag
 	{
 	public:
 		typedef IndexedContainerIterator<Vector, ElementType> Iterator;
@@ -53,17 +55,16 @@ GD_NAMESPACE_BEGIN
 		{
 			this->Reserve(InitialCapacity != SIZE_MAX ? InitialCapacity : InitialLength);
 			this->Resize(InitialLength);
-			Vector::InitializeRange(this->PtrBegin(), this->PtrEnd());
+			InitializeRange(this->PtrBegin(), this->PtrEnd());
 		}
 
 		/// @brief Initializes vector with copy of values of specified iterators. 
 		/// @param StartIterator First iterator would be copied.
 		/// @param EndIterator Last iterator would be copied.
 		GDINL Vector(ConstIterator const StartIterator, ConstIterator const EndIterator)
-			: Vector(static_cast<size_t>(EndIterator - StartIterator))
 		{
 			this->Resize(EndIterator - StartIterator);
-			Vector::CopyFromRange(StartIterator, EndIterator, this->PtrBegin());
+			CopyFromRange(StartIterator, EndIterator, this->PtrBegin());
 		}
 
 		/// @brief Initializes vector with default C++11's initializer list. You should not use this constructor manually.
@@ -71,20 +72,12 @@ GD_NAMESPACE_BEGIN
 		GDINL Vector(InitializerList<ElementType> const& InitializerList)
 		{
 			this->Resize(InitializerList.size());
-			Vector::CopyFromRange(InitializerList.begin(), InitializerList.end(), this->PtrBegin());
+			CopyFromRange(InitializerList.begin(), InitializerList.end(), this->PtrBegin());
 		}
 
 		/// @brief Moves other vector here.
 		/// @param OtherVector Vector would be moved into current object.
 		GDINL Vector(Vector&& OtherVector)
-		{
-			this->Resize(OtherVector.Length);
-			Vector::CopyFromRange(OtherVector.PtrBegin(), OtherVector.PtrEnd(), this->PtrBegin());
-		}
-
-		/// @brief Initializes vector with copy of other vector.
-		/// @param OtherVector Vector would be copied.
-		GDINL Vector(Vector const& OtherVector)
 		{
 			this->Memory = OtherVector.Memory;
 			this->Length = OtherVector.Length;
@@ -95,108 +88,18 @@ GD_NAMESPACE_BEGIN
 			OtherVector.Capacity = 0;
 		}
 
+		/// @brief Initializes vector with copy of other vector.
+		/// @param OtherVector Vector would be copied.
+		GDINL Vector(Vector const& OtherVector)
+		{
+			this->Resize(OtherVector.Length);
+			CopyFromRange(OtherVector.PtrBegin(), OtherVector.PtrEnd(), this->PtrBegin());
+		}
+
 		/// @brief Deinitializes all elements and deallocates memory.
 		GDINL ~Vector()
 		{
 			this->Clear();
-		}
-
-	private:
-
-		/// @brief Initializes value of the specified iterator.
-		/// @param Iterator Value of this iterator would be initialized.
-		GDINL static void InitializeIterator(PtrIterator const Iterator)
-		{
-			if (!TypeTraits::IsPodType<ElementType>::Value) {
-				new (Iterator) ElementType();
-			}
-		}
-
-		/// @brief Initializes value of the specified iterator.
-		/// @param Iterator Value of this iterator would be initialized.
-		/// @param Element Initial value of the iterator.
-		/// @{
-		GDINL static void InitializeIterator(PtrIterator const Iterator, ElementType&& Element)
-		{
-			new (Iterator) ElementType(Forward<ElementType>(Element));
-		}
-		GDINL static void InitializeIterator(PtrIterator const Iterator, ElementType const& Element)
-		{
-			new (Iterator) ElementType(Element);
-		}
-		/// @}
-
-		/// @brief Initializes all values of the iterators in specified range.
-		/// @param StartIterator Start of the iterators range.
-		/// @param EndIterator End of the iterators range.
-		GDINL static void InitializeRange(PtrIterator const StartIterator, PtrIterator const EndIterator)
-		{
-			if (!TypeTraits::IsPodType<ElementType>::Value) {
-				for (PtrIterator Iterator = StartIterator; Iterator != EndIterator; ++Iterator) {
-					Vector::InitializeIterator(Iterator);
-				}
-			}
-		}
-
-		/// @brief Deinitializes value of the specified iterator.
-		/// @param Iterator Value of this iterator would be initialized.
-		GDINL static void DeinitializeIterator(PtrIterator const Iterator)
-		{
-			if (!TypeTraits::IsPodType<ElementType>::Value) {
-				Iterator->~ElementType();
-			}
-		}
-
-		/// @brief Deinitializes all values of the iterators in specified range.
-		/// @param StartIterator Start of the iterators range.
-		/// @param EndIterator End of the iterators range.
-		GDINL static void DeinitializeRange(PtrIterator const StartIterator, PtrIterator const EndIterator)
-		{
-			if (!TypeTraits::IsPodType<ElementType>::Value) {
-				for (PtrIterator Iterator = StartIterator; Iterator != EndIterator; ++Iterator) {
-					Iterator->~ElementType();
-				}
-			}
-		}
-
-		/// @brief Copies values of the iterators from source range to destination.
-		/// @param StartSource Start of the source iterators range.
-		/// @param EndSource End of the source iterators range.
-		/// @param Destination First destination iterator.
-		template<typename SourceIteratorType>
-		GDINL static void CopyFromRange(SourceIteratorType const& StartSource, SourceIteratorType const& EndSource, PtrIterator Destination)
-		{
-			for (SourceIteratorType Iterator = StartSource; Iterator != EndSource; ++Iterator) {
-				Vector::InitializeIterator(Destination + (Iterator - StartSource), *Iterator);
-			}
-		}
-
-		/// @brief Moves values of the iterators from source range to destination.
-		/// @param StartSource Start of the source iterators range.
-		/// @param EndSource End of the source iterators range.
-		/// @param Destination First destination iterator.
-		template<typename SourceIteratorType>
-		GDINL static void MoveFromRange(SourceIteratorType const& StartSource, SourceIteratorType const& EndSource, PtrIterator Destination)
-		{
-			for (SourceIteratorType Iterator = StartSource; Iterator != EndSource; ++Iterator) {
-				Vector::InitializeIterator(Destination + (Iterator - StartSource), Forward<ElementType>(*Iterator));
-			}
-		}
-
-		/// @brief Compares this container and some other by a predicate.
-		/// @param OtherVector Other container against which we are comparing.
-		/// @param Predicate Object with () operator overloaded that takes two elements and compares then somehow.
-		template<typename ComparingPredicateType>
-		GDINL bool CompareTo(Vector const& OtherVector, ComparingPredicateType const& Predicate)
-		{
-			size_t const MinLength = Min(this->Length, OtherVector.Length);
-			for (size_t Index = 0; Index < MinLength; ++Index) {
-				if (!ComparingPredicate(*(this->PtrBegin() + Index), *(OtherVector.PtrBegin() + Index))) {
-					return false;
-				}
-			}
-
-			return true;
 		}
 
 	private:
@@ -286,7 +189,7 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL ReverseIterator ReverseBegin()
 		{
-			return ReverseContainerIterator(this->End() - 1);
+			return ReverseIterator(this->End() - 1);
 		}
 		GDINL ReverseConstIterator ReverseBegin() const
 		{
@@ -299,7 +202,7 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL ReverseIterator ReverseEnd()
 		{
-			return ReverseContainerIterator(this->Begin() - 1);
+			return ReverseIterator(this->Begin() - 1);
 		}
 		GDINL ReverseConstIterator ReverseEnd() const
 		{
@@ -327,7 +230,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns True if this container is empty, false otherwise.
 		GDINL bool IsEmpty() const
 		{
-			return (this->Length == 0);
+			return this->Length == 0;
 		}
 
 		/// @brief Resizes vector to make it able to contain specified number of elements.
@@ -337,9 +240,9 @@ GD_NAMESPACE_BEGIN
 			if (this->Length != NewLength) {	// We do not need to resize our element with same size.
 				if (this->Length < NewLength) {	// Increasing size of container, we need to initialize new elements.
 					this->ReserveToLength(NewLength);
-					Vector::InitializeRange(this->PtrEnd(), this->PtrBegin() + NewLength);
+					InitializeRange(this->PtrEnd(), this->PtrBegin() + NewLength);
 				} else {	// Decreasing size of container, we need to destroy last elements there.
-					Vector::DeinitializeRange(this->PtrBegin() + NewLength, this->PtrEnd());
+					DeinitializeRange(this->PtrBegin() + NewLength, this->PtrEnd());
 				}
 
 				this->Length = NewLength;
@@ -358,9 +261,10 @@ GD_NAMESPACE_BEGIN
 				}
 
 				ElementType* NewMemory = reinterpret_cast<ElementType*>(Allocator::AllocateMemory(NewCapacity * sizeof(ElementType)));
-				Vector::MoveFromRange(this->PtrBegin(), this->PtrEnd(), reinterpret_cast<PtrIterator>(NewMemory));
-				Vector::DeinitializeRange(this->PtrBegin(), this->PtrEnd());
+				MoveFromRange(this->PtrBegin(), this->PtrEnd(), reinterpret_cast<PtrIterator>(NewMemory));
+				DeinitializeRange(this->PtrBegin(), this->PtrEnd());
 				this->Memory = NewMemory;
+				this->Capacity = NewCapacity;
 			}
 		}
 
@@ -398,11 +302,11 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL ElementType const& GetLastElement() const
 		{
-			return this->GetElementAt(this->Length - 1);
+			return (*this)[this->Length - 1];
 		}
 		GDINL ElementType& GetLastElement()
 		{
-			return this->GetElementAt(this->Length - 1);
+			return (*this)[this->Length - 1];
 		}
 		/// @}
 
@@ -419,7 +323,7 @@ GD_NAMESPACE_BEGIN
 			}
 
 			this->Length += 1;
-			Vector::InitializeIterator(this->PtrBegin() + Index, Forward<ElementType>(Element));
+			InitializeIterator(this->PtrBegin() + Index, Forward<ElementType>(Element));
 		}
 		GDINL void InsertElementAt(size_t const Index, ElementType const& Element)
 		{
@@ -430,7 +334,7 @@ GD_NAMESPACE_BEGIN
 			}
 
 			this->Length += 1;
-			Vector::InitializeIterator(this->PtrBegin() + Index, Element);
+			InitializeIterator(this->PtrBegin() + Index, Element);
 		}
 		/// @}
 
@@ -444,7 +348,7 @@ GD_NAMESPACE_BEGIN
 			}
 
 			this->Length -= 1;
-			Vector::DeinitializeIterator(this->PtrEnd());
+			DeinitializeIterator(this->PtrEnd());
 		}
 
 		/// @brief Appends new element to container.
@@ -454,13 +358,13 @@ GD_NAMESPACE_BEGIN
 		{
 			this->ReserveToLength(this->Length + 1);
 			this->Length += 1;
-			Vector::InitializeIterator(this->PtrEnd() - 1, Forward<ElementType>(NewElement));
+			InitializeIterator(this->PtrEnd() - 1, Forward<ElementType>(NewElement));
 		}
 		GDINL void PushLast(ElementType const& NewElement)
 		{
 			this->ReserveToLength(this->Length + 1);
 			this->Length += 1;
-			Vector::InitializeIterator(this->PtrEnd() - 1, NewElement);
+			InitializeIterator(this->PtrEnd() - 1, NewElement);
 		}
 		/// @}
 
@@ -589,7 +493,7 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Moves other vector here.
 		/// @param OtherVector Vector would be moved into current object.
-		/// @returns Self.
+		/// @returns this.
 		GDINL Vector& operator= (Vector&& OtherVector)
 		{
 			if (&OtherVector != this) {
@@ -608,14 +512,14 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Assigns vector with copy of other vector.
 		/// @param OtherVector Vector would be assigned.
-		/// @returns Self.
+		/// @returns this.
 		GDINL Vector& operator= (Vector const& OtherVector)
 		{
 			if ((&OtherVector) != this) {
 				if (this->Capacity >= OtherVector.Length) {
 					this->Emptify();
 					this->Length = OtherVector.Length;
-					Vector::CopyFromRange(OtherVector.PtrBegin(), OtherVector.PtrEnd(), this->PtrBegin());
+					CopyFromRange(OtherVector.PtrBegin(), OtherVector.PtrEnd(), this->PtrBegin());
 				} else {
 					*this = Move(Vector(OtherVector));
 				}
@@ -626,13 +530,13 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Assigned vector the default C++11's initializer list. You should not use this constructor manually.
 		/// @param InitializerList Initializer list passed by the compiler.
-		/// @returns Self.
+		/// @returns this.
 		GDINL Vector& operator= (InitializerList<ElementType> const& InitializerList)
 		{
 			if (this->Capacity >= InitializerList.size()) {
 				this->Emptify();
 				this->Length = InitializerList.size();
-				Vector::CopyFromRange(InitializerList.begin(), InitializerList.end(), this->PtrBegin());
+				CopyFromRange(InitializerList.begin(), InitializerList.end(), this->PtrBegin());
 			} else {
 				*this = Move(Vector(InitializerList));
 			}
@@ -661,7 +565,7 @@ GD_NAMESPACE_BEGIN
 		GDINL bool operator== (Vector const& OtherVector) const
 		{
 			if (this->Length == OtherVector.Length) {
-				return this->CompareTo([](ElementType const& First, ElementType const& Second) -> bool {
+				return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool {
 					return (First == Second);
 				});
 			} else {
@@ -674,7 +578,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns True if both vectors have different length or elements.
 		GDINL bool operator!= (Vector const& OtherVector) const
 		{
-			return this->CompareTo([](ElementType const& First, ElementType const& Second) -> bool {
+			return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool {
 				return (First != Second);
 			});
 		}
@@ -684,7 +588,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns True if this's of the first different elements in vectors is greater than other's or strings are equal.
 		GDINL bool operator> (Vector const& OtherVector) const
 		{
-			this->CompareTo([](ElementType const& First, ElementType const& Second) -> bool {
+			CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool {
 				return (First >= Second);
 			});
 		}
@@ -694,7 +598,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns True if this's of the first different elements in vectors is less than other's or strings are equal.
 		GDINL bool operator< (Vector const& OtherVector) const
 		{
-			return this->CompareTo([](ElementType const& First, ElementType const& Second) -> bool {
+			return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool {
 				return (First <= Second);
 			});
 		}
@@ -723,11 +627,11 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL Vector operator+ (Vector&& OtherVector) const
 		{
-			return Vector*this += Forward<Vector>(OtherVector);
+			return Vector(*this) += Forward<Vector>(OtherVector);
 		}
 		GDINL Vector operator+ (Vector const& OtherVector) const
 		{
-			return *this + Move(Vector(OtherVector));
+			return Vector(*this) + Move(Vector(OtherVector));
 		}
 		/// @}
 

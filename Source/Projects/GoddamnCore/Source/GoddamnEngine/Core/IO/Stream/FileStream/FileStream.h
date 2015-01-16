@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// FileStream.h - File IO stream interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// @author James Jhuighuy
 /// ==========================================================================================
@@ -36,28 +36,28 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief				Returns current position in stream.
 		/// @returns			Current position in stream.
-		GDINT virtual size_t	GetPosition() const override final;
+		GDAPI virtual size_t	GetPosition() const override final;
 
 		/// @brief				Returns size of data that stream handles.
 		/// @returns			Size of data that stream handles.
-		GDINT virtual size_t	GetLength() const override final;
+		GDAPI virtual size_t	GetLength() const override final;
 
 		/// @brief				Closes this stream and releases all resources associated with this stream.
-		GDINT virtual void		Close() override final;
+		GDAPI virtual void		Close() override final;
 
 		/// @brief				Reposition this stream to new specified position.
 		/// @param Offset	Offset in bytes from specified origin.
 		/// @param Origin	Defines origin from which point make offset.
-		GDINT virtual void		Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current) override final;
+		GDAPI virtual void		Seek(ptrdiff_t const Offset, SeekOrigin const Origin = SeekOrigin::Current) override final;
 
 		/// @brief				Reads next element from input stream. Full endian abstraction is provided.
 		/// @returns			Read element from stream.
-		GDINT virtual UInt8		Read() override final;
+		GDAPI virtual UInt8		Read() override final;
 
 		/// @brief				Reads several elements from input stream.
-		/// @param Array	Output memory to which data would be written.
-		/// @param  Count	Length of one element
-		/// @param  Length	Length of memory in elements.
+		/// @param Array		Output memory to which data would be written.
+		/// @param  Count		Length of one element
+		/// @param  Length		Length of memory in elements.
 		GDAPI virtual void		Read(handle const Array, size_t const Count, size_t const Length) override final;
 	};	// class FileInputStream
 
@@ -79,27 +79,27 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief				Returns current position in stream.
 		/// @returns			Current position in stream.
-		GDINT virtual size_t	GetPosition() const override final;
+		GDAPI virtual size_t	GetPosition() const override final;
 
 		/// @brief				Returns size of data that stream handles.
 		/// @returns			Size of data that stream handles.
-		GDINT virtual size_t	GetLength() const override final;
+		GDAPI virtual size_t	GetLength() const override final;
 
 		/// @brief				Closes this stream and releases all resources associated with this stream.
-		GDINT virtual void		Close() override final;
+		GDAPI virtual void		Close() override final;
 
 		/// @brief				Writes all unsaved to the resource.
-		GDINT virtual void		Flush() override final;
+		GDAPI virtual void		Flush() override final;
 
 		/// @brief				Writes a byte into output.
-		/// @param			Byte Byte that would be written to output.
-		GDINT virtual void		Write(UInt8 const Byte) override final;
+		/// @param				Byte Byte that would be written to output.
+		GDAPI virtual void		Write(UInt8 const Byte) override final;
 
 		/// @brief				Writes several elements to output.
-		/// @param Array	Input elements that would be written.
-		/// @param Count	Length of one element.
-		/// @param Length	Length of memory in elements.
-		GDINL virtual void		Write(chandle const Array, size_t const Count, size_t const Length) override final;
+		/// @param Array		Input elements that would be written.
+		/// @param Count		Length of one element.
+		/// @param Length		Length of memory in elements.
+		GDAPI virtual void		Write(chandle const Array, size_t const Count, size_t const Length) override final;
 	};	// class FileOutputStream
 
 GD_NAMESPACE_END

@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Component.h - Base compinent class interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.06.2012 - Created by James Jhuighuy.
@@ -12,8 +12,8 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Events/Event.h>
-#include <GoddamnEngine/Core/Reflection/Object/Object.h>
-#include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
+#include <GoddamnEngine/Core/Object/Object.h>
+#include <GoddamnEngine/Core/Templates/RefPtr.h>
 
 /// Legacy macros
 #define Serializable Object
@@ -132,7 +132,7 @@ GD_NAMESPACE_BEGIN
 		template<typename ComponentType>
 		GDINL RefPtr<ComponentType> GetComponent()
 		{
-			static_assert((TypeTraits::IsBaseType<Component, ComponentType>::Value), "'GameObject::GetComponent<T>()' error: 'T' should be derived from Component");
+			static_assert((TypeTraits::IsBase<Component, ComponentType>::Value), "'GameObject::GetComponent<T>()' error: 'T' should be derived from Component");
 			return object_cast<RefPtr<ComponentType>>(this->GetComponent(ComponentType::GetClassTypeInformation()));
 		}
 
@@ -150,7 +150,7 @@ GD_NAMESPACE_BEGIN
 		template<typename ComponentType>
 		GDINL RefPtr<ComponentType> AddComponent()
 		{
-			static_assert((TypeTraits::IsBaseType<Component, ComponentType>::Value), "'GameObject::AddComponent<T>()' error: 'T' should be derived from Component");
+			static_assert((TypeTraits::IsBase<Component, ComponentType>::Value), "'GameObject::AddComponent<T>()' error: 'T' should be derived from Component");
 			return object_cast<RefPtr<ComponentType>>(this->AddComponent(ComponentType::GetClassTypeInformation()));
 		}
 
@@ -161,7 +161,7 @@ GD_NAMESPACE_BEGIN
 		template<class ComponentType>
 		GDINL void RemoveComponent()
 		{
-			static_assert((TypeTraits::IsBaseType<Component, ComponentType>::Value), "'GameObject::AddComponent<T>()' error: 'T' should be derived from Component");
+			static_assert((TypeTraits::IsBase<Component, ComponentType>::Value), "'GameObject::AddComponent<T>()' error: 'T' should be derived from Component");
 			this->RemoveComponent(ComponentType::GetClassTypeInformation());
 		}
 

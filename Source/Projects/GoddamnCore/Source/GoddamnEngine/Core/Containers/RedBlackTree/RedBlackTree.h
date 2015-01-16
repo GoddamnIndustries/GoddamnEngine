@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// RedBlackTree.h - Red Black tree data structure interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once
@@ -8,15 +8,9 @@
 #define GD_CORE_CONTAINERS_RED_BLACK_TREE
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Templates/Utility.h>
 
 GD_NAMESPACE_BEGIN
-
-	/// @brief Defines color of the Red-Black Tree node.
-	enum class RedBlackTreeNodeColor : UInt8
-	{
-		Red,
-		Black
-	};	// enum class RedBlackTreeNodeColor
 
 	/// @brief Defines a single node of the Red-Black Tree.
 	class RedBlackTreeBaseNode
@@ -25,60 +19,79 @@ GD_NAMESPACE_BEGIN
 		GD_CLASS_UNASSIGNABLE(RedBlackTreeBaseNode);
 		GD_CLASS_UNCOPIABLE(RedBlackTreeBaseNode);
 
-		template<typename ComparandType>
-		friend class RedBlackTreeNode;
-		friend class RedBlackTree;
+		friend class RedBlackTreeBase;
 
-		chandle const Comparand;
+		handle const Element;
 		RedBlackTreeBaseNode* Left = nullptr;
 		RedBlackTreeBaseNode* Right = nullptr;
 		RedBlackTreeBaseNode* Parent = nullptr;
-		RedBlackTreeNodeColor Color = RedBlackTreeNodeColor::Red;
+		bool IsRed;
 
-		GDINL RedBlackTreeBaseNode(chandle const Comparand)
-			: Comparand(Comparand)
+	public:
+		/// @brief Initializes a tree node.
+		/// @param Element The Element data pointer.
+		GDINL RedBlackTreeBaseNode(handle const Element)
+			: Element(Element)
 		{
 		}
+
+		/// @brief Returns Element data pointer.
+		/// @returns Element data pointer.
+		/// @{
+		GDINL chandle GetElement() const
+		{
+			return this->Element;
+		}
+		GDINL handle GetElement()
+		{
+			return const_cast<handle>(const_cast<RedBlackTreeBaseNode const*>(this)->GetElement());
+		}
+		/// @}
 	};	// class RedBlackTreeNode
 
-	/// @brief Red-Black Tree data structure. Contains fundamental tree management algorithms.
+	/// @brief Basic Red-Black Tree data structure. Contains fundamental tree management algorithms.
 	/// @see http://en.wikipedia.org/wiki/Red–black_tree
 	/// @see http://web.mit.edu/~emin/www.old/source_code/red_black_tree/index.html
-	class RedBlackTree
+	class RedBlackTreeBase
 	{
 	private:
-		GD_CLASS_UNCOPIABLE(RedBlackTree);
+		GD_CLASS_UNCOPIABLE(RedBlackTreeBase);
 
-		RedBlackTreeBaseNode static* NullNode;
+		RedBlackTreeBaseNode* NullNode = nullptr;
 		RedBlackTreeBaseNode* RootNode = nullptr;
 		size_t Length = 0;
 
-	protected:
-
+	public:
 		/// @brief Initializes a new Red-Black Tree.
-		GDAPI RedBlackTree();
+		GDAPI RedBlackTreeBase();
 
 		/// @brief Moves other Red-Black Tree here.
 		/// @param Other Other tree to move here.
-		GDAPI RedBlackTree(RedBlackTree&& Other);
+		GDAPI RedBlackTreeBase(RedBlackTreeBase&& Other);
 
 		/// @brief Deinitializes a Red-Black Tree and destroys all internal data.
-		GDAPI ~RedBlackTree();
-
-		/// @brief Compares comparands of the nodes. 
-		/// @param First First comparand.
-		/// @param Second Second comparand.
-		/// @returns Zero, if specified comparands are equal, positive value if first is greater, negative otherwise.
-		GDAPI virtual int CompareComparands(chandle const First, chandle const Second) const abstract;
+		GDAPI ~RedBlackTreeBase();
 
 	protected:
+		/// @brief Compares Elements of the nodes. 
+		/// @param First First Element.
+		/// @param Second Second Element.
+		/// @returns Zero, if specified Elements are equal, positive value if first is greater, negative otherwise.
+		GDAPI virtual int CompareElements(chandle const First, chandle const Second) const abstract;
 
+	public:
 		/// @brief Returns a node that represents a NULL sentinel of this tree.
 		/// @returns A node that represents a NULL sentinel of this tree.
+		/// @{
 		GDINL RedBlackTreeBaseNode const* GetNullNode() const
 		{
-			return RedBlackTree::NullNode;
+			return this->NullNode;
 		}
+		GDINL RedBlackTreeBaseNode* GetNullNode()
+		{
+			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTreeBase const*>(this)->GetNullNode());
+		}
+		/// @}
 
 		/// @brief Returns the first node of the tree or null.
 		/// @returns The first node of the tree or null if no first node exists.
@@ -89,7 +102,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL RedBlackTreeBaseNode* GetFirstNode()
 		{
-			return this->RootNode->Left;
+			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTreeBase const*>(this)->GetFirstNode());
 		}
 		/// @}
 
@@ -99,29 +112,29 @@ GD_NAMESPACE_BEGIN
 		GDAPI RedBlackTreeBaseNode const* GetLastNode() const;
 		GDINL RedBlackTreeBaseNode* GetLastNode()
 		{
-			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTree const*>(this)->GetLastNode());
+			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTreeBase const*>(this)->GetLastNode());
 		}
 		/// @}
 
 		/// @brief Returns next node to specified one or null.
-		/// @param TheNode Some node.
+		/// @param Node Some node.
 		/// @returns Next node to this one or null node if not exists.
 		/// @{
-		GDAPI RedBlackTreeBaseNode const* GetNextNode(RedBlackTreeBaseNode const* const TheNode) const;
-		GDINL RedBlackTreeBaseNode* GetNextNode(RedBlackTreeBaseNode* const TheNode)
+		GDAPI RedBlackTreeBaseNode const* GetNextNode(RedBlackTreeBaseNode const* const Node) const;
+		GDINL RedBlackTreeBaseNode* GetNextNode(RedBlackTreeBaseNode* const Node)
 		{
-			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTree const*>(this)->GetNextNode(TheNode));
+			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTreeBase const*>(this)->GetNextNode(Node));
 		}
 		/// @}
 
 		/// @brief Returns previous node to specified one or null.
-		/// @param TheNode Some node.
+		/// @param Node Some node.
 		/// @returns Previous node to this one or null node if not exists.
 		/// @{
-		GDAPI RedBlackTreeBaseNode const* GetPrevNode(RedBlackTreeBaseNode const* const TheNode) const;
-		GDINL RedBlackTreeBaseNode* GetPrevNode(RedBlackTreeBaseNode* const TheNode)
+		GDAPI RedBlackTreeBaseNode const* GetPrevNode(RedBlackTreeBaseNode const* const Node) const;
+		GDINL RedBlackTreeBaseNode* GetPrevNode(RedBlackTreeBaseNode* const Node)
 		{
-			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTree const*>(this)->GetPrevNode(TheNode));
+			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTreeBase const*>(this)->GetPrevNode(Node));
 		}
 		/// @}
 
@@ -148,38 +161,38 @@ GD_NAMESPACE_BEGIN
 		GDAPI void InternalCreateNode(RedBlackTreeBaseNode*& NewNode);
 
 		/// @brief Internally destroys a specified node and all is children.
-		/// @param TheNode Node that is going to be destroyed.
-		GDAPI void InternalDestroyNode(RedBlackTreeBaseNode* const TheNode);
+		/// @param Node Node that is going to be destroyed.
+		GDAPI void InternalDestroyNode(RedBlackTreeBaseNode* const Node);
 
 		/// @brief Performs a left rotation of the tree.
-		/// @param TheNode The node to rotate on.
-		GDAPI void RotateLeft(RedBlackTreeBaseNode* const TheNode);
+		/// @param Node The node to rotate on.
+		GDAPI void RotateLeft(RedBlackTreeBaseNode* const Node);
 
 		/// @brief Performs a right rotation of the tree.
-		/// @param TheNode The node to rotate on.
-		GDAPI void RotateRight(RedBlackTreeBaseNode* const TheNode);
+		/// @param Node The node to rotate on.
+		GDAPI void RotateRight(RedBlackTreeBaseNode* const Node);
 
 		/// @brief Fixes the tree and restores it's red-black properties.
-		/// @param TheNode The node to start fixing.
-		GDAPI void Repair(RedBlackTreeBaseNode* const TheNode);
+		/// @param Node The node to start fixing.
+		GDAPI void Repair(RedBlackTreeBaseNode* const Node);
 
-	protected:
+	public:
 
 		/// @brief Preforms an insertion of the new node with specified key and value.
 		/// @param NewNode The node that would be inserted. Should be already created.
 		GDAPI void Insert(RedBlackTreeBaseNode* const NewNode);
 
 		/// @brief Deletes the node from the tree.
-		/// @param TheNode Node that would be deleted. Should be manually deleted.
-		GDAPI void Delete(RedBlackTreeBaseNode* const TheNode);
+		/// @param Node Node that would be deleted. Should be manually deleted.
+		GDAPI void Delete(RedBlackTreeBaseNode* const Node);
 
 		/// @brief Searches for node with specified key.
 		/// @param Key Key we are looking for.
 		/// @{
-		GDAPI RedBlackTreeBaseNode const* Query(handle const Comparand) const;
-		GDINL RedBlackTreeBaseNode* Query(handle const Comparand)
+		GDAPI RedBlackTreeBaseNode const* Query(chandle const Element) const;
+		GDINL RedBlackTreeBaseNode* Query(chandle const Element)
 		{
-			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTree const*>(this)->Query(Comparand));
+			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTreeBase const*>(this)->Query(Element));
 		}
 		/// @}
 
@@ -190,30 +203,40 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Moves other Red-Black Tree here.
 		/// @param OtherTree Other Red-Black Tree that would be moved into current object.
-		/// @returns Self.
-		GDAPI RedBlackTree& operator= (RedBlackTree&& OtherTree);
+		/// @returns this.
+		GDAPI RedBlackTreeBase& operator= (RedBlackTreeBase&& OtherTree);
 	};	// class RedBlackTree
 
 	/// @brief Defines a single node of the Red-Black Tree.
-	/// @tparam ComparandType Type of objected been stored in the node.
-	template<typename ComparandType>
-	class RedBlackTreeNode final : public RedBlackTreeBaseNode
+	/// @tparam ElementType Type of objected been stored in the node.
+	template<typename ElementType>
+	class RedBlackTreeNode final : private RedBlackTreeBaseNode
 	{
+		template<typename SomeElementType>
+		friend class RedBlackTree;
+
 	public:
 
 		/// @brief Initializes a tree node.
-		/// @param Comparand The comparand data pointer.
-		GDINL RedBlackTreeNode(ComparandType const* const Comparand)
-			: RedBlackTreeBaseNode(Comparand)
+		/// @param Element The Element data pointer.
+		GDINL RedBlackTreeNode(ElementType* const Element)
+			: RedBlackTreeBaseNode(Element)
 		{
 		}
 
-		/// @brief Returns comparand data pointer.
-		/// @returns Comparand data pointer.
-		GDINL ComparandType const* GetComparand() const
+		/// @brief Returns Element data pointer.
+		/// @returns Element data pointer.
+		/// @{
+		GDINL ElementType const* GetElement() const
 		{
-			return reinterpret_cast<ComparandType const*>(this->Comparand);
+			return reinterpret_cast<ElementType const*>(this->RedBlackTreeBaseNode::GetElement());
 		}
+		GDINL ElementType* GetElement()
+		{
+			return const_cast<ElementType*>(const_cast<RedBlackTreeNode const*>(this)->GetElement());
+		}
+		/// @}
+
 	};	// struct RedBlackTreeNode
 
 	/// @brief Iterator for Red-Black Tree containers.
@@ -223,16 +246,15 @@ GD_NAMESPACE_BEGIN
 	struct RedBlackTreeIterator final
 	{
 	private:
-		typedef typename TypeTraits::RemovePointer<decltype(DeclValue<RedBlackTreeNodeType>().GetComparand())>::Type RedBlackTreeComparandType;
 		RedBlackTreeContainerType& Container;
-		RedBlackTreeNodeType const* IterNode = nullptr;
+		RedBlackTreeNodeType* IterNode = nullptr;
 
 	public:
 
-		/// @brief Initializes iterator that points on the first element of the specified container.
+		/// @brief Initializes iterator that points on the specified node of the tree.
 		/// @param Container Container that is going to be iterated.
 		/// @param IterNode Start node of the iterator.
-		GDINL explicit RedBlackTreeIterator(RedBlackTreeContainerType& Container, RedBlackTreeNodeType const* const IterNode)
+		GDINL explicit RedBlackTreeIterator(RedBlackTreeContainerType& Container, RedBlackTreeNodeType* const IterNode)
 			: Container(Container), IterNode(IterNode)
 		{
 		}
@@ -244,7 +266,17 @@ GD_NAMESPACE_BEGIN
 			return this->IterNode;
 		}
 
-		/// @brief Assigns the iterator next element of the indexed container.
+		/// @brief Assigns this iterator other one.
+		/// @param Other Other iterator to assign.
+		/// @returns this.
+		GDINL RedBlackTreeIterator& operator= (RedBlackTreeIterator const& Other)
+		{
+			GD_ASSERT(&this->Container == &Other.Container, "Iterators have different base containers.");
+			this->IterNode = Other.IterNode;
+			return *this;
+		}
+
+		/// @brief Assigns the iterator next node of the tree.
 		/// @returns Incremented iterator.
 		GDINL RedBlackTreeIterator& operator++ ()
 		{
@@ -252,7 +284,7 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		/// @brief Assigns the iterator next element of the indexed container.
+		/// @brief Assigns the iterator next node of the tree.
 		/// @param Unused Unused parameter passed be compiler.
 		/// @returns Iterator before incrementing.
 		GDINL RedBlackTreeIterator operator++ (int const Unused)
@@ -263,7 +295,7 @@ GD_NAMESPACE_BEGIN
 			return Copy;
 		}
 
-		/// @brief Assigns the iterator previous element of the indexed container.
+		/// @brief Assigns the iterator previous node of the tree.
 		/// @returns Decremented iterator.
 		GDINL RedBlackTreeIterator& operator-- ()
 		{
@@ -271,10 +303,10 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		/// @brief Assigns the iterator previous element of the indexed container.
+		/// @brief Assigns the iterator previous node of the tree.
 		/// @param Unused Unused parameter passed be compiler.
 		/// @returns Iterator before decrementing.
-		GDINL RedBlackTreeIterator operator-- (int const)
+		GDINL RedBlackTreeIterator operator-- (int const Unused)
 		{
 			GD_NOT_USED(Unused);
 			RedBlackTreeIterator Copy(*this);
@@ -299,19 +331,172 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// @brief Dereferences value of the iterator.
-		/// @returns Reference to the element of the container at iterator index.
-		GDINL RedBlackTreeComparandType& operator* () const
+		/// @returns Reference to the element of the node of the tree.
+		GDINL decltype(*DeclValue<RedBlackTreeNodeType>().GetElement()) operator* () const
 		{
-			return *this->IterNode->GetComparand();
+			return *this->IterNode->GetElement();
 		}
 
 		/// @brief Dereferences value of the iterator.
-		/// @returns Pointer to the element of the container at iterator index.
-		GDINL RedBlackTreeComparandType* operator-> () const
+		/// @returns Pointer to the element of the node of the tree.
+		GDINL decltype(DeclValue<RedBlackTreeNodeType>().GetElement()) operator-> () const
 		{
-			return this->IterNode->GetComparand();
+			return this->IterNode->GetElement();
 		}
 	};	// struct RedBlackTreeIterator
+
+	/// @brief Templatized Red-Black Tree data structure.
+	/// 	   All management functions overloaded to reloaded to make 
+	/// @tparam ElementType Type of objected been stored in the nodes of the tree.
+	template<typename ElementType>
+	class RedBlackTree : private RedBlackTreeBase
+	{
+	protected:
+		typedef RedBlackTreeNode<ElementType> RedBlackTreeNodeType;
+
+		/// @brief Initializes a new Red-Black Tree.
+		GDINL RedBlackTree()
+			: RedBlackTreeBase()
+		{
+		}
+
+		/// @brief Moves other Red-Black Tree here.
+		/// @param Other Other tree to move here.
+		GDINL RedBlackTree(RedBlackTree&& Other)
+			: RedBlackTreeBase(Forward<RedBlackTreeBase>(Other))
+		{
+		}
+
+		/// @brief Deinitializes a Red-Black Tree and destroys all internal data.
+		GDINL ~RedBlackTree()
+		{
+		}
+
+	protected:
+
+		/// @brief Returns a node that represents a NULL sentinel of this tree.
+		/// @returns A node that represents a NULL sentinel of this tree.
+		/// @{
+		GDINL RedBlackTreeNodeType const* GetNullNode() const
+		{
+			return static_cast<RedBlackTreeNodeType const*>(this->RedBlackTreeBase::GetNullNode());
+		}
+		GDINL RedBlackTreeNodeType* GetNullNode()
+		{
+			return const_cast<RedBlackTreeNodeType*>(const_cast<RedBlackTree const*>(this)->GetNullNode());
+		}
+		/// @}
+
+		/// @brief Returns the first node of the tree or null.
+		/// @returns The first node of the tree or null if no first node exists.
+		/// @{
+		GDINL RedBlackTreeNodeType const* GetFirstNode() const
+		{
+			return static_cast<RedBlackTreeNodeType const*>(this->RedBlackTreeBase::GetFirstNode());
+		}
+		GDINL RedBlackTreeNodeType* GetFirstNode()
+		{
+			return const_cast<RedBlackTreeNodeType*>(const_cast<RedBlackTree const*>(this)->GetFirstNode());
+		}
+		/// @}
+
+		/// @brief Returns the first node of the tree or null.
+		/// @returns The first node of the tree or null if no first node exists.
+		/// @{
+		GDINL RedBlackTreeNodeType const* GetLastNode() const
+		{
+			return static_cast<RedBlackTreeNodeType const*>(this->RedBlackTreeBase::GetLastNode());
+		}
+		GDINL RedBlackTreeNodeType* GetLastNode()
+		{
+			return const_cast<RedBlackTreeNodeType*>(const_cast<RedBlackTree const*>(this)->GetLastNode());
+		}
+		/// @}
+
+		/// @brief Returns next node to specified one or null.
+		/// @param Node Some node.
+		/// @returns Next node to this one or null node if not exists.
+		/// @{
+		GDINL RedBlackTreeNodeType const* GetNextNode(RedBlackTreeNodeType const* const Node) const
+		{
+			return static_cast<RedBlackTreeNodeType const*>(this->RedBlackTreeBase::GetNextNode());
+		}
+		GDINL RedBlackTreeNodeType* GetNextNode(RedBlackTreeNodeType* const Node)
+		{
+			return const_cast<RedBlackTreeNodeType*>(const_cast<RedBlackTree const*>(this)->GetNextNode(Node));
+		}
+		/// @}
+
+		/// @brief Returns previous node to specified one or null.
+		/// @param Node Some node.
+		/// @returns Previous node to this one or null node if not exists.
+		/// @{
+		GDINL RedBlackTreeNodeType const* GetPrevNode(RedBlackTreeNodeType const* const Node) const
+		{
+			return static_cast<RedBlackTreeNodeType const*>(this->RedBlackTreeBase::GetPrevNode());
+		}
+		GDINL RedBlackTreeNodeType* GetPrevNode(RedBlackTreeNodeType* const Node)
+		{
+			return const_cast<RedBlackTreeNodeType*>(const_cast<RedBlackTree const*>(this)->GetPrevNode(Node));
+		}
+		/// @}
+
+	public:
+
+		/// @brief Returns number of nodes that exist in the tree.
+		/// @returns Number of nodes that exist in tree.
+		GDINL size_t GetLength() const
+		{
+			return this->RedBlackTreeBase::GetLength();
+		}
+
+		/// @brief Returns true if this tree is empty.
+		/// @returns True if this tree is empty, false otherwise.
+		GDINL bool IsEmpty() const
+		{
+			return this->RedBlackTreeBase::IsEmpty();
+		}
+
+	protected:
+
+		/// @brief Preforms an insertion of the new node with specified key and value.
+		/// @param NewNode The node that would be inserted. Should be already created.
+		GDINL void Insert(RedBlackTreeNodeType* const NewNode)
+		{
+			this->RedBlackTreeBase::Insert(static_cast<RedBlackTreeBaseNode*>(NewNode));
+		}
+
+		/// @brief Deletes the node from the tree.
+		/// @param Node Node that would be deleted. Should be manually deleted.
+		GDINL void Delete(RedBlackTreeNodeType* const Node)
+		{
+			this->RedBlackTreeBase::Delete(static_cast<RedBlackTreeBaseNode*>(Node));
+		}
+
+		/// @brief Searches for node with specified key.
+		/// @param Key Key we are looking for.
+		/// @{
+		GDINL RedBlackTreeNodeType const* Query(chandle const Element) const
+		{
+			return static_cast<RedBlackTreeNodeType const*>(RedBlackTreeBase::Query(Element));
+		}
+		GDINL RedBlackTreeNodeType* Query(chandle const Element)
+		{
+			return const_cast<RedBlackTreeNodeType*>(const_cast<RedBlackTree const*>(this)->Query(Element));
+		}
+		/// @}
+
+	public:
+
+		/// @brief Moves other Red-Black Tree here.
+		/// @param OtherTree Other Red-Black Tree that would be moved into current object.
+		/// @returns this.
+		GDINL RedBlackTree& operator= (RedBlackTree&& OtherTree)
+		{
+			this->RedBlackTreeBase::operator=(Forward<RedBlackTreeBase>(OtherTree));
+			return *this;
+		}
+	};	// class RedBlackTreeBase
 
 GD_NAMESPACE_END
 

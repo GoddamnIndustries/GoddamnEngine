@@ -67,14 +67,14 @@ GD_NAMESPACE_BEGIN
 	template<typename ResourceType>
 	GDINL RefPtr<ResourceType> RSStreamer::LoadImmediately(String const& ID)
 	{
-		static_assert((TypeTraits::IsBaseType<Resource, ResourceType>::Value), "Type 'ResourceType' should be derived from 'Resource'");
+		static_assert((TypeTraits::IsBase<Resource, ResourceType>::Value), "Type 'ResourceType' should be derived from 'Resource'");
 		return (object_cast<ResourceType*>(this->LoadImmediately(ID, ResourceType::GetClassTypeInformation()).Release()));
 	}
 
 	template<typename ResourceType>
 	GDINL RefPtr<ResourceType> RSStreamer::ProcessStreaming(String const& ID)
 	{
-		static_assert((TypeTraits::IsBaseType<Resource, ResourceType>::Value), "Type 'ResourceType' should be derived from 'Resource'");
+		static_assert((TypeTraits::IsBase<Resource, ResourceType>::Value), "Type 'ResourceType' should be derived from 'Resource'");
 		return (object_cast<ResourceType*>(RSStreamer::GetInstance().ProcessStreaming(ID, ResourceType::GetClassTypeInformation()).Release()));
 	}
 

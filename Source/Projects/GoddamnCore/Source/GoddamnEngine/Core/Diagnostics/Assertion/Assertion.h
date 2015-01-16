@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Assertion.h: Assertation mechanism definition.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2014  - Created by James Jhuighuy
@@ -27,13 +27,13 @@
 #	if (defined(GD_PLATFORM_API_WINAPI))
 #		include <crtdbg.h>
 #		define GD_DEBUG_BREAK() (::_CrtDbgBreak())
-//	endif	// if (defined(GD_PLATFORM_API_WINAPI))
+#	elif (defined(GD_PLATFORM_HTML5))
+#		include <csignal>
+#		define GD_DEBUG_BREAK() (::raise(SIGTRAP))
 #	elif (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_X86)))
 #		define GD_DEBUG_BREAK() (__asm__ __volatile__ ("int $3\n\t"))
-//	endif	// if (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_X86))
 #	elif (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_ARM32) || defined(GD_ARCHITECTURE_ARM64)))
 #		define GD_DEBUG_BREAK() (__asm__ __volatile__ (".inst 0xE7F001F0\n\t"))
-//	endif	// if (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_ARM32) || defined(GD_ARCHITECTURE_ARM64))
 #	else	// *** Some other implementation ***
 #		include <csignal>
 #		define GD_DEBUG_BREAK() (::raise(SIGTRAP))
@@ -60,7 +60,7 @@
 #define GD_ENABLED_FALSE_ASSERT(Message, ...) \
 	do { \
 		GD_USING_NAMESPACE; \
-		FatalAssertionData static const TheAssertionData(__FILE__, __FUNCTION__, __LINE__); \
+		FatalAssertionData static const TheAssertionData(Message, __FILE__, __FUNCTION__, __LINE__); \
 		HandleFatalAssertion(&TheAssertionData, ##__VA_ARGS__);  \
 	} while (false)
 
@@ -73,12 +73,13 @@ GD_NAMESPACE_BEGIN
 		GD_CLASS_UNASSIGNABLE(FatalAssertionData);
 
 	public:
+		Str const Message;
 		Str const FileName;
 		Str const FunctionName;
 		size_t const Line;
 
-		GDINL FatalAssertionData(Str const FileName, Str const FunctionName, size_t const Line)
-			: FileName(FileName), FunctionName(FunctionName), Line(Line)
+		GDINL FatalAssertionData(Str const Message, Str const FileName, Str const FunctionName, size_t const Line)
+			: Message(Message), FileName(FileName), FunctionName(FunctionName), Line(Line)
 		{
 		}
 	};	// struct FatalAssertionData
@@ -121,7 +122,7 @@ GD_NAMESPACE_END
 #define GD_ENABLED_ASSERT(Expression, Message, ...) \
 	do { \
 		GD_USING_NAMESPACE; \
-		RegularAssertionData static TheAssertionData(__FILE__, __FUNCTION__, __LINE__, #Expression, Message); \
+		RegularAssertionData static TheAssertionData(Message, __FILE__, __FUNCTION__, __LINE__, #Expression); \
 		while ((!(Expression)) && (!TheAssertionData.ShouldAlwaysIgnoreThisAssertion)) { \
 			AssertionState const TheAssertionState = HandleRegularAssertion(&TheAssertionData, ##__VA_ARGS__); \
 			if (TheAssertionState == AssertionState::Break) { \
@@ -139,12 +140,11 @@ GD_NAMESPACE_BEGIN
 	struct RegularAssertionData final : public FatalAssertionData
 	{
 		Str const Expression;
-		Str const Message;
 		bool ShouldAlwaysIgnoreThisAssertion;
 
-		GDINL RegularAssertionData(Str const FileName, Str const FunctionName, size_t const Line, Str const Expression, Str const Message)
-			: FatalAssertionData(FileName, FunctionName, Line)
-			, Expression(Expression), Message(Message)
+		GDINL RegularAssertionData(Str const Message, Str const FileName, Str const FunctionName, size_t const Line, Str const Expression)
+			: FatalAssertionData(Message, FileName, FunctionName, Line)
+			, Expression(Expression)
 			, ShouldAlwaysIgnoreThisAssertion(false)
 		{
 		}

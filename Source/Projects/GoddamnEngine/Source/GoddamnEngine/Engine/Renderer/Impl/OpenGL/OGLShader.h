@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// OGLShader.h: OpenGL shaders implementation interface. 
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.02.2014  - Created by James Jhuighuy
@@ -39,7 +39,7 @@ GD_NAMESPACE_BEGIN
 	{
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRIOGLShaderInstance, HRIShaderInstance, GDINT);
-		StackVector<GLuint, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> ShaderConstantBuffers;
+		StaticVector<GLuint, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> ShaderConstantBuffers;
 
 	public:
 		GDINT explicit HRIOGLShaderInstance(HRIShaderInstanceDesc const* const InstanceDesc);

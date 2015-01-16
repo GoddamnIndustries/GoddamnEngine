@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Stream.h - Base stream interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// @author James Jhuighuy
 /// ==========================================================================================
@@ -11,7 +11,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/IO/IO.h>
-#include <GoddamnEngine/Core/Utility.h>					
+#include <GoddamnEngine/Core/Templates/Utility.h>					
 #include <GoddamnEngine/Core/Containers/String.h>	
 #include <GoddamnEngine/Core/Containers/Vector.h>
 

@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Resource.h - base resource implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2012 - Created by James Jhuighuy
@@ -30,23 +30,23 @@ GD_NAMESPACE_BEGIN
 
 	/// Searches for resource with specified identifier in list and returns it if found nullptr otherwise. 
 	/// @param ID     Idenitifer of the reqiured resource.
-	/// @param TypeInformation Type informartion of type that would be created if original was not found. 
+	/// @param ITypeInformation Type informartion of type that would be created if original was not found. 
 	/// @param DoSearchInRequests If is set, then searching is also done in requests list.
 	/// @returns First found resource that matches specified criteria or nullptr.
-	GDAPI RefPtr<Resource> RSStreamer::FindOrCreateResource(String const& ID, ITypeInformation const* const TypeInformation) 
+	GDAPI RefPtr<Resource> RSStreamer::FindOrCreateResource(String const& ID, ITypeInformation const* const ITypeInformation) 
 	{
-		GD_DEBUG_ASSERT((TypeInformation != nullptr), "Nullptr Type information specified.");
+		GD_DEBUG_ASSERT((ITypeInformation != nullptr), "Nullptr Type information specified.");
 		ScopedLock const Lock(this->StreamerLock);
 		HashCode   const IDHash = ID.GetHashCode();
 		for (auto const Child : IterateChildObjects<Resource>(this)) {
 			if (Child->Identifier == IDHash) {
-				GD_ASSERT(Child->GetTypeInformation()->IsDerivedFrom(TypeInformation), "Requested resource exists, but it's type is incompatible with passed one.");
+				GD_ASSERT(Child->GetTypeInformation()->IsDerivedFrom(ITypeInformation), "Requested resource exists, but it's type is incompatible with passed one.");
 				return Child;
 			}
 		}
 		
-		GD_DEBUG_ASSERT((TypeInformation->VirtualConstructor != nullptr), "Attempted creation of instance of an abstract resource type");
-		RefPtr<Resource> const CreatedResource(object_cast<Resource*>(TypeInformation->VirtualConstructor(nullptr, const_cast<String*>(&ID))));
+		GD_DEBUG_ASSERT((ITypeInformation->VirtualConstructor != nullptr), "Attempted creation of instance of an abstract resource type");
+		RefPtr<Resource> const CreatedResource(object_cast<Resource*>(ITypeInformation->VirtualConstructor(nullptr, const_cast<String*>(&ID))));
 		CreatedResource->AttachToObject(this);
 		CreatedResource->State = RSState::Requested;
 
@@ -95,16 +95,16 @@ GD_NAMESPACE_BEGIN
 
 	/// Creates resource (or uses existing found by identifier) and loads it.
 	/// @param ID Idenitifer of the reqiured resource.
-	/// @param TypeInformation Type informartion of type that would be created. 
+	/// @param ITypeInformation Type informartion of type that would be created. 
 	/// @returns Possible created or found immediately loaded resource.
-	RefPtr<Resource> RSStreamer::LoadImmediately(String const& ID, TypeInformation const* const TypeInformation)
+	RefPtr<Resource> RSStreamer::LoadImmediately(String const& ID, ITypeInformation const* const ITypeInformation)
 	{
-		return this->LoadImmediately(this->FindOrCreateResource(ID, TypeInformation));
+		return this->LoadImmediately(this->FindOrCreateResource(ID, ITypeInformation));
 	}
 
-	RefPtr<Resource> RSStreamer::ProcessStreaming(String const& ID, TypeInformation const* const TypeInformation)
+	RefPtr<Resource> RSStreamer::ProcessStreaming(String const& ID, ITypeInformation const* const ITypeInformation)
 	{	// Resource would loaded in some time.
-		return this->FindOrCreateResource(ID, TypeInformation);
+		return this->FindOrCreateResource(ID, ITypeInformation);
 	}
 
 	void RSStreamer::WaitForLoading()
@@ -168,12 +168,12 @@ GD_NAMESPACE_BEGIN
 		GD_ASSERT((ProtocolDelimiter != -1), "URI parsing failed: string doesn't matches 'protocol://value0[?value1]'");
 
 		this->Hash = URI.GetHashCode();
-		this->Protocol = RSURIProtocolTypeFromStr(URI.Subtring(0, ProtocolDelimiter).CStr());
+		this->Protocol = RSURIProtocolTypeFromStr(URI.Substring(0, ProtocolDelimiter).CStr());
 		switch (this->Protocol)
 		{
 			case RSURIProtocolType::File: {
 				this->IdentifierType = RSURIType::PathToRealFile;
-				this->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.Subtring(ProtocolDelimiter + ProtocolDelimiterString.GetLength());
+				this->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.Substring(ProtocolDelimiter + ProtocolDelimiterString.GetLength());
 				this->PathInFile = "/";
 			}	break;
 
@@ -182,8 +182,8 @@ GD_NAMESPACE_BEGIN
 				GD_ASSERT((QueryDelimiter != -1), "URI parsing failed: specified 'package' protocol, but no virtual path specified");
 
 				this->IdentifierType = RSURIType::PathToVirtualFile;
-				this->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.Subtring(ProtocolDelimiter + ProtocolDelimiterString.GetLength(), QueryDelimiter);
-				this->PathInFile = URI.Subtring(QueryDelimiter + 1);
+				this->PathToFile = Application::GetInstance().GetEnvironmentPath() + URI.Substring(ProtocolDelimiter + ProtocolDelimiterString.GetLength(), QueryDelimiter);
+				this->PathInFile = URI.Substring(QueryDelimiter + 1);
 			}	break;
 
 			case RSURIProtocolType::HTTP:
@@ -220,7 +220,7 @@ GD_NAMESPACE_BEGIN
 						Base64::Decode(&Input, &Output);
 					} else if (strncmp(DataType, "plain-text", sizeof("plain-text") - 1) == 0) {
 						this->InlinedData.Resize(DataTextSize);
-						memcpy(this->InlinedData.GetPointer(), DataText, DataTextSize * sizeof(Char));
+						memcpy(this->InlinedData.CStr(), DataText, DataTextSize * sizeof(Char));
 					} else 
 						GD_DEBUG_ASSERT_FALSE("URI parsing failed: parsing inlined data failed: unknown data type");
 				}	break;

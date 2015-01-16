@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Path.h - Path management utility interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once

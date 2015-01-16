@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Utility.h - Base utilities definition and implementations.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once
@@ -8,9 +8,7 @@
 #define GD_CORE_UTILITY
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/TypeTraits.h>
-
-#include <utility>
+#include <GoddamnEngine/Core/Templates/TypeTraits.h>
 
 GD_NAMESPACE_BEGIN
 

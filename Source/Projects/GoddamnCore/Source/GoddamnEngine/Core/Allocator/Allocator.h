@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Allocator.h: memory allocator interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once
@@ -8,7 +8,6 @@
 #define GD_CORE_ALLOCATOR_ALLOCATOR
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/TypeTraits.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -23,17 +22,27 @@ GD_NAMESPACE_BEGIN
 		GDINL ~Allocator() { }
 		
 	public:
-		/// Allocates block of memory with specified size and returns pointer to it.
-		/// This function never returns nullptr except specified size is 0.
+		/// @brief Allocates block of memory with specified size and returns pointer to it.
+		/// @param AllocationSize Size of required memory in bytes.
+		/// @returns Pointer on the allocated memory. This function never returns nullptr except specified size is 0.
 		GDAPI static handle AllocateMemory(size_t const AllocationSize);
 
-		/// Reallocates block of memory to specified size.
-		/// This function never returns nullptr except specified size is 0.
+		/// @brief Allocates block of memory with specified size that is aligned by specified value and returns pointer to it.
+		/// @param AllocationSize Size of required memory in bytes.
+		/// @param Alignment Pointer to memory would be aligned by this value.
+		/// @returns Pointer on the allocated memory. This function never returns nullptr except specified size is 0.
+		GDAPI static handle AllocateMemoryAligned(size_t const AllocationSize, size_t const Alignment);
+
+		/// @brief Reallocates block of memory to specified size.
+		/// @param Memory Memory that would be reallocated.
+		/// @param AllocationSize New size of required memory in bytes.
+		/// @returns Pointer on the reallocated memory. This function never returns nullptr except specified size is 0.
 		GDAPI static handle ReallocateMemory(handle const Memory, size_t const AllocationSize);
 
-		/// Deallocates block of memory.
-		/// If specified block is nullptr then does nothing.
+		/// @brief Deallocates block of memory.
+		/// @param Memory Memory that would be deallocated. If specified block is nullptr then does nothing.
 		GDAPI static void DeallocateMemory(handle const Memory);
+
 	};	// class Allocator
 
 GD_NAMESPACE_END

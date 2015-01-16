@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Framework.SDL2.inl - Framework SDL2 implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 10.06.2014 - Created by James Jhuighuy
@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 	Window::Window() : Impl(new Window::WindowImpl())
 	{
 		for (auto& EventListener : this->EventListeners) {
-			EventListener = ([](chandle const Param) {});
+			EventListener = ([](chandle const Param) { GD_NOT_USED(Param); });
 		}
 
 		int const Result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
@@ -78,7 +78,7 @@ GD_NAMESPACE_BEGIN
 		if (Result != SDL_TRUE) {
 			throw SDL2WindowException("Failed to initialize SDL2 library: \"%s\" error.", SDL_GetError());
 		} else {
-			return static_cast<handle>(&WindowInformation.info);
+			return static_cast<handle>(WindowInformation.info.win.window);
 		}
 	}
 

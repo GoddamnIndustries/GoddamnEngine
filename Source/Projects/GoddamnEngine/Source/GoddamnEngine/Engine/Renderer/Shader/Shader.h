@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Shader.h - shaders common interface
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2014 - Created by James Jhuighuy
@@ -15,12 +15,12 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Math/Math.h>
-#include <GoddamnEngine/Core/Format/Format.h>
-#include <GoddamnEngine/Core/Reflection/Object/Object.h>
+#include <GoddamnEngine/Core/Object/Object.h>
 #include <GoddamnEngine/Core/Containers/String.h>
-#include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
-#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.h>
+#include <GoddamnEngine/Core/Templates/RefPtr.h>
+#include <GoddamnEngine/Core/Templates/UniquePtr.h>
 
+#include <GoddamnEngine/Engine/Renderer/Format/Format.h>
 // #include "Shader.Generated.h"
 
 // Define this to get OpenGL-style name aliases.

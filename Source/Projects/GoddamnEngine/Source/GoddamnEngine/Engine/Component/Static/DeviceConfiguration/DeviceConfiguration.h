@@ -58,14 +58,14 @@ GD_NAMESPACE_BEGIN
 			String const typeName = RenderingSystemElement::GetClassTypeInformation()->Name + 
 				/*"_" + systemPostfix*/ "_D3D11";
 			
-			TypeInformation const* const typeInformation = TypeInformation::FindType(typeName);
+			ITypeInformation const* const typeInformation = ITypeInformation::FindType(typeName);
 			GD_ASSERT((typeInformation != nullptr), 
 				"No type information specified for type '%s'", &typeName[0]);
 			GD_ASSERT((typeInformation->VirtualConstructor != nullptr), 
 				"'%s' is not constructible", &typeName[0]);
 
-			TypeInformation* const 
-				thisTypeInformation = (TypeInformation*)RenderingSystemElement::GetClassTypeInformation();
+			ITypeInformation* const 
+				thisTypeInformation = (ITypeInformation*)RenderingSystemElement::GetClassTypeInformation();
 				thisTypeInformation->VirtualConstructor = typeInformation->VirtualConstructor;
 
 			return typeInformation->VirtualConstructor(parent, argument);

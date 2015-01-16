@@ -1,6 +1,6 @@
 /// ==========================================================================================
-/// RedBlackTree.cpp - Red Black tree data structure implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// RedBlackTree.cpp - Red Black this data structure implementation.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 /// ------------------------------------------------------------------------------------------
@@ -34,97 +34,91 @@ GD_NAMESPACE_BEGIN
 	/// RedBlackTree class.
 	/// ==========================================================================================
 
-	RedBlackTreeBaseNode* RedBlackTree::NullNode = nullptr;
-
 	/// ------------------------------------------------------------------------------------------
 	/// Constructor and destructor.
 	/// ------------------------------------------------------------------------------------------
 
-	GDAPI RedBlackTree::RedBlackTree()
+	GDAPI RedBlackTreeBase::RedBlackTreeBase()
 	{
-		if (RedBlackTree::NullNode == nullptr) {
-			this->InternalCreateNode(RedBlackTree::NullNode);
-		}
-
+		this->InternalCreateNode(this->NullNode);
 		this->InternalCreateNode(this->RootNode);
 	}
 
-	GDAPI RedBlackTree::RedBlackTree(RedBlackTree&& Other)
+	GDAPI RedBlackTreeBase::RedBlackTreeBase(RedBlackTreeBase&& Other)
 	{
 		this->RootNode = Other.RootNode;
+		this->NullNode = Other.NullNode;
 		this->Length = Other.Length;
 
 		Other.RootNode = nullptr;
+		Other.NullNode = nullptr;
 		Other.Length = 0;
 	}
 
-	GDAPI RedBlackTree::~RedBlackTree()
+	GDAPI RedBlackTreeBase::~RedBlackTreeBase()
 	{
 		this->InternalDestroyNode(this->RootNode->Left);
 		delete this->RootNode;
+		delete this->NullNode;
 	}
 
 	/// ------------------------------------------------------------------------------------------
 	/// Tree iteration.
 	/// ------------------------------------------------------------------------------------------
 
-	GDAPI RedBlackTreeBaseNode const* RedBlackTree::GetLastNode() const
+	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::GetLastNode() const
 	{
 		RedBlackTreeBaseNode const* IterNode = this->GetFirstNode();
-		while (IterNode->Right != RedBlackTree::NullNode) {
+		while (IterNode->Right != RedBlackTreeBase::NullNode) {
 			IterNode = IterNode->Right;
 		}
 
 		return IterNode;
 	}
 
-	GDAPI RedBlackTreeBaseNode const* RedBlackTree::GetNextNode(RedBlackTreeBaseNode const* const TheNode) const
+	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::GetNextNode(RedBlackTreeBaseNode const* X) const
 	{
-		RedBlackTreeBaseNode const* CurrentNode = TheNode;
-		RedBlackTreeBaseNode const* IterNode = CurrentNode->Right;
-		if (IterNode != RedBlackTree::NullNode) {
-			while (IterNode->Left != RedBlackTree::NullNode) {
-				IterNode = IterNode->Left;
-			}
+		RedBlackTreeBaseNode const* Y;
+		RedBlackTreeBaseNode const* NullNode = this->NullNode;
+		RedBlackTreeBaseNode const* RootNode = this->RootNode;
 
-			return IterNode;
+		if (NullNode != (Y = X->Right)) { // assignment to Y is intentional
+			while (Y->Left != NullNode) { // returns the minimum of the Right subtree of X
+				Y = Y->Left;
+			}
+			return(Y);
 		} else {
-			IterNode = CurrentNode->Parent;
-			while (CurrentNode == IterNode->Right) {
-				CurrentNode = IterNode;
-				IterNode = IterNode->Parent;
+			Y = X->Parent;
+			while (X == Y->Right) { // sentinel used instead of checking for NullNode
+				X = Y;
+				Y = Y->Parent;
 			}
-
-			if (IterNode == this->RootNode) {
-				return RedBlackTree::NullNode;
-			} else {
-				return IterNode;
-			}
+			if (Y == RootNode) return(NullNode);
+			return(Y);
 		}
 	}
 
-	GDAPI RedBlackTreeBaseNode const* RedBlackTree::GetPrevNode(RedBlackTreeBaseNode const* const TheNode) const
+	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::GetPrevNode(RedBlackTreeBaseNode const* X) const
 	{
-		RedBlackTreeBaseNode const* CurrentNode = TheNode;
-		RedBlackTreeBaseNode const* IterNode = CurrentNode->Left;
-		if (RedBlackTree::NullNode != IterNode) {
-			while (IterNode->Right != RedBlackTree::NullNode) {
-				IterNode = IterNode->Right;
-			}
+		RedBlackTreeBaseNode const* Y;
+		RedBlackTreeBaseNode const* NullNode = this->NullNode;
+		RedBlackTreeBaseNode const* RootNode = this->RootNode;
 
-			return IterNode;
+		if (NullNode != (Y = X->Left)) { // assignment to Y is intentional
+			while (Y->Right != NullNode) { // returns the maximum of the Left subtree of X
+				Y = Y->Right;
+			}
+			return(Y);
 		} else {
-			IterNode = CurrentNode->Parent;
-			while (CurrentNode == IterNode->Left) {
-				if (IterNode == this->RootNode) {
-					return RedBlackTree::NullNode;
+			Y = X->Parent;
+			while (X == Y->Left) {
+				if (Y == RootNode) {
+					return(NullNode);
 				}
-
-				CurrentNode = IterNode;
-				IterNode = IterNode->Parent;
+				X = Y;
+				Y = Y->Parent;
 			}
-
-			return IterNode;
+			return(Y);
 		}
 	}
 	
@@ -132,270 +126,330 @@ GD_NAMESPACE_BEGIN
 	/// Tree manipulation.
 	/// ------------------------------------------------------------------------------------------
 
-	GDAPI void RedBlackTree::InternalCreateNode(RedBlackTreeBaseNode*& NewNode)
+	GDAPI void RedBlackTreeBase::InternalCreateNode(RedBlackTreeBaseNode*& NewNode)
 	{
 		NewNode = new RedBlackTreeBaseNode(nullptr);
-		NewNode->Left = RedBlackTree::NullNode;
-		NewNode->Right = RedBlackTree::NullNode;
-		NewNode->Parent = RedBlackTree::NullNode;
-		NewNode->Color = RedBlackTreeNodeColor::Black;
+		NewNode->Left = RedBlackTreeBase::NullNode;
+		NewNode->Right = RedBlackTreeBase::NullNode;
+		NewNode->Parent = RedBlackTreeBase::NullNode;
+		NewNode->IsRed = false;
 	}
 
-	GDAPI void RedBlackTree::InternalDestroyNode(RedBlackTreeBaseNode* const TheNode)
+	GDAPI void RedBlackTreeBase::InternalDestroyNode(RedBlackTreeBaseNode* const Node)
 	{
-		if (TheNode != RedBlackTree::NullNode) {
-			this->InternalDestroyNode(TheNode->Left);
-			this->InternalDestroyNode(TheNode->Right);
-			delete TheNode;
+		if (Node != RedBlackTreeBase::NullNode) {
+			this->InternalDestroyNode(Node->Left);
+			this->InternalDestroyNode(Node->Right);
+			delete Node;
 		}
 	}
 
-	GDAPI void RedBlackTree::RotateLeft(RedBlackTreeBaseNode* const TheNode)
+	GDAPI void RedBlackTreeBase::RotateLeft(RedBlackTreeBaseNode* X)
 	{
-		RedBlackTreeBaseNode* ChildNode = TheNode->Right;
-		TheNode->Right = ChildNode->Left;
-		if (ChildNode->Left != RedBlackTree::NullNode) {
-			ChildNode->Left->Parent = TheNode;
+		RedBlackTreeBaseNode* Y;
+		RedBlackTreeBaseNode* NullNode = this->NullNode;
+
+		//  I originally wrote this function to use the sentinel for
+		//  NullNode to avoid checking for NullNode.  However this introduces a
+		//  very subtle bug because sometimes this function modifies
+		//  the Parent pointer of NullNode.  This can be a problem if a
+		//  function which calls this->RotateLeft also uses the NullNode sentinel
+		//  and expects the NullNode sentinel's Parent pointer to be unchanged
+		//  after calling this function.  For example, when RBDeleteFixUP
+		//  calls this->RotateLeft it expects the Parent pointer of NullNode to be
+		//  unchanged.
+
+		Y = X->Right;
+		X->Right = Y->Left;
+
+		if (Y->Left != NullNode) {
+			Y->Left->Parent = X; 
+			// used to use sentinel here
+			// and do an unconditional assignment instead of testing for NullNode
 		}
 
-		ChildNode->Parent = TheNode->Parent;
-		if (TheNode == TheNode->Parent->Left) {
-			TheNode->Parent->Left = ChildNode;
+		Y->Parent = X->Parent;
+
+		// instead of checking if X->Parent is the RootNode as in the book, we
+		// count on the RootNode sentinel to implicitly take care of this case
+		if (X == X->Parent->Left) {
+			X->Parent->Left = Y;
 		} else {
-			TheNode->Parent->Right = ChildNode;
+			X->Parent->Right = Y;
 		}
+		Y->Left = X;
+		X->Parent = Y;
 
-		ChildNode->Left = TheNode;
-		TheNode->Parent = ChildNode;
+		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not IsRed in this->RotateLeft");
 	}
 
-	GDAPI void RedBlackTree::RotateRight(RedBlackTreeBaseNode* const TheNode)
+	GDAPI void RedBlackTreeBase::RotateRight(RedBlackTreeBaseNode* Y)
 	{
-		RedBlackTreeBaseNode* ChildNode = TheNode->Left;
-		TheNode->Left = ChildNode->Right;
-		if (ChildNode->Right != RedBlackTree::NullNode) {
-			ChildNode->Right->Parent = TheNode;
+		RedBlackTreeBaseNode* X;
+		RedBlackTreeBaseNode* NullNode = this->NullNode;
+
+		//  I originally wrote this function to use the sentinel for
+		//  NullNode to avoid checking for NullNode.  However this introduces a
+		//  very subtle bug because sometimes this function modifies
+		//  the Parent pointer of NullNode.  This can be a problem if a
+		//  function which calls this->RotateLeft also uses the NullNode sentinel
+		//  and expects the NullNode sentinel's Parent pointer to be unchanged
+		//  after calling this function.  For example, when RBDeleteFixUP
+		//  calls this->RotateLeft it expects the Parent pointer of NullNode to be
+		//  unchanged.
+
+		X = Y->Left;
+		Y->Left = X->Right;
+
+		if (NullNode != X->Right) {
+			X->Right->Parent = Y; 
+			// used to use sentinel here
+			// and do an unconditional assignment instead of testing for NullNode
 		}
 
-		ChildNode->Parent = TheNode->Parent;
-		if (TheNode == TheNode->Parent->Left) {
-			TheNode->Parent->Left = ChildNode;
+		// instead of checking if X->Parent is the RootNode as in the book, we
+		// count on the RootNode sentinel to implicitly take care of this case
+		X->Parent = Y->Parent;
+		if (Y == Y->Parent->Left) {
+			Y->Parent->Left = X;
 		} else {
-			TheNode->Parent->Right = ChildNode;
+			Y->Parent->Right = X;
 		}
+		X->Right = Y;
+		Y->Parent = X;
 
-		ChildNode->Right = TheNode;
-		TheNode->Parent = ChildNode;
+		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not IsRed in this->RotateRight");
 	}
 
-	GDAPI void RedBlackTree::Repair(RedBlackTreeBaseNode* const TheNode)
+	GDAPI void RedBlackTreeBase::Repair(RedBlackTreeBaseNode* X)
 	{
-		RedBlackTreeBaseNode* const FirstNode = this->RootNode->Left;
-		RedBlackTreeBaseNode* SiblingNode = nullptr;
-		RedBlackTreeBaseNode* CurrentNode = TheNode;
+		RedBlackTreeBaseNode* RootNode = this->RootNode->Left;
+		RedBlackTreeBaseNode* w;
 
-		while ((CurrentNode->Color == RedBlackTreeNodeColor::Black) && (FirstNode != CurrentNode)) {
-			if (CurrentNode == CurrentNode->Parent->Left) {
-				SiblingNode = CurrentNode->Parent->Right;
-				if (SiblingNode->Color == RedBlackTreeNodeColor::Red) {
-					SiblingNode->Color = RedBlackTreeNodeColor::Black;
-					CurrentNode->Parent->Color = RedBlackTreeNodeColor::Red;
-
-					this->RotateLeft(CurrentNode->Parent);
-					SiblingNode = CurrentNode->Parent->Right;
+		while ((!X->IsRed) && (RootNode != X)) {
+			if (X == X->Parent->Left) {
+				w = X->Parent->Right;
+				if (w->IsRed) {
+					w->IsRed = false;
+					X->Parent->IsRed = true;
+					this->RotateLeft(X->Parent);
+					w = X->Parent->Right;
 				}
-
-				if ((SiblingNode->Right->Color == RedBlackTreeNodeColor::Black) && (SiblingNode->Left->Color == RedBlackTreeNodeColor::Black)) {
-					SiblingNode->Color = RedBlackTreeNodeColor::Red;
-					CurrentNode = CurrentNode->Parent;
+				if ((!w->Right->IsRed) && (!w->Left->IsRed)) {
+					w->IsRed = true;
+					X = X->Parent;
 				} else {
-					if (SiblingNode->Right->Color == RedBlackTreeNodeColor::Black) {
-						SiblingNode->Left->Color = RedBlackTreeNodeColor::Black;
-						SiblingNode->Color = RedBlackTreeNodeColor::Red;
-
-						this->RotateRight(SiblingNode);
-						SiblingNode = CurrentNode->Parent->Right;
+					if (!w->Right->IsRed) {
+						w->Left->IsRed = false;
+						w->IsRed = true;
+						this->RotateRight(w);
+						w = X->Parent->Right;
 					}
-
-					SiblingNode->Color = CurrentNode->Parent->Color;
-					SiblingNode->Right->Color = RedBlackTreeNodeColor::Black;
-					CurrentNode->Parent->Color = RedBlackTreeNodeColor::Black;
-
-					this->RotateLeft(CurrentNode->Parent);
-					CurrentNode = FirstNode;
+					w->IsRed = X->Parent->IsRed;
+					X->Parent->IsRed = false;
+					w->Right->IsRed = false;
+					this->RotateLeft(X->Parent);
+					X = RootNode; // this is to exit while loop
 				}
-			} else {
-				SiblingNode = CurrentNode->Parent->Left;
-				if (SiblingNode->Color == RedBlackTreeNodeColor::Red) {
-					SiblingNode->Color = RedBlackTreeNodeColor::Black;
-					CurrentNode->Parent->Color = RedBlackTreeNodeColor::Red;
-
-					this->RotateRight(CurrentNode->Parent);
-					SiblingNode = CurrentNode->Parent->Left;
+			} else { // the code below is has Left and Right switched from above
+				w = X->Parent->Left;
+				if (w->IsRed) {
+					w->IsRed = false;
+					X->Parent->IsRed = true;
+					this->RotateRight(X->Parent);
+					w = X->Parent->Left;
 				}
-
-				if ((SiblingNode->Right->Color == RedBlackTreeNodeColor::Black) && (SiblingNode->Left->Color == RedBlackTreeNodeColor::Black)) {
-					SiblingNode->Color = RedBlackTreeNodeColor::Red;
-					CurrentNode = CurrentNode->Parent;
+				if ((!w->Right->IsRed) && (!w->Left->IsRed)) {
+					w->IsRed = true;
+					X = X->Parent;
 				} else {
-					if (SiblingNode->Left->Color == RedBlackTreeNodeColor::Black) {
-						SiblingNode->Right->Color = RedBlackTreeNodeColor::Black;
-						SiblingNode->Color = RedBlackTreeNodeColor::Red;
-
-						this->RotateLeft(SiblingNode);
-						SiblingNode = CurrentNode->Parent->Left;
+					if (!w->Left->IsRed) {
+						w->Right->IsRed = false;
+						w->IsRed = true;
+						this->RotateLeft(w);
+						w = X->Parent->Left;
 					}
-
-					SiblingNode->Color = CurrentNode->Parent->Color;
-					CurrentNode->Parent->Color = RedBlackTreeNodeColor::Black;
-					SiblingNode->Left->Color = RedBlackTreeNodeColor::Black;
-
-					this->RotateRight(CurrentNode->Parent);
-					CurrentNode = FirstNode;
+					w->IsRed = X->Parent->IsRed;
+					X->Parent->IsRed = false;
+					w->Left->IsRed = false;
+					this->RotateRight(X->Parent);
+					X = RootNode; // this is to exit while loop
 				}
 			}
 		}
+		X->IsRed = false;
 
-		CurrentNode->Color = RedBlackTreeNodeColor::Black;
+		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not black in this->Repair");
 	}
 
 	/// ------------------------------------------------------------------------------------------
 	/// Tree modification.
 	/// ------------------------------------------------------------------------------------------
 
-	GDAPI void RedBlackTree::Insert(RedBlackTreeBaseNode* const NewNode)
+	GDAPI void RedBlackTreeBase::Insert(RedBlackTreeBaseNode* NewNode)
 	{
 		GD_DEBUG_ASSERT(NewNode != nullptr, "Null pointer node.");
 		this->Length += 1;
 
-		RedBlackTreeBaseNode* ParentNode = this->RootNode;
-		RedBlackTreeBaseNode* CurrentNode = this->RootNode->Left;
+		auto const TreeInsertHelp = [this](RedBlackTreeBaseNode* Z) {
+			//  This function should only be called by InsertRBTree (see above)
+			RedBlackTreeBaseNode* X;
+			RedBlackTreeBaseNode* Y;
+			RedBlackTreeBaseNode* NullNode = this->NullNode;
 
-		while (CurrentNode != RedBlackTree::NullNode) {
-			ParentNode = CurrentNode;
-			if (this->CompareComparands(CurrentNode, NewNode)) {
-				CurrentNode = CurrentNode->Left;
-			} else {
-				CurrentNode = CurrentNode->Right;
-			}
-		}
-		if ((this->CompareComparands(CurrentNode->Comparand, NewNode->Comparand) > 0) || (ParentNode == this->RootNode)) {
-			ParentNode->Left = NewNode;
-		} else {
-			ParentNode->Right = NewNode;
-		}
-
-		CurrentNode = NewNode;
-		CurrentNode->Parent = ParentNode;
-		CurrentNode->Color = RedBlackTreeNodeColor::Red;
-		while (CurrentNode->Parent->Color == RedBlackTreeNodeColor::Red) {
-			if (CurrentNode->Parent == CurrentNode->Parent->Parent->Left) {
-				ParentNode = CurrentNode->Parent->Parent->Right;
-				if (ParentNode->Color == RedBlackTreeNodeColor::Red) {
-					ParentNode->Color = RedBlackTreeNodeColor::Black;
-
-					CurrentNode->Parent->Color = RedBlackTreeNodeColor::Black;
-					CurrentNode->Parent->Parent->Color = RedBlackTreeNodeColor::Red;
-					CurrentNode = CurrentNode->Parent->Parent;
-				} else {
-					if (CurrentNode == CurrentNode->Parent->Right) {
-						CurrentNode = CurrentNode->Parent;
-						this->RotateLeft(CurrentNode);
-					}
-
-					CurrentNode->Parent->Color = RedBlackTreeNodeColor::Black;
-					CurrentNode->Parent->Parent->Color = RedBlackTreeNodeColor::Red;
-					this->RotateRight(CurrentNode->Parent->Parent);
-				}
-			} else {
-				ParentNode = CurrentNode->Parent->Parent->Left;
-				if (ParentNode->Color == RedBlackTreeNodeColor::Red) {
-					ParentNode->Color = RedBlackTreeNodeColor::Black;
-
-					CurrentNode->Parent->Color = RedBlackTreeNodeColor::Black;
-					CurrentNode->Parent->Parent->Color = RedBlackTreeNodeColor::Red;
-					CurrentNode = CurrentNode->Parent->Parent;
-				} else {
-					if (CurrentNode == CurrentNode->Parent->Left) {
-						CurrentNode = CurrentNode->Parent;
-						this->RotateRight(CurrentNode);
-					}
-
-					CurrentNode->Parent->Color = RedBlackTreeNodeColor::Black;
-					CurrentNode->Parent->Parent->Color = RedBlackTreeNodeColor::Red;
-					this->RotateLeft(CurrentNode->Parent->Parent);
+			Z->Left = Z->Right = NullNode;
+			Y = this->RootNode;
+			X = this->RootNode->Left;
+			while (X != NullNode) {
+				Y = X;
+				if (1 == this->CompareElements(X->Element, Z->Element)) { // X.key > Z.key
+					X = X->Left;
+				} else { // X,key <= Z.key
+					X = X->Right;
 				}
 			}
-		}
+			Z->Parent = Y;
+			if ((Y == this->RootNode) || (1 == this->CompareElements(Y->Element, Z->Element))) { // Y.key > Z.key
+				Y->Left = Z;
+			} else {
+				Y->Right = Z;
+			}
 
-		this->RootNode->Left->Color = RedBlackTreeNodeColor::Black;
+			GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not IsRed in TreeInsertHelp");
+		};
+
+		RedBlackTreeBaseNode* Y;
+		RedBlackTreeBaseNode* X;
+
+		// Node comes already preallocated..
+		//X = (RedBlackTreeBaseNode*) SafeMalloc(sizeof(RedBlackTreeBaseNode));
+		//X->Element = key;
+		//X->info = info;
+
+		TreeInsertHelp(NewNode);
+		X = NewNode;
+		X->IsRed = true;
+		while (X->Parent->IsRed) { // use sentinel instead of checking for RootNode
+			if (X->Parent == X->Parent->Parent->Left) {
+				Y = X->Parent->Parent->Right;
+				if (Y->IsRed) {
+					X->Parent->IsRed = false;
+					Y->IsRed = false;
+					X->Parent->Parent->IsRed = true;
+					X = X->Parent->Parent;
+				} else {
+					if (X == X->Parent->Right) {
+						X = X->Parent;
+						this->RotateLeft(X);
+					}
+					X->Parent->IsRed = false;
+					X->Parent->Parent->IsRed = true;
+					this->RotateRight(X->Parent->Parent);
+				}
+			} else { // case for X->Parent == X->Parent->Parent->Right
+				Y = X->Parent->Parent->Left;
+				if (Y->IsRed) {
+					X->Parent->IsRed = false;
+					Y->IsRed = false;
+					X->Parent->Parent->IsRed = true;
+					X = X->Parent->Parent;
+				} else {
+					if (X == X->Parent->Left) {
+						X = X->Parent;
+						this->RotateRight(X);
+					}
+					X->Parent->IsRed = false;
+					X->Parent->Parent->IsRed = true;
+					this->RotateLeft(X->Parent->Parent);
+				}
+			}
+		}
+		this->RootNode->Left->IsRed = false;
+
+		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not IsRed in RBTreeInsert");
+		GD_DEBUG_ASSERT(!this->RootNode->IsRed, "RootNode not IsRed in RBTreeInsert");
 	}
 
-	GDAPI void RedBlackTree::Delete(RedBlackTreeBaseNode* const TheNode)
+	GDAPI void RedBlackTreeBase::Delete(RedBlackTreeBaseNode* const Z)
 	{
-		this->Length -= 1;
+		RedBlackTreeBaseNode* Y;
+		RedBlackTreeBaseNode* X;
+		RedBlackTreeBaseNode* NullNode = this->NullNode;
+		RedBlackTreeBaseNode* RootNode = this->RootNode;
 
-		RedBlackTreeBaseNode* ChildNode = (TheNode->Left == RedBlackTree::NullNode) || (TheNode->Right == RedBlackTree::NullNode) ? TheNode : this->GetNextNode(TheNode);
-		RedBlackTreeBaseNode* SiblingNode = ChildNode->Left == RedBlackTree::NullNode ? ChildNode->Right : ChildNode->Left;
-
-		SiblingNode->Parent = ChildNode->Parent;
-		if (this->RootNode == SiblingNode->Parent) {
-			this->RootNode->Left = SiblingNode;
+		Y = ((Z->Left == NullNode) || (Z->Right == NullNode)) ? Z : this->GetNextNode(Z);
+		X = (Y->Left == NullNode) ? Y->Right : Y->Left;
+		if (RootNode == (X->Parent = Y->Parent)) { // assignment of Y->p to X->p is intentional
+			RootNode->Left = X;
 		} else {
-			if (ChildNode == ChildNode->Parent->Left) {
-				ChildNode->Parent->Left = SiblingNode;
+			if (Y == Y->Parent->Left) {
+				Y->Parent->Left = X;
 			} else {
-				ChildNode->Parent->Right = SiblingNode;
+				Y->Parent->Right = X;
 			}
 		}
+		if (Y != Z) { // Y should not be NullNode in this case
 
-		if (ChildNode != TheNode) {
-			if (ChildNode->Color == RedBlackTreeNodeColor::Black) {
-				this->Repair(SiblingNode);
-			}
+			GD_DEBUG_ASSERT((Y != this->NullNode), "Y is NullNode in RBDelete\n");
+			// Y is the node to splice out and X is its child
 
-			ChildNode->Left = TheNode->Left;
-			ChildNode->Right = TheNode->Right;
-			ChildNode->Parent = TheNode->Parent;
-			ChildNode->Color = TheNode->Color;
-			TheNode->Left->Parent = ChildNode;
-			TheNode->Right->Parent = ChildNode;
-			if (TheNode == TheNode->Parent->Left) {
-				TheNode->Parent->Left = ChildNode;
+			if (!(Y->IsRed)) this->Repair(X);
+
+			//this->DestroyKey(Z->Element);
+			//this->DestroyInfo(Z->info);
+			Y->Left = Z->Left;
+			Y->Right = Z->Right;
+			Y->Parent = Z->Parent;
+			Y->IsRed = Z->IsRed;
+			Z->Left->Parent = Z->Right->Parent = Y;
+			if (Z == Z->Parent->Left) {
+				Z->Parent->Left = Y;
 			} else {
-				TheNode->Parent->Right = ChildNode;
+				Z->Parent->Right = Y;
 			}
+			//free(Z);
 		} else {
-			if (TheNode->Color == RedBlackTreeNodeColor::Black) {
-				this->Repair(SiblingNode);
-			}
+			//this->DestroyKey(Y->Element);
+			//this->DestroyInfo(Y->info);
+			if (!(Y->IsRed)) this->Repair(X);
+			//free(Y);
 		}
+
+		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not black in RBDelete");
 	}
 
-	GDAPI RedBlackTreeBaseNode const* RedBlackTree::Query(handle const Comparand) const
+	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::Query(chandle const Element) const
 	{
-		RedBlackTreeBaseNode* TheNode = this->RootNode->Left;
-		while (TheNode == RedBlackTree::NullNode) {
-			int const ComparingResult = this->CompareComparands(TheNode->Comparand, Comparand);
-			if (ComparingResult == 0) {
-				return TheNode;
-			} else if (ComparingResult > 0) {
-				TheNode = TheNode->Left;
-			} else {
-				TheNode = TheNode->Right;
-			}
+		RedBlackTreeBaseNode* X = this->RootNode->Left;
+		RedBlackTreeBaseNode* NullNode = this->NullNode;
+		int CompVal;
+		if (X == NullNode) {
+			// return(0);
+			return(X);
 		}
-
-		return TheNode;
+		CompVal = this->CompareElements(X->Element, Element);
+		while (0 != CompVal) {//assignemnt
+			if (1 == CompVal) { // X->Element > q
+				X = X->Left;
+			} else {
+				X = X->Right;
+			}
+			if (X == NullNode) {
+				// return(0);
+				return(X);
+			}
+			CompVal = this->CompareElements(X->Element, Element);
+		}
+		return(X);
 	}
 
-	GDINL void RedBlackTree::Clear()
+	GDINL void RedBlackTreeBase::Clear()
 	{
 		this->InternalDestroyNode(this->RootNode->Left);
-		this->RootNode->Left = RedBlackTree::NullNode;
+		this->RootNode->Left = RedBlackTreeBase::NullNode;
 
 		this->InternalDestroyNode(this->RootNode->Right);
-		this->RootNode->Right = RedBlackTree::NullNode;
+		this->RootNode->Right = RedBlackTreeBase::NullNode;
 	}
 
 GD_NAMESPACE_END

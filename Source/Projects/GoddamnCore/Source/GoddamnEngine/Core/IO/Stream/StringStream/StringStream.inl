@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// StringStream.inl - String stream implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// @author James Jhuighuy
 /// ==========================================================================================
@@ -32,7 +32,7 @@ GD_NAMESPACE_BEGIN
 
 	template<typename CharacterType>
 	GDINL BaseStringInputStream<CharacterType>::BaseStringInputStream(BaseStringBuilder<CharacterType> const& SomeStringBuilder)
-		: BaseStringInputStream(reinterpret_cast<CharacterType const*>(SomeStringBuilder.GetPointer())
+		: BaseStringInputStream(reinterpret_cast<CharacterType const*>(SomeStringBuilder.CStr())
 		, sizeof(CharacterType) * SomeStringBuilder.GetLength())
 	{
 	}

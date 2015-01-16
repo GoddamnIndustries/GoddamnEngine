@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Allocator.cpp: memory allocator implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 12.06.2014 - Created by James Jhuighuy
@@ -24,6 +24,13 @@ GD_NAMESPACE_BEGIN
 	handle Allocator::AllocateMemory(size_t const AllocationSize)
 	{
 		handle const AllocatedMemory = handle(::malloc(AllocationSize));
+		GD_ASSERT(AllocatedMemory != nullptr, "Failed to allocate memory");
+		return AllocatedMemory;
+	}
+
+	handle Allocator::AllocateMemoryAligned(size_t const AllocationSize, size_t const Alignment)
+	{
+		handle const AllocatedMemory = handle(::aligned_alloc(AllocationSize, Alignment));
 		GD_ASSERT(AllocatedMemory != nullptr, "Failed to allocate memory");
 		return AllocatedMemory;
 	}

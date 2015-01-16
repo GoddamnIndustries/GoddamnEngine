@@ -96,7 +96,7 @@ GD_NAMESPACE_BEGIN
 			GD_FIELD(Color, ClearColor);
 		GD_SERIALIZATION_END();
 
-		//StackVector<RenderTexture*, (size_t)/*RenderTargetTexture::Unknown*/1> RenderTextures;
+		//StaticVector<RenderTexture*, (size_t)/*RenderTargetTexture::Unknown*/1> RenderTextures;
   HRIRenderTarget* RenderTarget;
 
 		Matrix4x4 ProjectionMatrix;

@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// OGLBuffer.cpp - HRI Buffer OpenGL implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 05.06.2014 - Created by James Jhuighuy
@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 		GL.GenBuffers(1, &this->VertexBufferObject);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to create Vertex buffer");
 		this->BindBuffer();
-		GL.BufferData(GL_ARRAY_BUFFER, Size * sizeof(Float32), Data, GL_STATIC_DRAW);
+		GL.BufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(Size * sizeof(Float32)), Data, GL_STATIC_DRAW);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to pass Vertex buffer data");
 		this->UnbindBuffer();
 	}
@@ -59,7 +59,7 @@ GD_NAMESPACE_BEGIN
 		GL.GenBuffers(1, &this->IndexBufferObject);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to create Index buffer");
 		this->BindBuffer();
-		GL.BufferData(GL_ELEMENT_ARRAY_BUFFER, Size * Stride, Data, GL_STATIC_DRAW);
+		GL.BufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(Size * Stride), Data, GL_STATIC_DRAW);
 		this->UnbindBuffer();
 	}
 	
@@ -118,7 +118,7 @@ GD_NAMESPACE_BEGIN
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
 		this->BindBuffer();
-		GL.BufferData(GL_UNIFORM_BUFFER, this->Size, Data, GL_DYNAMIC_DRAW);
+		GL.BufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(this->Size), Data, GL_DYNAMIC_DRAW);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to pass Uniform buffer data");
 		this->UnbindBuffer();
 	}

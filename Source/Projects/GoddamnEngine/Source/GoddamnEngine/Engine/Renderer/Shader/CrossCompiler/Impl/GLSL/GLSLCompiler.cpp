@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// GLSLCompiler.h: GLSL compiler generator and compiler implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 13.06.2014 - Created by James Jhuighuy.
@@ -13,7 +13,7 @@
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.h>
 
-#include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.h>
+#include <GoddamnEngine/Core/Containers/StringBuilder.h>
 #include <GoddamnEngine/Core/Threading/CriticalSection/CriticalSection.h>
 #include <GoddamnEngine/Core/IO/Stream/FileStream/FileStream.h>
 #include <GoddamnEngine/Core/IO/Path/Path.h>
@@ -61,7 +61,7 @@ GD_NAMESPACE_BEGIN
 		static Char const GLSLCopyright[] = 
 R"(/// ==========================================================================================
 /// This file was automatically translated from HLSL by Goddamn Engine.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 )";
 
@@ -259,8 +259,8 @@ R"(
 				(((Argument->AccsessType & GD_HLSL_ARGUMENT_OUT) != 0) ? "out" : ""),
 				Argument->Type->Name.CStr(), Argument->Name.CStr());
 		}
-		*(Builder.GetPointer() + Builder.GetLength() - 2) =  ')';
-		*(Builder.GetPointer() + Builder.GetLength() - 1) = '\n';
+		*(Builder.CStr() + Builder.GetLength() - 2) =  ')';
+		*(Builder.CStr() + Builder.GetLength() - 1) = '\n';
 		Builder.Append(StaticFunction->Body);
 	}
 
@@ -298,8 +298,8 @@ R"(
 				}
 				
 				if (Argument->AccsessType == GD_HLSL_ARGUMENT_IN) {
-					*(FakeEntryInvocation.GetPointer() + FakeEntryInvocation.GetLength() - 2) = ')';	// Removing trailing comma.
-					*(FakeEntryInvocation.GetPointer() + FakeEntryInvocation.GetLength() - 1) = ',';	// Removing trailing space.
+					*(FakeEntryInvocation.CStr() + FakeEntryInvocation.GetLength() - 2) = ')';	// Removing trailing comma.
+					*(FakeEntryInvocation.CStr() + FakeEntryInvocation.GetLength() - 1) = ',';	// Removing trailing space.
 					  FakeEntryInvocation.Append(' ');
 				}
 			} else {
@@ -317,13 +317,13 @@ R"(
 			}
 		}
 
-		*(FakeEntryInvocation.GetPointer() + FakeEntryInvocation.GetLength() - 2) = ')';	// Removing trailing comma.
-		*(FakeEntryInvocation.GetPointer() + FakeEntryInvocation.GetLength() - 1) = ';';	// Removing trailing space.
-		  FakeEntryInvocation = Move(StringBuilder().AppendFormat("\n\t%s(%s", EntryPoint->Name.CStr(), FakeEntryInvocation.GetPointer()));
+		*(FakeEntryInvocation.CStr() + FakeEntryInvocation.GetLength() - 2) = ')';	// Removing trailing comma.
+		*(FakeEntryInvocation.CStr() + FakeEntryInvocation.GetLength() - 1) = ';';	// Removing trailing space.
+		  FakeEntryInvocation = Move(StringBuilder().AppendFormat("\n\t%s(%s", EntryPoint->Name.CStr(), FakeEntryInvocation.CStr()));
 
 		if (EntryPoint->Type->Class == GD_HLSL_TYPE_CLASS_STRUCT) {
 			FakeEntryInternals.AppendFormat("\n\t%s Ret;", EntryPoint->Type->Name.CStr());
-			FakeEntryInvocation = Move(StringBuilder().AppendFormat("\n\tRet = %s", FakeEntryInvocation.GetPointer() + 2));
+			FakeEntryInvocation = Move(StringBuilder().AppendFormat("\n\tRet = %s", FakeEntryInvocation.CStr() + 2));
 
 			HLSLStruct const* const ReturnStruct = static_cast<HLSLStruct const*>(EntryPoint->Type);
 			for (auto const& Definition : ReturnStruct->InnerDefinitions) {
@@ -336,7 +336,7 @@ R"(
 			}
 		} else if (EntryPoint->Semantic != nullptr) {
 			FakeEntryExternals.AppendFormat("\nlayout(location = %d) out %s VaryingRet;", LastUsedSemanticOut, EntryPoint->Name.CStr());
-			FakeEntryInvocation = Move(StringBuilder().AppendFormat("\n\tVaryingRet = %s", FakeEntryInvocation.GetPointer() + 2));
+			FakeEntryInvocation = Move(StringBuilder().AppendFormat("\n\tVaryingRet = %s", FakeEntryInvocation.CStr() + 2));
 		}
 
 		Builder.AppendFormat(
@@ -346,10 +346,10 @@ R"(
 				"/*** Generated Fake Entry Invocation***/\n%s"
 				"/*** Generated Fake Entry Assigment ***/\n%s"
 			"}\n"
-			, FakeEntryExternals .GetPointer()
-			, FakeEntryInternals .GetPointer()
-			, FakeEntryInvocation.GetPointer()
-			, FakeEntryAssigment .GetPointer()
+			, FakeEntryExternals .CStr()
+			, FakeEntryInternals .CStr()
+			, FakeEntryInvocation.CStr()
+			, FakeEntryAssigment .CStr()
 			);
 	}
 
@@ -388,7 +388,7 @@ R"(
 
 		// Saving output to some temporary file to make is accessable from MCPP
 		FileOutputStream MCPPSourceFile(MCPPSourceFilePath);
-		MCPPSourceFile.Write(GLSLGeneratorBuilder.GetPointer(), GLSLGeneratorBuilder.GetLength(), sizeof(Char));
+		MCPPSourceFile.Write(GLSLGeneratorBuilder.CStr(), GLSLGeneratorBuilder.GetLength(), sizeof(Char));
 		MCPPSourceFile.Close();
 
 		{	// mcpp is not thread-safe.
@@ -402,7 +402,7 @@ R"(
 		FileInputStream MCPPOutputFile(MCPPOutputFilePath);
 		size_t const GLSLPreprocessedBuilderPos = GLSLPreprocessedBuilder.GetLength();
 		GLSLPreprocessedBuilder.Resize(GLSLPreprocessedBuilder.GetLength() + MCPPOutputFile.GetLength());
-		MCPPOutputFile.Read(GLSLPreprocessedBuilder.GetPointer() + GLSLPreprocessedBuilderPos, MCPPOutputFile.GetLength(), 1);
+		MCPPOutputFile.Read(GLSLPreprocessedBuilder.CStr() + GLSLPreprocessedBuilderPos, MCPPOutputFile.GetLength(), 1);
 		MCPPOutputFile.Close();
 
 		GD_DEBUG_ASSERT(::remove(MCPPSourceFilePath.CStr()) == 0, "Failed to remove mcpp source file.");
@@ -421,7 +421,7 @@ R"(
 			}
 
 			glslopt_ctx   * const OptimizerContext = glslopt_initialize(((ShaderTargetPlatform == GD_HRI_SHADERCC_COMPILER_TARGET_GLSLES3) ? kGlslTargetOpenGLES30 : kGlslTargetOpenGLES20));
-			glslopt_shader* const OptimizedShader = glslopt_optimize(OptimizerContext, ((ShaderTargetPlatform == GD_HRI_SHADER_TYPE_VERTEX) ? kGlslOptShaderVertex : kGlslOptShaderFragment), GLSLPreprocessedBuilder.GetPointer(), kGlslOptionSkipPreprocessor);
+			glslopt_shader* const OptimizedShader = glslopt_optimize(OptimizerContext, ShaderTargetPlatform == GD_HRI_SHADER_TYPE_VERTEX ? kGlslOptShaderVertex : kGlslOptShaderFragment, GLSLPreprocessedBuilder.CStr(), kGlslOptionSkipPreprocessor);
 			if (!glslopt_get_status(OptimizedShader)) {
 				Str const ShaderOptimizationLog = glslopt_get_log(OptimizedShader);
 				GLSLCompilerErrorDesc static const OptimizerFailedError("shader optmization failed with following log: \n%s");
@@ -468,7 +468,7 @@ R"(
 				/* GD_HRI_SHADER_TYPE_GEOMETRY    = */ EShLangGeometry,
 			};
 
-			char const* const GLSLOptimizerBuilderPtr = GLSLOptimizerBuilder.GetPointer();
+			char const* const GLSLOptimizerBuilderPtr = GLSLOptimizerBuilder.CStr();
 			glslang::TShader GLSLangShader(HRI2GLSLangShaderType[ShaderType]);
 			GLSLangShader.setStrings(&GLSLOptimizerBuilderPtr, 1);
 			if (!GLSLangShader.parse(&GLSLangInitializer.DefaultResources, 100, true, EShMsgDefault)) {	// Failed to compile our shader.
@@ -490,7 +490,7 @@ R"(
 		}
 #endif	// if (!defined(GD_HRI_SHADERCC_GLSL_COMPILER_DUAL_CHECK))
 
-		ShaderByteCodeOutputStream->Write(GLSLOptimizerBuilder.GetPointer(), GLSLOptimizerBuilder.GetLength(), sizeof(GLSLOptimizerBuilder.GetPointer()[0]));
+		ShaderByteCodeOutputStream->Write(GLSLOptimizerBuilder.CStr(), GLSLOptimizerBuilder.GetLength(), sizeof(GLSLOptimizerBuilder.CStr()[0]));
 	}
 
 GD_NAMESPACE_END

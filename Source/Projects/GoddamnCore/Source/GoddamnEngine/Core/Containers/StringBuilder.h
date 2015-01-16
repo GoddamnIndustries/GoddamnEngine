@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// StringBuilder.h: Mutable string interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once
@@ -26,16 +26,21 @@ GD_NAMESPACE_BEGIN
 		ContainerType Container;
 
 	public:
+
+		/// @brief Initializes empty string builder.
+		GDINL BaseStringBuilder()
+		{
+			this->Container.PushLast(CharType('\0'));
+		}
+
+		/// @brief Moves other string builder into this string builder.
+		/// @param Other Other string builder to move into this.
 		GDINL BaseStringBuilder(BaseStringBuilder&& Other)
 			: Container(Move(Other.MutableString)) 
 		{
 		}
 
-		GDINL BaseStringBuilder() 
-		{
-			this->Container.PushLast(CharType('\0')); 
-		}
-
+		/// @brief Deinitializes a string builder.
 		GDINL ~BaseStringBuilder()
 		{
 		}
@@ -49,7 +54,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL CharType* CStr()
 		{
-			return const_cast<CharType*>(const_cast<BaseString const*>(this)->CStr());
+			return const_cast<CharType*>(const_cast<BaseStringBuilder const*>(this)->CStr());
 		}
 		/// @}
 		
@@ -90,7 +95,7 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Appends a character to this string builder.
 		/// @param Character Character to append.
- 		/// @returns Self.
+ 		/// @returns this.
 		inline BaseStringBuilder& Append(CharType const Character)
 		{
 			*(this->Container.End() - 1) = Character;
@@ -100,7 +105,7 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Appends formatable string to this string builder.
 		/// @param Format Standart printf-like format.
-		/// @returns Self.
+		/// @returns this.
 		inline BaseStringBuilder& AppendFormat(CharType const* const Format, ...)
 		{
 			/// @todo Optimize this code. possibly try to format everything inline in the builder.
@@ -116,7 +121,7 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Appends a C string with specified length to this string builder.
 		/// @param String C string to append.
-		/// @returns Self.
+		/// @returns this.
 		inline BaseStringBuilder& Append(CharType const* const CString, size_t const Length)
 		{
 			size_t const StartPos = this->Container.GetLength() - 1;
@@ -128,7 +133,7 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Appends a C string to this string builder.
 		/// @param String C string to append.
-		/// @returns Self.
+		/// @returns this.
 		/// @{
 		template <size_t const Length>	// Length of string constant is determined at compile time..
 		inline BaseStringBuilder& Append(CharType const(&CString)[Length])
@@ -143,7 +148,7 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Appends a Goddamn string to this string builder.
 		/// @param TheString Goddamn string to append.
-		/// @returns Self.
+		/// @returns this.
 		inline BaseStringBuilder& Append(BaseStringType const& TheString)
 		{
 			return this->Append(TheString.CStr(), TheString.GetLength());
@@ -158,7 +163,7 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Moves other string builder here.
 		/// @param Other String builder that would be moved into current object.
-		/// @returns Self.
+		/// @returns this.
 		GDINL BaseStringBuilder& operator= (BaseStringBuilder&& Other) 
 		{ 
 			if (this != &Other) {

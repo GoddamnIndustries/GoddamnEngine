@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Path.cpp - Path management utility implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 27.04.2014 - Created by James Jhuighuy
@@ -39,13 +39,13 @@ GD_NAMESPACE_BEGIN
 		extern String GetDirectoryName(String const& SomePath)
 		{
 			size_t const LastSlashLocation = Path::GetLastSlashLocation(SomePath);
-			return ((LastSlashLocation != SIZE_MAX) ? SomePath.Subtring(0, LastSlashLocation) : SomePath);
+			return ((LastSlashLocation != SIZE_MAX) ? SomePath.Substring(0, LastSlashLocation) : SomePath);
 		}
 		
 		extern String GetFileName(String const& SomePath)
 		{
 			size_t const LastSlashLocation = Path::GetLastSlashLocation(SomePath);
-			return ((LastSlashLocation != SIZE_MAX) ? SomePath.Subtring(LastSlashLocation) : SomePath);
+			return ((LastSlashLocation != SIZE_MAX) ? SomePath.Substring(LastSlashLocation) : SomePath);
 		}
 
 		extern String GetDirectoryAndFileNameWithoutExtension(String const& SomePath)
@@ -55,7 +55,7 @@ GD_NAMESPACE_BEGIN
 				return SomePath;
 			}
 
-			return SomePath.Subtring(0, Index - 1);
+			return SomePath.Substring(0, Index - 1);
 		}
 
 		extern String GetFileNameWithoutExtension(String const& SomePath)

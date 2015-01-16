@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// OGLShader.cpp: OpenGL shaders implementation. 
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.02.2014  - Created by James Jhuighuy
@@ -65,7 +65,7 @@ GD_NAMESPACE_BEGIN
 					GL.GetProgramInfoLog(this->ProgramID, static_cast<GLsizei>(LinkingResultLogLength), nullptr, LinkingResultLog.CStr());
 					throw HRIOGLException(String("Shader linking failed with following log: ") + LinkingResultLog);
 				} else {
-					throw HRIOGLException("Unknown error accured while linking shader program.");
+					throw HRIOGLException("Unknown error occured while linking shader program.");
 				}
 			}
 		}
@@ -134,7 +134,7 @@ GD_NAMESPACE_BEGIN
 				GL.GetShaderInfoLog(this->VertexShaderID, static_cast<GLsizei>(CompilationResultLogLength), nullptr, CompilationResultLog.CStr());
 				throw HRIOGLException(String("Vertex shader compilation failed with following log: ") + CompilationResultLog);
 			} else {
-				throw HRIOGLException("Unknown error accured while compiling Vertex shader.");
+				throw HRIOGLException("Unknown error occured while compiling Vertex shader.");
 			}
 		}
 	}
@@ -190,7 +190,7 @@ GD_NAMESPACE_BEGIN
 				GL.GetShaderInfoLog(this->TessCtrlShaderID, static_cast<GLsizei>(CompilationResultLogLength), nullptr, CompilationResultLog.CStr());
 				throw HRIOGLException(String("Tesselation Control shader compilation failed with following log: ") + CompilationResultLog);
 			} else {
-				throw HRIOGLException("Unknown error accured while compiling Tesselation Control shader.");
+				throw HRIOGLException("Unknown error occured while compiling Tesselation Control shader.");
 			}
 		}
 	}
@@ -244,7 +244,7 @@ GD_NAMESPACE_BEGIN
 				GL.GetShaderInfoLog(this->TessEvalShaderID, static_cast<GLsizei>(CompilationResultLogLength), nullptr, CompilationResultLog.CStr());
 				throw HRIOGLException(String("Tesselation Evaluation shader compilation failed with following log: ") + CompilationResultLog);
 			} else {
-				throw HRIOGLException("Unknown error accured while compiling Tesselation Evaluation shader.");
+				throw HRIOGLException("Unknown error occured while compiling Tesselation Evaluation shader.");
 			}
 		}
 	}
@@ -300,7 +300,7 @@ GD_NAMESPACE_BEGIN
 				GL.GetShaderInfoLog(this->FragmentShaderID, static_cast<GLsizei>(CompilationResultLogLength), nullptr, CompilationResultLog.CStr());
 				throw HRIOGLException(String("Fragment shader compilation failed with following log: ") + CompilationResultLog);
 			} else {
-				throw HRIOGLException("Unknown error accured while compiling Fragment shader.");
+				throw HRIOGLException("Unknown error occured while compiling Fragment shader.");
 			}
 		}
 	}

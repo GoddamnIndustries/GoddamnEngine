@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Map.h - Dynamically sized associative container interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once
@@ -8,8 +8,9 @@
 #define GD_CORE_CONTAINERS_MAP
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Templates/Pair.h>
 #include <GoddamnEngine/Core/Containers/Containers.h>
-#include <GoddamnEngine/Core/Containers/Pair.h>
+#include <GoddamnEngine/Core/Containers/InitializerList.h>
 #include <GoddamnEngine/Core/Containers/RedBlackTree/RedBlackTree.h>
 
 GD_NAMESPACE_BEGIN
@@ -17,26 +18,33 @@ GD_NAMESPACE_BEGIN
 	/// @brief Dynamically sized associative container that is implemented with Red-Black Trees.
 	/// 	   Current implementation has a MASSIVE overhead per each element (33 bytes by Red-Black Tree). 
 	/// 	   Red-Black Tree is used for elements access and searching, Lists for elements rapid iteration.
+	/// @tparam KeyType Key type, used for searching.
+	/// @tparam ValueType Type of elements stored in the container.
 	template<typename KeyType, typename ValueType>
-	class Map : public RedBlackTree, public ContainerIteratableTag, public ContainerReverseIteratableTag
+	class Map final : public RedBlackTree<Pair<KeyType, ValueType>>, public ContainerIteratableTag, public ContainerReverseIteratableTag
 	{
-	private:
+	public:
 		typedef Pair<KeyType, ValueType> PairType;
+		typedef RedBlackTree<PairType> RedBlackTreeType;
 		typedef RedBlackTreeNode<PairType> RedBlackTreeNodeType;
-		typedef typename PairType::KeyType const& KeyType const&;
-		typedef typename PairType::ValueType const& ValueType const&;
 
 		typedef RedBlackTreeIterator<Map, RedBlackTreeNodeType> Iterator;
-		typedef RedBlackTreeIterator<Map const, RedBlackTreeNode<PairType const>> ConstIterator;
+		typedef RedBlackTreeIterator<Map const, RedBlackTreeNode<PairType> const> ConstIterator;
 		GD_CONTAINER_CHECK_ITERATORS(Map);
 
 		typedef ReverseContainerIterator<Iterator> ReverseIterator;
 		typedef ReverseContainerIterator<ConstIterator> ReverseConstIterator;
 		GD_CONTAINER_CHECK_REVERSE_ITERATORS(Map);
 
-		GD_CONTAINER_DEFINE_PTR_ITERATION_SUPPORT(Map);
+		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(Map);
 
 	public:
+
+		/// @brief Initializes an empty map.
+		GDINL Map()
+			: RedBlackTree()
+		{
+		}
 
 		/// @brief Initializes map with default C++11's initializer list. You should not use this constructor manually.
 		/// @param InitializerList Initializer list passed by the compiler.
@@ -44,7 +52,7 @@ GD_NAMESPACE_BEGIN
 			: RedBlackTree()
 		{
 			for (auto const& Element : InitializerList) {
-				this->Insert(Element.Key, Element.Value);
+				this->InsertKeyValue(Element.Key, Element.Value);
 			}
 		}
 
@@ -57,14 +65,14 @@ GD_NAMESPACE_BEGIN
 
 	private:
 
-		/// @brief Compares comparands of the nodes by keys. 
-		/// @param First First comparand.
-		/// @param Second Second comparand.
-		/// @returns Zero, if specified comparands are equal, positive value if first is greater, negative otherwise.
-		GDINL virtual int CompareComparands(chandle const First, chandle const Second) const final override
+		/// @brief Compares Elements of the nodes by keys. 
+		/// @param First First Element.
+		/// @param Second Second Element.
+		/// @returns Zero, if specified Elements are equal, positive value if first is greater, negative otherwise.
+		GDINL virtual int CompareElements(chandle const First, chandle const Second) const final override
 		{
-			KeyType const* FirstKey = reinterpret_cast<PairType const*>(First)->Key;
-			KeyType const* SecondKey = reinterpret_cast<PairType const*>(Second)->Key;
+			KeyType const& FirstKey = reinterpret_cast<PairType const*>(First)->Key;
+			KeyType const& SecondKey = reinterpret_cast<PairType const*>(Second)->Key;
 			if (FirstKey == SecondKey) {
 				return 0;
 			} else if (FirstKey > SecondKey) {
@@ -81,11 +89,11 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL Iterator Begin()
 		{
-			return Iterator(*this, this->GetFirstNode());
+			return Iterator(*this, this->RedBlackTreeType::GetFirstNode());
 		}
 		GDINL ConstIterator Begin() const
 		{
-			return ConstIterator(*this, this->GetFirstNode());
+			return ConstIterator(*this, this->RedBlackTreeType::GetFirstNode());
 		}
 		/// @}
 
@@ -94,11 +102,11 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL Iterator End()
 		{
-			return Iterator(*this, this->GetNullNode());
+			return Iterator(*this, this->RedBlackTreeType::GetNullNode());
 		}
 		GDINL ConstIterator End() const
 		{
-			return Iterator(*this, this->GetNullNode());
+			return ConstIterator(*this, this->RedBlackTreeType::GetNullNode());
 		}
 		/// @}
 
@@ -107,11 +115,11 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL ReverseIterator ReverseBegin()
 		{
-			return ReverseIterator(*this, this->GetLastNode());
+			return ReverseIterator(*this, this->RedBlackTreeType::GetLastNode());
 		}
 		GDINL ReverseConstIterator ReverseBegin() const
 		{
-			return ReverseConstIterator(*this, this->GetLastNode());
+			return ReverseConstIterator(*this, this->RedBlackTreeType::GetLastNode());
 		}
 		/// @}
 
@@ -120,11 +128,11 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL ReverseIterator ReverseEnd()
 		{
-			return Iterator(*this, this->GetNullNode());
+			return ReverseIterator(*this, this->RedBlackTreeType::GetNullNode());
 		}
 		GDINL ReverseConstIterator ReverseEnd() const
 		{
-			return Iterator(*this, this->GetNullNode());
+			return ReverseConstIterator(*this, this->RedBlackTreeType::GetNullNode());
 		}
 		/// @}
 	
@@ -136,13 +144,21 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL ConstIterator QueryIterator(KeyType const& Key) const
 		{
-			return ConstIterator(*this, this->Query(&Key));
+			return ConstIterator(*this, this->RedBlackTreeType::Query(&Key));
 		}
 		GDINL Iterator QueryIterator(KeyType const& Key)
 		{
-			return Iterator(*this, this->Query(&Key));
+			return Iterator(*this, this->RedBlackTreeType::Query(&Key));
 		}
 		/// @}
+
+		/// @brief Determines whether the element with specified key exists in the container.
+		/// @param Key Key of the element we are looking for.
+		/// @returns True if element with specified key exists in the container, false otherwise.
+		GDINL bool Contains(KeyType const& Key) const
+		{
+			return this->QueryIterator(Key) != this->End();
+		}
 
 		/// @brief Inserts specified element into collection at desired index.
 		/// @param Key Key of the element that is going to be inserted.
@@ -151,12 +167,12 @@ GD_NAMESPACE_BEGIN
 		GDINL void InsertKeyValue(KeyType&& Key, ValueType&& Value = ValueType())
 		{
 			RedBlackTreeNodeType* const NewNode = new RedBlackTreeNodeType(new PairType(Forward<KeyType>(Key), Forward<ValueType>(Value)));
-			this->Insert(NewNode);
+			this->RedBlackTreeType::Insert(NewNode);
 		}
 		GDINL void InsertKeyValue(KeyType const& Key, ValueType const& Value)
 		{
 			RedBlackTreeNodeType* const NewNode = new RedBlackTreeNodeType(new PairType(Key, Value));
-			this->Insert(NewNode);
+			this->RedBlackTreeType::Insert(NewNode);
 		}
 		/// @}
 
@@ -168,8 +184,8 @@ GD_NAMESPACE_BEGIN
 			GD_ASSERT(QueriedIterator != this->End(), "Element with specified key does not exist.");
 			
 			RedBlackTreeNodeType const* QueriedNode = QueriedIterator.GetNode();
-			this->Delete(QueriedNode);
-			delete QueriedNode->GetComparand();
+			this->RedBlackTreeType::Delete(QueriedNode);
+			delete QueriedNode->GetElement();
 			delete QueriedNode;
 		}
 
@@ -177,7 +193,7 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Moves other map here.
 		/// @param OtherMap Other map that would be moved into current object.
-		/// @returns Self.
+		/// @returns this.
 		GDINL Map& operator= (Map&& OtherMap)
 		{
 			RedBlackTree::operator= (Forward<Map>(OtherMap));

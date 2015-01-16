@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Float32x4IntrinsicsSSE.h: x86 SSE4 Float32x4 vector intrinsics.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 07.06.2014  - Created by James Jhuighuy,
@@ -153,6 +153,8 @@ GD_NAMESPACE_BEGIN
 
 		inline VectorRegisterType VectorCross(VectorRegisterType const First, VectorRegisterType const Second)
 		{
+			GD_NOT_USED(First);
+			GD_NOT_USED(Second);
 			throw 0;
 		}
 

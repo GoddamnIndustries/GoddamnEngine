@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Framework.h - Framework interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 10.06.2014 - Created by James Jhuighuy
@@ -236,7 +236,7 @@ GD_NAMESPACE_BEGIN
 		struct WindowImpl;
 		Window* const ParentWindow = nullptr;
 		WindowImpl* const Impl = nullptr;
-		StackVector<WindowEventListenerProc, static_cast<size_t>(WindowEvent::Invalid)> EventListeners;
+		WindowEventListenerProc EventListeners[static_cast<size_t>(WindowEvent::Invalid)];
 
 	public:
 		GDAPI static Str    const DefaultWindowTitle;

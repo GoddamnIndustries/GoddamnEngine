@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Validator.h: shader validator and description generator interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 17.05.2014 - Created by James Jhuighuy
@@ -34,7 +34,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Shader  Shader for which description would be generated.
 		/// @param ParsedData Parsed data of specifed shader.
 		/// @param EntryName  Name of entry point function
-		/// @returns Generated decription from parsed shader data or nullptr if error occures.
+		/// @returns Generated decription from parsed shader data or nullptr if error occurs.
 		GDAPI HRIShaderInstanceDesc* ValidateAndGenerateDescription(HLSLScope const* const ParsedData, String const& EntryName);
 
 	private:

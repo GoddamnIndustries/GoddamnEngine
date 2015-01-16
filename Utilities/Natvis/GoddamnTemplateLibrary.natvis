@@ -3,33 +3,161 @@
 ##########################################################################
 # GoddamnTemplateLibrary.natvis Visual Studio native visualizer helper.
 # Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-#
-# History:
-#     * 12.06.2014 - Created by James Jhuighuy.
 ##########################################################################
 -->
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <!-- 
   ##########################################################################
-  Template library. Containers, etc.
+  Templates.
   ##########################################################################
   -->
-  <!-- String class -->
+  <!-- UniquePtr<T> class -->
+  <Type Name="Goddamn::UniquePtr&lt;*&gt;">
+    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
+    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
+    <Expand>
+      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
+    </Expand>
+  </Type>
+  <!-- SharedPtr<T> class -->
+  <Type Name="Goddamn::SharedPtr&lt;*&gt;">
+    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
+    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
+    <Expand>
+      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
+      <Item Condition="Pointer != 0" Name="Reference counter">*ReferenceCount</Item>
+    </Expand>
+  </Type>
+  <!-- RefPtr<T> class -->
+  <Type Name="Goddamn::RefPtr&lt;*&gt;">
+    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
+    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
+    <Expand>
+      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
+      <Item Condition="Pointer != 0" Name="Reference counter">Pointer->ReferenceCount</Item>
+    </Expand>
+  </Type>
+  <!-- 
+  ##########################################################################
+  Containers.
+  ##########################################################################
+  -->
+  <!-- ### List.h ### -->
+  <!-- LinkedList<T> class -->
+  <Type Name="Goddamn::LinkedList&lt;*&gt;">
+    <DisplayString>{{ Length = {Length} }}</DisplayString>
+    <Expand>
+      <Item Name="Length">Length</Item>
+      <LinkedListItems>
+        <Size>Length</Size>
+        <HeadPointer>First</HeadPointer>
+        <NextPointer>Next</NextPointer>
+        <ValueNode>Element</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <!-- DoubleLinkedList<T> class -->
+  <Type Name="Goddamn::DoubleLinkedList&lt;*&gt;">
+    <DisplayString>{{ Length = {Length} }}</DisplayString>
+    <Expand>
+      <Item Name="Length">Length</Item>
+      <LinkedListItems>
+        <Size>Length</Size>
+        <HeadPointer>First</HeadPointer>
+        <NextPointer>Next</NextPointer>
+        <ValueNode>Element</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <!-- ### LockFreeList.h ### -->
+  <!-- LockFreeList<T> class -->
+  <Type Name="Goddamn::LockFreeList&lt;*&gt;">
+    <DisplayString>{{ Length = {Length} }}</DisplayString>
+    <Expand>
+      <Item Name="Length">Length</Item>
+      <LinkedListItems>
+        <Size>Length</Size>
+        <HeadPointer>First</HeadPointer>
+        <NextPointer>Next</NextPointer>
+        <ValueNode>Element</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <!-- ### RedBlackTree/RedBlackTree.h ### -->
+  <!-- RedBlackTreeBase class -->
+  <Type Name="Goddamn::RedBlackTreeBase">
+    <DisplayString>{{ Length = {Length} }}</DisplayString>
+    <Expand>
+      <Item Name="Length">Length</Item>
+      <TreeItems>
+        <Size>Length</Size>
+        <HeadPointer>RootNode-&gt;Left</HeadPointer>
+        <LeftPointer>Left</LeftPointer>
+        <RightPointer>Right</RightPointer>
+        <ValueNode Condition="Element != 0">Element</ValueNode>
+      </TreeItems>
+    </Expand>
+  </Type>
+  <!-- RedBlackTree<T> class -->
+  <Type Name="Goddamn::RedBlackTree&lt;*&gt;">
+    <DisplayString>{{ Length = {Length} }}</DisplayString>
+    <Expand>
+      <Item Name="Length">Length</Item>
+      <TreeItems>
+        <Size>Length</Size>
+        <HeadPointer>RootNode-&gt;Left</HeadPointer>
+        <LeftPointer>Left</LeftPointer>
+        <RightPointer>Right</RightPointer>
+        <ValueNode Condition="Element != 0">*(($T1*)Element)</ValueNode>
+      </TreeItems>
+    </Expand>
+  </Type>
+  <!-- ### Map.h ### -->
+  <!-- Map<K, V> class -->
+  <Type Name="Goddamn::Map&lt;*,*&gt;">
+    <DisplayString>{{ Length = {Length} }}</DisplayString>
+    <Expand>
+      <Item Name="Length">Length</Item>
+      <TreeItems>
+        <Size>Length</Size>
+        <HeadPointer>RootNode-&gt;Left</HeadPointer>
+        <LeftPointer>Left</LeftPointer>
+        <RightPointer>Right</RightPointer>
+        <ValueNode Condition="Element != 0">*((Goddamn::Pair&lt;$T1,$T2&gt;*)Element)</ValueNode>
+      </TreeItems>
+    </Expand>
+  </Type>
+  <!-- ### String.h ### -->
+  <!-- BaseString<T> class -->
 	<Type Name="Goddamn::BaseString&lt;*&gt;">
-    <DisplayString Condition="StringSize &gt;= StringMaxHeapSize">{StringHeapPointer}</DisplayString>
-    <DisplayString Condition="StringSize &lt; StringMaxHeapSize">{&amp;StringStackArray[0]}</DisplayString>
-    <StringView Condition="StringSize &gt;= StringMaxHeapSize">StringHeapPointer</StringView>
-    <StringView Condition="StringSize &lt; StringMaxHeapSize">&amp;StringStackArray[0]</StringView>
+    <DisplayString Condition="Length &gt;= MaxStackLength">{HeapMemory}</DisplayString>
+    <DisplayString Condition="Length &lt; MaxStackLength">{&amp;StackMemory[0]}</DisplayString>
+    <StringView Condition="Length &gt;= MaxStackLength">HeapMemory</StringView>
+    <StringView Condition="Length &lt; MaxStackLength">&amp;StackMemory[0]</StringView>
 		<Expand>
-			<Item Name="Length">StringSize</Item>
+			<Item Name="Length">Length</Item>
 			<ArrayItems>
-        <Size>StringSize</Size>
-        <ValuePointer Condition="StringSize &gt;= StringMaxHeapSize">StringHeapPointer</ValuePointer>
-        <ValuePointer Condition="StringSize &lt; StringMaxHeapSize">&amp;StringStackArray[0]</ValuePointer>
+        <Size>Length</Size>
+        <ValuePointer Condition="Length &gt;= MaxStackLength">HeapMemory</ValuePointer>
+        <ValuePointer Condition="Length &lt; MaxStackLength">&amp;StackMemory[0]</ValuePointer>
 			</ArrayItems>
 		</Expand>
 	</Type>
-	<!-- Vector class -->
+  <!-- ### StringBuilder.h ### -->
+  <!-- BaseStringBuilder<T> class -->
+  <Type Name="Goddamn::BaseStringBuilder&lt;*&gt;">
+    <DisplayString>{{ Length = {Container.Length - 1} }}</DisplayString>
+    <Expand>
+      <Item Name="Length">Container.Length - 1</Item>
+      <Item Name="Capacity">Container.Capacity</Item>
+      <ArrayItems>
+        <Size>Container.Length</Size>
+        <ValuePointer>Container.Memory</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <!-- ### Vector.h ### -->
+  <!-- Vector<T> class -->
 	<Type Name="Goddamn::Vector&lt;*&gt;">
 		<DisplayString>{{ Length = {Length} }}</DisplayString>
 		<Expand>
@@ -41,32 +169,6 @@
 			</ArrayItems>
 		</Expand>
 	</Type>
-	<!-- UniquePtr class -->
-	<Type Name="Goddamn::UniquePtr&lt;*&gt;">
-    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
-    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
-    <Expand>
-      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
-    </Expand>
-	</Type>
-  <!-- SharedPtr class -->
-  <Type Name="Goddamn::SharedPtr&lt;*&gt;">
-    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
-    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
-    <Expand>
-      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
-      <Item Condition="Pointer != 0" Name="Reference counter">*ReferenceCount</Item>
-    </Expand>
-  </Type>
-  <!-- RefPtr class -->
-  <Type Name="Goddamn::RefPtr&lt;*&gt;">
-    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
-    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
-    <Expand>
-      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
-      <Item Condition="Pointer != 0" Name="Reference counter">Pointer->ReferenceCount</Item>
-    </Expand>
-  </Type>
   <!-- 
   ##########################################################################
   Math library. Vectors, matrices, etc.

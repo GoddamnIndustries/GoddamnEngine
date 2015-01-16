@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Stream.inl - Base stream inline implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 30.04.2014 - Created by James Jhuighuy
@@ -11,8 +11,8 @@
 #	error("Please, include Stream.h instead of Stream.inl")
 #endif
 
-#include <GoddamnEngine/Core/Utility.h>
-#include <GoddamnEngine/Core/TypeTraits.h>
+#include <GoddamnEngine/Core/Templates/Utility.h>
+#include <GoddamnEngine/Core/Templates/TypeTraits.h>
 
 GD_NAMESPACE_BEGIN
 

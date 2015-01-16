@@ -1,9 +1,6 @@
 /// ==========================================================================================
 /// Parser.h - HLSL parser interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-/// 
-/// History:
-///		* 14.05.2014 - Created by James Jhuighuy
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once
@@ -17,7 +14,7 @@
 
 #if (!defined(GD_PLATFORM_DESKTOP))
 #	error "This API can be used on desktop platfroms only."
-#endif
+#endif	// if (!defined(GD_PLATFORM_DESKTOP))
 
 GD_NAMESPACE_BEGIN
 
@@ -31,28 +28,28 @@ GD_NAMESPACE_BEGIN
 
 	enum HLSLExpressionType : UInt8
 	{
-		GD_HLSL_EXPRESSION_UNKNOWN  = 0,
-		GD_HLSL_EXPRESSION_DEFINITION  = GD_BIT(0),
-		GD_HLSL_EXPRESSION_AFTERCOLON  = GD_BIT(1),
-		GD_HLSL_EXPRESSION_FLOWCONTROL = GD_BIT(2),
-		//GD_HLSL_EXPRESSION_ = GD_BIT(),
+		GD_HLSL_EXPRESSION_UNKNOWN         =        0 ,
+		GD_HLSL_EXPRESSION_DEFINITION      = GD_BIT(0),
+		GD_HLSL_EXPRESSION_AFTERCOLON      = GD_BIT(1),
+		GD_HLSL_EXPRESSION_FLOWCONTROL     = GD_BIT(2),
+		//GD_HLSL_EXPRESSION_              = GD_BIT( ),
 	};	// enum HLSLExpressionType
 
 	enum HLSLDefinitionType : UInt8
 	{
-		GD_HLSL_DEFINITION_UNKNOWN  = 0,
-		GD_HLSL_DEFINITION_VARIABLE    = GD_BIT(0),
-		GD_HLSL_DEFINITION_FUNCTION    = GD_BIT(1),
-		GD_HLSL_DEFINITION_ARGUMENT    = GD_BIT(2),
-		GD_HLSL_DEFINITION_ATTRIBUTE   = GD_BIT(3),
-		GD_HLSL_DEFINITION_CONSTANTBUFFER = GD_BIT(4),
-		GD_HLSL_DEFINITION_TYPEDEF  = GD_BIT(5),
-		GD_HLSL_DEFINITION_TYPE     = GD_BIT(6),
+		GD_HLSL_DEFINITION_UNKNOWN         = 0,
+		GD_HLSL_DEFINITION_VARIABLE        = GD_BIT(0),
+		GD_HLSL_DEFINITION_FUNCTION        = GD_BIT(1),
+		GD_HLSL_DEFINITION_ARGUMENT        = GD_BIT(2),
+		GD_HLSL_DEFINITION_ATTRIBUTE       = GD_BIT(3),
+		GD_HLSL_DEFINITION_CONSTANTBUFFER  = GD_BIT(4),
+		GD_HLSL_DEFINITION_TYPEDEF         = GD_BIT(5),
+		GD_HLSL_DEFINITION_TYPE            = GD_BIT(6),
 	};	// enum HLSLDefinitionType
 	
 	enum HLSLTypeClass : UInt8
 	{
-		GD_HLSL_TYPE_CLASS_UNKNOWN = 0,
+		GD_HLSL_TYPE_CLASS_UNKNOWN         = 0,
 		GD_HLSL_TYPE_CLASS_VOID,
 		GD_HLSL_TYPE_CLASS_SCALAR,
 		GD_HLSL_TYPE_CLASS_VECTOR,
@@ -65,7 +62,7 @@ GD_NAMESPACE_BEGIN
 
 	enum HLSLTypeDataType : UInt8
 	{
-		GD_HLSL_TYPE_DATA_TYPE_UNKNOWN = 0,
+		GD_HLSL_TYPE_DATA_TYPE_UNKNOWN     = 0,
 		GD_HLSL_TYPE_DATA_TYPE_bool,
 		GD_HLSL_TYPE_DATA_TYPE_int,
 		GD_HLSL_TYPE_DATA_TYPE_uint,
@@ -84,23 +81,23 @@ GD_NAMESPACE_BEGIN
 
 	enum HLSLTypeModifier : UInt8
 	{
-		GD_HLSL_TYPE_MODIFIER_UNKNOWN   = 0,
-		GD_HLSL_TYPE_MODIFIER_CONST  = GD_BIT(0),
-		GD_HLSL_TYPE_MODIFIER_ROW_MAJOR = GD_BIT(1),
+		GD_HLSL_TYPE_MODIFIER_UNKNOWN      = 0,
+		GD_HLSL_TYPE_MODIFIER_CONST        = GD_BIT(0),
+		GD_HLSL_TYPE_MODIFIER_ROW_MAJOR    = GD_BIT(1),
 		GD_HLSL_TYPE_MODIFIER_COLUMN_MAJOR = GD_BIT(2),
 	};	// enum HLSLTypeModifier
 
 	enum HLSLExprColonType : UInt8
 	{
-		GD_HLSL_EXPRCOLON_TYPE_UNKNOWN = 0,
-		GD_HLSL_EXPRCOLON_TYPE_SEMANTIC   = GD_BIT(0),
-		GD_HLSL_EXPRCOLON_TYPE_REGISTER   = GD_BIT(1),
-		GD_HLSL_EXPRCOLON_TYPE_PACKOFFSET = GD_BIT(2),
+		GD_HLSL_EXPRCOLON_TYPE_UNKNOWN     = 0,
+		GD_HLSL_EXPRCOLON_TYPE_SEMANTIC    = GD_BIT(0),
+		GD_HLSL_EXPRCOLON_TYPE_REGISTER    = GD_BIT(1),
+		GD_HLSL_EXPRCOLON_TYPE_PACKOFFSET  = GD_BIT(2),
 	};	// enum HLSLExprColonType
 
 	enum HLSLSemanticType : UInt8
 	{
-		GD_HLSL_SEMANTIC_UNKNOWN = 0,
+		GD_HLSL_SEMANTIC_UNKNOWN           = 0,
 		GD_HLSL_SEMANTIC_BINORMAL,
 		GD_HLSL_SEMANTIC_BLENDINDICES,
 		GD_HLSL_SEMANTIC_BLENDWEIGHT,
@@ -140,7 +137,7 @@ GD_NAMESPACE_BEGIN
 
 	enum HLSLRegisterType : UInt8
 	{
-		GD_HLSL_REGISTER_UNKNOWN = 0,
+		GD_HLSL_REGISTER_UNKNOWN           = 0,
 		GD_HLSL_REGISTER_B,
 		GD_HLSL_REGISTER_T,
 		GD_HLSL_REGISTER_C,
@@ -149,10 +146,10 @@ GD_NAMESPACE_BEGIN
 
 	enum HLSLArgumentAccessType : UInt8
 	{
-		GD_HLSL_ARGUMENT_UNKNOWN =  0,
-		GD_HLSL_ARGUMENT_IN   =  GD_BIT(0),
-		GD_HLSL_ARGUMENT_OUT  =  GD_BIT(1),
-		GD_HLSL_ARGUMENT_INOUT   = (GD_HLSL_ARGUMENT_IN | GD_HLSL_ARGUMENT_OUT),
+		GD_HLSL_ARGUMENT_UNKNOWN           =  0,
+		GD_HLSL_ARGUMENT_IN                =  GD_BIT(0),
+		GD_HLSL_ARGUMENT_OUT               =  GD_BIT(1),
+		GD_HLSL_ARGUMENT_INOUT             = (GD_HLSL_ARGUMENT_IN | GD_HLSL_ARGUMENT_OUT),
 	};	// enum HLSLArgumentAccessType
 
 	struct HLSLExpression
@@ -162,7 +159,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		HLSLExpressionType const ExpressionType;
-		GDINL virtual ~HLSLExpression(                 )          { }
+		GDINL virtual ~HLSLExpression()          { }
 		GDINL explicit HLSLExpression(HLSLExpressionType const ExpressionType = GD_HLSL_EXPRESSION_UNKNOWN) : ExpressionType(ExpressionType) { }
 	};	// struct HLSLExpression
 

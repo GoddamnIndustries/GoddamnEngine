@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// D3D11RenderTarget.h: Render target Direct3D11 interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 17.02.2014  - Created by James Jhuighuy
@@ -21,7 +21,7 @@ GD_NAMESPACE_BEGIN
 	{
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRID3D11RenderTarget, HRIRenderTarget, GDINT);
-		StackVector<ID3D11RenderTargetView*, GD_HRI_MAX_RENDER_TARGETS> RenderTargetRenderTargets;
+		StaticVector<ID3D11RenderTargetView*, GD_HRI_MAX_RENDER_TARGETS> RenderTargetRenderTargets;
 
 	public:
 		GDINT explicit HRID3D11RenderTarget(HRIRenderTargetCtorInfo const& gpuRenderTargetCtorInfo);

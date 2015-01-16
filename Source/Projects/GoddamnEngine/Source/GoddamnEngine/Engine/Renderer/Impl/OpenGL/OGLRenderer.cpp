@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// OGLRenderer.cpp - OpenGL(ES) Hardware renderer implementation implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 05.06.2014 - Created by James Jhuighuy
@@ -10,8 +10,9 @@
 #include <GoddamnEngine/Engine/Renderer/Shader/Shader.h>
 #include <GoddamnEngine/Engine/Application/Application.h>
 
-#if (defined(GD_PLATFORM_API_LIBSDL2))
-#else	// if (defined(GD_PLATFORM_API_LIBSDL2))
+#if (defined(GD_PLATFORM_API_LIBSDL2)) && 0
+#elif (defined(GD_PLATFORM_API_LIBSDL1)) && 0
+#else	// if (defined(GD_PLATFORM_API_LIBSDL*))
 #	if (!defined(GD_HRI_OGL_ES))
 #		if (defined(GD_PLATFORM_WINDOWS))
 #			pragma comment(lib, "OpenGL32.lib")
@@ -26,7 +27,7 @@
 #	else	// if (!defined(GD_HRI_OGL_ES))
 #		define GD_GL_GET_PROC_ADDRESS (::eglGetProcAddress)
 #	endif	// if (!defined(GD_HRI_OGL_ES))
-#endif	// if (defined(GD_PLATFORM_API_LIBSDL2))
+#endif	// if (defined(GD_PLATFORM_API_LIBSDL*))
 
 GD_NAMESPACE_BEGIN
 
@@ -40,13 +41,14 @@ GD_NAMESPACE_BEGIN
 			/*throw HRIOGLException("Unable to map 'gl"#MethodName"' method.");*/ \
 			Debug::Warning("Unable to map 'gl"#MethodName"' method.");\
 		}
-#if (defined(GD_PLATFORM_API_LIBSDL2))
-#else	// if (defined(GD_PLATFORM_API_LIBSDL2))
+#if (defined(GD_PLATFORM_API_LIBSDL2)) && 0
+#elif (defined(GD_PLATFORM_API_LIBSDL1)) && 0
+#else	// if (defined(GD_PLATFORM_API_LIBSDL*))
 #	if (!defined(GD_HRI_OGL_ES))
 #		if (defined(GD_PLATFORM_WINDOWS))
-		HWND const Window = reinterpret_cast<HWND>(Application::GetInstance().GetApplicationGameWindow()->GetWindowNativeHandle());
+		HWND const Window = reinterpret_cast<HWND>(Application::GetInstance()/*.GetApplicationGameWindow()->GetWindowNativeHandle()*/.lowLevelSystem->hWindow);
 		if ((this->DeviceContext = ::GetDC(Window)) == nullptr) {
-			throw HRIOGLException("Failed to obtain the windows's device context ('::GetDC' return nullptr)");
+			throw HRIOGLException("Failed to obtain the windows device context ('::GetDC' return nullptr)");
 		}
 
 		PIXELFORMATDESCRIPTOR PixelFormatDescriptor;
@@ -72,15 +74,15 @@ GD_NAMESPACE_BEGIN
 			throw HRIOGLException("Failed to create temporary OpenGL context ('::wglCreateContext' returned nullptr)");
 		}
 		if (::wglMakeCurrent(this->DeviceContext, TemporaryContext) != TRUE) {
-			throw HRIOGLException("Failed to setup temorary OpenGL context ('::wglMakeCurrent' failed)");
+			throw HRIOGLException("Failed to setup temporary OpenGL context ('::wglMakeCurrent' failed)");
 		}
 
 		// Loading OpenGL methods using generated code and WGL manually.
-#if (!defined(__INTELLISENSE__))	// Intelli Sence goes crazy while parsing code below.
+#if (!defined(__INTELLISENSE__))	// IntelliSence goes crazy while parsing code below.
 #	include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
 #endif	// if (!defined(__INTELLISENSE__))
 
-		// Loading API that allowes creation of advanced context.
+		// Loading API that allows creation of advanced context.
 		auto const WinCreateContextAttribsARB = reinterpret_cast<HGLRC(*)(HDC const hDC, HGLRC const hGLRC, int const* const Attributes)>(::wglGetProcAddress("wglCreateContextAttribsARB"));
 		if (WinCreateContextAttribsARB == nullptr) {
 			throw HRIOGLException("Unable to map 'wglCreateContextAttribsARB' method.");
@@ -113,7 +115,7 @@ GD_NAMESPACE_BEGIN
 #			error "'HROGLInterface::CreateContex()' is not implemented for target platform (OpenGL(ES))."
 #		endif	// *** Platform Select ***
 #	endif	// if (!defined(GD_HRI_OGL_ES))
-#endif	// if (defined(GD_PLATFORM_API_LIBSDL2))
+#endif	// if (defined(GD_PLATFORM_API_LIBSDL*))
 		auto const& GL = HROGLInterface::GetInstance().Driver;
 		
 		// Lets check shader limits.
@@ -121,7 +123,7 @@ GD_NAMESPACE_BEGIN
 		GL.GetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &MaxUniformBufferBindings);
 		GD_HRI_OGL_CHECK_ERRORS("Failed to get 'GL_MAX_UNIFORM_BUFFER_BINDINGS' constant");
 		if (MaxUniformBufferBindings < (static_cast<GLint>(GD_HRI_SHADER_MAX_CBUFFERS_LOCATIONS) * static_cast<GLint>(GD_HRI_SHADER_TYPES_COUNT))) {
-			Debug::Error(String::Format("Engine requiests more UBO bindings, than Driver supports. This may cause crashes/graphics artifacts."));
+			Debug::Error(String::Format("Engine requests more UBO bindings, than Driver supports. This may cause crashes/graphics artifacts."));
 		}
 
 		// Enabling functionality.
@@ -146,7 +148,7 @@ GD_NAMESPACE_BEGIN
 	{
 #if (!defined(GD_HRI_OGL_ES))
 #	define GD_DEFINE_OGL_METHOD(ReturnType, MethodName, ArgumentsDeclarations, ArgumentsPassing) this->Driver._##MethodName = nullptr;
-#	if (!defined(__INTELLISENSE__))	// Intelli Sence goes crazy while parsing code below.
+#	if (!defined(__INTELLISENSE__))	// IntelliSence goes crazy while parsing code below.
 #		include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLRendererMethods.h>
 #	endif	// if (!defined(__INTELLISENSE__))
 #	if (defined(GD_PLATFORM_WINDOWS))
@@ -172,10 +174,12 @@ GD_NAMESPACE_BEGIN
 		auto const& GL = HROGLInterface::GetInstance().Driver;
 		GL.Clear(GL_COLOR_BUFFER_BIT | (DoClearDepth ? GL_DEPTH_BUFFER_BIT : 0));
 		GL.ClearColor(ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a);
-		GL.Viewport(static_cast<GLint>(this->ContextRectagle.Width  * ClearingViewport.Left  ),
-					static_cast<GLint>(this->ContextRectagle.Height * ClearingViewport.Top   ),
-					static_cast<GLint>(this->ContextRectagle.Width  * ClearingViewport.Width ),
-					static_cast<GLint>(this->ContextRectagle.Height * ClearingViewport.Height));
+		GL.Viewport(
+			static_cast<GLint>(this->ContextRectagle.Width  * ClearingViewport.Left),
+			static_cast<GLint>(this->ContextRectagle.Height * ClearingViewport.Top),
+			static_cast<GLint>(this->ContextRectagle.Width  * ClearingViewport.Width),
+			static_cast<GLint>(this->ContextRectagle.Height * ClearingViewport.Height)
+		);
 	}
 
 	void HROGLInterface::SwapBuffers()

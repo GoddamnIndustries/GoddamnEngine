@@ -1,6 +1,6 @@
 ﻿//! ==========================================================================================
 //! AssemblyInfo.cs - Build system's assembly information.
-//! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 //! 
 //! @author Created by James Jhuighuy
 //! ==========================================================================================
@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("GoddamnBuildSystem")]
 [assembly: AssemblyDescription("GoddamnEngine Build System")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("$(GODDAMN_DEV)")]
+[assembly: AssemblyCompany("Goddamn Industries")]
 [assembly: AssemblyProduct("GoddamnBuildSystem")]
 [assembly: AssemblyCopyright("Copyright (C) 2014")]
 [assembly: AssemblyTrademark("GoddamnEngine")]

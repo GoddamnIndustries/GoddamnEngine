@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Containers.h - common algorithms for containers interfaces.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once
@@ -8,7 +8,9 @@
 #define GD_CORE_CONTAINERS
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Utility.h>
+#include <GoddamnEngine/Core/Templates/Utility.h>
+
+#include <new>
 
 /// Adds support of ranged-for iteration to the container. 
 /// @param this_type Type of this container. Should contain const and mutable versions of 'Begin' and 'End' methods.
@@ -56,9 +58,39 @@ GD_NAMESPACE_BEGIN
 	/// @brief Type that cannot be used.
 	struct UnusableType
 	{
-		UnusableType();
-		~UnusableType();
+		GDINT UnusableType();
+		GDINT ~UnusableType();
 	};	// struct UnusableType
+
+	/// @brief Struct that is used to determine if iterator has correct signature for direct iterations.
+	struct DirectIteratorTag
+	{
+		typedef UnusableType Iterator;
+
+		GDINL Iterator operator++ ();
+		GDINL Iterator operator++ (int const Unused);
+	};	// struct DirectIteratorTag
+
+	/// @brief Struct that is used to determine if iterator has correct signature for reverse iterations.
+	struct ReverseIteratorTag
+	{
+		typedef UnusableType Iterator;
+
+		GDINL Iterator operator-- ();
+		GDINL Iterator operator-- (int const Unused);
+	};	// struct ReverseIteratorTag
+
+	/// @brief Checks if direct iterator has valid signature.
+	/// @param ThisType Iterator type.
+#define GD_ITERATOR_CHECK_DIRECT(ThisType) \
+	static_assert(TypeTraits::IsBase<DirectIteratorTag, ThisType>::Value, "'GD_ITERATOR_CHECK_DIRECT' is supported only for 'DirectIteratorTag'-derived types"); \
+	/** @todo Add checks for valid operator++. */ \
+
+	/// @brief Checks if reverse iterator has valid signature.
+	/// @param ThisType Iterator type.
+#define GD_ITERATOR_CHECK_REVERSE(ThisType) \
+	static_assert(TypeTraits::IsBase<ReverseIteratorTag, ThisType>::Value, "'GD_ITERATOR_CHECK_REVERSE' is supported only for 'ReverseIteratorTag'-derived types"); \
+	/** @todo Add checks for valid operator++. */ \
 
 	/// @brief Struct that is used to determine if container has correct signature for iterations.
 	struct ContainerIteratableTag
@@ -111,29 +143,44 @@ GD_NAMESPACE_BEGIN
 	/// @brief Checks if this container has a valid signature for iterations.
 	/// @param ThisType Container type.
 #define GD_CONTAINER_CHECK_ITERATORS(ThisType) \
-	static_assert(TypeTraits::IsBaseType<ContainerIteratableTag, ThisType>::Value, "'GD_CONTAINER_CHECK_ITERATOR' Is supported only for 'ContainerIteratableTag' types"); \
-	static_assert(!TypeTraits::IsSameType<Iterator, UnusableType>::Value, "'Iterator' type is not defined."); \
-	static_assert(!TypeTraits::IsSameType<ConstIterator, UnusableType>::Value, "'ConstIterator' type is not defined."); \
+	static_assert(TypeTraits::IsBase<ContainerIteratableTag, ThisType>::Value, "'GD_CONTAINER_CHECK_ITERATOR' is supported only for 'ContainerIteratableTag'-derived types"); \
+	static_assert(!TypeTraits::IsSame<Iterator, UnusableType>::Value, "'Iterator' type is not defined."); \
+	static_assert(!TypeTraits::IsSame<ConstIterator, UnusableType>::Value, "'ConstIterator' type is not defined."); \
 	/** @todo Add checks for valid Begin/End methods. */ \
 
+	/// @brief Checks if this container has a valid signature for reverse iterations.
+	/// @param ThisType Container type.
 #define GD_CONTAINER_CHECK_REVERSE_ITERATORS(ThisType) \
-	/** @todo Implement checks here.. */ \
+	static_assert(TypeTraits::IsBase<ContainerReverseIteratableTag, ThisType>::Value, "'GD_CONTAINER_CHECK_REVERSE_ITERATORS' is supported only for 'ContainerReverseIteratableTag'-derived types"); \
+	static_assert(!TypeTraits::IsSame<ReverseIterator, UnusableType>::Value, "'ReverseIterator' type is not defined."); \
+	static_assert(!TypeTraits::IsSame<ReverseConstIterator, UnusableType>::Value, "'ReverseConstIterator' type is not defined."); \
+	/** @todo Add checks for valid ReverseBegin/ReverseEnd methods. */ \
 
-#define GD_CONTAINER_CHECK_REVERSE_ITERATORS(ThisType) \
-	/** @todo Implement checks here.. */ \
-
+	/// @brief Checks if this container has a valid signature for per-pointer iterations.
+	/// @param ThisType Container type.
 #define GD_CONTAINER_CHECK_PTR_ITERATORS(ThisType) \
-	/** @todo Implement checks here.. */ \
+	static_assert(TypeTraits::IsBase<ContainerPtrIteratableTag, ThisType>::Value, "'GD_CONTAINER_CHECK_PTR_ITERATORS' is supported only for 'ContainerPtrIteratableTag'-derived types"); \
+	static_assert(!TypeTraits::IsSame<PtrIterator, UnusableType>::Value, "'PtrIterator' type is not defined."); \
+	static_assert(!TypeTraits::IsSame<PtrConstIterator, UnusableType>::Value, "'PtrConstIterator' type is not defined."); \
+	/** @todo Add checks for valid PtrBegin/PtrEnd methods. */ \
 
+	/// @brief Checks if this container has a valid signature for per-pointer reverse iterations.
+	/// @param ThisType Container type.
 #define GD_CONTAINER_CHECK_REVERSE_PTR_ITERATORS(ThisType) \
-	/** @todo Implement checks here.. */ \
+	static_assert(TypeTraits::IsBase<ContainerPtrReverseIteratableTag, ThisType>::Value, "'GD_CONTAINER_CHECK_REVERSE_PTR_ITERATORS' is supported only for 'ContainerPtrReverseIteratableTag'-derived types"); \
+	static_assert(!TypeTraits::IsSame<ReversePtrIterator, UnusableType>::Value, "'ReversePtrIterator' type is not defined."); \
+	static_assert(!TypeTraits::IsSame<ReversePtrConstIterator, UnusableType>::Value, "'ReversePtrConstIterator' type is not defined."); \
+	/** @todo Add checks for valid ReverseBegin/ReverseEnd methods. */ \
 
 	/// @brief Iterator for container that have constant-time (preferably) index access operators.
 	/// @tparam IndexedContainerType Type of container.
 	/// @tparam IndexedContainerElementType Type of container element type.
 	template<typename IndexedContainerType, typename IndexedContainerElementType>
-	struct IndexedContainerIterator final
+	struct IndexedContainerIterator final : public DirectIteratorTag, public ReverseIteratorTag
 	{
+		GD_ITERATOR_CHECK_DIRECT(IndexedContainerIterator);
+		GD_ITERATOR_CHECK_REVERSE(IndexedContainerIterator);
+
 	private:
 		IndexedContainerType& Container;
 		size_t Index = 0;
@@ -149,7 +196,7 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Assigns this iterator other one.
 		/// @param Other Other iterator to assign.
-		/// @returns Self.
+		/// @returns this.
 		GDINL IndexedContainerIterator& operator= (IndexedContainerIterator const& Other)
 		{
 			GD_ASSERT(&this->Container == &Other.Container, "Iterators have different base containers.");
@@ -187,7 +234,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Assigns the iterator previous element of the indexed container.
 		/// @param Unused Unused parameter passed be compiler.
 		/// @returns Iterator before decrementing.
-		GDINL IndexedContainerIterator operator-- (int const)
+		GDINL IndexedContainerIterator operator-- (int const Unused)
 		{
 			GD_NOT_USED(Unused);
 			IndexedContainerIterator Copy(*this);
@@ -399,7 +446,6 @@ GD_NAMESPACE_BEGIN
 	{
 	private:
 		GD_CLASS_UNASSIGNABLE(ReverseContainerAdapter);
-		GD_CLASS_UNSWAPPABLE(ReverseContainerAdapter);
 		ContainerType& Container;
 
 	public:
@@ -411,10 +457,17 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
+		/// @brief Initializes an adapter as copy of the other adapter.
+		/// @param Other Other adapter that would be copied.
+		GDINL ReverseContainerAdapter(ReverseContainerAdapter const& Other)
+			: Container(Other.Container)
+		{
+		}
+
 		/// @brief Returns iterator that points to first container element.
 		/// @returns Iterator that points to first container element.
 		GDINL auto Begin() const ->
-			typename EnableIf<TypeTraits::IsBaseType<ContainerReverseIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().ReverseBegin())>::Type
+			typename EnableIf<TypeTraits::IsBase<ContainerReverseIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().ReverseBegin())>::Type
 		{
 			return this->Container.ReverseBegin(); 
 		}
@@ -422,7 +475,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Returns iterator that points to past the end container element.
 		/// @returns Iterator that points to past the end container element.
 		GDINL auto End() const -> 
-			typename EnableIf<TypeTraits::IsBaseType<ContainerReverseIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().ReverseEnd())>::Type
+			typename EnableIf<TypeTraits::IsBase<ContainerReverseIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().ReverseEnd())>::Type
 		{ 
 			return this->Container.ReverseEnd(); 
 		}
@@ -430,7 +483,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Returns iterator that points to last container element.
 		/// @returns Iterator that points to last container element.
 		GDINL auto ReverseBegin() const ->
-			typename EnableIf<TypeTraits::IsBaseType<ContainerIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().Begin())>::Type
+			typename EnableIf<TypeTraits::IsBase<ContainerIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().Begin())>::Type
 		{
 			return this->Container.Begin();
 		}
@@ -438,20 +491,20 @@ GD_NAMESPACE_BEGIN
 		/// @brief Returns iterator that points to preceding the first container element.
 		/// @returns Iterator that points to preceding the first container element.
 		GDINL auto ReverseEnd() const ->
-			typename EnableIf<TypeTraits::IsBaseType<ContainerIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().End())>::Type
+			typename EnableIf<TypeTraits::IsBase<ContainerIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().End())>::Type
 		{
 			return this->Container.End();
 		}
 
 	private:
 		GDINL friend auto begin(ReverseContainerAdapter const& container) ->
-			typename EnableIf<TypeTraits::IsBaseType<ContainerReverseIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().ReverseBegin())>::Type
+			typename EnableIf<TypeTraits::IsBase<ContainerReverseIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().ReverseBegin())>::Type
 		{
 			return container.Begin();
 		}
 
 		GDINL friend auto end(ReverseContainerAdapter const& container) ->
-			typename EnableIf<TypeTraits::IsBaseType<ContainerReverseIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().ReverseBegin())>::Type
+			typename EnableIf<TypeTraits::IsBase<ContainerReverseIteratableTag, ContainerType>::Value, decltype(DeclValue<ContainerType>().ReverseBegin())>::Type
 		{
 			return container.End();
 		}
@@ -464,7 +517,114 @@ GD_NAMESPACE_BEGIN
 	template<typename ContainerType>
 	GDINL ReverseContainerAdapter<ContainerType> Reverse(ContainerType& Container)
 	{	
-		return ReverseContainerAdapter<typename TypeTraits::IsReference<ContainerType>::Type>(Container);
+		return ReverseContainerAdapter<ContainerType>(Container);
+	}
+
+	/// @brief Initializes value of the specified iterator.
+	/// @param Iterator Value of this iterator would be initialized.
+	template<typename IteratorType>
+	GDINL static void InitializeIterator(IteratorType const Iterator)
+	{
+		typedef typename TypeTraits::RemoveReference<decltype(*Iterator)>::Type ElementType;
+		if (!TypeTraits::IsPOD<ElementType>::Value) {
+			new (Iterator) ElementType();
+		}
+	}
+
+	/// @brief Initializes value of the specified iterator.
+	/// @param Iterator Value of this iterator would be initialized.
+	/// @param Element Initial value of the iterator.
+	/// @{
+	template<typename IteratorType, typename ElementType>
+	GDINL static void InitializeIterator(IteratorType const Iterator, ElementType&& Element)
+	{
+		new (Iterator) ElementType(Forward<ElementType>(Element));
+	}
+	template<typename IteratorType, typename ElementType>
+	GDINL static void InitializeIterator(IteratorType const Iterator, ElementType const& Element)
+	{
+		new (Iterator) ElementType(Element);
+	}
+	/// @}
+
+	/// @brief Initializes all values of the iterators in specified range.
+	/// @param StartIterator Start of the iterators range.
+	/// @param EndIterator End of the iterators range.
+	template<typename IteratorType>
+	GDINL static void InitializeRange(IteratorType const StartIterator, IteratorType const EndIterator)
+	{
+		typedef typename TypeTraits::RemoveReference<decltype(*StartIterator)>::Type ElementType;
+		if (!TypeTraits::IsPOD<ElementType>::Value) {
+			for (IteratorType Iterator = StartIterator; Iterator != EndIterator; ++Iterator) {
+				InitializeIterator(Iterator);
+			}
+		}
+	}
+
+	/// @brief Deinitializes value of the specified iterator.
+	/// @param Iterator Value of this iterator would be initialized.
+	template<typename IteratorType>
+	GDINL static void DeinitializeIterator(IteratorType const Iterator)
+	{
+		typedef typename TypeTraits::RemoveReference<decltype(*Iterator)>::Type ElementType;
+		if (!TypeTraits::IsPOD<ElementType>::Value) {
+			Iterator->~ElementType();
+		}
+	}
+
+	/// @brief Deinitializes all values of the iterators in specified range.
+	/// @param StartIterator Start of the iterators range.
+	/// @param EndIterator End of the iterators range.
+	template<typename IteratorType>
+	GDINL static void DeinitializeRange(IteratorType const StartIterator, IteratorType const EndIterator)
+	{
+		typedef typename TypeTraits::RemoveReference<decltype(*StartIterator)>::Type ElementType;
+		if (!TypeTraits::IsPOD<ElementType>::Value) {
+			for (IteratorType Iterator = StartIterator; Iterator != EndIterator; ++Iterator) {
+				DeinitializeIterator(Iterator);
+			}
+		}
+	}
+
+	/// @brief Copies values of the iterators from source range to destination.
+	/// @param StartSource Start of the source iterators range.
+	/// @param EndSource End of the source iterators range.
+	/// @param Destination First destination iterator.
+	template<typename SourceIteratorType, typename DestinationIteratorType>
+	GDINL static void CopyFromRange(SourceIteratorType const& StartSource, SourceIteratorType const& EndSource, DestinationIteratorType Destination)
+	{
+		for (SourceIteratorType Iterator = StartSource; Iterator != EndSource; ++Iterator) {
+			InitializeIterator(Destination + (Iterator - StartSource), *Iterator);
+		}
+	}
+
+	/// @brief Moves values of the iterators from source range to destination.
+	/// @param StartSource Start of the source iterators range.
+	/// @param EndSource End of the source iterators range.
+	/// @param Destination First destination iterator.
+	template<typename SourceIteratorType, typename DestinationIteratorType>
+	GDINL static void MoveFromRange(SourceIteratorType const& StartSource, SourceIteratorType const& EndSource, DestinationIteratorType Destination)
+	{
+		typedef typename TypeTraits::RemoveReference<decltype(*Destination)>::Type ElementType;
+		for (SourceIteratorType Iterator = StartSource; Iterator != EndSource; ++Iterator) {
+			InitializeIterator(Destination + (Iterator - StartSource), Forward<ElementType>(*Iterator));
+		}
+	}
+
+	/// @brief Compares this container and some other by a predicate.
+	/// @param OtherVector Other container against which we are comparing.
+	/// @param Predicate Object with () operator overloaded that takes two elements and compares then somehow.
+	template<typename ContainerType, typename ComparingPredicateType>
+	GDINL bool CompareTo(ContainerType const& First, ContainerType const& Second, ComparingPredicateType const& Predicate)
+	{
+		size_t const MinLength = Min(First.Length, Second.Length);
+		for (size_t Index = 0; Index < MinLength; ++Index) {
+			if (!Predicate(*(First.PtrBegin() + Index), *(Second.PtrBegin() + Index))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 GD_NAMESPACE_END

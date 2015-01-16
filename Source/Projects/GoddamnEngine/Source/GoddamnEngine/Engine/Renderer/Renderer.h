@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Renderer.h - <p>Hardcore</p> Hardware Rendering Interface (HRI).
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2014 - Created by James Jhuighuy
@@ -14,8 +14,9 @@
 #include <GoddamnEngine/Include.h>
 
 #include <GoddamnEngine/Core/Math/Math.h>
-#include <GoddamnEngine/Core/Format/Format.h>
-#include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
+#include <GoddamnEngine/Core/Templates/RefPtr.h>
+#include <GoddamnEngine/Core/Containers/StaticVector.h>
+#include <GoddamnEngine/Engine/Renderer/Format/Format.h>
 #include <GoddamnEngine/Core/Diagnostics/Exception/Exception.h>
 #include <GoddamnEngine/Engine/Plugin/Plugin.h>
 #include <GoddamnEngine/Engine/Application/Application.h>
@@ -154,7 +155,7 @@ GD_NAMESPACE_BEGIN
 		GDINL virtual ~HRIIndexBuffer(                ) { }
 	public:
 		GDINL chandle GetData  () const { return this->Data; }
-		GDINL size_t  GetSize  () const { return this->Size; }
+		GDINL size_t  GetLength  () const { return this->Size; }
 		GDINL size_t  GetStride() const { return this->Stride; }
 	};	// class HRIIndexBuffer
 
@@ -190,7 +191,7 @@ GD_NAMESPACE_BEGIN
 	{
 	private:
 		GD_TYPEINFORMATION_DEFINITION(HRIIndexedShape, HRIObject, GDAPI);
-		StackVector<RefPtr<HRIVertexBuffer>, GD_HRI_SEMANTICS_COUNT> VertexBuffers;
+		StaticVector<RefPtr<HRIVertexBuffer>, GD_HRI_SEMANTICS_COUNT> VertexBuffers;
 		RefPtr<HRIIndexBuffer> IndexBuffer;
 		HRITopologyType TopologyType;
 
@@ -322,7 +323,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		Resolution const RenderTargetResolution;
-		StackVector<HRITexture2D const*, 10> RenderTargetTextures;
+		StaticVector<HRITexture2D const*, 10> RenderTargetTextures;
 
 		GDAPI ~HRIRenderTargetCtorInfo();
 		GDAPI  HRIRenderTargetCtorInfo(HRIRenderTargetCtorInfo const& gpuRenderTargetCtorInfo);
@@ -355,7 +356,7 @@ GD_NAMESPACE_BEGIN
 		GD_TYPEINFORMATION_DEFINITION(HRInterface, Object, GDAPI);
 
 	protected:
-		GDINL explicit HRInterface() : ContextRectagle(Application::GetInstance().GetApplicationGameWindow()->GetWindowRectangle()) { }
+		GDINL explicit HRInterface() : ContextRectagle(/*Application::GetInstance().GetApplicationGameWindow()->GetWindowRectangle()*/Rectangle(0, 0, 1280, 720)) { }
 		GDINL virtual ~HRInterface() { }
 
 	public:

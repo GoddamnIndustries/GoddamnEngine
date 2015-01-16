@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Resource.h - base resource interface.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.01.2012 - Created by James Jhuighuy
@@ -12,12 +12,13 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/IO/Stream/Stream.h>
-#include <GoddamnEngine/Core/Reflection/Object/Object.h>
+#include <GoddamnEngine/Core/Object/Object.h>
+#include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
 #include <GoddamnEngine/Core/Threading/CriticalSection/CriticalSection.h>
-#include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
-#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.h>
-#include <GoddamnEngine/Core/Text/StringBuilder/StringBuilder.h>
-#include <GoddamnEngine/Core/Reflection/TypeInformation/TypeInformation.h>
+#include <GoddamnEngine/Core/Templates/RefPtr.h>
+#include <GoddamnEngine/Core/Templates/UniquePtr.h>
+#include <GoddamnEngine/Core/Containers/StringBuilder.h>
+#include <GoddamnEngine/Core/Reflection/TypeInformation.h>
 
 #define GD_RESOURCE_ARGS (*(reinterpret_cast<String const*>(Argument)))
 
@@ -29,7 +30,7 @@ GD_NAMESPACE_BEGIN
 		PathToRealFile,						///< URI points to file in file system. E.g. "@c file://path_to_file"
 		PathToVirtualFile,					///< URI points to data in file. E.g. "@c package://path_to_package?path_to_file_in_package"
 		PathToServer,						///< URI points to external server. E.g. "@c https://your_domain.com/your_file" 
-		InlinedData,						///< URI points to data inlined into itself. E.g. "@c inline://plain-text?Hello, World!"
+		InlinedData,						///< URI points to data inlined into itthis. E.g. "@c inline://plain-text?Hello, World!"
 		Unknown,							///< Unknown URI type (internalusage only).
 		Count								= Unknown,
 	};	// enum RSURIType
@@ -206,10 +207,10 @@ GD_NAMESPACE_BEGIN
 	private /*Class API*/:
 		/// Searches for resource with specified identifier in list and returns it if found nullptr otherwise. 
 		/// @param ID     Idenitifer of the reqiured resource.
-		/// @param TypeInformation Type informartion of type that would be created if original was not found. 
+		/// @param ITypeInformation Type informartion of type that would be created if original was not found. 
 		/// @param DoSearchInRequests If is set, then searching is also done in requests list.
 		/// @returns First found resource that matches specified criteria or nullptr.
-		GDAPI RefPtr<Resource> FindOrCreateResource(String const& ID, ITypeInformation const* const TypeInformation);
+		GDAPI RefPtr<Resource> FindOrCreateResource(String const& ID, ITypeInformation const* const ITypeInformation);
 
 	public /*Class API*/:
 		/// Loads in to memory and/or to GPU already existing resource.
@@ -219,9 +220,9 @@ GD_NAMESPACE_BEGIN
 
 		/// Creates resource (or uses existing found by identifier) and loads it.
 		/// @param ID     Idenitifer of the reqiured resource.
-		/// @param TypeInformation Type informartion of type that would be created. 
+		/// @param ITypeInformation Type informartion of type that would be created. 
 		/// @returns Possible created or found immediately loaded resource.
-		GDAPI RefPtr<Resource> LoadImmediately(String const& ID, ITypeInformation const* const TypeInformation);
+		GDAPI RefPtr<Resource> LoadImmediately(String const& ID, ITypeInformation const* const ITypeInformation);
 
 		/// @see RSStreamer::LoadImmediately
 		template<typename ResourceType>
@@ -232,7 +233,7 @@ GD_NAMESPACE_BEGIN
 		/// Recommended using RSStreamer::WaitForLoading function to ensure, that all resources in queue are loaded.
 		///	If resource streaming is disabled, than calling RSStreamer::WaitForLoading is required.
 		///	to load all unloaded resource in current thread.
-		GDAPI RefPtr<Resource> ProcessStreaming(String const& ID, ITypeInformation const* const TypeInformation);
+		GDAPI RefPtr<Resource> ProcessStreaming(String const& ID, ITypeInformation const* const ITypeInformation);
 
 		/// @see RSStreamer::ProcessStreaming
 		template<typename ResourceType>

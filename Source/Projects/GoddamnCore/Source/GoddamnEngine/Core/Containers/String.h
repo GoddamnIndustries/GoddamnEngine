@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// String.h - Constantly sized string class.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once
@@ -43,10 +43,10 @@ GD_NAMESPACE_BEGIN
 
 	private:
 		size_t Length = 0;
-		size_t static const StringMaxHeapSize = 2 * (sizeof(CharType*) / sizeof(CharType));
-		static_assert((StringMaxHeapSize >= 2) && (StringMaxHeapSize >= sizeof(CharType*)), "'StringMaxHeapSize' has invalid size");
+		size_t static const MaxStackLength = 2 * (sizeof(CharType*) / sizeof(CharType));
+		static_assert((MaxStackLength >= 2) && (MaxStackLength >= sizeof(CharType*)), "'MaxStackLength' has invalid size");
 		union {
-			CharType StackMemory[StringMaxHeapSize];
+			CharType StackMemory[MaxStackLength];
 			CharType* HeapMemory;
 		};	// anonymous union
 
@@ -71,10 +71,11 @@ GD_NAMESPACE_BEGIN
 		/// @brief Fills a String with specified number of characters.
 		/// @param Size A length of the string.
 		/// @param FillWith A character that String would be filled with.
-		GDINL BaseString(size_t const Size, CharType const FillWith = CharType('\0'))
+		GDINL BaseString(size_t const Length, CharType const FillWith = CharType('\0'))
 		{
-			if ((this->Length = Size) >= BaseString::StringMaxHeapSize) {
-				size_t const DataSizeInBytes = (Size + 1) * sizeof(CharType);
+			this->Length = Length;
+			if (this->Length >= BaseString::MaxStackLength) {
+				size_t const DataSizeInBytes = (Length + 1) * sizeof(CharType);
 				this->HeapMemory = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
 			}
 
@@ -83,7 +84,7 @@ GD_NAMESPACE_BEGIN
 					Character = FillWith;
 				}
 			} else {
-				::memset(this->CStr(), FillWith, Size);
+				::memset(this->CStr(), FillWith, Length);
 			}
 
 			*this->PtrEnd() = CharType('\0');
@@ -92,12 +93,12 @@ GD_NAMESPACE_BEGIN
 		/// @brief Initializes a String with some C String with known length.
 		/// @param Chars String's initial data.
 		/// @param Size Size of String initial data.
-		GDINL BaseString(CharType const* const Chars, size_t const Size)
+		GDINL BaseString(CharType const* const Chars, size_t const Length)
 		{
 			GD_DEBUG_ASSERT(Chars != nullptr, "Null pointer data specified");
-			this->Length = Size;
-			size_t const DataSizeInBytes = (Size + 1) * sizeof(CharType);
-			if (this->Length >= BaseString::StringMaxHeapSize) {
+			this->Length = Length;
+			size_t const DataSizeInBytes = (Length + 1) * sizeof(CharType);
+			if (this->Length >= BaseString::MaxStackLength) {
 				this->HeapMemory = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
 				::memcpy(this->HeapMemory, Chars, DataSizeInBytes);
 			} else {
@@ -133,10 +134,10 @@ GD_NAMESPACE_BEGIN
 			*this = Forward<BaseString>(Other);
 		}
 
-		/// @brief Deinitialzes string.
+		/// @brief Deinitializes string.
 		GDINL ~BaseString()
 		{
-			if (this->Length >= BaseString::StringMaxHeapSize) {
+			if (this->Length >= BaseString::MaxStackLength) {
 				Allocator::DeallocateMemory(this->HeapMemory);
 				this->HeapMemory = nullptr;
 			} else {
@@ -233,7 +234,7 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL ReverseIterator ReverseBegin()
 		{
-			return ReverseContainerIterator(this->End() - 1);
+			return ReverseIterator(this->End() - 1);
 		}
 		GDINL ReverseConstIterator ReverseBegin() const
 		{
@@ -246,7 +247,7 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL ReverseIterator ReverseEnd()
 		{
-			return ReverseContainerIterator(this->Begin() - 1);
+			return ReverseIterator(this->Begin() - 1);
 		}
 		GDINL ReverseConstIterator ReverseEnd() const
 		{
@@ -273,7 +274,7 @@ GD_NAMESPACE_BEGIN
 		/// @{
 		GDINL CharType const* CStr() const
 		{
-			if (this->GetLength() >= BaseString::StringMaxHeapSize) {
+			if (this->GetLength() >= BaseString::MaxStackLength) {
 				return this->HeapMemory;
 			} else {
 				return &this->StackMemory[0];
@@ -308,7 +309,7 @@ GD_NAMESPACE_BEGIN
 		/// @param From Index of the first character that would be extracted to the substring.
 		/// @param To Index of the last character that would be extracted to the substring.
 		/// @returns A part of this string.
-		GDINL BaseString Subtring(size_t const From, size_t const To) const
+		GDINL BaseString Substring(size_t const From, size_t const To) const
 		{
 			GD_DEBUG_ASSERT(To >= From, "Invalid subString indices.");
 			BaseString Result(To - From);
@@ -319,9 +320,9 @@ GD_NAMESPACE_BEGIN
 		/// @brief Extracts a substring fro this string from specified index to the end.
 		/// @param From Index of the first character that would be extracted to the substring.
 		/// @returns A part of this string.
-		GDINL BaseString Subtring(size_t const From) const
+		GDINL BaseString Substring(size_t const From) const
 		{
-			return this->Subtring(From, this->GetLength());
+			return this->Substring(From, this->GetLength());
 		}
 
 		/// @brief Searches for first occurrence of the character in the string.
@@ -438,28 +439,36 @@ GD_NAMESPACE_BEGIN
 		GDINL static BaseString Format(CharType const* const Format, ...)
 		{
 			va_list List; va_start(List, Format);
-			return (BaseString::FormatVa(Format, List));
+			return BaseString::FormatVa(Format, List);
 		}
 
 		/// @brief Assigns string with copy of other string.
 		/// @param OtherVector String would be assigned.
-		/// @returns Self.
+		/// @returns this.
 		GDINL BaseString& operator= (BaseString const& Other)
 		{
 			this->~BaseString();
-			this->ConstructWithDataPointerAndSize(Other.CStr(), Other.GetLength());
-			return (*this);
+			this->Length = Other.Length;
+			size_t const DataSizeInBytes = (this->Length + 1) * sizeof(CharType);
+			if (this->Length >= BaseString::MaxStackLength) {
+				this->HeapMemory = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
+				::memcpy(this->HeapMemory, Other.CStr(), DataSizeInBytes);
+			} else {
+				::memcpy(&this->StackMemory[0], Other.CStr(), DataSizeInBytes);
+			}
+
+			return *this;
 		}
 
 		/// @brief Moves other string here.
 		/// @param Other String would be moved into current object.
-		/// @returns Self.
+		/// @returns this.
 		GDINL BaseString& operator= (BaseString&& Other)
 		{
 			this->~BaseString();
 			this->Length = Other.Length;
 			Other.Length = 0;
-			if (this->Length >= BaseString::StringMaxHeapSize) {
+			if (this->Length >= BaseString::MaxStackLength) {
 				this->HeapMemory = Other.HeapMemory;
 				Other.HeapMemory = nullptr;
 			} else {
@@ -467,7 +476,7 @@ GD_NAMESPACE_BEGIN
 				::memcpy(&this->StackMemory[0], &Other.StackMemory[0], DataSizeInBytes);
 			}
 
-			return (*this);
+			return *this;
 		}
 
 		/// @brief Returns reference on the character at specified index.
@@ -481,7 +490,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL CharType& operator[] (size_t const Index)
 		{
-			return const_cast<Char&>(const_cast<BaseString const&>(&this)[Index]);
+			return const_cast<Char&>(const_cast<BaseString const&>(*this)[Index]);
 		}
 		/// @}
 
@@ -526,17 +535,17 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// @brief Checks if this string is greater to specified one.
-		/// @param OtherVector Other string to compare to.
+		/// @param Other Other string to compare to.
 		/// @returns True if this string is greater to specified one, false otherwise.
-		GDINL bool operator> (BaseString const& OtherVector) const
+		GDINL bool operator> (BaseString const& Other) const
 		{
 			return (CharTraits<CharType>::StrNCmp(this->CStr(), Other.CStr(), this->Length) > 0);
 		}
 
 		/// @brief Checks if this string is less to specified one.
-		/// @param OtherVector Other string to compare to.
+		/// @param Other Other string to compare to.
 		/// @returns True if this string is less to specified one, false otherwise.
-		GDINL bool operator< (BaseString const& OtherVector) const
+		GDINL bool operator< (BaseString const& Other) const
 		{
 			return (CharTraits<CharType>::StrNCmp(this->CStr(), Other.CStr(), this->Length) < 0);
 		}

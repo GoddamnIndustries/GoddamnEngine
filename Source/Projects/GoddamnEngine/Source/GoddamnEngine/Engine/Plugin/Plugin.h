@@ -2,7 +2,7 @@
 #define GD_ENGINE_PLUGIN_PLUGIN
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Reflection/Object/Object.h>
+#include <GoddamnEngine/Core/Object/Object.h>
 #include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
 
 GD_NAMESPACE_BEGIN
@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 		static_assert(((8 * sizeof(PluginLoadingFlags)) >= GD_PLUGIN_TYPES_COUNT),
 			"PluginLoadingFlags`s type is not large enough to represent flags for plugins flags");
 
-		TypeInformation const*	PluginTypeInformation;	///< Type information about plugin 
+		ITypeInformation const*	PluginTypeInformation;	///< Type information about plugin 
 		char const*				Description;			///< String description of plugin
 		PluginType				Type;					///< Type of this plugin
 	};
@@ -38,7 +38,7 @@ GD_NAMESPACE_BEGIN
 	{
 		static_assert(((SpecifiedPluginType != GD_PLUGIN_TYPES_COUNT) 
 			&& (SpecifiedPluginType != GD_PLUGIN_TYPE_UNKNOWN)),
-			"Specification plugins for 'GD_PLUGIN_TYPES_COUNT/UNKNOWN' are not allowed");
+			"Specification plugins for 'GD_PLUGIN_TYPES_COUNT/Unknown' are not allowed");
 
 	public:
 		/// Type of this plugin is

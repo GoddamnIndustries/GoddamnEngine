@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Matrix4x4.h - 4x4 matrix class.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 09.06.2014  - Rewritten from scratch by James Jhuighuy,
@@ -27,7 +27,7 @@ GD_NAMESPACE_BEGIN
 	struct Matrix4x4t final
 	{
 		static_assert(TypeTraits::IsFloatingPoint<ElementType>::Value, "'Matrix4x4t<T>' error: T should be floating-point value.");
-		typedef typename Conditional<TypeTraits::IsPodType<ElementType>::Value, ElementType, ElementType const&>::Type ElementTypeConstRef;
+		typedef typename Conditional<TypeTraits::IsPOD<ElementType>::Value, ElementType, ElementType const&>::Type ElementTypeConstRef;
 		enum : size_t { ThisRowsCount = 4, ThisColumnsCount = 4 };
 		
 		union {
@@ -90,7 +90,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Initializes this matrix to identity.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeIdentity
 		GDINL Matrix4x4t& Identity(ElementTypeConstRef const ElementDiagVal = ElementType(1))
 		{
@@ -161,7 +161,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Inverses this matrix.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeInverse
 		GDINL Matrix4x4t& Inverse()
 		{
@@ -190,7 +190,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Transposes this matrix.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeTranspose
 		Matrix4x4t& Transpose()
 		{
@@ -227,7 +227,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Rotates this matrix on specified quaternion.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeRotation
 		GDINL Matrix4x4t& Rotate(Quaternion_t<ElementType> const& Rotation)
 		{
@@ -252,7 +252,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Scales this matrix on specified vector.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeScale
 		GDINL Matrix4x4t& Scale(Vector3t<ElementType> const& Scale)
 		{
@@ -274,7 +274,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Translates this matrix on specified vector.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeTranslation
 		GDINL Matrix4x4t& Translate(Vector3t<ElementType> const& Translation)
 		{
@@ -351,7 +351,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes view matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeLookAtLH
 		GDINL Matrix4x4t& LookAtLH(Vector3t<ElementType> const& Eye, Vector3t<ElementType> const& At, Vector3t<ElementType> const& Up)
 		{
@@ -370,7 +370,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes view matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeLookAtRH
 		GDINL Matrix4x4t& LookAtRH(Vector3t<ElementType> const& Eye, Vector3t<ElementType> const& At, Vector3t<ElementType> const& Up)
 		{
@@ -408,7 +408,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes perspective matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakePerspectiveLH
 		GDINL Matrix4x4t& PerspectiveLH(ElementTypeConstRef const FOVDegrees, ElementTypeConstRef const Aspect, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
@@ -428,7 +428,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes perspective matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakePerspectiveRH
 		GDINL Matrix4x4t& PerspectiveRH(ElementTypeConstRef const FOVDegrees, ElementTypeConstRef const Aspect, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
@@ -457,7 +457,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes ortho matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeOrthoLH
 		GDINL Matrix4x4t<ElementType>& OrthoLH(ElementTypeConstRef const Left, ElementTypeConstRef const Right, ElementTypeConstRef const Bottom, ElementTypeConstRef const Top, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
@@ -479,7 +479,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes ortho matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeOrthoRH
 		GDINL Matrix4x4t<ElementType>& OrthoRH(ElementTypeConstRef const Left, ElementTypeConstRef const Right, ElementTypeConstRef const Bottom, ElementTypeConstRef const Top, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
@@ -633,7 +633,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Initializes this matrix to identity.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeIdentity
 		GDINL Matrix4x4t& Identity(Float32 const Float32Def = 1.0f)
 		{
@@ -654,7 +654,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Inverses this matrix.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeInverse
 		GDINL Matrix4x4t& Inverse()
 		{
@@ -682,7 +682,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Transposes this matrix.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeTranspose
 		Matrix4x4t& Transpose()
 		{
@@ -745,7 +745,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Rotates this matrix on specified quaternion.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeRotation
 		GDINL Matrix4x4t& Rotate(Quaternion_t<Float32> const& Rotation)
 		{
@@ -770,7 +770,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Scales this matrix on specified vector.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeScale
 		GDINL Matrix4x4t& Scale(Vector3Fast const& Scale)
 		{
@@ -792,7 +792,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Translates this matrix on specified vector.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeTranslation
 		GDINL Matrix4x4t& Translate(Vector3Fast const& Translation)
 		{
@@ -837,7 +837,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Builds a look-to matrix (Left-Handed coordinate system).
 		/// @see Matrix4x4t::MakeLookToLH
-		GDINL Matrix4x4t& LookToLH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
+		GDINL Matrix4x4t& LookToLH(Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
 			Matrix4x4t::MakeLookToLH((*this), Eye, Dir, Up);
 			return (*this);
@@ -856,7 +856,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Builds a look-to matrix (Right-Handed coordinate system).
 		/// @see Matrix4x4t::MakeLookToRH
-		GDINL Matrix4x4t& LookToRH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
+		GDINL Matrix4x4t& LookToRH(Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
 			Matrix4x4t::MakeLookToRH((*this), Eye, Dir, Up);
 			return (*this);
@@ -878,7 +878,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes view matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeLookAtLH
 		GDINL Matrix4x4t& LookAtLH(Vector3Fast const& Eye, Vector3Fast const& At, Vector3Fast const& Up)
 		{
@@ -898,7 +898,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes view matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeLookAtRH
 		GDINL Matrix4x4t& LookAtRH(Vector3Fast const& Eye, Vector3Fast const& At, Vector3Fast const& Up)
 		{
@@ -943,7 +943,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes perspective matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakePerspectiveLH
 		GDINL Matrix4x4t& PerspectiveLH(Float32 const FOVDegrees, Float32 const Aspect, Float32 const ZNear, Float32 const ZFar)
 		{
@@ -977,7 +977,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes perspective matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakePerspectiveLH
 		GDINL Matrix4x4t& PerspectiveRH(Float32 const FOVDegrees, Float32 const Aspect, Float32 const ZNear, Float32 const ZFar)
 		{
@@ -1002,7 +1002,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/// Makes ortho matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeOrthoLH
 		GDINL Matrix4x4t<Float32>& OrthoLH(Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{
@@ -1020,11 +1020,18 @@ GD_NAMESPACE_BEGIN
 		/// @param ZFar   Far clipping plane.
 		GDINL static void MakeOrthoRH(Matrix4x4t& Matrix, Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{
+			GD_NOT_USED(Matrix);
+			GD_NOT_USED(Left);
+			GD_NOT_USED(Right);
+			GD_NOT_USED(Bottom);
+			GD_NOT_USED(Top);
+			GD_NOT_USED(ZNear);
+			GD_NOT_USED(ZFar);
 			throw 0;
 		}
 
 		/// Makes ortho matrix from this one.
-		/// @returns Self.
+		/// @returns this.
 		/// @see Matrix4x4t::MakeOrthoLH
 		GDINL Matrix4x4t<Float32>& OrthoRH(Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{

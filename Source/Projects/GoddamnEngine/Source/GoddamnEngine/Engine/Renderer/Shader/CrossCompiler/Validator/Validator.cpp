@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// Description.cpp: shader instance description generator implementation.
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* 17.05.2014 - Created by James Jhuighuy
@@ -9,7 +9,7 @@
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Validator/Validator.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/Parser/Parser.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/CrossCompiler/CrossCompiler.h>
-#include <GoddamnEngine/Core/Containers/Pointer/UniquePtr.h>
+#include <GoddamnEngine/Core/Templates/UniquePtr.h>
 
 /// Define this to make validator throw warnings on stuff unrecommended to
 /// used in GoddamnEngine coding standarts.

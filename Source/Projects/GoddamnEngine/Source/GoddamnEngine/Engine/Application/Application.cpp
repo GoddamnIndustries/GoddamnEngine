@@ -35,7 +35,7 @@ GD_NAMESPACE_BEGIN
 		, TheResourceStreamer(new RSStreamer())
 		, ThePluginManager(new PluginManager())
 		, TheGameWindow(new Window())
-	//	, lowLevelSystem(new LowLevelSystem())
+		, lowLevelSystem(new LowLevelSystem())
 		, staticComponentHandler(new GameObject())
 		, gameObjectsHandler(new /*Object*/GameObject())
 	{	// Some libraries, like Mono just terminate process if some error accures. 
@@ -59,8 +59,8 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT((this->CMDArgsCount >= 1) && (this->CMDArgsList != nullptr), "Invalid command line arguments specified");
 		this->EnvironmentPath = Path::GetDirectoryName(this->CMDArgsList[0]);
 
-		new HROGLInterface();
-	//	new HRD3D11Interface();
+	//	new HROGLInterface();
+		new HRD3D11Interface();
 
 		this->staticComponentHandler.GetPointer()->AttachToObject(this);
 		StaticComponent::InitializeAsHandler(this->staticComponentHandler.GetPointer());

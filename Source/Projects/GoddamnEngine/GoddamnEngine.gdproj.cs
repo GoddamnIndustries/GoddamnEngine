@@ -1,6 +1,6 @@
 //! ==========================================================================================
 //! GoddamnEngine.gdproj.cs - GoddamnEngine project file.
-//! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 //! 
 //! @author James Jhuighuy
 //! ==========================================================================================
@@ -10,9 +10,14 @@ using GoddamnEngine.BuildSystem;
 
 public sealed class GoddamnEngineProject : Project
 {
- public sealed override string GetSourceFiltersOrigin()
- {
-  return Path.Combine(base.GetSourceFiltersOrigin(), "Engine");
- }
+    public sealed override ProjectPriority GetPriority()
+    {
+        return ProjectPriority.EngineLevel;
+    }
+
+    public sealed override string GetSourceFiltersOrigin()
+    {
+        return Path.Combine(base.GetSourceFiltersOrigin(), "Engine");
+    }
 }   // class GoddamnEngineProject
- 
+

@@ -3,13 +3,13 @@
 
 #include <GoddamnEngine/Include.h>
 
-#include <GoddamnEngine/Core/Reflection/Object/Object.h>
+#include <GoddamnEngine/Core/Object/Object.h>
 #include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
 #include <GoddamnEngine/Core/Containers/String.h>
-#include <GoddamnEngine/Core/Containers/Map/Map.h>
-#include <GoddamnEngine/Core/Containers/Pointer/SharedPtr.h>
-#include <GoddamnEngine/Core/Containers/Pointer/RefPtr.h>
-//#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
+#include <GoddamnEngine/Core/Containers/Map.h>
+#include <GoddamnEngine/Core/Templates/SharedPtr.h>
+#include <GoddamnEngine/Core/Templates/RefPtr.h>
+#include <GoddamnEngine/Core/LowLevelSystem/LowLevelSystem.h>
 #include <GoddamnEngine/Core/Framework/Framework.h>
 #include <GoddamnEngine/Engine/Plugin/Plugin.h>
 #include <GoddamnEngine/Engine/Scene/Scene.h>
@@ -46,8 +46,8 @@ GD_NAMESPACE_BEGIN
 		UniquePtr<RSStreamer   > TheResourceStreamer;
 
 		SharedPtr<Window    > TheGameWindow;
-
-	//	RefPtr<LowLevelSystem> lowLevelSystem;
+	public:
+		RefPtr<LowLevelSystem> lowLevelSystem;
 	//	RefPtr<SceneManager> sceneManager;
 		RefPtr<GameObject> staticComponentHandler;
 		RefPtr<Object> gameObjectsHandler;

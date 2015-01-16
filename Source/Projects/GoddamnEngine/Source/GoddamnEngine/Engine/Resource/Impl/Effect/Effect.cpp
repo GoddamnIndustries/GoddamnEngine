@@ -74,23 +74,23 @@ GD_NAMESPACE_BEGIN
 		size_t const CommaIndex = ShaderPathes.Find(',');
 		IToolchain Toolchain;
 		{	// Creating vertex shader.
-			String const VertexShaderPath = ShaderPathes.Subtring(0, CommaIndex);
+			String const VertexShaderPath = ShaderPathes.Substring(0, CommaIndex);
 			StringBuilder VertexShaderOutput;
 			Vector<UInt8> const VertexShaderData = RSStreamer::GetInstance().LoadImmediately<RSBinary>(VertexShaderPath)->BinaryData;
 			UniquePtr<InputStream> VertexShaderInputStream(new StringInputStream(reinterpret_cast<CharAnsi const*>(&VertexShaderData[0]), VertexShaderData.GetLength()));
 			UniquePtr<OutputStream> VertexShaderOutputStream(new StringOutputStream(VertexShaderOutput));
-			RefPtr<HRIShaderInstanceDesc> VertexShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(Move(VertexShaderInputStream), VertexShaderOutputStream, GD_HRI_SHADER_TYPE_VERTEX, /*GD_HRI_SHADERCC_COMPILER_TARGET_HLSL*/GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430, "Main"));
-			HRIShaderCtorInfo const VertexShaderCtorInfo(this->EffectShaderProgram.GetPointer(), VertexShaderOutput.GetPointer(), VertexShaderOutput.GetLength(), VertexShaderInstanceDesc.GetPointer());
+			RefPtr<HRIShaderInstanceDesc> VertexShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(Move(VertexShaderInputStream), VertexShaderOutputStream, GD_HRI_SHADER_TYPE_VERTEX, GD_HRI_SHADERCC_COMPILER_TARGET_HLSL /*GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430*/, "Main"));
+			HRIShaderCtorInfo const VertexShaderCtorInfo(this->EffectShaderProgram.GetPointer(), VertexShaderOutput.CStr(), VertexShaderOutput.GetLength(), VertexShaderInstanceDesc.GetPointer());
 			HRInterface::GetInstance().CreateVertexShader(VertexShaderCtorInfo);
 		}
 		{	// Creating vertex shader.
-			String const PixelShaderPath = ShaderPathes.Subtring(CommaIndex + 1);
+			String const PixelShaderPath = ShaderPathes.Substring(CommaIndex + 1);
 			StringBuilder PixelShaderOutput;
 			Vector<UInt8> const PixelShaderData = RSStreamer::GetInstance().LoadImmediately<RSBinary>(PixelShaderPath)->BinaryData;
 			UniquePtr<InputStream> PixelShaderInputStream(new StringInputStream(reinterpret_cast<CharAnsi const*>(&PixelShaderData[0]), PixelShaderData.GetLength()));
 			UniquePtr<OutputStream> PixelShaderOutputStream(new StringOutputStream(PixelShaderOutput));
-			RefPtr<HRIShaderInstanceDesc> PixelShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(Move(PixelShaderInputStream), PixelShaderOutputStream, GD_HRI_SHADER_TYPE_PIXEL, /*GD_HRI_SHADERCC_COMPILER_TARGET_HLSL*/GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430, "Main"));
-			HRIShaderCtorInfo const PixelShaderCtorInfo(this->EffectShaderProgram.GetPointer(), PixelShaderOutput.GetPointer(), PixelShaderOutput.GetLength(), PixelShaderInstanceDesc.GetPointer());
+			RefPtr<HRIShaderInstanceDesc> PixelShaderInstanceDesc(HRIShaderCrossCompiler(&Toolchain).CrossCompileShader(Move(PixelShaderInputStream), PixelShaderOutputStream, GD_HRI_SHADER_TYPE_PIXEL, GD_HRI_SHADERCC_COMPILER_TARGET_HLSL /*GD_HRI_SHADERCC_COMPILER_TARGET_GLSL430*/, "Main"));
+			HRIShaderCtorInfo const PixelShaderCtorInfo(this->EffectShaderProgram.GetPointer(), PixelShaderOutput.CStr(), PixelShaderOutput.GetLength(), PixelShaderInstanceDesc.GetPointer());
 			HRInterface::GetInstance().CreatePixelShader(PixelShaderCtorInfo);
 		}
 	}

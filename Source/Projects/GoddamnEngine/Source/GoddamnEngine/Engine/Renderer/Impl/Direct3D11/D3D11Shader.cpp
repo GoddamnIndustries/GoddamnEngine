@@ -1,6 +1,6 @@
 /// ==========================================================================================
 /// D3D11Shader.cpp: Direct3D 11 shaders implementation. 
-/// Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
+/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// 
 /// History:
 ///		* --.02.2014  - Created by James Jhuighuy
@@ -78,14 +78,14 @@ GD_NAMESPACE_BEGIN
 
 			D3D11_INPUT_ELEMENT_DESC& InputLayoutElement = InputLayoutElements[InputLayoutInputSlot];
 			ZeroMemory(&InputLayoutElement, sizeof(InputLayoutElement));
-			InputLayoutElement.SemanticName   = SemanticDesc.Name;
-			InputLayoutElement.SemanticIndex  = 0;
-			InputLayoutElement.Format      = ToDxgiFormat(SemanticDesc.SlotFormat);
-			InputLayoutElement.InputSlot   = InputLayoutInputSlot;
-			InputLayoutElement.AlignedByteOffset = 0;
-			InputLayoutElement.InputSlotClass    = D3D11_INPUT_PER_VERTEX_DATA;
+			InputLayoutElement.SemanticName         = SemanticDesc.Name;
+			InputLayoutElement.SemanticIndex        = 0;
+			InputLayoutElement.Format               = ToDxgiFormat(SemanticDesc.SlotFormat);
+			InputLayoutElement.InputSlot            = InputLayoutInputSlot;
+			InputLayoutElement.AlignedByteOffset    = 0;
+			InputLayoutElement.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 			InputLayoutElement.InstanceDataStepRate = 0;
-			InputLayoutInputSlot += 1;
+			InputLayoutInputSlot                   += 1;
 		}
 
 		if (FAILED(Result = Device->CreateInputLayout(&InputLayoutElements[0], InputLayoutInputSlot, CtorInfo.CreationData, CtorInfo.CreationDataSize, &this->InputLayout))) {
@@ -153,7 +153,7 @@ GD_NAMESPACE_BEGIN
 				Context->HSSetConstantBuffers(0, LocationConstantBuffersCount, const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
 			}
 			
-			if (ShaderResources != nullptr)	{	// Our shader also cointains resources.
+			if (ShaderResources != nullptr)	{	// Our shader also contains resources.
 				UINT const LocationResourcesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
 				if (LocationResourcesCount != 0) {
 					Context->HSSetShaderResources(0, LocationResourcesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
@@ -166,10 +166,10 @@ GD_NAMESPACE_BEGIN
 	void HRID3D11HullShader::UnbindShader() const
 	{
 		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
-		Context->HSSetShaderResources(0, 0, nullptr   );
-		Context->HSSetSamplers    (0, 0, nullptr   );
-		Context->HSSetConstantBuffers(0, 0, nullptr   );
-		Context->HSSetShader   (   nullptr, nullptr, 0);
+		Context->HSSetShaderResources(0, 0, nullptr            );
+		Context->HSSetSamplers       (0, 0, nullptr            );
+		Context->HSSetConstantBuffers(0, 0, nullptr            );
+		Context->HSSetShader         (      nullptr, nullptr, 0);
 	}
 
 	/// ==========================================================================================
@@ -190,7 +190,7 @@ GD_NAMESPACE_BEGIN
 		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
 		Context->DSSetShader(this->DomainShader.Get(), nullptr, 0);
 		if (TheShaderInstance != nullptr) {	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
-			HRID3D11ShaderInstance      const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
+			HRID3D11ShaderInstance               const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
 			HRID3D11ShaderParamLocationResources const* const ShaderResources = object_cast<HRID3D11ShaderParamLocationResources const*>(ShaderInstance->GetInstanceResourcesLocation());
 			
 			UINT const LocationConstantBuffersCount = static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetLength());
@@ -198,7 +198,7 @@ GD_NAMESPACE_BEGIN
 				Context->DSSetConstantBuffers(0, LocationConstantBuffersCount, const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
 			}
 			
-			if (ShaderResources != nullptr) {	// Our shader also cointains resources.
+			if (ShaderResources != nullptr) {	// Our shader also contains resources.
 				UINT const LocationResourcesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
 				if (LocationResourcesCount != 0) {
 					Context->DSSetShaderResources(0, LocationResourcesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
@@ -235,13 +235,13 @@ GD_NAMESPACE_BEGIN
 		ID3D11DeviceContext* const Context = HRD3D11Interface::GetInstance().Context.Get();
 		Context->PSSetShader(this->PixelShader.Get(), nullptr, 0);
 		if (TheShaderInstance != nullptr) {	// Instance is specified, it may contain constant buffer and some other resources that are required to be sent to GPU.
-			HRID3D11ShaderInstance      const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
+			HRID3D11ShaderInstance               const* const ShaderInstance  = object_cast<HRID3D11ShaderInstance const*>(TheShaderInstance);
 			HRID3D11ShaderParamLocationResources const* const ShaderResources = object_cast<HRID3D11ShaderParamLocationResources const*>(ShaderInstance->GetInstanceResourcesLocation());
 			UINT const LocationConstantBuffersCount = static_cast<UINT>(ShaderInstance->ShaderConstantBuffers.GetLength());
 			if (LocationConstantBuffersCount != 0) {
 				Context->PSSetConstantBuffers(0, LocationConstantBuffersCount, const_cast<ID3D11Buffer* const*>(&ShaderInstance->ShaderConstantBuffers[0]));
 			}
-			if (ShaderResources != nullptr) {	// Our shader also cointains shader resources.
+			if (ShaderResources != nullptr) {	// Our shader also contains shader resources.
 				UINT const LocationResourcesCount = static_cast<UINT>(ShaderResources->LocationDesc->GetLocationInstancesCount());
 				if (LocationResourcesCount != 0) {
 					Context->PSSetShaderResources(0, LocationResourcesCount, const_cast<ID3D11ShaderResourceView* const*>(&ShaderResources->ShaderResourceViews[0]));
