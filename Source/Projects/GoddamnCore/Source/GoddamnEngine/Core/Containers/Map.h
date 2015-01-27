@@ -9,6 +9,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Pair.h>
+#include <GoddamnEngine/Core/Text/Hash/Hash.h>
 #include <GoddamnEngine/Core/Containers/Containers.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>
 #include <GoddamnEngine/Core/Containers/RedBlackTree/RedBlackTree.h>
@@ -21,10 +22,12 @@ GD_NAMESPACE_BEGIN
 	/// @tparam KeyType Key type, used for searching.
 	/// @tparam ValueType Type of elements stored in the container.
 	template<typename KeyType, typename ValueType>
-	class Map final : public RedBlackTree<Pair<KeyType, ValueType>>, public ContainerIteratableTag, public ContainerReverseIteratableTag
+	class Map final : public IContainer, public RedBlackTree<Pair<KeyType const, ValueType>>
+		, public ContainerIteratableTag
+		, public ContainerReverseIteratableTag
 	{
 	public:
-		typedef Pair<KeyType, ValueType> PairType;
+		typedef Pair<KeyType const, ValueType> PairType;
 		typedef RedBlackTree<PairType> RedBlackTreeType;
 		typedef RedBlackTreeNode<PairType> RedBlackTreeNodeType;
 
@@ -42,14 +45,14 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Initializes an empty map.
 		GDINL Map()
-			: RedBlackTree()
+			: RedBlackTreeType()
 		{
 		}
 
 		/// @brief Initializes map with default C++11's initializer list. You should not use this constructor manually.
 		/// @param InitializerList Initializer list passed by the compiler.
 		GDINL Map(InitializerList<PairType> const& InitializerList)
-			: RedBlackTree()
+			: RedBlackTreeType()
 		{
 			for (auto const& Element : InitializerList) {
 				this->InsertKeyValue(Element.Key, Element.Value);
@@ -59,7 +62,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Moves other vector here.
 		/// @param OtherVector Vector would be moved into current object.
 		GDINL Map(Map&& OtherVector)
-			: RedBlackTree(Forward<Map>(OtherVector))
+			: RedBlackTreeType(Forward<Map>(OtherVector))
 		{
 		}
 
@@ -178,12 +181,12 @@ GD_NAMESPACE_BEGIN
 
 		/// @brief Removes existing element from array at specified index.
 		/// @param Key Key of the element that is going to be removed.
-		GDINL void RemoveElementAt(KeyType const& Key)
+		GDINL void RemoveElementWithKey(KeyType const& Key)
 		{
 			Iterator QueriedIterator = this->QueryIterator(Key);
 			GD_ASSERT(QueriedIterator != this->End(), "Element with specified key does not exist.");
 			
-			RedBlackTreeNodeType const* QueriedNode = QueriedIterator.GetNode();
+			auto const QueriedNode = const_cast<RedBlackTreeNodeType*>(QueriedIterator.GetNode());
 			this->RedBlackTreeType::Delete(QueriedNode);
 			delete QueriedNode->GetElement();
 			delete QueriedNode;
@@ -196,7 +199,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns this.
 		GDINL Map& operator= (Map&& OtherMap)
 		{
-			RedBlackTree::operator= (Forward<Map>(OtherMap));
+			RedBlackTreeType::operator= (Forward<Map>(OtherMap));
 			return *this;
 		}
 
@@ -216,6 +219,10 @@ GD_NAMESPACE_BEGIN
 		}
 		/// @}
 	};	// class Map
+
+	/// @brief Map with hash codes used as keys.
+	template<typename ValueType>
+	using HashMap = Map<HashCode, ValueType>;
 
 GD_NAMESPACE_END
 

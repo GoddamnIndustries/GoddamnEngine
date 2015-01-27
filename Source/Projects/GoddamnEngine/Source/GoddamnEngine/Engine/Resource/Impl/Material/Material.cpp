@@ -10,7 +10,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(Material, Resource, GDAPI, GD_RESOURCE_ARGS);
+	GD_CLASSINFO_IMPLEMENTATION(Material, Resource, GDAPI, GD_RESOURCE_ARGS);
 
 	/// ==========================================================================================
 	void Material::SetShaderProgram(RefPtr<HRIShaderProgram> const& Effect) 

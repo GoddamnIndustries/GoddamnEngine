@@ -12,22 +12,22 @@ GD_NAMESPACE_BEGIN
 
 	void StaticComponent::InitializeAsHandler(GameObject* const TheGameObject)
 	{
-		for (ITypeInformation const* TypeInfo = ITypeInformation::GetLastRegistered(); TypeInfo != nullptr; TypeInfo = TypeInfo->PreviousType) {
-			if ((TypeInfo->BaseType != StaticComponent::GetClassTypeInformation()) || (TypeInfo->VirtualConstructor == nullptr)) {
-				continue;
-			}
+		//for (IClassInfo const* TypeInfo = IClassInfo::GetLastRegistered(); TypeInfo != nullptr; TypeInfo = TypeInfo->PreviousType) {
+		//	if ((TypeInfo->GetBaseType() != StaticComponent::GetTypeClassInfo()) || (TypeInfo->VirtualConstructor == nullptr)) {
+		//		continue;
+		//	}
 
-			RefPtr<StaticComponent> const TheStaticComponent = object_cast<RefPtr<StaticComponent>>(TheGameObject->AddComponent(TypeInfo));
-		//	for (auto const TheStaticComponentIterator : IterateChildObjects<StaticComponent>(TheGameObject)) {
-			for (StaticComponent*
-				TheStaticComponentIterator = object_cast<StaticComponent*>(TheGameObject->GetTransform()->GetNextSiblingObject()); TheStaticComponent != TheStaticComponentIterator;
-				TheStaticComponentIterator = object_cast<StaticComponent*>(TheStaticComponentIterator->GetNextSiblingObject())) {
-				if (TheStaticComponentIterator->Priority <= TheStaticComponentIterator->Priority)	{
-					TheStaticComponent->MoveToSiblingObject(TheStaticComponentIterator->GetPreviousSiblingObject());
-					break;
-				}
-			}
-		}
+		//	RefPtr<StaticComponent> const TheStaticComponent = object_cast<RefPtr<StaticComponent>>(TheGameObject->AddComponent(TypeInfo));
+		////	for (auto const TheStaticComponentIterator : IterateChildObjects<StaticComponent>(TheGameObject)) {
+		//	for (StaticComponent*
+		//		TheStaticComponentIterator = object_cast<StaticComponent*>(TheGameObject->GetTransform()->GetNextSiblingObject()); TheStaticComponent != TheStaticComponentIterator;
+		//		TheStaticComponentIterator = object_cast<StaticComponent*>(TheStaticComponentIterator->GetNextSiblingObject())) {
+		//		if (TheStaticComponentIterator->Priority <= TheStaticComponentIterator->Priority)	{
+		//			TheStaticComponent->MoveToSiblingObject(TheStaticComponentIterator->GetPreviousSiblingObject());
+		//			break;
+		//		}
+		//	}
+		//}
 	}
 
 GD_NAMESPACE_END

@@ -3,7 +3,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/RefPtr.h>
-#include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
+#include <GoddamnEngine/Core/Templates/Singleton.h>
 #include <GoddamnEngine/Engine/Component/Component.h>
 
 GD_NAMESPACE_BEGIN
@@ -16,7 +16,7 @@ GD_NAMESPACE_BEGIN
 		typedef UInt8 SceneFlags;
 
 	private:
-		GD_TYPEINFORMATION_DEFINITION(Scene, Object, GDAPI);
+		GD_CLASSINFO_DEFINITION(Scene, Object, GDAPI);
 
 		RefPtr<GameObject> staticComponentsManager;
 
@@ -51,7 +51,7 @@ GD_NAMESPACE_BEGIN
 						 public Singleton<SceneManager>
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(SceneManager, Object, GDAPI);
+		GD_CLASSINFO_DEFINITION(SceneManager, Object, GDAPI);
 
 	public:
 		RefPtr<GameObject> const SharedStaticComponentManager;	///< Default static components manager used

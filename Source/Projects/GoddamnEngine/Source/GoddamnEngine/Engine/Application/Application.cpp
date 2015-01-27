@@ -17,7 +17,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(Application, Object, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(Application, Object, GDAPI, nullptr);
 	GD_SINGLETON_IMPLEMENTATION(Application);
 
 	GDINL void OnEvent(chandle const argument)

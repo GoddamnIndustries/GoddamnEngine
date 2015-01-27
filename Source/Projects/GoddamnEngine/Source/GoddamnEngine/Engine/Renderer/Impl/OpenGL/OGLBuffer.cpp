@@ -14,7 +14,7 @@ GD_NAMESPACE_BEGIN
 	/// HRIOGLVertexBuffer class.
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIOGLVertexBuffer, HRIVertexBuffer, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIOGLVertexBuffer, HRIVertexBuffer, GDINT, nullptr);
 	HRIOGLVertexBuffer::HRIOGLVertexBuffer(Float32 const* const Data, size_t const Size) 
 		: HRIVertexBuffer(Data, Size)
 	{	
@@ -51,7 +51,7 @@ GD_NAMESPACE_BEGIN
 	/// HRIOGLIndexBuffer class.
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIOGLIndexBuffer, HRIIndexBuffer, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIOGLIndexBuffer, HRIIndexBuffer, GDINT, nullptr);
 	HRIOGLIndexBuffer::HRIOGLIndexBuffer(chandle const Data, size_t const Size, size_t const Stride)
 		: HRIIndexBuffer(Data, Size, Stride)
 	{
@@ -86,7 +86,7 @@ GD_NAMESPACE_BEGIN
 	/// HRIOGLConstantBuffer class.
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIOGLConstantBuffer, HRIConstantBuffer, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIOGLConstantBuffer, HRIConstantBuffer, GDINT, nullptr);
 	HRIOGLConstantBuffer::HRIOGLConstantBuffer(size_t const Size)
 		: HRIConstantBuffer(Size)
 	{

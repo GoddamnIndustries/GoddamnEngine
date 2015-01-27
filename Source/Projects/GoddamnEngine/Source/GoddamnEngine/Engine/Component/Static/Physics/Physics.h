@@ -37,7 +37,7 @@ GD_NAMESPACE_BEGIN
 		friend class MeshCollider;
 
 	private:
-		GD_TYPEINFORMATION_DEFINITION(PhysicsInterface, StaticComponent, GDAPI);
+		GD_CLASSINFO_DEFINITION(PhysicsInterface, StaticComponent, GDAPI);
 		
 		physx::PxFoundation* Foundation = nullptr;
 		physx::PxPhysics* PhysicsSdk = nullptr;
@@ -63,7 +63,7 @@ GD_NAMESPACE_BEGIN
 	class MeshCollider : public Component
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(MeshCollider, Component, GDAPI);
+		GD_CLASSINFO_DEFINITION(MeshCollider, Component, GDAPI);
 
 		physx::PxTransform*	 RigidbodyTransform;
 		physx::PxRigidActor* RigidbodyPtr = nullptr;
@@ -83,7 +83,7 @@ GD_NAMESPACE_BEGIN
 					  public IOnTransformedListener
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(Rigidbody, Component, GDAPI);
+		GD_CLASSINFO_DEFINITION(Rigidbody, Component, GDAPI);
 
 		physx::PxTransform*	 RigidbodyTransform;
 		physx::PxRigidDynamic* RigidbodyPtr = nullptr;

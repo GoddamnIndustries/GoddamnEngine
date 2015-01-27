@@ -18,7 +18,7 @@ GD_NAMESPACE_BEGIN
 	class Material : public Resource
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(Material, Resource, GDAPI);
+		GD_CLASSINFO_DEFINITION(Material, Resource, GDAPI);
 
 		RefPtr<HRIShaderProgram> MaterialProgram;
 		RefPtr<HRIShaderInstance> MaterialInstance;

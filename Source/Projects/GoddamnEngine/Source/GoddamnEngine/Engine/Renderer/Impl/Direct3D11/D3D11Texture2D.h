@@ -9,7 +9,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11Texture2D final : public HRITexture2D
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11Texture2D, HRITexture2D, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11Texture2D, HRITexture2D, GDINT);
 		D3D11RefPtr<ID3D11Texture2D> Texture;
 		D3D11RefPtr<ID3D11SamplerState> TextureSample;
 		D3D11RefPtr<ID3D11ShaderResourceView> TextureShaderResource;

@@ -11,7 +11,7 @@
 #define GD_ENGINE_RENDERER_SHADER_CROSS_COMPILER
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
+#include <GoddamnEngine/Core/Templates/Singleton.h>
 #include <GoddamnEngine/Core/Compilers/Toolchain/Toolchain.h>
 #include <GoddamnEngine/Engine/Renderer/Shader/Shader.h>
 

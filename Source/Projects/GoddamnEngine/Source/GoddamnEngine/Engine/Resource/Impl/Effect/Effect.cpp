@@ -8,7 +8,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(RSEffect, Resource, GDAPI, GD_RESOURCE_ARGS);
+	GD_CLASSINFO_IMPLEMENTATION(RSEffect, Resource, GDAPI, GD_RESOURCE_ARGS);
 	
 	void RSEffect::OnResourceLoad(UniquePtr<InputStream> const& InputResourceData)
 	{

@@ -71,7 +71,6 @@ GD_NAMESPACE_BEGIN
 	};	// enum HRIShaderLimits
 
 	/// Describes types of shaders.
-	$GD_ENUMERATION(Type = Enumeration, ExportPolicy = Internal)
 	enum HRIShaderType : size_t
 	{
 		GD_HRI_SHADER_TYPE_VERTEX,								///< Vertex shader type.
@@ -90,7 +89,6 @@ GD_NAMESPACE_BEGIN
 	};	// enum HRIShaderType
 
 	/// Describes type of shader parameter
-	$GD_ENUMERATION(Type = Enumeration, ExportPolicy = Internal)
 	enum HRIShaderParamDescType : size_t
 	{
 		GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE,				///< Type of parameter can be represented as Format.
@@ -104,7 +102,6 @@ GD_NAMESPACE_BEGIN
 	};	// enum HRIShaderParamDescType
 
 	/// Describing types of location of shader parameter
-	$GD_ENUMERATION(Type = Enumeration, ExportPolicy = Internal)
 	enum HRIShaderParamLocationDescType : size_t
 	{
 		GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_RESOURCES,		///< Parameter is resource.
@@ -115,11 +112,8 @@ GD_NAMESPACE_BEGIN
 	};	// enum HRIShaderParamLocationDescType
 
 	/// Describes shader public parameter
-	$GD_REFLECTABLE()
 	class HRIShaderParamDesc final : public HRIObject
 	{
-		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
-
 	private:
 #if (defined(GD_HRI_SHADER_D3D11_EMULATING))
 		friend class HRIShaderParamLocationConstantBufferEmulated;
@@ -130,7 +124,6 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		/// Name of this parameter.
-		$GD_PROPERTY(ReadOnly)
 		String const ParamName;
 
 		/// Hash of parameter`s name.
@@ -138,15 +131,12 @@ GD_NAMESPACE_BEGIN
 		HashCode const ParamHash;
 
 		/// Type of this parameter.
-		$GD_PROPERTY(ReadOnly)
 		HRIShaderParamDescType const ParamType;
 
 		/// Format of this parameter. Unknown if type is not GD_HRI_SHADER_PARAM_DESC_TYPE_FORMATABLE.
-		$GD_PROPERTY(ReadOnly)
 		Format const ParamFormat;
 
 		/// If this variable was defined as a array, array length.
-		$GD_PROPERTY(ReadOnly)
 		size_t const ParamArrayLength;
 
 		GDINL virtual ~HRIShaderParamDesc();
@@ -160,7 +150,6 @@ GD_NAMESPACE_BEGIN
 		);
 
 		/// Returns instance description this param description uses.
-		$GD_PROPERTY(ReadOnly, DefinedAs = Getter)
 		GDINL HRIShaderParamLocationDesc const* GetLocationDesc() const;
 		GDINL HRIShaderParamLocationDesc   * GetLocationDesc();
 
@@ -170,11 +159,9 @@ GD_NAMESPACE_BEGIN
 #endif	// if (defined(GD_HRI_SHADER_D3D11_EMULATING))
 
 		/// Returns unique shader param ID.
-		$GD_PROPERTY(ReadOnly, DefinedAs = Getter)
 		GDINL HRIShaderParamID GetParamID() const { return this->ParamID; }
 
 		/// Returns size of parameter in bytes
-		$GD_PROPERTY(ReadOnly, DefinedAs = Getter)
 		GDINL size_t GetParamSize() const;
 	};	// class HRIShaderParamDesc
 
@@ -182,11 +169,8 @@ GD_NAMESPACE_BEGIN
 	typedef Float32 HRIShaderChar;	
 
 	/// Instance of single parameter in shader
-	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParam final : public HRIObject
 	{
-		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
-
 	private:
 		friend  class HRIShaderParamLocation;
 		mutable bool  DidValueChanged = true;
@@ -201,7 +185,6 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		/// Pointer to description of variable.
-		$GD_PROPERTY(ReadOnly, DefinedAs = Field)
 		RefPtr<HRIShaderParamDesc const> const ParamDesc; 
 
 		/// Returns Domain in which this param exists.
@@ -213,7 +196,6 @@ GD_NAMESPACE_BEGIN
 		GDINL HRIShaderParam   * GetNextSameParam();
 
 		/// Returns pointer value that exists in shader.
-		$GD_PROPERTY(DefinedAs = Getter, AlsoHas = Setter)
 		GDINL handle GetValue() const { return this->ParamValue; }
 
 		/// Applies value to shader param.
@@ -223,11 +205,8 @@ GD_NAMESPACE_BEGIN
 	};	// class HRIShaderParam
 	
 	/// Description of single location type in shader instance desc.
-	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParamLocationDesc final : public HRIObject
 	{
-		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
-
 	private:
 		friend class HRIShaderParamDesc;
 		size_t LocationInstancesCount = 0;
@@ -235,27 +214,21 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		/// Type of this location.
-		$GD_PROPERTY(ReadOnly, DefinedAs = Field)
 		HRIShaderParamLocationDescType const LocationType = GD_HRI_SHADER_PARAM_LOCATION_DESC_TYPE_UNKNOWN; 
 
 		GDINL virtual ~HRIShaderParamLocationDesc(                            ) { }
 		GDINL    HRIShaderParamLocationDesc(HRIShaderInstanceDesc* const LocationShaderInstanceDesc, HRIShaderParamLocationDescType const LocationType);
 
 		/// Returns total number of location instances inside
-		$GD_PROPERTY(ReadOnly, DefinedAs = Getter)
 		GDINL size_t GetLocationInstancesCount() const { return this->LocationInstancesCount; }
 		
 		/// Returns total size of memory required for this location
-		$GD_PROPERTY(ReadOnly, DefinedAs = Getter)
 		GDINL size_t GetLocationInstancesSize() const { return this->LocationInstancesSize; }
 	};	// class HRIShaderParamLocationDesc
 
 	/// Description of single location in shader instance
-	$GD_REFLECTABLE(/*Serializable, Deserializable*/)
 	class HRIShaderParamLocation : public HRIObject
 	{
-		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
-	
 	private:
 		friend class HRIShaderParam;
 
@@ -278,14 +251,12 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		/// Pointer to description of this location
-		$GD_PROPERTY(ReadOnly)
 		RefPtr<HRIShaderParamLocationDesc const> const LocationDesc = nullptr;
 
 		GDAPI    HRIShaderParamLocation(HRIShaderInstance* const LocationInstance, HRIShaderParamLocationDesc const* const LocationDesc);
 		GDAPI virtual ~HRIShaderParamLocation(                          );
 
 		/// Returns instance that this location is attached to
-		$GD_PROPERTY(ReadOnly, DefinedAs = Getter)
 		GDINL HRIShaderInstance const* GetLocationInstance() const;
 		GDINL HRIShaderInstance   * GetLocationInstance();
 
@@ -318,7 +289,7 @@ GD_NAMESPACE_BEGIN
 	class HRIShaderParamLocationConstantBufferNative : public HRIShaderParamLocationConstantBufferBase
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIShaderParamLocationConstantBufferNative, HRIShaderParamLocation, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIShaderParamLocationConstantBufferNative, HRIShaderParamLocation, GDAPI);
 		HRIConstantBuffer* const LocationBuffer = nullptr; // Note, that we cannot use RefPtr here.
 
 	public:
@@ -338,7 +309,7 @@ GD_NAMESPACE_BEGIN
 	class HRIShaderParamLocationConstantBufferEmulated : public HRIShaderParamLocationConstantBufferBase
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIShaderParamLocationConstantBufferEmulated, HRIShaderParamLocation, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIShaderParamLocationConstantBufferEmulated, HRIShaderParamLocation, GDAPI);
 
 	protected:
 		GDINL static void CacheParamID   (HRIShaderParam   * const Param, HRIShaderParamID     const ID   ) { Param->ParamDesc->ParamID = ID; }
@@ -363,7 +334,7 @@ GD_NAMESPACE_BEGIN
 	class HRIShaderParamLocationResources : public HRIShaderParamLocation
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIShaderParamLocationResources, HRIShaderParamLocation, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIShaderParamLocationResources, HRIShaderParamLocation, GDAPI);
 
 	protected:
 		GDINL explicit HRIShaderParamLocationResources(HRIShaderInstance* const ShaderInstance, HRIShaderParamLocationDesc const* const LocationDesc);
@@ -374,7 +345,7 @@ GD_NAMESPACE_BEGIN
 	class HRIShaderInstanceDesc final : public HRIObject
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIShaderInstanceDesc, HRIObject, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIShaderInstanceDesc, HRIObject, GDAPI);
 	
 	public:
 		UInt64 const InstanceInputFormat;  ///< Semantic list that describes input list of primitives for shader.
@@ -397,7 +368,7 @@ GD_NAMESPACE_BEGIN
 	/// Container for value of public parameter of shader
 	class HRIShaderInstance : public HRIObject
 	{
-		GD_TYPEINFORMATION_DEFINITION(HRIShaderInstance, HRIObject, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIShaderInstance, HRIObject, GDAPI);
 	
 	private:
 		friend class HRIShaderParamLocation;
@@ -455,7 +426,7 @@ GD_NAMESPACE_BEGIN
 	class HRIShader : public HRIObject
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIShader, HRIObject, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIShader, HRIObject, GDAPI);
 
 	protected:
 		GDINL virtual ~HRIShader(                 );
@@ -498,7 +469,7 @@ GD_NAMESPACE_BEGIN
 	class HRIShaderProgram : public HRIObject
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIShaderProgram, HRIObject, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIShaderProgram, HRIObject, GDAPI);
 		friend class HRIShader;
 		union {
 			HRIShader* ProgramShaders[GD_HRI_SHADER_TYPES_COUNT];

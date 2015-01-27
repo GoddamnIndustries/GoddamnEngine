@@ -7,7 +7,7 @@
 
 GD_NAMESPACE_BEGIN
 	
-	GD_TYPEINFORMATION_IMPLEMENTATION(HRD3D11Interface, HRInterface, GDINT);
+	GD_CLASSINFO_IMPLEMENTATION(HRD3D11Interface, HRInterface, GDINT);
 
 	bool HRD3D11Interface::CreateContex()
 	{
@@ -244,7 +244,7 @@ GDEXP extern bool EnginePluginEntry(GD::PluginDescription* const Description)
 
 	Description->Type      = GD_PLUGIN_TYPE_RENDERER;
 	Description->Description     = "Default GoddamnEngine`s Direct3D11 Renderer";
-	Description->PluginTypeInformation = HRD3D11Interface::GetClassTypeInformation();
+	Description->PluginTypeInfo = HRD3D11Interface::GetTypeClassInfo();
 
 	return true;
 }

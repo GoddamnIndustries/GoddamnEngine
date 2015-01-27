@@ -69,7 +69,7 @@ GD_NAMESPACE_BEGIN
 	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::GetLastNode() const
 	{
 		RedBlackTreeBaseNode const* IterNode = this->GetFirstNode();
-		while (IterNode->Right != RedBlackTreeBase::NullNode) {
+		while (IterNode->Right != this->NullNode) {
 			IterNode = IterNode->Right;
 		}
 
@@ -79,21 +79,19 @@ GD_NAMESPACE_BEGIN
 	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::GetNextNode(RedBlackTreeBaseNode const* X) const
 	{
 		RedBlackTreeBaseNode const* Y;
-		RedBlackTreeBaseNode const* NullNode = this->NullNode;
-		RedBlackTreeBaseNode const* RootNode = this->RootNode;
 
-		if (NullNode != (Y = X->Right)) { // assignment to Y is intentional
-			while (Y->Left != NullNode) { // returns the minimum of the Right subtree of X
+		if (this->NullNode != (Y = X->Right)) { // assignment to Y is intentional
+			while (Y->Left != this->NullNode) { // returns the minimum of the Right subtree of X
 				Y = Y->Left;
 			}
 			return(Y);
 		} else {
 			Y = X->Parent;
-			while (X == Y->Right) { // sentinel used instead of checking for NullNode
+			while (X == Y->Right) { // sentinel used instead of checking for this->NullNode
 				X = Y;
 				Y = Y->Parent;
 			}
-			if (Y == RootNode) return(NullNode);
+			if (Y == this->RootNode) return(this->NullNode);
 			return(Y);
 		}
 	}
@@ -101,19 +99,17 @@ GD_NAMESPACE_BEGIN
 	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::GetPrevNode(RedBlackTreeBaseNode const* X) const
 	{
 		RedBlackTreeBaseNode const* Y;
-		RedBlackTreeBaseNode const* NullNode = this->NullNode;
-		RedBlackTreeBaseNode const* RootNode = this->RootNode;
 
-		if (NullNode != (Y = X->Left)) { // assignment to Y is intentional
-			while (Y->Right != NullNode) { // returns the maximum of the Left subtree of X
+		if (this->NullNode != (Y = X->Left)) { // assignment to Y is intentional
+			while (Y->Right != this->NullNode) { // returns the maximum of the Left subtree of X
 				Y = Y->Right;
 			}
 			return(Y);
 		} else {
 			Y = X->Parent;
 			while (X == Y->Left) {
-				if (Y == RootNode) {
-					return(NullNode);
+				if (Y == this->RootNode) {
+					return(this->NullNode);
 				}
 				X = Y;
 				Y = Y->Parent;
@@ -129,15 +125,15 @@ GD_NAMESPACE_BEGIN
 	GDAPI void RedBlackTreeBase::InternalCreateNode(RedBlackTreeBaseNode*& NewNode)
 	{
 		NewNode = new RedBlackTreeBaseNode(nullptr);
-		NewNode->Left = RedBlackTreeBase::NullNode;
-		NewNode->Right = RedBlackTreeBase::NullNode;
-		NewNode->Parent = RedBlackTreeBase::NullNode;
+		NewNode->Left = this->NullNode;
+		NewNode->Right = this->NullNode;
+		NewNode->Parent = this->NullNode;
 		NewNode->IsRed = false;
 	}
 
 	GDAPI void RedBlackTreeBase::InternalDestroyNode(RedBlackTreeBaseNode* const Node)
 	{
-		if (Node != RedBlackTreeBase::NullNode) {
+		if (Node != this->NullNode) {
 			this->InternalDestroyNode(Node->Left);
 			this->InternalDestroyNode(Node->Right);
 			delete Node;
@@ -147,31 +143,30 @@ GD_NAMESPACE_BEGIN
 	GDAPI void RedBlackTreeBase::RotateLeft(RedBlackTreeBaseNode* X)
 	{
 		RedBlackTreeBaseNode* Y;
-		RedBlackTreeBaseNode* NullNode = this->NullNode;
 
 		//  I originally wrote this function to use the sentinel for
-		//  NullNode to avoid checking for NullNode.  However this introduces a
+		//  this->NullNode to avoid checking for this->NullNode.  However this introduces a
 		//  very subtle bug because sometimes this function modifies
-		//  the Parent pointer of NullNode.  This can be a problem if a
-		//  function which calls this->RotateLeft also uses the NullNode sentinel
-		//  and expects the NullNode sentinel's Parent pointer to be unchanged
+		//  the Parent pointer of this->NullNode.  This can be a problem if a
+		//  function which calls this->RotateLeft also uses the this->NullNode sentinel
+		//  and expects the this->NullNode sentinel's Parent pointer to be unchanged
 		//  after calling this function.  For example, when RBDeleteFixUP
-		//  calls this->RotateLeft it expects the Parent pointer of NullNode to be
+		//  calls this->RotateLeft it expects the Parent pointer of this->NullNode to be
 		//  unchanged.
 
 		Y = X->Right;
 		X->Right = Y->Left;
 
-		if (Y->Left != NullNode) {
+		if (Y->Left != this->NullNode) {
 			Y->Left->Parent = X; 
 			// used to use sentinel here
-			// and do an unconditional assignment instead of testing for NullNode
+			// and do an unconditional assignment instead of testing for this->NullNode
 		}
 
 		Y->Parent = X->Parent;
 
-		// instead of checking if X->Parent is the RootNode as in the book, we
-		// count on the RootNode sentinel to implicitly take care of this case
+		// instead of checking if X->Parent is the this->RootNode as in the book, we
+		// count on the this->RootNode sentinel to implicitly take care of this case
 		if (X == X->Parent->Left) {
 			X->Parent->Left = Y;
 		} else {
@@ -180,35 +175,34 @@ GD_NAMESPACE_BEGIN
 		Y->Left = X;
 		X->Parent = Y;
 
-		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not IsRed in this->RotateLeft");
+		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not IsRed in RotateLeft");
 	}
 
 	GDAPI void RedBlackTreeBase::RotateRight(RedBlackTreeBaseNode* Y)
 	{
 		RedBlackTreeBaseNode* X;
-		RedBlackTreeBaseNode* NullNode = this->NullNode;
 
 		//  I originally wrote this function to use the sentinel for
-		//  NullNode to avoid checking for NullNode.  However this introduces a
+		//  this->NullNode to avoid checking for this->NullNode.  However this introduces a
 		//  very subtle bug because sometimes this function modifies
-		//  the Parent pointer of NullNode.  This can be a problem if a
-		//  function which calls this->RotateLeft also uses the NullNode sentinel
-		//  and expects the NullNode sentinel's Parent pointer to be unchanged
+		//  the Parent pointer of this->NullNode.  This can be a problem if a
+		//  function which calls this->RotateLeft also uses the this->NullNode sentinel
+		//  and expects the this->NullNode sentinel's Parent pointer to be unchanged
 		//  after calling this function.  For example, when RBDeleteFixUP
-		//  calls this->RotateLeft it expects the Parent pointer of NullNode to be
+		//  calls this->RotateLeft it expects the Parent pointer of this->NullNode to be
 		//  unchanged.
 
 		X = Y->Left;
 		Y->Left = X->Right;
 
-		if (NullNode != X->Right) {
+		if (this->NullNode != X->Right) {
 			X->Right->Parent = Y; 
 			// used to use sentinel here
-			// and do an unconditional assignment instead of testing for NullNode
+			// and do an unconditional assignment instead of testing for this->NullNode
 		}
 
-		// instead of checking if X->Parent is the RootNode as in the book, we
-		// count on the RootNode sentinel to implicitly take care of this case
+		// instead of checking if X->Parent is the this->RootNode as in the book, we
+		// count on the this->RootNode sentinel to implicitly take care of this case
 		X->Parent = Y->Parent;
 		if (Y == Y->Parent->Left) {
 			Y->Parent->Left = X;
@@ -218,15 +212,14 @@ GD_NAMESPACE_BEGIN
 		X->Right = Y;
 		Y->Parent = X;
 
-		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not IsRed in this->RotateRight");
+		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not IsRed in RotateRight");
 	}
 
 	GDAPI void RedBlackTreeBase::Repair(RedBlackTreeBaseNode* X)
 	{
-		RedBlackTreeBaseNode* RootNode = this->RootNode->Left;
 		RedBlackTreeBaseNode* w;
 
-		while ((!X->IsRed) && (RootNode != X)) {
+		while ((!X->IsRed) && (this->RootNode != X)) {
 			if (X == X->Parent->Left) {
 				w = X->Parent->Right;
 				if (w->IsRed) {
@@ -249,7 +242,7 @@ GD_NAMESPACE_BEGIN
 					X->Parent->IsRed = false;
 					w->Right->IsRed = false;
 					this->RotateLeft(X->Parent);
-					X = RootNode; // this is to exit while loop
+					X = this->RootNode; // this is to exit while loop
 				}
 			} else { // the code below is has Left and Right switched from above
 				w = X->Parent->Left;
@@ -273,13 +266,13 @@ GD_NAMESPACE_BEGIN
 					X->Parent->IsRed = false;
 					w->Left->IsRed = false;
 					this->RotateRight(X->Parent);
-					X = RootNode; // this is to exit while loop
+					X = this->RootNode; // this is to exit while loop
 				}
 			}
 		}
 		X->IsRed = false;
 
-		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not black in this->Repair");
+		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not black in Repair");
 	}
 
 	/// ------------------------------------------------------------------------------------------
@@ -295,12 +288,11 @@ GD_NAMESPACE_BEGIN
 			//  This function should only be called by InsertRBTree (see above)
 			RedBlackTreeBaseNode* X;
 			RedBlackTreeBaseNode* Y;
-			RedBlackTreeBaseNode* NullNode = this->NullNode;
 
-			Z->Left = Z->Right = NullNode;
+			Z->Left = Z->Right = this->NullNode;
 			Y = this->RootNode;
 			X = this->RootNode->Left;
-			while (X != NullNode) {
+			while (X != this->NullNode) {
 				Y = X;
 				if (1 == this->CompareElements(X->Element, Z->Element)) { // X.key > Z.key
 					X = X->Left;
@@ -329,7 +321,7 @@ GD_NAMESPACE_BEGIN
 		TreeInsertHelp(NewNode);
 		X = NewNode;
 		X->IsRed = true;
-		while (X->Parent->IsRed) { // use sentinel instead of checking for RootNode
+		while (X->Parent->IsRed) { // use sentinel instead of checking for this->RootNode
 			if (X->Parent == X->Parent->Parent->Left) {
 				Y = X->Parent->Parent->Right;
 				if (Y->IsRed) {
@@ -366,21 +358,19 @@ GD_NAMESPACE_BEGIN
 		}
 		this->RootNode->Left->IsRed = false;
 
-		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not IsRed in RBTreeInsert");
-		GD_DEBUG_ASSERT(!this->RootNode->IsRed, "RootNode not IsRed in RBTreeInsert");
+		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not IsRed in Insert");
+		GD_DEBUG_ASSERT(!this->RootNode->IsRed, "RootNode not IsRed in Insert");
 	}
 
 	GDAPI void RedBlackTreeBase::Delete(RedBlackTreeBaseNode* const Z)
 	{
 		RedBlackTreeBaseNode* Y;
 		RedBlackTreeBaseNode* X;
-		RedBlackTreeBaseNode* NullNode = this->NullNode;
-		RedBlackTreeBaseNode* RootNode = this->RootNode;
 
-		Y = ((Z->Left == NullNode) || (Z->Right == NullNode)) ? Z : this->GetNextNode(Z);
-		X = (Y->Left == NullNode) ? Y->Right : Y->Left;
-		if (RootNode == (X->Parent = Y->Parent)) { // assignment of Y->p to X->p is intentional
-			RootNode->Left = X;
+		Y = ((Z->Left == this->NullNode) || (Z->Right == this->NullNode)) ? Z : this->GetNextNode(Z);
+		X = (Y->Left == this->NullNode) ? Y->Right : Y->Left;
+		if (this->RootNode == (X->Parent = Y->Parent)) { // assignment of Y->p to X->p is intentional
+			this->RootNode->Left = X;
 		} else {
 			if (Y == Y->Parent->Left) {
 				Y->Parent->Left = X;
@@ -388,9 +378,9 @@ GD_NAMESPACE_BEGIN
 				Y->Parent->Right = X;
 			}
 		}
-		if (Y != Z) { // Y should not be NullNode in this case
+		if (Y != Z) { // Y should not be this->NullNode in this case
 
-			GD_DEBUG_ASSERT((Y != this->NullNode), "Y is NullNode in RBDelete\n");
+			GD_DEBUG_ASSERT((Y != this->NullNode), "Y is this->NullNode in RBDelete\n");
 			// Y is the node to splice out and X is its child
 
 			if (!(Y->IsRed)) this->Repair(X);
@@ -415,15 +405,14 @@ GD_NAMESPACE_BEGIN
 			//free(Y);
 		}
 
-		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "NullNode not black in RBDelete");
+		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "this->NullNode not black in RBDelete");
 	}
 
 	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::Query(chandle const Element) const
 	{
 		RedBlackTreeBaseNode* X = this->RootNode->Left;
-		RedBlackTreeBaseNode* NullNode = this->NullNode;
 		int CompVal;
-		if (X == NullNode) {
+		if (X == this->NullNode) {
 			// return(0);
 			return(X);
 		}
@@ -434,7 +423,7 @@ GD_NAMESPACE_BEGIN
 			} else {
 				X = X->Right;
 			}
-			if (X == NullNode) {
+			if (X == this->NullNode) {
 				// return(0);
 				return(X);
 			}
@@ -443,13 +432,13 @@ GD_NAMESPACE_BEGIN
 		return(X);
 	}
 
-	GDINL void RedBlackTreeBase::Clear()
+	GDAPI void RedBlackTreeBase::Clear()
 	{
 		this->InternalDestroyNode(this->RootNode->Left);
-		this->RootNode->Left = RedBlackTreeBase::NullNode;
+		this->RootNode->Left = this->NullNode;
 
 		this->InternalDestroyNode(this->RootNode->Right);
-		this->RootNode->Right = RedBlackTreeBase::NullNode;
+		this->RootNode->Right = this->NullNode;
 	}
 
 GD_NAMESPACE_END

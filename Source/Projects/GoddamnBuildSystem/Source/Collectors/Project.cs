@@ -226,7 +226,7 @@ namespace GoddamnEngine.BuildSystem
 #if INCLUDE_GODDAMNSDK_SPECIFIC
             return Path.Combine(GetLocation(), "Source", "GoddamnEngine");
 #else   // INCLUDE_GODDAMNSDK_SPECIFIC
-   return GetLocation();
+            return GetLocation();
 #endif  // INCLUDE_GODDAMNSDK_SPECIFIC
         }
 
@@ -234,10 +234,6 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Iterator for list of directories that contain header files.
         public virtual IEnumerable<string> EnumerateHeaderDirectories()
         {
-            //! @todo Temporary solution. Fix it.
-            yield return @"D:\GoddamnEngine\Source\Projects\GoddamnCore\Source";
-            yield return @"D:\GoddamnEngine\Source\Projects\GoddamnEngine\Source";
-
             string ProjectSourceFiles = Path.Combine(GetLocation(), "Source");
             if (!Directory.Exists(ProjectSourceFiles)) {
                 throw new BuildSystemException("No source directories for dependencies {0} were found.", GetName());
@@ -314,16 +310,29 @@ namespace GoddamnEngine.BuildSystem
         public virtual IEnumerable<DependencyCache> EnumerateDependencies()
         {
             string ProjectDependencyDirectory = Path.Combine(GetLocation(), "Dependencies");
-            if (!Directory.Exists(ProjectDependencyDirectory)) {
-                yield break;
-            }
-
-            foreach (string ProjectDependency in Directory.EnumerateFiles(ProjectDependencyDirectory, "*.gddep.cs", SearchOption.AllDirectories)) {
-                DependencyCache Dependency = DependencyFactory.Create(ProjectDependency);
-                if (Dependency.m_IsSupported) {
-                    yield return Dependency;
+            if (Directory.Exists(ProjectDependencyDirectory)) {
+                // Adding explicit dependencies.
+                foreach (string ProjectDependency in Directory.EnumerateFiles(ProjectDependencyDirectory, "*.gddep.cs", SearchOption.AllDirectories)) {
+                    DependencyCache Dependency = DependencyFactory.Create(ProjectDependency);
+                    if (Dependency.m_IsSupported) {
+                        yield return Dependency;
+                    }
                 }
             }
+
+#if INCLUDE_GODDAMNSDK_SPECIFIC
+            // Adding implicit priority-related dependencies.
+            ProjectPriority Priority = GetPriority();
+            if (Priority < ProjectPriority.CoreLevel) {
+                // Resolving Core library dependency.
+                yield return DependencyFactory.GetGoddamnCoreDependency();
+
+                if (Priority < ProjectPriority.EngineLevel) {
+                    // Resolving Engine library dependency.
+                    yield return DependencyFactory.GetGoddamnEngineDependency();
+                }
+            }
+#endif  // INCLUDE_GODDAMNSDK_SPECIFIC
         }
 
         //! @brief Collects list of additional preprocessor definitions added to this project.
@@ -446,14 +455,14 @@ namespace GoddamnEngine.BuildSystem
         public readonly bool m_IsBuildTool;
         public readonly string m_CachedFilter;
         public readonly ProjectPriority m_CachedPriority;
-        public readonly CollectorPlatformConfigurationData<ProjectBuildType> m_CachedBuildTypes;
-        public readonly CollectorPlatformConfigurationData<string> m_CachedOutputPaths;
-        public readonly CollectorPlatformConfigurationData<string> m_CachedImportLibraryOutputPaths;
+        public readonly CollectorContainer<ProjectBuildType> m_CachedBuildTypes;
+        public readonly CollectorContainer<string> m_CachedOutputPaths;
+        public readonly CollectorContainer<string> m_CachedImportLibraryOutputPaths;
         public readonly string m_CachedSourcesFilterOrigin;
         public readonly ProjectSourceFile[] m_CachedSourceFiles;
         public readonly string[] m_CachedHeaderDirectories;
         public readonly DependencyCache[] m_CachedDependencies;
-        public readonly CollectorPlatformConfigurationData<ProjectMacro[]> m_CachedMacros;
+        public readonly CollectorContainer<ProjectMacro[]> m_CachedMacros;
 
         //! @brief Generates cache for specified project.
         //! @param Project Project which dynamic properties would be cached.
@@ -465,15 +474,15 @@ namespace GoddamnEngine.BuildSystem
                 m_CachedPriority = Project.GetPriority();
                 m_IsBuildTool = Project is BuildToolProject;
                 if (!m_IsBuildTool) {
-                    //  m_MakefilePathes = new CollectorPlatformConfigurationData<string>();
-                    m_CachedBuildTypes = new CollectorPlatformConfigurationData<ProjectBuildType>(Project.GetBuildType);
-                    m_CachedOutputPaths = new CollectorPlatformConfigurationData<string>(Project.GetOutputPathDelegate);
-                    m_CachedImportLibraryOutputPaths = new CollectorPlatformConfigurationData<string>(Project.GetImportLibraryOutputPathDelegate);
+                    //  m_MakefilePathes = new CollectorContainer<string>();
+                    m_CachedBuildTypes = new CollectorContainer<ProjectBuildType>(Project.GetBuildType);
+                    m_CachedOutputPaths = new CollectorContainer<string>(Project.GetOutputPathDelegate);
+                    m_CachedImportLibraryOutputPaths = new CollectorContainer<string>(Project.GetImportLibraryOutputPathDelegate);
                     m_CachedSourcesFilterOrigin = Project.GetSourceFiltersOrigin();
                     m_CachedSourceFiles = Project.EnumerateSourceFiles().ToArray();
                     m_CachedHeaderDirectories = Project.EnumerateHeaderDirectories().ToArray();
                     m_CachedDependencies = Project.EnumerateDependencies().ToArray();
-                    m_CachedMacros = new CollectorPlatformConfigurationData<ProjectMacro[]>((TargetPlatform P, TargetConfiguration C) => Project.EnumerateMacros(P, C).ToArray());
+                    m_CachedMacros = new CollectorContainer<ProjectMacro[]>((TargetPlatform P, TargetConfiguration C) => Project.EnumerateMacros(P, C).ToArray());
                 } else {
                     m_GeneratorOutputPath = ((BuildToolProject)Project).GetProjectFile();
                 }

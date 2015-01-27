@@ -13,12 +13,11 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/IO/Stream/Stream.h>
 #include <GoddamnEngine/Core/Object/Object.h>
-#include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
+#include <GoddamnEngine/Core/Templates/Singleton.h>
 #include <GoddamnEngine/Core/Threading/CriticalSection/CriticalSection.h>
 #include <GoddamnEngine/Core/Templates/RefPtr.h>
 #include <GoddamnEngine/Core/Templates/UniquePtr.h>
 #include <GoddamnEngine/Core/Containers/StringBuilder.h>
-#include <GoddamnEngine/Core/Reflection/TypeInformation.h>
 
 #define GD_RESOURCE_ARGS (*(reinterpret_cast<String const*>(Argument)))
 
@@ -139,7 +138,7 @@ GD_NAMESPACE_BEGIN
 		friend class RSStreamer;
 
 	private /*Support stuff*/:
-		GD_TYPEINFORMATION_DEFINITION(Resource,  Object, GDAPI);
+		GD_CLASSINFO_DEFINITION(Resource,  Object, GDAPI);
 		GD_CLASS_UNASSIGNABLE(Resource);
 		GD_CLASS_UNCOPIABLE  (Resource);
 		
@@ -207,10 +206,10 @@ GD_NAMESPACE_BEGIN
 	private /*Class API*/:
 		/// Searches for resource with specified identifier in list and returns it if found nullptr otherwise. 
 		/// @param ID     Idenitifer of the reqiured resource.
-		/// @param ITypeInformation Type informartion of type that would be created if original was not found. 
+		/// @param IClassInfo Type informartion of type that would be created if original was not found. 
 		/// @param DoSearchInRequests If is set, then searching is also done in requests list.
 		/// @returns First found resource that matches specified criteria or nullptr.
-		GDAPI RefPtr<Resource> FindOrCreateResource(String const& ID, ITypeInformation const* const ITypeInformation);
+		GDAPI RefPtr<Resource> FindOrCreateResource(String const& ID, IClassInfo const* const IClassInfo);
 
 	public /*Class API*/:
 		/// Loads in to memory and/or to GPU already existing resource.
@@ -220,9 +219,9 @@ GD_NAMESPACE_BEGIN
 
 		/// Creates resource (or uses existing found by identifier) and loads it.
 		/// @param ID     Idenitifer of the reqiured resource.
-		/// @param ITypeInformation Type informartion of type that would be created. 
+		/// @param IClassInfo Type informartion of type that would be created. 
 		/// @returns Possible created or found immediately loaded resource.
-		GDAPI RefPtr<Resource> LoadImmediately(String const& ID, ITypeInformation const* const ITypeInformation);
+		GDAPI RefPtr<Resource> LoadImmediately(String const& ID, IClassInfo const* const IClassInfo);
 
 		/// @see RSStreamer::LoadImmediately
 		template<typename ResourceType>
@@ -233,7 +232,7 @@ GD_NAMESPACE_BEGIN
 		/// Recommended using RSStreamer::WaitForLoading function to ensure, that all resources in queue are loaded.
 		///	If resource streaming is disabled, than calling RSStreamer::WaitForLoading is required.
 		///	to load all unloaded resource in current thread.
-		GDAPI RefPtr<Resource> ProcessStreaming(String const& ID, ITypeInformation const* const ITypeInformation);
+		GDAPI RefPtr<Resource> ProcessStreaming(String const& ID, IClassInfo const* const IClassInfo);
 
 		/// @see RSStreamer::ProcessStreaming
 		template<typename ResourceType>
@@ -248,7 +247,7 @@ GD_NAMESPACE_BEGIN
 	class RSBinary final : public Resource
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(RSBinary, Resource, GDAPI);
+		GD_CLASSINFO_DEFINITION(RSBinary, Resource, GDAPI);
 
 		Vector<UInt8> BinaryData;
 

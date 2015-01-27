@@ -20,7 +20,7 @@ GD_NAMESPACE_BEGIN
 	class RSEffect final : public Resource
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(RSEffect, Resource, GDAPI);
+		GD_CLASSINFO_DEFINITION(RSEffect, Resource, GDAPI);
 		RefPtr<HRIShaderProgram> EffectShaderProgram = nullptr;
 
 		GDINL explicit RSEffect(String const& ID) : Resource(ID) { }

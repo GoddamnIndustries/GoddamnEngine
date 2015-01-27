@@ -31,7 +31,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(HROGLInterface, HRInterface, GDINT);
+	GD_CLASSINFO_IMPLEMENTATION(HROGLInterface, HRInterface, GDINT);
 
 	bool HROGLInterface::CreateContex()
 	{
@@ -214,7 +214,7 @@ GDEXP extern bool EnginePluginEntry(GD::PluginDescription* const Description)
 
 	Description->Type = GD_PLUGIN_TYPE_RENDERER;
 	Description->Description = "Default GoddamnEngine`s OpenGL Renderer";
-	Description->PluginTypeInformation = HROGLInterface::GetClassTypeInformation();
+	Description->PluginTypeInfo = HROGLInterface::GetTypeClassInfo();
 
 	return true;
 }

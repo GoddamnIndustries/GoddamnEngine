@@ -16,7 +16,11 @@ GD_NAMESPACE_BEGIN
 	/// @tparam ElementType Container element type.
 	/// @tparam Capacity Capacity of the static vector.
  	template<typename ElementType, size_t const Capacity>
-	class StaticVector final : public ContainerIteratableTag, public ContainerReverseIteratableTag, public ContainerPtrIteratableTag, public ContainerPtrReverseIteratableTag
+	class StaticVector final : public IContainer
+		, public ContainerIteratableTag
+		, public ContainerReverseIteratableTag
+		, public ContainerPtrIteratableTag
+		, public ContainerPtrReverseIteratableTag
 	{
 	public:
 		typedef IndexedContainerIterator<StaticVector, ElementType> Iterator;

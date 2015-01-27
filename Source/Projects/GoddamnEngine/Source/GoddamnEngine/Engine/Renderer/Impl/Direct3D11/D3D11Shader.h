@@ -21,7 +21,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11ShaderProgram final : public HRIShaderProgram
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11ShaderProgram, HRIShaderProgram, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11ShaderProgram, HRIShaderProgram, GDINT);
 
 	public:
 		GDINL virtual ~HRID3D11ShaderProgram() { }
@@ -35,7 +35,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11ShaderParamLocationResources final : public HRIShaderParamLocationResources
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11ShaderParamLocationResources, HRIShaderParamLocationResources, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11ShaderParamLocationResources, HRIShaderParamLocationResources, GDINT);
 		typedef StaticVector<ID3D11ShaderResourceView*, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> HRIShaderResourceViewsVector;
 		typedef StaticVector<ID3D11SamplerState   *, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> HRIShaderSampleStatesVector;
 		HRIShaderResourceViewsVector ShaderResourceViews;
@@ -55,7 +55,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11ShaderInstance : public HRIShaderInstance
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11ShaderInstance, HRIShaderInstance, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11ShaderInstance, HRIShaderInstance, GDINT);
 
 	public:
 		StaticVector<ID3D11Buffer const*, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> ShaderConstantBuffers;
@@ -68,7 +68,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11VertexShader final : public HRIVertexShader
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11VertexShader, HRIVertexShader, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11VertexShader, HRIVertexShader, GDINT);
 		D3D11RefPtr<ID3D11VertexShader> VertexShader;
 		D3D11RefPtr<ID3D11InputLayout > InputLayout;
 		D3D11RefPtr<ID3DBlob    > CompiledData;
@@ -88,7 +88,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11HullShader final : public HRIHullShader
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11HullShader, HRIHullShader, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11HullShader, HRIHullShader, GDINT);
 		D3D11RefPtr<ID3D11HullShader> HullShader;
 		D3D11RefPtr<ID3DBlob  > CompiledData;
 
@@ -103,7 +103,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11DomainShader final : public HRIDomainShader
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11DomainShader, HRIDomainShader, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11DomainShader, HRIDomainShader, GDINT);
 		D3D11RefPtr<ID3D11DomainShader> DomainShader;
 		D3D11RefPtr<ID3DBlob    > CompiledData;
 
@@ -118,7 +118,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11PixelShader final : public HRIPixelShader
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11PixelShader, HRIPixelShader, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11PixelShader, HRIPixelShader, GDINT);
 		D3D11RefPtr<ID3D11PixelShader> PixelShader;
 		D3D11RefPtr<ID3DBlob   > CompiledData;
 

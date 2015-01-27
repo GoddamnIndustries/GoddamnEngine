@@ -137,7 +137,8 @@ GD_NAMESPACE_BEGIN
 	/// @brief Single-linked template list class.
 	/// @tparam ElementType List element type.
 	template<typename ElementType>
-	class LinkedList final : public ContainerIteratableTag
+	class LinkedList final : public IContainer
+		, public ContainerIteratableTag
 	{
 	public:
 		typedef LinkedListNode<ElementType> LinkedListNodeType;
@@ -519,7 +520,9 @@ GD_NAMESPACE_BEGIN
 	/// @brief Double-linked template list class.
 	/// @tparam ElementType Container element type.
 	template<typename ElementType>
-	class DoubleLinkedList final : public ContainerIteratableTag, public ContainerReverseIteratableTag
+	class DoubleLinkedList final : public IContainer
+		, public ContainerIteratableTag
+		, public ContainerReverseIteratableTag
 	{
 	public:
 		typedef DoubleLinkedListNode<ElementType> DoubleLinkedListNodeType;

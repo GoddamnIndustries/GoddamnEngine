@@ -19,7 +19,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLIndexedShape final : public HRIIndexedShape
 	{
 	private:
-	//	GD_TYPEINFORMATION_DEFINITION(HRIOGLIndexedShape, HRIIndexedShape, GDINT);
+	//	GD_CLASSINFO_DEFINITION(HRIOGLIndexedShape, HRIIndexedShape, GDINT);
 
 	public:
 		GDINT virtual void SetTopologyType(HRITopologyType const TopologyType) { }

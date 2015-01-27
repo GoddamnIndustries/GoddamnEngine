@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 	class Input : public StaticComponent, public Singleton<Input>
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(Input, StaticComponent, GDAPI);
+		GD_CLASSINFO_DEFINITION(Input, StaticComponent, GDAPI);
 
 	protected:
 		GDINL Input() :

@@ -16,7 +16,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	class ITypeInformation;
+	class IClassInfo;
 	class AssemblyManifest final
 	{};
 
@@ -27,7 +27,7 @@ GD_NAMESPACE_BEGIN
 		GD_CLASS_UNASSIGNABLE(Assembly);
 		GD_CLASS_UNCOPIABLE(Assembly);
 
-		Vector<ITypeInformation const*> DefinedTypes;
+		Vector<IClassInfo const*> DefinedTypes;
 		AssemblyManifest const* (*ManifestGetterPtr)() = nullptr;
 		void (*ReflectionInitializationProcPtr)() = nullptr;
 
@@ -61,7 +61,7 @@ GD_NAMESPACE_BEGIN
 		GDAPI bool IsLinkedDynamically() const;
 
 		/// Returns collection of types that are defined in this assembly
-		GDAPI Vector<ITypeInformation const*> const& GetTypes() const;
+		GDAPI Vector<IClassInfo const*> const& GetTypes() const;
 
 		/// Returns pointer of native method that is located in this assembly or nullptr if it was not found
 		GDAPI chandle GetNativeMethod(String const& MethodName) const;

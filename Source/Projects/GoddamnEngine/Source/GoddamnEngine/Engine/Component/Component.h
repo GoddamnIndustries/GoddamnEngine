@@ -23,9 +23,9 @@
 #define GD_EXTENDS_SERIALIZABLE(Serializable) GD_EXTENDS_SERIALIZABLE_LIST(Serializable)
 #define GD_FIELD(Type, Name) Type Name
 
-#define GD_SERIALIZABLE_DEFINITION			GD_TYPEINFORMATION_DEFINITION
-#define GD_SERIALIZABLE_IMPLEMENTATION		GD_TYPEINFORMATION_IMPLEMENTATION
-#define GD_SERIALIZABLE_IMPLEMENTATION_C	GD_TYPEINFORMATION_IMPLEMENTATION_C
+#define GD_SERIALIZABLE_DEFINITION			GD_CLASSINFO_DEFINITION
+#define GD_SERIALIZABLE_IMPLEMENTATION		GD_CLASSINFO_IMPLEMENTATION
+#define GD_SERIALIZABLE_IMPLEMENTATION_C	GD_CLASSINFO_IMPLEMENTATION_C
 
 GD_NAMESPACE_BEGIN
 
@@ -36,10 +36,8 @@ GD_NAMESPACE_BEGIN
 	class Transform;
 
 	/// Base class that is a simple part of each game object.
-	$GD_REFLECTABLE()
 	class Component : public Object
 	{
-		$GD_REFLECTABLE_BODY_GENERATED_CRAP();
 		friend class Application;
 		friend class GameObject;
 		friend class Camera;
@@ -120,8 +118,8 @@ GD_NAMESPACE_BEGIN
 		/// Searches for attached components with specified type information
 		/// @param typeinfo Type information for required component type
 		/// @returns		Component attached to this object of this type or nullptr if nothing found
-		GDAPI RefPtr<Component   > GetComponent(ITypeInformation const* const TypeInfo);
-		GDINL RefPtr<Component const> GetComponent(ITypeInformation const* const TypeInfo) const
+		GDAPI RefPtr<Component   > GetComponent(IClassInfo const* const TypeInfo);
+		GDINL RefPtr<Component const> GetComponent(IClassInfo const* const TypeInfo) const
 		{
 			return const_cast<GameObject const*>(this)->GetComponent(TypeInfo);
 		}
@@ -133,7 +131,7 @@ GD_NAMESPACE_BEGIN
 		GDINL RefPtr<ComponentType> GetComponent()
 		{
 			static_assert((TypeTraits::IsBase<Component, ComponentType>::Value), "'GameObject::GetComponent<T>()' error: 'T' should be derived from Component");
-			return object_cast<RefPtr<ComponentType>>(this->GetComponent(ComponentType::GetClassTypeInformation()));
+			return object_cast<RefPtr<ComponentType>>(this->GetComponent(ComponentType::GetTypeClassInfo()));
 		}
 
 		template<typename ComponentType>
@@ -145,24 +143,24 @@ GD_NAMESPACE_BEGIN
 		/// @brief			Adds component with specified type information.
 		/// @param typeinfo Type information for required component type
 		/// @returns		Newly created component of this type or existing
-		GDAPI RefPtr<Component> AddComponent(ITypeInformation const* TypeInfo);
+		GDAPI RefPtr<Component> AddComponent(IClassInfo const* TypeInfo);
 
 		template<typename ComponentType>
 		GDINL RefPtr<ComponentType> AddComponent()
 		{
 			static_assert((TypeTraits::IsBase<Component, ComponentType>::Value), "'GameObject::AddComponent<T>()' error: 'T' should be derived from Component");
-			return object_cast<RefPtr<ComponentType>>(this->AddComponent(ComponentType::GetClassTypeInformation()));
+			return object_cast<RefPtr<ComponentType>>(this->AddComponent(ComponentType::GetTypeClassInfo()));
 		}
 
 		/// @brief			Removes component with specified type information (if exists in game object).
 		/// @param typeinfo Type information for required component type
-		GDAPI void RemoveComponent(ITypeInformation const* const TypeInfo);
+		GDAPI void RemoveComponent(IClassInfo const* const TypeInfo);
 		/// @see Component::RemoveComponent
 		template<class ComponentType>
 		GDINL void RemoveComponent()
 		{
 			static_assert((TypeTraits::IsBase<Component, ComponentType>::Value), "'GameObject::AddComponent<T>()' error: 'T' should be derived from Component");
-			this->RemoveComponent(ComponentType::GetClassTypeInformation());
+			this->RemoveComponent(ComponentType::GetTypeClassInfo());
 		}
 
 		/// @}

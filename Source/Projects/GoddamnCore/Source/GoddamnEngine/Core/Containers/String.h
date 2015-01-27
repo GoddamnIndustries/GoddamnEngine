@@ -20,7 +20,11 @@ GD_NAMESPACE_BEGIN
 	/// A base string class used by the engine.
 	/// @tparam CharType Character type of this string.
 	template<typename CharType>
-	class BaseString final : public ContainerIteratableTag, public ContainerReverseIteratableTag, public ContainerPtrIteratableTag, public ContainerPtrReverseIteratableTag
+	class BaseString final : public IContainer
+		, public ContainerIteratableTag
+		, public ContainerReverseIteratableTag
+		, public ContainerPtrIteratableTag
+		, public ContainerPtrReverseIteratableTag
 	{
 	public:
 		typedef IndexedContainerIterator<BaseString, CharType> Iterator;

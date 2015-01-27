@@ -5,7 +5,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(Texture2DResource, Resource, GDAPI, GD_RESOURCE_ARGS);
+	GD_CLASSINFO_IMPLEMENTATION(Texture2DResource, Resource, GDAPI, GD_RESOURCE_ARGS);
 
 	/// ==========================================================================================
 	void Texture2DResource::OnResourceLoad(

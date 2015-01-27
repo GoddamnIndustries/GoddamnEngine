@@ -1,10 +1,11 @@
 /// ==========================================================================================
 /// Hash.h - Text hashing algorithms.
 /// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// 
-/// History:
-///		* 23.11.2014 - Created by James Jhuighuy.
 /// ==========================================================================================
+
+#pragma once
+#ifndef GD_CORE_TEXT_HASHCODE
+#define GD_CORE_TEXT_HASHCODE
 
 #include <GoddamnEngine/Include.h>
 
@@ -33,3 +34,5 @@ GD_NAMESPACE_BEGIN
 	};	// struct HashCode
 
 GD_NAMESPACE_END
+
+#endif	// ifndef GD_CORE_TEXT_HASHCODE

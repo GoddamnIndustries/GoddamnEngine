@@ -1,15 +1,15 @@
 #include <GoddamnEngine/Engine/Renderer/Renderer.h>
 
 GD_NAMESPACE_BEGIN
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIBuffer,   HRIObject, GDAPI, nullptr);
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIVertexBuffer,   HRIBuffer, GDAPI, nullptr);
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIIndexBuffer, HRIBuffer, GDAPI, nullptr);
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIConstantBuffer, HRIBuffer, GDAPI, nullptr);
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIRenderTarget,   HRIObject, GDAPI, nullptr);
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRILinkagePoint,   HRIObject, GDAPI, nullptr);
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIIndexedShape,   HRIObject, GDAPI, nullptr);
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRITexture2D,   HRIObject, GDAPI, nullptr);
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRInterface,    HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIBuffer,   HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIVertexBuffer,   HRIBuffer, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIIndexBuffer, HRIBuffer, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIConstantBuffer, HRIBuffer, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIRenderTarget,   HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRILinkagePoint,   HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIIndexedShape,   HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRITexture2D,   HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRInterface,    HRIObject, GDAPI, nullptr);
 	GD_SINGLETON_IMPLEMENTATION(HRInterface);
 
 	/// ==========================================================================================

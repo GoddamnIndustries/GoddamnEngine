@@ -7,7 +7,7 @@ GD_NAMESPACE_BEGIN
 	// StaticMesh Class
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(StaticMesh, Resource, GDAPI, GD_RESOURCE_ARGS);
+	GD_CLASSINFO_IMPLEMENTATION(StaticMesh, Resource, GDAPI, GD_RESOURCE_ARGS);
 
 	StaticMesh::StaticMesh(String const& identifier) :
 		Resource(identifier)

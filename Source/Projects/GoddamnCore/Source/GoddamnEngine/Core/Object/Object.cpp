@@ -6,7 +6,7 @@ GD_NAMESPACE_BEGIN
 	// Object class
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(Object, IReflectable, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION(Object, IClass, GDAPI);
 
 	/// ==========================================================================================
 	// Constructor / Destructor
@@ -214,7 +214,7 @@ GD_NAMESPACE_BEGIN
 			 object != nullptr;
 			 object  = object->GetPreviousSiblingObject())
 		{
-			dumpedTreeData += (String(DumpedTreeDataRecursionLevel - 1, '\t') + String::Format("Object 0x%x with RTTI: %s\n", object, &object->GetTypeInformation()->GetName()[0]));
+			dumpedTreeData += (String(DumpedTreeDataRecursionLevel - 1, '\t') + String::Format("Object 0x%x with RTTI: %s\n", object, &object->GetClassInfo()->GetName()[0]));
 			 
 			object->DumpTreeData(dumpedTreeData);
 		}

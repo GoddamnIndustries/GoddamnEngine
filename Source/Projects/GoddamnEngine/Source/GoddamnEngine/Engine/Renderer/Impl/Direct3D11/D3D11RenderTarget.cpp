@@ -11,7 +11,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11RenderTarget, HRIRenderTarget, GDINT, nullptr);	
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11RenderTarget, HRIRenderTarget, GDINT, nullptr);	
 	HRID3D11RenderTarget::HRID3D11RenderTarget(HRIRenderTargetCtorInfo const& CtorInfo) : HRIRenderTarget(CtorInfo)
 	{
 		HRESULT Result = E_FAIL;

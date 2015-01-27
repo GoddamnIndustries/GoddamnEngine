@@ -84,7 +84,7 @@ GD_NAMESPACE_BEGIN
 	class HROGLInterface final : public HRInterface
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HROGLInterface, HRInterface, GDINT);
+		GD_CLASSINFO_DEFINITION(HROGLInterface, HRInterface, GDINT);
 		GD_SINGLETON_OVERRIDE(HROGLInterface, HRInterface);
 
 	public:

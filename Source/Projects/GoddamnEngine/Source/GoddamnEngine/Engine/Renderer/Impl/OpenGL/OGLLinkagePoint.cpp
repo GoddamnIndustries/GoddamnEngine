@@ -10,7 +10,7 @@
 #include <GoddamnEngine/Engine/Renderer/Impl/OpenGL/OGLBuffer.h>
 
 GD_NAMESPACE_BEGIN
-	GD_TYPEINFORMATION_IMPLEMENTATION(HRIOGLLinkagePoint, HRILinkagePoint, GDINT);
+	GD_CLASSINFO_IMPLEMENTATION(HRIOGLLinkagePoint, HRILinkagePoint, GDINT);
 
 	void HRIOGLLinkagePoint::RenderSelf() const
 	{

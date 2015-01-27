@@ -12,7 +12,7 @@ GD_NAMESPACE_BEGIN
 	/// Base class that is a simple part of each game object.
 	/// ==========================================================================================
 
-	GD_SERIALIZABLE_IMPLEMENTATION_C(Component, Object, GDAPI, nullptr);
+	GD_SERIALIZABLE_IMPLEMENTATION(Component, Object, GDAPI);
 
 	/// ==========================================================================================
 	/// GameObject class.
@@ -20,10 +20,10 @@ GD_NAMESPACE_BEGIN
 
 	GD_SERIALIZABLE_IMPLEMENTATION(GameObject, Component, GDAPI);
 
-	RefPtr<Component> GameObject::GetComponent(ITypeInformation const* const TypeInfo)
+	RefPtr<Component> GameObject::GetComponent(IClassInfo const* const TypeInfo)
 	{
 		for (auto const AttachedComponent : IterateChildObjects<Component>(this)) {
-			ITypeInformation const* const AttachedComponentTypeInfo = AttachedComponent->GetTypeInformation();
+			IClassInfo const* const AttachedComponentTypeInfo = AttachedComponent->GetClassInfo();
 			if (AttachedComponentTypeInfo->IsDerivedFrom(TypeInfo)) {
 				AttachedComponent->AddReference();
 				return AttachedComponent;
@@ -33,21 +33,22 @@ GD_NAMESPACE_BEGIN
 		return nullptr;
 	}
 
-	RefPtr<Component> GameObject::AddComponent(ITypeInformation const* const TypeInfo)
+	RefPtr<Component> GameObject::AddComponent(IClassInfo const* const TypeInfo)
 	{
 		RefPtr<Component> const FoundAttachedComponent(this->GetComponent(TypeInfo));
 		if (FoundAttachedComponent != nullptr) {
 			return FoundAttachedComponent;
 		}
 		else {
-			GD_DEBUG_ASSERT(TypeInfo->VirtualConstructor != nullptr, "Failed to create a instance of a abstract class.");
+			/*GD_DEBUG_ASSERT(TypeInfo->VirtualConstructor != nullptr, "Failed to create a instance of a abstract class.");
 			RefPtr<Component> const CreatedComponent = object_cast<Component*>(TypeInfo->VirtualConstructor(nullptr, nullptr));
 			CreatedComponent->AttachToObject(this);
-			return CreatedComponent;
+			return CreatedComponent;*/
+			return nullptr;
 		}
 	}
 
-	void GameObject::RemoveComponent(ITypeInformation const* const TypeInfo)
+	void GameObject::RemoveComponent(IClassInfo const* const TypeInfo)
 	{
 		RefPtr<Component> const FoundAttachedComponent = this->GetComponent(TypeInfo);
 		if (FoundAttachedComponent != nullptr) {

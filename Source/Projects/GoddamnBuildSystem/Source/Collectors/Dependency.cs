@@ -51,10 +51,6 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Iterator for list of libraries that should be linked with project build file.
         public virtual IEnumerable<string> EnumerateLinkedLibraries(TargetPlatform Platform, TargetConfiguration Configuration)
         {
-            //! @todo Temporary solution. Fix it.
-            yield return @"D:\GoddamnEngine\Lib\GoddamnEngine*.lib";
-            yield return @"D:\GoddamnEngine\Lib\GoddamnCore*.lib";
-
             Debug.Assert(Platform != TargetPlatform.Unknown);
             foreach (string LibraryFile in Directory.EnumerateFiles(this.GetLocation())) {
                 string LibraryFileExtension = Path.GetExtension(LibraryFile).ToLowerInvariant();
@@ -91,12 +87,68 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class Dependency
 
+    //! @brief Adapter that converts projects to dependencies for other projects.
+    public class ProjectDependency : Dependency
+    {
+        private ProjectCache m_Project = null;
+
+        //! @brief Returns project caches that is used in this dependency.
+        //! @returns Project caches that is used in this dependency.
+        public virtual ProjectCache GetProject()
+        {
+            if (m_Project == null) {
+                string ProjectSource = Path.Combine(GetLocation(), GetName()) + ".gdproj.cs";
+                if (File.Exists(ProjectSource)) {
+                    m_Project = ProjectFactory.Create(ProjectSource);
+                } else {
+                    throw new BuildSystemException("Corresponding \"{0}\" project source file was not found.", ProjectSource);
+                }
+            }
+
+            return m_Project;
+        }
+        
+        //! @brief Collects list of directories that contain header files.
+        //! @returns Iterator for list of header files.
+        public sealed override IEnumerable<string> EnumerateHeaderDirectories()
+        {
+            yield return Path.Combine(GetProject().m_CachedLocation, "Source");
+        }
+
+        //! @brief Collects list of files that should be copied to project build output directory.
+        //! @param Platform One of the target platforms.
+        //! @param Configuration One of the target configurations.
+        //! @returns Iterator for list of files that should be copied to project build output directory.
+        public sealed override IEnumerable<string> EnumerateCopyFiles(TargetPlatform Platform, TargetConfiguration Configuration)
+        {
+            if (GetProject().m_CachedBuildTypes[Platform, Configuration] == ProjectBuildType.DynamicLibrary) {
+                yield return GetProject().m_CachedOutputPaths[Platform, Configuration];
+            }
+        }
+
+        //! @brief Collects list of libraries that should be linked with project build file.
+        //! @param Platform One of the target platforms.
+        //! @param Configuration One of the target configurations.
+        //! @returns Iterator for list of libraries that should be linked with project build file.
+        public sealed override IEnumerable<string> EnumerateLinkedLibraries(TargetPlatform Platform, TargetConfiguration Configuration)
+        {
+            if (Target.IsWinAPIPlatform(Platform)) {
+                yield return GetProject().m_CachedImportLibraryOutputPaths[Platform, Configuration];
+            } else {
+                if (GetProject().m_CachedBuildTypes[Platform, Configuration] == ProjectBuildType.DynamicLibrary) {
+                    yield return GetProject().m_CachedOutputPaths[Platform, Configuration];
+                }
+            }
+        }
+
+    }   // class ProjectDependency
+
     //! @brief Represents a collection of cached data that was by dependency object.
     public sealed class DependencyCache : CollectorCache
     {
         public readonly string[] m_CachedHeaderDirectories;
-        public readonly CollectorPlatformConfigurationData<string[]> m_CachedCopyFiles;
-        public readonly CollectorPlatformConfigurationData<string[]> m_CachedLinkedLibraries;
+        public readonly CollectorContainer<string[]> m_CachedCopyFiles;
+        public readonly CollectorContainer<string[]> m_CachedLinkedLibraries;
 
         //! @brief Generates cache for specified dependency.
         //! @param Dependency Dependency which dynamic properties would be cached.
@@ -105,192 +157,57 @@ namespace GoddamnEngine.BuildSystem
         {
             if (m_IsSupported) {
                 m_CachedHeaderDirectories = Dependency.EnumerateHeaderDirectories().ToArray();
-                m_CachedCopyFiles = new CollectorPlatformConfigurationData<string[]>((TargetPlatform P, TargetConfiguration C) => Dependency.EnumerateCopyFiles(P, C).ToArray());
-                m_CachedLinkedLibraries = new CollectorPlatformConfigurationData<string[]>((TargetPlatform P, TargetConfiguration C) => Dependency.EnumerateLinkedLibraries(P, C).ToArray());
+                m_CachedCopyFiles = new CollectorContainer<string[]>((TargetPlatform P, TargetConfiguration C) => Dependency.EnumerateCopyFiles(P, C).ToArray());
+                m_CachedLinkedLibraries = new CollectorContainer<string[]>((TargetPlatform P, TargetConfiguration C) => Dependency.EnumerateLinkedLibraries(P, C).ToArray());
             }
         }
+
     }   // class DependencyCache
 
     //! @brief Represents a factory of dependencies.
     public /*static*/ sealed class DependencyFactory : CollectorFactory<Dependency, DependencyCache>
     {
+#if INCLUDE_GODDAMNSDK_SPECIFIC
+        private static DependencyCache s_GoddamnCoreDependency = null;
+        private static DependencyCache s_GoddamnEngineDependency = null;
+
+        //! @brief Returns cached dependency for GoddamnCore project.
+        //! @returns Cached dependency for GoddamnCore project.
+        public static DependencyCache GetGoddamnCoreDependency()
+        {
+            if (s_GoddamnCoreDependency == null) {
+                string GoddamnCoreDependencyPath = Path.Combine(BuildSystem.GetSDKLocation(), "Source", "Projects", "GoddamnCore", "GoddamnCore.gddep.cs");
+                if (File.Exists(GoddamnCoreDependencyPath)) {
+                    s_GoddamnCoreDependency = Create(GoddamnCoreDependencyPath);
+                    Debug.Assert(s_GoddamnCoreDependency.m_Collector is ProjectDependency);
+                } else {
+                    throw new BuildSystemException("GoddamnCore dependency was not found at \"{0}\".", GoddamnCoreDependencyPath);
+                }
+            }
+
+            return s_GoddamnCoreDependency;
+        }
+
+        //! @brief Returns cached dependency for GoddamnEngine project.
+        //! @returns Cached dependency for GoddamnEngine project.
+        public static DependencyCache GetGoddamnEngineDependency()
+        {
+            if (s_GoddamnEngineDependency == null) {
+                string GoddamnEngineDependencyPath = Path.Combine(BuildSystem.GetSDKLocation(), "Source", "Projects", "GoddamnEngine", "GoddamnEngine.gddep.cs");
+                if (File.Exists(GoddamnEngineDependencyPath)) {
+                    s_GoddamnEngineDependency = Create(GoddamnEngineDependencyPath);
+                    Debug.Assert(s_GoddamnEngineDependency.m_Collector is ProjectDependency);
+                } else {
+                    throw new BuildSystemException("GoddamnEngine dependency was not found at \"{0}\".", GoddamnEngineDependencyPath);
+                }
+            }
+
+            return s_GoddamnEngineDependency;
+        }
+
+#endif  // INCLUDE_GODDAMNSDK_SPECIFIC
     }   // class DependencyFactory
 }   // namespace GoddamnEngine.BuildSystem
-
-// GoddamnSDK specific dependencies code.
-#if INCLUDE_GODDAMNSDK_SPECIFIC && FALSE
-namespace GoddamnEngine.BuildSystem.GoddamnSpecific
-{
- //! <summary>
- //! Represents a dependency of some GoddamnSDK library.
- //! </summary>
- public class GoddamnDependency : Dependency
- {
-  //! ------------------------------------------------------------------------------------------
-  //! @name Fields.
-  //! @{
-  //! ------------------------------------------------------------------------------------------
-
-  private string m_ComponentName = null;
-
-  //! @}
-
-  //! ------------------------------------------------------------------------------------------
-  //! @name Constructor.
-  //! @{
-  //! ------------------------------------------------------------------------------------------
-
-  //! Initializes a GoddamnSDK dependency. Location is set to default SDK location.
-  internal GoddamnDependency(string ComponentName)
-   : base(BuildSystem.GetSDKLocation())
-  {
-   m_ComponentName = ComponentName;
-  }
-
-  //! @}
-
-  //! ------------------------------------------------------------------------------------------
-  //! @name Properties.
-  //! @{
-  //! ------------------------------------------------------------------------------------------
-
-  //! Adds standart GoddamnSDK headers location into header paths.
-  //! @param Platform Platform for which resolving is done.
-  //! @param Configuration Configuration for which resolving is done.
-  //! @note Result of this function is recommended to be cached.
-  public sealed override List<string> GetHeaderPaths(TargetPlatform Platform, TargetConfiguration Configuration)
-  {
-   Debug.Assert(TargetPlatform.Unknown != Platform);
-   Debug.Assert(TargetConfiguration.Unknown != Configuration);
-
-   List<string> DependencyHeaderPaths = new List<string>();
-   string DependencyCoreHeadersPath = Path.Combine(BuildSystem.GetSDKLocation(), "source");
-   if (Directory.Exists(DependencyCoreHeadersPath)) {
-    DependencyHeaderPaths.Add(DependencyCoreHeadersPath);
-   } else {
-    throw new BuildSystemException("Headers path for GoddamnSDK where not found. Was it installed correctly?");
-   }
-
-   return DependencyHeaderPaths;
-  }
-
-  //! Does nothing. All internally dependent file would be automatically installed during the build of SDK projects.
-  //! @param Platform Platform for which resolving is done.
-  //! @param Configuration Configuration for which resolving is done.
-  //! @note Result of this function is recommended to be cached.
-  public sealed override List<string> GetCopyFilesPaths(TargetPlatform Platform, TargetConfiguration Configuration)
-  {
-   Debug.Assert(TargetPlatform.Unknown != Platform);
-   Debug.Assert(TargetConfiguration.Unknown != Configuration);
-
-   return new List<string>();
-  }
-
-  //! Adds standart GoddamnSDK libraries (and frameworks) locations into additional libraries paths.
-  //! @param LibrariesPaths Output for libraries paths.
-  //! @param Platform Platform for which resolving is done.
-  //! @param Configuration Configuration for which resolving is done.
-  //! @note Result of this function is recommended to be cached.
-  public sealed override List<string> GetLibrariesPaths(TargetPlatform Platform, TargetConfiguration Configuration)
-  {
-   Debug.Assert(TargetPlatform.Unknown != Platform);
-   Debug.Assert(TargetConfiguration.Unknown != Configuration);
-
-   List<string> DependencyLibrariesPaths = new List<string>();
-
-   string DependencySDKLibrariesLocation = Path.Combine(BuildSystem.GetSDKLocation(), "lib");
-   string DependencySDKLibraryPattern = m_ComponentName.ToLowerInvariant();
-   if (Configuration != TargetConfiguration.Release) {
-    DependencySDKLibraryPattern += string.Concat('.', Configuration).ToLowerInvariant();
-   }
-
-   // Installing "file"-library dependencies.
-   foreach (string DependencySDKLibrary in Directory.EnumerateFiles(DependencySDKLibrariesLocation)) {
-    if (Path.GetFileName(DependencySDKLibrary.ToLowerInvariant()) == DependencySDKLibraryPattern) {
-     string SDKLibraryExtension = Path.GetExtension(DependencySDKLibrary).ToLowerInvariant();
-     if (Target.IsWebPlatform(Platform)) {
-      if (SDKLibraryExtension == ".bc") {
-       DependencyLibrariesPaths.Add(DependencySDKLibrary);
-      }
-     } else if (Target.IsWinAPIPlatform(Platform)) {
-      if (SDKLibraryExtension == ".lib") {
-       DependencyLibrariesPaths.Add(DependencySDKLibrary);
-      }
-     } else if (Target.IsPosixPlatform(Platform)) {
-      if ((SDKLibraryExtension == ".a") || (SDKLibraryExtension == ".so")) {
-       DependencyLibrariesPaths.Add(DependencySDKLibrary);
-      }
-     } else {
-      throw new NotImplementedException();
-     }
-    }
-   }
-
-   // On Apple platforms we also have '.framework' directories that are treated as libraries.
-   if (Target.IsCocoaPlatform(Platform)) {
-    foreach (string DependencySDKFramework in Directory.EnumerateDirectories(DependencySDKLibrariesLocation)) {
-     if (Path.GetFileName(DependencySDKFramework.ToLowerInvariant()) == DependencySDKLibraryPattern) {
-      if (Path.GetExtension(DependencySDKFramework).ToLowerInvariant() == ".framework") {
-       //  LibrariesPaths.Add(FrameworkFile);
-       throw new NotImplementedException("Using frameworks is not implemented.");
-      }
-     }
-    }
-   }
-
-   return DependencyLibrariesPaths;
-  }
-  //! @}
- }   // class GoddamnDependency
-
- //! Represents a SDK dependency, which should be linked and cannot be build as plugin.
- //! This means, that this dependency would be never skipped on any platform.
- public class GoddamnNotPluginDependency : Dependency
- {
-  //! ------------------------------------------------------------------------------------------
-  //! @name Constructor.
-  //! @{
-  //! ------------------------------------------------------------------------------------------
-
-  //! Initializes a GoddamnSDK dependency. Location is set to default SDK location.
-  internal GoddamnNotPluginDependency(string ComponentName) : base(ComponentName) { }
-
-  //! @}
-
-  //! ------------------------------------------------------------------------------------------
-  //! @name Properties.
-  //! @{
-  //! ------------------------------------------------------------------------------------------
-
-  //! Returns false on all platforms.
-  //! @param Platform Platform for which resolving is done.
-  //! @param Configuration Configuration for which resolving is done.
-  public sealed override bool GetIsSkipped(TargetPlatform Platform, TargetConfiguration Configuration)
-  {
-   Debug.Assert(TargetPlatform.Unknown != Platform);
-   Debug.Assert(TargetConfiguration.Unknown != Configuration);
-
-   return false;
-  }
-
-  //! @}
- }   // class GoddamnNotPluginDependency
-
- //! Represents dependency on GoddamnCore library.
- public sealed class GoddamnCoreDependency : GoddamnNotPluginDependency
- {
-  //! Initializes a new GoddamnCore library dependency.
-  public GoddamnCoreDependency() : base("GoddamnCore") { }
- }   // class GoddamnCoreDependency
-
- //! Represents dependency on GoddamnEngine library.
- public sealed class GoddamnEngineDependency : GoddamnNotPluginDependency
- {
-  //! Initializes a new GoddamnEngine library dependency.
-  public GoddamnEngineDependency() : base("GoddamnEngine") { }
- }   // class EngineProjectDependency
-}   // namespace GoddamnEngine.BuildSystem.GoddamnSpecific
-#endif  // INCLUDE_GODDAMNSDK_SPECIFIC
 
 // Some additional dependencies code.
 #if INCLUDE_ADDITIONALS

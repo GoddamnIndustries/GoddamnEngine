@@ -11,7 +11,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(HRID3D11IndexedShape, HRIIndexedShape, GDINT);
+	GD_CLASSINFO_IMPLEMENTATION(HRID3D11IndexedShape, HRIIndexedShape, GDINT);
 
 	void HRID3D11IndexedShape::SetTopologyType(HRITopologyType const TopologyType)
 	{

@@ -11,7 +11,7 @@
 #define GD_CORE_OBJECT
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Reflection/Reflectable.h>
+#include <GoddamnEngine/Core/Object/Reflection.h>
 #include <GoddamnEngine/Core/Threading/Atomic/Atomic.h>
 
 GD_NAMESPACE_BEGIN
@@ -23,7 +23,7 @@ struct IteratorTagMutable { bool const static IsConst = false; };
 	typedef UInt8  ObjectTreeLockingFlags;
 
 	/// Basic Object class.
-	class Object : public IReflectable/*: public Lockable*/
+	class Object : public IClass/*: public Lockable*/
 	{
 	public:
 		template<typename Tag, typename ObjectType = Object>
@@ -103,7 +103,7 @@ struct IteratorTagMutable { bool const static IsConst = false; };
 		};	// enum ObjectTreeLockingFlags
 
 	private:
-		GD_TYPEINFORMATION_DEFINITION(Object, IReflectable, GDAPI);
+		GD_CLASSINFO_DEFINITION(Object, IClass, GDAPI);
 		GD_CLASS_UNASSIGNABLE(Object);
 		GD_CLASS_UNSWAPPABLE (Object);
 		GD_CLASS_UNCOPIABLE  (Object);

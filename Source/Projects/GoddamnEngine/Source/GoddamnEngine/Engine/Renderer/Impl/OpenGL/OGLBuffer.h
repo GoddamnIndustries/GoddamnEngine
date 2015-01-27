@@ -18,7 +18,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLVertexBuffer final : public HRIVertexBuffer
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIOGLVertexBuffer, HRIVertexBuffer, GDINT);
+		GD_CLASSINFO_DEFINITION(HRIOGLVertexBuffer, HRIVertexBuffer, GDINT);
 		GLuint VertexBufferObject = 0;
 
 	public:
@@ -34,7 +34,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLIndexBuffer final : public HRIIndexBuffer
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIOGLIndexBuffer, HRIIndexBuffer, GDINT);
+		GD_CLASSINFO_DEFINITION(HRIOGLIndexBuffer, HRIIndexBuffer, GDINT);
 		GLuint IndexBufferObject = 0;
 
 	public:
@@ -50,7 +50,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLConstantBuffer final : public HRIConstantBuffer
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIOGLConstantBuffer, HRIConstantBuffer, GDINT);
+		GD_CLASSINFO_DEFINITION(HRIOGLConstantBuffer, HRIConstantBuffer, GDINT);
 		GLuint UniformBufferObject = 0;
 
 	public:

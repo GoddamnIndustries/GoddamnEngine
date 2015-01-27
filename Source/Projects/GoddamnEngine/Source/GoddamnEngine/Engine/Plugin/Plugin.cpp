@@ -38,8 +38,8 @@ GD_NAMESPACE_BEGIN
 						break;
 					}
 
-					if (pluginDescription.PluginTypeInformation->VirtualConstructor != nullptr)
-						pluginDescription.PluginTypeInformation->VirtualConstructor(nullptr, nullptr);
+					/*if (pluginDescription.PluginTypeInfo->VirtualConstructor != nullptr)
+						pluginDescription.PluginTypeInfo->VirtualConstructor(nullptr, nullptr);*/
 
 					this->pluginLoadingFlags |= GD_BIT(pluginDescription.Type);
 				//	const_cast<Assembly*>(plugin)->AttachToObject(this);

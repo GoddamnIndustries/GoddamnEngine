@@ -32,7 +32,7 @@ GD_NAMESPACE_BEGIN
 	class StaticMesh final : public Resource
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(StaticMesh, Resource, GDAPI);
+		GD_CLASSINFO_DEFINITION(StaticMesh, Resource, GDAPI);
 
 		Vector<HRIIndexedShape*> levelsOfDetails;
 		size_t bindedLevelOfDetails;

@@ -48,13 +48,13 @@ GD_NAMESPACE_BEGIN
 	/// HRIShaderParamDesc
 	/// ==========================================================================================
 	
-//	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamDesc, HRIObject, GDAPI, nullptr);
+//	GD_CLASSINFO_IMPLEMENTATION_C(HRIShaderParamDesc, HRIObject, GDAPI, nullptr);
 
 	/// ==========================================================================================
 	/// HRIShaderParam
 	/// ==========================================================================================
 	
-//	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParam, HRIObject, GDAPI, nullptr);
+//	GD_CLASSINFO_IMPLEMENTATION_C(HRIShaderParam, HRIObject, GDAPI, nullptr);
 
 	/// ==========================================================================================
 	HRIShaderParam::HRIShaderParam(HRIShaderParamLocation* const ParamLocation, HRIShaderParamDesc const* const ParamDesc)
@@ -117,13 +117,13 @@ GD_NAMESPACE_BEGIN
 	/// HRIShaderParamLocationDesc
 	/// ==========================================================================================
 
-//	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamLocationDesc, HRIObject, GDAPI, nullptr);
+//	GD_CLASSINFO_IMPLEMENTATION_C(HRIShaderParamLocationDesc, HRIObject, GDAPI, nullptr);
 
 	/// ==========================================================================================
 	/// HRIShaderParamLocation
 	/// ==========================================================================================
 
-//	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamLocation, HRIObject, GDAPI, nullptr);
+//	GD_CLASSINFO_IMPLEMENTATION_C(HRIShaderParamLocation, HRIObject, GDAPI, nullptr);
 
 	HRIShaderParamLocation::HRIShaderParamLocation(
 		HRIShaderInstance      * const HRIShaderInstance,
@@ -155,8 +155,8 @@ GD_NAMESPACE_BEGIN
 	/// HRIShaderParamLocationConstantBuffer class
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamLocationConstantBufferNative  , HRIShaderParamLocation, GDAPI, nullptr);
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamLocationConstantBufferEmulated, HRIShaderParamLocation, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIShaderParamLocationConstantBufferNative  , HRIShaderParamLocation, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIShaderParamLocationConstantBufferEmulated, HRIShaderParamLocation, GDAPI, nullptr);
 
 	HRIShaderParamLocationConstantBufferBase::HRIShaderParamLocationConstantBufferBase(HRIShaderInstance* const ShaderInstance, HRIShaderParamLocationDesc const* const LocationDesc)
 		: HRIShaderParamLocation(ShaderInstance, LocationDesc)
@@ -195,19 +195,19 @@ GD_NAMESPACE_BEGIN
 	/// HRIShaderParamLocationResources
 	/// ==========================================================================================
 	
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderParamLocationResources, HRIShaderParamLocation, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIShaderParamLocationResources, HRIShaderParamLocation, GDAPI, nullptr);
 
 	/// ==========================================================================================
 	/// HRIShaderInstanceDesc
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderInstanceDesc, HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIShaderInstanceDesc, HRIObject, GDAPI, nullptr);
 
 	/// ==========================================================================================
 	/// HRIShaderInstance
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderInstance, HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIShaderInstance, HRIObject, GDAPI, nullptr);
 
 	HRIShaderInstance::HRIShaderInstance(HRIShaderInstanceDesc const* const InstanceDesc)
 		: HRIObject(HRIObject::TreeLockingFlagsNone), InstanceDesc(InstanceDesc)
@@ -233,12 +233,12 @@ GD_NAMESPACE_BEGIN
 	/// HRIShader
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShader, HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIShader, HRIObject, GDAPI, nullptr);
 
 	/// ==========================================================================================
 	/// HRIShaderProgram
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIShaderProgram, HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIShaderProgram, HRIObject, GDAPI, nullptr);
 
 GD_NAMESPACE_END

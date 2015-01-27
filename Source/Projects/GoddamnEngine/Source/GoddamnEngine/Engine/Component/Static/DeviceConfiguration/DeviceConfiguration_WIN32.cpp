@@ -5,7 +5,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(DeviceConfiguration, StaticComponent, GDAPI);
+	GD_CLASSINFO_IMPLEMENTATION(DeviceConfiguration, StaticComponent, GDAPI);
 	GD_SINGLETON_IMPLEMENTATION(DeviceConfiguration);
 
 	DeviceConfiguration::DeviceConfiguration() :

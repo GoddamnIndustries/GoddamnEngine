@@ -72,7 +72,7 @@ namespace GoddamnEngine.BuildSystem
                     string LibraryConfiguration = Path.GetExtension(Path.GetFileNameWithoutExtension(ObjectPathExtensionless));
                     if (!string.IsNullOrEmpty(LibraryConfiguration)) {
                         // Checking if platform information is defined and it is of type TargetConfiguration.
-                        return (LibraryConfiguration == string.Concat('.', Configuration));
+                        return LibraryConfiguration == string.Concat('.', Configuration);
                     }
                 } else {
                     // Library filename contains some platform information, but it not matches target platform.
@@ -86,7 +86,7 @@ namespace GoddamnEngine.BuildSystem
 
     //! @brief Represents a data structure, that contains pre-cached from collector for different platforms/configurations.
     //! @tparam T Type of data stored in the container.
-    public sealed class CollectorPlatformConfigurationData<T>
+    public sealed class CollectorContainer<T>
     {
         private Dictionary<UInt16, T> m_Container;
 
@@ -104,7 +104,7 @@ namespace GoddamnEngine.BuildSystem
 
         //! @brief Initializes the container with all values.
         //! @param Accessor Function that returns a value depending on platform/configuration.
-        public CollectorPlatformConfigurationData(Func<TargetPlatform, TargetConfiguration, T> Accessor)
+        public CollectorContainer(Func<TargetPlatform, TargetConfiguration, T> Accessor)
         {
             m_Container = new Dictionary<UInt16, T>();
             foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
@@ -123,16 +123,12 @@ namespace GoddamnEngine.BuildSystem
             get { return m_Container[CompressPlatformConfiguration(Platform, Configuration)]; }
             set { m_Container[CompressPlatformConfiguration(Platform, Configuration)] = value; }
         }
-    }   // class CollectorPlatformConfigurationData<T>
+    }   // class CollectorContainer<T>
 
     //! @brief Contains cached data of some abstract collector.
-    //!        Caching properties rules:
-    //!        @li Returns target/configuration independent result - just store.
-    //!        @li Returns target/configuration dependent result - avoid this.
-    //!        @li Returns target dependent result: store as platform-value dictionary.
-    //!        @li Returns configuration dependent result: store as delegate of configuration.
     public class CollectorCache
     {
+        public readonly Collector m_Collector;
         public dynamic m_AdditionalCache;
         public readonly bool m_IsSupported;
         public readonly string m_CachedSource;
@@ -143,6 +139,7 @@ namespace GoddamnEngine.BuildSystem
         //! @param Collector Collector which dynamic properties would be cached.
         public CollectorCache(Collector Collector)
         {
+            m_Collector = Collector;
             m_IsSupported = Collector.GetIsSupported();
             if (m_IsSupported) {
                 m_AdditionalCache = new ExpandoObject();
@@ -160,28 +157,38 @@ namespace GoddamnEngine.BuildSystem
         where TCollector : Collector
         where TCache : CollectorCache
     {
+        private readonly static Dictionary<string, TCache> s_CachedCache = new Dictionary<string,TCache>();
+
         //! @brief Constructs new collector instance and cached it data.
         //! @param CollectorSourcePath Path so source file of the collector.
         //! @returns Created instance of cached collector data.
         public static TCache Create(string CollectorSourcePath)
         {
-            TCollector Collector = null;
-            if (CollectorSourcePath != null) {
-                foreach (Type InternalType in CSharpCompiler.CompileSourceFile(CollectorSourcePath).GetTypes()) {
-                    if (InternalType.IsSubclassOf(typeof(TCollector))) {
-                        Collector = (TCollector)Activator.CreateInstance(InternalType);
-                        break;
+            if (!s_CachedCache.ContainsKey(CollectorSourcePath)) {
+
+                TCollector Collector = null;
+                if (CollectorSourcePath != null) {
+                    foreach (Type InternalType in CSharpCompiler.CompileSourceFile(CollectorSourcePath).GetTypes()) {
+                        if (InternalType.IsSubclassOf(typeof(TCollector))) {
+                            Collector = (TCollector)Activator.CreateInstance(InternalType);
+                            break;
+                        }
                     }
                 }
+
+                if (Collector == null) {
+                    Collector = Activator.CreateInstance<TCollector>();
+                }
+
+                Collector.m_Source = CollectorSourcePath;
+
+                TCache Cache = (TCache)Activator.CreateInstance(typeof(TCache), Collector);
+                s_CachedCache.Add(CollectorSourcePath, Cache);
+
+                return Cache;
+            } else {
+                return s_CachedCache[CollectorSourcePath];
             }
-
-            if (Collector == null) {
-                Collector = Activator.CreateInstance<TCollector>();
-            }
-
-            Collector.m_Source = CollectorSourcePath;
-
-            return (TCache)Activator.CreateInstance(typeof(TCache), Collector);
         }
     }   // class TargetCollectorFactory<TCollector, TCache>
 }   // namespace GoddamnEngine.BuildSystem

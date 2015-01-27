@@ -18,7 +18,7 @@ GD_NAMESPACE_BEGIN
 	/// @brief Represents mutable sequence of characters.
 	/// @tparam CharType Character type of this string.
  	template<typename CharType>
-	class BaseStringBuilder final
+	class BaseStringBuilder final : public IContainer
 	{
 	private:
 		typedef Vector<CharType> ContainerType;

@@ -392,6 +392,11 @@
 /// Compiler setup.
 /// ------------------------------------------------------------------------------------------
 
+// __COUNTER__ is required in several places.
+#if (!defined(__COUNTER__))
+#	error '__COUNTER__' macro is not defined. Check your compiler to support of it.
+#endif	// if (!defined(__COUNTER__))
+
 // __FUNCTION__ in GCC.
 #if (defined(GD_COMPILER_GCC_COMPATIBLE))
 #	if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)

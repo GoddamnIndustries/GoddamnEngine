@@ -2,7 +2,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11Texture2D, HRITexture2D, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11Texture2D, HRITexture2D, GDINT, nullptr);
 	HRID3D11Texture2D::HRID3D11Texture2D(HRITexture2DCtorInfo const& CtorInfo, chandle const InitialData, size_t const InitialiDataLength) 
 		: HRITexture2D(CtorInfo, InitialData, InitialiDataLength)
 		,	Texture(nullptr)

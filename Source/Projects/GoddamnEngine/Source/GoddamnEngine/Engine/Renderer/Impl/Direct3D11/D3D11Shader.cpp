@@ -10,9 +10,9 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(HRID3D11ShaderProgram, HRIShaderProgram, GDINT);
+	GD_CLASSINFO_IMPLEMENTATION(HRID3D11ShaderProgram, HRIShaderProgram, GDINT);
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11ShaderParamLocationResources, HRIShaderParamLocationResources, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11ShaderParamLocationResources, HRIShaderParamLocationResources, GDINT, nullptr);
 	HRID3D11ShaderParamLocationResources::HRID3D11ShaderParamLocationResources(HRIShaderInstance* const ShaderInstance, HRIShaderParamLocationDesc const* const LocationDesc) 
 		: HRIShaderParamLocationResources(ShaderInstance, LocationDesc)
 	{
@@ -41,7 +41,7 @@ GD_NAMESPACE_BEGIN
 	/// HRID3D11ShaderInstance class
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11ShaderInstance, HRIShaderInstance, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11ShaderInstance, HRIShaderInstance, GDINT, nullptr);
 
 	HRID3D11ShaderInstance::HRID3D11ShaderInstance(HRIShaderInstanceDesc const* const InstanceDesc) : HRIShaderInstance(InstanceDesc)
 	{	// Caching all inner constant buffer.
@@ -57,7 +57,7 @@ GD_NAMESPACE_BEGIN
 	/// HRID3D11VertexShader class
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11VertexShader, HRIVertexShader, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11VertexShader, HRIVertexShader, GDINT, nullptr);
 	HRID3D11VertexShader::HRID3D11VertexShader(HRIShaderCtorInfo const& CtorInfo) : HRIVertexShader(CtorInfo)
 	{
 		HRESULT Result = E_FAIL;
@@ -131,7 +131,7 @@ GD_NAMESPACE_BEGIN
 	/// HRID3D11HullShader class
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11HullShader, HRIHullShader, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11HullShader, HRIHullShader, GDINT, nullptr);
 	HRID3D11HullShader::HRID3D11HullShader(HRIShaderCtorInfo const& CtorInfo) : HRIHullShader(CtorInfo)
 	{
 		HRESULT Result = E_FAIL;
@@ -176,7 +176,7 @@ GD_NAMESPACE_BEGIN
 	/// HRID3D11DomainShader class
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11DomainShader, HRIDomainShader, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11DomainShader, HRIDomainShader, GDINT, nullptr);
 	HRID3D11DomainShader::HRID3D11DomainShader(HRIShaderCtorInfo const& CtorInfo) : HRIDomainShader(CtorInfo)
 	{
 		HRESULT Result = E_FAIL;
@@ -221,7 +221,7 @@ GD_NAMESPACE_BEGIN
 	/// HRID3D11PixelShader class
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11PixelShader, HRIPixelShader, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11PixelShader, HRIPixelShader, GDINT, nullptr);
 	HRID3D11PixelShader::HRID3D11PixelShader(HRIShaderCtorInfo const& CtorInfo) : HRIPixelShader(CtorInfo)
 	{
 		HRESULT Result = E_FAIL;

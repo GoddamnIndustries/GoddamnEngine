@@ -20,7 +20,11 @@ GD_NAMESPACE_BEGIN
 	/// @brief Dynamic array implementation.
 	/// @tparam ElementType Container element type.
  	template<typename ElementType>
-	class Vector final : public ContainerIteratableTag, public ContainerReverseIteratableTag, public ContainerPtrIteratableTag, public ContainerPtrReverseIteratableTag
+	class Vector final : public IContainer
+		, public ContainerIteratableTag
+		, public ContainerReverseIteratableTag
+		, public ContainerPtrIteratableTag
+		, public ContainerPtrReverseIteratableTag
 	{
 	public:
 		typedef IndexedContainerIterator<Vector, ElementType> Iterator;

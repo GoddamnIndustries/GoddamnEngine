@@ -21,7 +21,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLLinkagePoint final : public HRILinkagePoint
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIOGLLinkagePoint, HRILinkagePoint, GDINT);
+		GD_CLASSINFO_DEFINITION(HRIOGLLinkagePoint, HRILinkagePoint, GDINT);
 		RefPtr<HRIOGLShaderProgram const> ShaderProgram;
 		RefPtr<HRIOGLIndexedShape  const> IndexedShape;
 		mutable bool  IsRelinkingRequired = true;

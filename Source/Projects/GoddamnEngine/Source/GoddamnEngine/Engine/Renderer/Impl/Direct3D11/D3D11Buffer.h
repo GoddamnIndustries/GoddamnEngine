@@ -18,7 +18,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11VertexBuffer final : public HRIVertexBuffer
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11VertexBuffer, HRIVertexBuffer, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11VertexBuffer, HRIVertexBuffer, GDINT);
 		D3D11RefPtr<ID3D11Buffer> Buffer;
 
 	public:
@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11IndexBuffer final : public HRIIndexBuffer
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11IndexBuffer, HRIIndexBuffer, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11IndexBuffer, HRIIndexBuffer, GDINT);
 		D3D11RefPtr<ID3D11Buffer> Buffer;
 		DXGI_FORMAT IndexFormat = DXGI_FORMAT_UNKNOWN;
 
@@ -45,7 +45,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11ConstantBuffer final : public HRIConstantBuffer
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11ConstantBuffer, HRIConstantBuffer, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11ConstantBuffer, HRIConstantBuffer, GDINT);
 		D3D11RefPtr<ID3D11Buffer> Buffer;
 
 	public:

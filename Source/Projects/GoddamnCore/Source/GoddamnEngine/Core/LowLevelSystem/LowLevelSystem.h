@@ -6,7 +6,7 @@
 #include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Containers/StaticVector.h>
 #include <GoddamnEngine/Core/Object/Object.h>
-#include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
+#include <GoddamnEngine/Core/Templates/Singleton.h>
 #include <GoddamnEngine/Core/Framework/Framework.h>
 
 #define GD_RESOLUTION_DEFAULT_WIDTH 1280

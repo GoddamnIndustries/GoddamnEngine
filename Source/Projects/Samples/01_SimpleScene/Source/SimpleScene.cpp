@@ -29,15 +29,15 @@ public:
 };	// class SimpleSceneSampleApp
 
 /// Represents a simple DooM-like FPS controller.
-$GD_REFLECTABLE()
 class SimpleSceneFPSController final : public Component
 {
-	GD_TYPEINFORMATION_DEFINITION_BEGIN(SimpleSceneFPSController, Component, GDINT);
+	GD_CLASSINFO_DEFINITION(SimpleSceneFPSController, Component, GDINT);
 
 	/// Player's moving speed.
 	GD_DEFINE_FIELD(Float32, MovingSpeed) = 2.6f;
 
-	GD_TYPEINFORMATION_DEFINITION_END();
+	/// Player's rotation speed.
+	GD_DEFINE_FIELD(Float32, RotationSpeed) = 2.6f;
 
 public/*Class API*/:
 	GDINL SimpleSceneFPSController() { }
@@ -47,7 +47,7 @@ public/*Class API*/:
 	virtual void OnUpdateSelf() final override;
 };	// class SimpleSceneFPSController
 
-GD_TYPEINFORMATION_IMPLEMENTATION(SimpleSceneFPSController, Component, GDINT);
+GD_CLASSINFO_IMPLEMENTATION(SimpleSceneFPSController, Component, GDINT);
 
 String MyFunction(String const& A, String const& B, size_t const C)
 {
@@ -59,15 +59,33 @@ String MyFunction(String const& A, String const& B, size_t const C)
 	return Result + A;
 }
 
+/// @brief Sample enum.
+GD_ENUMINFO_DEFINITION_BEGIN(MyEnum, UInt32, GDINT)
+	GD_DEFINE_ENUM_VALUE_AUTO(Zero)
+	GD_DEFINE_ENUM_VALUE(A, 123)
+	GD_DEFINE_ENUM_VALUE_AUTO(Auto)
+	GD_DEFINE_ENUM_VALUE(B, 1234)
+GD_ENUMINFO_DEFINITION_END();
+
+GD_ENUMINFO_IMPLEMENTATION(MyEnum, UInt32, GDINT);
+
+//struct MyStruct 
+//{
+//	Float32 First;
+//	UInt32 Second;
+//	String Third;
+//};	// struct MyStruct
+//
+//GD_STRUCTINFO_DEFINITION_EXTERNAL(MyStruct, GDINT);
+//
+//GD_STRUCTINFO_IMPLEMENTATION_EXTERNAL(MyStruct, GDINT);
+////GD_IMPLEMENT_FIELD(First);
+////GD_IMPLEMENT_FIELD(Second);
+////GD_IMPLEMENT_FIELD(Third);
+
 void SimpleSceneSampleApp::OnInitialize()
 {	
-	Delegate<String(String const&, String const&, size_t const)> MyFunctionDelegate = &MyFunction;
-	String Result;
-	String A = "\"", B = "A";
-	size_t C = 3;
-	MyFunctionDelegate.Invoke(nullptr, &Result, &A, &B, &C);
-
-	ITypeInformation const* TI = SimpleSceneFPSController::GetClassTypeInformation();
+	auto a = MyEnum::GetEnumInfo();
 
 	// Initializing Application.
 	this->Application::OnInitialize();

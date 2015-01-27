@@ -15,7 +15,7 @@
 
 GD_NAMESPACE_BEGIN
 	
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(Resource, Object, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(Resource, Object, GDAPI, nullptr);
 	
 	/// ==========================================================================================
 	/// RSStreamer class.
@@ -30,27 +30,28 @@ GD_NAMESPACE_BEGIN
 
 	/// Searches for resource with specified identifier in list and returns it if found nullptr otherwise. 
 	/// @param ID     Idenitifer of the reqiured resource.
-	/// @param ITypeInformation Type informartion of type that would be created if original was not found. 
+	/// @param IClassInfo Type informartion of type that would be created if original was not found. 
 	/// @param DoSearchInRequests If is set, then searching is also done in requests list.
 	/// @returns First found resource that matches specified criteria or nullptr.
-	GDAPI RefPtr<Resource> RSStreamer::FindOrCreateResource(String const& ID, ITypeInformation const* const ITypeInformation) 
+	GDAPI RefPtr<Resource> RSStreamer::FindOrCreateResource(String const& ID, IClassInfo const* const IClassInfo) 
 	{
-		GD_DEBUG_ASSERT((ITypeInformation != nullptr), "Nullptr Type information specified.");
+		GD_DEBUG_ASSERT((IClassInfo != nullptr), "Nullptr Type information specified.");
 		ScopedLock const Lock(this->StreamerLock);
 		HashCode   const IDHash = ID.GetHashCode();
 		for (auto const Child : IterateChildObjects<Resource>(this)) {
 			if (Child->Identifier == IDHash) {
-				GD_ASSERT(Child->GetTypeInformation()->IsDerivedFrom(ITypeInformation), "Requested resource exists, but it's type is incompatible with passed one.");
+				GD_ASSERT(Child->GetClassInfo()->IsDerivedFrom(IClassInfo), "Requested resource exists, but it's type is incompatible with passed one.");
 				return Child;
 			}
 		}
 		
-		GD_DEBUG_ASSERT((ITypeInformation->VirtualConstructor != nullptr), "Attempted creation of instance of an abstract resource type");
-		RefPtr<Resource> const CreatedResource(object_cast<Resource*>(ITypeInformation->VirtualConstructor(nullptr, const_cast<String*>(&ID))));
+		/*GD_DEBUG_ASSERT((IClassInfo->VirtualConstructor != nullptr), "Attempted creation of instance of an abstract resource type");
+		RefPtr<Resource> const CreatedResource(object_cast<Resource*>(IClassInfo->VirtualConstructor(nullptr, const_cast<String*>(&ID))));
 		CreatedResource->AttachToObject(this);
 		CreatedResource->State = RSState::Requested;
 
-		return CreatedResource;
+		return CreatedResource;*/
+		return nullptr;
 	}
 
 	/// Loads in to memory and/or to GPU already existing resource.
@@ -95,16 +96,16 @@ GD_NAMESPACE_BEGIN
 
 	/// Creates resource (or uses existing found by identifier) and loads it.
 	/// @param ID Idenitifer of the reqiured resource.
-	/// @param ITypeInformation Type informartion of type that would be created. 
+	/// @param IClassInfo Type informartion of type that would be created. 
 	/// @returns Possible created or found immediately loaded resource.
-	RefPtr<Resource> RSStreamer::LoadImmediately(String const& ID, ITypeInformation const* const ITypeInformation)
+	RefPtr<Resource> RSStreamer::LoadImmediately(String const& ID, IClassInfo const* const IClassInfo)
 	{
-		return this->LoadImmediately(this->FindOrCreateResource(ID, ITypeInformation));
+		return this->LoadImmediately(this->FindOrCreateResource(ID, IClassInfo));
 	}
 
-	RefPtr<Resource> RSStreamer::ProcessStreaming(String const& ID, ITypeInformation const* const ITypeInformation)
+	RefPtr<Resource> RSStreamer::ProcessStreaming(String const& ID, IClassInfo const* const IClassInfo)
 	{	// Resource would loaded in some time.
-		return this->FindOrCreateResource(ID, ITypeInformation);
+		return this->FindOrCreateResource(ID, IClassInfo);
 	}
 
 	void RSStreamer::WaitForLoading()
@@ -130,7 +131,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 	
-	GD_TYPEINFORMATION_IMPLEMENTATION(RSBinary, Resource, GDAPI, GD_RESOURCE_ARGS);
+	GD_CLASSINFO_IMPLEMENTATION(RSBinary, Resource, GDAPI, GD_RESOURCE_ARGS);
 
 	/// ==========================================================================================
 	/// URI class.

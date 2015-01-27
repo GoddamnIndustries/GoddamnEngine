@@ -21,7 +21,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLShaderProgram final : public HRIShaderProgram
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIOGLShaderProgram, HRIShaderProgram, GDINT);
+		GD_CLASSINFO_DEFINITION(HRIOGLShaderProgram, HRIShaderProgram, GDINT);
 		GLuint mutable ProgramID = 0;
 
 	public:
@@ -38,7 +38,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLShaderInstance : public HRIShaderInstance
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIOGLShaderInstance, HRIShaderInstance, GDINT);
+		GD_CLASSINFO_DEFINITION(HRIOGLShaderInstance, HRIShaderInstance, GDINT);
 		StaticVector<GLuint, GD_HRI_SHADER_PARAM_MAX_LOCATION_COUNT> ShaderConstantBuffers;
 
 	public:
@@ -51,7 +51,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLVertexShader final : public HRIVertexShader
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIOGLVertexShader, HRIVertexShader, GDINT);
+		GD_CLASSINFO_DEFINITION(HRIOGLVertexShader, HRIVertexShader, GDINT);
 		GLuint VertexShaderID = 0;
 
 	private:
@@ -71,7 +71,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLTessCtrlShader final : public HRIHullShader
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIOGLTessCtrlShader, HRIHullShader, GDINT);
+		GD_CLASSINFO_DEFINITION(HRIOGLTessCtrlShader, HRIHullShader, GDINT);
 		GLuint TessCtrlShaderID = 0;
 
 	public:
@@ -86,7 +86,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLTessEvalShader final : public HRIDomainShader
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIOGLTessEvalShader, HRIDomainShader, GDINT);
+		GD_CLASSINFO_DEFINITION(HRIOGLTessEvalShader, HRIDomainShader, GDINT);
 		GLuint TessEvalShaderID = 0;
 
 	public:
@@ -102,7 +102,7 @@ GD_NAMESPACE_BEGIN
 	class HRIOGLFragmentShader final : public HRIPixelShader
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIOGLFragmentShader, HRIPixelShader, GDINT);
+		GD_CLASSINFO_DEFINITION(HRIOGLFragmentShader, HRIPixelShader, GDINT);
 		GLuint FragmentShaderID = 0;
 
 	public:

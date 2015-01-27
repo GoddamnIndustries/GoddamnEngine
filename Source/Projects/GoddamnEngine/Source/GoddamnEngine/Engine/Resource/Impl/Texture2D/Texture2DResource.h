@@ -10,7 +10,7 @@ GD_NAMESPACE_BEGIN
 	class Texture2DResource final : public Resource
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(Texture2DResource, Resource, GDAPI);
+		GD_CLASSINFO_DEFINITION(Texture2DResource, Resource, GDAPI);
 		HRITexture2D* Texture = nullptr;
 
 		/// ==========================================================================================

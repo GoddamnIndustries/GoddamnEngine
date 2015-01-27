@@ -7,7 +7,7 @@ GD_NAMESPACE_BEGIN
 	class Input_WIN32_WINAPI : public Input
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(Input_WIN32_WINAPI, Input, GDINT);
+		GD_CLASSINFO_DEFINITION(Input_WIN32_WINAPI, Input, GDINT);
 
 		StaticVector<KeyState, GD_INPUT_KEYS_SIZE> keyboardButtons;
 		StaticVector<KeyState, GD_INPUT_MOUSE_SIZE> mouseButtons;
@@ -71,7 +71,7 @@ GD_NAMESPACE_BEGIN
 		return false;
 	}
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(Input_WIN32_WINAPI, Input, GDINT);
+	GD_CLASSINFO_IMPLEMENTATION(Input_WIN32_WINAPI, Input, GDINT);
 
 	/// ==========================================================================================
 	// Messaging functions

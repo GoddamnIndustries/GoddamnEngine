@@ -4,7 +4,7 @@
 #include <GoddamnEngine/Include.h>
 
 #include <GoddamnEngine/Core/Object/Object.h>
-#include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
+#include <GoddamnEngine/Core/Templates/Singleton.h>
 #include <GoddamnEngine/Core/Containers/String.h>
 #include <GoddamnEngine/Core/Containers/Map.h>
 #include <GoddamnEngine/Core/Templates/SharedPtr.h>
@@ -39,7 +39,7 @@ GD_NAMESPACE_BEGIN
 	class Application : public Object, public Singleton<Application>
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(Application, Object, GDAPI);
+		GD_CLASSINFO_DEFINITION(Application, Object, GDAPI);
 		String EnvironmentPath;
 
 		UniquePtr<PluginManager> ThePluginManager;

@@ -3,7 +3,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Object/Object.h>
-#include <GoddamnEngine/Core/Object/Singleton/Singleton.h>
+#include <GoddamnEngine/Core/Templates/Singleton.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 		static_assert(((8 * sizeof(PluginLoadingFlags)) >= GD_PLUGIN_TYPES_COUNT),
 			"PluginLoadingFlags`s type is not large enough to represent flags for plugins flags");
 
-		ITypeInformation const*	PluginTypeInformation;	///< Type information about plugin 
+		IClassInfo const*	PluginTypeInfo;	///< Type information about plugin 
 		char const*				Description;			///< String description of plugin
 		PluginType				Type;					///< Type of this plugin
 	};

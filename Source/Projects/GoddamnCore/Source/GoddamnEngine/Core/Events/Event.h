@@ -90,7 +90,7 @@ GD_NAMESPACE_BEGIN
 		/// @param eventListener	Object, that would respond on event
 		GDINL void operator+= (EventListener* const eventListener)
 		{
-			// GD_ASSERT(eventListener->GetTypeInformation().IsChildOf(EventFunctor::GetClassTypeInformation()),
+			// GD_ASSERT(eventListener->GetClassInfo().IsChildOf(EventFunctor::GetTypeClassInfo()),
 			//	"'Event::operator+=' error: type of parameter 'eventListener' not derived from "
 			//	"'EventListener' class");
 

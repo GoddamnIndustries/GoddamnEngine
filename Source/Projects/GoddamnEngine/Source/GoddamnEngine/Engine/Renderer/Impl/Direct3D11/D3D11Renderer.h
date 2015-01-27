@@ -83,7 +83,7 @@ GD_NAMESPACE_BEGIN
 	class HRD3D11Interface final : public HRInterface
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRD3D11Interface, HRInterface, GDINT);
+		GD_CLASSINFO_DEFINITION(HRD3D11Interface, HRInterface, GDINT);
 		GD_SINGLETON_OVERRIDE(HRD3D11Interface, HRInterface);
 
 	public:

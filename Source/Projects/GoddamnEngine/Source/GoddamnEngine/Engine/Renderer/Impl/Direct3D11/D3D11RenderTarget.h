@@ -20,7 +20,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11RenderTarget : public HRIRenderTarget
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11RenderTarget, HRIRenderTarget, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11RenderTarget, HRIRenderTarget, GDINT);
 		StaticVector<ID3D11RenderTargetView*, GD_HRI_MAX_RENDER_TARGETS> RenderTargetRenderTargets;
 
 	public:

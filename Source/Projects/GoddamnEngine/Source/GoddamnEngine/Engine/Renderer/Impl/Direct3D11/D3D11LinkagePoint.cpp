@@ -10,7 +10,7 @@
 #include <GoddamnEngine/Engine/Renderer/Impl/Direct3D11/D3D11Buffer.h>
 
 GD_NAMESPACE_BEGIN
-	GD_TYPEINFORMATION_IMPLEMENTATION(HRID3D11LinkagePoint, HRILinkagePoint, GDINT);
+	GD_CLASSINFO_IMPLEMENTATION(HRID3D11LinkagePoint, HRILinkagePoint, GDINT);
 	
 	void HRID3D11LinkagePoint::RenderSelf() const
 	{

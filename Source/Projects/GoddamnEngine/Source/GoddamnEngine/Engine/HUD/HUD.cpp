@@ -25,7 +25,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	/// ==========================================================================================
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HUDElementPanel, HRIObject, GDAPI, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HUDElementPanel, HRIObject, GDAPI, nullptr);
 	
 	/// ==========================================================================================
 	HUDElementPanel::HUDElementPanel(
@@ -229,7 +229,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	/// ==========================================================================================
-	GD_TYPEINFORMATION_IMPLEMENTATION(HUDResources, Object, GDAPI);
+	GD_CLASSINFO_IMPLEMENTATION(HUDResources, Object, GDAPI);
 	GD_SINGLETON_IMPLEMENTATION(HUDResources);
 
 	/// ==========================================================================================

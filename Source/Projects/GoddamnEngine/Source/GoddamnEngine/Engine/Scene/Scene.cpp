@@ -3,10 +3,10 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(Scene, Object, GDAPI);
+	GD_CLASSINFO_IMPLEMENTATION(Scene, Object, GDAPI);
 	GD_SINGLETON_IMPLEMENTATION(Scene);
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(SceneManager, Object, GDAPI);
+	GD_CLASSINFO_IMPLEMENTATION(SceneManager, Object, GDAPI);
 	GD_SINGLETON_IMPLEMENTATION(SceneManager);
 
 	Scene::Scene(const SceneFlags sceneFlags /* = Scene::UsingSharedStaticComponentsManager */)

@@ -16,7 +16,7 @@ GD_NAMESPACE_BEGIN
 	/// PhysicsInterface class
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(PhysicsInterface, StaticComponent, GDAPI);
+	GD_CLASSINFO_IMPLEMENTATION(PhysicsInterface, StaticComponent, GDAPI);
 	GD_SINGLETON_IMPLEMENTATION   (PhysicsInterface       );
 
 	PhysicsInterface::PhysicsInterface() : StaticComponent(StaticComponentPriority::Low)
@@ -81,7 +81,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	/// ==========================================================================================
-	GD_TYPEINFORMATION_IMPLEMENTATION(MeshCollider, Component, GDAPI);
+	GD_CLASSINFO_IMPLEMENTATION(MeshCollider, Component, GDAPI);
 
 	/// ==========================================================================================
 	/// ==========================================================================================
@@ -128,7 +128,7 @@ GD_NAMESPACE_BEGIN
 
 	/// ==========================================================================================
 	/// ==========================================================================================
-	GD_TYPEINFORMATION_IMPLEMENTATION(Rigidbody, Component, GDAPI);
+	GD_CLASSINFO_IMPLEMENTATION(Rigidbody, Component, GDAPI);
 
 	/// ==========================================================================================
 	/// ==========================================================================================

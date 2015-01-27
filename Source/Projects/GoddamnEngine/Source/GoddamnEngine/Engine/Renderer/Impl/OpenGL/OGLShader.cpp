@@ -16,7 +16,7 @@ GD_NAMESPACE_BEGIN
 	/// Shader program OpenGL implementation.
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION(HRIOGLShaderProgram, HRIShaderProgram, GDINT);
+	GD_CLASSINFO_IMPLEMENTATION(HRIOGLShaderProgram, HRIShaderProgram, GDINT);
 	HRIOGLShaderProgram::~HRIOGLShaderProgram()
 	{
 		if (this->ProgramID != 0) {
@@ -84,7 +84,7 @@ GD_NAMESPACE_BEGIN
 	/// HRIOGLShaderInstance class.
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIOGLShaderInstance, HRIShaderInstance, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIOGLShaderInstance, HRIShaderInstance, GDINT, nullptr);
 
 	HRIOGLShaderInstance::HRIOGLShaderInstance(HRIShaderInstanceDesc const* const InstanceDesc) : HRIShaderInstance(InstanceDesc)
 	{	// Caching all inner constant buffer.
@@ -112,7 +112,7 @@ GD_NAMESPACE_BEGIN
 	/// HRIOGLVertexShader class.
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIOGLVertexShader, HRIVertexShader, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIOGLVertexShader, HRIVertexShader, GDINT, nullptr);
 	HRIOGLVertexShader::HRIOGLVertexShader(HRIShaderCtorInfo const& CtorInfo) : HRIVertexShader(CtorInfo)
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
@@ -168,7 +168,7 @@ GD_NAMESPACE_BEGIN
 	/// HRIOGLTessCtrlShader class.
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIOGLTessCtrlShader, HRITessellationControlShader, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIOGLTessCtrlShader, HRITessellationControlShader, GDINT, nullptr);
 	HRIOGLTessCtrlShader::HRIOGLTessCtrlShader(HRIShaderCtorInfo const& CtorInfo) : HRITessellationControlShader(CtorInfo)
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
@@ -222,7 +222,7 @@ GD_NAMESPACE_BEGIN
 	/// HRIOGLTessEvalShader class.
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIOGLTessEvalShader, HRITessellationEvaluationShader, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIOGLTessEvalShader, HRITessellationEvaluationShader, GDINT, nullptr);
 	HRIOGLTessEvalShader::HRIOGLTessEvalShader(HRIShaderCtorInfo const& CtorInfo) : HRITessellationEvaluationShader(CtorInfo)
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;
@@ -278,7 +278,7 @@ GD_NAMESPACE_BEGIN
 	/// HRIOGLFragmentShader class.
 	/// ==========================================================================================
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRIOGLFragmentShader, HRIFragmentShader, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRIOGLFragmentShader, HRIFragmentShader, GDINT, nullptr);
 	HRIOGLFragmentShader::HRIOGLFragmentShader(HRIShaderCtorInfo const& CtorInfo) : HRIFragmentShader(CtorInfo)
 	{
 		auto const& GL = HROGLInterface::GetInstance().Driver;

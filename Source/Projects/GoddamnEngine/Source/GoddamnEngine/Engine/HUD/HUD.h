@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 	/// Class represents format for texture atlas used in HUD system
 	class HUDTextureAtlas final : public HRIObject
 	{
-		//GD_TYPEINFORMATION_DEFINITION(HUDTextureAtlas, HRIObject, GDAPI);
+		//GD_CLASSINFO_DEFINITION(HUDTextureAtlas, HRIObject, GDAPI);
 
 	public:
 		RefPtr<HRITexture2D const> const AtlasTexture;		///< Atlas texture pointer
@@ -52,7 +52,7 @@ GD_NAMESPACE_BEGIN
 	/// Class represents format for font atlas used in HUD system
 	class HUDCharactersAtlas final : public HRIObject 
 	{
-		//GD_TYPEINFORMATION_DEFINITION(HUDCharactersAtlas, HRIObject, GDAPI);
+		//GD_CLASSINFO_DEFINITION(HUDCharactersAtlas, HRIObject, GDAPI);
 
 	public:
 		RefPtr<HRITexture2D const> const AtlasTexture;			///< Atlas texture pointer
@@ -97,7 +97,7 @@ GD_NAMESPACE_BEGIN
 	/// Base class for all HUD elements. 
 	class HUDElementPanel : public  HRIObject
 	{
-		GD_TYPEINFORMATION_DEFINITION(HUDElementPanel, HRIObject, GDAPI);
+		GD_CLASSINFO_DEFINITION(HUDElementPanel, HRIObject, GDAPI);
 		friend class HUDResources;
 
 	private:
@@ -212,13 +212,13 @@ GD_NAMESPACE_BEGIN
 	///// Class represents format for pre-rendered font used in HUD system
 	//class HUDCharactersAtlas final : public HRIObject
 	//{
-	//	GD_TYPEINFORMATION_DEFINITION(HUDCharactersAtlas, HRIObject, GDAPI);
+	//	GD_CLASSINFO_DEFINITION(HUDCharactersAtlas, HRIObject, GDAPI);
 	//};
 
 	class HUDResources final : public Object,
 							   public Singleton<HUDResources>
 	{
-		GD_TYPEINFORMATION_DEFINITION(HUDResources, Object, GDAPI);
+		GD_CLASSINFO_DEFINITION(HUDResources, Object, GDAPI);
 
 	public:
 		HRILinkagePoint* HUDMountingPoint;

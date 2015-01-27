@@ -1,10 +1,11 @@
 ###########################################################################
 ## Custom:
 utilities/ThirdPartyExecutables/
-_[Dd]ependencies/
-_[Bb]uild/
-bin/
-lib/
+[Dd]ependencies/
+[Bb]uild/
+Doc/html/
+Bin/
+Lib/
 *.lib
 *.a
 *.dll

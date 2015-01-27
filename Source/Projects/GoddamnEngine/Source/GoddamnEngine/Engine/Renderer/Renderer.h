@@ -117,7 +117,7 @@ GD_NAMESPACE_BEGIN
 	class HRIBuffer : public HRIObject
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIBuffer, HRIObject, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIBuffer, HRIObject, GDAPI);
 		HRIBufferType BufferType = GD_HRI_BUFFER_TYPE_UNKNOWN;
 	protected:
 		GDINL explicit HRIBuffer(HRIBufferType const BufferType) : BufferType(BufferType) { }
@@ -131,7 +131,7 @@ GD_NAMESPACE_BEGIN
 	class HRIVertexBuffer : public HRIBuffer
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIVertexBuffer, HRIBuffer, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIVertexBuffer, HRIBuffer, GDAPI);
 		Float32 const* Data = nullptr;
 		size_t   Size = 0;
 	protected:
@@ -146,7 +146,7 @@ GD_NAMESPACE_BEGIN
 	class HRIIndexBuffer : public HRIBuffer
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIIndexBuffer, HRIBuffer, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIIndexBuffer, HRIBuffer, GDAPI);
 		chandle Data = nullptr;
 		size_t  Size   = 0;
 		size_t  Stride = 2;
@@ -163,7 +163,7 @@ GD_NAMESPACE_BEGIN
 	class HRIConstantBuffer : public HRIBuffer
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIConstantBuffer, HRIBuffer, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIConstantBuffer, HRIBuffer, GDAPI);
 		size_t Size = 0;
 	protected:
 		GDINL explicit HRIConstantBuffer(size_t const Size) : HRIBuffer(GD_HRI_BUFFER_TYPE_CONSTANT), Size(Size) { }
@@ -190,7 +190,7 @@ GD_NAMESPACE_BEGIN
 	class HRIIndexedShape : public HRIObject
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIIndexedShape, HRIObject, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIIndexedShape, HRIObject, GDAPI);
 		StaticVector<RefPtr<HRIVertexBuffer>, GD_HRI_SEMANTICS_COUNT> VertexBuffers;
 		RefPtr<HRIIndexBuffer> IndexBuffer;
 		HRITopologyType TopologyType;
@@ -224,7 +224,7 @@ GD_NAMESPACE_BEGIN
 	class HRILinkagePoint : public HRIObject
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRILinkagePoint, HRIObject, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRILinkagePoint, HRIObject, GDAPI);
 	protected:
 		GDINL explicit HRILinkagePoint() { }
 		GDINL virtual ~HRILinkagePoint() { }
@@ -296,7 +296,7 @@ GD_NAMESPACE_BEGIN
 	class HRITexture2D : public HRIObject, public HRITexture2DCtorInfo
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRITexture2D, HRIObject, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRITexture2D, HRIObject, GDAPI);
 	protected:
 		GDINL virtual ~HRITexture2D() { }
 		GDINL explicit HRITexture2D(HRITexture2DCtorInfo const& CtorInfo, chandle const InitialData, size_t const InitialDataLength) 
@@ -334,7 +334,7 @@ GD_NAMESPACE_BEGIN
 	class HRIRenderTarget : public HRIObject, public HRIRenderTargetCtorInfo
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRIRenderTarget, HRIObject, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRIRenderTarget, HRIObject, GDAPI);
 	protected:
 		GDINL explicit HRIRenderTarget(HRIRenderTargetCtorInfo const& CtorInfo) : HRIRenderTargetCtorInfo(CtorInfo) { }
 		GDINL virtual ~HRIRenderTarget(           ) { }
@@ -353,7 +353,7 @@ GD_NAMESPACE_BEGIN
 	class HRInterface : public Plugin<GD_PLUGIN_TYPE_RENDERER>, public Singleton<HRInterface>
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRInterface, Object, GDAPI);
+		GD_CLASSINFO_DEFINITION(HRInterface, Object, GDAPI);
 
 	protected:
 		GDINL explicit HRInterface() : ContextRectagle(/*Application::GetInstance().GetApplicationGameWindow()->GetWindowRectangle()*/Rectangle(0, 0, 1280, 720)) { }

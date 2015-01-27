@@ -183,7 +183,8 @@ GD_NAMESPACE_BEGIN
 		GDINL typename EnableIf<ArgumentsCount == 0, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
 		{
 			GD_NOT_USED(ArgumentsList);
-			return (*this)(Instance);
+			return (*this)(Instance
+				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 1, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
@@ -383,7 +384,7 @@ GD_NAMESPACE_BEGIN
 		/// @param ... Invocation arguments.
 		GDINL virtual void Invoke(handle const Instance, handle const ReturnValueOutputPtr, ...) const override final
 		{
-			va_list ArgumentsList = va_list();
+			va_list ArgumentsList;
 			va_start(ArgumentsList, ReturnValueOutputPtr);
 			this->InvokeVa(Instance, ReturnValueOutputPtr, ArgumentsList);
 			va_end(ArgumentsList);
@@ -391,19 +392,29 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
+		/// @brief Moves other delegate here.
+		/// @param Other Other delegate.
+		/// @returns Self.
 		GDINL Delegate& operator= (Delegate&& Other)
 		{
 			this->DelegateTraitsPtr = Move(Other.DelegateTraitsPtr);
 			return *this;
 		}
 
+		/// @brief Copies other delegate here.
+		/// @param Other Other delegate.
+		/// @returns Self.
 		GDINL Delegate& operator= (Delegate const& Other)
 		{ 
 			this->DelegateTraitsPtr = Other.DelegateTraitsPtr->Clone();
 			return *this; 
 		}
 
-		GDINL ReturnType operator()(handle const Instance, ArgumentTypes&&... Arguments) const 
+		/// @brief Invokes the delegate.
+		/// @param Instance Object to invoke delegate on. May be null for static function.
+		/// @param Arguments Invocation arguments.
+		/// @returns Result of the invocation.
+		GDINL ReturnType operator()(handle const Instance, ArgumentTypes&&... Arguments) const
 		{ 
 			return this->DelegateTraitsPtr->Invoke(Instance, Forward<ArgumentTypes>(Arguments)...); 
 		}

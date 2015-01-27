@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 								public Singleton<DeviceConfiguration>
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(DeviceConfiguration, StaticComponent, GDAPI);
+		GD_CLASSINFO_DEFINITION(DeviceConfiguration, StaticComponent, GDAPI);
 
 	public:
 		GDINT DeviceConfiguration();
@@ -55,18 +55,18 @@ GD_NAMESPACE_BEGIN
 		{
 			// String systemPostfix = "";
 			// DeviceConfiguration::GetInstance().GetRenderingSystemName(systemPostfix);
-			String const typeName = RenderingSystemElement::GetClassTypeInformation()->Name + 
+			String const typeName = RenderingSystemElement::GetTypeClassInfo()->Name + 
 				/*"_" + systemPostfix*/ "_D3D11";
 			
-			ITypeInformation const* const typeInformation = ITypeInformation::FindType(typeName);
+			IClassInfo const* const typeInformation = IClassInfo::FindType(typeName);
 			GD_ASSERT((typeInformation != nullptr), 
 				"No type information specified for type '%s'", &typeName[0]);
 			GD_ASSERT((typeInformation->VirtualConstructor != nullptr), 
 				"'%s' is not constructible", &typeName[0]);
 
-			ITypeInformation* const 
-				thisTypeInformation = (ITypeInformation*)RenderingSystemElement::GetClassTypeInformation();
-				thisTypeInformation->VirtualConstructor = typeInformation->VirtualConstructor;
+			IClassInfo* const 
+				thisTypeInfo = (IClassInfo*)RenderingSystemElement::GetTypeClassInfo();
+				thisTypeInfo->VirtualConstructor = typeInformation->VirtualConstructor;
 
 			return typeInformation->VirtualConstructor(parent, argument);
 		}

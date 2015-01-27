@@ -21,7 +21,7 @@ GD_NAMESPACE_BEGIN
 	class HRID3D11LinkagePoint final : public HRILinkagePoint
 	{
 	private:
-		GD_TYPEINFORMATION_DEFINITION(HRID3D11LinkagePoint, HRILinkagePoint, GDINT);
+		GD_CLASSINFO_DEFINITION(HRID3D11LinkagePoint, HRILinkagePoint, GDINT);
 		RefPtr<HRID3D11ShaderProgram const> Effect;
 		RefPtr<HRID3D11IndexedShape  const> IndexedShape;
 		mutable bool IsRelinkingRequired = false;

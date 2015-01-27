@@ -10,7 +10,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11VertexBuffer, HRIVertexBuffer, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11VertexBuffer, HRIVertexBuffer, GDINT, nullptr);
 	HRID3D11VertexBuffer::HRID3D11VertexBuffer(Float32 const* const Data, size_t const Size) 
 		: HRIVertexBuffer(Data, Size)
 	{	
@@ -35,7 +35,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11IndexBuffer, HRIIndexBuffer, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11IndexBuffer, HRIIndexBuffer, GDINT, nullptr);
 	HRID3D11IndexBuffer::HRID3D11IndexBuffer(chandle const Data, size_t const Size, size_t const Stride)
 		: HRIIndexBuffer(Data, Size, Stride)
 	{
@@ -68,7 +68,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 	
-	GD_TYPEINFORMATION_IMPLEMENTATION_C(HRID3D11ConstantBuffer, HRIConstantBuffer, GDINT, nullptr);
+	GD_CLASSINFO_IMPLEMENTATION_C(HRID3D11ConstantBuffer, HRIConstantBuffer, GDINT, nullptr);
 	HRID3D11ConstantBuffer::HRID3D11ConstantBuffer(size_t const Size)
 		: HRIConstantBuffer(Size - (Size % 16) + (((Size % 16) != 0) ? 16 : 0))	// Constant buffer's memory is aligned by 16 bytes.
 	{
