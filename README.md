@@ -16,7 +16,7 @@ Features
 Installation
 ------------
  - Download [**the source code**](https://github.com/GoddamnIndustries/GoddamnEngine). You can do it by forking the official repository on GitHub.
- - Download and unzip to the engine location [**the required dependencies**](http://fixme.com) files. Replace files on prompt.
+ - Download and unzip to the engine location [**the required dependencies**](https://www.dropbox.com/s/fz01ocjms3srtn3/GoddamnEngine-Dependencies.zip?dl=0) files. Replace files on prompt.
  - Perform next platform-dependent steps to finish installation.
 
 ### Windows.
