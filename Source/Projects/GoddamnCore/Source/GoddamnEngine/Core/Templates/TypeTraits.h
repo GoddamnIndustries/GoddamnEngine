@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// TypeTraits.h: Compile-time types information and modifiers management.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+// ==========================================================================================
+// TypeTraits.h: Compile-time types information and modifiers management.
+// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
+// ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_TYPE_TRAITS
@@ -9,30 +9,38 @@
 
 #include <GoddamnEngine/Include.h>
 
-/// @brief Template type selector. Similar to trinary operator.
-/// @tparam Condition Compile-time condition for type selector.
-template<  bool Condition,   typename TrueType, typename FalseType> struct Conditional { typedef TrueType Type; };
-template</*bool Condition,*/ typename TrueType, typename FalseType> struct Conditional<false, TrueType, FalseType> { typedef FalseType Type; };
-
-/// @brief Typedefs specified type if condition is true.
-/// @tparam Condition Compile-time condition for the check.
-/// @tparam CondType Type that would available if condition is true.
-template<  bool Condition,   typename CondType   = void  > struct EnableIf { };
-template</*bool Condition,*/ typename CondType /*= void*/> struct EnableIf<true, CondType> { typedef CondType Type; };
-
-/// @brief Typedefs specified type if condition is false.
-/// @tparam Condition Compile-time condition for the check.
-/// @tparam CondType Type that would available if condition is false.
-template<  bool Condition,   typename CondType   = void  > struct DisableIf { };
-template</*bool Condition,*/ typename CondType /*= void*/> struct DisableIf<false, CondType> { typedef CondType Type; };
-
 /// Compiler intrinsic for traits. Hope are 'cross-platform'.
 /// @param	Type The type to be checked.
+/// @{
 #define GD_TYPE_TRAITS_IS_ENUM(Type) __is_enum(Type)
 #define GD_TYPE_TRAITS_IS_POD(Type) __is_pod(Type)
 #define GD_TYPE_TRAITS_IS_ABSTARCT(Type) __is_abstract(Type)
+/// @}
 
 GD_NAMESPACE_BEGIN
+
+	/// @brief Template type selector. Similar to trinary operator.
+	/// @tparam Condition Compile-time condition for type selector.
+	/// @{
+	template<  bool Condition,   typename TrueType, typename FalseType> struct Conditional { typedef TrueType Type; };
+	template</*bool Condition,*/ typename TrueType, typename FalseType> struct Conditional<false, TrueType, FalseType> { typedef FalseType Type; };
+	/// @}
+
+	/// @brief Typedefs specified type if condition is true.
+	/// @tparam Condition Compile-time condition for the check.
+	/// @tparam CondType Type that would available if condition is true.
+	/// @{
+	template<  bool Condition, typename CondType = void  > struct EnableIf { };
+	template</*bool Condition,*/ typename CondType /*= void*/> struct EnableIf <true, CondType> { typedef CondType Type; };
+	/// @}
+
+	/// @brief Typedefs specified type if condition is false.
+	/// @tparam Condition Compile-time condition for the check.
+	/// @tparam CondType Type that would available if condition is false.
+	/// @{
+	template<  bool Condition, typename CondType = void  > struct DisableIf { };
+	template</*bool Condition,*/ typename CondType /*= void*/> struct DisableIf<false, CondType> { typedef CondType Type; };
+	/// @}
 
 	/// Does some actions on types.
 	namespace TypeTraits

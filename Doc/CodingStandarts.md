@@ -33,7 +33,7 @@ namespace MyNamespace
 2. Braces
 ---------
 ```C++
-// K&R-style braces:
+// K&R-style braces (https://en.wikipedia.org/wiki/Indent_style#K.26R_style):
 class MyClass
 {
 	// Param braces come after definition without any spaces.

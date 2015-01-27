@@ -1,9 +1,6 @@
 /// ==========================================================================================
-/// Assertion.h: Assertion mechanism implementation.
+/// Assertion.cpp: Assertion mechanism implementation.
 /// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// 
-/// History:
-///		* --.01.2014  - Created by James Jhuighuy
 /// ==========================================================================================
 
 /// Note: code inside this file needs to be asserted too. To do that use default assert macro.
@@ -15,7 +12,6 @@
 #if ((!defined(GD_PLATFORM_API_COCOA)) || (defined(GD_CORE_DIAGNOSTICS_ASSERTION_MM)))
 
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
-#include <GoddamnEngine/Core/Threading/CriticalSection/CriticalSection.h>
 #include <GoddamnEngine/Core/Containers/String.h>
 
 /// ------------------------------------------------------------------------------------------
@@ -120,8 +116,9 @@ GD_NAMESPACE_BEGIN
 
 	void HandleFatalAssertionVa(FatalAssertionData const* const Data, va_list Args)
 	{
-		CriticalSection static CriticalAssertionCriticalSection;
-		CriticalAssertionCriticalSection.Enter();
+		/// @todo Restore code here
+		//CriticalSection static CriticalAssertionCriticalSection;
+		//CriticalAssertionCriticalSection.Enter();
 
 		AssertionCache TheAssertionCache;
 		TheAssertionCache.IsFatal = true;
@@ -150,8 +147,9 @@ GD_NAMESPACE_BEGIN
 	{
 		bool static ShouldIgnoreAllRegularAssertions = false;
 		if (!ShouldIgnoreAllRegularAssertions) {
-			CriticalSection static RegularAssertionCriticalSection;
-			ScopedLock RegularAssertionLock(RegularAssertionCriticalSection);
+			/// @todo Restore code here
+			//CriticalSection static RegularAssertionCriticalSection;
+			//ScopedLock RegularAssertionLock(RegularAssertionCriticalSection);
 
 			AssertionCache TheAssertionCache;
 			TheAssertionCache.TheAssertionData = Data;

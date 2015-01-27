@@ -8,9 +8,9 @@
 #define GD_CORE_TEXT_STRING
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Text/Hash/Hash.h>
-#include <GoddamnEngine/Core/Text/CharTraits.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
+#include <GoddamnEngine/Core/Miscellaneous/Hash.h>
+#include <GoddamnEngine/Core/Miscellaneous/CharTraits.h>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
 #include <cstring>

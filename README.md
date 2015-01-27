@@ -1,5 +1,7 @@
-GoddamnEngine
-=============
+Goddamn Engine
+==============
+_Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved._
+
 The [GoddamnEngine](http://goddamnengine.com) is cross-platform next-generation-ready realtime game engine. 
 Goal of this project is the creation of the most minimalistic full-featured game development framework that surpasses most three-A engines. Project contains a very small core, but is intended to be very flexible and extensible.
 Work is in progress now.
@@ -24,3 +26,14 @@ Installation
 ### OS X & Linux.
  - Make sure you have [Mono Development Kit (MDK)](http://www.mono-project.com/) installed.
  - Execute from a terminal **SetupGoddamnSDK.sh** inside the _GoddamnEngine_ directory. It should take less than a minute to generate the project files.
+
+Getting started
+---------------
+ - Study [samples](https://github.com/GoddamnIndustries/GoddamnEngine/tree/master/Source/Projects/Samples/)!
+ - Read the [API Documentation](https://github.com/GoddamnIndustries/GoddamnEngine/blob/master/Doc/GoddamnEngine.chm)!
+ - Create and enjoy!
+
+Authors
+-------
+_Engine Programmer, Graphics/FX Programmer, Utilities Programmer, CTO - [James Jhuighuy](https://github.com/Jhuighuy)._ 
+_Engine Programmer, UI/Editor Programmer - [Roman Zhiganoff](https://github.com/Zhiganoff)._

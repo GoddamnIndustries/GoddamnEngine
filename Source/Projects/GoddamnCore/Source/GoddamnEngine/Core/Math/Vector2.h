@@ -1,9 +1,6 @@
 /// ==========================================================================================
 /// Vector2.h: Two-dimensional vector class
 /// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// 
-/// History:
-///		* 07.06.2014  - Rewritten from scratch by James Jhuighuy,
 /// ==========================================================================================
 
 #pragma once

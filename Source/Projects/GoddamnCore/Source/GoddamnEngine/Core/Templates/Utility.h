@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 	template<typename SignatureType> 
 	GDINL typename TypeTraits::RemoveReference<SignatureType>::Type&& Move(SignatureType&& Instance)
 	{
-		return (static_cast<typename TypeTraits::RemoveReference<SignatureType>::Type&&>(Instance));
+		return static_cast<typename TypeTraits::RemoveReference<SignatureType>::Type&&>(Instance);
 	}
 
 	/// @brief Returns an RValue reference to specified object if it is not an LValue reference. If specified object is an LValue reference, the function returns it without modifying it`s type.
@@ -39,7 +39,7 @@ GD_NAMESPACE_BEGIN
 	GDINL SignatureType&& Forward(typename TypeTraits::RemoveReference<SignatureType>::Type&& Instance)
 	{	
 		static_assert(!TypeTraits::IsLValueReference<SignatureType>::Value, "Invocation of forward function with non-LValue reference type.");
-		return (static_cast<SignatureType&&>(Instance));
+		return static_cast<SignatureType&&>(Instance);
 	}
 	/// @}
 

@@ -15,20 +15,23 @@
 #ifndef ___GODDAMN_ENGINE_INCLUDE___
 #define ___GODDAMN_ENGINE_INCLUDE___
 
+
 /// ==========================================================================================
 /// Version definitions
 /// ==========================================================================================
 
-#define GD_ENGINE_NAME					L"GoddamnEngine"
-#define GD_ENGINE_TITLE					L"GoddamnEngine"
-#define GD_ENGINE_ASSEMBLY_DESCRIPTION	L"GoddamnEngine"
+#define GD_ENGINE_NAME					L"Goddamn Engine"
+#define GD_ENGINE_TITLE					L"Goddamn Engine"
 #define GD_ENGINE_ASSEMBLY_COMPANY		L"(C) Goddamn Industries"
-#define GD_ENGINE_ASSEMBLY_PRODUCT		L"GoddamnEngine"
-#define GD_ENGINE_ASSEMBLY_COPYRIGHT	L"Copyright \0xA9 2014"
-#define GD_ENGINE_ASSEMBLY_TRADEMARK	L"GoddamnEngine"
+#define GD_ENGINE_ASSEMBLY_PRODUCT		L"Goddamn Engine"
+#define GD_ENGINE_ASSEMBLY_COPYRIGHT	L"Copyright \0xA9 2011 - 2015"GD_ENGINE_ASSEMBLY_COMPANY
+#define GD_ENGINE_ASSEMBLY_TRADEMARK	L"Goddamn Engine"
 #define GD_ENGINE_ASSEMBLY_GUID			L"D2D6C4B5-41CD-4986-8CAA-538591C82A0C"
 #define GD_ENGINE_ASSEMBLY_VERSION		L"1.0.0.0"
 #define GD_ENGINE_ASSEMBLY_FILEVERSION	L"1.0.0.0"
+
+// Code below should be stripped be the resource compiler.
+#if (!defined(RC_INVOKED))
 
 /// ==========================================================================================
 /// Platform Determination.
@@ -215,7 +218,7 @@
 #		define GD_COMPILER_MSVC				(1)	///< Code for target platform is going to be compiled using MSVC.
 #		define GD_COMPILER_MSVC_COMPATIBLE	(1)	///< Target compiler is compatible with the MSVC compiler.
 #	else	// if (_MSC_VER >= 1800)
-#		error "MSVC compiler version is lower than 1800. Please, use MSVC compiler version 2012 CTP and newer."
+#		error "MSVC compiler version is lower than 1800. Please, use MSVC compiler version 2013 CTP and newer."
 #	endif	// if (_MSC_VER >= 1800)
 #endif	// if (defined(_MSC_VER))
 
@@ -491,12 +494,12 @@
 #endif	// if defined(__cplusplus)
 
 /// ==========================================================================================
-/// Engine namepaces.
+/// Engine namespaces.
 /// ==========================================================================================
 
 #if defined(__cplusplus)
 /// Redefine this to move entire engine code to custom namespace.
-#	define GD_NAMESPACE Goddamn
+#	define GD_NAMESPACE GoddamnEngine
 #	if (defined(GD_NAMESPACE))
 #		define GD_NAMESPACE_BEGIN namespace GD_NAMESPACE {		///< Declaration of the namespace where entire API is located.
 #		define GD_NAMESPACE_END   }	// namespace GD_NAMESPACE  	///< End of main namespace declaration.
@@ -622,4 +625,5 @@ GD_NAMESPACE_END
 #define Error			Log
 //////////////////////////////////////////////////////////////////////////
 
+#endif	// if (defined(RC_INVOKED))
 #endif	// ifndef ___GODDAMN_ENGINE_INCLUDE___

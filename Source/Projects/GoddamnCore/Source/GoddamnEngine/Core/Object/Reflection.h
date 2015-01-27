@@ -327,11 +327,11 @@ GD_NAMESPACE_BEGIN
 
 	};	// class IEnumInfo
 
-	template<typename EnumType>
+	/*template<typename EnumType>
 	GDINL ITypeInfo const* TypeOf<EnableIf<TypeTraits::IsBase<IEnum, EnumType>::Value, EnumType>::Type>()
 	{
-		return EnumType::GetEnumInfo();
-	}
+	return EnumType::GetEnumInfo();
+	}*/
 
 	// ==========================================================================================
 	// Pointer TypeInfo ...

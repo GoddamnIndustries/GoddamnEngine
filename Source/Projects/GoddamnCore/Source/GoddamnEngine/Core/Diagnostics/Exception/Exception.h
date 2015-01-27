@@ -1,9 +1,6 @@
 /// ==========================================================================================
 /// Exception.h: Exception base class interface.
 /// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// 
-/// History:
-///		* 04.07.2014  - Created by James Jhuighuy
 /// ==========================================================================================
 
 #pragma once

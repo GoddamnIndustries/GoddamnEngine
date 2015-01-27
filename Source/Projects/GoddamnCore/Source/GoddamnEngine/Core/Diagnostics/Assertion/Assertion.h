@@ -226,10 +226,10 @@ GD_NAMESPACE_END
 /// ------------------------------------------------------------------------------------------
 
 // Code block is not implemented.
-#define GD_NOT_IMPLEMENTED() GD_DEBUG_ASSERT_FALSE("A part or whole '" /*## __FUNCTION__  ##*/ "' not implemented (and probably never would be :[).")
-#define GD_NOT_SUPPORTED() GD_DEBUG_ASSERT_FALSE("A part or whole '" /*## __FUNCTION__  ##*/ "' is not supported.")
+#define GD_NOT_IMPLEMENTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '" ## __FUNCTION__  ## "' not implemented (and probably never would be :[).")
+#define GD_NOT_SUPPORTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '" ## __FUNCTION__  ## "' is not supported.")
 
-// Messegeless assertions.
+// Assertions without messages.
 #define GD_ASSERTION_DEFAULT_MESSAGE ("*** Someone is too lazy to write a message for every assert ***")
 #define GD_DEBUG_ASSERT_FALSE_NO_MESSAGE() GD_DEBUG_ASSERT_FALSE(GD_ASSERTION_DEFAULT_MESSAGE)
 #define GD_DEBUG_ASSERT_NO_MESSAGE(Expression) GD_DEBUG_ASSERT(Expression, GD_ASSERTION_DEFAULT_MESSAGE)

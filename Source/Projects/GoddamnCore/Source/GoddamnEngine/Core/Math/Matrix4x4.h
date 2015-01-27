@@ -1,9 +1,6 @@
 /// ==========================================================================================
 /// Matrix4x4.h - 4x4 matrix class.
 /// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// 
-/// History:
-///		* 09.06.2014  - Rewritten from scratch by James Jhuighuy,
 /// ==========================================================================================
 
 #pragma once
