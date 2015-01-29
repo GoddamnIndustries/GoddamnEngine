@@ -284,8 +284,8 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT(NewNode != nullptr, "Null pointer node.");
 		this->Length += 1;
 
-		auto const TreeInsertHelp = [this](RedBlackTreeBaseNode* Z) {
-			//  This function should only be called by InsertRBTree (see above)
+		//  This function should only be called by InsertRBTree (see above)
+		auto static const TreeInsertHelp = [this](RedBlackTreeBaseNode* Z) {
 			RedBlackTreeBaseNode* X;
 			RedBlackTreeBaseNode* Y;
 

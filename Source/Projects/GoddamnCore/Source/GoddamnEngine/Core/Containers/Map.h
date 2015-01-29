@@ -9,7 +9,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Pair.h>
-#include <GoddamnEngine/Core/Text/Hash/Hash.h>
+#include <GoddamnEngine/Core/Miscellaneous/Hash.h>
 #include <GoddamnEngine/Core/Containers/Containers.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>
 #include <GoddamnEngine/Core/Containers/RedBlackTree/RedBlackTree.h>

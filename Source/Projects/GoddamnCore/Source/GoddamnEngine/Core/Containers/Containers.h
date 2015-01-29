@@ -9,7 +9,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Utility.h>
-#include <GoddamnEngine/Core/Object/ReflectionBase.h>
+#include <GoddamnEngine/Core/Object/Reflection-Base.h>
 
 #include <new>
 

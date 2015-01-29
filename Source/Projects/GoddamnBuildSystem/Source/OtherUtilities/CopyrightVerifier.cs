@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GoddamnEngine.BuildSystem.Source.MiscUtilities
+namespace GoddamnEngine.BuildSystem.ProjectCompiler
 {
     class CopyrightVerifier
     {
-    }
-}
+    }   // class CopyrightVerifier
+}   // namespace GoddamnEngine.BuildSystem.ProjectCompiler

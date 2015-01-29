@@ -42,9 +42,11 @@ GD_NAMESPACE_BEGIN
 	template</*bool Condition,*/ typename CondType /*= void*/> struct DisableIf<false, CondType> { typedef CondType Type; };
 	/// @}
 
-	/// Does some actions on types.
-	namespace TypeTraits
+	/// @brief Does some actions on types.
+	class TypeTraits final
 	{
+	public:
+
 		/// @brief Removes one level constant modifier.
 		/// @tparam InType Type to perform operation on.
 		/// @{
@@ -191,7 +193,7 @@ GD_NAMESPACE_BEGIN
 			enum ValueType { Value = (sizeof(Test(static_cast<DerivedTypeUnPtr const*>(nullptr))) == sizeof(Yes)) };
 		};	// struct IsBase
 
-	} // namespace TypeTraits
+	}; // class TypeTraits
 
 GD_NAMESPACE_END
 

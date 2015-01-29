@@ -1,5 +1,5 @@
 /// ==========================================================================================
-/// ReflectionBase.h: Basic definitions for RTTI/Introspection/Reflection interface.
+/// Reflection-Base.h: Basic definitions for RTTI/Introspection/Reflection interface.
 /// Copyright (C) Goddamn Industries 2011 - Present. All Rights Reserved.
 /// ==========================================================================================
 
