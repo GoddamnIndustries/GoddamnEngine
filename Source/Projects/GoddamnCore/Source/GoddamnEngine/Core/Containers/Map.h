@@ -72,7 +72,7 @@ GD_NAMESPACE_BEGIN
 		/// @param First First Element.
 		/// @param Second Second Element.
 		/// @returns Zero, if specified Elements are equal, positive value if first is greater, negative otherwise.
-		GDINL virtual int CompareElements(chandle const First, chandle const Second) const final override
+		GDINL virtual int CompareElements(CHandle const First, CHandle const Second) const final override
 		{
 			KeyType const& FirstKey = reinterpret_cast<PairType const*>(First)->Key;
 			KeyType const& SecondKey = reinterpret_cast<PairType const*>(Second)->Key;

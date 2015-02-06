@@ -22,7 +22,7 @@ GD_NAMESPACE_BEGIN
 
 		friend class RedBlackTreeBase;
 
-		handle const Element;
+		Handle const Element;
 		RedBlackTreeBaseNode* Left = nullptr;
 		RedBlackTreeBaseNode* Right = nullptr;
 		RedBlackTreeBaseNode* Parent = nullptr;
@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		/// @brief Initializes a tree node.
 		/// @param Element The Element data pointer.
-		GDINL RedBlackTreeBaseNode(handle const Element)
+		GDINL RedBlackTreeBaseNode(Handle const Element)
 			: Element(Element)
 		{
 		}
@@ -39,13 +39,13 @@ GD_NAMESPACE_BEGIN
 		/// @brief Returns Element data pointer.
 		/// @returns Element data pointer.
 		/// @{
-		GDINL chandle GetElement() const
+		GDINL CHandle GetElement() const
 		{
 			return this->Element;
 		}
-		GDINL handle GetElement()
+		GDINL Handle GetElement()
 		{
-			return const_cast<handle>(const_cast<RedBlackTreeBaseNode const*>(this)->GetElement());
+			return const_cast<Handle>(const_cast<RedBlackTreeBaseNode const*>(this)->GetElement());
 		}
 		/// @}
 	};	// class RedBlackTreeNode
@@ -78,7 +78,7 @@ GD_NAMESPACE_BEGIN
 		/// @param First First Element.
 		/// @param Second Second Element.
 		/// @returns Zero, if specified Elements are equal, positive value if first is greater, negative otherwise.
-		GDAPI virtual int CompareElements(chandle const First, chandle const Second) const abstract;
+		GDAPI virtual int CompareElements(CHandle const First, CHandle const Second) const abstract;
 
 	public:
 		/// @brief Returns a node that represents a NULL sentinel of this tree.
@@ -190,8 +190,8 @@ GD_NAMESPACE_BEGIN
 		/// @brief Searches for node with specified key.
 		/// @param Key Key we are looking for.
 		/// @{
-		GDAPI RedBlackTreeBaseNode const* Query(chandle const Element) const;
-		GDINL RedBlackTreeBaseNode* Query(chandle const Element)
+		GDAPI RedBlackTreeBaseNode const* Query(CHandle const Element) const;
+		GDINL RedBlackTreeBaseNode* Query(CHandle const Element)
 		{
 			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTreeBase const*>(this)->Query(Element));
 		}
@@ -477,11 +477,11 @@ GD_NAMESPACE_BEGIN
 		/// @brief Searches for node with specified key.
 		/// @param Key Key we are looking for.
 		/// @{
-		GDINL RedBlackTreeNodeType const* Query(chandle const Element) const
+		GDINL RedBlackTreeNodeType const* Query(CHandle const Element) const
 		{
 			return static_cast<RedBlackTreeNodeType const*>(RedBlackTreeBase::Query(Element));
 		}
-		GDINL RedBlackTreeNodeType* Query(chandle const Element)
+		GDINL RedBlackTreeNodeType* Query(CHandle const Element)
 		{
 			return const_cast<RedBlackTreeNodeType*>(const_cast<RedBlackTree const*>(this)->Query(Element));
 		}

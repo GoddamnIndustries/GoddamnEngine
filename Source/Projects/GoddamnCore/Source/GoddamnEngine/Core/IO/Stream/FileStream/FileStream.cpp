@@ -1,12 +1,11 @@
 /// ==========================================================================================
 /// FileStream.cpp - File IO stream implementation.
 /// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// 
-/// History:
-///		* 18.06.2014 - Created by James Jhuighuy
 /// ==========================================================================================
 
 #include <GoddamnEngine/Core/IO/Stream/FileStream/FileStream.h>
+
+#include <cstdio>
 
 #if (defined(GD_PLATFORM_API_WINAPI))
 // Implemented using following:
@@ -50,7 +49,7 @@ GD_NAMESPACE_BEGIN
 
 	size_t FileInputStream::GetPosition() const
 	{
-		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file Handle.");
 		long const Position = ::ftell(this->FileHandle);
 		if (Position < 0l) {
 			throw IOException("Failed to get position of stream ('ftell' returned negative value).");
@@ -74,7 +73,7 @@ GD_NAMESPACE_BEGIN
 
 	void FileInputStream::Close()
 	{
-		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file Handle.");
 		if (::fclose(this->FileHandle) != 0) {
 			throw IOException("Failed to close file ('fclose' returned non-zero value).");
 		}
@@ -92,7 +91,7 @@ GD_NAMESPACE_BEGIN
 			/* SeekOrigin::End  = */ SEEK_END
 		};
 
-		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file Handle.");
 		int const StandartOrigin = SeekOriginTable[static_cast<size_t>(Origin)];
 		if (::fseek(this->FileHandle, static_cast<long>(Offset), StandartOrigin) != 0) {
 			throw IOException("Failed to seek inside file ('fseek' returned non-zero value).");
@@ -106,11 +105,11 @@ GD_NAMESPACE_BEGIN
 		return Result;
 	}
 
-	void FileInputStream::Read(handle const Array, size_t const Count, size_t const Length)
+	void FileInputStream::Read(Handle const Array, size_t const Count, size_t const Length)
 	{
 		GD_DEBUG_ASSERT(Count != 0, "Zero elements count specified");
 		GD_DEBUG_ASSERT(Length != 0, "Zero element length specified");
-		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file Handle.");
 		if (::fread(Array, Length, Count, this->FileHandle) != Count) {
 			throw IOException("Failed to read from file ('fread' returned invalid value).");
 		}
@@ -150,7 +149,7 @@ GD_NAMESPACE_BEGIN
 
 	size_t FileOutputStream::GetPosition() const
 	{
-		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file Handle.");
 		long const Position = ::ftell(this->FileHandle);
 		if (Position < 0l) {
 			throw IOException("Failed to get position of stream ('ftell' returned negative value).");
@@ -165,7 +164,7 @@ GD_NAMESPACE_BEGIN
 
 	void FileOutputStream::Close()
 	{
-		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file Handle.");
 		if (::fclose(this->FileHandle) != 0) {
 			throw IOException("Failed to close file ('fclose' returned non-zero value).");
 		}
@@ -177,7 +176,7 @@ GD_NAMESPACE_BEGIN
 
 	void FileOutputStream::Flush()
 	{
-		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file Handle.");
 		if (::fflush(this->FileHandle) != 0) {
 			throw IOException("Failed to flush file ('fflush' returned non-zero value).");
 		}
@@ -188,11 +187,11 @@ GD_NAMESPACE_BEGIN
 		this->Write(&Byte, 1, sizeof(Byte));
 	}
 
-	void FileOutputStream::Write(chandle const Array, size_t const Count, size_t const Length)
+	void FileOutputStream::Write(CHandle const Array, size_t const Count, size_t const Length)
 	{
 		GD_DEBUG_ASSERT(Count != 0, "Zero elements count specified");
 		GD_DEBUG_ASSERT(Length != 0, "Zero element length specified");
-		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file handle.");
+		GD_DEBUG_ASSERT(this->FileHandle != nullptr, "Nullptr file Handle.");
 		if (::fwrite(Array, Length, Count, this->FileHandle) != Count) {
 			throw IOException("Failed to write to file ('fwrite' returned invalid value).");
 		}

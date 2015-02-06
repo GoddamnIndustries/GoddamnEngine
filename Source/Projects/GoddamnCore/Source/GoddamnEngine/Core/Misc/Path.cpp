@@ -3,10 +3,9 @@
 /// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
-#include <GoddamnEngine/Core/Miscellaneous/Path.h>
+#include <GoddamnEngine/Core/Misc/Path.h>
 
 #if (defined(GD_PLATFORM_WINDOWS))
-#	define WIN32_LEAN_AND_MEAN
 #	include <Windows.h>
 #endif	// if (defined(GD_PLATFORM_WINDOWS))
 #include <cstdio>

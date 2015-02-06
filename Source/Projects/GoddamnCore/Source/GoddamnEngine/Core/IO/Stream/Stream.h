@@ -43,8 +43,8 @@ GD_NAMESPACE_BEGIN
 		/// @returns			Current position in stream.
 		GDINT virtual size_t	GetPosition() const abstract;
 
-		/// @brief				Returns size of data that stream handles.
-		/// @returns			Size of data that stream handles.
+		/// @brief				Returns size of data that stream Handles.
+		/// @returns			Size of data that stream Handles.
 		GDINT virtual size_t	GetLength() const abstract;
 	};	// class BaseStream
 
@@ -71,7 +71,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Array	Output memory to which data would be written.
 		/// @param  Count	Length of one element
 		/// @param  Length	Length of memory in elements.
-		GDAPI virtual void		Read(handle const Array, size_t const Count, size_t const Length);
+		GDAPI virtual void		Read(Handle const Array, size_t const Count, size_t const Length);
 	};	// class InputStream
 
 	/// Base class for all classes representing an output stream stream of bytes.
@@ -95,7 +95,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Array	Input elements that would be written.
 		/// @param Count	Length of one element.
 		/// @param Length	Length of memory in elements.
-		GDINL virtual void		Write(chandle const Array, size_t const Count, size_t const Length);
+		GDINL virtual void		Write(CHandle const Array, size_t const Count, size_t const Length);
 	};	// class OutputStream
 
 GD_NAMESPACE_END

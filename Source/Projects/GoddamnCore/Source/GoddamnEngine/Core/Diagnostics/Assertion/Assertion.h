@@ -23,7 +23,7 @@
 /// Cross-platform debug break.
 /// ------------------------------------------------------------------------------------------
 
-#if (defined(GD_DEBUG))
+#if GD_DEBUG
 #	if (defined(GD_PLATFORM_API_WINAPI))
 #		include <crtdbg.h>
 #		define GD_DEBUG_BREAK() (::_CrtDbgBreak())
@@ -38,9 +38,9 @@
 #		include <csignal>
 #		define GD_DEBUG_BREAK() (::raise(SIGTRAP))
 #	endif	// *** Some other implementation ***
-#else	// if (defined(GD_DEBUG))
+#else	// if GD_DEBUG
 #	define GD_DEBUG_BREAK() (static_cast<void>(false))
-#endif	// if (defined(GD_DEBUG))
+#endif	// if GD_DEBUG
 
 /// ------------------------------------------------------------------------------------------
 /// Fatal Assertation mechanisms.
@@ -191,12 +191,12 @@ GD_NAMESPACE_END
 #define GD_ASSERTION_LEVEL_TESTING	(1)
 #define GD_ASSERTION_LEVEL_RELEASE	(0)
 #if (!defined(GD_ASSERTION_LEVEL))
-#	if (defined(GD_DEBUG))
+#	if GD_DEBUG
 #		define GD_ASSERTION_LEVEL GD_ASSERTION_LEVEL_DEBUG
-//	endif	// if (defined(GD_DEBUG))
-#	elif (defined(GD_RELEASE))
+//	endif	// if GD_DEBUG
+#	elif GD_RELEASE
 #		define GD_ASSERTION_LEVEL GD_ASSERTION_LEVEL_TESTING
-//	endif	// if (defined(GD_RELEASE))
+//	endif	// if GD_RELEASE
 #	else	// *** Assertion level selection ***.
 #		define GD_ASSERTION_LEVEL GD_ASSERTION_LEVEL_RELEASE
 #	endif	// *** Assertion level selection ***.

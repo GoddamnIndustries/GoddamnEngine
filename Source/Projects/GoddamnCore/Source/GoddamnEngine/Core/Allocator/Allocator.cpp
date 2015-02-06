@@ -21,28 +21,28 @@
 
 GD_NAMESPACE_BEGIN
  
-	handle Allocator::AllocateMemory(size_t const AllocationSize)
+	Handle Allocator::AllocateMemory(size_t const AllocationSize)
 	{
-		handle const AllocatedMemory = handle(::malloc(AllocationSize));
+		Handle const AllocatedMemory = Handle(::malloc(AllocationSize));
 		GD_ASSERT(AllocatedMemory != nullptr, "Failed to allocate memory");
 		return AllocatedMemory;
 	}
 
-	handle Allocator::AllocateMemoryAligned(size_t const AllocationSize, size_t const Alignment)
+	Handle Allocator::AllocateMemoryAligned(size_t const AllocationSize, size_t const Alignment)
 	{
-		handle const AllocatedMemory = handle(::aligned_alloc(AllocationSize, Alignment));
+		Handle const AllocatedMemory = Handle(::aligned_alloc(AllocationSize, Alignment));
 		GD_ASSERT(AllocatedMemory != nullptr, "Failed to allocate memory");
 		return AllocatedMemory;
 	}
 
-	handle Allocator::ReallocateMemory(handle const Memory, size_t const AllocationSize)
+	Handle Allocator::ReallocateMemory(Handle const Memory, size_t const AllocationSize)
 	{
-		handle const ReallocatedMemory = handle(::realloc(Memory, AllocationSize));
+		Handle const ReallocatedMemory = Handle(::realloc(Memory, AllocationSize));
 		GD_ASSERT(ReallocatedMemory != nullptr, "Failed to reallocate memory");
 		return ReallocatedMemory;
 	}
 
-	void Allocator::DeallocateMemory(handle const Memory)
+	void Allocator::DeallocateMemory(Handle const Memory)
 	{
 		if (Memory != nullptr) {
 			::free(Memory);
@@ -50,7 +50,7 @@ GD_NAMESPACE_BEGIN
 	}
 	
 #if 0	// Code left here just for history purposes.
-	void Allocator::ShiftRight(handle _memory, const size_t memorySize, const size_t from, const size_t to, const size_t offset)
+	void Allocator::ShiftRight(Handle _memory, const size_t memorySize, const size_t from, const size_t to, const size_t offset)
 	{
 		UInt8* memory = (UInt8*)_memory;
 		UInt8* result = (UInt8*)Allocator::Allocate(memorySize);
@@ -74,7 +74,7 @@ GD_NAMESPACE_BEGIN
 		Allocator::Deallocate(result);
 	}
 
-	void Allocator::ShiftLeft(handle _memory, const size_t memorySize, const size_t from, const size_t to, const size_t offset)
+	void Allocator::ShiftLeft(Handle _memory, const size_t memorySize, const size_t from, const size_t to, const size_t offset)
 	{
 		UInt8* memory = (UInt8*)_memory;
 		UInt8* result = (UInt8*)Allocator::Allocate(memorySize);

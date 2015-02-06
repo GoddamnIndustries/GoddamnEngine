@@ -9,74 +9,101 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/TypeTraits.h>
-#include <GoddamnEngine/Core/Math/Vector2.h>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
+
+#include <GoddamnEngine/Core/Math/Math.h>
+#include <GoddamnEngine/Core/Math/Vector2.h>
 
 GD_NAMESPACE_BEGIN
 
-	/// Three-dimensional vector class.
-	///  Y ^
-	/// | / Z
-	/// |/
+	/// @brief Three-dimensional vector class.
+	/// @code
+	///  Y ^  > Z
+	///    | / 
+	///    |/
 	/// ---0------> X
 	///   /|
+	/// @endcode
+	/// @tparam ElementType Type of the element stored in Vector. 
 	template<typename ElementType>
 	struct Vector3t final
 	{
 	public:
 		typedef typename Conditional<TypeTraits::IsPOD<ElementType>::Value, ElementType, ElementType const&>::Type ElementTypeConstRef;
-		enum : size_t { ThisComponentsCount = 3 };
+		size_t static constexpr ComponentsCount = 3;
 
 		union {
-			ElementType Elements[ThisComponentsCount];
+			ElementType Elements[ComponentsCount];
 			struct { ElementType Width, Height, Depth; }; ///< Representation as dimensional system
-			struct { ElementType x,  y,   z;  }; ///< Representation in XYZ coordinate system
-			struct { ElementType r,  g,   b;  }; ///< Representation in RGB color system
-			struct { ElementType u,  v,   w;  }; ///< Representation in UVW coordinate system
-			struct { ElementType _0, _1, _2; };
+			struct { ElementType _0,    _1,     _2;    }; ///< Compatibility with D3D Math.
+			struct { ElementType x,     y,      z;     }; ///< Representation in XYZ coordinate system
+			struct { ElementType r,     g,      b;     }; ///< Representation in RGB color system
+			struct { ElementType u,     v,      w;     }; ///< Representation in UVW coordinate system
 		};	// anonymous union
 
-	public /* Constructors */:
+	public:
+
+		/// @brief Initializes a 2D vector with value {X:0, Y:0, Z:0}.
+		GDINL explicit Vector3t()
+			: _0(static_cast<ElementType>(0))
+			, _1(static_cast<ElementType>(0))
+			, _2(static_cast<ElementType>(0))
+		{
+		}
+
+		/// @brief Initializes a 3D vector.
+		/// @param Vector3Value Value of the all coordinates of the vector.
+		GDINL explicit Vector3t(ElementTypeConstRef const Vector3Value = static_cast<ElementType>(0))
+			: _0(Vector3Value)
+			, _1(Vector3Value)
+			, _2(Vector3Value)
+		{
+		}
+
+		/// @brief Initializes a 3D vector.
+		/// @param Vector3Value0 Value of the first coordinate of the vector.
+		/// @param Vector3Value1 Value of the second coordinate of the vector.
+		/// @param Vector3Value2 Value of the third coordinate of the vector.
 		GDINL Vector3t(ElementTypeConstRef const Vector3Value0, ElementTypeConstRef const Vector3Value1, ElementTypeConstRef const Vector3Value2)
-			: x(Vector3Value0)
-			, y(Vector3Value1)
-			, z(Vector3Value2)
+			: _0(Vector3Value0)
+			, _1(Vector3Value1)
+			, _2(Vector3Value2)
 		{
 		}
 
-		GDINL Vector3t(Vector2t<ElementType> const& Vector3Value01, ElementTypeConstRef const Vector3Value2)
-			: x(Vector3Value01.x)
-			, y(Vector3Value01.y)
-			, z(Vector3Value2)
-		{
-		}
-
+		/// @brief Initializes a 3D vector.
+		/// @param Vector3Value0 Value of the first coordinate of the vector.
+		/// @param Vector3Value12 Value of the second and third coordinates of the vector.
 		GDINL Vector3t(ElementTypeConstRef const Vector3Value0, Vector2t<ElementType> const& Vector3Value12)
-			: x(Vector3Value0)
-			, y(Vector3Value12.x)
-			, z(Vector3Value12.y)
+			: _0(Vector3Value0)
+			, _1(Vector3Value12._0)
+			, _2(Vector3Value12._1)
 		{
 		}
 
-		GDINL Vector3t(ElementTypeConstRef const Vector3Value = ElementType(0))
-			: x(Vector3Value)
-			, y(Vector3Value)
-			, z(Vector3Value)
+		/// @brief Initializes a 3D vector. Third coordinate is set to 0.
+		/// @param Vector3Value01 Value of the first two coordinates of the vector.
+		GDINL Vector3t(Vector2t<ElementType> const& Vector3Value01, ElementTypeConstRef const Vector3Value2)
+			: _0(Vector3Value01._0)
+			, _1(Vector3Value01._1)
+			, _2(static_cast<ElementType>(0))
 		{
 		}
 
-		GDINL Vector3t(Vector3t const& Other)
-			: x(Other.x)
-			, y(Other.y)
-			, z(Other.z)
-		{
-		}
-
-		GDINL ~Vector3t()
+		/// @brief Initializes a 3D vector.
+		/// @param Vector3Value01 Value of the first two coordinates of the vector.
+		/// @param Vector3Value2 Value of the third coordinate of the vector.
+		GDINL Vector3t(Vector2t<ElementType> const& Vector3Value01, ElementTypeConstRef const Vector3Value2)
+			: _0(Vector3Value01._0)
+			, _1(Vector3Value01._1)
+			, _2(Vector3Value2)
 		{
 		}
 
 	public /* Class API */:
+
+		/// @brief Computes dot product of two vectors.
+		/// @returns Dot product of two vectors.
 		GDINL ElementType Dot(Vector3t const& Other) const
 		{
 			return this->x * Other.x + this->y * Other.y + this->z * Other.z;
@@ -98,9 +125,10 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public /* Operators */:
+
 		GDINL ElementTypeConstRef operator[] (size_t const Index) const
 		{
-			GD_ASSERT(Index < ThisComponentsCount, "invalid Vector3t subindex.");
+			GD_ASSERT(Index < ComponentsCount, "invalid Vector3t subindex.");
 			return this->Elements[Index];
 		}
 

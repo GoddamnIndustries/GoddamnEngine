@@ -96,7 +96,7 @@ GD_NAMESPACE_BEGIN
 			/// @brief Returns pointer on on the field of specific object.
 			/// @param Reflectable Object for which pointer would be queried.
 			/// @returns Pointer on on the field of specific object.
-			GDINL virtual chandle GetPointer(chandle const Reflectable) const override final
+			GDINL virtual CHandle GetPointer(CHandle const Reflectable) const override final
 			{
 				GD_NOT_USED(Reflectable);
 				return FieldPtr;
@@ -105,7 +105,7 @@ GD_NAMESPACE_BEGIN
 			/// @brief Copies value of the member to output.
 			/// @param Reflectable Reflectable object we are operating on.
 			/// @param OutputValuePtr Here would be copied value of the member.
-			GDINL virtual void GetValue(chandle const Reflectable, handle const OutputValuePtr) const override final
+			GDINL virtual void GetValue(CHandle const Reflectable, Handle const OutputValuePtr) const override final
 			{
 				GD_NOT_USED(Reflectable);
 				typedef typename BaseType::FieldTypeClassNonConst FieldTypeClassNonConst;
@@ -141,7 +141,7 @@ GD_NAMESPACE_BEGIN
 			/// @brief Returns pointer on on the field of specific object.
 			/// @param Reflectable Object for which pointer would be queried.
 			/// @returns Pointer on on the field of specific object.
-			GDINL virtual chandle GetPointer(chandle const Reflectable) const override final
+			GDINL virtual CHandle GetPointer(CHandle const Reflectable) const override final
 			{
 				return &(object_cast<FieldOwnerClass const*>(Reflectable)->*this->FieldPtr);
 			}
@@ -149,7 +149,7 @@ GD_NAMESPACE_BEGIN
 			/// @brief Copies value of the member to output.
 			/// @param Reflectable Reflectable object we are operating on.
 			/// @param OutputValuePtr Here would be copied value of the member.
-			GDINL virtual void GetValue(chandle const Reflectable, handle const OutputValuePtr) const override final
+			GDINL virtual void GetValue(CHandle const Reflectable, Handle const OutputValuePtr) const override final
 			{
                 typedef typename BaseType::FieldTypeClassNonConst FieldTypeClassNonConst;
 				FieldTypeClassNonConst& OutputValueReference = *(reinterpret_cast<FieldTypeClassNonConst*>(OutputValuePtr));
@@ -183,7 +183,7 @@ GD_NAMESPACE_BEGIN
 			/// @brief Copies value of input into member.
 			/// @param Reflectable Reflectable object we are operating on.
 			/// @param InputValuePtr New value of the member would be copied out of here.
-            GDINL virtual void SetValue(handle const Reflectable, handle const InputValuePtr) const override final
+            GDINL virtual void SetValue(Handle const Reflectable, Handle const InputValuePtr) const override final
 			{
 				GD_NOT_USED(Reflectable);
 				FieldValueType& FieldReference = (*this->FieldPtr);
@@ -236,7 +236,7 @@ GD_NAMESPACE_BEGIN
 			/// @brief Copies value of input into member.
 			/// @param Reflectable Reflectable object we are operating on.
 			/// @param InputValuePtr New value of the member would be copied out of here.
-            GDINL virtual void SetValue(handle const Reflectable, handle const InputValuePtr) const override final
+            GDINL virtual void SetValue(Handle const Reflectable, Handle const InputValuePtr) const override final
 			{
 				FieldValueType& FieldReference = (object_cast<FieldOwnerClass*>(Reflectable)->*this->FieldPtr);
 				FieldReference = Forward<FieldValueType>(*(reinterpret_cast<FieldValueType*>(InputValuePtr)));
@@ -272,8 +272,8 @@ GD_NAMESPACE_BEGIN
 	///		GDINT virtual ITypeInfo const* GetOwnerType() const override final;
 	///	 	GDINT virtual bool IsStatic() const override final;
 	///	 	GDINT virtual bool IsReadOnly() const override final;
-	///	 	GDINT virtual void GetValue(chandle const Reflectable, handle const OutputValuePtr) const override final;
-	///	 	GDINT virtual void SetValue(handle const Reflectable, handle const InputValuePtr) const override final;
+	///	 	GDINT virtual void GetValue(CHandle const Reflectable, Handle const OutputValuePtr) const override final;
+	///	 	GDINT virtual void SetValue(Handle const Reflectable, Handle const InputValuePtr) const override final;
 	/// @endcode
 	/// @tparam FieldSignatureType Type of the field signature.
 	/// @tparam FieldPointer Pointer to the field.
@@ -344,7 +344,7 @@ GD_NAMESPACE_BEGIN
 			/// @brief Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
 			/// @param Reflectable Reflectable object we are operating on.
 			/// @param ReturnValueOutputPtr Pointer to the methods execution result. Null pointer may be specified for voids.
-			GDINL virtual void Invoke(IClass* const Instance, handle const ReturnValueOutputPtr, ...) const override final
+			GDINL virtual void Invoke(IClass* const Instance, Handle const ReturnValueOutputPtr, ...) const override final
 			{
 				va_list ArgumentsList; 
 				va_start(ArgumentsList, ReturnValueOutputPtr);
@@ -440,7 +440,7 @@ GD_NAMESPACE_BEGIN
 	/// 	GDINT virtual ITypeInfo const* GetReturnType() const override final;
 	///		GDINT virtual ITypeInfo const* GetOwnerType()  const override final;
 	///		GDINT virtual Vector<ITypeInfo const*> const& GetArgumentsTypes() const override final;
-	///		GDINT virtual void Invoke(IClass* const Instance, handle const ReturnValueOutputPtr, ...) override final;
+	///		GDINT virtual void Invoke(IClass* const Instance, Handle const ReturnValueOutputPtr, ...) override final;
 	///		GDINT virtual bool IsStatic() const override final;
 	///		GDINT virtual bool IsConst()  const override final;
 	/// @endcode
@@ -914,7 +914,7 @@ private: \
 	\
 	/* Making this class accessible to the reflection manager. */ \
 	friend class __Refl_##ThisType##ClassInfo; \
-    friend GD::IClass* __Refl_VirtuallyContruct##ThisType(GD::IClass* const Parent, handle const Argument); \
+    friend GD::IClass* __Refl_VirtuallyContruct##ThisType(GD::IClass* const Parent, Handle const Argument); \
 	\
 	/** @brief Stores a name of this type. */ \
 	typedef ThisType __Refl_ThisType; \
@@ -932,7 +932,7 @@ private: \
 		/** @brief Method that collects member information. */ \
 		/** @param CollectionPtr Pointer to container that would store collected member information. */ \
 		/** @param CollectionType Type of information data required to be collected. */ \
-		GDINL static void __Refl_CollectReflectionInfo(GD::handle const CollectionPtr, GD::MemberType const CollectionType) \
+		GDINL static void __Refl_CollectReflectionInfo(GD::Handle const CollectionPtr, GD::MemberType const CollectionType) \
 		{ \
 			/* Nothing to do here, just a dummy for the end of recursion... */ \
 			GD_NOT_USED(CollectionPtr); \
@@ -1040,7 +1040,7 @@ private: \
 		/** @brief Method that collects member information. */ \
 		/** @param CollectionPtr Pointer to container that would store collected member information. */ \
 		/** @param CollectionType Type of information data required to be collected. */ \
-		GDINL static void __Refl_CollectReflectionInfo(GD::handle const CollectionPtr, GD::MemberType const CollectionType) \
+		GDINL static void __Refl_CollectReflectionInfo(GD::Handle const CollectionPtr, GD::MemberType const CollectionType) \
 		{ \
 			GD_USING_NAMESPACE; \
 			if(CollectionType == MemberType::Member) { /* Invoking the real code only on some specific collection pass. */ \

@@ -22,7 +22,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
 		/// @param Instance Instance object we are operating on.
 		/// @param ReturnValueOutputPtr Pointer to the methods execution result. Null pointer may be specified for voids.
-		GDAPI virtual void Invoke(handle const Instance, handle const ReturnValueOutputPtr, ...) const abstract;
+		GDAPI virtual void Invoke(Handle const Instance, Handle const ReturnValueOutputPtr, ...) const abstract;
 	};	// struct IDelegate
 
 	template<typename DelegateSignatureType> 
@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 
 	/// @brief Basic template wrapper on delegate pointers. Class is same to @c std::function class with some differences (for member functions).
 	///        When specifying member function it is not required to pass instance type as first params arguments. 
-	///        Invocation operator takes pointer to instance as it`s first argument (handle type, it is better to make a const_cast for constant objects).
+	///        Invocation operator takes pointer to instance as it`s first argument (Handle type, it is better to make a const_cast for constant objects).
 	///        For pointers to to static functions instance param can take any value (nullptr is preferred).
 	template<typename ReturnType, typename... ArgumentTypes>
 	struct Delegate<ReturnType(ArgumentTypes...)> : public IDelegate
@@ -60,7 +60,7 @@ GD_NAMESPACE_BEGIN
 			/// @param Instance Object we are operating on.
 			/// @param Arguments List of the delegate arguments.
 			/// @return	A result of the delegate execution.
-			GDINT virtual ReturnType Invoke(handle const Instance, ArgumentTypes&&... Arguments) const abstract;
+			GDINT virtual ReturnType Invoke(Handle const Instance, ArgumentTypes&&... Arguments) const abstract;
 		};	// struct IDelegateTraitsBase
 
 		template<typename DelegateSignatureType> 
@@ -85,7 +85,7 @@ GD_NAMESPACE_BEGIN
 				return new DelegateTraits<ReturnType(*)(ArgumentTypes...)>(this->DelegatePtr); 
 			}
 
-			GDINL virtual ReturnType Invoke(handle const Instance, ArgumentTypes&&... Arguments) const override final
+			GDINL virtual ReturnType Invoke(Handle const Instance, ArgumentTypes&&... Arguments) const override final
 			{
 				GD_NOT_USED(Instance); // Since no instance is required to be used while invocation of static function
 				return (*this->DelegatePtr)(Forward<ArgumentTypes>(Arguments)...);
@@ -111,7 +111,7 @@ GD_NAMESPACE_BEGIN
 				return new DelegateTraits<ReturnType(ClassType::*)(ArgumentTypes...)>(this->DelegatePtr); 
 			}
 
-			GDINL virtual ReturnType Invoke(handle const Instance, ArgumentTypes&&... Arguments) const override final
+			GDINL virtual ReturnType Invoke(Handle const Instance, ArgumentTypes&&... Arguments) const override final
 			{
 				ClassType* const ClassInstance = static_cast<ClassType*>(Instance);
 				return (ClassInstance->*this->DelegatePtr)(Instance, Forward<ArgumentTypes>(Arguments)...);
@@ -137,7 +137,7 @@ GD_NAMESPACE_BEGIN
 				return new DelegateTraits<ReturnType(ClassType::*)(ArgumentTypes...) const>(this->DelegatePtr); 
 			}
 
-			GDINL virtual ReturnType Invoke(handle const Instance, ArgumentTypes&&... Arguments) const override final
+			GDINL virtual ReturnType Invoke(Handle const Instance, ArgumentTypes&&... Arguments) const override final
 			{
 				ClassType const* const ClassInstance = static_cast<ClassType const*>(Instance);
 				return (ClassInstance->*this->DelegatePtr)(Forward<ArgumentTypes>(Arguments)...);
@@ -180,14 +180,14 @@ GD_NAMESPACE_BEGIN
 		/// @returns Invocation result.
 		/// @{
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 0, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 0, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			GD_NOT_USED(ArgumentsList);
 			return (*this)(Instance
 				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 1, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 1, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
 			return (*this)(Instance
@@ -195,7 +195,7 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 2, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 2, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
 			auto Arg1 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<1>>::Type*);
@@ -205,7 +205,7 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 3, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 3, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
 			auto Arg1 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<1>>::Type*);
@@ -217,7 +217,7 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 4, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 4, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
 			auto Arg1 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<1>>::Type*);
@@ -231,7 +231,7 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 5, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 5, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
 			auto Arg1 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<1>>::Type*);
@@ -247,7 +247,7 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 6, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 6, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
 			auto Arg1 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<1>>::Type*);
@@ -265,7 +265,7 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 7, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 7, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
 			auto Arg1 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<1>>::Type*);
@@ -285,7 +285,7 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 8, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 8, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
 			auto Arg1 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<1>>::Type*);
@@ -307,7 +307,7 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 9, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 9, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
 			auto Arg1 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<1>>::Type*);
@@ -331,7 +331,7 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
-		GDINL typename EnableIf<ArgumentsCount == 10, ReturnType>::Type InvokeVa(handle const Instance, va_list ArgumentsList) const
+		GDINL typename EnableIf<ArgumentsCount == 10, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
 			auto Arg1 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<1>>::Type*);
@@ -367,13 +367,13 @@ GD_NAMESPACE_BEGIN
 		/// @param ArgumentsList Varied arguments list pointer.
 		/// @{
 		template<typename TheReturnType = ReturnType>
-		GDINL typename EnableIf<TypeTraits::IsSame<TheReturnType, void>::Value>::Type InvokeVa(handle const Instance, handle const ReturnValueOutputPtr, va_list ArgumentsList) const
+		GDINL typename EnableIf<TypeTraits::IsSame<TheReturnType, void>::Value>::Type InvokeVa(Handle const Instance, Handle const ReturnValueOutputPtr, va_list ArgumentsList) const
 		{
 			GD_NOT_USED(ReturnValueOutputPtr);
 			this->InvokeVa(Instance, ArgumentsList);
 		}
 		template<typename TheReturnType = ReturnType>
-		GDINL typename DisableIf<TypeTraits::IsSame<TheReturnType, void>::Value>::Type InvokeVa(handle const Instance, handle const ReturnValueOutputPtr, va_list ArgumentsList) const
+		GDINL typename DisableIf<TypeTraits::IsSame<TheReturnType, void>::Value>::Type InvokeVa(Handle const Instance, Handle const ReturnValueOutputPtr, va_list ArgumentsList) const
 		{
 			*reinterpret_cast<ReturnType*>(ReturnValueOutputPtr) = Forward<ReturnType>(this->InvokeVa(Instance, ArgumentsList));
 		}
@@ -382,7 +382,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
 		/// @param Instance Object to invoke delegate on. May be null for static function.
 		/// @param ... Invocation arguments.
-		GDINL virtual void Invoke(handle const Instance, handle const ReturnValueOutputPtr, ...) const override final
+		GDINL virtual void Invoke(Handle const Instance, Handle const ReturnValueOutputPtr, ...) const override final
 		{
 			va_list ArgumentsList;
 			va_start(ArgumentsList, ReturnValueOutputPtr);
@@ -414,7 +414,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Instance Object to invoke delegate on. May be null for static function.
 		/// @param Arguments Invocation arguments.
 		/// @returns Result of the invocation.
-		GDINL ReturnType operator()(handle const Instance, ArgumentTypes&&... Arguments) const
+		GDINL ReturnType operator()(Handle const Instance, ArgumentTypes&&... Arguments) const
 		{ 
 			return this->DelegateTraitsPtr->Invoke(Instance, Forward<ArgumentTypes>(Arguments)...); 
 		}

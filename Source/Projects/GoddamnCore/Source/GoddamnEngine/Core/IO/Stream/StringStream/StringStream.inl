@@ -112,7 +112,7 @@ GD_NAMESPACE_BEGIN
 	}
 
 	template<typename CharacterType>
-	GDINL void BaseStringInputStream<CharacterType>::Read(handle const Array, size_t const Count, size_t const Length)
+	GDINL void BaseStringInputStream<CharacterType>::Read(Handle const Array, size_t const Count, size_t const Length)
 	{
 		GD_DEBUG_ASSERT(this->DataReference != nullptr, "Nullptr data reference.");
 		if (this->DataReferencePosition + (Count * Length) > this->DataReferenceLength) {
@@ -178,7 +178,7 @@ GD_NAMESPACE_BEGIN
 	}
 
 	template<typename CharacterType>
-	GDINL void BaseStringOutputStream<CharacterType>::Write(chandle const Array, size_t const Count, size_t const Length)
+	GDINL void BaseStringOutputStream<CharacterType>::Write(CHandle const Array, size_t const Count, size_t const Length)
 	{
 		GD_DEBUG_ASSERT((Length % sizeof(CharacterType)) == 0, "Length of single element is not multiple of character type.");
 		this->Builder->Append(reinterpret_cast<CharacterType const*>(Array), Count * Length);

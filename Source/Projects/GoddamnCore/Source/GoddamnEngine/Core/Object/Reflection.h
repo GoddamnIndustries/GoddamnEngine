@@ -156,7 +156,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Serializes specified object.
 		/// @param Pointer Pointer to object that would be serialized.
 		/// @param Output Stream to which data would be written.
-		GDAPI virtual void Serialize(chandle const Pointer, OutputStream* const Output) const
+		GDAPI virtual void Serialize(CHandle const Pointer, OutputStream* const Output) const
 		{
 			GD_NOT_USED(Pointer);
 			GD_NOT_USED(Output);
@@ -166,7 +166,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Deserializes specified object.
 		/// @param Pointer Pointer to object that would be deserialized.
 		/// @param Input Stream from which data would be read.
-		GDAPI virtual void Deserialize(handle const Pointer, InputStream* const Input) const
+		GDAPI virtual void Deserialize(Handle const Pointer, InputStream* const Input) const
 		{
 			GD_NOT_USED(Pointer);
 			GD_NOT_USED(Input);
@@ -209,12 +209,12 @@ GD_NAMESPACE_BEGIN
 		/// @brief Serializes specified object.
 		/// @param Pointer Pointer to object that would be serialized.
 		/// @param Output Stream to which data would be written.
-		GDAPI virtual void Serialize(chandle const Pointer, OutputStream* const Output) const override final;
+		GDAPI virtual void Serialize(CHandle const Pointer, OutputStream* const Output) const override final;
 
 		/// @brief Deserializes specified object.
 		/// @param Pointer Pointer to object that would be deserialized.
 		/// @param Input Stream from which data would be read.
-		GDAPI virtual void Deserialize(handle const Pointer, InputStream* const Input) const override final;
+		GDAPI virtual void Deserialize(Handle const Pointer, InputStream* const Input) const override final;
 
 	};	// class INumericType
 
@@ -258,12 +258,12 @@ GD_NAMESPACE_BEGIN
 		/// @brief Serializes specified object.
 		/// @param Pointer Pointer to object that would be serialized.
 		/// @param Output Stream to which data would be written.
-		GDAPI virtual void Serialize(chandle const Pointer, OutputStream* const Output) const override final;
+		GDAPI virtual void Serialize(CHandle const Pointer, OutputStream* const Output) const override final;
 
 		/// @brief Deserializes specified object.
 		/// @param Pointer Pointer to object that would be deserialized.
 		/// @param Input Stream from which data would be read.
-		GDAPI virtual void Deserialize(handle const Pointer, InputStream* const Input) const override final;
+		GDAPI virtual void Deserialize(Handle const Pointer, InputStream* const Input) const override final;
 
 	};	// class INumericType
 
@@ -445,17 +445,17 @@ GD_NAMESPACE_BEGIN
 		/// @brief Returns pointer on on the field of specific object.
 		/// @param Reflectable Object for which pointer would be queried.
 		/// @returns Pointer on on the field of specific object.
-		GDAPI virtual chandle GetPointer(chandle const Reflectable) const abstract;
+		GDAPI virtual CHandle GetPointer(CHandle const Reflectable) const abstract;
 
 		/// @brief Copies value of the member to output.
 		/// @param Reflectable Reflectable object we are operating on.
 		/// @param OutputValuePtr Here would be copied value of the member.
-		GDAPI virtual void GetValue(chandle const Reflectable, handle const OutputValuePtr) const abstract;
+		GDAPI virtual void GetValue(CHandle const Reflectable, Handle const OutputValuePtr) const abstract;
 
 		/// @brief Copies value of input into member.
 		/// @param Reflectable Reflectable object we are operating on.
 		/// @param InputValuePtr New value of the member would be copied out of here.
-		GDAPI virtual void SetValue(handle const Reflectable, handle const InputValuePtr) const
+		GDAPI virtual void SetValue(Handle const Reflectable, Handle const InputValuePtr) const
 		{
 			GD_NOT_USED(Reflectable);
 			GD_NOT_USED(InputValuePtr);
@@ -496,7 +496,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
 		/// @param Reflectable Reflectable object we are operating on.
 		/// @param ReturnValueOutputPtr Pointer to the methods execution result. Null pointer may be specified for voids.
-		GDAPI virtual void Invoke(IClass* const Instance, handle const ReturnValueOutputPtr, ...) const abstract;
+		GDAPI virtual void Invoke(IClass* const Instance, Handle const ReturnValueOutputPtr, ...) const abstract;
 
 	};	// class IMethodInfo
 

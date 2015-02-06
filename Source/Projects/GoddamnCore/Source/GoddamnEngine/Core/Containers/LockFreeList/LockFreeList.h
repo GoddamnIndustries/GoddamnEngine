@@ -32,7 +32,7 @@ GD_NAMESPACE_BEGIN
 			LockFreeListBaseNode* Next;
 			SLIST_ENTRY Entry;
 		};	// anonymous union
-		handle Element;
+		Handle Element;
 
 	protected:
 
@@ -60,7 +60,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		/// @brief Initializes a tree node.
 		/// @param Element The Element data pointer.
-		GDINL LockFreeListBaseNode(handle const Element)
+		GDINL LockFreeListBaseNode(Handle const Element)
 			: Element(Element)
 		{
 			this->Next = nullptr;
@@ -69,13 +69,13 @@ GD_NAMESPACE_BEGIN
 		/// @brief Returns Element data pointer.
 		/// @returns Element data pointer.
 		/// @{
-		GDINL chandle GetElement() const
+		GDINL CHandle GetElement() const
 		{
 			return this->Element;
 		}
-		GDINL handle GetElement()
+		GDINL Handle GetElement()
 		{
-			return const_cast<handle>(const_cast<LockFreeListBaseNode const*>(this)->GetElement());
+			return const_cast<Handle>(const_cast<LockFreeListBaseNode const*>(this)->GetElement());
 		}
 		/// @}
 

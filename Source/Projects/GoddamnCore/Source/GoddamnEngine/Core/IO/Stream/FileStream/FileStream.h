@@ -38,8 +38,8 @@ GD_NAMESPACE_BEGIN
 		/// @returns			Current position in stream.
 		GDAPI virtual size_t	GetPosition() const override final;
 
-		/// @brief				Returns size of data that stream handles.
-		/// @returns			Size of data that stream handles.
+		/// @brief				Returns size of data that stream Handles.
+		/// @returns			Size of data that stream Handles.
 		GDAPI virtual size_t	GetLength() const override final;
 
 		/// @brief				Closes this stream and releases all resources associated with this stream.
@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Array		Output memory to which data would be written.
 		/// @param  Count		Length of one element
 		/// @param  Length		Length of memory in elements.
-		GDAPI virtual void		Read(handle const Array, size_t const Count, size_t const Length) override final;
+		GDAPI virtual void		Read(Handle const Array, size_t const Count, size_t const Length) override final;
 	};	// class FileInputStream
 
 	/// Specifies write-only stream that provides writing to file.
@@ -81,8 +81,8 @@ GD_NAMESPACE_BEGIN
 		/// @returns			Current position in stream.
 		GDAPI virtual size_t	GetPosition() const override final;
 
-		/// @brief				Returns size of data that stream handles.
-		/// @returns			Size of data that stream handles.
+		/// @brief				Returns size of data that stream Handles.
+		/// @returns			Size of data that stream Handles.
 		GDAPI virtual size_t	GetLength() const override final;
 
 		/// @brief				Closes this stream and releases all resources associated with this stream.
@@ -99,7 +99,7 @@ GD_NAMESPACE_BEGIN
 		/// @param Array		Input elements that would be written.
 		/// @param Count		Length of one element.
 		/// @param Length		Length of memory in elements.
-		GDAPI virtual void		Write(chandle const Array, size_t const Count, size_t const Length) override final;
+		GDAPI virtual void		Write(CHandle const Array, size_t const Count, size_t const Length) override final;
 	};	// class FileOutputStream
 
 GD_NAMESPACE_END

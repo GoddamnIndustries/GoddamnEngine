@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Initializes empty string builder.
 		GDINL BaseStringBuilder()
 		{
-			this->Container.PushLast(CharType('\0'));
+			this->Container.PushLast(GD_LITERAL(CharType, '\0'));
 		}
 
 		/// @brief Moves other string builder into this string builder.
@@ -99,7 +99,7 @@ GD_NAMESPACE_BEGIN
 		inline BaseStringBuilder& Append(CharType const Character)
 		{
 			*(this->Container.End() - 1) = Character;
-			this->Container.PushLast(CharType('\0'));
+			this->Container.PushLast(GD_LITERAL(CharType, '\0'));
 			return *this;
 		}
 

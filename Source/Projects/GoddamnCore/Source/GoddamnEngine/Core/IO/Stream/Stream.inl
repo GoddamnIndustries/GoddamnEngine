@@ -20,7 +20,7 @@ GD_NAMESPACE_BEGIN
 	/// InputStream class.
 	/// ==========================================================================================
 
-	GDINL void InputStream::Read(handle const _Array, size_t const Count, size_t const Length)
+	GDINL void InputStream::Read(Handle const _Array, size_t const Count, size_t const Length)
 	{
 		UInt8* const Array = static_cast<UInt8*>(_Array);
 		for (UInt8* Byte = Array; Byte < (Array + (Count * Length)); ++Byte) {
@@ -32,7 +32,7 @@ GD_NAMESPACE_BEGIN
 	/// OutputStream class.
 	/// ==========================================================================================
 
-	GDINL void OutputStream::Write(chandle const _Array, size_t const Count, size_t const Length)
+	GDINL void OutputStream::Write(CHandle const _Array, size_t const Count, size_t const Length)
 	{
 		UInt8 const* const Array = static_cast<UInt8 const*>(_Array);
 		for (UInt8 const* Byte = Array; Byte < (Array + (Count * Length)); ++Byte) {

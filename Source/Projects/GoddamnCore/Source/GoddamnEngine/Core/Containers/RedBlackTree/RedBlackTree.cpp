@@ -408,7 +408,7 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT(!this->NullNode->IsRed, "this->NullNode not black in RBDelete");
 	}
 
-	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::Query(chandle const Element) const
+	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::Query(CHandle const Element) const
 	{
 		RedBlackTreeBaseNode* X = this->RootNode->Left;
 		int CompVal;

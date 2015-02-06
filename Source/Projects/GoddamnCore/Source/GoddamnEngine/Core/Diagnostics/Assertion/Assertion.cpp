@@ -9,10 +9,12 @@
 
 // We should not compile this file on Cocoa-driven systems cause they are compiling dummy Obj-C++ source, that 
 // includes this one.
-#if ((!defined(GD_PLATFORM_API_COCOA)) || (defined(GD_CORE_DIAGNOSTICS_ASSERTION_MM)))
+#if (!GD_PLATFORM_API_COCOA) || (defined(GD_CORE_DIAGNOSTICS_ASSERTION_MM))
 
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 #include <GoddamnEngine/Core/Containers/String.h>
+
+#include <cstdio>
 
 /// ------------------------------------------------------------------------------------------
 /// We are inside assertion implementation source, so we cannot use our asserts in order 
@@ -182,7 +184,7 @@ GD_NAMESPACE_BEGIN
 				} break;
 				case AssertionState::Retry:
 				case AssertionState::Break: {
-					// Macros handle here.
+					// Macros Handle here.
 				} break;
 			}
 
@@ -271,7 +273,7 @@ GD_NAMESPACE_END
 #define GD_ASSERTION_DLG_BTNREPORT_TEXT		GD_WIDEN(GD_ASSERTION_DIALOG_BTNREPORT_TEXT)
 #define GD_ASSERTION_DLG_BTNBREAK_IDC		1006
 #define GD_ASSERTION_DLG_BTNBREAK_TEXT		GD_WIDEN(GD_ASSERTION_DIALOG_BTNBREAK_TEXT)
-#define GD_ASSERTION_DLG_GROUPBOX_IDC		0		//	Groupbox to handle text edit and label.
+#define GD_ASSERTION_DLG_GROUPBOX_IDC		0		//	Groupbox to Handle text edit and label.
 #define GD_ASSERTION_DLG_GROUPBOX_TEXT		GD_WIDEN(GD_ASSERTION_DIALOG_GROUPBOX_TEXT)
 #define GD_ASSERTION_DLG_DESCRIPTION_IDC	0		//	Description of a what mess is going on.
 #define GD_ASSERTION_DLG_DESCRIPTION_TEXT	GD_WIDEN(GD_ASSERTION_DIALOG_DESCRIPTION_TEXT)
@@ -338,7 +340,7 @@ GD_NAMESPACE_BEGIN
 				::Beep(750, 300);
 			} break;
 			case WM_COMMAND: {
-				static_assert(sizeof(INT_PTR) >= sizeof(AssertionState), "Size of 'AssertionState' is not enough be handled by WinAPI.");
+				static_assert(sizeof(INT_PTR) >= sizeof(AssertionState), "Size of 'AssertionState' is not enough be Handled by WinAPI.");
 				switch (LOWORD(WParam)) {
 					case GD_ASSERTION_DLG_BTNABORT_IDC: {
 						::EndDialog(HDialog, static_cast<INT_PTR>(AssertionState::Abort));

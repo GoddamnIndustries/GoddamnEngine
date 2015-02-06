@@ -8,12 +8,10 @@
 #define GD_CORE_TEXT_STRING
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Misc/Hash.h>
+#include <GoddamnEngine/Core/Misc/CString.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
-#include <GoddamnEngine/Core/Miscellaneous/Hash.h>
-#include <GoddamnEngine/Core/Miscellaneous/CharTraits.h>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
-
-#include <cstring>
 
 GD_NAMESPACE_BEGIN
 
@@ -60,7 +58,7 @@ GD_NAMESPACE_BEGIN
 		GDINL BaseString()
 		{
 			this->Length = 0;
-			this->StackMemory[0] = CharType('\0');
+			this->StackMemory[0] = GD_LITERAL(CharType, '\0');
 		}
 
 		/// @brief Initializes a string with a single character.
@@ -69,13 +67,13 @@ GD_NAMESPACE_BEGIN
 		{
 			this->Length = 1;
 			this->StackMemory[0] = Character;
-			this->StackMemory[1] = CharType('\0');
+			this->StackMemory[1] = GD_LITERAL(CharType, '\0');
 		}
 
 		/// @brief Fills a String with specified number of characters.
 		/// @param Size A length of the string.
 		/// @param FillWith A character that String would be filled with.
-		GDINL BaseString(size_t const Length, CharType const FillWith = CharType('\0'))
+		GDINL BaseString(size_t const Length, CharType const FillWith = GD_LITERAL(CharType, '\0'))
 		{
 			this->Length = Length;
 			if (this->Length >= BaseString::MaxStackLength) {
@@ -91,7 +89,7 @@ GD_NAMESPACE_BEGIN
 				::memset(this->CStr(), FillWith, Length);
 			}
 
-			*this->PtrEnd() = CharType('\0');
+			*this->PtrEnd() = GD_LITERAL(CharType, '\0');
 		}
 
 		/// @brief Initializes a String with some C String with known length.
@@ -145,7 +143,7 @@ GD_NAMESPACE_BEGIN
 				Allocator::DeallocateMemory(this->HeapMemory);
 				this->HeapMemory = nullptr;
 			} else {
-				this->StackMemory[0] = CharType('\0');
+				this->StackMemory[0] = GD_LITERAL(CharType, '\0');
 			}
 
 			this->Length = 0;
@@ -589,8 +587,8 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	typedef BaseString<CharAnsi> StringAnsi;
-	typedef BaseString<CharUnicode> StringUtf16;
+	typedef BaseString<ANSIChar> StringAnsi;
+	typedef BaseString<WideChar> StringUtf16;
 	typedef BaseString<Char> String;
 
 GD_NAMESPACE_END

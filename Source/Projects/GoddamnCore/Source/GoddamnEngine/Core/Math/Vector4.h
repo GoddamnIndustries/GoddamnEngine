@@ -8,117 +8,169 @@
 #define GD_CORE_MATH_VECTOR4
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/TypeTraits.h>
+#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
+
+#include <GoddamnEngine/Core/Math/Math.h>
 #include <GoddamnEngine/Core/Math/Vector2.h>
 #include <GoddamnEngine/Core/Math/Vector3.h>
 #include <GoddamnEngine/Core/Math/Float32x4Intrinsics/Float32x4Intrinsics.h>
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
 GD_NAMESPACE_BEGIN
 
-	/// Four-dimensional vector class.
+	/// @brief Four-dimensional vector class.
+	/// @code
+	///  Y ^  > Z
+	///    | /    ...W...
+	///    |/   
+	/// ---0------> X
+	///   /|
+	/// @endcode
+	/// @tparam ElementType Type of the element stored in Vector. 
 	template<typename ElementType>
 	struct Vector4t final
 	{
 	public:
 		typedef typename Conditional<TypeTraits::IsPOD<ElementType>::Value, ElementType, ElementType const&>::Type ElementTypeConstRef;
-		enum : size_t { ThisComponentsCount = 4 };
+		size_t static constexpr ComponentsCount = 4;
 
 		union {
-			ElementType Elements[ThisComponentsCount];
+			ElementType Elements[ComponentsCount];
+			struct { ElementType _0,   _1,  _2,    _3;     }; ///< Compatibility with D3D Math.
 			struct { ElementType Left, Top, Width, Height; }; ///< Compatibility with Rectangle
-			struct { ElementType x, y,   z,  w;   }; ///< Representation in XYZW coordinate system
-			struct { ElementType r, g,   b,  a;   }; ///< Representation in RGBA color system
-			struct { ElementType _0, _1, _2, _3; };
+			struct { ElementType x,    y,   z,     w;      }; ///< Representation in XYZW coordinate system
+			struct { ElementType r,    g,   b,     a;      }; ///< Representation in RGBA color system
 		};	// anonymous union
 
 	public /* Constructors */:
+
+		/// @brief Initializes a 4D vector with value {X:0, Y:0, Z:0, W:1}.
+		GDINL explicit Vector4t()
+			: _0(static_cast<ElementType>(0))
+			, _1(static_cast<ElementType>(0))
+			, _2(static_cast<ElementType>(0))
+			, _3(static_cast<ElementType>(1))
+		{
+		}
+
+		/// @brief Initializes a 4D vector.
+		/// @param Vector4Value Value of the all coordinates of the vector.
+		GDINL explicit Vector4t(ElementTypeConstRef const Vector4Value)
+			: _0(Vector4Value)
+			, _1(Vector4Value)
+			, _2(Vector4Value)
+			, _3(Vector4Value)
+		{
+		}
+
+		/// @brief Initializes a 4D vector.
+		/// @param Vector4Value0 Value of the first coordinate of the vector.
+		/// @param Vector4Value1 Value of the second coordinate of the vector.
+		/// @param Vector4Value2 Value of the third coordinate of the vector.
+		/// @param Vector4Value3 Value of the fourth coordinate of the vector.
 		GDINL Vector4t(ElementTypeConstRef const Vector4Value0, ElementTypeConstRef const Vector4Value1, ElementTypeConstRef const Vector4Value2, ElementTypeConstRef const Vector4Value3)
-			: x(Vector4Value0)
-			, y(Vector4Value1)
-			, z(Vector4Value2)
-			, w(Vector4Value3)
+			: _0(Vector4Value0)
+			, _1(Vector4Value1)
+			, _2(Vector4Value2)
+			, _3(Vector4Value3)
 		{
 		}
 
-		GDINL Vector4t(Vector2t<ElementType> const& Vector4Value01, Vector2t<ElementType> const& Vector4Value23)
-			: x(Vector4Value01.x)
-			, y(Vector4Value01.y)
-			, z(Vector4Value23.x)
-			, w(Vector4Value23.y)
-		{
-		}
-
-		GDINL Vector4t(Vector2t<ElementType> const& Vector4Value01, ElementTypeConstRef const Vector4Value2, ElementTypeConstRef const Vector4Value3)
-			: x(Vector4Value01.x)
-			, y(Vector4Value01.y)
-			, z(Vector4Value2)
-			, w(Vector4Value3)
-		{
-		}
-
-		GDINL Vector4t(ElementTypeConstRef const Vector4Value0, Vector2t<ElementType> const& Vector4Value12, ElementTypeConstRef const Vector4Value3)
-			: x(Vector4Value0)
-			, y(Vector4Value12.x)
-			, z(Vector4Value12.y)
-			, w(Vector4Value3)
-		{
-		}
-
+		/// @brief Initializes a 4D vector.
+		/// @param Vector4Value0 Value of the first coordinate of the vector.
+		/// @param Vector4Value1 Value of the second coordinate of the vector.
+		/// @param Vector4Value23 Value of the third and fourth coordinates of the vector.
 		GDINL Vector4t(ElementTypeConstRef const Vector4Value0, ElementTypeConstRef const Vector4Value1, Vector2t<ElementType> const& Vector4Value23)
-			: x(Vector4Value0)
-			, y(Vector4Value1)
-			, z(Vector4Value23.x)
-			, w(Vector4Value23.y)
+			: _0(Vector4Value0)
+			, _1(Vector4Value1)
+			, _2(Vector4Value23._0)
+			, _3(Vector4Value23._1)
 		{
 		}
 
-		GDINL Vector4t(Vector3t<ElementType> const& Vector4Value012, ElementTypeConstRef const Vector4Value3)
-			: x(Vector4Value012.x)
-			, y(Vector4Value012.y)
-			, z(Vector4Value012.z)
-			, w(Vector4Value3)
+		/// @brief Initializes a 4D vector.
+		/// @param Vector4Value0 Value of the first coordinate of the vector.
+		/// @param Vector4Value12 Value of the second and third coordinates of the vector.
+		/// @param Vector4Value3 Value of the fourth coordinate of the vector.
+		GDINL Vector4t(ElementTypeConstRef const Vector4Value0, Vector2t<ElementType> const& Vector4Value12, ElementTypeConstRef const Vector4Value3)
+			: _0(Vector4Value0)
+			, _1(Vector4Value12._0)
+			, _2(Vector4Value12._1)
+			, _3(Vector4Value3)
 		{
 		}
 
+		/// @brief Initializes a 4D vector.
+		/// @param Vector4Value0 Value of the first coordinate of the vector.
+		/// @param Vector4Value123 Value of the second, third and fourth coordinates of the vector.
 		GDINL Vector4t(ElementTypeConstRef const Vector4Value0, Vector3t<ElementType> const& Vector4Value123)
-			: x(Vector4Value0)
-			, y(Vector4Value123.x)
-			, z(Vector4Value123.y)
-			, w(Vector4Value123.z)
+			: _0(Vector4Value0)
+			, _1(Vector4Value123._0)
+			, _2(Vector4Value123._1)
+			, _3(Vector4Value123._2)
 		{
 		}
 
-		GDINL Vector4t(ElementTypeConstRef const Vector4Value)
-			: x(Vector4Value)
-			, y(Vector4Value)
-			, z(Vector4Value)
-			, w(Vector4Value)
+		/// @brief Initializes a 3D vector. Third coordinate is set to 0, fourth - to 1.
+		/// @param Vector4Value01 Value of the first two coordinates of the vector.
+		GDINL explicit Vector4t(Vector2t<ElementType> const& Vector4Value01)
+			: _0(Vector4Value01._0)
+			, _1(Vector4Value01._1)
+			, _2(static_cast<ElementType>(0))
+			, _3(static_cast<ElementType>(1))
 		{
 		}
 
-		GDINL Vector4t(Vector4t const& Other)
-			: x(Other.x)
-			, y(Other.y)
-			, z(Other.z)
-			, w(Other.w)
+		/// @brief Initializes a 4D vector.
+		/// @param Vector4Value01 Value of the first two coordinates of the vector.
+		/// @param Vector4Value2 Value of the third coordinate of the vector.
+		/// @param Vector4Value3 Value of the fourth coordinate of the vector.
+		GDINL Vector4t(Vector2t<ElementType> const& Vector4Value01, ElementTypeConstRef const Vector4Value2, ElementTypeConstRef const Vector4Value3)
+			: _0(Vector4Value01._0)
+			, _1(Vector4Value01._1)
+			, _2(Vector4Value2)
+			, _3(Vector4Value3)
 		{
 		}
 
-		GDINL Vector4t()
-			: x(ElementType(0))
-			, y(ElementType(0))
-			, z(ElementType(0))
-			, w(ElementType(1))
+		/// @brief Initializes a 4D vector.
+		/// @param Vector4Value01 Value of the first two coordinates of the vector.
+		/// @param Vector4Value23 Value of the third and fourth coordinates of the vector.
+		GDINL Vector4t(Vector2t<ElementType> const& Vector4Value01, Vector2t<ElementType> const& Vector4Value23)
+			: _0(Vector4Value01._0)
+			, _1(Vector4Value01._1)
+			, _2(Vector4Value23._0)
+			, _3(Vector4Value23._1)
 		{
 		}
 
-		GDINL ~Vector4t()
+		/// @brief Initializes a 3D vector. Fourth is set to 1.
+		/// @param Vector4Value012 Value of the first, second and third coordinates of the vector.
+		GDINL explicit Vector4t(Vector2t<ElementType> const& Vector4Value012)
+			: _0(Vector4Value012._0)
+			, _1(Vector4Value012._1)
+			, _2(Vector4Value012._2)
+			, _3(static_cast<ElementType>(1))
+		{
+		}
+
+		/// @brief Initializes a 4D vector.
+		/// @param Vector4Value012 Value of the first, second and third coordinates of the vector.
+		/// @param Vector4Value3 Value of the fourth coordinate of the vector.
+		GDINL Vector4t(Vector3t<ElementType> const& Vector4Value012, ElementTypeConstRef const Vector4Value3)
+			: _0(Vector4Value012._0)
+			, _1(Vector4Value012._1)
+			, _2(Vector4Value012._2)
+			, _3(Vector4Value3)
 		{
 		}
 
 	public /* Class API */:
-		GDINL ElementType Dot(const Vector4t& v) const
+
+		/// @brief Computes dot product of two vectors.
+		/// @returns Dot product of two vectors.
+		GDINL ElementType Dot(Vector3t const& Other) const
 		{
 			return this->x * v.x + this->y * v.y + this->z * v.z + this->w * v.w;
 		}
@@ -141,7 +193,7 @@ GD_NAMESPACE_BEGIN
 	public /* Operators */:
 		GDINL ElementTypeConstRef operator[] (size_t const Index) const
 		{
-			GD_ASSERT(Index < ThisComponentsCount, "invalid Vector4t subindex.");
+			GD_ASSERT(Index < ComponentsCount, "invalid Vector4t subindex.");
 			return this->Elements[Index];
 		}
 
@@ -350,12 +402,12 @@ GD_NAMESPACE_BEGIN
 	template<>
 	struct GD_ALIGN_MSVC(16) Vector4t<Float32> final
 	{
-		enum : size_t { ThisComponentsCount = 4 };
+		enum : size_t { ComponentsCount = 4 };
 		union {
 			Float32x4Intrinsics::VectorRegisterType ElementsVector;
-			Float32 Elements[ThisComponentsCount];
-			struct { Float32 Left, Top, Width, Height; };
-			struct { Float32 x, y,   z,  w;   };
+			Float32 Elements[ComponentsCount];
+			struct { Float32 Left, Top, _3idth, Height; };
+			struct { Float32 x, _1,   z,  w;   };
 			struct { Float32 r, g,   b,  a;   };
 			struct { Float32 _0, _1, _2, _3; };
 		};	// anonymous union
@@ -449,7 +501,7 @@ GD_NAMESPACE_BEGIN
 	public /* Operators */:
 		GDINL Float32& operator[] (size_t const Index)
 		{
-			GD_ASSERT(Index < ThisComponentsCount, "invalid Vector4 subindex.");
+			GD_ASSERT(Index < ComponentsCount, "invalid Vector4 subindex.");
 			return this->Elements[Index];
 		}
 

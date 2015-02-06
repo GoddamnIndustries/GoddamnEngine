@@ -25,23 +25,23 @@ GD_NAMESPACE_BEGIN
 		/// @brief Allocates block of memory with specified size and returns pointer to it.
 		/// @param AllocationSize Size of required memory in bytes.
 		/// @returns Pointer on the allocated memory. This function never returns nullptr except specified size is 0.
-		GDAPI static handle AllocateMemory(size_t const AllocationSize);
+		GDAPI static Handle AllocateMemory(size_t const AllocationSize);
 
 		/// @brief Allocates block of memory with specified size that is aligned by specified value and returns pointer to it.
 		/// @param AllocationSize Size of required memory in bytes.
 		/// @param Alignment Pointer to memory would be aligned by this value.
 		/// @returns Pointer on the allocated memory. This function never returns nullptr except specified size is 0.
-		GDAPI static handle AllocateMemoryAligned(size_t const AllocationSize, size_t const Alignment);
+		GDAPI static Handle AllocateMemoryAligned(size_t const AllocationSize, size_t const Alignment);
 
 		/// @brief Reallocates block of memory to specified size.
 		/// @param Memory Memory that would be reallocated.
 		/// @param AllocationSize New size of required memory in bytes.
 		/// @returns Pointer on the reallocated memory. This function never returns nullptr except specified size is 0.
-		GDAPI static handle ReallocateMemory(handle const Memory, size_t const AllocationSize);
+		GDAPI static Handle ReallocateMemory(Handle const Memory, size_t const AllocationSize);
 
 		/// @brief Deallocates block of memory.
 		/// @param Memory Memory that would be deallocated. If specified block is nullptr then does nothing.
-		GDAPI static void DeallocateMemory(handle const Memory);
+		GDAPI static void DeallocateMemory(Handle const Memory);
 
 	};	// class Allocator
 
