@@ -1,9 +1,6 @@
 /// ==========================================================================================
 /// Assertion.h: Assertation mechanism definition.
 /// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// 
-/// History:
-///		* --.01.2014  - Created by James Jhuighuy
 /// ==========================================================================================
 
 #pragma once
@@ -24,15 +21,15 @@
 /// ------------------------------------------------------------------------------------------
 
 #if GD_DEBUG
-#	if (defined(GD_PLATFORM_API_WINAPI))
+#	if GD_PLATFORM_API_WINAPI
 #		include <crtdbg.h>
 #		define GD_DEBUG_BREAK() (::_CrtDbgBreak())
-#	elif (defined(GD_PLATFORM_HTML5))
+#	elif GD_PLATFORM_HTML5
 #		include <csignal>
 #		define GD_DEBUG_BREAK() (::raise(SIGTRAP))
-#	elif (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_X64) || defined(GD_ARCHITECTURE_X86)))
+#	elif GD_COMPILER_GCC_COMPATIBLE && GD_ARCHITECTURE_X64 || GD_ARCHITECTURE_X86
 #		define GD_DEBUG_BREAK() (__asm__ __volatile__ ("int $3\n\t"))
-#	elif (defined(GD_COMPILER_GCC_COMPATIBLE) && (defined(GD_ARCHITECTURE_ARM32) || defined(GD_ARCHITECTURE_ARM64)))
+#	elif GD_COMPILER_GCC_COMPATIBLE && GD_ARCHITECTURE_ARM32 || GD_ARCHITECTURE_ARM64
 #		define GD_DEBUG_BREAK() (__asm__ __volatile__ (".inst 0xE7F001F0\n\t"))
 #	else	// *** Some other implementation ***
 #		include <csignal>
@@ -73,12 +70,12 @@ GD_NAMESPACE_BEGIN
 		GD_CLASS_UNASSIGNABLE(FatalAssertionData);
 
 	public:
-		Str const Message;
-		Str const FileName;
-		Str const FunctionName;
+		CStr const Message;
+		CStr const FileName;
+		CStr const FunctionName;
 		size_t const Line;
 
-		GDINL FatalAssertionData(Str const Message, Str const FileName, Str const FunctionName, size_t const Line)
+		GDINL FatalAssertionData(CStr const Message, CStr const FileName, CStr const FunctionName, size_t const Line)
 			: Message(Message), FileName(FileName), FunctionName(FunctionName), Line(Line)
 		{
 		}
@@ -139,10 +136,10 @@ GD_NAMESPACE_BEGIN
 	/// Storing the whole assertion data in a single structure. Saves more stack space on failure reporter call.
 	struct RegularAssertionData final : public FatalAssertionData
 	{
-		Str const Expression;
+		CStr const Expression;
 		bool ShouldAlwaysIgnoreThisAssertion;
 
-		GDINL RegularAssertionData(Str const Message, Str const FileName, Str const FunctionName, size_t const Line, Str const Expression)
+		GDINL RegularAssertionData(CStr const Message, CStr const FileName, CStr const FunctionName, size_t const Line, CStr const Expression)
 			: FatalAssertionData(Message, FileName, FunctionName, Line)
 			, Expression(Expression)
 			, ShouldAlwaysIgnoreThisAssertion(false)
@@ -226,8 +223,8 @@ GD_NAMESPACE_END
 /// ------------------------------------------------------------------------------------------
 
 // Code block is not implemented.
-#define GD_NOT_IMPLEMENTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '" ## __FUNCTION__  ## "' not implemented (and probably never would be :[).")
-#define GD_NOT_SUPPORTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '" ## __FUNCTION__  ## "' is not supported.")
+#define GD_NOT_IMPLEMENTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '%s' not implemented (and probably never would be :[).", __FUNCTION__)
+#define GD_NOT_SUPPORTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '%s' is not supported.", __FUNCTION__)
 
 // Assertions without messages.
 #define GD_ASSERTION_DEFAULT_MESSAGE ("*** Someone is too lazy to write a message for every assert ***")

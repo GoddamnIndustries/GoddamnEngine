@@ -1,11 +1,11 @@
 /// ==========================================================================================
-/// CharTraits.h - Traits, helper functions and definitions for character types.
+/// CChar.h - Traits, helper functions and definitions for character types.
 /// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
 #pragma once
-#ifndef GD_CORE_MISC_CHARTRAITS
-#define GD_CORE_MISC_CHARTRAITS
+#ifndef GD_CORE_MISC_CCHAR
+#define GD_CORE_MISC_CCHAR
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/TypeTraits.h>
@@ -75,15 +75,16 @@ GD_NAMESPACE_BEGIN
 	/// @param StringLiteral Literal.
 #define GD_LITERAL(CharType, StringLiteral) Literal<CharType>::Select(StringLiteral, L##StringLiteral)
 
-	/// @brief Provides helper functions for processing characters.
+	/// @brief Provides helper functions for processing characters. Contains methods from "cctype" and "cwctype".
 	/// @tparam CharType Specified character type.
 	template<typename CharType>
-	class CharTraits final
+	class CCharTraits final
 	{
 	public:
 
 		/// @brief Returns true if this character is valid digit in specified notation. Currently supports notations range between 2 and 36.
 		/// @param Character Specified character.
+		/// @param Notation Notation in which value is represented.
 		/// @returns True if this character is valid digit in specified notation.
 		GDINL static bool IsDigit(CharType const Character, size_t const Notation = 10)
 		{
@@ -262,9 +263,14 @@ GD_NAMESPACE_BEGIN
 		/// @brief Integer representation of this character data.
 		GDINL static UInt8 ToDigit(Char const Character)
 		{
-			return ((Character >= GD_LITERAL(CharType, '0')) && (Character <= GD_LITERAL(CharType, '9'))) ? (Character -  GD_LITERAL(CharType, '0')) 
-				:  ((Character >= GD_LITERAL(CharType, 'A')) && (Character <= GD_LITERAL(CharType, 'Z'))) ? ((Character - GD_LITERAL(CharType, 'A')) + 10)
-				:  ((Character >= GD_LITERAL(CharType, 'a')) && (Character <= GD_LITERAL(CharType, 'z'))) ? ((Character - GD_LITERAL(CharType, 'a')) + 10);
+			GD_DEBUG_ASSERT(IsDigit(Character), "Specified character is not a digit.");
+			if ((Character >= GD_LITERAL(CharType, '0')) && (Character <= GD_LITERAL(CharType, '9'))) {
+				return Character - GD_LITERAL(CharType, '0');
+			} else if ((Character >= GD_LITERAL(CharType, 'A')) && (Character <= GD_LITERAL(CharType, 'Z'))) {
+				return (Character - GD_LITERAL(CharType, 'A')) + 10;
+			} else {
+				return (Character - GD_LITERAL(CharType, 'a')) + 10;
+			}
 		}
 
 		/// @brief Returns lower-cased equivalent of the character.
@@ -298,11 +304,12 @@ GD_NAMESPACE_BEGIN
 			return static_cast<CharType>(std::towlower(static_cast<std::wint_t>(Character)));
 		}
 		/// @}
-	};	// struct CharTraits<>
+	};	// struct CCharTraits<T>
 
-	typedef CharTraits<ANSIChar> ANSICharTraits;
-	typedef CharTraits<WideChar> WideCharTraits;
+	typedef CCharTraits<ANSIChar> ANSICharTraits;
+	typedef CCharTraits<WideChar> WideCharTraits;
+	typedef CCharTraits<Char> CChar;
 
 GD_NAMESPACE_END
 
-#endif	// ifndef GD_CORE_TEXT_CHARTRAITS
+#endif	// ifndef GD_CORE_MISC_CCHAR

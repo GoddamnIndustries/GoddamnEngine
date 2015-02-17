@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 		/// @brief Initializes empty string builder.
 		GDINL BaseStringBuilder()
 		{
-			this->Container.PushLast(GD_LITERAL(CharType, '\0'));
+			this->Container.InsertLast(GD_LITERAL(CharType, '\0'));
 		}
 
 		/// @brief Moves other string builder into this string builder.
@@ -99,7 +99,7 @@ GD_NAMESPACE_BEGIN
 		inline BaseStringBuilder& Append(CharType const Character)
 		{
 			*(this->Container.End() - 1) = Character;
-			this->Container.PushLast(GD_LITERAL(CharType, '\0'));
+			this->Container.InsertLast(GD_LITERAL(CharType, '\0'));
 			return *this;
 		}
 
@@ -126,7 +126,7 @@ GD_NAMESPACE_BEGIN
 		{
 			size_t const StartPos = this->Container.GetLength() - 1;
 			this->Container.Resize(this->Container.GetLength() + Length);
-			::memcpy(&this->Container[StartPos], CString, (Length + 1) * sizeof(CharType));
+			CMemory::Memcpy(&this->Container[StartPos], CString, (Length + 1) * sizeof(CharType));
 
 			return *this;
 		}
@@ -142,7 +142,7 @@ GD_NAMESPACE_BEGIN
 		}
 		inline BaseStringBuilder& Append(CharType const* const CString)
 		{
-			return this->Append(CString, CharTraits<CharType>::StrLen(CString));
+			return this->Append(CString, CCharTraits<CharType>::StrLen(CString));
 		}
 		/// @}
 

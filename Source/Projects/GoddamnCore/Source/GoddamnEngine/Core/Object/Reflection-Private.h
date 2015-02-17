@@ -1081,7 +1081,7 @@ public: \
 		{ \
 			GD_DEFINE_NAME_GETTER(#Name); \
 		} static const Name##FieldInfo; \
-		Collection.PushLast(&Name##FieldInfo); \
+		Collection.InsertLast(&Name##FieldInfo); \
 	}) \
 	\
 	/* Defining a field... */ \
@@ -1117,7 +1117,7 @@ public: \
 		{ \
 			GD_DEFINE_NAME_GETTER(#Name); \
 		} static const Name##MethodInfo; \
-		Collection.PushLast(&Name##MethodInfo); \
+		Collection.InsertLast(&Name##MethodInfo); \
 	}) \
 	\
 	/* Defining a method... */ \

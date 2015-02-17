@@ -23,7 +23,7 @@
 #define GD_ENGINE_TITLE					L"Goddamn Engine"
 #define GD_ENGINE_ASSEMBLY_COMPANY		L"(C) Goddamn Industries"
 #define GD_ENGINE_ASSEMBLY_PRODUCT		L"Goddamn Engine"
-#define GD_ENGINE_ASSEMBLY_COPYRIGHT	L"Copyright \0xA9 2011 - 2015"GD_ENGINE_ASSEMBLY_COMPANY
+#define GD_ENGINE_ASSEMBLY_COPYRIGHT	L"Copyright \0xA9 2011 - 2015"##GD_ENGINE_ASSEMBLY_COMPANY
 #define GD_ENGINE_ASSEMBLY_TRADEMARK	L"Goddamn Engine"
 #define GD_ENGINE_ASSEMBLY_GUID			L"D2D6C4B5-41CD-4986-8CAA-538591C82A0C"
 #define GD_ENGINE_ASSEMBLY_VERSION		L"1.0.0.0"
@@ -54,9 +54,9 @@
 /// Microsoft Windows (R) Platforms family.
 /// ------------------------------------------------------------------------------------------
 
-#if (defined(_WIN32))
+#if (defined(_WIN32)) && (!defined(GD_PLATFORM_NOT_WINDOWS))
+#	define _CRT_SECURE_NO_WARNINGS		  1
 #	define _USE_MATH_DEFINES    		  1								// <| M_PI and others
-#	define _CRT_SECURE_NO_WARNINGS 		  1								// <| Using printf and others
 #	define  WIN32_LEAN_AND_MEAN			  1								// <| We do not need whole WinAPI header.
 #	define  VC_EXTRALEAN				  1								//  |
 #	include <winapifamily.h>
@@ -80,7 +80,7 @@
 #	else	// elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_***))
 #		error "Unsupported Windows target platform."
 #	endif	// elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_***))
-#endif	// if (defined(_WIN32))
+#endif	// if (defined(_WIN32)) && (!defined(GD_PLATFORM_NOT_WINDOWS))
 
 /// ------------------------------------------------------------------------------------------
 /// Microsoft XBox One Platform family.
@@ -157,6 +157,7 @@
 #if (defined(__EMSCRIPTEN__))
 #	define GD_PLATFORM_WEB				  1  			  		///< Building a web-application. 
 #	define GD_PLATFORM_HTML5			  1  					///< Building an HTML5 web-application.
+#	define GD_PLATFORM_API_POSIX		  1  					///< Emscripten has a POSIX-compatible layer.
 #	define GD_PLATFORM_API_LIBSDL1		  1  					///< LibSDL1 supports target platform.
 #endif	// if (defined(__EMSCRIPTEN__))
 
@@ -241,25 +242,24 @@
 #	define GD_PLATFORM_API_COCOA 0
 #endif	// if (!defined(GD_PLATFORM_API_WINAPI))
 #if (!defined(GD_PLATFORM_API_POSIX))
-#	define GD_PLATFORM_API_COCOA 0
+#	define GD_PLATFORM_API_POSIX 0
 #endif	// if (!defined(GD_PLATFORM_API_POSIX))
-#if (!defined(GD_PLATFORM_API_LIBSDL2))
-#	define GD_PLATFORM_API_LIBSDL2 0
-#endif	// if (!defined(GD_PLATFORM_CONSOLE))
 #if (!defined(GD_PLATFORM_API_LIBSDL1))
 #	define GD_PLATFORM_API_LIBSDL1 0
 #endif	// if (!defined(GD_PLATFORM_CONSOLE))
-#if GD_PLATFORM_API_LIBSDL2
+#if (!defined(GD_PLATFORM_API_LIBSDL2))
+#	define GD_PLATFORM_API_LIBSDL2 0
+#else	// if (!defined(GD_PLATFORM_CONSOLE))
 // Disabling support of libSDL1 if newer major version is supported.
 #	if GD_PLATFORM_API_LIBSDL1
 #		undef GD_PLATFORM_API_LIBSDL1
 #		define GD_PLATFORM_API_LIBSDL1 0
 #	endif	// if GD_PLATFORM_API_LIBSDL1
-#endif	// if GD_PLATFORM_API_LIBSDL2
+#endif	// if (!defined(GD_PLATFORM_CONSOLE))
 #if ((!(0 \
 	^ GD_PLATFORM_API_WINAPI \
 	^ GD_PLATFORM_API_COCOA \
-	^ GD_PLATFORM_API_POSIX)) || (!(0 \
+	^ GD_PLATFORM_API_POSIX)) && (!(0 \
 	^ GD_PLATFORM_API_LIBSDL1 \
 	^ GD_PLATFORM_API_LIBSDL2)))
 #	error "No target platform API was selected OR multiple target platform APIs were selected."
@@ -294,21 +294,21 @@
 /// Microsoft Visual C++ compiler.
 /// ------------------------------------------------------------------------------------------
 
-#if (defined(_MSC_VER))
+#if (defined(_MSC_VER)) && (!defined(GD_PLATFORM_NOT_WINDOWS))
 #	if (_MSC_VER >= 1800)						//   2013 CTP Compiler and above.
 #		define GD_COMPILER_MSVC				1  	///< Code for target platform is going to be compiled using MSVC.
 #		define GD_COMPILER_MSVC_COMPATIBLE	1  	///< Target compiler is compatible with the MSVC compiler.
 #	else	// if (_MSC_VER >= 1800)
 #		error "MSVC compiler version is lower than 1800. Please, use MSVC compiler version 2013 CTP and newer."
 #	endif	// if (_MSC_VER >= 1800)
-#endif	// if (defined(_MSC_VER))
+#endif	// if (defined(_MSC_VER)) && (!defined(GD_PLATFORM_NOT_WINDOWS))
 
 /// ------------------------------------------------------------------------------------------
 /// Apple (R) Clang compiler.
 /// ------------------------------------------------------------------------------------------
 
 #if (defined(__clang__))
-#	define GD_COMPILER_GLANG				1  	///< Code for target platform is going to be compiled using Clang compiler. 
+#	define GD_COMPILER_CLANG				1  	///< Code for target platform is going to be compiled using Clang compiler. 
 #	define GD_COMPILER_GCC_COMPATIBLE		1  	///< Target compiler is compatible with the GCC compiler.
 #endif	// if (defined(__GNUC__))
 
@@ -316,7 +316,7 @@
 /// Generally-Not-Usable Compiler Collection.
 /// ------------------------------------------------------------------------------------------
 
-#if (defined(__GNUC__))
+#if (defined(__GNUC__)) && (!defined(GD_COMPILER_CLANG))
 #	define GD_COMPILER_GCC					1   ///< Code for target platform is going to be compiled using GNU Compiler collection. 
 #	define GD_COMPILER_GCC_COMPATIBLE		1  	///< Target compiler is compatible with the GCC compiler.
 #endif	// if (defined(__GNUC__))
@@ -712,25 +712,25 @@ GDINL static size_t gd_array_size_failure() { GD_DEBUG_ASSERT_FALSE("Non-array w
 #if defined(__cplusplus)
 GD_NAMESPACE_BEGIN
 
-	using std::nullptr_t;
-	using std::size_t;
+	typedef decltype(nullptr) nullptr_t;
+	using ::size_t;
 
-	typedef std::uint8_t UInt8;
-	typedef std::int8_t  Int8;
+	typedef ::uint8_t UInt8;
+	typedef ::int8_t  Int8;
 	static_assert((sizeof(UInt8) == sizeof(Int8)) && (sizeof(UInt8) == 1), "Error in 8-bit integer sizes");
 
-	typedef std::uint16_t UInt16;
-	typedef std::int16_t  Int16;
+	typedef ::uint16_t UInt16;
+	typedef ::int16_t  Int16;
 	static_assert((sizeof(UInt16) == sizeof(Int16)) && (sizeof(UInt16) == 2), "Error in 16-bit integer sizes");
 
-	typedef std::uint32_t UInt32;
-	typedef std::int32_t  Int32;
+	typedef ::uint32_t UInt32;
+	typedef ::int32_t  Int32;
 	static_assert((sizeof(UInt32) == sizeof(Int32)) && (sizeof(UInt32) == 4), "Error in 32-bit integer sizes");
 
 	// In JavaScript we do not have any 64-bit integer types. 
 //#if (!defined(GD_ARCHITECTURE_ASMJS))
-	typedef std::uint64_t UInt64;
-	typedef std::int64_t  Int64;
+	typedef ::uint64_t UInt64;
+	typedef ::int64_t  Int64;
 	static_assert((sizeof(UInt64) == sizeof(Int64)) && (sizeof(UInt64) == 8), "Error in 64-bit integer sizes");
 //#endif	// if (!defined(GD_ARCHITECTURE_ASMJS))
 
@@ -743,7 +743,7 @@ GD_NAMESPACE_BEGIN
 	typedef double Float64;
 	static_assert(sizeof(Float64) == 8, "Error in 64-bit float sizes");
 
-	typedef char const* Str;
+	typedef char const* CStr;
 	typedef void const* CHandle;
 	typedef void      *  Handle;
 

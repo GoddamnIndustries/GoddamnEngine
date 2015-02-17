@@ -358,13 +358,13 @@ GD_NAMESPACE_BEGIN
 		/// @brief Appends new element to container.
 		/// @param NewElement New element that would be inserted into the end of container.
 		/// @{
-		GDINL void PushLast(ElementType&& NewElement = ElementType())
+		GDINL void InsertLast(ElementType&& NewElement = ElementType())
 		{
 			this->ReserveToLength(this->Length + 1);
 			this->Length += 1;
 			InitializeIterator(this->PtrEnd() - 1, Forward<ElementType>(NewElement));
 		}
-		GDINL void PushLast(ElementType const& NewElement)
+		GDINL void InsertLast(ElementType const& NewElement)
 		{
 			this->ReserveToLength(this->Length + 1);
 			this->Length += 1;
@@ -373,7 +373,7 @@ GD_NAMESPACE_BEGIN
 		/// @}
 
 		/// @brief Removes last element from container.
-		GDINL void PopLast()
+		GDINL void RemoveLast()
 		{
 			GD_ASSERT((this->Length != 0), "Container size is zero");
 			this->Resize(this->Length - 1);
@@ -440,7 +440,7 @@ GD_NAMESPACE_BEGIN
 			Vector SearchingResult;
 			for (PtrConstIterator Iterator = this->PtrBegin(); Iterator != this->PtrEnd(); ++Iterator) {
 				if (Predicate(*Iterator)) {
-					SearchingResult.PushLast(*Iterator);
+					SearchingResult.InsertLast(*Iterator);
 				}
 			}
 
@@ -615,7 +615,7 @@ GD_NAMESPACE_BEGIN
 		{
 			this->ReserveToLength(this->Length + OtherVector.Length);
 			for (Iterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); ++Iterator) {
-				this->PushLast(Move(*Iterator));
+				this->InsertLast(Move(*Iterator));
 			}
 
 			return *this;
@@ -624,7 +624,7 @@ GD_NAMESPACE_BEGIN
 		{
 			this->ReserveToLength(this->Length + OtherVector.Length);
 			for (Iterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); ++Iterator) {
-				this->PushLast(*Iterator);
+				this->InsertLast(*Iterator);
 			}
 
 			return *this;

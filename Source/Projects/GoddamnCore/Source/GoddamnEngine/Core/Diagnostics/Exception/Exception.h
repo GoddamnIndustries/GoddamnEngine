@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 
 		/// Returns type of exception was thrown.
 		/// @returns Type of exception was thrown.
-		GDINL virtual Str GetExceptionType() const { return "Exception"; }
+		GDINL virtual CStr GetExceptionType() const { return "Exception"; }
 	};	// class Exception
 
 	// Defines new exception class with specified base class, inheritance attributes and overridden 'GetErrorMessage' proc.
@@ -40,7 +40,7 @@ GD_NAMESPACE_BEGIN
 	public /*Public API*/: \
 		GDINL explicit ExceptionClass(String const& ErrorMessage) : BaseExceptionClass(ErrorMessage) { } \
 		GDINL virtual ~ExceptionClass() { } \
-		GDINL virtual Str GetExceptionType() const override Attributes { return (#ExceptionClass); } \
+		GDINL virtual CStr GetExceptionType() const override Attributes { return (#ExceptionClass); } \
 		MessageGetterFunc\
 	};	// class ExceptionClass
 

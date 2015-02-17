@@ -284,7 +284,8 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT(NewNode != nullptr, "Null pointer node.");
 		this->Length += 1;
 
-		//  This function should only be called by InsertRBTree (see above)
+		//  This function should only be called by InsertRBTree (see above).
+		/// @todo Get rid of this lambda here...
 		auto static const TreeInsertHelp = [this](RedBlackTreeBaseNode* Z) {
 			RedBlackTreeBaseNode* X;
 			RedBlackTreeBaseNode* Y;

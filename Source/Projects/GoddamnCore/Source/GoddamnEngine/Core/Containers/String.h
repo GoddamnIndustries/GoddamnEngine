@@ -10,6 +10,7 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Misc/Hash.h>
 #include <GoddamnEngine/Core/Misc/CString.h>
+#include <GoddamnEngine/Core/Misc/CMemory.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
@@ -24,6 +25,10 @@ GD_NAMESPACE_BEGIN
 		, public ContainerPtrIteratableTag
 		, public ContainerPtrReverseIteratableTag
 	{
+	private:
+		typedef CChar CChar;
+		typedef CString CString;
+
 	public:
 		typedef IndexedContainerIterator<BaseString, CharType> Iterator;
 		typedef IndexedContainerIterator<BaseString const, CharType const> ConstIterator;
@@ -86,7 +91,7 @@ GD_NAMESPACE_BEGIN
 					Character = FillWith;
 				}
 			} else {
-				::memset(this->CStr(), FillWith, Length);
+				CMemory::Memset(this->CStr(), FillWith, Length);
 			}
 
 			*this->PtrEnd() = GD_LITERAL(CharType, '\0');
@@ -102,9 +107,9 @@ GD_NAMESPACE_BEGIN
 			size_t const DataSizeInBytes = (Length + 1) * sizeof(CharType);
 			if (this->Length >= BaseString::MaxStackLength) {
 				this->HeapMemory = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
-				::memcpy(this->HeapMemory, Chars, DataSizeInBytes);
+				CMemory::Memcpy(this->HeapMemory, DataSizeInBytes, Chars, DataSizeInBytes);
 			} else {
-				::memcpy(&this->StackMemory[0], Chars, DataSizeInBytes);
+				CMemory::Memcpy(&this->StackMemory[0], GD_ARRAY_SIZE(this->StackMemory), Chars, DataSizeInBytes);
 			}
 		}
 
@@ -117,7 +122,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 		GDINL BaseString(CharType const* const Chars)
-			: BaseString(Chars, CharTraits<CharType>::StrLen(Chars))
+			: BaseString(Chars, CString::Strlen(Chars))
 		{
 		}
 		/// @}
@@ -264,6 +269,17 @@ GD_NAMESPACE_BEGIN
 			return this->Length;
 		}
 
+		/// @brief Returns available size of the container.
+		/// @returns Available size of the container.
+		GDINL size_t GetAllocatedSize() const
+		{
+			if (this->GetLength() >= BaseString::MaxStackLength) {
+				return (this->Length + 1) * sizeof(CharType);
+			} else {
+				return GD_ARRAY_SIZE(this->StackMemory);
+			}
+		}
+
 		/// @brief Returns true if this string is empty.
 		/// @returns True if this String is empty, false otherwise.
 		GDINL bool IsEmpty() const
@@ -315,7 +331,7 @@ GD_NAMESPACE_BEGIN
 		{
 			GD_DEBUG_ASSERT(To >= From, "Invalid subString indices.");
 			BaseString Result(To - From);
-			::memcpy(Result.CStr(), &(*this)[From], (To - From) * sizeof(CharType));
+			CMemory::Memcpy(Result.CStr(), Result.GetAllocatedSize(), &(*this)[From], (To - From) * sizeof(CharType));
 			return Result;
 		}
 
@@ -333,7 +349,7 @@ GD_NAMESPACE_BEGIN
 		GDINL size_t Find(CharType const Character) const
 		{
 			CharType const* const CString = this->CStr();
-			CharType const* const Location = CharTraits<CharType>::StrChr(CString, Character);
+			CharType const* const Location = CString::Strchr(CString, Character);
 			if (Location != nullptr) {
 				return static_cast<size_t>(Location - CString);
 			} else {
@@ -347,7 +363,7 @@ GD_NAMESPACE_BEGIN
 		GDINL size_t Find(CharType const* const OtherCString) const
 		{
 			CharType const* const CString = this->CStr();
-			CharType const* const Location = CharTraits<CharType>::StrStr(CString, OtherCString);
+			CharType const* const Location = CString::Strstr(CString, OtherCString);
 			if (Location != nullptr) {
 				return static_cast<size_t>(Location - CString);
 			} else {
@@ -361,7 +377,7 @@ GD_NAMESPACE_BEGIN
 		GDINL size_t ReverseFind(CharType const Character) const
 		{
 			CharType const* const CString = this->CStr();
-			CharType const* const Location = CharTraits<CharType>::StrRChr(CString, Character);
+			CharType const* const Location = CString::Strrchr(CString, Character);
 			if (Location != nullptr) {
 				return static_cast<size_t>(Location - CString);
 			} else {
@@ -374,20 +390,13 @@ GD_NAMESPACE_BEGIN
 		/// @returns Index of the last occurrence of the C string in the string or @c SIZE_MAX if nothing was found.
 		GDINL size_t ReverseFind(CharType const* const OtherCString) const
 		{
-			size_t const OtherCStringLength = CharTraits<CharType>::StrLen(OtherCString);
-			if (OtherCStringLength > this->Length) {
-				CharType const* const CString = this->CStr();
-				CharType const* const CStringStart = CString() + this->GetLength() - OtherCStringLength;
-				CharType const* const CStringEnd = CString - 1;
-				for (CharType const* CStringIter = CStringStart; CStringIter != CStringEnd; --CStringIter) {
-					CharType const* const Location = CharTraits<CharType>::StrStr(CStringIter, OtherCString);
-					if (Location != nullptr) {
-						return static_cast<size_t>(Location - CString);
-					}
-				}
+			CharType const* const CString = this->CStr();
+			CharType const* const Location = CString::Strrstr(CString, OtherCString);
+			if (Location != nullptr) {
+				return static_cast<size_t>(Location - CString);
+			} else {
+				return SIZE_MAX;
 			}
-
-			return SIZE_MAX;
 		}
 
 		/// @brief Returns lowercased version of this string.
@@ -396,7 +405,7 @@ GD_NAMESPACE_BEGIN
 		{
 			BaseString Result(*this);
 			for (auto& Character : Result) {
-				Character = static_cast<CharType>(CharTraits<CharType>::ToUpper(Character));
+				Character = static_cast<CharType>(CChar::ToUpper(Character));
 			}
 
 			return Result;
@@ -408,7 +417,7 @@ GD_NAMESPACE_BEGIN
 		{
 			BaseString Result(*this);
 			for (auto& Character : Result) {
-				Character = static_cast<CharType>(CharTraits<CharType>::ToLower(Character));
+				Character = static_cast<CharType>(CChar::ToLower(Character));
 			}
 
 			return Result;
@@ -420,14 +429,14 @@ GD_NAMESPACE_BEGIN
 		GDINL static BaseString FormatVa(CharType const* const Format, va_list List)
 		{
 			CharType Buffer1024[1024];
-			::memset(&Buffer1024[0], 0, sizeof(Buffer1024));
-			int const Result1204 = CharTraits<CharType>::VSNPrintF(&Buffer1024[0], GD_ARRAY_SIZE(Buffer1024), Format, List);
+			CMemory::Memset(&Buffer1024[0], 0, sizeof(Buffer1024));
+			int const Result1204 = CString::Vsnprintf(&Buffer1024[0], GD_ARRAY_SIZE(Buffer1024), Format, List);
 			if ((Result1204 > 0) && (Result1204 < GD_ARRAY_SIZE(Buffer1024))) {
 				return BaseString(&Buffer1024[0]);
 			} else {
 				CharType Buffer2048[2048];
-				::memset(&Buffer2048[0], 0, sizeof(Buffer2048));
-				int const Result2048 = CharTraits<CharType>::VSNPrintF(&Buffer2048[0], GD_ARRAY_SIZE(Buffer2048), Format, List);
+				CMemory::Memset(&Buffer2048[0], 0, sizeof(Buffer2048));
+				int const Result2048 = CString::Vsnprintf(&Buffer2048[0], GD_ARRAY_SIZE(Buffer2048), Format, List);
 				if ((Result2048 > 0) && (Result2048 < GD_ARRAY_SIZE(Buffer2048))) {
 					return BaseString(&Buffer2048[0]);
 				} else {
@@ -454,9 +463,9 @@ GD_NAMESPACE_BEGIN
 			size_t const DataSizeInBytes = (this->Length + 1) * sizeof(CharType);
 			if (this->Length >= BaseString::MaxStackLength) {
 				this->HeapMemory = reinterpret_cast<CharType*>(Allocator::AllocateMemory(DataSizeInBytes));
-				::memcpy(this->HeapMemory, Other.CStr(), DataSizeInBytes);
+				CMemory::Memcpy(this->HeapMemory, DataSizeInBytes, Other.CStr(), DataSizeInBytes);
 			} else {
-				::memcpy(&this->StackMemory[0], Other.CStr(), DataSizeInBytes);
+				CMemory::Memcpy(&this->StackMemory[0], GD_ARRAY_SIZE(this->StackMemory), Other.CStr(), DataSizeInBytes);
 			}
 
 			return *this;
@@ -475,7 +484,7 @@ GD_NAMESPACE_BEGIN
 				Other.HeapMemory = nullptr;
 			} else {
 				size_t const DataSizeInBytes = (this->Length + 1) * sizeof(CharType);
-				::memcpy(&this->StackMemory[0], &Other.StackMemory[0], DataSizeInBytes);
+				CMemory::Memcpy(this->StackMemory, GD_ARRAY_SIZE(this->StackMemory), &Other.StackMemory[0], DataSizeInBytes);
 			}
 
 			return *this;
@@ -502,7 +511,7 @@ GD_NAMESPACE_BEGIN
 		GDINL bool operator== (BaseString const & Other) const
 		{
 			if (this->Length == Other.Length) {
-				return (CharTraits<CharType>::StrNCmp(this->CStr(), Other.CStr(), this->Length) == 0);
+				return (CString::Strcmp(this->CStr(), Other.CStr(), this->Length) == 0);
 			} else {
 				return false;
 			}
@@ -541,7 +550,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns True if this string is greater to specified one, false otherwise.
 		GDINL bool operator> (BaseString const& Other) const
 		{
-			return (CharTraits<CharType>::StrNCmp(this->CStr(), Other.CStr(), this->Length) > 0);
+			return (CString::Strcmp(this->CStr(), Other.CStr(), this->Length) > 0);
 		}
 
 		/// @brief Checks if this string is less to specified one.
@@ -549,7 +558,7 @@ GD_NAMESPACE_BEGIN
 		/// @returns True if this string is less to specified one, false otherwise.
 		GDINL bool operator< (BaseString const& Other) const
 		{
-			return (CharTraits<CharType>::StrNCmp(this->CStr(), Other.CStr(), this->Length) < 0);
+			return (CString::Strcmp(this->CStr(), Other.CStr(), this->Length) < 0);
 		}
 
 		/// @brief Concatenates two strings.
@@ -559,8 +568,8 @@ GD_NAMESPACE_BEGIN
 		GDINL BaseString operator+ (BaseString const& Other) const
 		{
 			BaseString Result(this->Length + Other.GetLength());
-			::memcpy(Result.CStr(), this->CStr(), this->Length * sizeof(CharType));
-			::memcpy(Result.CStr() + this->Length, Other.CStr(), Other.Length * sizeof(CharType));
+			CMemory::Memcpy(Result.CStr(), Result.GetAllocatedSize(), this->CStr(), this->Length * sizeof(CharType));
+			CMemory::Memcpy(Result.CStr() + this->Length, Result.GetAllocatedSize(), Other.CStr(), Other.Length * sizeof(CharType));
 			return Result;
 		}
 		GDINL BaseString& operator+= (BaseString const& Other)

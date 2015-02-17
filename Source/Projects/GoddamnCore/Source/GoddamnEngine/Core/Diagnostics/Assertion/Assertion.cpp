@@ -79,9 +79,9 @@ GD_NAMESPACE_BEGIN
 	/// Returns the approximate location of assertion in the source of the engine.
 	/// This information is crucial for determining whether bug is located inside engine code (and we made mistakes)
 	/// or is cause by crooked hands of some game developers (no offenses, all assertion are caused by crookedness).
-	GDINT static AssertionLocation GetAssertionLocationForSource(Str const FileName)
+	GDINT static AssertionLocation GetAssertionLocationForSource(CStr const FileName)
 	{
-		Str const EngineSDKLocation = std::strstr(FileName, GD_PLATFORM_SLASH "GoddamnEngine" GD_PLATFORM_SLASH "source");
+		CStr const EngineSDKLocation = std::strstr(FileName, GD_PLATFORM_SLASH "GoddamnEngine" GD_PLATFORM_SLASH "source");
 		if (EngineSDKLocation != nullptr) {
 			if (std::strstr(EngineSDKLocation, GD_PLATFORM_SLASH "Dependencies") != nullptr) {
 				return AssertionLocation::DependencyCode;
@@ -206,7 +206,7 @@ GD_NAMESPACE_END
 /// Here comes real hardcore inlined dialog box programming. God is with us!
 /// ==========================================================================================
 
-#if (defined(GD_PLATFORM_WINDOWS))
+#if GD_PLATFORM_WINDOWS
 #include <Windows.h>
 
 /// ------------------------------------------------------------------------------------------
@@ -387,7 +387,7 @@ GD_NAMESPACE_END
 /// SDL 2.0 MessageBox-driven implementation. 
 /// ==========================================================================================
 
-#elif (defined(GD_PLATFORM_API_LIBSDL2))
+#elif GD_PLATFORM_API_LIBSDL2
 #include <SDL2/SDL_messagebox.h>
 
 GD_NAMESPACE_BEGIN
@@ -396,7 +396,7 @@ GD_NAMESPACE_BEGIN
 	{
 		size_t ButtonsSize = 0;
 		SDL_MessageBoxButtonData ButtonsData[static_cast<size_t>(AssertionState::Invalid)];
-		std::memset(&ButtonsData[0], 0, sizeof(ButtonsData));
+		CMemory::Memset(&ButtonsData[0], 0, sizeof(ButtonsData));
 
 		// Abort button is always available.
 		ButtonsData[ButtonsSize++] = { 0, static_cast<int>(AssertionState::Abort), GD_ASSERTION_DIALOG_BTNABORT_TEXT };

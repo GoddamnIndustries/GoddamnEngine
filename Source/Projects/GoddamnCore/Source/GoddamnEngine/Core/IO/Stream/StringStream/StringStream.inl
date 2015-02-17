@@ -119,7 +119,7 @@ GD_NAMESPACE_BEGIN
 			throw IOException("Failed to read from data reference (position is out of bounds).");
 		}
 
-		std::memcpy(Array, this->DataReference, Count * Length);
+		CMemory::Memcpy(Array, this->DataReference, Count * Length);
 		this->DataReferencePosition += (Count * Length);
 	}
 
