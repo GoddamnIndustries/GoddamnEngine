@@ -11,7 +11,7 @@
 #include <GoddamnEngine/Core/Templates/Utility.h>
 #include <GoddamnEngine/Core/Containers/Containers.h>
 
-#if (defined(GD_PLATFORM_WINDOWS))
+#if GD_PLATFORM_WINDOWS
 
 #include <Windows.h>
 
@@ -182,7 +182,7 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#else	// if (defined(GD_PLATFORM_WINDOWS))
+#else	// if GD_PLATFORM_WINDOWS
 
 /// @todo Provide generic implementation of the LockFreeList.
 #	error LockFreeList is not implemented for this platform.

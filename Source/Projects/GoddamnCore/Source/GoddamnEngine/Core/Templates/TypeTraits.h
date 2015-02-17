@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 	/// @tparam Condition Compile-time condition for the check.
 	/// @tparam CondType Type that would available if condition is true.
 	/// @{
-	template<  bool Condition, typename CondType = void  > struct EnableIf { };
+	template<  bool Condition,   typename CondType   = void  > struct EnableIf { };
 	template</*bool Condition,*/ typename CondType /*= void*/> struct EnableIf <true, CondType> { typedef CondType Type; };
 	/// @}
 
@@ -38,14 +38,20 @@ GD_NAMESPACE_BEGIN
 	/// @tparam Condition Compile-time condition for the check.
 	/// @tparam CondType Type that would available if condition is false.
 	/// @{
-	template<  bool Condition, typename CondType = void  > struct DisableIf { };
+	template<  bool Condition,   typename CondType   = void  > struct DisableIf { };
 	template</*bool Condition,*/ typename CondType /*= void*/> struct DisableIf<false, CondType> { typedef CondType Type; };
 	/// @}
 
 	/// @brief Does some actions on types.
+#if GD_COMPILER_MSVC_COMPATIBLE || defined(GD_DOCUMENTATION)
 	class TypeTraits final
 	{
 	public:
+#else	// if GD_COMPILER_MSVC_COMPATIBLE || defined(GD_DOCUMENTATION)
+	// Avoiding 'explicit specialization in class scope' errors.
+	namespace TypeTraits
+	{
+#endif	// if GD_COMPILER_MSVC_COMPATIBLE || defined(GD_DOCUMENTATION)
 
 		/// @brief Removes one level constant modifier.
 		/// @tparam InType Type to perform operation on.

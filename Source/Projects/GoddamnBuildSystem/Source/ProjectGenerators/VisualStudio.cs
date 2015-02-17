@@ -344,7 +344,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
                             VCXProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
                             VCXProj./**/WriteElementString("OutDir", Path.GetDirectoryName(OutputPath) + Path.DirectorySeparatorChar);
                             VCXProj./**/WriteElementString("NMakeOutput", OutputPath);
-                            VCXProj./**/WriteElementString("NMakePreprocessorDefinitions", Macros + StandartMacros);
+                            VCXProj./**/WriteElementString("NMakePreprocessorDefinitions", Macros + StandartMacros + ";GD_PLATFORM_NOT_WINDOWS=1");
                             VCXProj./**/WriteElementString("NMakeIncludeSearchPath", IncludePathes + StandartLibrariesPaths);
                             VCXProj./**/WriteElementString("NMakeBuildCommandLine", NMakeCommand);
                             VCXProj./**/WriteElementString("NMakeReBuildCommandLine", NMakeCommand + "Rebuild");

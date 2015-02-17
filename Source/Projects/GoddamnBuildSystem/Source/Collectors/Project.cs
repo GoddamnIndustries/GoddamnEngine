@@ -498,17 +498,17 @@ namespace GoddamnEngine.BuildSystem
                 Separator = Path.PathSeparator.ToString();
             }
 
-            StringBuilder IncludePathesBuilder = new StringBuilder();
+            StringBuilder IncludePathesBuilder = new StringBuilder(Separator);
 
             // Adding header paths from this projects.
             Array.ForEach(m_CachedHeaderDirectories, HeaderDirectory =>
-             IncludePathesBuilder.Append(HeaderDirectory).Append(Separator)
+                IncludePathesBuilder.Append(Separator).Append(HeaderDirectory)
             );
 
             // Adding header paths from dependencies.
             Array.ForEach(m_CachedDependencies, Dependency =>
                 Array.ForEach(Dependency.m_CachedHeaderDirectories, DependencyIncludePath =>
-                    IncludePathesBuilder.Append(DependencyIncludePath).Append(Separator)
+                    IncludePathesBuilder.Append(Separator).Append(DependencyIncludePath)
                 )
             );
 

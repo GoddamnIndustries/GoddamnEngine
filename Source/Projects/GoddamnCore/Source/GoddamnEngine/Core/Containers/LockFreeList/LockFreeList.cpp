@@ -3,6 +3,7 @@
 /// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
 /// ==========================================================================================
 
+#if 0
 #include <GoddamnEngine/Core/Containers/LockFreeList/LockFreeList.h>
 
 #if (defined(GD_PLATFORM_WINDOWS))
@@ -16,7 +17,6 @@ GD_NAMESPACE_END
 /// @todo Provide generic implementation of the LockFreeList.
 #	error LockFreeList is not implemented for this platform.
 
-#if 0
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>

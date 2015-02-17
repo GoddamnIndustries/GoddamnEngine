@@ -148,7 +148,7 @@ GD_NAMESPACE_BEGIN
 	static_assert(!TypeTraits::IsSame<Iterator, UnusableType>::Value, "'Iterator' type is not defined."); \
 	static_assert(!TypeTraits::IsSame<ConstIterator, UnusableType>::Value, "'ConstIterator' type is not defined."); \
 	/** @todo Add checks for valid Begin/End methods. */ \
-
+		
 	/// @brief Checks if this container has a valid signature for reverse iterations.
 	/// @param ThisType Container type.
 #define GD_CONTAINER_CHECK_REVERSE_ITERATORS(ThisType) \
