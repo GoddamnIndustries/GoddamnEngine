@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// Matrix4x4.h - 4x4 matrix class.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! Matrix4x4.h - 4x4 matrix class.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_MATH_MATRIX4X4
@@ -18,14 +18,14 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// Generic implementation of a 4 x 4 Row-major matrix representation.
-	/// If is Float32x4 intrinsics are supported, uses them for better performance.
+	//! Generic implementation of a 4 x 4 Row-major matrix representation.
+	//! If is Float32x4 intrinsics are supported, uses them for better performance.
 	template<typename ElementType>
 	struct Matrix4x4t final
 	{
 		static_assert(TypeTraits::IsFloatingPoint<ElementType>::Value, "'Matrix4x4t<T>' error: T should be floating-point value.");
 		typedef typename Conditional<TypeTraits::IsPOD<ElementType>::Value, ElementType, ElementType const&>::Type ElementTypeConstRef;
-		enum : size_t { ThisRowsCount = 4, ThisColumnsCount = 4 };
+		enum : SizeTp { ThisRowsCount = 4, ThisColumnsCount = 4 };
 		
 		union {
 			struct { ElementType Elements[ThisRowsCount * ThisColumnsCount]; };
@@ -39,8 +39,8 @@ GD_NAMESPACE_BEGIN
 		};	// anonymous union
 
 	public /* Constructors */:
-		/// Initializes identity matrix with speficied diagonal value.
-		/// @param ElementDiagVal Diagonal matrix value. 1 by default.
+		//! Initializes identity matrix with speficied diagonal value.
+		//! @param ElementDiagVal Diagonal matrix value. 1 by default.
 		GDINL Matrix4x4t(ElementTypeConstRef const ElementDiagVal = ElementType(1))
 			: _00(ElementDiagVal), _01(ElementType(0)), _02(ElementType(0)), _03(ElementType(0))
 			, _10(ElementType(0)), _11(ElementDiagVal), _12(ElementType(0)), _13(ElementType(0))
@@ -49,7 +49,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		/// Initializes Matrix using 4 vectors.
+		//! Initializes Matrix using 4 vectors.
 		GDINL Matrix4x4t(Vector4t<ElementType> const& _0, Vector4t<ElementType> const& _1, Vector4t<ElementType> const& _2, Vector4t<ElementType> const& _3)
 			: _0(_0)
 			, _1(_1)
@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		/// Copy constructor.
+		//! Copy constructor.
 		GDINL Matrix4x4t(Matrix4x4t const& Other)
 		{
 			memcpy(this, &Other, sizeof(*this));
@@ -69,39 +69,39 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public /* Class API */:
-		/// ==========================================================================================
-		/// @name Common initializations.
-		/// @{
+		//! ==========================================================================================
+		//! @name Common initializations.
+		//! @{
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Idenitity *** 
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Idenitity *** 
+		//! ------------------------------------------------------------------------------------------
 
-		/// Initializes specified matrix to identity.
-		/// @param Matrix   Matrix to perform initialization on.
-		/// @param ElementDiagVal Matrix diagonal initial value.
+		//! Initializes specified matrix to identity.
+		//! @param Matrix   Matrix to perform initialization on.
+		//! @param ElementDiagVal Matrix diagonal initial value.
 		GDINL static void MakeIdentity(Matrix4x4t& Matrix, ElementTypeConstRef const ElementDiagVal = ElementType(1))
 		{
 			memset(&Matrix, 0, sizeof(Matrix));
 			Matrix._00 = Matrix._11 = Matrix._22 = Matrix._33 = ElementDiagVal;
 		}
 
-		/// Initializes this matrix to identity.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeIdentity
+		//! Initializes this matrix to identity.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeIdentity
 		GDINL Matrix4x4t& Identity(ElementTypeConstRef const ElementDiagVal = ElementType(1))
 		{
 			Matrix4x4t::MakeIdentity((*this), ElementDiagVal);
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Inverse ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Inverse ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Inverses specified matrix.
-		/// @param Input  Initial matrix that requires to be inverted.
-		/// @param Matrix Matrix to perform inversion on.
+		//! Inverses specified matrix.
+		//! @param Input  Initial matrix that requires to be inverted.
+		//! @param Matrix Matrix to perform inversion on.
 		GDINL static void MakeInverse(Matrix4x4t& Matrix, Matrix4x4t const& Input)
 		{
 			if (&Matrix != &Input) {
@@ -157,22 +157,22 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		/// Inverses this matrix.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeInverse
+		//! Inverses this matrix.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeInverse
 		GDINL Matrix4x4t& Inverse()
 		{
 			Matrix4x4t::MakeInverse((*this), (*this));
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Transpose ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Transpose ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Transposes specified matrix.
-		/// @param Input  Initial matrix that requires to be transposed.
-		/// @param Matrix Matrix to perform transposion on.
+		//! Transposes specified matrix.
+		//! @param Input  Initial matrix that requires to be transposed.
+		//! @param Matrix Matrix to perform transposion on.
 		GDINL static void MakeTranspose(Matrix4x4t& Matrix, Matrix4x4t const& Input)
 		{
 			if (&Matrix != &Input) {
@@ -186,29 +186,29 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		/// Transposes this matrix.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeTranspose
+		//! Transposes this matrix.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeTranspose
 		Matrix4x4t& Transpose()
 		{
 			Matrix4x4t::MakeTranspose((*this), (*this));
 			return (*this);
 		}
 
-		/// @}
-		/// ==========================================================================================
+		//! @}
+		//! ==========================================================================================
 
-		/// ==========================================================================================
-		/// @name Matrix transformations.
-		/// @{
+		//! ==========================================================================================
+		//! @name Matrix transformations.
+		//! @{
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Rotation ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Rotation ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Rotates specified matrix on specified quaternion.
-		/// @param Matrix   Matrix to perform transformations on.
-		/// @param Rotation Value on which matrix would be rotated. 
+		//! Rotates specified matrix on specified quaternion.
+		//! @param Matrix   Matrix to perform transformations on.
+		//! @param Rotation Value on which matrix would be rotated. 
 		GDINL static void MakeRotation(Matrix4x4t& Matrix, Quaternion_t<ElementType> const& Rotation)
 		{
 			Matrix4x4t::MakeIdentity(Matrix);
@@ -223,22 +223,22 @@ GD_NAMESPACE_BEGIN
 			Matrix._22 = ElementType(1) - ElementType(2) * Rotation.x * Rotation.x - ElementType(2) * Rotation.y * Rotation.y;
 		}
 
-		/// Rotates this matrix on specified quaternion.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeRotation
+		//! Rotates this matrix on specified quaternion.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeRotation
 		GDINL Matrix4x4t& Rotate(Quaternion_t<ElementType> const& Rotation)
 		{
 			Matrix4x4t::MakeRotation((*this), Rotation);
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Scale ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Scale ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Scales specified matrix on specified vector.
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Scale  Value on which matrix would be scaled. 
+		//! Scales specified matrix on specified vector.
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Scale  Value on which matrix would be scaled. 
 		GDINL static void MakeScale(Matrix4x4t& Matrix, Vector3t<ElementType> const& Scale)
 		{
 			Matrix4x4t::MakeIdentity(Matrix);
@@ -248,93 +248,93 @@ GD_NAMESPACE_BEGIN
 			Matrix._33 = ElementType(1);
 		}
 
-		/// Scales this matrix on specified vector.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeScale
+		//! Scales this matrix on specified vector.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeScale
 		GDINL Matrix4x4t& Scale(Vector3t<ElementType> const& Scale)
 		{
-			Matrix4x4t::MakeIdentity((*this), Scale);
+			Matrix4x4t::MakeScale((*this), Scale);
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Translation ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Translation ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Translates specified matrix on specified vector.
-		/// @param Matrix    Matrix to perform transformations on.
-		/// @param Translation  Value on which matrix would be translated. 
+		//! Translates specified matrix on specified vector.
+		//! @param Matrix    Matrix to perform transformations on.
+		//! @param Translation  Value on which matrix would be translated. 
 		GDINL static void MakeTranslation(Matrix4x4t& Matrix, Vector3t<ElementType> const& Translation)
 		{
 			Matrix4x4t::MakeIdentity(Matrix);
 			Matrix._3 = Vector4t<ElementType>(Translation, ElementType(1));
 		}
 
-		/// Translates this matrix on specified vector.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeTranslation
+		//! Translates this matrix on specified vector.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeTranslation
 		GDINL Matrix4x4t& Translate(Vector3t<ElementType> const& Translation)
 		{
 			Matrix4x4t::MakeTranslation((*this), Translation);
 			return (*this);
 		}
 
-		/// @}
-		/// ==========================================================================================
+		//! @}
+		//! ==========================================================================================
 
-		/// ==========================================================================================
-		/// @name View matrix computing
-		/// @{
+		//! ==========================================================================================
+		//! @name View matrix computing
+		//! @{
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** LookTo ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** LookTo ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Builds a look-to matrix (Left-Handed coordinate system)
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Eye Position of camera.
-		/// @param Dir Direction to which we are looking.
-		/// @param Up  Camera up vector.
+		//! Builds a look-to matrix (Left-Handed coordinate system)
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Eye Position of camera.
+		//! @param Dir Direction to which we are looking.
+		//! @param Up  Camera up vector.
 		GDINL static void MakeLookToLH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
 			throw 0;
 		}
 
-		/// Builds a look-to matrix (Left-Handed coordinate system).
-		/// @see Matrix4x4t::MakeLookToLH
+		//! Builds a look-to matrix (Left-Handed coordinate system).
+		//! @see Matrix4x4t::MakeLookToLH
 		GDINL Matrix4x4t& LookToLH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
 			Matrix4x4t::MakeLookToLH((*this), Eye, Dir, Up);
 			return (*this);
 		}
 
-		/// Builds a look-to matrix (Right-Handed coordinate system).
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Eye Position of camera.
-		/// @param Dir Direction to which we are looking.
-		/// @param Up  Camera up vector.
+		//! Builds a look-to matrix (Right-Handed coordinate system).
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Eye Position of camera.
+		//! @param Dir Direction to which we are looking.
+		//! @param Up  Camera up vector.
 		GDINL static void MakeLookToRH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
 			throw 0;
 		}
 
-		/// Builds a look-to matrix (Right-Handed coordinate system).
-		/// @see Matrix4x4t::MakeLookToRH
+		//! Builds a look-to matrix (Right-Handed coordinate system).
+		//! @see Matrix4x4t::MakeLookToRH
 		GDINL Matrix4x4t& LookToRH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
 			Matrix4x4t::MakeLookToRH((*this), Eye, Dir, Up);
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** LookAt ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** LookAt ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Builds a look-at matrix (Left-Handed coordinate system)
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Eye Position of camera
-		/// @param At  Point we are looking at
-		/// @param Up  Camera up vector
+		//! Builds a look-at matrix (Left-Handed coordinate system)
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Eye Position of camera
+		//! @param At  Point we are looking at
+		//! @param Up  Camera up vector
 		GDINL static void MakeLookAtLH(Matrix4x4t& Matrix, Vector3t<ElementType> const& Eye, Vector3t<ElementType> const& At, Vector3t<ElementType> const& Up)
 		{
 			Vector3t<ElementType> const ZAxis = (At - Eye).Normalize();
@@ -347,51 +347,51 @@ GD_NAMESPACE_BEGIN
 			Matrix._30 = -XAxis.Dot(Eye); Matrix._31 = -YAxis.Dot(Eye); Matrix._32 = -ZAxis.Dot(Eye); Matrix._33 = ElementType(1);
 		}
 
-		/// Makes view matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeLookAtLH
+		//! Makes view matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeLookAtLH
 		GDINL Matrix4x4t& LookAtLH(Vector3t<ElementType> const& Eye, Vector3t<ElementType> const& At, Vector3t<ElementType> const& Up)
 		{
 			Matrix4x4t::MakeLookAtLH((*this), Eye, At, Up);
 			return (*this);
 		}
 
-		/// Builds a look-at matrix (Right-Handed coordinate system)
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Eye Position of camera
-		/// @param At  Point we are looking at
-		/// @param Up  Camera up vector
+		//! Builds a look-at matrix (Right-Handed coordinate system)
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Eye Position of camera
+		//! @param At  Point we are looking at
+		//! @param Up  Camera up vector
 		GDINL static void MakeLookAtRH(Matrix4x4t& Matrix, Vector3t<ElementType> const& Eye, Vector3t<ElementType> const& At, Vector3t<ElementType> const& Up)
 		{
 			throw 0;
 		}
 
-		/// Makes view matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeLookAtRH
+		//! Makes view matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeLookAtRH
 		GDINL Matrix4x4t& LookAtRH(Vector3t<ElementType> const& Eye, Vector3t<ElementType> const& At, Vector3t<ElementType> const& Up)
 		{
 			Matrix4x4t::MakeLookAtRH((*this), Eye, At, Up);
 			return (*this);
 		}
 
-		/// @}
-		/// ==========================================================================================
+		//! @}
+		//! ==========================================================================================
 
-		/// ==========================================================================================
-		/// @name Projection matrix computing
-		/// @{
+		//! ==========================================================================================
+		//! @name Projection matrix computing
+		//! @{
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Perspective ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Perspective ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Builds perspective-projection matrix (Left-Handed coordinate system)
-		/// @param Matrix  Matrix to perform transformations on.
-		/// @param FOVDegrees Field of view.
-		/// @param Aspect  Screen aspect ration.
-		/// @param ZNear   Near clipping plane.
-		/// @param ZFar    Far clipping plane.
+		//! Builds perspective-projection matrix (Left-Handed coordinate system)
+		//! @param Matrix  Matrix to perform transformations on.
+		//! @param FOVDegrees Field of view.
+		//! @param Aspect  Screen aspect ration.
+		//! @param ZNear   Near clipping plane.
+		//! @param ZFar    Far clipping plane.
 		GDINL static void MakePerspectiveLH(Matrix4x4t& Matrix, ElementTypeConstRef const FOVDegrees, ElementTypeConstRef const Aspect, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
 			ElementType const FOV = ElementType(M_PI / 180) * FOVDegrees;
@@ -404,47 +404,47 @@ GD_NAMESPACE_BEGIN
 			Matrix._30 = ElementType(0); Matrix._31 = ElementType(0); Matrix._32 = ZNear * ZFar / (ZNear - ZFar); Matrix._33 = ElementType(0);
 		}
 
-		/// Makes perspective matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakePerspectiveLH
+		//! Makes perspective matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakePerspectiveLH
 		GDINL Matrix4x4t& PerspectiveLH(ElementTypeConstRef const FOVDegrees, ElementTypeConstRef const Aspect, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
 			Matrix4x4t::MakePerspectiveLH((*this), FOVDegrees, Aspect, ZNear, ZFar);
 			return (*this);
 		}
 
-		/// Builds perspective-projection matrix (Right-Handed coordinate system)
-		/// @param Matrix  Matrix to perform transformations on.
-		/// @param FOVDegrees Field of view.
-		/// @param Aspect  Screen aspect ration.
-		/// @param ZNear   Near clipping plane.
-		/// @param ZFar    Far clipping plane.
+		//! Builds perspective-projection matrix (Right-Handed coordinate system)
+		//! @param Matrix  Matrix to perform transformations on.
+		//! @param FOVDegrees Field of view.
+		//! @param Aspect  Screen aspect ration.
+		//! @param ZNear   Near clipping plane.
+		//! @param ZFar    Far clipping plane.
 		GDINL static void MakePerspectiveRH(Matrix4x4t& Matrix, ElementTypeConstRef const FOVDegrees, ElementTypeConstRef const Aspect, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
 			throw 0;
 		}
 
-		/// Makes perspective matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakePerspectiveRH
+		//! Makes perspective matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakePerspectiveRH
 		GDINL Matrix4x4t& PerspectiveRH(ElementTypeConstRef const FOVDegrees, ElementTypeConstRef const Aspect, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
 			Matrix4x4t::MakePerspectiveRH((*this), FOVDegrees, Aspect, ZNear, ZFar);
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Ortho ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Ortho ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Builds orthographic-projection matrix (Left-Handed coordinate system)
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Left   Minimum x-value of view volume.
-		/// @param Right  Maximum x-value of view volume.
-		/// @param Bottom Minimum y-value of view volume.
-		/// @param Top Maximum y-value of view volume.
-		/// @param ZNear  Near clipping plane.
-		/// @param ZFar   Far clipping plane.
+		//! Builds orthographic-projection matrix (Left-Handed coordinate system)
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Left   Minimum x-value of view volume.
+		//! @param Right  Maximum x-value of view volume.
+		//! @param Bottom Minimum y-value of view volume.
+		//! @param Top Maximum y-value of view volume.
+		//! @param ZNear  Near clipping plane.
+		//! @param ZFar   Far clipping plane.
 		GDINL static void MakeOrthoLH(Matrix4x4t& Matrix, ElementTypeConstRef const Left, ElementTypeConstRef const Right, ElementTypeConstRef const Bottom, ElementTypeConstRef const Top, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
 			Matrix._00 = ElementType(2) / (Right - Left); Matrix._01 = ElementType(0);      Matrix._02 = ElementType(0);      Matrix._03 = ElementType(0);
@@ -453,39 +453,39 @@ GD_NAMESPACE_BEGIN
 			Matrix._30 = (Left + Right) / (Left - Right); Matrix._31 = (Top + Bottom) / (Bottom - Top); Matrix._32 =    ZNear / (ZNear - ZFar); Matrix._33 = ElementType(1);
 		}
 
-		/// Makes ortho matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeOrthoLH
+		//! Makes ortho matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeOrthoLH
 		GDINL Matrix4x4t<ElementType>& OrthoLH(ElementTypeConstRef const Left, ElementTypeConstRef const Right, ElementTypeConstRef const Bottom, ElementTypeConstRef const Top, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
 			Matrix4x4t::MakeOrthoLH((*this), Left, Right, Bottom, Top, ZNear, ZFar);
 			return (*this);
 		}
 
-		/// Builds orthographic-projection matrix (Right-Handed coordinate system)
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Left   Minimum x-value of view volume.
-		/// @param Right  Maximum x-value of view volume.
-		/// @param Bottom Minimum y-value of view volume.
-		/// @param Top Maximum y-value of view volume.
-		/// @param ZNear  Near clipping plane.
-		/// @param ZFar   Far clipping plane.
+		//! Builds orthographic-projection matrix (Right-Handed coordinate system)
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Left   Minimum x-value of view volume.
+		//! @param Right  Maximum x-value of view volume.
+		//! @param Bottom Minimum y-value of view volume.
+		//! @param Top Maximum y-value of view volume.
+		//! @param ZNear  Near clipping plane.
+		//! @param ZFar   Far clipping plane.
 		GDINL static void MakeOrthoRH(Matrix4x4t& Matrix, ElementTypeConstRef const Left, ElementTypeConstRef const Right, ElementTypeConstRef const Bottom, ElementTypeConstRef const Top, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
 			throw 0;
 		}
 
-		/// Makes ortho matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeOrthoRH
+		//! Makes ortho matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeOrthoRH
 		GDINL Matrix4x4t<ElementType>& OrthoRH(ElementTypeConstRef const Left, ElementTypeConstRef const Right, ElementTypeConstRef const Bottom, ElementTypeConstRef const Top, ElementTypeConstRef const ZNear, ElementTypeConstRef const ZFar)
 		{
 			Matrix4x4t::MakeOrthoRH((*this), Left, Right, Bottom, Top, ZNear, ZFar);
 			return (*this);
 		}
 
-		/// @}
-		/// ==========================================================================================
+		//! @}
+		//! ==========================================================================================
 
 	public /* Operators */:
 		inline Matrix4x4t<ElementType> operator* (Matrix4x4t const& Other) const
@@ -540,23 +540,23 @@ GD_NAMESPACE_BEGIN
 			return (*this);
 		}
 
-		GDINL Vector4t<ElementType>& operator[] (size_t const Index)
+		GDINL Vector4t<ElementType>& operator[] (SizeTp const Index)
 		{ 
 			GD_ASSERT(Index < ThisRowsCount, "invalid Matrix4x4 subindex.");
 			return *(&this->_0 + Index);
 		}
 
-		GDINL Vector4t<ElementType> const& operator[] (size_t const Index) const 
+		GDINL Vector4t<ElementType> const& operator[] (SizeTp const Index) const 
 		{
 			return const_cast<Matrix4x4t*>(this)->operator[](Index);
 		}
 	};	// struct Matrix4x4t
 
-#if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
+#if (defined(GD_HAS_FLOAT32X4INTRINSICS) && !GD_DOCUMENTATION)
 	template<>
 	struct GD_ALIGN_MSVC(16) Matrix4x4t<Float32>
 	{
-		enum : size_t { ThisRowsCount = 4, ThisColumnsCount = 4 };
+		enum : SizeTp { ThisRowsCount = 4, ThisColumnsCount = 4 };
 		union {
 			struct { Float32x4Intrinsics::VectorRegisterType _R0, _R1, _R2, _R3; };
 			struct { Float32 Elements[ThisRowsCount * ThisColumnsCount]; };
@@ -609,17 +609,17 @@ GD_NAMESPACE_BEGIN
 
 	public /* Class API */:
 		
-		/// ==========================================================================================
-		/// @name Common modifications.
-		/// @{
+		//! ==========================================================================================
+		//! @name Common modifications.
+		//! @{
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Identity ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Identity ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Initializes specified matrix to identity.
-		/// @param Matrix   Matrix to perform initialization on.
-		/// @param ElementDiagVal Matrix diagonal initial value.
+		//! Initializes specified matrix to identity.
+		//! @param Matrix   Matrix to perform initialization on.
+		//! @param ElementDiagVal Matrix diagonal initial value.
 		GDINL static void MakeIdentity(Matrix4x4t& Matrix, Float32 const Float32Def = 1.0f)
 		{
 			Float32 const Init = Float32Def;
@@ -629,43 +629,43 @@ GD_NAMESPACE_BEGIN
 			Matrix._R3 = Float32x4Intrinsics::VectorMake(0.0f, 0.0f, 0.0f, Init);
 		}
 
-		/// Initializes this matrix to identity.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeIdentity
+		//! Initializes this matrix to identity.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeIdentity
 		GDINL Matrix4x4t& Identity(Float32 const Float32Def = 1.0f)
 		{
 			Matrix4x4t::MakeIdentity((*this), Float32Def);
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Inverse ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Inverse ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Inverses specified matrix.
-		/// @param Input  Initial matrix that requires to be inverted.
-		/// @param Matrix Matrix to perform inversion on.
+		//! Inverses specified matrix.
+		//! @param Input  Initial matrix that requires to be inverted.
+		//! @param Matrix Matrix to perform inversion on.
 		GDINL static void MakeInverse(Matrix4x4t& Matrix, Matrix4x4t const& Input)
 		{	// I've prefered inlining inverting code into intrinsics.
 			Float32x4Intrinsics::MatrixInverse(&Matrix._R0, &Input._R0);
 		}
 
-		/// Inverses this matrix.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeInverse
+		//! Inverses this matrix.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeInverse
 		GDINL Matrix4x4t& Inverse()
 		{
 			Matrix4x4t::MakeInverse((*this), (*this));
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Transpose ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Transpose ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Transposes specified matrix.
-		/// @param Input  Initial matrix that requires to be transposed.
-		/// @param Matrix Matrix to perform transposion on.
+		//! Transposes specified matrix.
+		//! @param Input  Initial matrix that requires to be transposed.
+		//! @param Matrix Matrix to perform transposion on.
 		GDINL static void MakeTranspose(Matrix4x4t& Matrix, Matrix4x4t const& Input)
 		{
 			Float32x4Intrinsics::VectorRegisterType const Temp0 = Float32x4Intrinsics::VectorShuffle(Input._R0, Input._R1, 0, 1, 0, 1);
@@ -678,29 +678,29 @@ GD_NAMESPACE_BEGIN
 			Matrix._R3 = Float32x4Intrinsics::VectorShuffle(Temp2, Temp3, 1, 3, 1, 3);
 		}
 
-		/// Transposes this matrix.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeTranspose
+		//! Transposes this matrix.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeTranspose
 		Matrix4x4t& Transpose()
 		{
 			Matrix4x4t::MakeTranspose((*this), (*this));
 			return (*this);
 		}
 
-		/// @}
-		/// ==========================================================================================
+		//! @}
+		//! ==========================================================================================
 
-		/// ==========================================================================================
-		/// @name Matrix transformations.
-		/// @{
+		//! ==========================================================================================
+		//! @name Matrix transformations.
+		//! @{
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Rotate ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Rotate ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Rotates specified matrix on specified quaternion.
-		/// @param Matrix   Matrix to perform transformations on.
-		/// @param Rotation Value on which matrix would be rotated. 
+		//! Rotates specified matrix on specified quaternion.
+		//! @param Matrix   Matrix to perform transformations on.
+		//! @param Rotation Value on which matrix would be rotated. 
 		GDINL static void MakeRotation(Matrix4x4t& Matrix, Quaternion_t<Float32> const& Rotation)
 		{
 			Float32x4Intrinsics::VectorRegisterType static const ConstantFloat1110 = { 1.0f, 1.0f, 1.0f, 0.0f };
@@ -741,22 +741,22 @@ GD_NAMESPACE_BEGIN
 			Matrix._R3 = Float32x4Intrinsics::VectorMake(0.0f, 0.0f, 0.0f, 1.0f);
 		}
 
-		/// Rotates this matrix on specified quaternion.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeRotation
+		//! Rotates this matrix on specified quaternion.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeRotation
 		GDINL Matrix4x4t& Rotate(Quaternion_t<Float32> const& Rotation)
 		{
 			Matrix4x4t::MakeRotation((*this), Rotation);
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Scale ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Scale ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Scales specified matrix on specified vector.
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Scale  Value on which matrix would be scaled. 
+		//! Scales specified matrix on specified vector.
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Scale  Value on which matrix would be scaled. 
 		GDINL static void MakeScale(Matrix4x4t& Matrix, Vector3Fast const& Scale)
 		{
 			Matrix4x4t::MakeIdentity(Matrix);
@@ -766,53 +766,53 @@ GD_NAMESPACE_BEGIN
 			Matrix._33 = 1.0f;
 		}
 
-		/// Scales this matrix on specified vector.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeScale
+		//! Scales this matrix on specified vector.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeScale
 		GDINL Matrix4x4t& Scale(Vector3Fast const& Scale)
 		{
 			Matrix4x4t::MakeScale((*this), Scale);
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Translate ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Translate ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Translates specified matrix on specified vector.
-		/// @param Matrix    Matrix to perform transformations on.
-		/// @param Translation  Value on whitch matrix would be translated. 
+		//! Translates specified matrix on specified vector.
+		//! @param Matrix    Matrix to perform transformations on.
+		//! @param Translation  Value on whitch matrix would be translated. 
 		GDINL static void MakeTranslation(Matrix4x4t& Matrix, Vector3Fast const& Translation)
 		{
 			Matrix4x4t::MakeIdentity(Matrix);
 			Matrix._3 = Vector4t<Float32>(Translation, 1.0f);
 		}
 
-		/// Translates this matrix on specified vector.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeTranslation
+		//! Translates this matrix on specified vector.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeTranslation
 		GDINL Matrix4x4t& Translate(Vector3Fast const& Translation)
 		{
 			Matrix4x4t::MakeTranslation((*this), Translation);
 			return (*this);
 		}
 
-		/// @}
-		/// ==========================================================================================
+		//! @}
+		//! ==========================================================================================
 
-		/// ==========================================================================================
-		/// @name View matrix computing.
-		/// @{
+		//! ==========================================================================================
+		//! @name View matrix computing.
+		//! @{
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** LookTo ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** LookTo ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Builds a look-to matrix (Left-Handed coordinate system)
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Eye Position of camera.
-		/// @param Dir Direction to which we are looking.
-		/// @param Up  Camera up vector.
+		//! Builds a look-to matrix (Left-Handed coordinate system)
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Eye Position of camera.
+		//! @param Dir Direction to which we are looking.
+		//! @param Up  Camera up vector.
 		GDINL static void MakeLookToLH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
 			Float32x4Intrinsics::VectorRegisterType const R2 = Float32x4Intrinsics::Vector3Normalize(Dir.ElementsVector);
@@ -832,94 +832,94 @@ GD_NAMESPACE_BEGIN
 			Matrix4x4t::MakeTranspose(Matrix, Matrix);
 		}
 
-		/// Builds a look-to matrix (Left-Handed coordinate system).
-		/// @see Matrix4x4t::MakeLookToLH
+		//! Builds a look-to matrix (Left-Handed coordinate system).
+		//! @see Matrix4x4t::MakeLookToLH
 		GDINL Matrix4x4t& LookToLH(Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
 			Matrix4x4t::MakeLookToLH((*this), Eye, Dir, Up);
 			return (*this);
 		}
 
-		/// Builds a look-to matrix (Right-Handed coordinate system).
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Eye Position of camera.
-		/// @param Dir Direction to which we are looking.
-		/// @param Up  Camera up vector.
+		//! Builds a look-to matrix (Right-Handed coordinate system).
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Eye Position of camera.
+		//! @param Dir Direction to which we are looking.
+		//! @param Up  Camera up vector.
 		GDINL static void MakeLookToRH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
 			Float32x4Intrinsics::VectorRegisterType const NegDir = Float32x4Intrinsics::VectorNegate(Dir.ElementsVector);
 			Matrix4x4t::MakeLookToLH(Matrix, Eye, Vector3Fast(NegDir), Up);
 		}
 
-		/// Builds a look-to matrix (Right-Handed coordinate system).
-		/// @see Matrix4x4t::MakeLookToRH
+		//! Builds a look-to matrix (Right-Handed coordinate system).
+		//! @see Matrix4x4t::MakeLookToRH
 		GDINL Matrix4x4t& LookToRH(Vector3Fast const& Eye, Vector3Fast const& Dir, Vector3Fast const& Up)
 		{
 			Matrix4x4t::MakeLookToRH((*this), Eye, Dir, Up);
 			return (*this);
 		}
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** LookAt **
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** LookAt **
+		//! ------------------------------------------------------------------------------------------
 
-		/// Builds a look-at matrix (Left-Handed coordinate system)
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Eye Position of camera.
-		/// @param At  Point we are looking at.
-		/// @param Up  Camera up vector.
+		//! Builds a look-at matrix (Left-Handed coordinate system)
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Eye Position of camera.
+		//! @param At  Point we are looking at.
+		//! @param Up  Camera up vector.
 		GDINL static void MakeLookAtLH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& At, Vector3Fast const& Up)
 		{
 			Vector3Fast const Dir = At - Eye;
 			Matrix4x4t::MakeLookToLH(Matrix, Eye, Dir, Up);
 		}
 
-		/// Makes view matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeLookAtLH
+		//! Makes view matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeLookAtLH
 		GDINL Matrix4x4t& LookAtLH(Vector3Fast const& Eye, Vector3Fast const& At, Vector3Fast const& Up)
 		{
 			Matrix4x4t::MakeLookAtLH((*this), Eye, At, Up);
 			return (*this);
 		}
 
-		/// Builds a look-at matrix (Right-Handed coordinate system)
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Eye Position of camera.
-		/// @param At  Point we are looking at.
-		/// @param Up  Camera up vector.
+		//! Builds a look-at matrix (Right-Handed coordinate system)
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Eye Position of camera.
+		//! @param At  Point we are looking at.
+		//! @param Up  Camera up vector.
 		GDINL static void MakeLookAtRH(Matrix4x4t& Matrix, Vector3Fast const& Eye, Vector3Fast const& At, Vector3Fast const& Up)
 		{
 			Vector3Fast const NegDir = Eye - At;
 			Matrix4x4t::MakeLookToLH(Matrix, Eye, NegDir, Up);
 		}
 
-		/// Makes view matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeLookAtRH
+		//! Makes view matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeLookAtRH
 		GDINL Matrix4x4t& LookAtRH(Vector3Fast const& Eye, Vector3Fast const& At, Vector3Fast const& Up)
 		{
 			Matrix4x4t::MakeLookAtRH((*this), Eye, At, Up);
 			return (*this);
 		}
 
-		/// @}
-		/// ==========================================================================================
+		//! @}
+		//! ==========================================================================================
 
-		/// ==========================================================================================
-		/// @name Projection matrix computing
-		/// @{
+		//! ==========================================================================================
+		//! @name Projection matrix computing
+		//! @{
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** Perspective ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** Perspective ***
+		//! ------------------------------------------------------------------------------------------
 
-		/// Builds perspective-projection matrix (Left-Handed coordinate system).
-		/// @param Matrix  Matrix to perform transformations on.
-		/// @param FOVDegrees Field of view in degrees.
-		/// @param Aspect  Screen aspect ration.
-		/// @param ZNear   Near clipping plane.
-		/// @param ZFar    Far clipping plane.
+		//! Builds perspective-projection matrix (Left-Handed coordinate system).
+		//! @param Matrix  Matrix to perform transformations on.
+		//! @param FOVDegrees Field of view in degrees.
+		//! @param Aspect  Screen aspect ration.
+		//! @param ZNear   Near clipping plane.
+		//! @param ZFar    Far clipping plane.
 		GDINL static void MakePerspectiveLH(Matrix4x4t& Matrix, Float32 const FOVDegrees, Float32 const Aspect, Float32 const ZNear, Float32 const ZFar)
 		{
 			Float32 SinFOV = 0.0f;
@@ -939,21 +939,21 @@ GD_NAMESPACE_BEGIN
 			Matrix._R3 = Float32x4Intrinsics::VectorShuffle(Matrix._R2,        Values,              0, 0, 1, 2);
 		}
 
-		/// Makes perspective matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakePerspectiveLH
+		//! Makes perspective matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakePerspectiveLH
 		GDINL Matrix4x4t& PerspectiveLH(Float32 const FOVDegrees, Float32 const Aspect, Float32 const ZNear, Float32 const ZFar)
 		{
 			Matrix4x4t::MakePerspectiveLH((*this), FOVDegrees, Aspect, ZNear, ZFar);
 			return (*this);
 		}
 
-		/// Builds perspective-projection matrix (Right-Handed coordinate system).
-		/// @param Matrix  Matrix to perform transformations on.
-		/// @param FOVDegrees Field of view in degrees.
-		/// @param Aspect  Screen aspect ration.
-		/// @param ZNear   Near clipping plane.
-		/// @param ZFar    Far clipping plane.
+		//! Builds perspective-projection matrix (Right-Handed coordinate system).
+		//! @param Matrix  Matrix to perform transformations on.
+		//! @param FOVDegrees Field of view in degrees.
+		//! @param Aspect  Screen aspect ration.
+		//! @param ZNear   Near clipping plane.
+		//! @param ZFar    Far clipping plane.
 		GDINL static void MakePerspectiveRH(Matrix4x4t& Matrix, Float32 const FOVDegrees, Float32 const Aspect, Float32 const ZNear, Float32 const ZFar)
 		{
 			Float32 SinFOV = 0.0f;
@@ -973,23 +973,23 @@ GD_NAMESPACE_BEGIN
 			Matrix._R3 = Float32x4Intrinsics::VectorShuffle(Matrix._R2,        Values,               0, 0, 1, 2);
 		}
 
-		/// Makes perspective matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakePerspectiveLH
+		//! Makes perspective matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakePerspectiveLH
 		GDINL Matrix4x4t& PerspectiveRH(Float32 const FOVDegrees, Float32 const Aspect, Float32 const ZNear, Float32 const ZFar)
 		{
 			Matrix4x4t::MakePerspectiveRH((*this), FOVDegrees, Aspect, ZNear, ZFar);
 			return (*this);
 		}
 
-		/// Builds orthographic-projection matrix (Left-Handed coordinate system)
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Left   Minimum x-value of view volume.
-		/// @param Right  Maximum x-value of view volume.
-		/// @param Bottom Minimum y-value of view volume.
-		/// @param Top Maximum y-value of view volume.
-		/// @param ZNear  Near clipping plane.
-		/// @param ZFar   Far clipping plane.
+		//! Builds orthographic-projection matrix (Left-Handed coordinate system)
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Left   Minimum x-value of view volume.
+		//! @param Right  Maximum x-value of view volume.
+		//! @param Bottom Minimum y-value of view volume.
+		//! @param Top Maximum y-value of view volume.
+		//! @param ZNear  Near clipping plane.
+		//! @param ZFar   Far clipping plane.
 		GDINL static void MakeOrthoLH(Matrix4x4t& Matrix, Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{
 			Matrix._00 = 2.0f / (Right - Left);     Matrix._01 = 0.0f;       Matrix._02 = 0.0f;       Matrix._03 = 0.0f;
@@ -998,23 +998,23 @@ GD_NAMESPACE_BEGIN
 			Matrix._30 = (Left + Right) / (Left - Right); Matrix._31 = (Top + Bottom) / (Bottom - Top); Matrix._32 = ZNear / (ZNear - ZFar); Matrix._33 = 1.0f;
 		}
 
-		/// Makes ortho matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeOrthoLH
+		//! Makes ortho matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeOrthoLH
 		GDINL Matrix4x4t<Float32>& OrthoLH(Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{
 			Matrix4x4t::MakeOrthoLH((*this), Left, Right, Bottom, Top, ZNear, ZFar);
 			return (*this);
 		}
 
-		/// Builds orthographic-projection matrix (Left-Handed coordinate system)
-		/// @param Matrix Matrix to perform transformations on.
-		/// @param Left   Minimum x-value of view volume.
-		/// @param Right  Maximum x-value of view volume.
-		/// @param Bottom Minimum y-value of view volume.
-		/// @param Top Maximum y-value of view volume.
-		/// @param ZNear  Near clipping plane.
-		/// @param ZFar   Far clipping plane.
+		//! Builds orthographic-projection matrix (Left-Handed coordinate system)
+		//! @param Matrix Matrix to perform transformations on.
+		//! @param Left   Minimum x-value of view volume.
+		//! @param Right  Maximum x-value of view volume.
+		//! @param Bottom Minimum y-value of view volume.
+		//! @param Top Maximum y-value of view volume.
+		//! @param ZNear  Near clipping plane.
+		//! @param ZFar   Far clipping plane.
 		GDINL static void MakeOrthoRH(Matrix4x4t& Matrix, Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{
 			GD_NOT_USED(Matrix);
@@ -1027,17 +1027,17 @@ GD_NAMESPACE_BEGIN
 			throw 0;
 		}
 
-		/// Makes ortho matrix from this one.
-		/// @returns this.
-		/// @see Matrix4x4t::MakeOrthoLH
+		//! Makes ortho matrix from this one.
+		//! @returns this.
+		//! @see Matrix4x4t::MakeOrthoLH
 		GDINL Matrix4x4t<Float32>& OrthoRH(Float32 const Left, Float32 const Right, Float32 const Bottom, Float32 const Top, Float32 const ZNear, Float32 const ZFar)
 		{
 			Matrix4x4t::MakeOrthoRH((*this), Left, Right, Bottom, Top, ZNear, ZFar);
 			return (*this);
 		}
 
-		/// @}
-		/// ==========================================================================================
+		//! @}
+		//! ==========================================================================================
 
 	public /* Operators */:
 		inline Matrix4x4t operator* (Matrix4x4t<Float32> const& Other) const
@@ -1110,18 +1110,18 @@ GD_NAMESPACE_BEGIN
 			return (*this);
 		}
 
-		GDINL Vector4t<Float32>& operator[] (size_t const Index)
+		GDINL Vector4t<Float32>& operator[] (SizeTp const Index)
 		{
 			GD_ASSERT(Index < ThisRowsCount, "invalid Matrix4x4 subindex.");
 			return *(&this->_0 + Index);
 		}
 
-		GDINL Vector4t<Float32> const& operator[] (size_t const Index) const
+		GDINL Vector4t<Float32> const& operator[] (SizeTp const Index) const
 		{
 			return const_cast<Matrix4x4t*>(this)->operator[](Index);
 		}
 	} GD_ALIGN_GCC(16);	// struct Matrix4x4t
-#endif	// if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
+#endif	// if (defined(GD_HAS_FLOAT32X4INTRINSICS) && !GD_DOCUMENTATION)
 
 	typedef Matrix4x4t<Float32> Float32x4x4;
 	typedef Matrix4x4t<Float64> Float64x4x4;

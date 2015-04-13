@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// LockFreeList.h - Lock-free list class implementation.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! LockFreeList.h - Lock-free list class implementation.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #if 0
 #include <GoddamnEngine/Core/Containers/LockFreeList/LockFreeList.h>
@@ -14,7 +14,7 @@ GD_NAMESPACE_END
 
 #else	// if (defined(GD_PLATFORM_WINDOWS))
 
-/// @todo Provide generic implementation of the LockFreeList.
+//! @todo Provide generic implementation of the LockFreeList.
 #	error LockFreeList is not implemented for this platform.
 
 #define _CRTDBG_MAP_ALLOC

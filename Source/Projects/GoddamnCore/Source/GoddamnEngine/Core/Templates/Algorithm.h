@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// Algorithm.h - Template algorithms definitions. 
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! Algorithm.h - Template algorithms definitions. 
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_TEMPLATE_ALGORITH
@@ -13,12 +13,12 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// @brief Returns a minimal object of the two specified.
-	/// @param First First comparand.
-	/// @param Second Second comparand.
-	/// @tparam ComparandType Type of the objects. Should contain the '<' operator.
-	/// @returns Minimal of two comparands.
-	/// @{
+	//! @brief Returns a minimal object of the two specified.
+	//! @param First First comparand.
+	//! @param Second Second comparand.
+	//! @tparam ComparandType Type of the objects. Should contain the '<' operator.
+	//! @returns Minimal of two comparands.
+	//! @{
 	template<typename ComparandType>
 	GDINL ComparandType& Min(ComparandType& First, ComparandType& Second)
 	{
@@ -29,14 +29,14 @@ GD_NAMESPACE_BEGIN
 	{
 		return (First < Second) ? First : Second;
 	}
-	/// @}
+	//! @}
 
-	/// @brief Returns a maximum object of the two specified.
-	/// @param First First comparand.
-	/// @param Second Second comparand.
-	/// @tparam ComparandType Type of the objects. Should contain the '>' operator.
-	/// @returns Maximum of two comparands.
-	/// @{
+	//! @brief Returns a maximum object of the two specified.
+	//! @param First First comparand.
+	//! @param Second Second comparand.
+	//! @tparam ComparandType Type of the objects. Should contain the '>' operator.
+	//! @returns Maximum of two comparands.
+	//! @{
 	template<typename ComparandType>
 	GDINL ComparandType& Max(ComparandType& First, ComparandType& Second)
 	{
@@ -47,7 +47,7 @@ GD_NAMESPACE_BEGIN
 	{
 		return (First > Second) ? First : Second;
 	}
-	/// @}
+	//! @}
 
 GD_NAMESPACE_END
 

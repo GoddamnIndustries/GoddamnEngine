@@ -1,9 +1,13 @@
-﻿//! ==========================================================================================
-//! Target.cs - description for target platforms, confutations, etc.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-//! 
-//! @author James Jhuighuy
-//! ==========================================================================================
+﻿// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file Target.cs
+//! Description for target platforms, confutations, etc.
 
 using System;
 using System.Collections.Generic;
@@ -22,13 +26,14 @@ namespace GoddamnEngine.BuildSystem
         //! Enumerates all supported and implemented target platforms.
         public static IEnumerable<TargetPlatform> EnumerateAllPlatforms()
         {
-            switch (Environment.OSVersion.Platform) {
+            switch (Environment.OSVersion.Platform)
+            {
                 case PlatformID.Win32NT:
                     yield return TargetPlatform.Windows;
                     //yield return TargetPlatforms.WindowsRT;
                     //yield return TargetPlatforms.WindowsStore;
                     //yield return TargetPlatforms.WindowsPhone;
-                    //yield return TargetPlatforms.XBoxOne;
+                    //yield return TargetPlatforms.XboxOne;
                     //yield return TargetPlatforms.PlayStation4;   // Not sure here..
                     break;
                 case PlatformID.MacOSX:
@@ -56,7 +61,8 @@ namespace GoddamnEngine.BuildSystem
         //! Returns true if target platform is desktop.
         public static bool IsDesktopPlatform(TargetPlatform Platform)
         {
-            switch (Platform) {
+            switch (Platform)
+            {
                 case TargetPlatform.OSX:
                 case TargetPlatform.Linux:
                 case TargetPlatform.Windows:
@@ -69,7 +75,8 @@ namespace GoddamnEngine.BuildSystem
         //! Returns true if target platform is mobile.
         public static bool IsMobilePlatform(TargetPlatform Platform)
         {
-            switch (Platform) {
+            switch (Platform)
+            {
                 case TargetPlatform.iOS:
                 case TargetPlatform.Android:
                 case TargetPlatform.WindowsRT:
@@ -84,8 +91,9 @@ namespace GoddamnEngine.BuildSystem
         //! Returns true if target platform is console.
         public static bool IsConsolePlatform(TargetPlatform Platform)
         {
-            switch (Platform) {
-                case TargetPlatform.XBoxOne:
+            switch (Platform)
+            {
+                case TargetPlatform.XboxOne:
                 case TargetPlatform.PlayStation4:
                     return true;
             }
@@ -96,7 +104,8 @@ namespace GoddamnEngine.BuildSystem
         //! Returns true if specified platform is Web
         public static bool IsWebPlatform(TargetPlatform Platform)
         {
-            switch (Platform) {
+            switch (Platform)
+            {
                 case TargetPlatform.Emscripten:
                     return true;
             }
@@ -107,8 +116,9 @@ namespace GoddamnEngine.BuildSystem
         //! Returns true if target platform`s native API is WinAPI.
         public static bool IsWinAPIPlatform(TargetPlatform Platform)
         {
-            switch (Platform) {
-                case TargetPlatform.XBoxOne:
+            switch (Platform)
+            {
+                case TargetPlatform.XboxOne:
                 case TargetPlatform.Windows:
                 case TargetPlatform.WindowsRT:
                 case TargetPlatform.WindowsStore:
@@ -122,7 +132,8 @@ namespace GoddamnEngine.BuildSystem
         //! Returns true if target platform is POSIX compatible.
         public static bool IsPosixPlatform(TargetPlatform Platform)
         {
-            switch (Platform) {
+            switch (Platform)
+            {
                 case TargetPlatform.iOS:
                 case TargetPlatform.OSX:
                 case TargetPlatform.Linux:
@@ -137,7 +148,8 @@ namespace GoddamnEngine.BuildSystem
         //! Returns true if target platform`s native API is Cocoa.
         public static bool IsCocoaPlatform(TargetPlatform Platform)
         {
-            switch (Platform) {
+            switch (Platform)
+            {
                 case TargetPlatform.iOS:
                 case TargetPlatform.OSX:
                     return true;

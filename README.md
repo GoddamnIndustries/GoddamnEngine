@@ -36,4 +36,3 @@ Getting started
 Authors
 -------
 _Engine Programmer, Graphics/FX Programmer, Utilities Programmer, CTO - [James Jhuighuy](https://github.com/Jhuighuy)._ 
-_Engine Programmer, UI/Editor Programmer - [Roman Zhiganoff](https://github.com/Zhiganoff)._

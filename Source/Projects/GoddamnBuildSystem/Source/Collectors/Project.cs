@@ -1,7 +1,13 @@
-﻿//! ==========================================================================================
-//! Project.cs - project class.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-//! ==========================================================================================
+﻿// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file Project.cs
+//! Project class.
 
 using System;
 using System.Collections.Generic;
@@ -75,7 +81,8 @@ namespace GoddamnEngine.BuildSystem
         //! Returns true if object on specified path has platform/configuration data and matches it.
         public bool ShouldBeExcluded(TargetPlatform Platform, TargetConfiguration Configuration)
         {
-            if (!m_IsExcludedDelegate(Platform)) {
+            if (!m_IsExcludedDelegate(Platform))
+            {
                 return !Collector.MatchesPlatformConfiguration(m_FileName, Platform, Configuration);
             }
 
@@ -150,8 +157,10 @@ namespace GoddamnEngine.BuildSystem
             Debug.Assert(Platform != TargetPlatform.Unknown);
             string OutputDirectory = Path.Combine(BuildSystem.GetSDKLocation(), "bin", this.GetName());
             string OutputExtension = null;
-            if (Target.IsWebPlatform(Platform)) {
-                switch (GetBuildType(Platform, Configuration)) {
+            if (Target.IsWebPlatform(Platform))
+            {
+                switch (GetBuildType(Platform, Configuration))
+                {
                     case ProjectBuildType.Application:
                         OutputExtension = ".html";
                         break;
@@ -160,8 +169,11 @@ namespace GoddamnEngine.BuildSystem
                         OutputExtension = ".bc";
                         break;
                 }
-            } else if (Target.IsWinAPIPlatform(Platform)) {
-                switch (GetBuildType(Platform, Configuration)) {
+            }
+            else if (Target.IsWinAPIPlatform(Platform))
+            {
+                switch (GetBuildType(Platform, Configuration))
+                {
                     case ProjectBuildType.Application:
                         OutputExtension = ".exe";
                         break;
@@ -174,10 +186,14 @@ namespace GoddamnEngine.BuildSystem
                     default:
                         throw new NotImplementedException();
                 }
-            } else if (Target.IsPosixPlatform(Platform)) {
-                switch (GetBuildType(Platform, Configuration)) {
+            }
+            else if (Target.IsPosixPlatform(Platform))
+            {
+                switch (GetBuildType(Platform, Configuration))
+                {
                     case ProjectBuildType.Application:
-                        if (Target.IsCocoaPlatform(Platform)) {
+                        if (Target.IsCocoaPlatform(Platform))
+                        {
                             // On OS X there is something like ".app" package, and some other shit...
                             throw new NotImplementedException();
                         }
@@ -191,7 +207,9 @@ namespace GoddamnEngine.BuildSystem
                     default:
                         throw new NotImplementedException();
                 }
-            } else {
+            }
+            else
+            {
                 throw new NotImplementedException();
             }
 
@@ -208,7 +226,8 @@ namespace GoddamnEngine.BuildSystem
         public virtual string GetImportLibraryOutputPathDelegate(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(Platform != TargetPlatform.Unknown);
-            if (Target.IsWinAPIPlatform(Platform) && (GetBuildType(Platform, Configuration) == ProjectBuildType.DynamicLibrary)) {
+            if (Target.IsWinAPIPlatform(Platform) && (GetBuildType(Platform, Configuration) == ProjectBuildType.DynamicLibrary))
+            {
                 string ImportLibraryOutputDirectory = Path.Combine(BuildSystem.GetSDKLocation(), "lib", this.GetName());
                 return (Configuration != TargetConfiguration.Release
                     ? ImportLibraryOutputDirectory + "." + Configuration.ToString() + ".lib"
@@ -235,7 +254,8 @@ namespace GoddamnEngine.BuildSystem
         public virtual IEnumerable<string> EnumerateHeaderDirectories()
         {
             string ProjectSourceFiles = Path.Combine(GetLocation(), "Source");
-            if (!Directory.Exists(ProjectSourceFiles)) {
+            if (!Directory.Exists(ProjectSourceFiles))
+            {
                 throw new BuildSystemException("No source directories for dependencies {0} were found.", GetName());
             }
 
@@ -251,14 +271,17 @@ namespace GoddamnEngine.BuildSystem
 
             // Adding collected project files.
             string ProjectSourceDirectory = Path.Combine(GetLocation(), "Source");
-            if (!Directory.Exists(ProjectSourceDirectory)) {
+            if (!Directory.Exists(ProjectSourceDirectory))
+            {
                 throw new BuildSystemException("Project {0} does not contain \"Source\" directory.", GetName());
             }
 
-            foreach (string SourceFile in Directory.EnumerateFiles(ProjectSourceDirectory, "*.*", SearchOption.AllDirectories)) {
+            foreach (string SourceFile in Directory.EnumerateFiles(ProjectSourceDirectory, "*.*", SearchOption.AllDirectories))
+            {
                 string SourceFileName = Path.GetFileName(SourceFile);
                 string SourceFileExtension = Path.GetExtension(SourceFile).ToLowerInvariant();
-                switch (SourceFileExtension) {
+                switch (SourceFileExtension)
+                {
                     case ".d":
                         yield return new ProjectSourceFile(SourceFile, GetProgrammingLanguage() == ProjectLanguge.D ? ProjectSourceFileType.HeaderFile : ProjectSourceFileType.SupportFile);
                         break;
@@ -290,8 +313,10 @@ namespace GoddamnEngine.BuildSystem
                         break;
                     case ".cs":
                         string ProjectFileSecondExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(SourceFile)).ToLowerInvariant();
-                        if (!string.IsNullOrEmpty(ProjectFileSecondExtension)) {
-                            switch (ProjectFileSecondExtension) {
+                        if (!string.IsNullOrEmpty(ProjectFileSecondExtension))
+                        {
+                            switch (ProjectFileSecondExtension)
+                            {
                                 case ".gdproj":
                                 case ".gddep":
                                 case ".gdsln":
@@ -310,11 +335,14 @@ namespace GoddamnEngine.BuildSystem
         public virtual IEnumerable<DependencyCache> EnumerateDependencies()
         {
             string ProjectDependencyDirectory = Path.Combine(GetLocation(), "Dependencies");
-            if (Directory.Exists(ProjectDependencyDirectory)) {
+            if (Directory.Exists(ProjectDependencyDirectory))
+            {
                 // Adding explicit dependencies.
-                foreach (string ProjectDependency in Directory.EnumerateFiles(ProjectDependencyDirectory, "*.gddep.cs", SearchOption.AllDirectories)) {
+                foreach (string ProjectDependency in Directory.EnumerateFiles(ProjectDependencyDirectory, "*.gddep.cs", SearchOption.AllDirectories))
+                {
                     DependencyCache Dependency = DependencyFactory.Create(ProjectDependency);
-                    if (Dependency.m_IsSupported) {
+                    if (Dependency.m_IsSupported)
+                    {
                         yield return Dependency;
                     }
                 }
@@ -323,11 +351,13 @@ namespace GoddamnEngine.BuildSystem
 #if INCLUDE_GODDAMNSDK_SPECIFIC
             // Adding implicit priority-related dependencies.
             ProjectPriority Priority = GetPriority();
-            if (Priority < ProjectPriority.CoreLevel) {
+            if (Priority < ProjectPriority.CoreLevel)
+            {
                 // Resolving Core library dependency.
                 yield return DependencyFactory.GetGoddamnCoreDependency();
 
-                if (Priority < ProjectPriority.EngineLevel) {
+                if (Priority < ProjectPriority.EngineLevel)
+                {
                     // Resolving Engine library dependency.
                     yield return DependencyFactory.GetGoddamnEngineDependency();
                 }
@@ -341,14 +371,19 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Iterator for list of additional preprocessor definitions added to this project.
         public virtual IEnumerable<ProjectMacro> EnumerateMacros(TargetPlatform Platform, TargetConfiguration Configuration)
         {
-            if (Target.IsWinAPIPlatform(Platform)) {
-                if (TargetConfigurationInfo.Get(Configuration).m_IsDebug) {
+            if (Target.IsWinAPIPlatform(Platform))
+            {
+                if (TargetConfigurationInfo.Get(Configuration).m_IsDebug)
+                {
                     yield return new ProjectMacro("_DEBUG", "1");
-                } else {
+                }
+                else
+                {
                     yield return new ProjectMacro("NDEBUG", "1");
                 }
 
-                if (GetBuildType(Platform, Configuration) == ProjectBuildType.DynamicLibrary) {
+                if (GetBuildType(Platform, Configuration) == ProjectBuildType.DynamicLibrary)
+                {
                     yield return new ProjectMacro("_WINDLL");
                 }
             }
@@ -374,9 +409,12 @@ namespace GoddamnEngine.BuildSystem
         public virtual string GetProjectFile()
         {
             string CSProjFile = Path.Combine(GetLocation(), GetName() + ".csproj");
-            if (File.Exists(CSProjFile)) {
+            if (File.Exists(CSProjFile))
+            {
                 return CSProjFile;
-            } else {
+            }
+            else
+            {
                 throw new BuildSystemException("No project files for build tool {0} where found.", GetName());
             }
         }
@@ -397,49 +435,49 @@ namespace GoddamnEngine.BuildSystem
             return ProjectPriority.BuildToolLevel;
         }
 
-        /// @warning Method is not supported for a build tool.
+        //! @warning Method is not supported for a build tool.
         public sealed override ProjectBuildType GetBuildType(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             throw new NotSupportedException();
         }
 
-        /// @warning Method is not supported for a build tool.
+        //! @warning Method is not supported for a build tool.
         public sealed override string GetOutputPathDelegate(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             throw new NotSupportedException();
         }
 
-        /// @warning Method is not supported for a build tool.
+        //! @warning Method is not supported for a build tool.
         public sealed override string GetImportLibraryOutputPathDelegate(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             throw new NotSupportedException();
         }
 
-        /// @warning Method is not supported for a build tool.
+        //! @warning Method is not supported for a build tool.
         public sealed override string GetSourceFiltersOrigin()
         {
             throw new NotSupportedException();
         }
 
-        /// @warning Method is not supported for a build tool.
+        //! @warning Method is not supported for a build tool.
         public sealed override IEnumerable<ProjectSourceFile> EnumerateSourceFiles()
         {
             throw new NotSupportedException();
         }
 
-        /// @warning Method is not supported for a build tool.
+        //! @warning Method is not supported for a build tool.
         public sealed override IEnumerable<string> EnumerateHeaderDirectories()
         {
             throw new NotSupportedException();
         }
 
-        /// @warning Method is not supported for a build tool.
+        //! @warning Method is not supported for a build tool.
         public sealed override IEnumerable<DependencyCache> EnumerateDependencies()
         {
             throw new NotSupportedException();
         }
 
-        /// @warning Method is not supported for a build tool.
+        //! @warning Method is not supported for a build tool.
         public sealed override IEnumerable<ProjectMacro> EnumerateMacros(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             throw new NotSupportedException();
@@ -469,11 +507,13 @@ namespace GoddamnEngine.BuildSystem
         public ProjectCache(Project Project)
             : base(Project)
         {
-            if (m_IsSupported) {
+            if (m_IsSupported)
+            {
                 m_CachedFilter = Project.GetFilter();
                 m_CachedPriority = Project.GetPriority();
                 m_IsBuildTool = Project is BuildToolProject;
-                if (!m_IsBuildTool) {
+                if (!m_IsBuildTool)
+                {
                     //  m_MakefilePathes = new CollectorContainer<string>();
                     m_CachedBuildTypes = new CollectorContainer<ProjectBuildType>(Project.GetBuildType);
                     m_CachedOutputPaths = new CollectorContainer<string>(Project.GetOutputPathDelegate);
@@ -483,7 +523,9 @@ namespace GoddamnEngine.BuildSystem
                     m_CachedHeaderDirectories = Project.EnumerateHeaderDirectories().ToArray();
                     m_CachedDependencies = Project.EnumerateDependencies().ToArray();
                     m_CachedMacros = new CollectorContainer<ProjectMacro[]>((TargetPlatform P, TargetConfiguration C) => Project.EnumerateMacros(P, C).ToArray());
-                } else {
+                }
+                else
+                {
                     m_GeneratorOutputPath = ((BuildToolProject)Project).GetProjectFile();
                 }
             }
@@ -494,7 +536,8 @@ namespace GoddamnEngine.BuildSystem
         //! @returns A strigified include paths.
         public string GenerateIncludePaths(string Separator = null)
         {
-            if (Separator == null) {
+            if (Separator == null)
+            {
                 Separator = Path.PathSeparator.ToString();
             }
 
@@ -522,7 +565,8 @@ namespace GoddamnEngine.BuildSystem
         //! @returns A strigified list of macros.
         public string GenerateMacros(TargetPlatform Platform, TargetConfiguration Configuration, string Separator = null)
         {
-            if (Separator == null) {
+            if (Separator == null)
+            {
                 Separator = Path.PathSeparator.ToString();
             }
 
@@ -541,7 +585,8 @@ namespace GoddamnEngine.BuildSystem
         //! @returns A strigified list of linked libraries paths.
         public string GenerateLinkedLibrariesPaths(TargetPlatform Platform, TargetConfiguration Configuration, string Separator = null)
         {
-            if (Separator == null) {
+            if (Separator == null)
+            {
                 Separator = Path.PathSeparator.ToString();
             }
 

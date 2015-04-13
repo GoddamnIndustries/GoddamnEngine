@@ -69,8 +69,8 @@ if not "%VS140ComnTools%" == "" (
 )
 
 rem Setting up debug visualizers for Visual Studio..
-mkdir "%UserProfile%\My Documents\Visual Studio %VSCompilerYear%\Visualizers\" 1>nul 2>nul
-copy /y ".\utilities\Natvis\GoddamnTemplateLibrary.natvis" "%UserProfile%\My Documents\Visual Studio %VSCompilerYear%\Visualizers\" 1>nul 2>nul
+mkdir "%UserProfile%\Documents\Visual Studio %VSCompilerYear%\Visualizers\" 1>nul 2>nul
+copy /y ".\utilities\Natvis\GoddamnTemplateLibrary.natvis" "%UserProfile%\Documents\Visual Studio %VSCompilerYear%\Visualizers\" 1>nul 2>nul
 if %ErrorLevel% == 0 (
 	reg add "HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\%VSCompilerVersion%.0_Config\Debugger" /v "EnableNatvisDiagnostics" /t REG_DWORD /d "00000001" /f 1>nul 2>nul
 	if not %ErrorLevel% == 0 (

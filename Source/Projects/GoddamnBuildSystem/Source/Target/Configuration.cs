@@ -1,7 +1,13 @@
-﻿//! ==========================================================================================
-//! TargetConfiguration.cs - descriptions for configurations.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-//! ==========================================================================================
+﻿// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file TargetConfiguration.cs
+//! Descriptions for configurations.
 
 using System;
 using System.Collections.Generic;
@@ -40,14 +46,19 @@ namespace GoddamnEngine.BuildSystem
         //! @returns The information for specific platform.
         public static TargetConfigurationInfo Get(TargetConfiguration TheConfiguration)
         {
-            if (s_CachedInformation == null) {
+            if (s_CachedInformation == null)
+            {
                 s_CachedInformation = new Dictionary<TargetConfiguration, TargetConfigurationInfo>();
-                foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations()) {
+                foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations())
+                {
                     Type ConfigurationInfoType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(T => T.Name.EndsWith(Configuration + "ConfigurationInfo"));
-                    if (ConfigurationInfoType != null) {
+                    if (ConfigurationInfoType != null)
+                    {
                         TargetConfigurationInfo ConfigurationInfo = (TargetConfigurationInfo)Activator.CreateInstance(ConfigurationInfoType);
                         s_CachedInformation.Add(Configuration, ConfigurationInfo);
-                    } else {
+                    }
+                    else
+                    {
                         throw new BuildSystemException("Not сonfiguration information exists for сonfiguration {0}.", Configuration);
                     }
                 }

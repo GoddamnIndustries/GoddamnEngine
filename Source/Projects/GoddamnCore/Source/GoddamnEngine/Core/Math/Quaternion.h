@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// Quaternion.h: quternion class.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! Quaternion.h: quternion class.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_MATH_QUATERNION
@@ -15,7 +15,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// Generic quaternion class.
+	//! Generic quaternion class.
 	template<typename ElementType>
 	struct Quaternion_t final
 	{
@@ -135,7 +135,7 @@ GD_NAMESPACE_BEGIN
 		}
 	};	// struct Quaternion_t
 
-#if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
+#if (defined(GD_HAS_FLOAT32X4INTRINSICS) && !GD_DOCUMENTATION)
 	template<>
 	struct GD_ALIGN_MSVC(16) Quaternion_t<Float32> final
 	{
@@ -171,9 +171,9 @@ GD_NAMESPACE_BEGIN
 
 	public /* Class API */:
 
-		/// ------------------------------------------------------------------------------------------
-		/// *** EulerRadians ***
-		/// ------------------------------------------------------------------------------------------
+		//! ------------------------------------------------------------------------------------------
+		//! *** EulerRadians ***
+		//! ------------------------------------------------------------------------------------------
 
 		inline Vector3Fast GetEulerRadians() const
 		{
@@ -255,7 +255,7 @@ GD_NAMESPACE_BEGIN
 			return (*this);
 		}
 	} GD_ALIGN_GCC(16);	// Quaternion_t<Float32>
-#endif	// if (defined(GD_HAS_FLOAT32X4INTRINSICS) && (!defined(GD_DOCUMENTATION)))
+#endif	// if (defined(GD_HAS_FLOAT32X4INTRINSICS) && !GD_DOCUMENTATION)
 
 	typedef Quaternion_t<float> Quaternion;
 

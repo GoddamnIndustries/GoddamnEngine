@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// Pair.h - pair structure.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! Pair.h - pair structure.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_TEMPLATES_PAIR
@@ -12,15 +12,15 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// Class key-value objects.
+	//! Class key-value objects.
 	template<typename KeyType, typename ValueType>
-	struct Pair
+	struct Pair : IUncopiable
 	{
 	public:
 		KeyType Key;
 		ValueType Value;
 
-		/// @todo Replace this macros with proper code. Possibly unions.
+		//! @todo Replace this macros with proper code. Possibly unions.
 #define First Key
 #define Second Value
 

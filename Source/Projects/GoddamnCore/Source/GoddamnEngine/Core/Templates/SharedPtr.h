@@ -1,10 +1,10 @@
-/// ==========================================================================================
-/// SharedPtr.h - shared smart pointer interface/implementation.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// 
-/// History:
+//! ==========================================================================================
+//! SharedPtr.h - shared smart pointer interface/implementation.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! 
+//! History:
 ///		* 26.06.2014 - Created by James Jhuighuy
-/// ==========================================================================================
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_CONTAINERS_SHARED_PTR
@@ -13,18 +13,18 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Utility.h>
 #include <GoddamnEngine/Core/Templates/TypeTraits.h>
-#include <GoddamnEngine/Core/Threading/Atomic/Atomic.h>
+#include <GoddamnEngine/Core/Platform/Atomics.h>
 
 GD_NAMESPACE_BEGIN
 
-	/// Describes types of avaliable shared pointers.
+	//! Describes types of avaliable shared pointers.
 	enum SharedPtrType : UInt8
 	{
-		GD_SHARED_PTR_FAST  = 0,	///< Fast, but not thread-safe shared pointer.
-		GD_SHARED_PTR_THREAD_SAFE = 1,	///< Slow, but thread-safe shared pointer.
+		GD_SHARED_PTR_FAST  = 0,	//!< Fast, but not thread-safe shared pointer.
+		GD_SHARED_PTR_THREAD_SAFE = 1,	//!< Slow, but thread-safe shared pointer.
 	};	// enum SharedPtrType	
 
-	template<typename PointerType, SharedPtrType const PtrType = GD_SHARED_PTR_THREAD_SAFE>
+	template<typename PointerType, SharedPtrType const PtrType = GD_SHARED_PTR_FAST>
 	struct SharedPtr;
 
 	template<typename PointerType>
@@ -35,16 +35,16 @@ GD_NAMESPACE_BEGIN
 		UInt32  * ReferenceCount = nullptr;
 
 	public /*Constructors/Destructor*/:
-		/// Initializes shared pointer with raw pointer value.
-		/// Initial reference count is 1.
+		//! Initializes shared pointer with raw pointer value.
+		//! Initial reference count is 1.
 		GDINL SharedPtr(PointerType* const Pointer = nullptr)
 			: Pointer(Pointer)
 			, ReferenceCount(this->Pointer != nullptr ? new UInt32(1) : nullptr)
 		{
 		}
 
-		/// Initializes shared pointer with other shared pointer.
-		/// Reference counter is incremeneted.
+		//! Initializes shared pointer with other shared pointer.
+		//! Reference counter is incremeneted.
 		GDINL SharedPtr(SharedPtr const& Other)
 			: Pointer(Other.Pointer)
 			, ReferenceCount(Other.ReferenceCount)
@@ -53,8 +53,8 @@ GD_NAMESPACE_BEGIN
 				++(*this->ReferenceCount);
 		}
 
-		/// Moves other shared pointer to this object.
-		/// Reference counter is not incremeneted.
+		//! Moves other shared pointer to this object.
+		//! Reference counter is not incremeneted.
 		GDINL SharedPtr(SharedPtr&& Other)
 			: Pointer(Other.Pointer)
 			, ReferenceCount(Other.ReferenceCount)
@@ -63,8 +63,8 @@ GD_NAMESPACE_BEGIN
 			Other.ReferenceCount = nullptr;
 		}
 
-		/// Deinitializes this shared pointer.
-		/// If decremeneted reference counter values is 0, than object would be deallocated.
+		//! Deinitializes this shared pointer.
+		//! If decremeneted reference counter values is 0, than object would be deallocated.
 		GDINL ~SharedPtr()
 		{
 			if (this->ReferenceCount != nullptr)
@@ -76,14 +76,14 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public /*Class API*/:
-		/// Returns native pointer stored in this object.
+		//! Returns native pointer stored in this object.
 		GDINL PointerType* GetPointer() const
 		{
 			return this->Pointer;
 		}
 
-		/// Deletes pointer, stored in this object and assigns it new specified value.
-		/// @returns New specified pointer.
+		//! Deletes pointer, stored in this object and assigns it new specified value.
+		//! @returns New specified pointer.
 		GDINL PointerType* Reset(PointerType* const Pointer)
 		{
 			this->~SharedPtr();
@@ -157,16 +157,16 @@ GD_NAMESPACE_BEGIN
 		Int32 volatile* ReferenceCount = nullptr;
 
 	public /*Constructors/Destructor*/:
-		/// Initializes shared pointer with raw pointer value.
-		/// Initial reference count is 1.
+		//! Initializes shared pointer with raw pointer value.
+		//! Initial reference count is 1.
 		GDINL SharedPtr(PointerType* const Pointer = nullptr)
 			: Pointer(Pointer)
 			, ReferenceCount(new Int32(1))
 		{
 		}
 
-		/// Initializes shared pointer with other shared pointer.
-		/// Reference counter is incremeneted.
+		//! Initializes shared pointer with other shared pointer.
+		//! Reference counter is incremeneted.
 		GDINL SharedPtr(SharedPtr const& Other)
 			: Pointer(Other.Pointer)
 			, ReferenceCount(Other.ReferenceCount)
@@ -175,8 +175,8 @@ GD_NAMESPACE_BEGIN
 				AtomicsIntrinsics::InterlockedIncrement(this->ReferenceCount);
 		}
 
-		/// Moves other shared pointer to this object.
-		/// Reference counter is not incremeneted.
+		//! Moves other shared pointer to this object.
+		//! Reference counter is not incremeneted.
 		GDINL SharedPtr(SharedPtr&& Other)
 			: Pointer(Other.Pointer)
 			, ReferenceCount(Other.ReferenceCount)
@@ -185,8 +185,8 @@ GD_NAMESPACE_BEGIN
 			Other.ReferenceCount = nullptr;
 		}
 
-		/// Deinitializes this shared pointer.
-		/// If decremeneted reference counter values is 0, than object would be deallocated.
+		//! Deinitializes this shared pointer.
+		//! If decremeneted reference counter values is 0, than object would be deallocated.
 		GDINL ~SharedPtr()
 		{
 			if (this->ReferenceCount != nullptr)
@@ -198,14 +198,14 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public /*Class API*/:
-		/// Returns native pointer stored in this object.
+		//! Returns native pointer stored in this object.
 		GDINL PointerType* GetPointer() const
 		{
 			return this->Pointer;
 		}
 
-		/// Deletes pointer, stored in this object and assigns it new specified value.
-		/// @returns New specified pointer.
+		//! Deletes pointer, stored in this object and assigns it new specified value.
+		//! @returns New specified pointer.
 		GDINL PointerType* Reset(PointerType* const Pointer)
 		{
 			this->~SharedPtr();

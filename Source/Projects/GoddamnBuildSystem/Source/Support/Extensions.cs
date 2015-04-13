@@ -1,52 +1,56 @@
-﻿//! ==========================================================================================
-//! Extensions.cs - extensions to .NET standart library.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-//! 
-//! @author Created by James Jhuighuy
-//! ==========================================================================================
+﻿// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file Extensions.cs
+//! Extensions to .NET standart library.
 
 using System;
 using System.Xml;
 
 namespace GoddamnEngine.BuildSystem
 {
- //! Represents extensions to .NET standart library's "Array" class.
- internal static class ArrayExtensions
- {
-  //! Similar to String's "Substring" function.
-  internal static T[] SubArray<T>(this T[] Data, int Index, int Length = -1)
-  {
-   Length = (Length > 0) ? Length : (Data.Length - Index);
-   T[] Result = new T[Length];
-   Array.Copy(Data, Index, Result, 0, Length);
+    //! @brief Represents extensions to .NET standart library's "Array" class.
+    internal static class ArrayExtensions
+    {
+        //! @brief Similar to String's "Substring" function.
+        internal static T[] SubArray<T>(this T[] Data, int Index, int Length = -1)
+        {
+            Length = (Length > 0) ? Length : (Data.Length - Index);
+            T[] Result = new T[Length];
+            Array.Copy(Data, Index, Result, 0, Length);
 
-   return Result;
-  }
+            return Result;
+        }
 
-  //! Similar to String's "Concat" function.
-  public static T[] Concat<T>(this T[] First, T[] Second)
-  {
-   int OldLength = First.Length;
-   Array.Resize<T>(ref First, First.Length + Second.Length);
-   Array.Copy(Second, 0, First, OldLength, Second.Length);
+        //! @brief Similar to String's "Concat" function.
+        public static T[] Concat<T>(this T[] First, T[] Second)
+        {
+            int OldLength = First.Length;
+            Array.Resize<T>(ref First, First.Length + Second.Length);
+            Array.Copy(Second, 0, First, OldLength, Second.Length);
 
-   return First;
-  }
- }   // class ArrayExtensions
+            return First;
+        }
+    }   // class ArrayExtensions
 
- //! Represents extensions to .NET standart library's "XmlTextWriter" class.
- internal static class XmlTextWriterExtensions
- {
-  //! Adds formatting support for "WriteAttributeString" function.
-  public static void WriteAttributeStringFormat(this XmlTextWriter Writer, string LocalName, string ValueFormat, params object[] ValueArguments)
-  {
-   Writer.WriteAttributeString(LocalName, string.Format(ValueFormat, ValueArguments));
-  }
+    //! @brief Represents extensions to .NET standart library's "XmlTextWriter" class.
+    internal static class XmlTextWriterExtensions
+    {
+        //! @brief Adds formatting support for "WriteAttributeString" function.
+        public static void WriteAttributeStringFormat(this XmlTextWriter Writer, string LocalName, string ValueFormat, params object[] ValueArguments)
+        {
+            Writer.WriteAttributeString(LocalName, string.Format(ValueFormat, ValueArguments));
+        }
 
-  //! Adds formatting support for "WriteElementString" function.
-  public static void WriteElementStringFormat(this XmlTextWriter Writer, string LocalName, string ValueFormat, params object[] ValueArguments)
-  {
-   Writer.WriteElementString(LocalName, string.Format(ValueFormat, ValueArguments));
-  }
- }   // class XmlTextWriterExtensions
+        //! @brief Adds formatting support for "WriteElementString" function.
+        public static void WriteElementStringFormat(this XmlTextWriter Writer, string LocalName, string ValueFormat, params object[] ValueArguments)
+        {
+            Writer.WriteElementString(LocalName, string.Format(ValueFormat, ValueArguments));
+        }
+    }   // class XmlTextWriterExtensions
 }   // namespace GoddamnEngine.BuildSystem

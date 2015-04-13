@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// Singleton.h: Singleton pattern interface.
-/// Copyright (C) Goddamn Industries 2011 - Present. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! Singleton.h: Singleton pattern interface.
+//! Copyright (C) Goddamn Industries 2011 - Present. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_TEMPLATES_SINGLETON
@@ -9,10 +9,9 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/TypeTraits.h>
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
-/// @brief Defines some code required for work of the singleton.
-/// @param SingletonType Type of singleton class.
+//! @brief Defines some code required for work of the singleton.
+//! @param SingletonType Type of singleton class.
 #define GD_SINGLETON_IMPLEMENTATION(SingletonType) \
 	\
 	/** @brief Instance of the singleton. */\
@@ -35,9 +34,9 @@
 		return *__Singleton##SingletonType##Instance; \
 	} \
 
-/// @brief Overrides singleton instance getter function for specified type.
-/// @param SingletonType Required type to be used.
-/// @param SingletonBaseType Base type to be overridden.
+//! @brief Overrides singleton instance getter function for specified type.
+//! @param SingletonType Required type to be used.
+//! @param SingletonBaseType Base type to be overridden.
 #define GD_SINGLETON_OVERRIDE(SingletonType, SingletonBaseType) \
 public: \
 	/** @brief Returns instance of the singleton. */ \
@@ -50,7 +49,7 @@ private: \
 
 GD_NAMESPACE_BEGIN
 
-	/// @brief Singleton class descendants are objects, for which only only one instance required. Than are alternatives to classes
+	//! @brief Singleton class descendants are objects, for which only only one instance required. Than are alternatives to classes
 	///	       with static functions and members. Project coding standards do not recommends using static members, so singletons are 
 	///		   located in code (somewhere above 'main' function). Common usage:
 	///	@code
@@ -59,14 +58,14 @@ GD_NAMESPACE_BEGIN
 	///		{ 
 	///			... 
 	///		};	// class MySingletonClass
-	/// 
+	//! 
 	///		// Somewhere is source file:
 	///		GD_SINGLETON_IMPLEMENTATION(MySingletonClass);
 	///			
 	///		// Usage:
 	///		MySingletonClass::GetInstance().DoSomething(a, b + c, &d);
 	///	@endcode
-	/// @tparam SingletonType Type that should be singleton.
+	//! @tparam SingletonType Type that should be singleton.
 	template<typename SingletonType>
 	class Singleton
 	{	
@@ -74,13 +73,13 @@ GD_NAMESPACE_BEGIN
 		static SingletonType* Instance;
 
 	protected:
-		/// Initializes a singleton.
+		//! Initializes a singleton.
 		GDAPI  Singleton();
 
 	public:
 
-		/// @brief Returns instance of the singleton.
-		/// @returns Instance of the singleton.
+		//! @brief Returns instance of the singleton.
+		//! @returns Instance of the singleton.
 		GDAPI static SingletonType& GetInstance();
 	};	// class Singleton
 

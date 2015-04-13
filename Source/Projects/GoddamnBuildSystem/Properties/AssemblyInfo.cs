@@ -1,6 +1,6 @@
 ﻿//! ==========================================================================================
 //! AssemblyInfo.cs - Build system's assembly information.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
 //! 
 //! @author Created by James Jhuighuy
 //! ==========================================================================================

@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// LockFreeList.h - Lock-free list class.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! LockFreeList.h - Lock-free list class.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_CONTAINERS_LOCKFREE_LOCKFREE
@@ -17,8 +17,8 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// @brief Defines a single node of a single-linked list.
-	/// @note We are using Windows default SList data structure. It seams to be faster than more generic implementations.
+	//! @brief Defines a single node of a single-linked list.
+	//! @note We are using Windows default SList data structure. It seams to be faster than more generic implementations.
 	class LockFreeListBaseNode
 	{
 	private:
@@ -36,10 +36,10 @@ GD_NAMESPACE_BEGIN
 
 	protected:
 
-		/// @brief Node aligned allocation/deallocation operators.
-		/// @todo This should be rewritten: used _aligned_malloc/_aligned_free but not engine's allocator.
-		/// @{
-		GDINL void* operator new(size_t const Size)
+		//! @brief Node aligned allocation/deallocation operators.
+		//! @todo This should be rewritten: used _aligned_malloc/_aligned_free but not engine's allocator.
+		//! @{
+		GDINL void* operator new(SizeTp const Size)
 		{
 			if (Size != 0) {
 				void* const Memory = ::_aligned_malloc(Size, MEMORY_ALLOCATION_ALIGNMENT);
@@ -55,20 +55,20 @@ GD_NAMESPACE_BEGIN
 				::_aligned_free(Memory);
 			}
 		}
-		/// @}
+		//! @}
 
 	public:
-		/// @brief Initializes a tree node.
-		/// @param Element The Element data pointer.
+		//! @brief Initializes a tree node.
+		//! @param Element The Element data pointer.
 		GDINL LockFreeListBaseNode(Handle const Element)
 			: Element(Element)
 		{
 			this->Next = nullptr;
 		}
 
-		/// @brief Returns Element data pointer.
-		/// @returns Element data pointer.
-		/// @{
+		//! @brief Returns Element data pointer.
+		//! @returns Element data pointer.
+		//! @{
 		GDINL CHandle GetElement() const
 		{
 			return this->Element;
@@ -77,13 +77,13 @@ GD_NAMESPACE_BEGIN
 		{
 			return const_cast<Handle>(const_cast<LockFreeListBaseNode const*>(this)->GetElement());
 		}
-		/// @}
+		//! @}
 
 	};	// class LockFreeListBase
 
-	/// @brief Single-linked lock-free list.
-	/// @note We are using Windows default SList data structure. It seams to be faster than more generic implementations.
-	/// @see http://msdn.microsoft.com/en-us/library/windows/desktop/ms686962(v=vs.85).aspx
+	//! @brief Single-linked lock-free list.
+	//! @note We are using Windows default SList data structure. It seams to be faster than more generic implementations.
+	//! @see http://msdn.microsoft.com/en-us/library/windows/desktop/ms686962(v=vs.85).aspx
 	class LockFreeListBase
 	{
 	private:
@@ -93,7 +93,7 @@ GD_NAMESPACE_BEGIN
 		LockFreeListBaseNode* FirstNode = nullptr;
 
 	public:
-		/// @brief Initializes a new Lock-Free List.
+		//! @brief Initializes a new Lock-Free List.
 		GDINL LockFreeListBase()
 		{
 			this->Header = reinterpret_cast<PSLIST_HEADER>(::_aligned_malloc(sizeof(SLIST_HEADER), MEMORY_ALLOCATION_ALIGNMENT));
@@ -101,15 +101,15 @@ GD_NAMESPACE_BEGIN
 			::InitializeSListHead(this->Header);
 		}
 
-		/// @brief Moves other Lock-Free List here.
-		/// @param Other Other list to move here.
+		//! @brief Moves other Lock-Free List here.
+		//! @param Other Other list to move here.
 		GDINL LockFreeListBase(LockFreeListBase&& Other)
 		{
 			GD_NOT_USED(Other);
 			GD_NOT_IMPLEMENTED();
 		}
 
-		/// @brief Deinitializes a Lock-Free List and destroys all internal data.
+		//! @brief Deinitializes a Lock-Free List and destroys all internal data.
 		GDINL ~LockFreeListBase()
 		{
 			this->Clear();
@@ -118,9 +118,9 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		/// @brief Returns pointer on the first node of the list.
-		/// @returns Pointer on the first node of the list.
-		/// @{
+		//! @brief Returns pointer on the first node of the list.
+		//! @returns Pointer on the first node of the list.
+		//! @{
 		GDINL LockFreeListBaseNode const* GetFirstNode() const
 		{
 			//return reinterpret_cast<LockFreeListBaseNode const*>(::RtlFirstEntrySList(this->Header));
@@ -132,25 +132,25 @@ GD_NAMESPACE_BEGIN
 		{
 			return const_cast<LockFreeListBaseNode*>(const_cast<LockFreeListBase const*>(this)->GetFirstNode());
 		}
-		/// @}
+		//! @}
 
 
-		/// @brief Returns number of elements that exist in list.
-		/// @returns Number of elements that exist in list.
-		GDINL size_t GetLength() const
+		//! @brief Returns number of elements that exist in list.
+		//! @returns Number of elements that exist in list.
+		GDINL SizeTp GetLength() const
 		{
-			return static_cast<size_t>(::QueryDepthSList(this->Header));
+			return static_cast<SizeTp>(::QueryDepthSList(this->Header));
 		}
 
-		/// @brief Returns true if this list is empty.
-		/// @returns True if this list is empty, false otherwise.
+		//! @brief Returns true if this list is empty.
+		//! @returns True if this list is empty, false otherwise.
 		GDINL bool IsEmpty() const
 		{
 			return ::QueryDepthSList(this->Header) == 0;
 		}
 
-		/// @brief Inserts the node to the front of the list.
-		/// @param Node Node that would be inserted.
+		//! @brief Inserts the node to the front of the list.
+		//! @param Node Node that would be inserted.
 		GDINL void InsertNodeFirst(LockFreeListBaseNode* const Node)
 		{
 			::MemoryBarrier();
@@ -158,21 +158,21 @@ GD_NAMESPACE_BEGIN
 			::InterlockedPushEntrySList(this->Header, &Node->Entry);
 		}
 		
-		/// @brief Removes last node of the list.
+		//! @brief Removes last node of the list.
 		GDINL void RemoveLastNode()
 		{
 			::InterlockedPopEntrySList(this->Header);
 		}
 
-		/// @brief Destroys all nodes of the list.
+		//! @brief Destroys all nodes of the list.
 		GDINL void Clear()
 		{
 			::InterlockedFlushSList(this->Header);
 		}
 
-		/// @brief Moves other list here.
-		/// @param OtherList list would be moved into current object.
-		/// @returns this.
+		//! @brief Moves other list here.
+		//! @param OtherList list would be moved into current object.
+		//! @returns this.
 		GDINL LockFreeListBase& operator= (LockFreeListBase&& OtherList)
 		{
 			GD_NOT_USED(OtherList);
@@ -184,7 +184,7 @@ GD_NAMESPACE_END
 
 #else	// if GD_PLATFORM_WINDOWS
 
-/// @todo Provide generic implementation of the LockFreeList.
+//! @todo Provide generic implementation of the LockFreeList.
 #	error LockFreeList is not implemented for this platform.
 
 #endif	// if (defined(GD_PLATFORM_WINDOWS))

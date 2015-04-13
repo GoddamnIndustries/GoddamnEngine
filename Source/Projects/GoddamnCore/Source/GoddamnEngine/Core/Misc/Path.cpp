@@ -1,11 +1,11 @@
-/// ==========================================================================================
-/// Path.cpp - Path management utility implementation.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! Path.cpp - Path management utility implementation.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #include <GoddamnEngine/Core/Misc/Path.h>
 
-#if (defined(GD_PLATFORM_WINDOWS))
+#if GD_PLATFORM_WINDOWS
 #	include <Windows.h>
 #endif	// if (defined(GD_PLATFORM_WINDOWS))
 #include <cstdio>
@@ -17,7 +17,7 @@ GD_NAMESPACE_BEGIN
 	GDINT static bool HasExtension(String const& SomePath);
 	GDINT static String GetExtension(String const& SomePath);
 
-	size_t GetLastSlashLocation(String const& SomePath)
+	SizeTp GetLastSlashLocation(String const& SomePath)
 	{
 		for (auto const& Character : Reverse(SomePath)) {
 			if ((Character == Char('\\')) || (Character == Char('/'))) {
@@ -25,25 +25,25 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		return SIZE_MAX;
+		return SizeTpMax;
 	}
 
 	String Path::GetDirectoryName(String const& SomePath)
 	{
-		size_t const LastSlashLocation = GetLastSlashLocation(SomePath);
-		return ((LastSlashLocation != SIZE_MAX) ? SomePath.Substring(0, LastSlashLocation) : SomePath);
+		SizeTp const LastSlashLocation = GetLastSlashLocation(SomePath);
+		return ((LastSlashLocation != SizeTpMax) ? SomePath.Substring(0, LastSlashLocation) : SomePath);
 	}
 		
 	String Path::GetFileName(String const& SomePath)
 	{
-		size_t const LastSlashLocation = GetLastSlashLocation(SomePath);
-		return ((LastSlashLocation != SIZE_MAX) ? SomePath.Substring(LastSlashLocation) : SomePath);
+		SizeTp const LastSlashLocation = GetLastSlashLocation(SomePath);
+		return ((LastSlashLocation != SizeTpMax) ? SomePath.Substring(LastSlashLocation) : SomePath);
 	}
 
 	String Path::GetDirectoryAndFileNameWithoutExtension(String const& SomePath)
 	{
-		size_t const Index = SomePath.ReverseFind('.');
-		if (Index == SIZE_MAX) {
+		SizeTp const Index = SomePath.ReverseFind('.');
+		if (Index == SizeTpMax) {
 			return SomePath;
 		}
 
@@ -65,7 +65,7 @@ GD_NAMESPACE_BEGIN
 	String const& Path::GetTemporaryPath()
 	{
 		String static const TemporaryPath([]() -> Char const* {
-#if (defined(GD_PLATFORM_WINDOWS))
+#if GD_PLATFORM_WINDOWS
 			char static TemporaryPath[MAX_PATH];
 			DWORD const static Result = GetTempPathA(MAX_PATH, &TemporaryPath[0]);
 			GD_ASSERT(Result != 0, "Failed to get temporary directory path");

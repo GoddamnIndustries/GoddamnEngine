@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// Delegate.h - function delegate class.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! Delegate.h - function delegate class.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_TEMPLATES_DELEGATE
@@ -13,60 +13,60 @@
 #include <GoddamnEngine/Core/Templates/UniquePtr.h>
 #include <GoddamnEngine/Core/Templates/TypeTraits.h>
 
-#include <cstdarg>  // For variadic arguments
-
 GD_NAMESPACE_BEGIN
 
+	//! @brief Base class for all invokable objects.
 	struct IDelegate
 	{
-		/// @brief Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
-		/// @param Instance Instance object we are operating on.
-		/// @param ReturnValueOutputPtr Pointer to the methods execution result. Null pointer may be specified for voids.
+	protected:
+		GDINL IDelegate() {}
+		GDINL virtual ~IDelegate() {}
+
+	public:
+
+		//! @brief Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
+		//! @param Instance Instance object we are operating on.
+		//! @param ReturnValueOutputPtr Pointer to the methods execution result. Null pointer may be specified for voids.
 		GDAPI virtual void Invoke(Handle const Instance, Handle const ReturnValueOutputPtr, ...) const abstract;
 	};	// struct IDelegate
 
 	template<typename DelegateSignatureType> 
 	struct Delegate;
 
-	/// @brief Basic template wrapper on delegate pointers. Class is same to @c std::function class with some differences (for member functions).
-	///        When specifying member function it is not required to pass instance type as first params arguments. 
-	///        Invocation operator takes pointer to instance as it`s first argument (Handle type, it is better to make a const_cast for constant objects).
-	///        For pointers to to static functions instance param can take any value (nullptr is preferred).
+	//! @brief Basic template wrapper on delegate pointers. Class is same to @c std::function class with some differences (for member functions).
+	//!        When specifying member function it is not required to pass instance type as first params arguments. 
+	//!        Invocation operator takes pointer to instance as it`s first argument (Handle type, it is better to make a const_cast for constant objects).
+	//!        For pointers to to static functions instance param can take any value (nullptr is preferred).
 	template<typename ReturnType, typename... ArgumentTypes>
 	struct Delegate<ReturnType(ArgumentTypes...)> : public IDelegate
 	{
 	private:		
-		/// @brief A delegate traits base class.
-		struct IDelegateTraitsBase
+		//! @brief A delegate traits base class.
+		struct IDelegateTraitsBase : public IUncopiable
 		{
-		private:
-			GD_CLASS_UNASSIGNABLE(IDelegateTraitsBase);
-			GD_CLASS_UNCOPIABLE(IDelegateTraitsBase);
-
 		protected:
 
-			/// @brief Initializes a new delegate traits.
-			GDINL IDelegateTraitsBase() 
-			{
-			}
+			//! @brief Initializes a new delegate traits.
+			GDINL IDelegateTraitsBase() { }
+			GDINL virtual ~IDelegateTraitsBase() { }
 
 		public:
 
-			/// @brief Clones this object.
-			/// @returns Clone of this object.
+			//! @brief Clones this object.
+			//! @returns Clone of this object.
 			GDINT virtual IDelegateTraitsBase const* Clone() const abstract;
 
-			/// @brief Executes the given operation on a different thread, and waits for the result.
-			/// @param Instance Object we are operating on.
-			/// @param Arguments List of the delegate arguments.
-			/// @return	A result of the delegate execution.
+			//! @brief Executes the given operation on a different thread, and waits for the result.
+			//! @param Instance Object we are operating on.
+			//! @param Arguments List of the delegate arguments.
+			//! @return	A result of the delegate execution.
 			GDINT virtual ReturnType Invoke(Handle const Instance, ArgumentTypes&&... Arguments) const abstract;
 		};	// struct IDelegateTraitsBase
 
 		template<typename DelegateSignatureType> 
 		struct DelegateTraits;
 
-		/// @brief Traits for STATIC DELEGATE.
+		//! @brief Traits for STATIC DELEGATE.
 		template<>
 		struct DelegateTraits<ReturnType(*)(ArgumentTypes...)> final : public IDelegateTraitsBase
 		{
@@ -92,7 +92,7 @@ GD_NAMESPACE_BEGIN
 			}
 		};	// struct DelegateTraits<ReturnType(*)(ArgumentTypes...)>
 
-		/// @brief Traits for MUTABLE MEMBER DELEGATE.
+		//! @brief Traits for MUTABLE MEMBER DELEGATE.
 		template<typename ClassType>
 		struct DelegateTraits<ReturnType(ClassType::*)(ArgumentTypes...)> final : public IDelegateTraitsBase
 		{
@@ -118,7 +118,7 @@ GD_NAMESPACE_BEGIN
 			}
 		};	// struct DelegateTraits<ReturnType(ClassType::*)(ArgumentTypes...)>
 
-		/// @brief Traits for CONSTANT MEMBER DELEGATE.
+		//! @brief Traits for CONSTANT MEMBER DELEGATE.
 		template<typename ClassType>
 		struct DelegateTraits<ReturnType(ClassType::*)(ArgumentTypes...) const> final : public IDelegateTraitsBase
 		{
@@ -148,45 +148,45 @@ GD_NAMESPACE_BEGIN
 		UniquePtr<IDelegateTraitsBase> DelegateTraitsPtr;
 
 	public:
-		/// @todo Rewrite this stuff without using any STL code.
-		template<size_t const Index> 
+		//! @todo Rewrite this stuff without using any STL code.
+		template<SizeTp const Index> 
 		using ArgumentType = typename TupleElement<Index, ArgumentTypes...>::Type;
 		
-		/// @brief Initializes a delegate.
-		/// @param Delegate Pointer to delegate function. 
+		//! @brief Initializes a delegate.
+		//! @param Delegate Pointer to delegate function. 
 		template<typename DelegateSignature>
 		GDINL Delegate(DelegateSignature const& DelegatePtr)
 			: DelegateTraitsPtr(new DelegateTraits<DelegateSignature>(DelegatePtr))
 		{
 		}
 
-		/// @brief Moves other delegate.
-		/// @param Other Other delegate to move.
+		//! @brief Moves other delegate.
+		//! @param Other Other delegate to move.
 		GDINL Delegate(Delegate&& Other)
 			: DelegateTraitsPtr(Move(Other.DelegateTraitsPtr))
 		{
 		}
 
-		/// @brief Copies other delegate.
-		/// @param Other Other delegate to copy.
+		//! @brief Copies other delegate.
+		//! @param Other Other delegate to copy.
 		GDINL Delegate(Delegate const& Other)
 			: DelegateTraitsPtr(Other.DelegateTraitsPtr->Clone())
 		{
 		}
 
-		/// @brief Invokes the delegate.
-		/// @param Instance Object to invoke delegate on. May be null for static function.
-		/// @param ArgumentsList Varied arguments list pointer.
-		/// @returns Invocation result.
-		/// @{
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		//! @brief Invokes the delegate.
+		//! @param Instance Object to invoke delegate on. May be null for static function.
+		//! @param ArgumentsList Varied arguments list pointer.
+		//! @returns Invocation result.
+		//! @{
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 0, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			GD_NOT_USED(ArgumentsList);
 			return (*this)(Instance
 				);
 		}
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 1, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
@@ -194,7 +194,7 @@ GD_NAMESPACE_BEGIN
 				, Forward<ArgumentType<0>>(*Arg0)
 				);
 		}
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 2, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
@@ -204,7 +204,7 @@ GD_NAMESPACE_BEGIN
 				, Forward<ArgumentType<1>>(*Arg1)
 				);
 		}
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 3, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
@@ -216,7 +216,7 @@ GD_NAMESPACE_BEGIN
 				, Forward<ArgumentType<2>>(*Arg2)
 				);
 		}
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 4, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
@@ -230,7 +230,7 @@ GD_NAMESPACE_BEGIN
 				, Forward<ArgumentType<3>>(*Arg3)
 				);
 		}
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 5, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
@@ -246,7 +246,7 @@ GD_NAMESPACE_BEGIN
 				, Forward<ArgumentType<4>>(*Arg4)
 				);
 		}
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 6, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
@@ -264,7 +264,7 @@ GD_NAMESPACE_BEGIN
 				, Forward<ArgumentType<5>>(*Arg5)
 				);
 		}
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 7, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
@@ -284,7 +284,7 @@ GD_NAMESPACE_BEGIN
 				, Forward<ArgumentType<6>>(*Arg6)
 				);
 		}
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 8, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
@@ -306,7 +306,7 @@ GD_NAMESPACE_BEGIN
 				, Forward<ArgumentType<7>>(*Arg7)
 				);
 		}
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 9, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
@@ -330,7 +330,7 @@ GD_NAMESPACE_BEGIN
 				, Forward<ArgumentType<8>>(*Arg8)
 				);
 		}
-		template<size_t const ArgumentsCount = sizeof...(ArgumentTypes)>
+		template<SizeTp const ArgumentsCount = sizeof...(ArgumentTypes)>
 		GDINL typename EnableIf<ArgumentsCount == 10, ReturnType>::Type InvokeVa(Handle const Instance, va_list ArgumentsList) const
 		{
 			auto Arg0 = va_arg(ArgumentsList, typename TypeTraits::RemoveReference<ArgumentType<0>>::Type*);
@@ -357,31 +357,34 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 		static_assert(sizeof...(ArgumentTypes) < 10, "Arguments count is more than maximum implemented.");
-		/// @}
+		//! @}
 
-		/// @brief Invokes delegate and returns it`s return value. 
-		///        If this is a member function then owner object should be passed first into varied function arguments.
-		///        All parameters that are passed by pointers on parameters instances.
-		/// @param Instance Object to invoke delegate on. May be null for static function.
-		/// @param ReturnValueOutputPtr Pointer to function execution result.
-		/// @param ArgumentsList Varied arguments list pointer.
-		/// @{
+		//! @brief Invokes delegate and returns it`s return value. 
+		//!        If this is a member function then owner object should be passed first into varied function arguments.
+		//!        All parameters that are passed by pointers on parameters instances.
+		//! @param Instance Object to invoke delegate on. May be null for static function.
+		//! @param ReturnValueOutputPtr Pointer to function execution result.
+		//! @param ArgumentsList Varied arguments list pointer.
+		//! @{
 		template<typename TheReturnType = ReturnType>
 		GDINL typename EnableIf<TypeTraits::IsSame<TheReturnType, void>::Value>::Type InvokeVa(Handle const Instance, Handle const ReturnValueOutputPtr, va_list ArgumentsList) const
 		{
 			GD_NOT_USED(ReturnValueOutputPtr);
 			this->InvokeVa(Instance, ArgumentsList);
+			return {};
 		}
 		template<typename TheReturnType = ReturnType>
 		GDINL typename DisableIf<TypeTraits::IsSame<TheReturnType, void>::Value>::Type InvokeVa(Handle const Instance, Handle const ReturnValueOutputPtr, va_list ArgumentsList) const
 		{
 			*reinterpret_cast<ReturnType*>(ReturnValueOutputPtr) = Forward<ReturnType>(this->InvokeVa(Instance, ArgumentsList));
+			return {};
 		}
-		/// @}
 
-		/// @brief Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
-		/// @param Instance Object to invoke delegate on. May be null for static function.
-		/// @param ... Invocation arguments.
+		//! @}
+
+		//! @brief Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
+		//! @param Instance Object to invoke delegate on. May be null for static function.
+		//! @param ... Invocation arguments.
 		GDINL virtual void Invoke(Handle const Instance, Handle const ReturnValueOutputPtr, ...) const override final
 		{
 			va_list ArgumentsList;
@@ -392,28 +395,28 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		/// @brief Moves other delegate here.
-		/// @param Other Other delegate.
-		/// @returns Self.
+		//! @brief Moves other delegate here.
+		//! @param Other Other delegate.
+		//! @returns Self.
 		GDINL Delegate& operator= (Delegate&& Other)
 		{
 			this->DelegateTraitsPtr = Move(Other.DelegateTraitsPtr);
 			return *this;
 		}
 
-		/// @brief Copies other delegate here.
-		/// @param Other Other delegate.
-		/// @returns Self.
+		//! @brief Copies other delegate here.
+		//! @param Other Other delegate.
+		//! @returns Self.
 		GDINL Delegate& operator= (Delegate const& Other)
 		{ 
 			this->DelegateTraitsPtr = Other.DelegateTraitsPtr->Clone();
 			return *this; 
 		}
 
-		/// @brief Invokes the delegate.
-		/// @param Instance Object to invoke delegate on. May be null for static function.
-		/// @param Arguments Invocation arguments.
-		/// @returns Result of the invocation.
+		//! @brief Invokes the delegate.
+		//! @param Instance Object to invoke delegate on. May be null for static function.
+		//! @param Arguments Invocation arguments.
+		//! @returns Result of the invocation.
 		GDINL ReturnType operator()(Handle const Instance, ArgumentTypes&&... Arguments) const
 		{ 
 			return this->DelegateTraitsPtr->Invoke(Instance, Forward<ArgumentTypes>(Arguments)...); 

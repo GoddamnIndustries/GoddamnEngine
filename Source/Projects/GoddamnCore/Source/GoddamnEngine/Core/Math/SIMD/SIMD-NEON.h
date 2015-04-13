@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// SIMDRegister-DirectXMath.h: SIMD register intrinsics NEON implementation header.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! SIMDRegister-DirectXMath.h: SIMD register intrinsics NEON implementation header.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_MATH_VECTOR_REGISTER_NEON
@@ -9,28 +9,28 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Math/SIMD/SIMD.h>
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
 #include <arm_neon.h>
 
 GD_NAMESPACE_BEGIN
 
-	/// @brief 4D Vector type stored in single register.
+	//! @brief 4D Vector type stored in single register.
 	typedef GD_ALIGN_MSVC(16) float32x4_t GD_ALIGN_GCC(16) SIMDRegisterNEON;
 
-	/// @brief SIMD register math ARM NEON implementation.
+	//! @brief SIMD register math ARM NEON implementation.
 	class SIMDNEON : public SIMDGeneric<SIMDRegisterNEON>
 	{
 	public:
-		/// @brief Creates a new SIMD register based on four floats.
-		/// @param X First component of the SIMD register.
-		/// @param Y Second component of the SIMD register.
-		/// @param Z Third component of the SIMD register.
-		/// @param W Fourth component of the SIMD register.
-		/// @returns Created vector.
+		//! @brief Creates a new SIMD register based on four floats.
+		//! @param X First component of the SIMD register.
+		//! @param Y Second component of the SIMD register.
+		//! @param Z Third component of the SIMD register.
+		//! @param W Fourth component of the SIMD register.
+		//! @returns Created vector.
 		GDINL static SIMDRegister GD_VECTORCALL Create(Float32 const X, Float32 const Y, Float32 const Z, Float32 const W)
 		{
-			union {
+			union 
+			{
 				SIMDRegister Register;
 				Float32 Values[4];
 			} Wrapper;
@@ -41,15 +41,16 @@ GD_NAMESPACE_BEGIN
 			return Wrapper.Register;
 		}
 
-		/// @brief Creates a new SIMD register based on bitwise equivalent of four integers.
-		/// @param X First component of the SIMD register bitwise value.
-		/// @param Y Second component of the SIMD register bitwise value.
-		/// @param Z Third component of the SIMD register bitwise value.
-		/// @param W Fourth component of the SIMD register bitwise value.
-		/// @returns Created vector.
+		//! @brief Creates a new SIMD register based on bitwise equivalent of four integers.
+		//! @param X First component of the SIMD register bitwise value.
+		//! @param Y Second component of the SIMD register bitwise value.
+		//! @param Z Third component of the SIMD register bitwise value.
+		//! @param W Fourth component of the SIMD register bitwise value.
+		//! @returns Created vector.
 		GDINL static SIMDRegister GD_VECTORCALL CreateInt(UInt32 const X, UInt32 const Y, UInt32 const Z, UInt32 const W)
 		{
-			union {
+			union 
+			{
 				SIMDRegister Register;
 				UInt32 Values[4];
 			} Wrapper;
@@ -60,10 +61,10 @@ GD_NAMESPACE_BEGIN
 			return Wrapper.Register;
 		}
 
-		/// @brief Gets a single component of a vector.
-		/// @param Register Specified register.
-		/// @tparam ElementIndex Specified index of the element.
-		/// @returns Specified single component of a vector.
+		//! @brief Gets a single component of a vector.
+		//! @param Register Specified register.
+		//! @tparam ElementIndex Specified index of the element.
+		//! @returns Specified single component of a vector.
 		template<UInt32 const ElementIndex>
 		GDINL static Float32 GetComponent(SIMDRegister const Register)
 		{
@@ -71,11 +72,11 @@ GD_NAMESPACE_BEGIN
 			return vgetq_lane_f32(Register, ElementIndex);
 		}
 
-		/// @brief Sets a single component of a vector.
-		/// @param Register Specified register.
-		/// @param Value Value of the component to be set.
-		/// @tparam ElementIndex Specified index of the element.
-		/// @returns Modified SIMD register.
+		//! @brief Sets a single component of a vector.
+		//! @param Register Specified register.
+		//! @param Value Value of the component to be set.
+		//! @tparam ElementIndex Specified index of the element.
+		//! @returns Modified SIMD register.
 		template<UInt32 const ElementIndex>
 		GDINL static SIMDRegister SetComponent(SIMDRegister const Register, Float32 const Value)
 		{
@@ -83,15 +84,15 @@ GD_NAMESPACE_BEGIN
 			return vsetq_lane_f32(Value, Register, ElementIndex);
 		}
 
-		/// @brief Creates a vector through selecting two components from each vector via a shuffle mask. 
-		/// @param First First register to shuffle.
-		/// @param Second Second register to shuffle.
-		/// @tparam X Index for which component to use for X (literal 0-3).
-		/// @tparam Y Index for which component to use for Y (literal 0-3).
-		/// @tparam Z Index for which component to use for Z (literal 0-3).
-		/// @tparam W Index for which component to use for W (literal 0-3).
-		/// @returns The shuffled vector.
-		/// @{
+		//! @brief Creates a vector through selecting two components from each vector via a shuffle mask. 
+		//! @param First First register to shuffle.
+		//! @param Second Second register to shuffle.
+		//! @tparam X Index for which component to use for X (literal 0-3).
+		//! @tparam Y Index for which component to use for Y (literal 0-3).
+		//! @tparam Z Index for which component to use for Z (literal 0-3).
+		//! @tparam W Index for which component to use for W (literal 0-3).
+		//! @returns The shuffled vector.
+		//! @{
 #if GD_DEBUG
 		template<UInt32 const X, UInt32 const Y, UInt32 const Z, UInt32 const W>
 		GDINL static SIMDRegister GD_VECTORCALL Shuffle(SIMDRegister const& First, SIMDRegister const& Second)
@@ -118,20 +119,20 @@ GD_NAMESPACE_BEGIN
 			} FirstWrapper, SecondWrapper;
 			FirstWrapper.Register = First;
 			SecondWrapper.Register = SecondWrapper;
-			return Create(FirstWrapper.Values[static_cast<size_t>(X)], FirstWrapper.Values[static_cast<size_t>(Y)], SecondWrapper.Values[static_cast<size_t>(Z)], SecondWrapper.Values[static_cast<size_t>(W)]);
+			return Create(FirstWrapper.Values[static_cast<SizeTp>(X)], FirstWrapper.Values[static_cast<SizeTp>(Y)], SecondWrapper.Values[static_cast<SizeTp>(Z)], SecondWrapper.Values[static_cast<SizeTp>(W)]);
 #endif	// if __has_builtin(__builtin_shufflevector)
 		}
-		/// @todo Create explicit specializations for specific values.
-		/// @}
+		//! @todo Create explicit specializations for specific values.
+		//! @}
 
-		/// @brief Returns swizzling result of all components of a specified vector.
-		/// @param Register Specified register.
-		/// @tparam X Index for which component to use for X (literal 0-3).
-		/// @tparam Y Index for which component to use for Y (literal 0-3).
-		/// @tparam Z Index for which component to use for Z (literal 0-3).
-		/// @tparam W Index for which component to use for W (literal 0-3).
-		/// @returns The swizzled vector.
-		/// @{
+		//! @brief Returns swizzling result of all components of a specified vector.
+		//! @param Register Specified register.
+		//! @tparam X Index for which component to use for X (literal 0-3).
+		//! @tparam Y Index for which component to use for Y (literal 0-3).
+		//! @tparam Z Index for which component to use for Z (literal 0-3).
+		//! @tparam W Index for which component to use for W (literal 0-3).
+		//! @returns The swizzled vector.
+		//! @{
 		template<UInt32 const X, UInt32 const Y, UInt32 const Z, UInt32 const W>
 		GDINL static SIMDRegister GD_VECTORCALL Swizzle(SIMDRegister const Register)
 		{
@@ -142,12 +143,13 @@ GD_NAMESPACE_BEGIN
 #if __has_builtin(__builtin_shufflevector)
 			return __builtin_shufflevector(Register, Register, X, Y, Z, W);
 #else	// if __has_builtin(__builtin_shufflevector)
-			union {
+			union 
+			{
 				SIMDRegister const Register;
 				Float32 Values[4];
 			} Wrapper;
 			Wrapper.Register = Register;
-			return Create(Wrapper.Values[static_cast<size_t>(X)], Wrapper.Values[static_cast<size_t>(Y)], Wrapper.Values[static_cast<size_t>(Z)], Wrapper.Values[static_cast<size_t>(W)]);
+			return Create(Wrapper.Values[static_cast<SizeTp>(X)], Wrapper.Values[static_cast<SizeTp>(Y)], Wrapper.Values[static_cast<SizeTp>(Z)], Wrapper.Values[static_cast<SizeTp>(W)]);
 #endif	// if __has_builtin(__builtin_shufflevector)
 		}
 		template<>
@@ -232,7 +234,8 @@ GD_NAMESPACE_BEGIN
 		template<> 
 		GDINL static SIMDRegister GD_VECTORCALL Swizzle<0, 0, 2, 2>(SIMDRegister const Register) 
 		{ 
-			union {
+			union 
+			{
 				float32x4x2_t Registers;
 				float32x4_t Values[2];
 			} Wrapper;
@@ -242,7 +245,8 @@ GD_NAMESPACE_BEGIN
 		template<> 
 		GDINL static SIMDRegister GD_VECTORCALL Swizzle<1, 1, 3, 3>(SIMDRegister const Register) 
 		{ 
-			union {
+			union 
+			{
 				float32x4x2_t Registers;
 				float32x4_t Values[2];
 			} Wrapper;
@@ -252,7 +256,8 @@ GD_NAMESPACE_BEGIN
 		template<> 
 		GDINL static SIMDRegister GD_VECTORCALL Swizzle<0, 0, 1, 1>(SIMDRegister const Register) 
 		{ 
-			union {
+			union 
+			{
 				float32x4x2_t Registers;
 				float32x4_t Values[2];
 			} Wrapper;
@@ -262,7 +267,8 @@ GD_NAMESPACE_BEGIN
 		template<> 
 		GDINL static SIMDRegister GD_VECTORCALL Swizzle<2, 2, 3, 3>(SIMDRegister const Register) 
 		{ 
-			union {
+			union 
+			{
 				float32x4x2_t Registers;
 				float32x4_t Values[2];
 			} Wrapper;
@@ -272,7 +278,8 @@ GD_NAMESPACE_BEGIN
 		template<> 
 		GDINL static SIMDRegister GD_VECTORCALL Swizzle<0, 2, 0, 2>(SIMDRegister const Register) 
 		{ 
-			union {
+			union 
+			{
 				float32x4x2_t Registers;
 				float32x4_t Values[2];
 			} Wrapper;
@@ -282,7 +289,8 @@ GD_NAMESPACE_BEGIN
 		template<> 
 		GDINL static SIMDRegister GD_VECTORCALL Swizzle<1, 3, 1, 3>(SIMDRegister const Register) 
 		{ 
-			union {
+			union 
+			{
 				float32x4x2_t Registers;
 				float32x4_t Values[2];
 			} Wrapper;
@@ -304,11 +312,11 @@ GD_NAMESPACE_BEGIN
 		{ 
 			return vextq_f32(Register, Register, 3); 
 		}
-		/// @}
+		//! @}
 
-		/// @brief Returns new register with all components assigned with specified component of a specified register.
-		/// @param Register Specified register.
-		/// @tparam ElementIndex Specified index of the element.
+		//! @brief Returns new register with all components assigned with specified component of a specified register.
+		//! @param Register Specified register.
+		//! @tparam ElementIndex Specified index of the element.
 		template<UInt32 const ElementIndex>
 		GDINL static SIMDRegister GD_VECTORCALL Replicate(SIMDRegister const Register)
 		{
@@ -316,80 +324,80 @@ GD_NAMESPACE_BEGIN
 			return vdupq_n_f32(vgetq_lane_f32(Register, ElementIndex));
 		}
 
-		/// @brief Returns component-wise absolute value of the register.
-		/// @param Register Specified register.
-		/// @returns Component-wise negated value of the register.
+		//! @brief Returns component-wise absolute value of the register.
+		//! @param Register Specified register.
+		//! @returns Component-wise negated value of the register.
 		GDINL static SIMDRegister GD_VECTORCALL Abs(SIMDRegister const Register)
 		{
 			return vabsq_f32(Register);
 		}
 
-		/// @brief Returns component-wise negated value of the register.
-		/// @param Register Specified register.
-		/// @returns Component-wise negated value of the register.
+		//! @brief Returns component-wise negated value of the register.
+		//! @param Register Specified register.
+		//! @returns Component-wise negated value of the register.
 		GDINL static SIMDRegister GD_VECTORCALL Negate(SIMDRegister const Register)
 		{
 			return vnegq_f32(Register);
 		}
 
-		/// @brief Performers bitwise OR for two registers.
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @returns Bitwise OR for two registers.
+		//! @brief Performers bitwise OR for two registers.
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @returns Bitwise OR for two registers.
 		GDINL static SIMDRegister GD_VECTORCALL BitwiseOr(SIMDRegister const First, SIMDRegister const Second)
 		{
 			return static_cast<SIMDRegister>(vorrq_u32(static_cast<uint32x4_t>(First), static_cast<uint32x4_t>(Second)));
 		}
 
-		/// @brief Performers bitwise XOR for two registers.
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @returns Bitwise XOR for two registers.
+		//! @brief Performers bitwise XOR for two registers.
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @returns Bitwise XOR for two registers.
 		GDINL static SIMDRegister GD_VECTORCALL BitwiseXor(SIMDRegister const First, SIMDRegister const Second)
 		{
 			return static_cast<SIMDRegister>(veorq_u32(static_cast<uint32x4_t>(First), static_cast<uint32x4_t>(Second)));
 		}
 
-		/// @brief Performers bitwise AND for two registers.
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @returns Bitwise AND for two registers.
+		//! @brief Performers bitwise AND for two registers.
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @returns Bitwise AND for two registers.
 		GDINL static SIMDRegister GD_VECTORCALL BitwiseAnd(SIMDRegister const First, SIMDRegister const Second)
 		{
 			return static_cast<SIMDRegister>(vandq_u32(static_cast<uint32x4_t>(First), static_cast<uint32x4_t>(Second)));
 		}
 
-		/// @brief Adds two registers and returns a result.
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @returns Per-component sum of two registers.
+		//! @brief Adds two registers and returns a result.
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @returns Per-component sum of two registers.
 		GDINL static SIMDRegister GD_VECTORCALL Add(SIMDRegister const First, SIMDRegister const Second)
 		{
 			return vaddq_f32(First, Second);
 		}
 
-		/// @brief Subtracts two registers and returns a result.
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @returns Per-component subtraction product of two registers.
+		//! @brief Subtracts two registers and returns a result.
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @returns Per-component subtraction product of two registers.
 		GDINL static SIMDRegister GD_VECTORCALL Sub(SIMDRegister const First, SIMDRegister const Second)
 		{
 			return vsubq_f32(First, Second);
 		}
 
-		/// @brief Multiplies two registers and returns a result.
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @returns Per-component multiplication product of two registers.
+		//! @brief Multiplies two registers and returns a result.
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @returns Per-component multiplication product of two registers.
 		GDINL static SIMDRegister GD_VECTORCALL Mul(SIMDRegister const First, SIMDRegister const Second)
 		{
 			return vmulq_f32(First, Second);
 		}
 
-		/// @brief Divides two registers and returns a result.
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @returns Per-component division product of two registers.
+		//! @brief Divides two registers and returns a result.
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @returns Per-component division product of two registers.
 		GDINL static SIMDRegister GD_VECTORCALL Div(SIMDRegister const First, SIMDRegister const Second)
 		{
 			SIMDRegister Reciprocal = vrecpeq_f32(Second);
@@ -398,10 +406,10 @@ GD_NAMESPACE_BEGIN
 			return vmulq_f32(First, Reciprocal);
 		}
 
-		/// @brief Computes dot product of two SIMD registers, treated as 3D vectors..
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @returns Dot product of two registers.
+		//! @brief Computes dot product of two SIMD registers, treated as 3D vectors..
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @returns Dot product of two registers.
 		GDINL static SIMDRegister GD_VECTORCALL Dot3(SIMDRegister const First, SIMDRegister const Second)
 		{
 			SIMDRegister MulResult = vmulq_f32(First, Second);
@@ -413,10 +421,10 @@ GD_NAMESPACE_BEGIN
 			return vcombine_f32(Temp1, Temp1);
 		}
 
-		/// @brief Computes dot product of two SIMD registers, treated as 4D vectors..
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @returns Dot product of two registers.
+		//! @brief Computes dot product of two SIMD registers, treated as 4D vectors..
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @returns Dot product of two registers.
 		GDINL static SIMDRegister GD_VECTORCALL Dot4(SIMDRegister const First, SIMDRegister const Second)
 		{
 			float32x4_t MulResult = vmulq_f32(First, Second);
@@ -428,10 +436,10 @@ GD_NAMESPACE_BEGIN
 			return vcombine_f32(Temp1, Temp1);
 		}
 
-		/// @brief Computes cross product of two SIMD registers, treated as 3D vectors..
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @returns Cross product of two registers.
+		//! @brief Computes cross product of two SIMD registers, treated as 3D vectors..
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @returns Cross product of two registers.
 		GDINL static SIMDRegister GD_VECTORCALL Cross3(SIMDRegister const First, SIMDRegister const Second)
 		{
 			SIMDRegister Result = Sub(
@@ -441,11 +449,11 @@ GD_NAMESPACE_BEGIN
 			return Result;
 		}
 
-		/// @brief Computes cross product of three SIMD registers, treated as 3D vectors..
-		/// @param First First specified register.
-		/// @param Second Second specified register.
-		/// @param Third Third specified register.
-		/// @returns Cross product of three registers.
+		//! @brief Computes cross product of three SIMD registers, treated as 3D vectors..
+		//! @param First First specified register.
+		//! @param Second Second specified register.
+		//! @param Third Third specified register.
+		//! @returns Cross product of three registers.
 		GDINL static SIMDRegister GD_VECTORCALL Cross4(SIMDRegister const First, SIMDRegister const Second, SIMDRegister const Third)
 		{
 			SIMDRegister const static MaskX = CreateInt(0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000);

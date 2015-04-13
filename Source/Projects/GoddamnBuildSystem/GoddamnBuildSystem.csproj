@@ -87,7 +87,8 @@
   <ItemGroup>
     <Compile Include="Source\BuildSystem.cs" />
     <Compile Include="Source\OtherUtilities\CopyrightVerifier.cs" />
-    <Compile Include="Source\OtherUtilities\ProjectCompiler.cs" />
+    <Compile Include="Source\ProjectCompiler\ProjectCompiler.cs" />
+    <Compile Include="Source\ProjectCompiler\ProjectRebuildOptimizer.cs" />
     <Compile Include="Source\Support\CommandLineUI.cs" />
     <Compile Include="Source\Support\Extensions.cs" />
     <Compile Include="Source\Collectors\Collector.cs" />
@@ -99,10 +100,10 @@
     <Compile Include="Source\Target\Configuration.cs" />
     <Compile Include="Source\Target\Platform.cs" />
     <Compile Include="Source\Target\Toolchain.cs" />
-    <Compile Include="Source\ProjectGenerators\ProjectGenerator.cs" />
+    <Compile Include="Source\ProjectGenerator\ProjectGenerator.cs" />
     <Compile Include="Source\Target\Target.cs" />
-    <Compile Include="Source\ProjectGenerators\VisualStudio.cs" />
-    <Compile Include="Source\ProjectGenerators\XCode.cs" />
+    <Compile Include="Source\ProjectGenerator\VisualStudio.cs" />
+    <Compile Include="Source\ProjectGenerator\XCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\App.config" />

@@ -1,9 +1,13 @@
-﻿//! ==========================================================================================
-//! BuildSystem.cs - GoddamnBuildSystem main source module.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-//! 
-//! @author James Jhuighuy
-//! ==========================================================================================
+﻿// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file BuildSystem.cs
+//! GoddamnBuildSystem main source module.
 
 using System;
 using System.IO;
@@ -18,7 +22,7 @@ namespace GoddamnEngine.BuildSystem
         //! @param Format Format String.
         //! @param Arguments Formatting arguments.
         public BuildSystemException(String Format, params object[] Arguments)
-            : base(String.Format(Format, Arguments)) 
+            : base(String.Format(Format, Arguments))
         {
         }
     }   // class ProjectException
@@ -53,12 +57,16 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Path to GoddamnSDK installation location.
         public static String GetSDKLocation()
         {
-            if (s_SDKPath == null) {
+            if (s_SDKPath == null)
+            {
                 String ExecutableLocation = Environment.CurrentDirectory;
                 String ExecutableShouldBe = Path.Combine("Bin", "ThirdParty");
-                if (ExecutableLocation.EndsWith(ExecutableShouldBe, StringComparison.InvariantCultureIgnoreCase)) {
+                if (ExecutableLocation.EndsWith(ExecutableShouldBe, StringComparison.InvariantCultureIgnoreCase))
+                {
                     s_SDKPath = ExecutableLocation.Substring(0, ExecutableLocation.Length - ExecutableShouldBe.Length - 1);
-                } else {
+                }
+                else
+                {
                     s_SDKPath = @"D:\GoddamnEngine";
                     //throw new BuildSystemException("Unable to determine where build system is located relatively to Goddamn SDK root.");
                 }
@@ -70,16 +78,19 @@ namespace GoddamnEngine.BuildSystem
         //! @brief Application entry point.
         private static void Main(String[] Arguments)
         {
-            try {
+            try
+            {
                 BuildSystemModule ExecutingModule = null;
                 String[] ExecutingModuleArguments = null;
-                if (Arguments.Length > 0) {
+                if (Arguments.Length > 0)
+                {
                     ExecutingModuleArguments = Arguments.SubArray(1);
-                    switch (Arguments[0]) {
+                    switch (Arguments[0])
+                    {
                         case "--generate-project-files":
                             ExecutingModule = new ProjectGenerator.ProjectGeneratorModule();
                             break;
-                        
+
                         case "--compile-project":
                             ExecutingModule = new ProjectCompiler.ProjectCompilerModule();
                             break;
@@ -89,18 +100,24 @@ namespace GoddamnEngine.BuildSystem
 
                         default:
                             ExecutingModuleArguments = Arguments;
-                            goto case "--generate-project-files"; 
+                            goto case "--generate-project-files";
                     }
-                } else {
+                }
+                else
+                {
                     ExecutingModule = new ProjectGenerator.ProjectGeneratorModule();
                     ExecutingModuleArguments = Arguments;
                 }
 
                 Environment.Exit(ExecutingModule.Execute(ExecutingModuleArguments));
-            } catch (BuildSystemException Exception) {
+            }
+            catch (BuildSystemException Exception)
+            {
                 Console.Error.WriteLine("Internal unhanded error was caught while running the Build System:");
                 Console.Error.WriteLine(Exception.Message);
-            } catch (Exception Exception) {
+            }
+            catch (Exception Exception)
+            {
                 Console.Error.WriteLine("Unhanded error was caught while running the Build System:");
                 Console.Error.WriteLine(Exception.ToString());
             }

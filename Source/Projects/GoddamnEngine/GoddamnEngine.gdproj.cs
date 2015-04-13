@@ -1,6 +1,6 @@
 //! ==========================================================================================
 //! GoddamnEngine.gdproj.cs - GoddamnEngine project file.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
 //! 
 //! @author James Jhuighuy
 //! ==========================================================================================

@@ -1,7 +1,13 @@
-﻿//! ==========================================================================================
-//! Solution.cs - represents a solution (set of projects).
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-//! ==========================================================================================
+﻿// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file Solution.cs 
+//! Represents a solution (set of projects).
 
 using System.Collections.Generic;
 using System.IO;
@@ -17,9 +23,11 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Iterator for list of projects in solution.
         public virtual IEnumerable<ProjectCache> EnumerateProjects()
         {
-            foreach (string ProjectFile in Directory.EnumerateFiles(Path.Combine(GetLocation(), "Projects"), "*.gdproj.cs", SearchOption.AllDirectories)) {
+            foreach (string ProjectFile in Directory.EnumerateFiles(Path.Combine(GetLocation(), "Projects"), "*.gdproj.cs", SearchOption.AllDirectories))
+            {
                 ProjectCache Project = ProjectFactory.Create(ProjectFile);
-                if (Project.m_IsSupported) {
+                if (Project.m_IsSupported)
+                {
                     yield return Project;
                 }
             }
@@ -38,7 +46,8 @@ namespace GoddamnEngine.BuildSystem
         public SolutionCache(Solution Solution)
             : base(Solution)
         {
-            if (m_IsSupported) {
+            if (m_IsSupported)
+            {
                 m_CachedProjects = Solution.EnumerateProjects().ToArray();
             }
         }

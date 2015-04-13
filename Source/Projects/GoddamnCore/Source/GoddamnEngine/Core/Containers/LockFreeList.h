@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// LockFreeList.h - Lock-free list class selector.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! LockFreeList.h - Lock-free list class selector.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_CONTAINERS_LOCKFREE
@@ -16,9 +16,9 @@
 
 GD_NAMESPACE_BEGIN
 	
-	/// @brief This type is supposed to be a lock-free list. 
-	/// 	   Because of no multithreading support on target platform standart lists were used instead.
-	/// @tparam ElementType Container element type.
+	//! @brief This type is supposed to be a lock-free list. 
+	//! 	   Because of no multithreading support on target platform standart lists were used instead.
+	//! @tparam ElementType Container element type.
 	template<typename ElementType>
 	using LockFreeList = DoubleLinkedList<ElementType>;
 

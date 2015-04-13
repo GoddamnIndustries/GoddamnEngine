@@ -2,8 +2,11 @@
 // This project is empty for now. 
 //
 
-#include <GoddamnEngine/Include.h>
+//#include <GoddamnEngine/Include.h>
 
-GDAPI void dummy()
+#if !__clang__
+__declspec(dllexport) 
+#endif	// if !__clang__
+void dummy()
 {
 }

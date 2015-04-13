@@ -1,7 +1,13 @@
-﻿//! ==========================================================================================
-//! Collector.cs - Collector class definition.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-//! ==========================================================================================
+﻿// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file Collector.cs
+//! Collector class definition.
 
 using System;
 using System.Collections.Generic;
@@ -30,7 +36,8 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Path directory of this collector.
         public string GetLocation()
         {
-            if (m_Location == null) {
+            if (m_Location == null)
+            {
                 m_Location = Path.GetDirectoryName(GetSource());
             }
 
@@ -41,9 +48,11 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Name of this collector.
         public string GetName()
         {
-            if (m_Name == null) {
+            if (m_Name == null)
+            {
                 m_Name = GetSource();
-                while (!string.IsNullOrEmpty(Path.GetExtension(m_Name))) {
+                while (!string.IsNullOrEmpty(Path.GetExtension(m_Name)))
+                {
                     m_Name = Path.GetFileNameWithoutExtension(m_Name);
                 }
             }
@@ -66,15 +75,20 @@ namespace GoddamnEngine.BuildSystem
         {
             string ObjectPathExtensionless = Path.GetFileNameWithoutExtension(ObjectPath);
             string ObjectPlatform = Path.GetExtension(ObjectPathExtensionless);
-            if (!string.IsNullOrEmpty(ObjectPlatform)) {
+            if (!string.IsNullOrEmpty(ObjectPlatform))
+            {
                 // Checking if platform information is defined and it is of type TargetPlatform.
-                if (ObjectPlatform == string.Concat('.', Platform)) {
+                if (ObjectPlatform == string.Concat('.', Platform))
+                {
                     string LibraryConfiguration = Path.GetExtension(Path.GetFileNameWithoutExtension(ObjectPathExtensionless));
-                    if (!string.IsNullOrEmpty(LibraryConfiguration)) {
+                    if (!string.IsNullOrEmpty(LibraryConfiguration))
+                    {
                         // Checking if platform information is defined and it is of type TargetConfiguration.
                         return LibraryConfiguration == string.Concat('.', Configuration);
                     }
-                } else {
+                }
+                else
+                {
                     // Library filename contains some platform information, but it not matches target platform.
                     return false;
                 }
@@ -107,8 +121,10 @@ namespace GoddamnEngine.BuildSystem
         public CollectorContainer(Func<TargetPlatform, TargetConfiguration, T> Accessor)
         {
             m_Container = new Dictionary<UInt16, T>();
-            foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
-                foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations()) {
+            foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
+            {
+                foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations())
+                {
                     m_Container.Add(CompressPlatformConfiguration(Platform, Configuration), Accessor(Platform, Configuration));
                 }
             }
@@ -141,7 +157,8 @@ namespace GoddamnEngine.BuildSystem
         {
             m_Collector = Collector;
             m_IsSupported = Collector.GetIsSupported();
-            if (m_IsSupported) {
+            if (m_IsSupported)
+            {
                 m_AdditionalCache = new ExpandoObject();
                 m_CachedSource = Collector.GetSource();
                 m_CachedName = Collector.GetName();
@@ -157,26 +174,31 @@ namespace GoddamnEngine.BuildSystem
         where TCollector : Collector
         where TCache : CollectorCache
     {
-        private readonly static Dictionary<string, TCache> s_CachedCache = new Dictionary<string,TCache>();
+        private readonly static Dictionary<string, TCache> s_CachedCache = new Dictionary<string, TCache>();
 
         //! @brief Constructs new collector instance and cached it data.
         //! @param CollectorSourcePath Path so source file of the collector.
         //! @returns Created instance of cached collector data.
         public static TCache Create(string CollectorSourcePath)
         {
-            if (!s_CachedCache.ContainsKey(CollectorSourcePath)) {
+            if (!s_CachedCache.ContainsKey(CollectorSourcePath))
+            {
 
                 TCollector Collector = null;
-                if (CollectorSourcePath != null) {
-                    foreach (Type InternalType in CSharpCompiler.CompileSourceFile(CollectorSourcePath).GetTypes()) {
-                        if (InternalType.IsSubclassOf(typeof(TCollector))) {
+                if (CollectorSourcePath != null)
+                {
+                    foreach (Type InternalType in CSharpCompiler.CompileSourceFile(CollectorSourcePath).GetTypes())
+                    {
+                        if (InternalType.IsSubclassOf(typeof(TCollector)))
+                        {
                             Collector = (TCollector)Activator.CreateInstance(InternalType);
                             break;
                         }
                     }
                 }
 
-                if (Collector == null) {
+                if (Collector == null)
+                {
                     Collector = Activator.CreateInstance<TCollector>();
                 }
 
@@ -186,7 +208,9 @@ namespace GoddamnEngine.BuildSystem
                 s_CachedCache.Add(CollectorSourcePath, Cache);
 
                 return Cache;
-            } else {
+            }
+            else
+            {
                 return s_CachedCache[CollectorSourcePath];
             }
         }

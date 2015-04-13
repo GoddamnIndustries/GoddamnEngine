@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// Vector3Fast.h: Fast floating-point three-dimensional vector class.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! Vector3Fast.h: Fast floating-point three-dimensional vector class.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_MATH_VECTOR3_FAST
@@ -20,9 +20,9 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// Fastest possible Vector3t<Float32> implementation on current platform.
-	/// If possible, uses SSE4 instructions to optimize computing.
-	/// @note This is 16-bytes aligned type. (@c sizeof(Vector3FloatFast) == 16)
+	//! Fastest possible Vector3t<Float32> implementation on current platform.
+	//! If possible, uses SSE4 instructions to optimize computing.
+	//! @note This is 16-bytes aligned type. (@c sizeof(Vector3FloatFast) == 16)
 	typedef GD_VECTOR3_FAST_IMPL Vector3Fast;
 
 GD_NAMESPACE_END

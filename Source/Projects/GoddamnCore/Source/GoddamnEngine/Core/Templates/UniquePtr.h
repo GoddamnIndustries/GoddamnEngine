@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// UniquePtr.h - unique smart pointer interface/implementation.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! UniquePtr.h - unique smart pointer interface/implementation.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_CONTAINERS_UNIQUE_PTR
@@ -12,49 +12,48 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// @brief Stores a pointer on object and provides automatic object deletion on destructor.
-	/// @tparam PointerType Type of the object stored in this object.
+	//! @brief Stores a pointer on object and provides automatic object deletion on destructor.
+	//! @tparam PointerType Type of the object stored in this object.
 	template<typename PointerType>
-	class UniquePtr final
+	class UniquePtr final : IUncopiable
 	{
 	private:
-		GD_CLASS_UNCOPIABLE(UniquePtr);
 		PointerType* Pointer = nullptr;
 
 	public:
 
-		/// @brief Initializes a unique pointer.
-		/// @param Pointer Raw pointer to the object.
+		//! @brief Initializes a unique pointer.
+		//! @param Pointer Raw pointer to the object.
 		GDINL UniquePtr(PointerType* const Pointer = nullptr) 
 			: Pointer(Pointer)
 		{
 		}
 
-		/// @brief Moves other unique pointer to this object.
-		/// @param Other Other unique pointer to move here.
+		//! @brief Moves other unique pointer to this object.
+		//! @param Other Other unique pointer to move here.
 		GDINL UniquePtr(UniquePtr&& Other) 
 			: Pointer(Other.Pointer)
 		{ 
 			Other.Pointer = nullptr;
 		}
 
-		/// @brief Deinitializes a unique pointer and destroys it's value.
+		//! @brief Deinitializes a unique pointer and destroys it's value.
 		GDINL ~UniquePtr()
 		{ 
 			delete this->Pointer; 
 			this->Pointer = nullptr; 
 		}
 
-		/// @brief Returns native pointer stored in this object.
-		/// @returns native pointer stored in this object.
+		//! @brief Returns native pointer stored in this object.
+		//! @returns native pointer stored in this object.
 		GDINL PointerType* GetPointer() const 
 		{ 
 			return this->Pointer; 
 		}
 
-		/// @brief Deletes pointer, stored in this object and assigns it new specified value.
-		/// @param Pointer New pointer to assign.
-		/// @returns New specified pointer.
+		//! @brief Deletes pointer, stored in this object and assigns it new specified value.
+		//! @param Pointer New pointer to assign.
+		//! @returns New specified pointer.
 		GDINL PointerType* Reset(PointerType* const Pointer)
 		{
 			this->~UniquePtr();
@@ -62,8 +61,8 @@ GD_NAMESPACE_BEGIN
 			return this->Pointer;
 		}
 
-		/// @brief Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
-		/// @returns Value of the pointer.
+		//! @brief Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
+		//! @returns Value of the pointer.
 		GDINL PointerType* Release()
 		{
 			PointerType* const Pointer = this->GetPointer();
@@ -73,9 +72,9 @@ GD_NAMESPACE_BEGIN
 
 		GDINL UniquePtr& operator= (UniquePtr const& OtherPtr) = delete;
 
-		/// @brief Assigns other unique pointer here.
-		/// @param Other Other pointer to be assigned.
-		/// @returns Self.
+		//! @brief Assigns other unique pointer here.
+		//! @param Other Other pointer to be assigned.
+		//! @returns Self.
 		GDINL UniquePtr& operator= (UniquePtr&& Other)
 		{
 			if (this != &Other) {
@@ -87,9 +86,9 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		/// @brief Assigns other raw pointer here.
-		/// @param Other Other pointer to be assigned.
-		/// @returns Self.
+		//! @brief Assigns other raw pointer here.
+		//! @param Other Other pointer to be assigned.
+		//! @returns Self.
 		GDINL UniquePtr& operator= (PointerType* const Other)
 		{
 			if (this->Pointer != Other) {
@@ -100,15 +99,15 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		/// @brief References value of the pointer.
-		/// @returns Referenced value of the pointer.
+		//! @brief References value of the pointer.
+		//! @returns Referenced value of the pointer.
 		GDINL PointerType& operator* () const 
 		{ 
 			return *this->Pointer;
 		}
 
-		/// @brief Dereferences value of the pointer.
-		/// @returns Dereferenced value of the pointer.
+		//! @brief Dereferences value of the pointer.
+		//! @returns Dereferenced value of the pointer.
 		GDINL PointerType* operator-> () const 
 		{ 
 			return this->Pointer;
@@ -126,10 +125,9 @@ GD_NAMESPACE_BEGIN
 	};	// class UniquePtr 
 
 	template<typename PointerType>
-	class UniquePtr<PointerType[]> final
+	class UniquePtr<PointerType[]> final : IUncopiable
 	{	
 	private /*Class members*/:
-		GD_CLASS_UNCOPIABLE(UniquePtr);
 		PointerType* Pointer = nullptr;
 
 	public /*Constructors / destructor.*/:
@@ -151,21 +149,21 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public /*Class API*/:
-		/// Returns native pointer stored in this object.
+		//! Returns native pointer stored in this object.
 		GDINL PointerType* GetPointer() const
 		{
 			return this->Pointer;
 		}
 
-		/// Deletes pointer, stored in this object and assigns it new specified value.
-		/// @returns New specified pointer.
+		//! Deletes pointer, stored in this object and assigns it new specified value.
+		//! @returns New specified pointer.
 		GDINL PointerType* Reset(PointerType* const Pointer)
 		{
 			this->~UniquePtr();
 			return (this->Pointer = Pointer);
 		}
 
-		/// Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
+		//! Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
 		GDINL PointerType* Release()
 		{
 			PointerType* const Pointer = this->GetPointer();

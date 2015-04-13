@@ -1,10 +1,10 @@
-/// ==========================================================================================
-/// RefPtr.h - unique reference-contable pointer interface/implementation.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// 
-/// History:
+//! ==========================================================================================
+//! RefPtr.h - unique reference-contable pointer interface/implementation.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! 
+//! History:
 ///		* 13.05.2014 - Created by James Jhuighuy
-/// ==========================================================================================
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_CONTAINERS_REF_PTR
@@ -15,7 +15,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	/// Provides automatic reference counting on object-derived objects.
+	//! Provides automatic reference counting on object-derived objects.
 	template<typename ObjectType>
 	class RefPtr final
 	{
@@ -23,24 +23,24 @@ GD_NAMESPACE_BEGIN
 		ObjectType* Pointer;
 
 	public /* Constructors / Destructors. */:
-		/// Initializes smart pointer with existing object.
-		/// Reference counter is not incremented.
+		//! Initializes smart pointer with existing object.
+		//! Reference counter is not incremented.
 		GDINL RefPtr(ObjectType* const Pointer = nullptr)
 			: Pointer(Pointer)
 		{
 			SafeObtain(this->Pointer);
 		}
 
-		/// Initializes smart pointer with other pointer.
-		/// Reference counter is incremented.
+		//! Initializes smart pointer with other pointer.
+		//! Reference counter is incremented.
 		GDINL RefPtr(RefPtr const& Other)
 			: Pointer(Other.Pointer)
 		{
 			SafeObtain(this->Pointer);
 		}
 
-		/// Moves other smart pointer to this new object.
-		/// Reference counter is not incremented.
+		//! Moves other smart pointer to this new object.
+		//! Reference counter is not incremented.
 		GDINL RefPtr(RefPtr&& Other)
 			: Pointer(Other.Pointer)
 		{
@@ -53,13 +53,13 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public /*Class API*/:
-		/// Returns native pointer stored in this object.
+		//! Returns native pointer stored in this object.
 		GDINL ObjectType* GetPointer() const
 		{
 			return this->Pointer;
 		}
 
-		/// Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
+		//! Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
 		GDINL ObjectType* Release()
 		{
 			ObjectType* Pointer = this->Pointer;
@@ -131,13 +131,13 @@ GD_NAMESPACE_BEGIN
 		}
 	};	// class RefPtr
 
-#if (!defined(GD_DOCUMENTATION))
+#if !GD_DOCUMENTATION
 	template<typename ObjectType, typename ThisObjectType>
 	auto IterateChildObjects(RefPtr<ThisObjectType> const& TheObject) -> decltype(IterateChildObjects<ObjectType>(TheObject.GetPointer()))
 	{	// Returning object wrapped with iteration adapter.
 		return IterateChildObjects<ObjectType>(TheObject.GetPointer());
 	}
-#endif	// if (!defined(GD_DOCUMENTATION))
+#endif	// if !GD_DOCUMENTATION
 
 GD_NAMESPACE_END
 

@@ -1,7 +1,7 @@
-/// ==========================================================================================
-/// Misc.h: miscellaneous math functions.
-/// Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-/// ==========================================================================================
+//! ==========================================================================================
+//! Misc.h: miscellaneous math functions.
+//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! ==========================================================================================
 
 #pragma once
 #ifndef GD_CORE_MATH_MISC
@@ -9,11 +9,10 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/TypeTraits.h>
-#include <GoddamnEngine/Core/Diagnostics/Assertion/Assertion.h>
 
 GD_NAMESPACE_BEGIN
 
-	/// Contains miscellaneous math functions.
+	//! Contains miscellaneous math functions.
 	namespace MathMisc
 	{
 		template<typename ElementType>

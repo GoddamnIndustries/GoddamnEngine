@@ -1,9 +1,13 @@
-﻿//! ==========================================================================================
-//! TargetConfiguration.cs - descriptions for platforms.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-//! 
-//! @author James Jhuighuy
-//! ==========================================================================================
+﻿// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file TargetConfiguration.cs
+//! Descriptions for platforms.
 
 using System;
 using System.Collections.Generic;
@@ -22,7 +26,7 @@ namespace GoddamnEngine.BuildSystem
         WindowsRT,
         WindowsStore,
         WindowsPhone,
-        XBoxOne,
+        XboxOne,
         OSX,
         iOS,
         PlayStation4,
@@ -55,8 +59,10 @@ namespace GoddamnEngine.BuildSystem
         //! @returns A strigified include paths.
         public string GenerateStandartIncludePaths(string Separator = null)
         {
-            if (m_StandartHeadersPathes != null) {
-                if (Separator == null) {
+            if (m_StandartHeadersPathes != null)
+            {
+                if (Separator == null)
+                {
                     Separator = Path.PathSeparator.ToString();
                 }
 
@@ -76,8 +82,10 @@ namespace GoddamnEngine.BuildSystem
         //! @returns A strigified list of macros.
         public string GenerateStandartMacrosList(string Separator = null)
         {
-            if (m_StandartMacros != null) {
-                if (Separator == null) {
+            if (m_StandartMacros != null)
+            {
+                if (Separator == null)
+                {
                     Separator = Path.PathSeparator.ToString();
                 }
 
@@ -97,8 +105,10 @@ namespace GoddamnEngine.BuildSystem
         //! @returns A strigified list of linked libraries paths.
         public string GenerateStandartLinkedLibrariesPaths(string Separator = null)
         {
-            if (m_StandartLibraries != null) {
-                if (Separator == null) {
+            if (m_StandartLibraries != null)
+            {
+                if (Separator == null)
+                {
                     Separator = Path.PathSeparator.ToString();
                 }
 
@@ -120,14 +130,19 @@ namespace GoddamnEngine.BuildSystem
         //! @returns The information for specific platform.
         public static TargetPlatformInfo Get(TargetPlatform ThePlatform)
         {
-            if (s_CachedInformation == null) {
+            if (s_CachedInformation == null)
+            {
                 s_CachedInformation = new Dictionary<TargetPlatform, TargetPlatformInfo>();
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms()) {
+                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
+                {
                     Type PlatformInfoType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(T => T.Name.EndsWith(Platform + "PlatformInfo"));
-                    if (PlatformInfoType != null) {
+                    if (PlatformInfoType != null)
+                    {
                         TargetPlatformInfo PlatformInfo = (TargetPlatformInfo)Activator.CreateInstance(PlatformInfoType);
                         s_CachedInformation.Add(Platform, PlatformInfo);
-                    } else {
+                    }
+                    else
+                    {
                         throw new BuildSystemException("Not platform information exists for platform {0}.", Platform);
                     }
                 }
@@ -146,7 +161,7 @@ namespace GoddamnEngine.BuildSystem
             m_HumanReadableName = "Windows (x64)";
             m_StandartHeadersPathes = null;
             m_CompilerPath = "cl.exe";
-            m_StandartLibraries = new string[] { "winmm.lib", "imm32.lib", "version.lib" };
+            m_StandartLibraries = new string[] { "winmm.lib", "imm32.lib", "version.lib", "Dwmapi.lib" };
             m_RequiresExceptions = true;
             m_RequiresRTTI = false;
         }
@@ -166,20 +181,29 @@ namespace GoddamnEngine.BuildSystem
             var Emscripten64Key = Microsoft.Win32.RegistryKey
                 .OpenBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, Microsoft.Win32.RegistryView.Registry64)
                 .OpenSubKey("Software\\Emscripten64");
-            if (Emscripten64Key != null) {
+            if (Emscripten64Key != null)
+            {
                 string Emscripten64SDKLocation = (string)Emscripten64Key.GetValue("Install_Dir");
                 string Emscripten64LatestVersion = Directory.EnumerateDirectories(Path.Combine(Emscripten64SDKLocation, "emscripten")).LastOrDefault();
-                if (Emscripten64LatestVersion != null) {
+                if (Emscripten64LatestVersion != null)
+                {
                     m_IsSDKInstalled = true;
                     EmscriptenSDKPath = Emscripten64LatestVersion;
-                } else {
+                }
+                else
+                {
                     throw new BuildSystemException("Something is wrong in Emscripten SDK installation path. Try to reinstall Emscripten.");
                 }
-            } else {
+            }
+            else
+            {
                 string EmscriptenVar = Environment.GetEnvironmentVariable("EMSCRIPTEN");
-                if (EmscriptenVar != null) {
+                if (EmscriptenVar != null)
+                {
                     EmscriptenSDKPath = EmscriptenVar;
-                } else {
+                }
+                else
+                {
                     m_IsSDKInstalled = false;
                 }
             }

@@ -1,7 +1,13 @@
-﻿//! ==========================================================================================
-//! Dependency.cs - project's dependency class.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-//! ==========================================================================================
+﻿// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @brief Dependency.cs
+//! Project's dependency class.
 
 using System;
 using System.Collections.Generic;
@@ -19,9 +25,12 @@ namespace GoddamnEngine.BuildSystem
         public virtual IEnumerable<string> EnumerateHeaderDirectories()
         {
             string StandartIncludePath = Path.Combine(GetLocation(), "include");
-            if (Directory.Exists(StandartIncludePath)) {
+            if (Directory.Exists(StandartIncludePath))
+            {
                 yield return StandartIncludePath;
-            } else {
+            }
+            else
+            {
                 throw new BuildSystemException("No include directories for dependencies {0} were found.", GetName());
             }
         }
@@ -33,11 +42,15 @@ namespace GoddamnEngine.BuildSystem
         public virtual IEnumerable<string> EnumerateCopyFiles(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(Platform != TargetPlatform.Unknown);
-            if (Target.IsDesktopPlatform(Platform)) {
-                foreach (string CopyFile in Directory.EnumerateFiles(GetLocation())) {
+            if (Target.IsDesktopPlatform(Platform))
+            {
+                foreach (string CopyFile in Directory.EnumerateFiles(GetLocation()))
+                {
                     string CopyFileExtension = Path.GetExtension(CopyFile).ToLowerInvariant();
-                    if (Target.IsWinAPIPlatform(Platform)) {
-                        if (CopyFileExtension == ".dll") {
+                    if (Target.IsWinAPIPlatform(Platform))
+                    {
+                        if (CopyFileExtension == ".dll")
+                        {
                             yield return CopyFile;
                         }
                     }
@@ -52,34 +65,51 @@ namespace GoddamnEngine.BuildSystem
         public virtual IEnumerable<string> EnumerateLinkedLibraries(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             Debug.Assert(Platform != TargetPlatform.Unknown);
-            foreach (string LibraryFile in Directory.EnumerateFiles(this.GetLocation())) {
+            foreach (string LibraryFile in Directory.EnumerateFiles(this.GetLocation()))
+            {
                 string LibraryFileExtension = Path.GetExtension(LibraryFile).ToLowerInvariant();
-                if (Target.IsWebPlatform(Platform)) {
-                    if (LibraryFileExtension == ".bc") {
-                        if (Collector.MatchesPlatformConfiguration(LibraryFile, Platform, Configuration)) {
+                if (Target.IsWebPlatform(Platform))
+                {
+                    if (LibraryFileExtension == ".bc")
+                    {
+                        if (Collector.MatchesPlatformConfiguration(LibraryFile, Platform, Configuration))
+                        {
                             yield return LibraryFile;
                         }
                     }
-                } else if (Target.IsWinAPIPlatform(Platform)) {
-                    if (LibraryFileExtension == ".lib") {
-                        if (Collector.MatchesPlatformConfiguration(LibraryFile, Platform, Configuration)) {
+                }
+                else if (Target.IsWinAPIPlatform(Platform))
+                {
+                    if (LibraryFileExtension == ".lib")
+                    {
+                        if (Collector.MatchesPlatformConfiguration(LibraryFile, Platform, Configuration))
+                        {
                             yield return LibraryFile;
                         }
                     }
-                } else if (Target.IsPosixPlatform(Platform)) {
-                    if ((LibraryFileExtension == ".a") || (LibraryFileExtension == ".so")) {
-                        if (Collector.MatchesPlatformConfiguration(LibraryFile, Platform, Configuration)) {
+                }
+                else if (Target.IsPosixPlatform(Platform))
+                {
+                    if ((LibraryFileExtension == ".a") || (LibraryFileExtension == ".so"))
+                    {
+                        if (Collector.MatchesPlatformConfiguration(LibraryFile, Platform, Configuration))
+                        {
                             yield return LibraryFile;
                         }
                     }
-                } else {
+                }
+                else
+                {
                     throw new NotImplementedException();
                 }
             }
 
-            if (Target.IsCocoaPlatform(Platform)) {
-                foreach (string FrameworkPackage in Directory.EnumerateDirectories(this.GetLocation(), "*.framework")) {
-                    if (Collector.MatchesPlatformConfiguration(FrameworkPackage, Platform, Configuration)) {
+            if (Target.IsCocoaPlatform(Platform))
+            {
+                foreach (string FrameworkPackage in Directory.EnumerateDirectories(this.GetLocation(), "*.framework"))
+                {
+                    if (Collector.MatchesPlatformConfiguration(FrameworkPackage, Platform, Configuration))
+                    {
                         yield return FrameworkPackage;
                     }
                 }
@@ -96,18 +126,22 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Project caches that is used in this dependency.
         public virtual ProjectCache GetProject()
         {
-            if (m_Project == null) {
+            if (m_Project == null)
+            {
                 string ProjectSource = Path.Combine(GetLocation(), GetName()) + ".gdproj.cs";
-                if (File.Exists(ProjectSource)) {
+                if (File.Exists(ProjectSource))
+                {
                     m_Project = ProjectFactory.Create(ProjectSource);
-                } else {
+                }
+                else
+                {
                     throw new BuildSystemException("Corresponding \"{0}\" project source file was not found.", ProjectSource);
                 }
             }
 
             return m_Project;
         }
-        
+
         //! @brief Collects list of directories that contain header files.
         //! @returns Iterator for list of header files.
         public sealed override IEnumerable<string> EnumerateHeaderDirectories()
@@ -121,7 +155,8 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Iterator for list of files that should be copied to project build output directory.
         public sealed override IEnumerable<string> EnumerateCopyFiles(TargetPlatform Platform, TargetConfiguration Configuration)
         {
-            if (GetProject().m_CachedBuildTypes[Platform, Configuration] == ProjectBuildType.DynamicLibrary) {
+            if (GetProject().m_CachedBuildTypes[Platform, Configuration] == ProjectBuildType.DynamicLibrary)
+            {
                 yield return GetProject().m_CachedOutputPaths[Platform, Configuration];
             }
         }
@@ -132,10 +167,15 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Iterator for list of libraries that should be linked with project build file.
         public sealed override IEnumerable<string> EnumerateLinkedLibraries(TargetPlatform Platform, TargetConfiguration Configuration)
         {
-            if (Target.IsWinAPIPlatform(Platform)) {
+            if (Target.IsWinAPIPlatform(Platform))
+            {
                 yield return GetProject().m_CachedImportLibraryOutputPaths[Platform, Configuration];
-            } else {
-                if (GetProject().m_CachedBuildTypes[Platform, Configuration] == ProjectBuildType.DynamicLibrary) {
+            }
+            else
+            {
+                if ((GetProject().m_CachedBuildTypes[Platform, Configuration] == ProjectBuildType.DynamicLibrary)
+                    || (GetProject().m_CachedBuildTypes[Platform, Configuration] == ProjectBuildType.StaticLibrary))
+                {
                     yield return GetProject().m_CachedOutputPaths[Platform, Configuration];
                 }
             }
@@ -155,7 +195,8 @@ namespace GoddamnEngine.BuildSystem
         public DependencyCache(Dependency Dependency)
             : base(Dependency)
         {
-            if (m_IsSupported) {
+            if (m_IsSupported)
+            {
                 m_CachedHeaderDirectories = Dependency.EnumerateHeaderDirectories().ToArray();
                 m_CachedCopyFiles = new CollectorContainer<string[]>((TargetPlatform P, TargetConfiguration C) => Dependency.EnumerateCopyFiles(P, C).ToArray());
                 m_CachedLinkedLibraries = new CollectorContainer<string[]>((TargetPlatform P, TargetConfiguration C) => Dependency.EnumerateLinkedLibraries(P, C).ToArray());
@@ -175,12 +216,16 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Cached dependency for GoddamnCore project.
         public static DependencyCache GetGoddamnCoreDependency()
         {
-            if (s_GoddamnCoreDependency == null) {
+            if (s_GoddamnCoreDependency == null)
+            {
                 string GoddamnCoreDependencyPath = Path.Combine(BuildSystem.GetSDKLocation(), "Source", "Projects", "GoddamnCore", "GoddamnCore.gddep.cs");
-                if (File.Exists(GoddamnCoreDependencyPath)) {
+                if (File.Exists(GoddamnCoreDependencyPath))
+                {
                     s_GoddamnCoreDependency = Create(GoddamnCoreDependencyPath);
                     Debug.Assert(s_GoddamnCoreDependency.m_Collector is ProjectDependency);
-                } else {
+                }
+                else
+                {
                     throw new BuildSystemException("GoddamnCore dependency was not found at \"{0}\".", GoddamnCoreDependencyPath);
                 }
             }
@@ -192,12 +237,16 @@ namespace GoddamnEngine.BuildSystem
         //! @returns Cached dependency for GoddamnEngine project.
         public static DependencyCache GetGoddamnEngineDependency()
         {
-            if (s_GoddamnEngineDependency == null) {
+            if (s_GoddamnEngineDependency == null)
+            {
                 string GoddamnEngineDependencyPath = Path.Combine(BuildSystem.GetSDKLocation(), "Source", "Projects", "GoddamnEngine", "GoddamnEngine.gddep.cs");
-                if (File.Exists(GoddamnEngineDependencyPath)) {
+                if (File.Exists(GoddamnEngineDependencyPath))
+                {
                     s_GoddamnEngineDependency = Create(GoddamnEngineDependencyPath);
                     Debug.Assert(s_GoddamnEngineDependency.m_Collector is ProjectDependency);
-                } else {
+                }
+                else
+                {
                     throw new BuildSystemException("GoddamnEngine dependency was not found at \"{0}\".", GoddamnEngineDependencyPath);
                 }
             }
