@@ -9,6 +9,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Containers/Vector.h>
 
 GD_NAMESPACE_BEGIN
 	

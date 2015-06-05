@@ -15,7 +15,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Three-dimensional vector class.
+	//! Three-dimensional vector class.
 	//! @code
 	//!  Y ^  > Z
 	//!    | / 
@@ -42,7 +42,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes a 2D vector with value {X:0, Y:0, Z:0}.
+		//! Initializes a 2D vector with value {X:0, Y:0, Z:0}.
 		GDINL explicit Vector3t()
 			: _0(static_cast<ElementType>(0))
 			, _1(static_cast<ElementType>(0))
@@ -50,7 +50,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 3D vector.
+		//! Initializes a 3D vector.
 		//! @param Vector3Value Value of the all coordinates of the vector.
 		GDINL explicit Vector3t(ElementTypeConstRef const Vector3Value)
 			: _0(Vector3Value)
@@ -59,7 +59,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 3D vector.
+		//! Initializes a 3D vector.
 		//! @param Vector3Value0 Value of the first coordinate of the vector.
 		//! @param Vector3Value1 Value of the second coordinate of the vector.
 		//! @param Vector3Value2 Value of the third coordinate of the vector.
@@ -70,7 +70,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 3D vector.
+		//! Initializes a 3D vector.
 		//! @param Vector3Value0 Value of the first coordinate of the vector.
 		//! @param Vector3Value12 Value of the second and third coordinates of the vector.
 		GDINL Vector3t(ElementTypeConstRef const Vector3Value0, Vector2t<ElementType> const& Vector3Value12)
@@ -80,7 +80,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 3D vector. Third coordinate is set to 0.
+		//! Initializes a 3D vector. Third coordinate is set to 0.
 		//! @param Vector3Value01 Value of the first two coordinates of the vector.
 		GDINL Vector3t(Vector2t<ElementType> const& Vector3Value01)
 			: _0(Vector3Value01._0)
@@ -89,7 +89,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 3D vector.
+		//! Initializes a 3D vector.
 		//! @param Vector3Value01 Value of the first two coordinates of the vector.
 		//! @param Vector3Value2 Value of the third coordinate of the vector.
 		GDINL Vector3t(Vector2t<ElementType> const& Vector3Value01, ElementTypeConstRef const Vector3Value2)
@@ -101,7 +101,7 @@ GD_NAMESPACE_BEGIN
 
 	public /* Class API */:
 
-		//! @brief Computes dot product of two vectors.
+		//! Computes dot product of two vectors.
 		//! @returns Dot product of two vectors.
 		GDINL ElementType Dot(Vector3t const& Other) const
 		{

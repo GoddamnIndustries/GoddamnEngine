@@ -16,6 +16,7 @@ using System.Reflection;
 
 namespace GoddamnEngine.BuildSystem.ProjectGenerator
 {
+    // ------------------------------------------------------------------------------------------
     //! List of supported target make systems.
     public enum ProjectGenerators : byte
     {
@@ -25,42 +26,48 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         XCode,
     }   //enum TargetBuildSystem
 
-    //! @brief Represents a project generation algorithm interface.
+    // ------------------------------------------------------------------------------------------
+    //! Represents a project generation algorithm interface.
     public abstract class ProjectGenerator
     {
-        //! @brief Checks if specified platform is natively supported by IDE.
+        // ------------------------------------------------------------------------------------------
+        //! Checks if specified platform is natively supported by IDE.
         //! @param Platform Some platform.
         public virtual bool IsPlatformNativelySupported(TargetPlatform Platform)
         {
             return false;
         }
 
-        //! @brief Generates project files for specified project.
+        // ------------------------------------------------------------------------------------------
+        //! Generates project files for specified project.
         //! @param Project Parsed project object.
         //! @returns Path to main project file.
         public virtual string GenerateProjectFiles(ProjectCache Project)
         {
-            string ProjectDirectoryPath = Path.Combine(Project.m_CachedLocation, "Build");
+            var ProjectDirectoryPath = Path.Combine(Project.CachedLocation, "Build");
             Directory.CreateDirectory(ProjectDirectoryPath);
 
             return ProjectDirectoryPath;
         }
 
-        //! @brief Generates solution files for specified solution.
+        // ------------------------------------------------------------------------------------------
+        //! Generates solution files for specified solution.
         //! @param Solution Parsed solution object.
         //! @returns Path to main project file.
         public virtual string GenerateSolutionFiles(SolutionCache Solution)
         {
-            string SolutionDirectoryPath = Path.Combine(Solution.m_CachedLocation, "Build");
+            var SolutionDirectoryPath = Path.Combine(Solution.CachedLocation, "Build");
             Directory.CreateDirectory(SolutionDirectoryPath);
 
             return SolutionDirectoryPath;
         }
     }   // class TargetProjectGenerator
 
-    //! @brief Represents a factory of IDE project files generator.
+    // ------------------------------------------------------------------------------------------
+    //! Represents a factory of IDE project files generator.
     public static class ProjectGeneratorFactory
     {
+        // ------------------------------------------------------------------------------------------
         //! Constructs new IDE project files generator instance.
         public static ProjectGenerator Create()
         {
@@ -80,7 +87,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                     throw new BuildSystemException("Unable to determine IDE for this platform");
             }
 
-            Type ProjectGeneratorType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(T => T.Name.EndsWith(ProjectGenerator + "ProjectGenerator"));
+            var ProjectGeneratorType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(T => T.Name.EndsWith(ProjectGenerator + "ProjectGenerator"));
             if (ProjectGeneratorType == null)
             {
                 throw new BuildSystemException("No generator for {0} IDE exists.", ProjectGenerator);
@@ -90,6 +97,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         }
     }   // class TargetProjectGeneratorFactory
 
+    // ------------------------------------------------------------------------------------------
     //! Represents an exception, thrown by ProjectGenerator code.
     [Serializable]
     public sealed class ProjectGeneratorException : BuildSystemException
@@ -103,30 +111,29 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         }
     }   // class ProjectGeneratorException
 
+    // ------------------------------------------------------------------------------------------
     //! Project file generation module.
     [BuildSystemModule("--generate-project")]
     public sealed class ProjectGeneratorModule : BuildSystemModule
     {
+        // ------------------------------------------------------------------------------------------
         //! Generates project files.
-        public sealed override int Execute(string[] Arguments)
+        public override int Execute(string[] Arguments)
         {
             try
             {
-                ProjectGenerator ProjectGenerator = ProjectGeneratorFactory.Create();
-                SolutionCache Solution = SolutionFactory.Create(Arguments.Length > 0
+                var ProjectGenerator = ProjectGeneratorFactory.Create();
+                var Solution = SolutionFactory.Create(Arguments.Length > 0
                     ? Arguments[0]
                     : Path.Combine(BuildSystem.GetSDKLocation(), "source", "GoddamnEngine.gdsln.cs")
                 );
 
-                foreach (ProjectCache Project in Solution.m_CachedProjects)
+                foreach (var Project in Solution.CachedProjects.Where(Project => !Project.IsBuildTool))
                 {
-                    if (!Project.m_IsBuildTool)
-                    {
-                        Project.m_GeneratorOutputPath = ProjectGenerator.GenerateProjectFiles(Project);
-                    }
+                    Project.GeneratorOutputPath = ProjectGenerator.GenerateProjectFiles(Project);
                 }
 
-                Solution.m_GeneratedSolutionPath = ProjectGenerator.GenerateSolutionFiles(Solution);
+                Solution.GeneratedSolutionPath = ProjectGenerator.GenerateSolutionFiles(Solution);
                 return 0;
             }
             catch (ProjectGeneratorException Exception)

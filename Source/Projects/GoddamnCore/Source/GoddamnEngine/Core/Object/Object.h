@@ -11,11 +11,10 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Object/Reflection.h>
 
 GD_NAMESPACE_BEGIN
 	
-	struct ObjectFlags
+	/*struct ObjectFlags
 	{
 		typedef UInt32 Type;
 	};	// struct ObjectFlags
@@ -52,6 +51,6 @@ GD_NAMESPACE_BEGIN
 
 	$end;	// $interface Object
 
-	enum ObjectStats : SizeTp { ObjectStatsSizeof = sizeof(Object) };
+	enum ObjectStats : SizeTp { ObjectStatsSizeof = sizeof(Object) };*/
 
 GD_NAMESPACE_END

@@ -17,7 +17,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Represents mutable sequence of characters.
+	//! Represents mutable sequence of characters.
 	//! @tparam CharType Character type of this string.
 	template<typename CharType>
 	class BaseStringBuilder final : public IContainer
@@ -29,25 +29,25 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes empty string builder.
+		//! Initializes empty string builder.
 		GDINL BaseStringBuilder()
 		{
 			this->Container.InsertLast(GD_LITERAL(CharType, '\0'));
 		}
 
-		//! @brief Moves other string builder into this string builder.
+		//! Moves other string builder into this string builder.
 		//! @param Other Other string builder to move into this.
 		GDINL BaseStringBuilder(BaseStringBuilder&& Other)
 			: Container(Move(Other.Container))
 		{
 		}
 
-		//! @brief Deinitializes a string builder.
+		//! Deinitializes a string builder.
 		GDINL ~BaseStringBuilder()
 		{
 		}
 
-		//! @brief Returns pointer on this string builder.
+		//! Returns pointer on this string builder.
 		//! @returns C-String version of this object.
 		//! @{
 		GDINL CharType const* CStr() const
@@ -60,42 +60,42 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns length of this string builder.
+		//! Returns length of this string builder.
 		//! @returns Size of this string builder.
 		GDINL SizeTp GetLength() const
 		{
 			return this->Container.GetLength() - 1;
 		}
 
-		//! @brief Returns number of characters that can be placed into string builder without reallocation.
+		//! Returns number of characters that can be placed into string builder without reallocation.
 		//! @returns Number of characters that can be placed into string builder without reallocation.
 		GDINL SizeTp GetCapacity() const
 		{
 			return this->Container.GetCapacity();
 		}
 
-		//! @brief Returns true if this string builder is empty.
+		//! Returns true if this string builder is empty.
 		//! @returns True if this string builder is empty, false otherwise.
 		GDINL bool IsEmpty() const
 		{
 			return this->GetLength() == 0;
 		}
 
-		//! @brief Resizes string builder to make it able to contain specified number of characters.
+		//! Resizes string builder to make it able to contain specified number of characters.
 		//! @param NewLength New required length of the string.
 		GDINL void Resize(SizeTp const NewLength)
 		{
 			this->Container.Resize(NewLength + 1);
 		}
 
-		//! @brief Reserves memory for string builder to make it contain specified number of characters without reallocation when calling Append method.
+		//! Reserves memory for string builder to make it contain specified number of characters without reallocation when calling Append method.
 		//! @param NewCapacity New required capacity of the string.
 		GDINL void Reserve(SizeTp const NewCapacity)
 		{
 			this->Container.Reserve(NewCapacity + 1);
 		}
 
-		//! @brief Appends a character to this string builder.
+		//! Appends a character to this string builder.
 		//! @param Character Character to append.
 		//! @returns this.
 		GDINL BaseStringBuilder& Append(CharType const Character)
@@ -105,7 +105,7 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		//! @brief Appends formatable string to this string builder.
+		//! Appends formatable string to this string builder.
 		//! @param Format Standart printf-like format.
 		//! @returns this.
 		GDINL BaseStringBuilder& AppendFormat(CharType const* const Format, ...)
@@ -120,7 +120,7 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		//! @brief Appends a C string with specified length to this string builder.
+		//! Appends a C string with specified length to this string builder.
 		//! @param String C string to append.
 		//! @returns this.
 		GDINL BaseStringBuilder& Append(CharType const* const CString, SizeTp const Length)
@@ -132,7 +132,7 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		//! @brief Appends a C string to this string builder.
+		//! Appends a C string to this string builder.
 		//! @param String C string to append.
 		//! @returns this.
 		//! @{
@@ -147,7 +147,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Appends a Goddamn string to this string builder.
+		//! Appends a Goddamn string to this string builder.
 		//! @param TheString Goddamn string to append.
 		//! @returns this.
 		GDINL BaseStringBuilder& Append(BaseStringType const& TheString)
@@ -155,23 +155,20 @@ GD_NAMESPACE_BEGIN
 			return this->Append(TheString.CStr(), TheString.GetLength());
 		}
 
-		//! @brief Converts this builder to normal string builder.
+		//! Converts this builder to normal string builder.
 		//! @returns C-string equivalent of this string builder.
 		GDINL BaseStringType ToString() const
 		{
 			return BaseStringType(this->CStr(), this->GetLength());
 		}
 
-		//! @brief Moves other string builder here.
+		//! Moves other string builder here.
 		//! @param Other String builder that would be moved into current object.
 		//! @returns this.
 		GDINL BaseStringBuilder& operator= (BaseStringBuilder&& Other)
 		{
 			if (this != &Other)
-			{
 				this->Container = Move(Other.Container);
-			}
-
 			return *this;
 		}
 	};	// class BaseStringBuilder

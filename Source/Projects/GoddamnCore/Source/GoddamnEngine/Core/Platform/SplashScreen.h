@@ -18,7 +18,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Defines regions of a splash screen.
+	//! Defines regions of a splash screen.
 	//! @{
 	struct SplashScreenTextRegion
 	{
@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 	typedef SplashScreenTextRegion::Type SplashScreenTextRegionTp;
 	//! @}
 
-	//! @brief Defines a generic splash screen class.
+	//! Defines a generic splash screen class.
 	class IGenericSplashScreen 
 		: public IPlatformObject<IGenericSplashScreen, PlatformObjectFlags::FlagsGenericInterfaceIsDummy | PlatformObjectFlags::FlagsHasNoTickFunction>
 	{
@@ -41,33 +41,34 @@ GD_NAMESPACE_BEGIN
 		CriticalSection		SplashScreenSyncObject;
 
 	protected:
-
-		//! @brief Initializes a splash screen.
+		//! Gays are here
+		//! Big dicks are back in town	
+		//! Initializes a splash screen.
 		GDINL IGenericSplashScreen() { }
 
-		//! @brief Destroys a splash screen.
+		//! Destroys a splash screen.
 		GDINL virtual ~IGenericSplashScreen() { this->DestroyObject(); }
 
 	protected:
 
-		//! @brief Initializes a splash screen.
+		//! Initializes a splash screen.
 		//! @note This method should be invoked in child class.
 		GD_PLATFORM_DEFINE_METHOD0(void, InitializeObject, override);
 
-		//! @brief Destroys a splash screen.
+		//! Destroys a splash screen.
 		GD_PLATFORM_DEFINE_METHOD0(void, DestroyObject, {});
 
 	public:
 
-		//! @brief Shows or hides a splash screen.
+		//! Shows or hides a splash screen.
 		//! @param SplashDoShow Whether to show or hide splash screen.
 		GD_PLATFORM_DEFINE_METHOD1(void, ShowSplash, bool const, SplashDoShow, {});
 
-		//! @brief Returns true, if splash is shown.
+		//! Returns true, if splash is shown.
 		//! @returns True, if splash is shown.
 		GD_PLATFORM_DEFINE_METHOD0(bool, IsSplashShown, const { return false; });
 
-		//! @brief Sets text that is displayed in some region of a splash screen.
+		//! Sets text that is displayed in some region of a splash screen.
 		//! @param SplashTextRegion Region to which set new text.
 		//! @param SplashText Text to set.
 		GD_PLATFORM_DEFINE_METHOD2(void, SetSplashText, SplashScreenTextRegionTp const, SplashTextRegion, String const&, SplashText, {});

@@ -16,7 +16,7 @@
 
 GD_NAMESPACE_BEGIN
 	
-	//! @brief This type is supposed to be a lock-free list. 
+	//! This type is supposed to be a lock-free list. 
 	//! 	   Because of no multithreading support on target platform standart lists were used instead.
 	//! @tparam ElementType Container element type.
 	template<typename ElementType>

@@ -62,11 +62,11 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Represents Windows definitions for atomic instructions.
+	//! Represents Windows definitions for atomic instructions.
 	class MicrosoftAtomics final : public GenericAtomics
 	{
 	public:
-		//! @brief Atomically increments specified value.
+		//! Atomically increments specified value.
 		//! @param Value to increment.
 		//! @returns Incremented value.
 		//! @{
@@ -82,7 +82,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if GD_ARCHITECTURE_X64 || GD_ARCHITECTURE_ARM64
 		//! @}
 
-		//! @brief Atomically decrements specified value.
+		//! Atomically decrements specified value.
 		//! @param Value to decrement.
 		//! @returns Decremented value.
 		//! @{
@@ -98,7 +98,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if GD_ARCHITECTURE_X64 || GD_ARCHITECTURE_ARM64
 		//! @}
 
-		//! @brief Atomically add specified amount to specified value.
+		//! Atomically add specified amount to specified value.
 		//! @param Value Value, to which amount would be added.
 		//! @param Amount Amount to add.
 		//! @returns Original value.
@@ -115,7 +115,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if GD_ARCHITECTURE_X64 || GD_ARCHITECTURE_ARM64
 		//! @}
 
-		//! @brief Atomically exchanges specified value to other one.
+		//! Atomically exchanges specified value to other one.
 		//! @param Value Value on which exchange is performed
 		//! @param Exchange Value which is exchanged.
 		//! @returns Original value.
@@ -136,7 +136,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Atomically exchanges specified value to other one if original value is equal to comparand.
+		//! Atomically exchanges specified value to other one if original value is equal to comparand.
 		//! @param Value Value on which exchange is performed
 		//! @param Exchange Value which is exchanged.
 		//! @param Comparand Comparand with which original value is compared.

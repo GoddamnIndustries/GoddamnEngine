@@ -1,18 +1,22 @@
-//! ==========================================================================================
-//! Utility.h - Base utilities definition and implementations.
-//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
-//! ==========================================================================================
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file GoddamnEngine/Core/Templates/Utility.h
+//! Base utilities definition and implementations.
 
 #pragma once
-#ifndef GD_CORE_UTILITY
-#define GD_CORE_UTILITY
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/TypeTraits.h>
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Returns RValue reference on type without creating any instance.
+	//! Returns RValue reference on type without creating any instance.
 	//! @returns RValue reference on type without creating any instance.
 	template<typename SignatureType>
 	GDINT SignatureType&& DeclValue();
@@ -26,7 +30,7 @@ GD_NAMESPACE_BEGIN
 		return static_cast<typename TypeTraits::RemoveReference<SignatureType>::Type&&>(Instance);
 	}
 
-	//! @brief Returns an RValue reference to specified object if it is not an LValue reference. If specified object is an LValue reference, the function returns it without modifying it`s type.
+	//! Returns an RValue reference to specified object if it is not an LValue reference. If specified object is an LValue reference, the function returns it without modifying it`s type.
 	//! @param Instance Some object.
 	//! @returns RValue reference to specified object if it is not an LValue reference.
 	//! @{
@@ -53,5 +57,3 @@ GD_NAMESPACE_BEGIN
 	}
 
 GD_NAMESPACE_END
-
-#endif

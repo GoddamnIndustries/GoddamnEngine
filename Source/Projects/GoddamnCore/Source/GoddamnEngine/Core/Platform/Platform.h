@@ -54,7 +54,7 @@
 #	endif	// if GD_PLATFORM_INCLUDE
 #else	// if !GD_DOCUMENTATION
 
-//! @brief Generates a path to header with implementation of some platform-dependent code.
+//! Generates a path to header with implementation of some platform-dependent code.
 //! @param Directory Path to directory with subdirectories that contain platform-dependent code.
 //! @param Header Name of the header file.
 #define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/CurrentPlatform/CurrentPlatform ## Header>
@@ -129,20 +129,20 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Describes compile-time flags of a platform type.
+	//! Describes compile-time flags of a platform type.
 	//! @{
 	struct PlatformObjectFlags
 	{
 		typedef UInt8 Type;
 		Type static const FlagsNone						= 0;
-		Type static const FlagsGenericInterfaceIsDummy	= GD_BIT(0);	//!< @brief Indicates that generic interface is useless without concrete implementation.
-		Type static const FlagsLiquidSignleton			= GD_BIT(1);	//!< @brief Indicates that this class is not technically a singleton.
-		Type static const FlagsHasNoTickFunction		= GD_BIT(2);	//!< @brief Indicates that this class is not required to be updated every tick.
+		Type static const FlagsGenericInterfaceIsDummy	= GD_BIT(0);	//!< Indicates that generic interface is useless without concrete implementation.
+		Type static const FlagsLiquidSignleton			= GD_BIT(1);	//!< Indicates that this class is not technically a singleton.
+		Type static const FlagsHasNoTickFunction		= GD_BIT(2);	//!< Indicates that this class is not required to be updated every tick.
 	};	// struct PlatformObjectFlags
 	typedef PlatformObjectFlags::Type PlatformObjectFlagsTp;
 	//! @}
 
-	//! @brief Interface to an platform-dependent object.
+	//! Interface to an platform-dependent object.
 	class IPlatformObjectBase
 	{
 	protected:
@@ -151,7 +151,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes a platform-dependent object.
+		//! Initializes a platform-dependent object.
 		//! @{
 		GDAPI virtual void InitializeObject_Inst() {}
 		GDINL void InitializeObject()
@@ -160,7 +160,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Deinitializes a platform-dependent object.
+		//! Deinitializes a platform-dependent object.
 		//! @{
 		GDAPI virtual void DestroyObject_Inst() {}
 		GDINL void DestroyObject()
@@ -169,7 +169,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Ticks a platform-dependent object.
+		//! Ticks a platform-dependent object.
 		//! @{
 		GDAPI virtual void TickObject_Inst() {}
 		GDINL void TickObject()
@@ -179,12 +179,14 @@ GD_NAMESPACE_BEGIN
 		//! @}
 	};	// class IPlatformObjectBase
 
-	//! @brief Interface and wrapper to an platform-dependent object.
+	//! Interface and wrapper to an platform-dependent object.
 	//! @tparam IPlatformObjectTp Type of an platform-dependent object.
 	//! @tparam PlatformObjectFlagsValue Flags of a platform-dependent object.
 	template<typename IPlatformObjectTp, PlatformObjectFlagsTp PlatformObjectFlagsValue>
-	class IPlatformObject : public IPlatformObjectBase, public Singleton<IPlatformObjectTp>, public IUncopiable
+	class IPlatformObject : public IPlatformObjectBase	//, public Singleton<IPlatformObjectTp>, public IUncopiable
 	{
+	public:
+		GDAPI static IPlatformObjectTp& GetInstance() { return *reinterpret_cast<IPlatformObjectTp*>(nullptr); };
 	};	// class IPlatformObject
 
 GD_NAMESPACE_END

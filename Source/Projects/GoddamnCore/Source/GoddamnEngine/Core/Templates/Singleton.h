@@ -1,23 +1,27 @@
-//! ==========================================================================================
-//! Singleton.h: Singleton pattern interface.
-//! Copyright (C) Goddamn Industries 2011 - Present. All Rights Reserved.
-//! ==========================================================================================
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file GoddamnEngine/Core/Templates/Singleton.h
+//! Singleton pattern interface.
 
 #pragma once
-#ifndef GD_TEMPLATES_SINGLETON
-#define GD_TEMPLATES_SINGLETON
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/TypeTraits.h>
 
-//! @brief Defines some code required for work of the singleton.
+//! Defines some code required for work of the singleton.
 //! @param SingletonType Type of singleton class.
 #define GD_SINGLETON_IMPLEMENTATION(SingletonType) \
 	\
-	/** @brief Instance of the singleton. */\
+	/** Instance of the singleton. */\
 	GDAPI extern SingletonType* __Singleton##SingletonType##Instance = nullptr; \
 	\
-	/** @brief Initializes a singleton. */\
+	/** Initializes a singleton. */\
 	template<> \
 	GD::Singleton<SingletonType>::Singleton() \
 	{ \
@@ -25,7 +29,7 @@
 		__Singleton##SingletonType##Instance = reinterpret_cast<SingletonType*>(this); \
 	} \
 	\
-	/** @brief Returns instance of the singleton. */ \
+	/** Returns instance of the singleton. */ \
 	/** @returns Instance of the singleton. */ \
 	template<> \
 	GD::SingletonType& Singleton<SingletonType>::GetInstance() \
@@ -34,12 +38,12 @@
 		return *__Singleton##SingletonType##Instance; \
 	} \
 
-//! @brief Overrides singleton instance getter function for specified type.
+//! Overrides singleton instance getter function for specified type.
 //! @param SingletonType Required type to be used.
 //! @param SingletonBaseType Base type to be overridden.
 #define GD_SINGLETON_OVERRIDE(SingletonType, SingletonBaseType) \
 public: \
-	/** @brief Returns instance of the singleton. */ \
+	/** Returns instance of the singleton. */ \
 	/** @returns Instance of the singleton. */ \
 	GDINL static SingletonType& GetInstance() \
 	{ \
@@ -49,7 +53,7 @@ private: \
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Singleton class descendants are objects, for which only only one instance required. Than are alternatives to classes
+	//! Singleton class descendants are objects, for which only only one instance required. Than are alternatives to classes
 	///	       with static functions and members. Project coding standards do not recommends using static members, so singletons are 
 	///		   located in code (somewhere above 'main' function). Common usage:
 	///	@code
@@ -78,11 +82,9 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Returns instance of the singleton.
+		//! Returns instance of the singleton.
 		//! @returns Instance of the singleton.
 		GDAPI static SingletonType& GetInstance();
 	};	// class Singleton
 
 GD_NAMESPACE_END
-
-#endif	// ifndef GD_TEMPLATES_SINGLETON

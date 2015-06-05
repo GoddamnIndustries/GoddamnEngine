@@ -13,14 +13,14 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Initializes a date/time class.
+	//! Initializes a date/time class.
 	GDAPI void IGenericDateTime::InitializeObject_Inst()
 	{
 		this->TimeSecondsPerCycle = static_cast<Float64>(CLOCKS_PER_SEC);
 		this->TimeStartTime = static_cast<Float64>(std::clock()) * this->TimeSecondsPerCycle;
 	}
 
-	//! @brief Ticks a frame.
+	//! Ticks a frame.
 	GDAPI void IGenericDateTime::TickObject_Inst()
 	{
 		Float64 CurrentTime = DateTime::GetSeconds();
@@ -29,7 +29,7 @@ GD_NAMESPACE_BEGIN
 		this->TimeFramesCount++;
 	}
 
-	//! @brief Returns time in seconds passed till Engine launch as a pretty formatted string.
+	//! Returns time in seconds passed till Engine launch as a pretty formatted string.
 	//! @returns Time in seconds passed till Engine launch as a pretty formatted string.
 	GDAPI String IGenericDateTime::GetSecondsString_Inst()
 	{
@@ -66,12 +66,12 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Returns local time in UTC.
+	//! Returns local time in UTC.
 	//! @returns Local time in UTC.
 	GDAPI DateTimeTp IGenericDateTime::GetDateTimeUTC_Inst()
 	{
 		auto const RawCurrentTime = std::time(nullptr);
-		struct tm UTCTime = { 0 };
+		tm UTCTime = { 0 };
 #if GD_PLATFORM_WINDOWS
 		::gmtime_s(&UTCTime, &RawCurrentTime);
 #else	// if GD_PLATFORM_WINDOWS
@@ -90,29 +90,29 @@ GD_NAMESPACE_BEGIN
 		return DateAndTime;
 	}
 
-	//! @brief Queries local date in UTC.
+	//! Queries local date in UTC.
 	//! @returns Local date in UTC as a string.
 	GDAPI String IGenericDateTime::GetDateUTCString_Inst()
 	{
-		DateTimeTp DateAndTime = this->GetDateTimeUTC();
+		auto DateAndTime = this->GetDateTimeUTC();
 		return String::Format("%02d:%02d:%02d"
 			, static_cast<Int32>(DateAndTime.Day),  static_cast<Int32>(DateAndTime.Month),  static_cast<Int32>(DateAndTime.Year));
 	}
 
-	//! @brief Queries local time in UTC.
+	//! Queries local time in UTC.
 	//! @returns Local time in UTC as a string.
 	GDAPI String IGenericDateTime::GetTimeUTCString_Inst()
 	{
-		DateTimeTp DateAndTime = this->GetDateTimeUTC();
+		auto DateAndTime = this->GetDateTimeUTC();
 		return String::Format("%02d:%02d:%02d"
 			, static_cast<Int32>(DateAndTime.Hour), static_cast<Int32>(DateAndTime.Minute), static_cast<Int32>(DateAndTime.Second));
 	}
 
-	//! @brief Queries local date and time in UTC.
+	//! Queries local date and time in UTC.
 	//! @returns Local date and time in UTC as a string.
 	GDAPI String IGenericDateTime::GetDateTimeUTCString_Inst()
 	{
-		DateTimeTp DateAndTime = this->GetDateTimeUTC();
+		auto DateAndTime = this->GetDateTimeUTC();
 		return String::Format("%02d/%02d/%02d %02d:%02d:%02d"
 			, static_cast<Int32>(DateAndTime.Day),  static_cast<Int32>(DateAndTime.Month),  static_cast<Int32>(DateAndTime.Year)
 			, static_cast<Int32>(DateAndTime.Hour), static_cast<Int32>(DateAndTime.Minute), static_cast<Int32>(DateAndTime.Second));

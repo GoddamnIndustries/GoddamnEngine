@@ -15,7 +15,7 @@ GD_NAMESPACE_BEGIN
 
 	GD_SINGLETON_IMPLEMENTATION(IGenericSplashScreen);
 
-	//! @brief Initializes a splash screen.
+	//! Initializes a splash screen.
 	//! @note This method should be invoked in child class.
 	GDAPI void IGenericSplashScreen::InitializeObject_Inst()
 	{

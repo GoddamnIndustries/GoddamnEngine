@@ -20,10 +20,10 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Implements a HTML5-specific console output device.
+	//! Implements a HTML5-specific console output device.
 	typedef PosixOutputDeviceConsole HTML5OutputDeviceConsole;
 
-	//! @brief Implements a specific console output device.
+	//! Implements a specific console output device.
 	typedef HTML5OutputDeviceConsole OutputDeviceConsole;
 
 GD_NAMESPACE_END

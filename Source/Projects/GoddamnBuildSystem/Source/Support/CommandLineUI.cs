@@ -18,7 +18,7 @@ using System.Text;
 namespace GoddamnEngine.BuildSystem
 {
     //! Interface to description of a single command-line property.
-    //! All command-line properties would be stored in 's_CommandLineArguments' variable.
+    //! All command-line properties would be stored in 'CommandLineArguments' variable.
     public abstract class ICommandLinePropertyProxy
     {
         //! Returns name of command-line parameter.
@@ -44,58 +44,58 @@ namespace GoddamnEngine.BuildSystem
     //! @tparam T Real type of parameter
     public sealed class CommandLinePropertyProxy<T> : ICommandLinePropertyProxy
     {
-        private T m_Value;
-        private readonly string m_Name;
-        private readonly string m_Description;
+        private T Value;
+        private readonly string Name;
+        private readonly string Description;
 
         //! Constructs a proxy variable for command-line parameter.
-        public CommandLinePropertyProxy(T Value, String Name, String Description)
+        public CommandLinePropertyProxy(T Value, string Name, string Description)
         {
             Debug.Assert((typeof(T) == typeof(bool)) || (typeof(T) == typeof(string)) || typeof(T).IsEnum);
             Debug.Assert(!string.IsNullOrWhiteSpace(Name));
             Debug.Assert(!string.IsNullOrWhiteSpace(Description));
 
-            m_Value = Value;
-            m_Name = Name;
-            m_Description = Description;
-            CommandLineUI.s_CommandLineProperties.Add(this);
+            this.Value = Value;
+            this.Name = Name;
+            this.Description = Description;
+            CommandLineUI.CommandLineProperties.Add(this);
         }
 
         //! Returns name of command-line parameter.
         public sealed override string GetName()
         {
-            return m_Name;
+            return Name;
         }
 
         //! Returns description of command-line parameter.
         public sealed override string GetDescription()
         {
-            return m_Description;
+            return Description;
         }
 
         //! Returns value of command-line parameter.
         public sealed override object GetValue()
         {
-            return m_Value;
+            return Value;
         }
 
         //! Assigns new value to command-line parameter.
         public sealed override void SetValue(object Value)
         {
-            m_Value = (T)Value;
+            Value = (T)Value;
         }
 
         //! Implicit cast to real type.
         public static implicit operator T(CommandLinePropertyProxy<T> ValueProxy)
         {
-            return ValueProxy.m_Value;
+            return ValueProxy.Value;
         }
     }   // CommandLinePropertyProxy<T>
 
     //! Represents access to command line user interface.
     public static class CommandLineUI
     {
-        internal static List<ICommandLinePropertyProxy> s_CommandLineProperties = new List<ICommandLinePropertyProxy>();
+        internal static List<ICommandLinePropertyProxy> CommandLineProperties = new List<ICommandLinePropertyProxy>();
 
         //! Prints a line into specified output in specified color.
         private static void PrintLineWithColor(ConsoleColor Color, TextWriter Output, string Message, params object[] Args)
@@ -137,7 +137,7 @@ namespace GoddamnEngine.BuildSystem
             // Printing properties.
             Console.Out.WriteLine("Usage: {0} [properties...]", BuildSystemExecutableName);
             Console.Out.WriteLine(" Properties:");
-            foreach (var CommandLineProperty in s_CommandLineProperties)
+            foreach (var CommandLineProperty in CommandLineProperties)
             {
                 // Creating padding to each property.
                 var CommandLinePropertyKey = string.Format("  {0,-12} -", CommandLineProperty.GetName());
@@ -198,12 +198,12 @@ namespace GoddamnEngine.BuildSystem
                 }
 #endif  // if INCLUDE_GODDAMNSDK_SPECIFIC
 
-                ICommandLinePropertyProxy CommandLinePropertyProxy = s_CommandLineProperties.Find(
+                ICommandLinePropertyProxy CommandLinePropertyProxy = CommandLineProperties.Find(
                  P => (P.GetName() == CommandLineProperty) || ((P.GetType() != typeof(bool)) && CommandLineProperty.StartsWith(P.GetName(), StringComparison.InvariantCultureIgnoreCase)));
                 if (CommandLinePropertyProxy != null)
                 {
                     // If we are just supposed to print help there is no need in other arguments parsing.
-                    //if (CommandLinePropertyProxy == s_DoJustPrintHelp) {
+                    //if (CommandLinePropertyProxy == DoJustPrintHelp) {
                     // PrintHelp();
                     // Environment.Exit(0);
                     //}

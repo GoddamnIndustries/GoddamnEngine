@@ -22,10 +22,10 @@
 // ------------------------------------------------------------------------------------------
 // Intel Threading Building Blocks' Scalable Allocator.
 // ------------------------------------------------------------------------------------------
-#if (GD_PLATFORM_WINDOWS || GD_PLATFORM_OSX || GD_PLATFORM_GNU_LINUX) && (GD_ARCHITECTURE_X86 || GD_ARCHITECTURE_X64) && (!defined(GD_PLATFORM_HAS_DEBUG_CRT_MALLOC))
+#if (GD_PLATFORM_WINDOWS || GD_PLATFORM_OS_X || GD_PLATFORM_GNU_LINUX) && (GD_ARCHITECTURE_X86 || GD_ARCHITECTURE_X64) && (!defined(GD_PLATFORM_HAS_DEBUG_CRT_MALLOC))
 #	define GD_PLATFORM_HAS_INTEL_TBB									GD_TRUE
 #	define GD_ALLOCATOR_IS_THREAD_SAFE									GD_TRUE
-#endif	//	if if (GD_PLATFORM_WINDOWS || GD_PLATFORM_OSX || GD_PLATFORM_GNU_LINUX) && (GD_ARCHITECTURE_X86 || GD_ARCHITECTURE_X64) && (!defined(GD_PLATFORM_HAS_DEBUG_CRT_MALLOC))
+#endif	//	if if (GD_PLATFORM_WINDOWS || GD_PLATFORM_OS_X || GD_PLATFORM_GNU_LINUX) && (GD_ARCHITECTURE_X86 || GD_ARCHITECTURE_X64) && (!defined(GD_PLATFORM_HAS_DEBUG_CRT_MALLOC))
 
 // ------------------------------------------------------------------------------------------
 // Jason Evans Allocator.
@@ -91,7 +91,7 @@
 GD_NAMESPACE_BEGIN
  
 #if !GD_ALLOCATOR_IS_THREAD_SAFE
-	//! @brief Returns pointer to sync object of an allocator.
+	//! Returns pointer to sync object of an allocator.
 	GDINL static CriticalSection* GetAllocatorLock()
 	{
 		static CriticalSection AllocatorLock;
@@ -99,13 +99,16 @@ GD_NAMESPACE_BEGIN
 	}
 #endif	// if !GD_ALLOCATOR_IS_THREAD_SAFE
 
-	//! @brief Allocates block of memory with specified size that is aligned by specified value and returns pointer to it.
+	// ------------------------------------------------------------------------------------------
+	//! Allocates block of memory with specified size that is aligned by specified value and returns pointer to it.
+	//! @param Location Information about place in code, where this allocation accures.
 	//! @param AllocationSize Size of required memory in bytes.
 	//! @param Alignment Pointer to memory would be aligned by this value.
 	//! @returns Pointer on the allocated memory. This function never returns nullptr except specified size is 0.
 	//! @note This function should not be directly invoked. Use 'GD_MALLOC'/'GD_MALLOC_ALIGNED' macro instead.
-	GDAPI Handle Allocator::AllocateMemory(GD_ALLOCTOR_DEBUG_SPECIFIC(CStr const File, int const Line, ) SizeTp const AllocationSize, SizeTp const Alignment /*= DefaultAlignment*/)
+	GDAPI Handle Allocator::AllocateMemory(SourceInfo const& Location, SizeTp const AllocationSize, SizeTp const Alignment /*= DefaultAlignment*/)
 	{
+		GD_NOT_USED(Location);	// In case it will be never used.
 		if (AllocationSize != 0) 
 		{
 #if !GD_ALLOCATOR_IS_THREAD_SAFE
@@ -136,7 +139,7 @@ GD_NAMESPACE_BEGIN
 
 			Handle const Memory = 
 #if GD_PLATFORM_HAS_DEBUG_CRT_MALLOC
-				_aligned_malloc_dbg(AllocationSize, Alignment, File, Line);
+				_aligned_malloc_dbg(AllocationSize, Alignment, Location.File, Location.Line);
 #endif	// if GD_PLATFORM_HAS_DEBUG_CRT_MALLOC
 #if GD_PLATFORM_HAS_INTEL_TBB
 				scalable_aligned_malloc(AllocationSize, Alignment);
@@ -155,7 +158,8 @@ GD_NAMESPACE_BEGIN
 		return nullptr;
 	}
 
-	//! @brief Deallocates block of memory.
+	// ------------------------------------------------------------------------------------------
+	//! Deallocates block of memory.
 	//! @param Memory Memory that would be deallocated. If specified block is nullptr then does nothing.
 	//! @note This function should not be directly invoked. Use 'GD_DEALLOC' macro instead.
 	GDAPI void Allocator::DeallocateMemory(Handle const Memory)

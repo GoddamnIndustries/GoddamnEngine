@@ -20,10 +20,10 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Represents Windows definitions for atomic instructions.
+	//! Represents Windows definitions for atomic instructions.
 	typedef MicrosoftAtomics WindowsAtomics;
 
-	//! @brief  Represents definitions for atomic instructions.
+	//!  Represents definitions for atomic instructions.
 	typedef WindowsAtomics Atomics;
 
 GD_NAMESPACE_END

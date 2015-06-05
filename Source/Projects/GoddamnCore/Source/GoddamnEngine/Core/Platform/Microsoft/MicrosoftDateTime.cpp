@@ -16,7 +16,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Initializes a date/time class.
+	//! Initializes a date/time class.
 	GDAPI void MicrosoftDateTime::InitializeObject_Inst()
 	{
 		LARGE_INTEGER LargeInt = { 0 };
@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 		this->TimeStartTime = this->TimeSecondsPerCycle * static_cast<Float64>(LargeInt.QuadPart);
 	}
 
-	//! @brief Returns local time in UTC.
+	//! Returns local time in UTC.
 	//! @returns Local time in UTC.
 	GDAPI DateTimeTp MicrosoftDateTime::GetDateTimeUTC_Inst()
 	{

@@ -21,20 +21,20 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
     //[Serializable]
     public class ProjectBuildableSourceFile
     {
-        public ProjectSourceFile m_Source;
-        public List<ProjectBuildableSourceFile> m_IncludedFiles;
-        public int m_LastHash;
+        public readonly ProjectSourceFile Source;
+        public List<ProjectBuildableSourceFile> IncludedFiles;
+        public int LastHash;
 
         public ProjectBuildableSourceFile(ProjectSourceFile Source)
         {
-            m_Source = Source;
-            m_IncludedFiles = new List<ProjectBuildableSourceFile>();
-            m_LastHash = 0;
+            this.Source = Source;
+            IncludedFiles = new List<ProjectBuildableSourceFile>();
+            LastHash = 0;
         }
 
         public void Parse(List<ProjectBuildableSourceFile> AllSourceFiles)
         {
-            foreach (var ReadLine in File.ReadAllLines(m_Source.m_FileName))
+            foreach (var ReadLine in File.ReadAllLines(Source.FileName))
             {
                 string Line = ReadLine.Trim();
                 if (Line.StartsWith("#"))
@@ -53,10 +53,10 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
                         {
                             IncludedFilePath = Line.Substring("\"".Length, Line.IndexOf("\"") - "\"".Length).Trim();
                         }
-                        else if (Line.StartsWith("GD_PLATFORM_INCLUDE("))
+                        else if (Line.StartsWith("GD_PLATFORINCLUDE("))
                         {
                             throw new NotImplementedException();
-                            // IncludedFilePath = Line.Substring("GD_PLATFORM_INCLUDE(".Length, Line.IndexOf(",") - "GD_PLATFORM_INCLUDE(".Length).Trim();
+                            // IncludedFilePath = Line.Substring("GD_PLATFORINCLUDE(".Length, Line.IndexOf(",") - "GD_PLATFORINCLUDE(".Length).Trim();
                         }
 
 

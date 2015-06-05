@@ -26,39 +26,101 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Microsoft Critical Section class.
+	// ------------------------------------------------------------------------------------------
+	//! Microsoft Critical Section class.
 	class MicrosoftCriticalSection final : public IGenericCriticalSection
 	{
 	private:
 		::CRITICAL_SECTION CriticalSection;
 
 	public:
-		//! @brief Initializes a Critical Section.
+
+		// ------------------------------------------------------------------------------------------
+		//! Initializes a Critical Section.
 		GDINL MicrosoftCriticalSection()
 		{
-			::InitializeCriticalSection(&this->CriticalSection);
-			::SetCriticalSectionSpinCount(&this->CriticalSection, 4000);
+			InitializeCriticalSection(&this->CriticalSection);
+			SetCriticalSectionSpinCount(&this->CriticalSection, 4000);
 		}
 
-		//! @brief Deinitializes a Critical Section.
+		// ------------------------------------------------------------------------------------------
+		//! Deinitializes a Critical Section.
 		GDINL ~MicrosoftCriticalSection()
 		{
-			::DeleteCriticalSection(&this->CriticalSection);
+			DeleteCriticalSection(&this->CriticalSection);
 		}
 
-		//! @brief Locks the Critical Section.
-		GDINL void Enter()
+	public:
+
+		// ------------------------------------------------------------------------------------------
+		//! Locks the Critical Section.
+		GDINL void Enter() override final
 		{
-			if (::TryEnterCriticalSection(&this->CriticalSection)) {
-				::EnterCriticalSection(&this->CriticalSection);
-			}
+			if (TryEnterCriticalSection(&this->CriticalSection)) 
+				EnterCriticalSection(&this->CriticalSection);
 		}
 
-		//! @brief Unlocks the Critical Section.
-		GDINL void Leave()
+		// ------------------------------------------------------------------------------------------
+		//! Unlocks the Critical Section.
+		GDINL void Leave() override final
 		{
-			::LeaveCriticalSection(&this->CriticalSection);
+			LeaveCriticalSection(&this->CriticalSection);
 		}
 	};	// class GenericCriticalSection
+
+	// ------------------------------------------------------------------------------------------
+	//! Microsoft signal/event class.
+	class MicrosoftThreadSignal : public IGenericThreadSignal
+	{
+	private:
+		HANDLE ThreadSignal;
+
+	public:
+
+		// ------------------------------------------------------------------------------------------
+		//! Initializes the current signal.
+		//! @param RequiresManualReset Does the signal requires to be manually reseted.
+		GDINL MicrosoftThreadSignal(bool const RequiresManualReset = false)
+			: IGenericThreadSignal(RequiresManualReset)
+		{
+			this->ThreadSignal = CreateEventA(nullptr, RequiresManualReset ? TRUE : FALSE, FALSE, nullptr);
+			GD_ASSERT(this->ThreadSignal != nullptr, "Failed to initialize a thread signal");
+		}
+	
+		// ------------------------------------------------------------------------------------------
+		//! Deinitializes the current signal.
+		GDINL virtual ~MicrosoftThreadSignal()
+		{
+			CloseHandle(this->ThreadSignal);
+			this->ThreadSignal = nullptr;
+		}
+
+	public:
+
+		// ------------------------------------------------------------------------------------------
+		//! Raises the current signal.
+		GDAPI virtual void RaiseSignal() override final
+		{
+			SetEvent(this->ThreadSignal);
+		}
+
+		// ------------------------------------------------------------------------------------------
+		//! Clears the current signal.
+		GDAPI virtual void ClearSignal() override final
+		{
+			ResetEvent(this->ThreadSignal);
+		}
+
+		// ------------------------------------------------------------------------------------------
+		//! Waits for signal to be raised with specified timeout.
+		//! @param TimeoutInMilliseconds Specified timeout in milliseconds. Can be specified as infinite.
+		//! @returns @c true, if signal was raised in the timeout period, @c false if timeout was reached.
+		GDAPI virtual bool WaitForSignal(TimeoutTp const TimeoutInMilliseconds) const override final
+		{
+			DWORD const Result = WaitForSingleObject(this->ThreadSignal, TimeoutInMilliseconds != TimeoutInfinite ? TimeoutInMilliseconds : INFINITE);
+			GD_ASSERT(Result == WAIT_OBJECT_0 || ((TimeoutInMilliseconds != TimeoutInfinite) && (Result == WAIT_TIMEOUT)), "'WaitForSingleObject' failed.");
+			return Result == WAIT_OBJECT_0;
+		}
+	};	// class MicrosoftThreadSignal
 
 GD_NAMESPACE_END

@@ -16,28 +16,28 @@ GD_NAMESPACE_BEGIN
 
 	static HINSTANCE ApplicationHInstance = nullptr;
 
-	//! @brief Returns hInstance of this application.
+	//! Returns hInstance of this application.
 	//! @returns hInstance of this application.
 	GDAPI extern HINSTANCE GetApplicationHInstance()
 	{
 		return ApplicationHInstance;
 	}
 	
-	//!< @brief Name of a application mutex.
+	//!< Name of a application mutex.
 #if defined(GD_NAMESPACE)
 	CHAR const WindowsApplication::AppMutexName[] = GD_GLUE(GD_STRIGIFY(GD_NAMESPACE), "_WindowsApplicationNamedMutex");
 #else	// if defined(GD_NAMESPACE)
 	CHAR const WindowsApplication::AppMutexName[] = "Goddamn_WindowsApplicationNamedMutex";
 #endif	// if defined(GD_NAMESPACE)
 
-	//! @brief Initializes an application.
+	//! Initializes an application.
 	GDAPI WindowsApplication::WindowsApplication()
 		: AppInstanceHandle(ApplicationHInstance)
 		, AppNamedMutex(nullptr)
 	{
 	}
 
-	//! @brief Initializes all stuff that should be initialized before main components.
+	//! Initializes all stuff that should be initialized before main components.
 	GDAPI void WindowsApplication::PreInitializeObject_Inst()
 	{
 		IGenericApplication::PreInitializeObject_Inst();
@@ -95,12 +95,12 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_ASSERT(Result != 0, "Error: 'WindowsApplication' failed to register window class.");
 	}
 
-	//! @brief Initializes all stuff that should be initialized after main components.
+	//! Initializes all stuff that should be initialized after main components.
 	GDAPI void WindowsApplication::PostInitializeObject_Inst()
 	{
 	}
 
-	//! @brief Destroys an application.
+	//! Destroys an application.
 	GDAPI void WindowsApplication::DestroyObject_Inst()
 	{
 		UnregisterClassA(WindowsWindow::WndClassName, ApplicationHInstance);
@@ -118,7 +118,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Splash screen window routine.
+	//! Splash screen window routine.
 	GDINT LRESULT WINAPI WindowsApplication::ApplicationWindowProc(HWND const AppWindowHandle, UINT const AppMessage, WPARAM const AppWParam, LPARAM const AppLParam)
 	{
 		return DefWindowProcA(AppWindowHandle, AppMessage, AppWParam, AppLParam);

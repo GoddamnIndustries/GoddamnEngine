@@ -29,7 +29,7 @@ GD_NAMESPACE_BEGIN
 
 	struct DropEffectTp { };
 
-	//! @brief Class that handles events of the application.
+	//! Class that handles events of the application.
 	class IApplicationEventsHandler
 	{
 	protected:
@@ -42,7 +42,7 @@ GD_NAMESPACE_BEGIN
 		// Input events.
 		// ------------------------------------------------------------------------------------------	
 
-		//! @brief Returns true if input events of the window are required to be handled.
+		//! Returns true if input events of the window are required to be handled.
 		//! @param AppWindow Application window for which input events can be handled.
 		//! @returns True if event was handled.
 		GDAPI virtual bool ShouldHandleInputEvents(SharedPtr<Window> const& AppWindow) const { return false; }
@@ -51,15 +51,15 @@ GD_NAMESPACE_BEGIN
 		// Keyboard input events.
 		// ------------------------------------------------------------------------------------------	
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnKeyboardButtonDown(Int32 const AppKeyCode, UInt32 const AppKeyCharacterCode, bool const AppKeyIsRepeated) { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnKeyboardButtonDownChar(WideChar const AppKeyCharacter, bool const AppKeyIsRepeated) { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnKeyboardButtonUp(Int32 const AppKeyCode, UInt32 const AppKeyCharacterCode, bool const AppKeyIsRepeated) { return false; }
 		
@@ -67,33 +67,33 @@ GD_NAMESPACE_BEGIN
 		// Mouse input events.
 		// ------------------------------------------------------------------------------------------	
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @param AppWindow Application window, which triggered the event.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnMouseButtonDown(SharedPtr<Window> const& AppWindow, MouseButtonsTp const AppMouseButton) { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnMouseButtonUp(MouseButtonsTp const AppMouseButton) { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @param AppWindow Application window, which triggered the event.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnMouseButtonDoubleClick(SharedPtr<Window> const& AppWindow, MouseButtonsTp const AppMouseButton) { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnMouseWheelRotated(Float32 const AppMouseWheelDelta) { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnMouseMoved() { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnMouseMovedToRaw(Vector2 const& AppMouseRawPosition) { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnMouseCursorSet() { return false; }
 
@@ -101,15 +101,15 @@ GD_NAMESPACE_BEGIN
 		// Controller input events.
 		// ------------------------------------------------------------------------------------------	
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnControllerAnalogMoved(ControllerButtonsTp const AppControllerButton, Int32 const AppControllerID, Float32 const AppAnalogValue) { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnControllerButtonDown(ControllerButtonsTp const AppControllerButton, Int32 const AppControllerID, bool const AppKeyIsRepeated) { return false; }
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnControllerButtonUp(ControllerButtonsTp const AppControllerButton, Int32 const AppControllerID, bool const AppKeyIsRepeated) { return false; }
 
@@ -117,34 +117,34 @@ GD_NAMESPACE_BEGIN
 		// Gesture input events.
 		// ------------------------------------------------------------------------------------------
 
-		//! @brief Event triggered when gesture input stared.
+		//! Event triggered when gesture input stared.
 		GDAPI virtual void OnGestureStared() {}
 		
-		//! @brief Event triggered while inputing gesture event.
+		//! Event triggered while inputing gesture event.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnGestureTouch(GestureEventsTp const AppGestureEvent, Vector2 const& AppDeltaCoord, Float32 const AppMouseWheelDelta) { return false; }
 		
-		//! @brief Event triggered when gesture input ended.
+		//! Event triggered when gesture input ended.
 		GDAPI virtual void OnGestureEnded() { }
 
 		// ------------------------------------------------------------------------------------------
 		// Touch input events.
 		// ------------------------------------------------------------------------------------------
 
-		//! @brief Event triggered when user has touched the touch screen.
+		//! Event triggered when user has touched the touch screen.
 		//! @param AppTouchLocation Location of a touch on a screen.
 		//! @param AppTouchIndex Index of a touch.
 		//! @param AppControllerID ID of a controlled, that had detected the touch.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnTouchStarted(SharedPtr<Window> const& AppWindow, Vector2 const& AppTouchLocation, Int32 const AppTouchIndex, Int32 const AppControllerID) { return false; }
 		
-		//! @brief Event triggered when user has moved finger across the touch screen.
+		//! Event triggered when user has moved finger across the touch screen.
 		//! @param AppTouchLocation Location of a touch on a screen.
 		//! @param AppControllerID ID of a controlled, that had detected the touch.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnTouchMoved(Vector2 const& AppTouchLocation, Int32 const AppTouchIndex, Int32 const AppControllerID) { return false; }
 		
-		//! @brief Event triggered when user has released the touch screen.
+		//! Event triggered when user has released the touch screen.
 		//! @param AppTouchLocation Location of a touch on a screen.
 		//! @param AppTouchIndex Index of a touch.
 		//! @param AppControllerID ID of a controlled, that had detected the touch.
@@ -155,7 +155,7 @@ GD_NAMESPACE_BEGIN
 		// Accelerometer input events.
 		// ------------------------------------------------------------------------------------------
 
-		//! @brief Event triggered when accelerometer has detected movement.
+		//! Event triggered when accelerometer has detected movement.
 		//! @param AppMotionTilt Tilt coordinate of a window.
 		//! @param AppMotionRotationRate Rotation rate of a motion.
 		//! @param AppMotionGravity Gravity coordinates (relative to accelerometer).
@@ -168,40 +168,40 @@ GD_NAMESPACE_BEGIN
 		// Window events.
 		// ------------------------------------------------------------------------------------------	
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @param AppWindow Application window, which triggered the event.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnWindowSizeChanged(SharedPtr<Window> const& AppWindow, Vector2 const& AppWindowNewSize, bool const AppWasWindowMinimized = false) { return false; }
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @param AppWindow Application window, which triggered the event.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnWindowMoved(SharedPtr<Window> const& AppWindow, Vector2 const& AppWindowNewPosition) { return false; }
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @param AppWindow Application window, which triggered the event.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnWindowReshapingStarted(SharedPtr<Window> const& AppWindow) { return false; }
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @param AppWindow Application window, which triggered the event.
 		GDAPI virtual void OnWindowReshaping(SharedPtr<Window> const& AppWindow) {}
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @param AppWindow Application window, which triggered the event.
 		GDAPI virtual void OnWindowReshapingEnded(SharedPtr<Window> const& AppWindow) {}
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @param AppWindow Application window, which triggered the event.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnWindowActivationChanged(SharedPtr<Window> const& AppWindow, WindowActivationTp const AppWindowActivation) { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @param AppWindow Application window, which triggered the event.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnWindowOSPaint(SharedPtr<Window> const& AppWindow) { return false; }
 		
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @param AppWindow Application window, which triggered the event.
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnWindowClosed(SharedPtr<Window> const& AppWindow) { return false; }
@@ -209,7 +209,7 @@ GD_NAMESPACE_BEGIN
 		//! @param AppWindow Application window, which triggered the event.
 		GDAPI virtual WindowZoneTp GetWindowZoneForPoint(SharedPtr<Window> const& AppWindow, Vector2 const& AppPoint) { return WindowZone::WindowZoneNotInWindow; }
 
-		//! @brief Event triggered when 
+		//! Event triggered when 
 		//! @returns True if event was handled.
 		GDAPI virtual bool OnApplicationActivationChanged(bool const AppIsActive) { return false; }
 
@@ -217,35 +217,35 @@ GD_NAMESPACE_BEGIN
 		// Drag-Drop events.
 		// ------------------------------------------------------------------------------------------	
 
-		//! @brief Event triggered when user has dragged a text into the window.
+		//! Event triggered when user has dragged a text into the window.
 		//! @param AppWindow Application window, which triggered the event.
 		//! @param AppDraggedText Text that was dragged into the window.
 		//! @returns Effect of a cursor while dragging.
 		GDAPI virtual DropEffectTp OnDragEnteredText(SharedPtr<Window> const& AppWindow, WideString const& AppDraggedText) { return DropEffect::EffectNone; }
 		
-		//! @brief Event triggered when user has dragged files into the window.
+		//! Event triggered when user has dragged files into the window.
 		//! @param AppWindow Application window, which triggered the event.
 		//! @param AppDraggedFiles Files that were dragged into the window.
 		//! @returns Effect of a cursor while dragging.
 		GDAPI virtual DropEffectTp OnDragEnteredFiles(SharedPtr<Window> const& AppWindow, Vector<WideString> const& AppDraggedFiles) { return DropEffect::EffectNone; }
 		
-		//! @brief Event triggered when user finished dragging into the window.
+		//! Event triggered when user finished dragging into the window.
 		//! @param AppWindow Application window, which triggered the event.
 		//! @returns Effect of a cursor while dragging.
 		GDAPI virtual DropEffectTp OnDragOver(SharedPtr<Window> const& AppWindow) { return DropEffect::EffectNone; }
 		
-		//! @brief Event triggered when user has dropped something into the window.
+		//! Event triggered when user has dropped something into the window.
 		//! @param AppWindow Application window, which triggered the event.
 		//! @returns Effect of a cursor while dragging.
 		GDAPI virtual DropEffectTp OnDragDroped(SharedPtr<Window> const& AppWindow) { return DropEffect::EffectNone; }
 		
-		//! @brief Event triggered when user's cursor (while dragging something) left the area of a window.
+		//! Event triggered when user's cursor (while dragging something) left the area of a window.
 		//! @param AppWindow Application window, which triggered the event.
 		GDAPI virtual void OnDragLeft(SharedPtr<Window> const& AppWindow) { }
 	};	// class IApplicationEventsHandler
 #endif	// if 0
 
-	//! @brief Cross-platform Application class.
+	//! Cross-platform Application class.
 	class IGenericApplication 
 		: public IPlatformObject<IGenericApplication, PlatformObjectFlags::FlagsNone>
 	{
@@ -257,27 +257,27 @@ GD_NAMESPACE_BEGIN
 
 	protected:
 
-		//! @brief Initializes an application.
+		//! Initializes an application.
 		GDINL IGenericApplication()
 			: AppIsFirstInstance(false)
 		{
 		}
 
-		//! @brief Destroys an application.
+		//! Destroys an application.
 		GDINL virtual ~IGenericApplication() { }
 
 	protected:
 
-		//! @brief Initializes all stuff that should be initialized before main components.
+		//! Initializes all stuff that should be initialized before main components.
 		GD_PLATFORM_DEFINE_METHOD0(void, PreInitializeObject, {});
 
-		//! @brief Initializes all stuff that should be initialized after main components.
+		//! Initializes all stuff that should be initialized after main components.
 		GD_PLATFORM_DEFINE_METHOD0(void, PostInitializeObject, {});
 
-		//! @brief Initializes an application.
-		GD_PLATFORM_DEFINE_METHOD0(void, InitializeObject, override);
+		//! Initializes an application.
+		GD_PLATFORM_DEFINE_METHOD0(void, InitializeObject, override {});
 
-		//! @brief Destroys an application.
+		//! Destroys an application.
 		GD_PLATFORM_DEFINE_METHOD0(void, DestroyObject, override {});
 		
 	public:

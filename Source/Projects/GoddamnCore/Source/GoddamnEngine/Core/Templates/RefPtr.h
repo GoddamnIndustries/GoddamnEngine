@@ -1,14 +1,15 @@
-//! ==========================================================================================
-//! RefPtr.h - unique reference-contable pointer interface/implementation.
-//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
-//! 
-//! History:
-///		* 13.05.2014 - Created by James Jhuighuy
-//! ==========================================================================================
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file GoddamnEngine/Core/Templates/RefPtr.h
+//! Unique reference-countable pointer interface/implementation.
 
 #pragma once
-#ifndef GD_CORE_CONTAINERS_REF_PTR
-#define GD_CORE_CONTAINERS_REF_PTR
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Object/Object.h>
@@ -22,7 +23,7 @@ GD_NAMESPACE_BEGIN
 	private /* Class members */:
 		ObjectType* Pointer;
 
-	public /* Constructors / Destructors. */:
+	public /* Constructors / Destructor. */:
 		//! Initializes smart pointer with existing object.
 		//! Reference counter is not incremented.
 		GDINL RefPtr(ObjectType* const Pointer = nullptr)
@@ -140,5 +141,3 @@ GD_NAMESPACE_BEGIN
 #endif	// if !GD_DOCUMENTATION
 
 GD_NAMESPACE_END
-
-#endif

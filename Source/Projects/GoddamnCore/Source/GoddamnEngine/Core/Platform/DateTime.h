@@ -17,7 +17,7 @@
 
 GD_NAMESPACE_BEGIN
 	
-	//! @brief Enumerates days in a week (starting from Monday).
+	//! Enumerates days in a week (starting from Monday).
 	//! @todo Names of this enumeration are rather self-descriptive. So remove this, or document them.
 	//! @{
 	struct DayOfWeek
@@ -34,7 +34,7 @@ GD_NAMESPACE_BEGIN
 	typedef DayOfWeek::Type DayOfWeekTp;
 	//! @}
 
-	//! @brief Enumerates months in a year.
+	//! Enumerates months in a year.
 	//! @todo Names of this enumeration are rather self-descriptive. So remove this, or document them.
 	//! @{
 	struct MonthOfYear
@@ -56,33 +56,33 @@ GD_NAMESPACE_BEGIN
 	typedef MonthOfYear::Type MonthOfYearTp;
 	//! @}
 	
-	//! @brief Represents date/time type.
+	//! Represents date/time type.
 	struct DateTimeTp
 	{
-		Int32			Year		= 0;	//!< @brief Current year.
-		MonthOfYearTp	Month		= 0;	//!< @brief Current month.
-		DayOfWeekTp		WeekDay		= 0;	//!< @brief Current day of week.
-		UInt8			Day			= 0;	//!< @brief Current day.
-		UInt8			Hour		= 0;	//!< @brief Current hour.
-		UInt8			Minute		= 0;	//!< @brief Current minute.
-		UInt8 			Second		= 0;	//!< @brief Current second.
-		UInt16 			Millisecond	= 0;	//!< @brief Current millisecond.
+		Int32			Year		= 0;	//!< Current year.
+		MonthOfYearTp	Month		= 0;	//!< Current month.
+		DayOfWeekTp		WeekDay		= 0;	//!< Current day of week.
+		UInt8			Day			= 0;	//!< Current day.
+		UInt8			Hour		= 0;	//!< Current hour.
+		UInt8			Minute		= 0;	//!< Current minute.
+		UInt8 			Second		= 0;	//!< Current second.
+		UInt16 			Millisecond	= 0;	//!< Current millisecond.
 	};	// struct DateTimeTp
 
-	//! @brief Defines a generic date/time manager class.
+	//! Defines a generic date/time manager class.
 	class IGenericDateTime : public IPlatformObject<IGenericDateTime, PlatformObjectFlags::FlagsNone>
 	{
 	protected:
-		Float64 TimeStartTime;				//!< @brief Start time for a engine.
-		Float64 TimeSecondsPerCycle;		//!< @brief Time it takes to perform one CPU cycle.
+		Float64 TimeStartTime;				//!< Start time for a engine.
+		Float64 TimeSecondsPerCycle;		//!< Time it takes to perform one CPU cycle.
 				
-		UInt32  TimeFramesCount;			//!< @brief Total amount of frames rendered (mod 2^32).
-		Float64 TimeFrameStartTime;			//!< @brief Time at the beginning of the frame.
-		Float64 TimeFrameDeltaTime;			//!< @brief Time it took to complete previous frame.
+		UInt32  TimeFramesCount;			//!< Total amount of frames rendered (mod 2^32).
+		Float64 TimeFrameStartTime;			//!< Time at the beginning of the frame.
+		Float64 TimeFrameDeltaTime;			//!< Time it took to complete previous frame.
 
 	protected:
 
-		//! @brief Initializes a date/time class.
+		//! Initializes a date/time class.
 		GDINL IGenericDateTime()
 			: TimeStartTime      (0.0)
 			, TimeSecondsPerCycle(0.0)
@@ -92,19 +92,19 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Deinitializes a date/time class.
+		//! Deinitializes a date/time class.
 		GDINL virtual ~IGenericDateTime() {	}
 
 	protected:
 
-		//! @brief Initializes a date/time class.
+		//! Initializes a date/time class.
 		GD_PLATFORM_DEFINE_METHOD0(void, InitializeObject, override);
 
-		//! @brief Ticks a frame.
+		//! Ticks a frame.
 		GD_PLATFORM_DEFINE_METHOD0(void, TickObject, override);
 
 	public:
-		//! @brief Returns time in seconds passed till Engine launch.
+		//! Returns time in seconds passed till Engine launch.
 		//! @returns Time in seconds passed till Engine launch.
 		GD_PLATFORM_DEFINE_METHOD0(Float64, GetSeconds, 
 		{
@@ -112,36 +112,36 @@ GD_NAMESPACE_BEGIN
 			return (this->TimeSecondsPerCycle * static_cast<Float64>(TimeTicksCount)) - this->TimeStartTime;
 		});
 
-		//! @brief Returns time in seconds passed till Engine launch as a pretty formatted string.
+		//! Returns time in seconds passed till Engine launch as a pretty formatted string.
 		//! @returns Time in seconds passed till Engine launch as a pretty formatted string.
 		GD_PLATFORM_DEFINE_METHOD0(String, GetSecondsString);
 
-		//! @brief Returns total amount of frames rendered.
+		//! Returns total amount of frames rendered.
 		//! @returns Total amount of frames rendered.
 		GD_PLATFORM_DEFINE_METHOD0(UInt32, GetFramesCount, { return this->TimeFramesCount; });
 
-		//! @brief Returns time at the beginning of the frame.
+		//! Returns time at the beginning of the frame.
 		//! @returns Time at the beginning of the frame.
 		GD_PLATFORM_DEFINE_METHOD0(Float64, GetFrameStartTime, { return this->TimeFrameStartTime; });
 
-		//! @brief Returns time it took to complete previous frame.
+		//! Returns time it took to complete previous frame.
 		//! @returns Time it took to complete previous frame.
 		GD_PLATFORM_DEFINE_METHOD0(Float64, GetFrameDeltaTime, { return this->TimeFrameDeltaTime; });
 
-		//! @brief Returns local time in UTC.
+		//! Returns local time in UTC.
 		//! @returns Local time in UTC.
 		//! @note Not all implementations can return full time. Unresolved fields would be set to zero.
 		GD_PLATFORM_DEFINE_METHOD0(DateTimeTp, GetDateTimeUTC);
 
-		//! @brief Queries local date in UTC.
+		//! Queries local date in UTC.
 		//! @returns Local date in UTC as a string.
 		GD_PLATFORM_DEFINE_METHOD0(String, GetDateUTCString);
 
-		//! @brief Queries local time in UTC.
+		//! Queries local time in UTC.
 		//! @returns Local time in UTC as a string.
 		GD_PLATFORM_DEFINE_METHOD0(String, GetTimeUTCString);
 
-		//! @brief Queries local date and time in UTC.
+		//! Queries local date and time in UTC.
 		//! @returns Local date and time in UTC as a string.
 		GD_PLATFORM_DEFINE_METHOD0(String, GetDateTimeUTCString);
 

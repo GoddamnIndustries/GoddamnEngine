@@ -1,11 +1,14 @@
-//! ==========================================================================================
-//! Algorithm.h - Template algorithms definitions. 
-//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
-//! ==========================================================================================
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
 
+//! @file GoddamnEngine/Core/Templates/Algorithm.h
+//! Template algorithms definitions. 
 #pragma once
-#ifndef GD_CORE_TEMPLATE_ALGORITH
-#define GD_CORE_TEMPLATE_ALGORITH
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Utility.h>
@@ -13,7 +16,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Returns a minimal object of the two specified.
+	//! Returns a minimal object of the two specified.
 	//! @param First First comparand.
 	//! @param Second Second comparand.
 	//! @tparam ComparandType Type of the objects. Should contain the '<' operator.
@@ -31,7 +34,7 @@ GD_NAMESPACE_BEGIN
 	}
 	//! @}
 
-	//! @brief Returns a maximum object of the two specified.
+	//! Returns a maximum object of the two specified.
 	//! @param First First comparand.
 	//! @param Second Second comparand.
 	//! @tparam ComparandType Type of the objects. Should contain the '>' operator.
@@ -50,5 +53,3 @@ GD_NAMESPACE_BEGIN
 	//! @}
 
 GD_NAMESPACE_END
-
-#endif	// ifndef GD_CORE_TEMPLATE_ALGORITH

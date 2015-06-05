@@ -24,12 +24,12 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Implements a Microsoft-specific console output device.
+	//! Implements a Microsoft-specific console output device.
 	class PosixOutputDeviceConsole : public IGenericOutputDeviceConsole
 	{
 	public:
 
-		//! @brief Initializes a console output device.
+		//! Initializes a console output device.
 		//! @param DeviceDefaultColor
 		//! @param DeviceVerbosity
 		//! @param DeviceTimeFormat
@@ -41,7 +41,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Deinitializes a console output device.
+		//! Deinitializes a console output device.
 		GDINL virtual ~PosixOutputDeviceConsole()
 		{
 			this->TearDown();
@@ -49,29 +49,29 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Sets new color of data printed to OutputDevice.
+		//! Sets new color of data printed to OutputDevice.
 		//! @param DeviceColor New color of data printed to OutputDevice.
 		GDAPI virtual void SetDataColor(OutputDeviceColorTp const DeviceColor) override;
 
-		//! @brief Internally dumps all buffered data to output device.
+		//! Internally dumps all buffered data to output device.
 		GDAPI virtual void Flush() override;
 
-		//! @brief Closes output device and cleans all data.
+		//! Closes output device and cleans all data.
 		GDAPI virtual void TearDown() override;
 
-		//! @brief Internally writes a string to OutputDevice.
+		//! Internally writes a string to OutputDevice.
 		//! @param Message Message to print.
 		GDAPI virtual void Print(String const& Message) override;
 
-		//! @brief Shows or hides a console window.
+		//! Shows or hides a console window.
 		//! @param DoShow Whether to show or hide a console window.
 		GDAPI virtual void ShowConsole(bool DoShow) override;
 
-		//! @brief Returns true if console window is currently shown or not.
+		//! Returns true if console window is currently shown or not.
 		//! @returns True if console window is currently shown or not.
 		GDAPI virtual bool IsConsoleShown() const override;
 
-		//! @brief Returns true if application is already attached to some console window.
+		//! Returns true if application is already attached to some console window.
 		//! @returns True if application is already attached to some console window.
 		GDAPI virtual bool IsConsoleAttached() const override;
 

@@ -12,10 +12,10 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief ANSI Character.
+	//! ANSI Character.
 	typedef char Char;
 
-	//! @brief Unicode Character.
+	//! Unicode Character.
 	typedef wchar_t WideChar;
 
 	template <typename CharType>
@@ -49,19 +49,19 @@ GD_NAMESPACE_BEGIN
 		}
 	};	// struct Literal<WideChar>
 
-	//! @brief Selects wide or ANSI character literal based on specified type.
+	//! Selects wide or ANSI character literal based on specified type.
 	//! @param CharType Type of characters.
 	//! @param StringLiteral Literal.
 	#define GD_LITERAL(CharType, StringLiteral) Literal<CharType>::Select(StringLiteral, L##StringLiteral)
 
-	//! @brief Provides helper functions for processing characters. Contains methods from "cctype" and "cwctype".
+	//! Provides helper functions for processing characters. Contains methods from "cctype" and "cwctype".
 	//! @tparam CharType Specified character type.
 	template<typename CharType>
 	class CCharTraits final
 	{
 	public:
 
-		//! @brief Returns true if this character is valid digit in specified notation. Currently supports notations range between 2 and 36.
+		//! Returns true if this character is valid digit in specified notation. Currently supports notations range between 2 and 36.
 		//! @param Character Specified character.
 		//! @param Notation Notation in which value is represented.
 		//! @returns True if this character is valid digit in specified notation.
@@ -105,7 +105,7 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		//! @brief Returns true if this character is valid digit.
+		//! Returns true if this character is valid digit.
 		//! @param Character Specified character.
 		//! @returns True if this character is valid digit.
 		//! @{
@@ -121,7 +121,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns true if this character is valid hex-a-decimal digit.
+		//! Returns true if this character is valid hex-a-decimal digit.
 		//! @param Character Specified character.
 		//! @returns True if this character is valid hex-a-decimal digit.
 		//! @{
@@ -137,7 +137,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns true if this character can be used in identifier name.
+		//! Returns true if this character can be used in identifier name.
 		//! @param Character Specified character.
 		//! @returns True if this character can be used in identifier name.
 		//! @{
@@ -153,7 +153,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns true if this character is valid special character.
+		//! Returns true if this character is valid special character.
 		//! @param Character Specified character.
 		//! @returns True if this character is valid special character.
 		//! @{
@@ -169,9 +169,9 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns true if this character is valid space character.
+		//! Returns true if this character is valid space character.
 		//! @param Character Specified character.
-		//! @brief True if this character is valid special character
+		//! True if this character is valid special character
 		//! @{
 		template<typename TheCharType = CharType>
 		GDINL static typename EnableIf<TypeTraits::IsSame<TheCharType, Char>::Value, bool>::Type IsSpace(CharType const Character)
@@ -185,9 +185,9 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Converts this character in specified notation to decimal one. Currently supports notations range between 2 and 36.
+		//! Converts this character in specified notation to decimal one. Currently supports notations range between 2 and 36.
 		//! @param Character Specified character.
-		//! @brief Integer representation of this character data.
+		//! Integer representation of this character data.
 		GDINL static UInt8 ToDigit(Char const Character)
 		{
 			GD_DEBUG_ASSERT(IsDigit(Character), "Specified character is not a digit.");
@@ -205,7 +205,7 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		//! @brief Returns lower-cased equivalent of the character.
+		//! Returns lower-cased equivalent of the character.
 		//! @param Character Specified character to convert.
 		//! @returns Lower-cased equivalent of the character.
 		//! @{
@@ -221,7 +221,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns upper-cased equivalent of the character.
+		//! Returns upper-cased equivalent of the character.
 		//! @param Character Specified character to convert.
 		//! @returns Upper-cased equivalent of the character.
 		//! @{

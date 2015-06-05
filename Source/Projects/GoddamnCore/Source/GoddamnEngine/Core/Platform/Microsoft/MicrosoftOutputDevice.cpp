@@ -14,7 +14,7 @@
 
 GD_NAMESPACE_BEGIN
 	
-	//! @brief Sets new color of data printed to OutputDevice.
+	//! Sets new color of data printed to OutputDevice.
 	//! @param DeviceColor New color of data printed to OutputDevice.
 	GDAPI void MicrosoftOutputDeviceConsole::SetDataColor(OutputDeviceColorTp const DeviceColor)
 	{
@@ -34,19 +34,19 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Internally dumps all buffered data to output device.
+	//! Internally dumps all buffered data to output device.
 	GDAPI void MicrosoftOutputDeviceConsole::Flush()
 	{
 		// Nothing to do
 	}
 
-	//! @brief Closes output device and cleans all data.
+	//! Closes output device and cleans all data.
 	GDAPI void MicrosoftOutputDeviceConsole::TearDown()
 	{
 		this->Flush();
 	}
 
-	//! @brief Internally writes a string to OutputDevice.
+	//! Internally writes a string to OutputDevice.
 	//! @param Message Message to print.
 	GDAPI void MicrosoftOutputDeviceConsole::Print(String const& Message)
 	{
@@ -56,7 +56,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Shows or hides a console window.
+	//! Shows or hides a console window.
 	//! @param DoShow Whether to show or hide a console window.
 	GDAPI void MicrosoftOutputDeviceConsole::ShowConsole(bool DoShow)
 	{
@@ -110,14 +110,14 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Returns true if console window is currently shown or not.
+	//! Returns true if console window is currently shown or not.
 	//! @returns True if console window is currently shown or not.
 	GDAPI bool MicrosoftOutputDeviceConsole::IsConsoleShown() const
 	{
 		return this->Console != nullptr;
 	}
 
-	//! @brief Returns true if application is already attached to some console window.
+	//! Returns true if application is already attached to some console window.
 	//! @returns True if application is already attached to some console window.
 	GDAPI bool MicrosoftOutputDeviceConsole::IsConsoleAttached() const
 	{

@@ -17,60 +17,95 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Generic Critical Section class.
+	typedef Int32 TimeoutTp;
+	TimeoutTp static const TimeoutInfinite = -1;
+
+	// ------------------------------------------------------------------------------------------
+	//! Generic Critical Section class.
 	class IGenericCriticalSection
 	{
-	public:
-		//! @brief Initializes a Critical Section.
+	protected:
 		GDINL IGenericCriticalSection() {}
+		GDINL virtual ~IGenericCriticalSection() {}
 
-		//! @brief Deinitializes a Critical Section.
-		GDINL virtual ~IGenericCriticalSection()
+	public:
+
+		// ------------------------------------------------------------------------------------------
+		//! Locks the Critical Section.
+		GDINL virtual void Enter()
 		{
 		}
 
-		//! @brief Locks the Critical Section.
-		GDINL virtual void Enter() { }
-
-		//! @brief Unlocks the Critical Section.
-		GDINL virtual void Leave() {}
+		// ------------------------------------------------------------------------------------------
+		//! Unlocks the Critical Section.
+		GDINL virtual void Leave()
+		{
+		}
 	};	// class IGenericCriticalSection
 		
-	//! @brief RAII object that locks specified object.
+	// ------------------------------------------------------------------------------------------
+	//! RAII object that locks specified object.
 	class ScopedLock final : IUncopiable
 	{
 	private:
 		IGenericCriticalSection* const SynchObject;
 
 	public:
-		//! @brief Initializes scoped lock and locks sync object.
+
+		// ------------------------------------------------------------------------------------------
+		//! Initializes scoped lock and locks sync object.
 		//! @param SynchObject Object which would be locked.
 		GDINL explicit ScopedLock(IGenericCriticalSection* const SynchObject)
 			: SynchObject(SynchObject)
 		{
-			GD_ASSERT(SynchObject != nullptr, "Null pointer critical section specified.");
+			GD_DEBUG_ASSERT(SynchObject != nullptr, "Null pointer critical section specified.");
 			this->SynchObject->Enter();
 		}
 
-		//! @brief Deinitializes scoped lock and unlocks sync object.
+		// ------------------------------------------------------------------------------------------
+		//! Deinitializes scoped lock and unlocks sync object.
 		GDINL ~ScopedLock()
 		{
 			this->SynchObject->Leave();
 		}
 	};	// class ScopedLock
 
-	class IGenericEvent
+	// ------------------------------------------------------------------------------------------
+	//! Generic signal/event class.
+	class IGenericThreadSignal : public IUncopiable
 	{
+	protected:
+
+		// ------------------------------------------------------------------------------------------
+		//! Initializes the current signal.
+		//! @param RequiresManualReset Does the signal requires to be manually reseted.
+		GDINL IGenericThreadSignal(bool const RequiresManualReset = false) {}
+		GDINL virtual ~IGenericThreadSignal() {}
+
 	public:
-		GDAPI IGenericEvent() { }
-		GDAPI virtual ~IGenericEvent() { }
 
-		GDAPI virtual bool CreateEvent(bool const RequiresManualResetting = false) abstract;
-		GDAPI virtual void TriggerEvent() abstract;
-		GDAPI virtual bool AwaitForEvent() abstract;
-	};	// class IGenericEvent
+		// ------------------------------------------------------------------------------------------
+		//! Raises the current signal.
+		GDAPI virtual void RaiseSignal()
+		{
+		}
 
+		// ------------------------------------------------------------------------------------------
+		//! Clears the current signal.
+		GDAPI virtual void ClearSignal()
+		{
+		}
 
+		// ------------------------------------------------------------------------------------------
+		//! Waits for signal to be raised with specified timeout.
+		//! @param TimeoutInMilliseconds Specified timeout in milliseconds. Can be specified as infinite.
+		//! @returns @c true, if signal was raised in the timeout period, @c false if timeout was reached.
+		GDAPI virtual bool WaitForSignal(TimeoutTp const TimeoutInMilliseconds) const
+		{
+			GD_NOT_USED(TimeoutInMilliseconds);
+			return true;
+		}
+	};	// class IGenericThreadSignal
 
 GD_NAMESPACE_END
 
@@ -78,7 +113,7 @@ GD_NAMESPACE_END
 #	include GD_PLATFORM_INCLUDE(GoddamnEngine/Core/Platform, Threading.h)
 #else	// if GD_PLATFORM_HAS_MULTITHREADING
 GD_NAMESPACE_BEGIN
-	//! @brief Represents definitions for Critical Section.
+	//! Represents definitions for Critical Section.
 	typedef IGenericCriticalSection CriticalSection;
 GD_NAMESPACE_END
 #endif	// if GD_PLATFORM_HAS_MULTITHREADING

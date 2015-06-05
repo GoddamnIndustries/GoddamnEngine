@@ -3,10 +3,10 @@
 //! Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 //! ==========================================================================================
 
+#include <typeinfo>
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Containers/Map.h>
-#include <GoddamnEngine/Core/Containers/Symbol.h>
-#include <GoddamnEngine/Core/Object/Reflection.h>
+//#include <GoddamnEngine/Core/Containers/Symbol.h>
 #include <GoddamnEngine/Core/Math/Matrix4x4.h>
 
 #include <GoddamnEngine/Core/Platform/Application.h>
@@ -15,10 +15,11 @@
 #include <GoddamnEngine/Core/Platform/Threading.h>
 #include <GoddamnEngine/Core/Platform/OutputDevice.h>
 #include <GoddamnEngine/Core/Platform/SplashScreen.h>
+#include <GoddamnEngine/Core/Object/Type.h>
 
 GD_USING_NAMESPACE;
 
-#if 1
+#if 0
 struct Component : public IReflectable { };
 
 $interface(Transform $extends Component)
@@ -42,7 +43,7 @@ public:
 
 	// ...
 
-	//! @brief Pointer to the parent transform of the object.
+	//! Pointer to the parent transform of the object.
 	$synthesize_property_tagged(HideInEditor, ParentTransform $as decltype(m_ParentTransform))
 		$getter $synthesize_generic_getter(m_ParentTransform);
 		$setter {
@@ -95,39 +96,13 @@ public:
 $end;
 #endif	// if 0
 
+struct BBB { int c; char d; };
+
 int main(int const CommandLineArgsCount, char const* const* const CommandLineArgsList)
 {
-	Application App;
-	App.InitializeObject();
-
-	OutputDeviceConsole Debug;
-	Debug.ShowConsole(true);
-	Debug.LogError("HUi");
-
-	Symbol a(L"HUI");
-	printf("x%p", &a);
-
-	SplashScreen* SS = new SplashScreen();
-
-	SplashScreen::InitializeObject();
-
-	while (true) { 
-		
-	}
-
-	Transform* T = GD_NEW(Transform);
-	ReflectionClass const* TransformClass = Transform::GetClassType();
-	ReflectionProperty const* TransformPositionPr = TransformClass->ClassFirstProperty->PropertyNext->PropertyNext;
-	ReflectionProperty const* TransformScalePr = TransformPositionPr->PropertyNext->PropertyNext->PropertyNext;
-
-	Map<int, int> SM;
-
-	Vector3Fast Pos;
-	T->SetPosition(Vector3Fast(100.0f));
-	TransformPositionPr->GetValueViaCopying(T, &Pos);
-	TransformScalePr->SetValueViaCopying(T, &Pos);
-	GD_DELETE(T);
-
+	auto const BBBTI0 = TypeInfo::ForName("BBB");
+	auto const BBBTI1 = TypeInfo::ForType<BBB>();
+	auto const BBBTI2 = TypeInfo::ForName("BBB");
 
 	// Place your code here!
 	GD_DEBUG_ASSERT(false, "Hello from code of the GoddamnEngine Sample!");

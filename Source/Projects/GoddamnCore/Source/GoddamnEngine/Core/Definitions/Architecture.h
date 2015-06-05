@@ -14,11 +14,11 @@
 #	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
 #endif	// if !defined(GD_INSIDE_INCLUDE_H)
 
-#include <GoddamnEngine/Include.h>
+//#include <GoddamnEngine/Include.h>
 
-// ==========================================================================================
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Platform Determination.
-// ==========================================================================================
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #pragma region Platform Determination
 #if !GD_DOCUMENTATION
 
@@ -35,52 +35,6 @@
 #	if 0																// These enables heap debugging.
 #	define _CRTDBG_MAP_ALLOC											GD_TRUE
 #	define _CRTDBG_MAP_ALLOC_NEW										GD_TRUE
-#	endif	// if 0
-#	if 0																// These hides unrequired data from Windows.h
-#	define NOGDICAPMASKS												GD_TRUE		// CC_*, LC_*, PC_*, CP_*, TC_*, RC_
-#	define NOVIRTUALKEYCODES											GD_TRUE		// VK_*
-#	define NOWINMESSAGES												GD_TRUE		// WM_*, EM_*, LB_*, CB_*
-#	define NOWINSTYLES													GD_TRUE		// WS_*, CS_*, ES_*, LBS_*, SBS_*, CBS_*
-#	define NOSYSMETRICS													GD_TRUE		// SM_*
-#	define NOMENUS														GD_TRUE		// MF_*
-#	define NOICONS														GD_TRUE		// IDI_*
-#	define NOKEYSTATES													GD_TRUE		// MK_*
-#	define NOSYSCOMMANDS												GD_TRUE		// SC_*
-#	define NORASTEROPS													GD_TRUE		// Binary and Tertiary raster ops
-#	define NOSHOWWINDOW													GD_TRUE		// SW_*
-#	define OEMRESOURCE													GD_TRUE		// OEM Resource values
-#	define NOATOM														GD_TRUE		// Atom Manager routines
-#	define NOCLIPBOARD													GD_TRUE		// Clipboard routines
-#	define NOCOLOR														GD_TRUE		// Screen colors
-#	define NOCTLMGR														GD_TRUE		// Control and Dialog routines
-#	define NODRAWTEXT													GD_TRUE		// DrawText() and DT_*
-#	define NOGDI														GD_TRUE		// All GDI #defines and routines
-#	define NOKERNEL														GD_TRUE		// All KERNEL #defines and routines
-#	define NOUSER														GD_TRUE		// All USER #defines and routines
-#	define NONLS														GD_TRUE		// All NLS #defines and routines
-#	define NOMB															GD_TRUE		// MB_* and MessageBox()
-#	define NOMEMMGR														GD_TRUE		// GMEM_*, LMEM_*, GHND, LHND, associated routines
-#	define NOMETAFILE													GD_TRUE		// typedef METAFILEPICT
-#	define NOMINMAX														GD_TRUE		// Macros min(a,b) and max(a,b)
-#	define NOMSG														GD_TRUE		// typedef MSG and associated routines
-#	define NOOPENFILE													GD_TRUE		// OpenFile(), OemToAnsi, AnsiToOem, and OF_*
-#	define NOSCROLL														GD_TRUE		// SB_* and scrolling routines
-#	define NOSERVICE													GD_TRUE		// All Service Controller routines, SERVICE_ equates, etc.
-#	define NOSOUND														GD_TRUE		// Sound driver routines
-#	define NOTEXTMETRIC													GD_TRUE		// typedef TEXTMETRIC and associated routines
-#	define NOWH															GD_TRUE		// SetWindowsHook and WH_*
-#	define NOWINOFFSETS													GD_TRUE		// GWL_*, GCL_*, associated routines
-#	define NOCOMM														GD_TRUE		// COMM driver routines
-#	define NOKANJI														GD_TRUE		// Kanji support stuff.
-#	define NOHELP														GD_TRUE		// Help engine interface.
-#	define NOPROFILER													GD_TRUE		// Profiler interface.
-#	define NODEFERWINDOWPOS												GD_TRUE		// DeferWindowPos routines
-#	define NOMCX														GD_TRUE		// Modem Configuration Extensions
-#	define NOCRYPT														GD_TRUE	
-#	define NOTAPE														GD_TRUE	
-#	define NOIMAGE														GD_TRUE	
-#	define NOPROXYSTUB													GD_TRUE	
-#	define NORPC														GD_TRUE	
 #	endif	// if 0
 #	include <winapifamily.h>
 #	define GD_PLATFORM_API_MICROSOFT									GD_TRUE
@@ -114,7 +68,7 @@
 #	define GD_PLATFORM_API_LIBSDL1										GD_TRUE
 #	if (defined(TARGET_OS_MAC))											// OS X application.
 #		define GD_PLATFORM_DESKTOP										GD_TRUE
-#		define GD_PLATFORM_OSX											GD_TRUE
+#		define GD_PLATFORM_OS_X											GD_TRUE
 #	elif defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_IPHONE) || defined(TARGET_OS_IPAD) // iOS application.
 #		define GD_PLATFORM_MOBILE										GD_TRUE
 #		define GD_PLATFORM_IOS											GD_TRUE
@@ -187,8 +141,8 @@
 #if (!defined(GD_PLATFORM_WINDOWS_RT))
 #	define GD_PLATFORM_WINDOWS_RT										GD_FALSE
 #endif	// if (!defined(GD_PLATFORM_WINDOWS_RT))
-#if (!defined(GD_PLATFORM_OSX))
-#	define GD_PLATFORM_OSX												GD_FALSE
+#if (!defined(GD_PLATFORM_OS_X))
+#	define GD_PLATFORM_OS_X												GD_FALSE
 #endif	// if (!defined(GD_PLATFORM_OS_X))
 #if (!defined(GD_PLATFORM_IOS))
 #	define GD_PLATFORM_IOS												GD_FALSE
@@ -280,77 +234,77 @@
 // Platform macros.
 // ------------------------------------------------------------------------------------------
 
-//! @brief Engine is being built as a Windows Desktop application.
+//! Engine is being built as a Windows Desktop application.
 #define GD_PLATFORM_WINDOWS												Compile-Time Value
 
-//! @brief Engine is being built as a Microsoft Windows Phone 8 application.
+//! Engine is being built as a Microsoft Windows Phone 8 application.
 #define GD_PLATFORM_WINDOWS_PHONE8										Compile-Time Value
 
-//! @brief Engine is being built as a Microsoft Windows RT application.
+//! Engine is being built as a Microsoft Windows RT application.
 #define GD_PLATFORM_WINDOWS_RT											Compile-Time Value
 
-//! @brief Engine is being built as an Apple OS X application.
-#define GD_PLATFORM_OSX													Compile-Time Value
+//! Engine is being built as an Apple OS X application.
+#define GD_PLATFORM_OS_X												Compile-Time Value
 
-//! @brief Engine is being built as an Apple iOS application.
+//! Engine is being built as an Apple iOS application.
 #define GD_PLATFORM_IOS													Compile-Time Value
 
-//! @brief Engine is being built as a GNU/Linux application.
+//! Engine is being built as a GNU/Linux application.
 #define GD_PLATFORM_GNU_LINUX											Compile-Time Value
 
-//! @brief Engine is being built as a Google Android application.
+//! Engine is being built as a Google Android application.
 #define GD_PLATFORM_ANDROID												Compile-Time Value
 
-//! @brief Engine is being built as a Microsoft Xbox One application.
+//! Engine is being built as a Microsoft Xbox One application.
 #define GD_PLATFORM_XBOX_ONE											Compile-Time Value
 
-//! @brief Engine is being built as a Sony PlayStation 4 game.
+//! Engine is being built as a Sony PlayStation 4 game.
 #define GD_PLATFORM_PLAYSTATION4										Compile-Time Value
 
-//! @brief Engine is being built as a HTML5/Asm.js/Emscripten webpage.
+//! Engine is being built as a HTML5/Asm.js/Emscripten webpage.
 #define GD_PLATFORM_HTML5												Compile-Time Value
 
 // ------------------------------------------------------------------------------------------
 // Platform Families macros.
 // ------------------------------------------------------------------------------------------
 
-//! @brief Engine is being built as a desktop application.
+//! Engine is being built as a desktop application.
 #define GD_PLATFORM_DESKTOP 											Compile-Time Value
 
-//! @brief Engine is being built as a mobile application.
+//! Engine is being built as a mobile application.
 #define GD_PLATFORM_MOBILE 												Compile-Time Value
 
-//! @brief Engine is being built as a console application/game.
+//! Engine is being built as a console application/game.
 #define GD_PLATFORM_CONSOLE 											Compile-Time Value
 
-//! @brief Engine is being built as a webpage.
+//! Engine is being built as a webpage.
 #define GD_PLATFORM_WEB													Compile-Time Value
 
 // ------------------------------------------------------------------------------------------
 // Platform API macros.
 // ------------------------------------------------------------------------------------------
 
-//! @brief Engine is being built with a support of the Win32 API.
+//! Engine is being built with a support of the Win32 API.
 #define GD_PLATFORM_API_MICROSOFT 										Compile-Time Value
 
-//! @brief Engine is being built with a support of the Cocoa API.
+//! Engine is being built with a support of the Cocoa API.
 #define GD_PLATFORM_API_COCOA 											Compile-Time Value
 
-//! @brief Engine is being built with a support of the Posix API.
+//! Engine is being built with a support of the Posix API.
 #define GD_PLATFORM_API_POSIX 											Compile-Time Value
 
-//! @brief Engine is being built with a support of the LibSDL1 API.
+//! Engine is being built with a support of the LibSDL1 API.
 #define GD_PLATFORM_API_LIBSDL1 										Compile-Time Value
 
-//! @brief Engine is being built with a support of the LibSDL2 API.
+//! Engine is being built with a support of the LibSDL2 API.
 #define GD_PLATFORM_API_LIBSDL2 										Compile-Time Value
 
 #endif	// if !GD_DOCUMENTATION
 #pragma endregion Platform Determination
 
-// ==========================================================================================
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Compiler Determination.
-// ==========================================================================================
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #pragma region Platform Determination
 #if !GD_DOCUMENTATION
 
@@ -437,34 +391,34 @@
 // Compiler macros.
 // ------------------------------------------------------------------------------------------
 
-//! @brief Engine is being built with a Intel C++ compiler.
+//! Engine is being built with a Intel C++ compiler.
 #define GD_COMPILER_INTEL 												Compile-Time Value
 
-//! @brief Engine is being built with a Microsoft Visual C++ compiler.
+//! Engine is being built with a Microsoft Visual C++ compiler.
 #define GD_COMPILER_MSVC 												Compile-Time Value
 
-//! @brief Engine is being built with a Clang compiler.
+//! Engine is being built with a Clang compiler.
 #define GD_COMPILER_CLANG 												Compile-Time Value
 
-//! @brief Engine is being built with a GCC compiler.
+//! Engine is being built with a GCC compiler.
 #define GD_COMPILER_GCC													Compile-Time Value
 
 // ------------------------------------------------------------------------------------------
 // Compiler compatibility layer macros.
 // ------------------------------------------------------------------------------------------
 
-//! @brief Engine is being built with a MSVC-compatible compiler.
+//! Engine is being built with a MSVC-compatible compiler.
 #define GD_COMPILER_MSVC_COMPATIBLE										Compile-Time Value
 
-//! @brief Engine is being built with a GCC-compatible compiler.
+//! Engine is being built with a GCC-compatible compiler.
 #define GD_COMPILER_GCC_COMPATIBLE										Compile-Time Value
 
 #endif	// if !GD_DOCUMENTATION
 #pragma endregion Platform Determination
 
-// ==========================================================================================
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Architecture Determination.
-// ==========================================================================================
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #pragma region Platform Determination
 #if !GD_DOCUMENTATION
 
@@ -592,34 +546,34 @@
 // Architecture macros.
 // ------------------------------------------------------------------------------------------
 
-//! @brief Engine is being built to a x86 architecture.
+//! Engine is being built to a x86 architecture.
 #define GD_ARCHITECTURE_X86 											Compile-Time Value
 
-//! @brief Engine is being built to a x64 architecture.
+//! Engine is being built to a x64 architecture.
 #define GD_ARCHITECTURE_X64  											Compile-Time Value
 
-//! @brief Engine is being built to an ARM architecture.
+//! Engine is being built to an ARM architecture.
 #define GD_ARCHITECTURE_ARM32  											Compile-Time Value
 
-//! @brief Engine is being built to an ARM64 architecture.
+//! Engine is being built to an ARM64 architecture.
 #define GD_ARCHITECTURE_ARM64  											Compile-Time Value
 
 // ------------------------------------------------------------------------------------------
 // Architecture Endianity macros.
 // ------------------------------------------------------------------------------------------
 
-//! @brief Engine is being built to a Big-Endian architecture.
+//! Engine is being built to a Big-Endian architecture.
 #define GD_ENDIANITY_BIG  												Compile-Time Value
 
-//! @brief Engine is being built to a Little-Endian architecture.
+//! Engine is being built to a Little-Endian architecture.
 #define GD_ENDIANITY_LITTLE				  								Compile-Time Value
 
 #endif	// if !GD_DOCUMENTATION
 #pragma endregion Platform Determination
 
-// ==========================================================================================
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Target Configuration Determination.
-// ==========================================================================================
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #pragma region Target Configuration Determination
 #if !GD_DOCUMENTATION
 
@@ -665,24 +619,24 @@
 
 #else	// if !GD_DOCUMENTATION
 
-//! @brief Engine is being built in the Debug configuration.
+//! Engine is being built in the Debug configuration.
 #define GD_DEBUG														Compile-Time Value
 
-//! @brief Engine is being built for Testing.
+//! Engine is being built for Testing.
 #define GD_TESTING														Compile-Time Value
 
-//! @brief Engine is being built in the Development configuration.
+//! Engine is being built in the Development configuration.
 #define GD_DEVELOPMENT													Compile-Time Value
 
-//! @brief Engine is being built in the Release configuration.
+//! Engine is being built in the Release configuration.
 #define GD_RELEASE														Compile-Time Value
 
 #endif	// if !GD_DOCUMENTATION
 #pragma endregion Target Configuration Determination
 
-// ==========================================================================================
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Compiler directives wrapping and etc.
-// ==========================================================================================
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #pragma region Compiler Directives
 
 #if defined(__INTELLISENSE__)
@@ -691,6 +645,9 @@
 #if (!defined(__has_builtin))
 #	define __has_builtin(builtin) 0	// Compatibility with Clang...
 #endif	// if (!defined(__has_builtin))
+#if (!defined(__builtin_expect))
+#	define __builtin_expect(expression, expected) (!!(expression) == expected)
+#endif	// if (!defined(__builtin_expect))
 #if (!defined(__COUNTER__))	// __COUNTER__ is required in several places.
 #	error '__COUNTER__' macro is not defined. Check your compiler to support of it.
 #endif	// if (!defined(__COUNTER__))
@@ -719,25 +676,29 @@
 // Definition declaration specifications.
 // ------------------------------------------------------------------------------------------
 
-//! @brief Definition would be aligned in MSVC-compatible notation (if is supported).
+// ------------------------------------------------------------------------------------------
+//! Definition would be aligned in MSVC-compatible notation (if is supported).
 //! @param Alignment Alignment value.
 #define GD_ALIGN_MSVC(Alignment) \
 	GD_COMPILER_GCC_COMPATIBLE_CODE() \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__declspec(align(Alignment)))
 
-//! @brief Definition would be aligned in GCC-compatible notation (if is supported).
+// ------------------------------------------------------------------------------------------
+//! Definition would be aligned in GCC-compatible notation (if is supported).
 //! @param Alignment Alignment value.
 #define GD_ALIGN_GCC(Alignment) \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((aligned(Alignment)))) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE()
 
-//! @brief Definition would be local to the thread.
+// ------------------------------------------------------------------------------------------
+//! Definition would be local to the thread.
 //! @todo Remove this when MSVC would support 'thread_local'.
 #define GD_THREAD_LOCAL \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(thread_local) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__declspec(thread)) 
 
-//! @brief Definition would be defined deprecated.
+// ------------------------------------------------------------------------------------------
+//! Definition would be defined deprecated.
 //! @param Text Deprecation notation message.
 //! @todo Remove this when compiler would support attributes.
 #define GD_DEPRECATED(Text) \
@@ -758,27 +719,32 @@
 #	endif	// if (defined(_WINDLL) && (!defined(GD_DLL_IMPORT)))
 #endif	// if GD_COMPILER_MSVC_COMPATIBLE
 
-//! @brief Defines an API method.
+// ------------------------------------------------------------------------------------------
+//! Defines an API method.
 #define GDAPI \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((visibility("default")))) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(GD_EXPORT(__declspec(dllexport)) GD_IMPORT(__declspec(dllexport)))
 
-//! @brief Defines a method that stays internal for the Assembly.
+// ------------------------------------------------------------------------------------------
+//! Defines a method that stays internal for the Assembly.
 #define GDINT \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((visibility("protected")))) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__declspec()) 
 
-//! @brief Defines a method that would be exported from the Assembly.
+// ------------------------------------------------------------------------------------------
+//! Defines a method that would be exported from the Assembly.
 #define GDEXP \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((visibility("default")))) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__declspec(dllexport)) 
 
-//! @brief Defines a method that would be imported to the Assembly.
+// ------------------------------------------------------------------------------------------
+//! Defines a method that would be imported to the Assembly.
 #define GDIMP \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((visibility("default")))) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__declspec(dllimport)) 
 
-//! @brief Define this to disable force inlining of methods.
+// ------------------------------------------------------------------------------------------
+//! Define this to disable force inlining of methods.
 #define GD_NO_FORCE_INLINE 0
 #if GD_NO_FORCE_INLINE
 #	define GD_FORCE_INLINE(...) inline
@@ -786,24 +752,28 @@
 #	define GD_FORCE_INLINE(...) __VA_ARGS__
 #endif	// if GD_NO_FORCE_INLINE
 
-//! @brief Defines a method that forcedly inlined into code.
+// ------------------------------------------------------------------------------------------
+//! Defines a method that forcedly inlined into code.
 #define GDINL GD_FORCE_INLINE( \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((always_inline)) inline) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__forceinline))
 
-//! @brief Defines a method that would terminate the application.
+// ------------------------------------------------------------------------------------------
+//! Defines a method that would terminate the application.
 #define GD_NORETURN \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((noreturn))) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__declspec(noreturn)) 
 
-//! @brief Defines a function that smell like printf. Does some real static analysis on GCC-compatible compilers.
+// ------------------------------------------------------------------------------------------
+//! Defines a function that smell like printf. Does some real static analysis on GCC-compatible compilers.
 //! @param StringIndex Index of a Format-string parameter.
 //! @param FirstToCheck Index of first Format-value parameter.
 #define GD_PRINTF_LIKE(StringIndex, FirstToCheck) \
 	GD_COMPILER_GCC_COMPATIBLE(__attribute__((format(printf, StringIndex, FirstToCheck)))) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE() 
 
-//! @brief Defines a method that would be using a 'Vector Calling Convention'.
+// ------------------------------------------------------------------------------------------
+//! Defines a method that would be using a 'Vector Calling Convention'.
 //! @see http://blogs.msdn.com/b/vcblog/archive/2013/07/12/introducing-vector-calling-convention.aspx
 #define GD_VECTORCALL \
 	GD_COMPILER_GCC_COMPATIBLE_CODE() \

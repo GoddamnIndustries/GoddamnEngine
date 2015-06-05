@@ -10,9 +10,11 @@
 //! Windows Input Interface definitions.
 
 #include <GoddamnEngine/Core/Platform/Input.h>
+#include <GoddamnEngine/Core/Templates/Algorithm.h>
 #if GD_PLATFORM_WINDOWS 
 
 #include <Xinput.h>
+#pragma comment(lib, "xinput.lib")
 
 GD_NAMESPACE_BEGIN
 
@@ -27,18 +29,18 @@ GD_NAMESPACE_BEGIN
 		return static_cast<Float32>(Value) / static_cast<Float32>(UInt8Max);
 	}
 
-	//! @brief Initializes an input interface.
+	//! Initializes an input interface.
 	void WindowsInput::InitializeObject_Inst()
 	{
 	
 	}
 
-	//! @brief Destroys an input interface.
+	//! Destroys an input interface.
 	void WindowsInput::DestroyObject_Inst()
 	{
 	}
 
-	//! @brief Ticks a frame.
+	//! Ticks a frame.
 	void WindowsInput::TickObject_Inst()
 	{
 		for (SizeTp InputGamepadIndex = 0; InputGamepadIndex < MaxSupportedGamepads; ++InputGamepadIndex)

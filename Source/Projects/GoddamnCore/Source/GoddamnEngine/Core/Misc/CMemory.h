@@ -11,13 +11,13 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Provides functions for C memory. Contains wrapped "mem*" methods and methods from "cstdio".
+	//! Provides functions for C memory. Contains wrapped "mem*" methods and methods from "cstdio".
 	class CMemory final
 	{
 	public:
 		// ... string.h's functions ...
 
-		//! @brief Fills C memory buffer with a specified value.
+		//! Fills C memory buffer with a specified value.
 		//! @param Dest Destination pointer.
 		//! @param Source Source pointer.
 		//! @param Value Value to fill into the buffer.
@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 			return ::std::memset(Dest, static_cast<int>(Value), MaxCount);
 		}
 
-		//! @brief Copies C memory buffer from source to destination. Buffers should not overlap.
+		//! Copies C memory buffer from source to destination. Buffers should not overlap.
 		//! @param Dest Destination pointer.
 		//! @param DestLength Length of the destination buffer.
 		//! @param Source Source pointer.
@@ -50,7 +50,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 
-		//! @brief Copies C memory buffer from source to destination. Buffers may not overlap.
+		//! Copies C memory buffer from source to destination. Buffers may not overlap.
 		//! @param Dest Destination pointer.
 		//! @param DestLength Length of the destination buffer.
 		//! @param Source Source pointer.

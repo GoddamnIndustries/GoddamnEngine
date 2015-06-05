@@ -69,7 +69,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Allocates a new symbol entry.
+	//! Allocates a new symbol entry.
 	//! @param SymbolData String symbol data.
 	//! @param SymbolLength Length of a symbol data.
 	//! @param SymbolFlags Initial flags of a symbol.
@@ -108,7 +108,7 @@ GD_NAMESPACE_BEGIN
 		return TableRecord;
 	}
 
-	//! @brief Deallocates a symbol entry.
+	//! Deallocates a symbol entry.
 	//! @param TableRecord A symbol entry to deallocate.
 	GDAPI void SymbolTableRecord::DeallocateSymbolTableRecord(SymbolTableRecord* const TableRecord)
 	{
@@ -119,7 +119,7 @@ GD_NAMESPACE_BEGIN
 	// Symbol class.
 	// ------------------------------------------------------------------------------------------
 
-	//! @brief Initializes a symbol with some data, it's length and flags.
+	//! Initializes a symbol with some data, it's length and flags.
 	//! @param SymbolData Symbol data.
 	//! @param SymbolLength Length of a symbol data.
 	//! @param SymbolFlags Flags of a data.

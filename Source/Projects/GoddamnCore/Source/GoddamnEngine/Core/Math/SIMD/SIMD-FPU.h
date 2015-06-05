@@ -14,14 +14,14 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief 4D Vector type stored in single register.
+	//! 4D Vector type stored in single register.
 	typedef GD_ALIGN_MSVC(4) struct { Float32 Values[4]; } GD_ALIGN_GCC(4) SIMDRegisterFPU;
 
-	//! @brief SIMD register math FPU/generic implementation.
+	//! SIMD register math FPU/generic implementation.
 	class SIMDFPU : public SIMDGeneric<SIMDRegisterFPU>
 	{
 	public:
-		//! @brief Creates a new SIMD register based on four floats.
+		//! Creates a new SIMD register based on four floats.
 		//! @param X First component of the SIMD register.
 		//! @param Y Second component of the SIMD register.
 		//! @param Z Third component of the SIMD register.
@@ -33,7 +33,7 @@ GD_NAMESPACE_BEGIN
 			return Register;
 		}
 
-		//! @brief Creates a new SIMD register based on bitwise equivalent of four integers.
+		//! Creates a new SIMD register based on bitwise equivalent of four integers.
 		//! @param X First component of the SIMD register bitwise value.
 		//! @param Y Second component of the SIMD register bitwise value.
 		//! @param Z Third component of the SIMD register bitwise value.
@@ -49,7 +49,7 @@ GD_NAMESPACE_BEGIN
 			return Register;
 		}
 
-		//! @brief Gets a single component of a vector.
+		//! Gets a single component of a vector.
 		//! @param Register Specified register.
 		//! @tparam ElementIndex Specified index of the element.
 		//! @returns Specified single component of a vector.
@@ -60,7 +60,7 @@ GD_NAMESPACE_BEGIN
 			return Register.Values[ElementIndex];
 		}
 
-		//! @brief Sets a single component of a vector.
+		//! Sets a single component of a vector.
 		//! @param Register Specified register.
 		//! @param Value Value of the component to be set.
 		//! @tparam ElementIndex Specified index of the element.
@@ -90,7 +90,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Creates a vector through selecting two components from each vector via a shuffle mask. 
+		//! Creates a vector through selecting two components from each vector via a shuffle mask. 
 		//! @param First First register to shuffle.
 		//! @param Second Second register to shuffle.
 		//! @tparam X Index for which component to use for X (literal 0-3).
@@ -108,7 +108,7 @@ GD_NAMESPACE_BEGIN
 			return Create(First.Values[static_cast<SizeTp>(X)], First.Values[static_cast<SizeTp>(Y)], Second.Values[static_cast<SizeTp>(Z)], Second.Values[static_cast<SizeTp>(W)]);
 		}
 
-		//! @brief Returns swizzling result of all components of a specified vector.
+		//! Returns swizzling result of all components of a specified vector.
 		//! @tparam X Index for which component to use for X (literal 0-3).
 		//! @tparam Y Index for which component to use for Y (literal 0-3).
 		//! @tparam Z Index for which component to use for Z (literal 0-3).
@@ -124,7 +124,7 @@ GD_NAMESPACE_BEGIN
 			return Create(Register.Values[static_cast<SizeTp>(X)], Register.Values[static_cast<SizeTp>(Y)], Register.Values[static_cast<SizeTp>(Z)], Register.Values[static_cast<SizeTp>(W)]);
 		}
 
-		//! @brief Returns new register with all components assigned with specified component of a specified register.
+		//! Returns new register with all components assigned with specified component of a specified register.
 		//! @param Register Specified register.
 		//! @tparam ElementIndex Specified index of the element.
 		template<UInt32 const ElementIndex>
@@ -134,7 +134,7 @@ GD_NAMESPACE_BEGIN
 			return Create(Value, Value, Value, Value);
 		}
 
-		//! @brief Returns component-wise absolute value of the register.
+		//! Returns component-wise absolute value of the register.
 		//! @param Register Specified register.
 		//! @returns Component-wise negated value of the register.
 		GDINL static SIMDRegister GD_VECTORCALL Abs(SIMDRegister const& Register)
@@ -142,7 +142,7 @@ GD_NAMESPACE_BEGIN
 			return Create(std::fabsf(Register.Values[0]), std::fabsf(Register.Values[1]), std::fabsf(Register.Values[2]), std::fabsf(Register.Values[3]));
 		}
 
-		//! @brief Performers bitwise OR for two registers.
+		//! Performers bitwise OR for two registers.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Bitwise OR for two registers.
@@ -153,7 +153,7 @@ GD_NAMESPACE_BEGIN
 			return CreateInt(*(PtrFirst + 0) | *(PtrSecond + 0), *(PtrFirst + 1) | *(PtrSecond + 1), *(PtrFirst + 2) | *(PtrSecond + 2), *(PtrFirst + 3) | *(PtrSecond + 3));
 		}
 
-		//! @brief Performers bitwise XOR for two registers.
+		//! Performers bitwise XOR for two registers.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Bitwise XOR for two registers.
@@ -164,7 +164,7 @@ GD_NAMESPACE_BEGIN
 			return CreateInt(*(PtrFirst + 0) ^ *(PtrSecond + 0), *(PtrFirst + 1) ^ *(PtrSecond + 1), *(PtrFirst + 2) ^ *(PtrSecond + 2), *(PtrFirst + 3) ^ *(PtrSecond + 3));
 		}
 
-		//! @brief Performers bitwise AND for two registers.
+		//! Performers bitwise AND for two registers.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Bitwise AND for two registers.
@@ -175,7 +175,7 @@ GD_NAMESPACE_BEGIN
 			return CreateInt(*(PtrFirst + 0) & *(PtrSecond + 0), *(PtrFirst + 1) & *(PtrSecond + 1), *(PtrFirst + 2) & *(PtrSecond + 2), *(PtrFirst + 3) & *(PtrSecond + 3));
 		}
 
-		//! @brief Returns component-wise negated value of the register.
+		//! Returns component-wise negated value of the register.
 		//! @param Register Specified register.
 		//! @returns Component-wise negated value of the register.
 		GDINL static SIMDRegister GD_VECTORCALL Negate(SIMDRegister const& Register)
@@ -183,7 +183,7 @@ GD_NAMESPACE_BEGIN
 			return Create(-1.0f * Register.Values[0], -1.0f * Register.Values[1], -1.0f * Register.Values[2], -1.0f * Register.Values[3]);
 		}
 
-		//! @brief Adds two registers and returns a result.
+		//! Adds two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component sum of two registers.
@@ -192,7 +192,7 @@ GD_NAMESPACE_BEGIN
 			return Create(First.Values[0] + Second.Values[0], First.Values[1] + Second.Values[1], First.Values[2] + Second.Values[2], First.Values[3] + Second.Values[3]);
 		}
 
-		//! @brief Subtracts two registers and returns a result.
+		//! Subtracts two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component subtraction product of two registers.
@@ -201,7 +201,7 @@ GD_NAMESPACE_BEGIN
 			return Create(First.Values[0] - Second.Values[0], First.Values[1] - Second.Values[1], First.Values[2] - Second.Values[2], First.Values[3] - Second.Values[3]);
 		}
 
-		//! @brief Multiplies two registers and returns a result.
+		//! Multiplies two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component multiplication product of two registers.
@@ -210,7 +210,7 @@ GD_NAMESPACE_BEGIN
 			return Create(First.Values[0] * Second.Values[0], First.Values[1] * Second.Values[1], First.Values[2] * Second.Values[2], First.Values[3] * Second.Values[3]);
 		}
 
-		//! @brief Divides two registers and returns a result.
+		//! Divides two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component division product of two registers.
@@ -219,7 +219,7 @@ GD_NAMESPACE_BEGIN
 			return Create(First.Values[0] / Second.Values[0], First.Values[1] / Second.Values[1], First.Values[2] / Second.Values[2], First.Values[3] / Second.Values[3]);
 		}
 
-		//! @brief Computes dot product of two SIMD registers, treated as 3D vectors..
+		//! Computes dot product of two SIMD registers, treated as 3D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Dot product of two registers.
@@ -229,7 +229,7 @@ GD_NAMESPACE_BEGIN
 			return Create(DotProduct, DotProduct, DotProduct, DotProduct);
 		}
 
-		//! @brief Computes dot product of two SIMD registers, treated as 4D vectors..
+		//! Computes dot product of two SIMD registers, treated as 4D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Dot product of two registers.
@@ -239,7 +239,7 @@ GD_NAMESPACE_BEGIN
 			return Create(DotProduct, DotProduct, DotProduct, DotProduct);
 		}
 
-		//! @brief Computes cross product of two SIMD registers, treated as 3D vectors..
+		//! Computes cross product of two SIMD registers, treated as 3D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Cross product of two registers.
@@ -253,7 +253,7 @@ GD_NAMESPACE_BEGIN
 				);
 		}
 
-		//! @brief Computes cross product of three SIMD registers, treated as 4D vectors..
+		//! Computes cross product of three SIMD registers, treated as 4D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @param Third Third specified register.

@@ -1,11 +1,15 @@
-//! ==========================================================================================
-//! Tuple.h - template tuple class.
-//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
-//! ==========================================================================================
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file GoddamnEngine/Core/Templates/Tuple.h
+//! Template tuple class.
 
 #pragma once
-#ifndef GD_CORE_TEMPLATES_TUPLE
-#define GD_CORE_TEMPLATES_TUPLE
 
 #include <GoddamnEngine/Include.h>
 
@@ -26,7 +30,7 @@ GD_NAMESPACE_BEGIN
 		typedef CurrentTupleType Type;
 	};	// struct TupleElementHelper<TupleIndex, CurrentTupleType, RestTupleTypes>
 	
-	//! @brief Objects that can retrieve a type with a specified index from the tuple.
+	//! Objects that can retrieve a type with a specified index from the tuple.
 	//! @tparam TupleIndex Index of the desired element.
 	//! @tparam TupleTypes Types stored in a tuple.
 	template<SizeTp const TupleIndex, typename... TupleTypes>
@@ -35,5 +39,3 @@ GD_NAMESPACE_BEGIN
 	};	// struct TupleElement
 
 GD_NAMESPACE_END
-
-#endif

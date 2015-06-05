@@ -1,18 +1,21 @@
-//! ==========================================================================================
-//! UniquePtr.h - unique smart pointer interface/implementation.
-//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
-//! ==========================================================================================
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
 
+//! @file GoddamnEngine/Core/Templates/UniquePtr.h
+//! Unique smart pointer interface/implementation.
 #pragma once
-#ifndef GD_CORE_CONTAINERS_UNIQUE_PTR
-#define GD_CORE_CONTAINERS_UNIQUE_PTR
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Utility.h>
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Stores a pointer on object and provides automatic object deletion on destructor.
+	//! Stores a pointer on object and provides automatic object deletion on destructor.
 	//! @tparam PointerType Type of the object stored in this object.
 	template<typename PointerType>
 	class UniquePtr final : IUncopiable
@@ -22,14 +25,14 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes a unique pointer.
+		//! Initializes a unique pointer.
 		//! @param Pointer Raw pointer to the object.
 		GDINL UniquePtr(PointerType* const Pointer = nullptr) 
 			: Pointer(Pointer)
 		{
 		}
 
-		//! @brief Moves other unique pointer to this object.
+		//! Moves other unique pointer to this object.
 		//! @param Other Other unique pointer to move here.
 		GDINL UniquePtr(UniquePtr&& Other) 
 			: Pointer(Other.Pointer)
@@ -37,21 +40,21 @@ GD_NAMESPACE_BEGIN
 			Other.Pointer = nullptr;
 		}
 
-		//! @brief Deinitializes a unique pointer and destroys it's value.
+		//! Deinitializes a unique pointer and destroys it's value.
 		GDINL ~UniquePtr()
 		{ 
 			delete this->Pointer; 
 			this->Pointer = nullptr; 
 		}
 
-		//! @brief Returns native pointer stored in this object.
+		//! Returns native pointer stored in this object.
 		//! @returns native pointer stored in this object.
 		GDINL PointerType* GetPointer() const 
 		{ 
 			return this->Pointer; 
 		}
 
-		//! @brief Deletes pointer, stored in this object and assigns it new specified value.
+		//! Deletes pointer, stored in this object and assigns it new specified value.
 		//! @param Pointer New pointer to assign.
 		//! @returns New specified pointer.
 		GDINL PointerType* Reset(PointerType* const Pointer)
@@ -61,7 +64,7 @@ GD_NAMESPACE_BEGIN
 			return this->Pointer;
 		}
 
-		//! @brief Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
+		//! Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
 		//! @returns Value of the pointer.
 		GDINL PointerType* Release()
 		{
@@ -72,7 +75,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL UniquePtr& operator= (UniquePtr const& OtherPtr) = delete;
 
-		//! @brief Assigns other unique pointer here.
+		//! Assigns other unique pointer here.
 		//! @param Other Other pointer to be assigned.
 		//! @returns Self.
 		GDINL UniquePtr& operator= (UniquePtr&& Other)
@@ -86,7 +89,7 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		//! @brief Assigns other raw pointer here.
+		//! Assigns other raw pointer here.
 		//! @param Other Other pointer to be assigned.
 		//! @returns Self.
 		GDINL UniquePtr& operator= (PointerType* const Other)
@@ -99,14 +102,14 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		//! @brief References value of the pointer.
+		//! References value of the pointer.
 		//! @returns Referenced value of the pointer.
 		GDINL PointerType& operator* () const 
 		{ 
 			return *this->Pointer;
 		}
 
-		//! @brief Dereferences value of the pointer.
+		//! Dereferences value of the pointer.
 		//! @returns Dereferenced value of the pointer.
 		GDINL PointerType* operator-> () const 
 		{ 
@@ -218,5 +221,3 @@ GD_NAMESPACE_BEGIN
 	}
 
 GD_NAMESPACE_END
-
-#endif

@@ -27,7 +27,7 @@ GD_NAMESPACE_BEGIN
 	typedef KeyboardKeys::Type KeyboardKeysTp;
 	//! @}
 
-	//! @brief Describes mouse buttons.
+	//! Describes mouse buttons.
 	//! @{
 	struct MouseButtons final
 	{
@@ -40,7 +40,7 @@ GD_NAMESPACE_BEGIN
 	typedef MouseButtons::Type MouseButtonsTp;
 	//! @}
 
-	//! @brief Describes gamepad buttons.
+	//! Describes gamepad buttons.
 	//! @{
 	struct GamepadButtons final
 	{
@@ -98,7 +98,7 @@ GD_NAMESPACE_BEGIN
 	typedef GamepadButtons::Type GamepadButtonsTp;
 	//! @}
 
-	//! @brief Describes a vibration feedback for a gamepad.
+	//! Describes a vibration feedback for a gamepad.
 	struct GamepadVibration
 	{
 		Float32 VibrationRightSmall;
@@ -107,7 +107,7 @@ GD_NAMESPACE_BEGIN
 		Float32 VibrationLeftLarge;
 	};	// struct GamepadVibration
 
-	//! @brief 
+	//! 
 	//! @{
 	struct GestureEvents final
 	{
@@ -122,12 +122,12 @@ GD_NAMESPACE_BEGIN
 	typedef GestureEvents::Type GestureEventsTp;
 	//! @}
 
-	//! @brief Defines a generic input interface.
+	//! Defines a generic input interface.
 	class IGenericInput : public IPlatformObject<IGenericInput, PlatformObjectFlags::FlagsGenericInterfaceIsDummy>
 	{
 	public:
 
-		//! @brief Max amount of supported controllers.
+		//! Max amount of supported controllers.
 		SizeTp static const MaxSupportedGamepads = 4;
 
 	protected:
@@ -163,15 +163,15 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes an input interface.
+		//! Initializes an input interface.
 		GDINL IGenericInput() { }
 
-		//! @brief Destroys an input interface.
+		//! Destroys an input interface.
 		GDINL virtual ~IGenericInput() { }
 
 	protected:
 
-		//! @brief Updates state of a button.
+		//! Updates state of a button.
 		//! @param InputButton Reference to the state of the button.
 		//! @param InputIsPressed Is button currently pressed.
 		GDINL static void UpdateButtonState(InputButtonStateTp& InputButton, bool const InputIsPressed)
@@ -189,62 +189,62 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		//! @brief Initializes an input interface.
+		//! Initializes an input interface.
 		GD_PLATFORM_DEFINE_METHOD0(void, InitializeObject, override { });
 
-		//! @brief Destroys an input interface.
+		//! Destroys an input interface.
 		GD_PLATFORM_DEFINE_METHOD0(void, DestroyObject, override { });
 
-		//! @brief Ticks a frame.
+		//! Ticks a frame.
 		GD_PLATFORM_DEFINE_METHOD0(void, TickObject, override { });
 
 	public:
 
 #if 0
 
-		//! @brief Returns true if user holds keyboard key with specified key code.
+		//! Returns true if user holds keyboard key with specified key code.
 		//! @param InputKeyboardKey Key code of a desired keyboard button.
 		//! @returns True if user holds keyboard key with specified key code.
 		GD_PLATFORM_DEFINE_METHOD1(bool, GetKeyboardKey, KeyboardKeyTp const, InputKeyboardKey, const { return false; });
 
-		//! @brief Returns true if user has pressed keyboard key with specified key code.
+		//! Returns true if user has pressed keyboard key with specified key code.
 		//! @param InputKeyboardKey Key code of a desired keyboard button.
 		//! @returns True if user has pressed keyboard key with specified key code.
 		GD_PLATFORM_DEFINE_METHOD1(bool, GetKeyboardKeyDown, KeyboardKeyTp const, InputKeyboardKey, const { return false; });
 
-		//! @brief Returns true if user has released keyboard key with specified key code.
+		//! Returns true if user has released keyboard key with specified key code.
 		//! @param InputKeyboardKey Key code of a desired keyboard button.
 		//! @returns True if user has released keyboard key with specified key code.
 		GD_PLATFORM_DEFINE_METHOD1(bool, GetKeyboardKeyUp, KeyboardKeyTp const, InputKeyboardKey, const{ return false; });
 
-		//! @brief Returns true if user holds mouse button with specified key code.
+		//! Returns true if user holds mouse button with specified key code.
 		//! @param InputMouseButton Key code of a desired mouse button.
 		//! @returns True if user holds mouse button with specified key code.
 		GD_PLATFORM_DEFINE_METHOD1(bool, GetMouseButton, MouseButtonsTp const, InputMouseButton, const { return false; });
 
-		//! @brief Returns true if user has pressed mouse button with specified key code.
+		//! Returns true if user has pressed mouse button with specified key code.
 		//! @param InputMouseButton Key code of a desired mouse button.
 		//! @returns True if user has pressed mouse button with specified key code.
 		GD_PLATFORM_DEFINE_METHOD1(bool, GetMouseButtonDown, MouseButtonsTp const, InputMouseButton, const { return false; });
 
-		//! @brief Returns true if user has released mouse button with specified key code.
+		//! Returns true if user has released mouse button with specified key code.
 		//! @param InputMouseButton Key code of a desired mouse button.
 		//! @returns True if user has released mouse button with specified key code.
 		GD_PLATFORM_DEFINE_METHOD1(bool, GetMouseButtonUp, MouseButtonsTp const, InputMouseButton, const { return false; });
 
-		//! @brief Returns true if user holds gamepad button with specified key code.
+		//! Returns true if user holds gamepad button with specified key code.
 		//! @param InputGamepadIndex Index of a gamepad.
 		//! @param InputGamepadButton Key code of a desired mouse button.
 		//! @returns True if user holds gamepad button with specified key code.
 		GD_PLATFORM_DEFINE_METHOD2(bool, GetGamepadButton, SizeTp const, InputGamepadIndex, GamepadButtonsTp const, InputGamepadButton, const { return false; });
 
-		//! @brief Returns true if user has pressed gamepad button with specified key code.
+		//! Returns true if user has pressed gamepad button with specified key code.
 		//! @param InputGamepadIndex Index of a gamepad.
 		//! @param InputGamepadButton Key code of a desired gamepad button.
 		//! @returns True if user has pressed gamepad button with specified key code.
 		GD_PLATFORM_DEFINE_METHOD2(bool, GetGamepadButtonDown, SizeTp const, InputGamepadIndex, GamepadButtonsTp const, InputGamepadButton, const { return false; });
 
-		//! @brief Returns true if user has released gamepad button with specified key code.
+		//! Returns true if user has released gamepad button with specified key code.
 		//! @param InputGamepadIndex Index of a gamepad.
 		//! @param InputGamepadButton Key code of a desired gamepad button.
 		//! @returns True if user has released gamepad button with specified key code.

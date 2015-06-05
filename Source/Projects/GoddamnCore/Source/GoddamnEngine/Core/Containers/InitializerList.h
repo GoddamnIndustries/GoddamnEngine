@@ -17,7 +17,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Workaround of standart initializer list with Goddamn-Like naming conversion.
+	//! Workaround of standart initializer list with Goddamn-Like naming conversion.
 	//! @todo Possibly write a wrapper container class with Goddamn-Like methods naming.
 	template<typename ElementType>
 	using InitializerList = std::initializer_list<ElementType>;

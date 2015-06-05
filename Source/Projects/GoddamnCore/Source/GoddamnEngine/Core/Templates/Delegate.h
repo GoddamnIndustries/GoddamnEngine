@@ -1,11 +1,14 @@
-//! ==========================================================================================
-//! Delegate.h - function delegate class.
-//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
-//! ==========================================================================================
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
 
+//! @file GoddamnEngine/Core/Templates/Delegate.h
+//! Function delegate class.
 #pragma once
-#ifndef GD_CORE_TEMPLATES_DELEGATE
-#define GD_CORE_TEMPLATES_DELEGATE
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Tuple.h>
@@ -15,7 +18,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Base class for all invokable objects.
+	//! Base class for all invokable objects.
 	struct IDelegate
 	{
 	protected:
@@ -24,7 +27,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
+		//! Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
 		//! @param Instance Instance object we are operating on.
 		//! @param ReturnValueOutputPtr Pointer to the methods execution result. Null pointer may be specified for voids.
 		GDAPI virtual void Invoke(Handle const Instance, Handle const ReturnValueOutputPtr, ...) const abstract;
@@ -33,7 +36,7 @@ GD_NAMESPACE_BEGIN
 	template<typename DelegateSignatureType> 
 	struct Delegate;
 
-	//! @brief Basic template wrapper on delegate pointers. Class is same to @c std::function class with some differences (for member functions).
+	//! Basic template wrapper on delegate pointers. Class is same to @c std::function class with some differences (for member functions).
 	//!        When specifying member function it is not required to pass instance type as first params arguments. 
 	//!        Invocation operator takes pointer to instance as it`s first argument (Handle type, it is better to make a const_cast for constant objects).
 	//!        For pointers to to static functions instance param can take any value (nullptr is preferred).
@@ -41,22 +44,22 @@ GD_NAMESPACE_BEGIN
 	struct Delegate<ReturnType(ArgumentTypes...)> : public IDelegate
 	{
 	private:		
-		//! @brief A delegate traits base class.
+		//! A delegate traits base class.
 		struct IDelegateTraitsBase : public IUncopiable
 		{
 		protected:
 
-			//! @brief Initializes a new delegate traits.
+			//! Initializes a new delegate traits.
 			GDINL IDelegateTraitsBase() { }
 			GDINL virtual ~IDelegateTraitsBase() { }
 
 		public:
 
-			//! @brief Clones this object.
+			//! Clones this object.
 			//! @returns Clone of this object.
 			GDINT virtual IDelegateTraitsBase const* Clone() const abstract;
 
-			//! @brief Executes the given operation on a different thread, and waits for the result.
+			//! Executes the given operation on a different thread, and waits for the result.
 			//! @param Instance Object we are operating on.
 			//! @param Arguments List of the delegate arguments.
 			//! @return	A result of the delegate execution.
@@ -66,7 +69,7 @@ GD_NAMESPACE_BEGIN
 		template<typename DelegateSignatureType> 
 		struct DelegateTraits;
 
-		//! @brief Traits for STATIC DELEGATE.
+		//! Traits for STATIC DELEGATE.
 		template<>
 		struct DelegateTraits<ReturnType(*)(ArgumentTypes...)> final : public IDelegateTraitsBase
 		{
@@ -92,7 +95,7 @@ GD_NAMESPACE_BEGIN
 			}
 		};	// struct DelegateTraits<ReturnType(*)(ArgumentTypes...)>
 
-		//! @brief Traits for MUTABLE MEMBER DELEGATE.
+		//! Traits for MUTABLE MEMBER DELEGATE.
 		template<typename ClassType>
 		struct DelegateTraits<ReturnType(ClassType::*)(ArgumentTypes...)> final : public IDelegateTraitsBase
 		{
@@ -118,7 +121,7 @@ GD_NAMESPACE_BEGIN
 			}
 		};	// struct DelegateTraits<ReturnType(ClassType::*)(ArgumentTypes...)>
 
-		//! @brief Traits for CONSTANT MEMBER DELEGATE.
+		//! Traits for CONSTANT MEMBER DELEGATE.
 		template<typename ClassType>
 		struct DelegateTraits<ReturnType(ClassType::*)(ArgumentTypes...) const> final : public IDelegateTraitsBase
 		{
@@ -152,7 +155,7 @@ GD_NAMESPACE_BEGIN
 		template<SizeTp const Index> 
 		using ArgumentType = typename TupleElement<Index, ArgumentTypes...>::Type;
 		
-		//! @brief Initializes a delegate.
+		//! Initializes a delegate.
 		//! @param Delegate Pointer to delegate function. 
 		template<typename DelegateSignature>
 		GDINL Delegate(DelegateSignature const& DelegatePtr)
@@ -160,21 +163,21 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Moves other delegate.
+		//! Moves other delegate.
 		//! @param Other Other delegate to move.
 		GDINL Delegate(Delegate&& Other)
 			: DelegateTraitsPtr(Move(Other.DelegateTraitsPtr))
 		{
 		}
 
-		//! @brief Copies other delegate.
+		//! Copies other delegate.
 		//! @param Other Other delegate to copy.
 		GDINL Delegate(Delegate const& Other)
 			: DelegateTraitsPtr(Other.DelegateTraitsPtr->Clone())
 		{
 		}
 
-		//! @brief Invokes the delegate.
+		//! Invokes the delegate.
 		//! @param Instance Object to invoke delegate on. May be null for static function.
 		//! @param ArgumentsList Varied arguments list pointer.
 		//! @returns Invocation result.
@@ -359,7 +362,7 @@ GD_NAMESPACE_BEGIN
 		static_assert(sizeof...(ArgumentTypes) < 10, "Arguments count is more than maximum implemented.");
 		//! @}
 
-		//! @brief Invokes delegate and returns it`s return value. 
+		//! Invokes delegate and returns it`s return value. 
 		//!        If this is a member function then owner object should be passed first into varied function arguments.
 		//!        All parameters that are passed by pointers on parameters instances.
 		//! @param Instance Object to invoke delegate on. May be null for static function.
@@ -382,7 +385,7 @@ GD_NAMESPACE_BEGIN
 
 		//! @}
 
-		//! @brief Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
+		//! Invokes method for Instance and copies return result to output with arguments specified as variable arguments list.
 		//! @param Instance Object to invoke delegate on. May be null for static function.
 		//! @param ... Invocation arguments.
 		GDINL virtual void Invoke(Handle const Instance, Handle const ReturnValueOutputPtr, ...) const override final
@@ -395,7 +398,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Moves other delegate here.
+		//! Moves other delegate here.
 		//! @param Other Other delegate.
 		//! @returns Self.
 		GDINL Delegate& operator= (Delegate&& Other)
@@ -404,7 +407,7 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		//! @brief Copies other delegate here.
+		//! Copies other delegate here.
 		//! @param Other Other delegate.
 		//! @returns Self.
 		GDINL Delegate& operator= (Delegate const& Other)
@@ -413,7 +416,7 @@ GD_NAMESPACE_BEGIN
 			return *this; 
 		}
 
-		//! @brief Invokes the delegate.
+		//! Invokes the delegate.
 		//! @param Instance Object to invoke delegate on. May be null for static function.
 		//! @param Arguments Invocation arguments.
 		//! @returns Result of the invocation.
@@ -424,5 +427,3 @@ GD_NAMESPACE_BEGIN
 	};	// struct Delegate
 
 GD_NAMESPACE_END
-
-#endif	// ifndef GD_CORE_TEMPLATES_DELEGATE

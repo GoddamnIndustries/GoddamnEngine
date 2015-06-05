@@ -12,7 +12,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Provides functions for C string. Contains wrapped "str*" methods and methods from 'string.h', 'stdlib.h' and 'stdio.h'.
+	//! Provides functions for C string. Contains wrapped "str*" methods and methods from 'string.h', 'stdlib.h' and 'stdio.h'.
 	//! @tparam CharType Specified character type.
 	template<typename CharType>
 	class CStringTraits final
@@ -20,7 +20,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		// ... string.h & wchar.h's functions ...
 
-		//! @brief Copies C string from source to destination.
+		//! Copies C string from source to destination.
 		//! @param Dest Destination pointer.
 		//! @param DestLength Length of the destination buffer.
 		//! @param Source Source pointer.
@@ -54,7 +54,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Copies specified amount of bytes from source a C string to destination.
+		//! Copies specified amount of bytes from source a C string to destination.
 		//! @param Dest Destination pointer.
 		//! @param DestLength Length of the destination buffer.
 		//! @param Source Source pointer.
@@ -88,7 +88,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Copies specified source C string to the end of destination one.
+		//! Copies specified source C string to the end of destination one.
 		//! @param Dest Destination pointer.
 		//! @param DestLength Length of the destination buffer.
 		//! @param Source Source pointer.
@@ -121,7 +121,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Copies specified amount of bytes from source C string to the end of destination one.
+		//! Copies specified amount of bytes from source C string to the end of destination one.
 		//! @param Dest Destination pointer.
 		//! @param DestLength Length of the destination buffer.
 		//! @param Source Source pointer.
@@ -155,7 +155,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Compares two C strings.
+		//! Compares two C strings.
 		//! @param First First C string to compare.
 		//! @param Second Second C string to compare.
 		//! @returns Zero, if strings are equal, positive if second is greater, negative - if first.
@@ -173,7 +173,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Compares specified amount of bytes of two C strings.
+		//! Compares specified amount of bytes of two C strings.
 		//! @param First First C string to compare.
 		//! @param Second Second C string to compare.
 		//! @param MaxCount Amount of bytes to compare.
@@ -192,7 +192,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns length of a C string.
+		//! Returns length of a C string.
 		//! @param CStr C string.
 		//! @returns Length of a C string.
 		//! @see @c "std::strlen" function.
@@ -209,7 +209,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns pointer to first occurrence of a specified character in the C string.
+		//! Returns pointer to first occurrence of a specified character in the C string.
 		//! @param CStr C string.
 		//! @param Chr C character to search for.
 		//! @returns Pointer to first occurrence of a specified character in the C string.
@@ -231,7 +231,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns pointer to last occurrence of a specified character in the C string.
+		//! Returns pointer to last occurrence of a specified character in the C string.
 		//! @param CStr C string.
 		//! @param Chr C character to search for.
 		//! @returns Pointer to last occurrence of a specified character in the C string.
@@ -253,7 +253,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns pointer to first occurrence of a specified C sub-string in the C string.
+		//! Returns pointer to first occurrence of a specified C sub-string in the C string.
 		//! @param CStr C string.
 		//! @param SubStr C sub-string to search for.
 		//! @returns Pointer to first occurrence of a specified C sub-string in the string.
@@ -275,7 +275,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns pointer to last occurrence of a specified C sub-string in the C string.
+		//! Returns pointer to last occurrence of a specified C sub-string in the C string.
 		//! @param CStr C string.
 		//! @param SubStr C sub-string to search for.
 		//! @returns Pointer to last occurrence of a specified C sub-string in the string.
@@ -290,7 +290,7 @@ GD_NAMESPACE_BEGIN
 				typedef CharType const* IteratorType;
 				IteratorType const StartIterator = CStr + StrLen - SubStrLength;
 				IteratorType const EndIterator = CStr - 1;
-				for (IteratorType const Iterator = StartIterator; Iterator != EndIterator; --Iterator) {
+				for (IteratorType Iterator = StartIterator; Iterator != EndIterator; --Iterator) {
 					CharType const* const Location = Strstr(Iterator, SubStr);
 					if (Location != nullptr) {
 						return Location;
@@ -308,7 +308,7 @@ GD_NAMESPACE_BEGIN
 
 		// ... stdlib.h's functions ...
 
-		//! @brief Converts a amount of character of a C string into ANSI C string.
+		//! Converts a amount of character of a C string into ANSI C string.
 		//! @param Dest Destination pointer.
 		//! @param DestLength Length of the destination buffer.
 		//! @param Source Source pointer.
@@ -337,7 +337,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Converts a amount of character of a C string into ANSI C string.
+		//! Converts a amount of character of a C string into ANSI C string.
 		//! @param Dest Destination pointer.
 		//! @param DestLength Length of the destination buffer.
 		//! @param Source Source pointer.
@@ -366,7 +366,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Converts a C string into 64-bit unsigned integer value.
+		//! Converts a C string into 64-bit unsigned integer value.
 		//! @param CStr C String to convert.
 		//! @param EndPtr Pointer to pointer, into which would be written pointer to the next to last parsed character. Is optional.
 		//! @param Notation Notation in which value is represented.
@@ -395,7 +395,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Converts a C string into 64-bit signed integer value.
+		//! Converts a C string into 64-bit signed integer value.
 		//! @param CStr C String to convert.
 		//! @param EndPtr Pointer to pointer, into which would be written pointer to the next to last parsed character. Is optional.
 		//! @param Notation Notation in which value is represented.
@@ -424,7 +424,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Converts a C string into 32-bit floating point value. value.
+		//! Converts a C string into 32-bit floating point value. value.
 		//! @param CStr C String to convert.
 		//! @param EndPtr Pointer to pointer, into which would be written pointer to the next to last parsed character. Is optional.
 		//! @returns 32-bit floating point representation of a string.
@@ -442,7 +442,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Converts a C string into 64-bit floating point value. value.
+		//! Converts a C string into 64-bit floating point value. value.
 		//! @param CStr C String to convert.
 		//! @param EndPtr Pointer to pointer, into which would be written pointer to the next to last parsed character. Is optional.
 		//! @returns 64-bit floating point representation of a string.
@@ -462,7 +462,7 @@ GD_NAMESPACE_BEGIN
 
 		// ... stdio.h functions ...
 
-		//! @brief Formats specified C string into sized buffer.
+		//! Formats specified C string into sized buffer.
 		//! @param Dest Destination pointer.
 		//! @param DestLength Length of the destination buffer.
 		//! @param Format Format C string.
@@ -492,7 +492,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Formats specified C string into sized buffer.
+		//! Formats specified C string into sized buffer.
 		//! @param Dest Destination pointer.
 		//! @param DestLength Length of the destination buffer.
 		//! @param Format Format C string.
@@ -508,7 +508,7 @@ GD_NAMESPACE_BEGIN
 			return Result;
 		}
 
-		//! @brief Pareses formatted data from a C string.
+		//! Pareses formatted data from a C string.
 		//! @param Source Source C string.
 		//! @param Format Format C string.
 		//! @param Arguments Format arguments.
@@ -535,7 +535,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Pareses formatted data from a C string.
+		//! Pareses formatted data from a C string.
 		//! @param Source Source C string.
 		//! @param Format Format C string.
 		//! @param ... Format arguments.

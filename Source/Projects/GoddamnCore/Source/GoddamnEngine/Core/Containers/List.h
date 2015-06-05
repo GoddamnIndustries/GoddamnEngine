@@ -13,10 +13,11 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Utility.h>
 #include <GoddamnEngine/Core/Containers/Containers.h>
+#include "ICCIRef.h"
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Defines a single node of a single-linked list.
+	//! Defines a single node of a single-linked list.
 	//! @tparam ElementType Container element type.
 	template<typename ElementType>
 	class LinkedListNode
@@ -30,7 +31,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes a single node of a double-linked container.
+		//! Initializes a single node of a double-linked container.
 		//! @param Element Element that would be stored in this node.
 		//! @{
 		GDINL LinkedListNode(ElementType&& Element = ElementType())
@@ -43,7 +44,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns next node to this.
+		//! Returns next node to this.
 		//! @returns Next node to this.
 		//! @{
 		GDINL LinkedListNode const* GetNextNode() const
@@ -56,7 +57,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns Element data reference.
+		//! Returns Element data reference.
 		//! @returns Element data reference.
 		//! @{
 		GDINL ElementType const& GetElement() const
@@ -71,7 +72,7 @@ GD_NAMESPACE_BEGIN
 
 	};	// class DoubleLinkedListNode
 
-	//! @brief Single-linked list iterator type.
+	//! Single-linked list iterator type.
 	//! @tparam	LinkedListNodeType Single linked list node type.
 	template<typename LinkedListNodeType>
 	struct LinkedListIterator
@@ -80,14 +81,14 @@ GD_NAMESPACE_BEGIN
 		LinkedListNodeType* IterNode;
 
 	public:
-		//! @brief Initializes iterator that points on the specified node of the list.
+		//! Initializes iterator that points on the specified node of the list.
 		//! @param IterNode Some node of the list.
 		GDINL explicit LinkedListIterator(LinkedListNodeType* IterNode)
 			: IterNode(IterNode)
 		{
 		}
 
-		//! @brief Assigns the iterator next node of the list.
+		//! Assigns the iterator next node of the list.
 		//! @returns Incremented iterator.
 		GDINL LinkedListIterator& operator++ ()
 		{
@@ -95,7 +96,7 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		//! @brief Assigns the iterator next node of the list.
+		//! Assigns the iterator next node of the list.
 		//! @param Unused Unused parameter passed be compiler.
 		//! @returns Iterator before incrementing.
 		GDINL LinkedListIterator operator++ (int const Unused)
@@ -106,7 +107,7 @@ GD_NAMESPACE_BEGIN
 			return Copy;
 		}
 
-		//! @brief Compares two iterators on equality.
+		//! Compares two iterators on equality.
 		//! @param Other Other iterator that would be compared.
 		//! @returns True if iterators point to the same container at same indices, false otherwise.
 		GDINL bool operator== (LinkedListIterator const& Other) const
@@ -114,7 +115,7 @@ GD_NAMESPACE_BEGIN
 			return this->IterNode == Other.IterNode;
 		}
 
-		//! @brief Compares two iterators on inequality.
+		//! Compares two iterators on inequality.
 		//! @param Other Other iterator that would be compared.
 		//! @returns False if iterators point to the same container at same indices, true otherwise.
 		GDINL bool operator!= (LinkedListIterator const& Other) const
@@ -122,14 +123,14 @@ GD_NAMESPACE_BEGIN
 			return this->IterNode != Other.IterNode;
 		}
 
-		//! @brief Dereferences value of the iterator.
+		//! Dereferences value of the iterator.
 		//! @returns Reference to the element of the node of the list.
 		GDINL decltype(DeclValue<LinkedListNodeType>().GetElement()) operator* () const
 		{
 			return this->IterNode->GetElement();
 		}
 
-		//! @brief Dereferences value of the iterator.
+		//! Dereferences value of the iterator.
 		//! @returns Reference to the element of the node of the list.
 		GDINL decltype(DeclValue<LinkedListNodeType>().GetElement()) operator-> () const
 		{
@@ -137,7 +138,7 @@ GD_NAMESPACE_BEGIN
 		}
 	};	// class LinkedListIterator
 
-	//! @brief Single-linked template list class.
+	//! Single-linked template list class.
 	//! @tparam ElementType List element type.
 	template<typename ElementType>
 	class LinkedList final : public IContainer, IUncopiable
@@ -158,12 +159,12 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes an empty list.
+		//! Initializes an empty list.
 		GDINL LinkedList()
 		{
 		}
 
-		//! @brief Moves other vector here.
+		//! Moves other vector here.
 		//! @param OtherVector Vector would be moved into current object.
 		GDINL LinkedList(LinkedList&& Other)
 		{
@@ -173,7 +174,7 @@ GD_NAMESPACE_BEGIN
 			Other.Length = 0;
 		}
 
-		//! @brief Deinitializes all nodes and deallocates memory.
+		//! Deinitializes all nodes and deallocates memory.
 		GDINL ~LinkedList()
 		{
 			this->Clear();
@@ -181,7 +182,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Returns iterator that points to first container element.
+		//! Returns iterator that points to first container element.
 		//! @returns Iterator that points to first container element.
 		//! @{
 		GDINL Iterator Begin()
@@ -194,7 +195,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns iterator that points to past the end container element.
+		//! Returns iterator that points to past the end container element.
 		//! @returns Iterator that points to past the end container element.
 		//! @{
 		GDINL Iterator End()
@@ -209,7 +210,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Returns pointer on the first node of the list.
+		//! Returns pointer on the first node of the list.
 		//! @returns Pointer on the first node of the list.
 		//! @{
 		GDINL LinkedListNodeType const* GetFirstNode() const
@@ -222,21 +223,21 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns number of elements that exist in list.
+		//! Returns number of elements that exist in list.
 		//! @returns Number of elements that exist in list.
 		GDINL SizeTp GetLength() const
 		{
 			return this->Length;
 		}
 
-		//! @brief Returns true if this list is empty.
+		//! Returns true if this list is empty.
 		//! @returns True if this list is empty, false otherwise.
 		GDINL bool IsEmpty() const
 		{
 			return this->Length == 0;
 		}
 
-		//! @brief Inserts the node to the front of the list.
+		//! Inserts the node to the front of the list.
 		//! @param Node Node that would be inserted.
 		GDINL void InsertNodeFirst(LinkedListNodeType* const Node)
 		{
@@ -254,20 +255,20 @@ GD_NAMESPACE_BEGIN
 			this->Length += 1;
 		}
 
-		//! @brief Inserts the element to the front of the list.
+		//! Inserts the element to the front of the list.
 		//! @param Element Element that would be inserted.
 		//! @{
 		GDINL void InsertFirst(ElementType&& Element = ElementType())
 		{
-			this->InsertNodeFirst(GD_NEW(LinkedListNodeType(Forward<ElementType>(Element))));
+			this->InsertNodeFirst(GD_NEW(LinkedListNodeType, Forward<ElementType>(Element)));
 		}
 		GDINL void InsertFirst(ElementType const& Element)
 		{
-			this->InsertNodeFirst(GD_NEW(LinkedListNodeType(Element)));
+			this->InsertNodeFirst(GD_NEW(LinkedListNodeType, Element));
 		}
 		//! @}
 
-		//! @brief Inserts the node after the specified node.
+		//! Inserts the node after the specified node.
 		//! @param Node Node that would be inserted.
 		//! @param After Node after that new one would be inserted. By default, it is before first node.
 		GDINL void InsertNodeAfter(LinkedListNodeType* const Node, LinkedListNodeType* const After = nullptr)
@@ -286,21 +287,21 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		//! @brief Inserts the element after the specified node.
+		//! Inserts the element after the specified node.
 		//! @param Element Element that would be inserted.
 		//! @param After Node after that new one would be inserted. By default, it is last node.
 		//! @{
 		GDINL void InsertAfter(ElementType&& Element = ElementType(), LinkedListNodeType* const After = nullptr)
 		{
-			this->InsertNodeAfter(GD_NEW(LinkedListNodeType(Forward<ElementType>(Element), After)));
+			this->InsertNodeAfter(GD_NEW(LinkedListNodeType, Forward<ElementType>(Element), After));
 		}
 		GDINL void InsertAfter(ElementType const& Element, LinkedListNodeType* const After = nullptr)
 		{
-			this->InsertNodeAfter(GD_NEW(LinkedListNodeType(Element, After)));
+			this->InsertNodeAfter(GD_NEW(LinkedListNodeType, Element, After));
 		}
 		//! @}
 
-		//! @brief Removes the node from the list.
+		//! Removes the node from the list.
 		//! @param Node	Node that would be removed from the list.
 		GDINL void RemoveNode(LinkedListNodeType* const Node)
 		{
@@ -334,22 +335,22 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		//! @brief Removes first node of the list.
+		//! Removes first node of the list.
 		GDINL void RemoveFirstNode()
 		{
 			this->RemoveNode(this->FirstNode);
 		}
 
-		//! @brief Removes last node of the list.
+		//! Removes last node of the list.
 		GDINL void RemoveLastNode()
 		{
 			this->RemoveNode(this->LastNode);
 		}
 
-		//! @brief Destroys all nodes of the list.
+		//! Destroys all nodes of the list.
 		GDINL void Clear()
 		{
-			LinkedListNodeType* IterNode = this->FirstNode;
+			LinkedListNodeType* IterNode;
 			while (this->FirstNode != nullptr)
 			{
 				IterNode = this->FirstNode->Next;
@@ -361,7 +362,7 @@ GD_NAMESPACE_BEGIN
 			this->FirstNode = nullptr;
 		}
 
-		//! @brief Moves other list here.
+		//! Moves other list here.
 		//! @param OtherList list would be moved into current object.
 		//! @returns this.
 		GDINL LinkedList& operator= (LinkedList&& OtherList)
@@ -380,7 +381,7 @@ GD_NAMESPACE_BEGIN
 		}
 	};	// class LinkedList
 
-	//! @brief Defines a single node of a double-linked container.
+	//! Defines a single node of a double-linked container.
 	//! @tparam ElementType Container element type.
 	template<typename ElementType>
 	class DoubleLinkedListNode : public IUncopiable
@@ -395,7 +396,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes a single node of a double-linked container.
+		//! Initializes a single node of a double-linked container.
 		//! @param Element Element that would be stored in this node.
 		//! @{
 		GDINL DoubleLinkedListNode(ElementType&& Element = ElementType())
@@ -408,7 +409,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns next node to this.
+		//! Returns next node to this.
 		//! @returns Next node to this.
 		//! @{
 		GDINL DoubleLinkedListNode const* GetNextNode() const
@@ -421,7 +422,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns previous node to this.
+		//! Returns previous node to this.
 		//! @returns Next previous to this.
 		//! @{
 		GDINL DoubleLinkedListNode const* GetPrevNode() const
@@ -434,7 +435,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns Element data reference.
+		//! Returns Element data reference.
 		//! @returns Element data reference.
 		//! @{
 		GDINL ElementType const& GetElement() const
@@ -449,7 +450,7 @@ GD_NAMESPACE_BEGIN
 
 	};	// class DoubleLinkedListNode
 
-	//! @brief Double-linked list iterator type.
+	//! Double-linked list iterator type.
 	//! @tparam	DoubleLinkedListNodeType Double linked list node type.
 	template<typename DoubleLinkedListNodeType>
 	struct DoubleLinkedListIterator
@@ -458,14 +459,14 @@ GD_NAMESPACE_BEGIN
 		DoubleLinkedListNodeType* IterNode;
 
 	public:
-		//! @brief Initializes iterator that points on the specified node of the list.
+		//! Initializes iterator that points on the specified node of the list.
 		//! @param IterNode Some node of the list.
 		GDINL explicit DoubleLinkedListIterator(DoubleLinkedListNodeType* IterNode)
 			: IterNode(IterNode)
 		{
 		}
 
-		//! @brief Assigns the iterator next node of the list.
+		//! Assigns the iterator next node of the list.
 		//! @returns Incremented iterator.
 		GDINL DoubleLinkedListIterator& operator++ ()
 		{
@@ -473,7 +474,7 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		//! @brief Assigns the iterator next node of the list.
+		//! Assigns the iterator next node of the list.
 		//! @param Unused Unused parameter passed be compiler.
 		//! @returns Iterator before incrementing.
 		GDINL DoubleLinkedListIterator operator++ (int const Unused)
@@ -484,7 +485,7 @@ GD_NAMESPACE_BEGIN
 			return Copy;
 		}
 
-		//! @brief Assigns the iterator previous node of the list.
+		//! Assigns the iterator previous node of the list.
 		//! @returns Decremented iterator.
 		GDINL DoubleLinkedListIterator& operator-- ()
 		{
@@ -492,7 +493,7 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		//! @brief Assigns the iterator previous node of the list.
+		//! Assigns the iterator previous node of the list.
 		//! @param Unused Unused parameter passed be compiler.
 		//! @returns Iterator before decrementing.
 		GDINL DoubleLinkedListIterator operator-- (int const Unused)
@@ -503,7 +504,7 @@ GD_NAMESPACE_BEGIN
 			return Copy;
 		}
 
-		//! @brief Compares two iterators on equality.
+		//! Compares two iterators on equality.
 		//! @param Other Other iterator that would be compared.
 		//! @returns True if iterators point to the same container at same indices, false otherwise.
 		GDINL bool operator== (DoubleLinkedListIterator const& Other) const
@@ -511,7 +512,7 @@ GD_NAMESPACE_BEGIN
 			return this->IterNode == Other.IterNode;
 		}
 
-		//! @brief Compares two iterators on inequality.
+		//! Compares two iterators on inequality.
 		//! @param Other Other iterator that would be compared.
 		//! @returns False if iterators point to the same container at same indices, true otherwise.
 		GDINL bool operator!= (DoubleLinkedListIterator const& Other) const
@@ -519,14 +520,14 @@ GD_NAMESPACE_BEGIN
 			return this->IterNode != Other.IterNode;
 		}
 
-		//! @brief Dereferences value of the iterator.
+		//! Dereferences value of the iterator.
 		//! @returns Reference to the element of the node of the list.
 		GDINL decltype(DeclValue<DoubleLinkedListNodeType>().GetElement()) operator* () const
 		{
 			return this->IterNode->GetElement();
 		}
 
-		//! @brief Dereferences value of the iterator.
+		//! Dereferences value of the iterator.
 		//! @returns Reference to the element of the node of the list.
 		GDINL decltype(DeclValue<DoubleLinkedListNodeType>().GetElement()) operator-> () const
 		{
@@ -534,7 +535,7 @@ GD_NAMESPACE_BEGIN
 		}
 	};	// class DoubleLinkedListIterator
 
-	//! @brief Double-linked template list class.
+	//! Double-linked template list class.
 	//! @tparam ElementType Container element type.
 	template<typename ElementType>
 	class DoubleLinkedList final : public IContainer, IUncopiable
@@ -561,12 +562,12 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes an empty list.
+		//! Initializes an empty list.
 		GDINL DoubleLinkedList()
 		{
 		}
 
-		//! @brief Moves other vector here.
+		//! Moves other vector here.
 		//! @param OtherVector Vector would be moved into current object.
 		GDINL DoubleLinkedList(DoubleLinkedList&& Other)
 		{
@@ -578,7 +579,7 @@ GD_NAMESPACE_BEGIN
 			Other.Length = 0;
 		}
 
-		//! @brief Deinitializes all nodes and deallocates memory.
+		//! Deinitializes all nodes and deallocates memory.
 		GDINL ~DoubleLinkedList()
 		{
 			this->Clear();
@@ -586,7 +587,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Returns iterator that points to first container element.
+		//! Returns iterator that points to first container element.
 		//! @returns Iterator that points to first container element.
 		//! @{
 		GDINL Iterator Begin()
@@ -599,7 +600,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns iterator that points to past the end container element.
+		//! Returns iterator that points to past the end container element.
 		//! @returns Iterator that points to past the end container element.
 		//! @{
 		GDINL Iterator End()
@@ -612,7 +613,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns iterator that points to last container element.
+		//! Returns iterator that points to last container element.
 		//! @returns Iterator that points to last container element.
 		//! @{
 		GDINL ReverseIterator ReverseBegin()
@@ -625,7 +626,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns iterator that points to preceding the first container element.
+		//! Returns iterator that points to preceding the first container element.
 		//! @returns Iterator that points to preceding the first container element.
 		//! @{
 		GDINL ReverseIterator ReverseEnd()
@@ -640,7 +641,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Returns pointer on the first node of the list.
+		//! Returns pointer on the first node of the list.
 		//! @returns Pointer on the first node of the list.
 		//! @{
 		GDINL DoubleLinkedListNodeType const* GetFirstNode() const
@@ -653,7 +654,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns pointer on the last node of the list.
+		//! Returns pointer on the last node of the list.
 		//! @returns Pointer on the last node of the list.
 		//! @{
 		GDINL DoubleLinkedListNodeType const* GetLastNode() const
@@ -666,21 +667,21 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns number of elements that exist in list.
+		//! Returns number of elements that exist in list.
 		//! @returns Number of elements that exist in list.
 		GDINL SizeTp GetLength() const
 		{
 			return this->Length;
 		}
 
-		//! @brief Returns true if this list is empty.
+		//! Returns true if this list is empty.
 		//! @returns True if this list is empty, false otherwise.
 		GDINL bool IsEmpty() const
 		{
 			return this->Length == 0;
 		}
 
-		//! @brief Inserts the node to the front of the list.
+		//! Inserts the node to the front of the list.
 		//! @param Node Node that would be inserted.
 		GDINL void InsertNodeFirst(DoubleLinkedListNodeType* const Node)
 		{
@@ -699,20 +700,20 @@ GD_NAMESPACE_BEGIN
 			this->Length += 1;
 		}
 
-		//! @brief Inserts the element to the front of the list.
+		//! Inserts the element to the front of the list.
 		//! @param Element Element that would be inserted.
 		//! @{
 		GDINL void InsertFirst(ElementType&& Element = ElementType())
 		{
-			this->InsertNodeFirst(GD_NEW(DoubleLinkedListNodeType(Forward<ElementType>(Element))));
+			this->InsertNodeFirst(GD_NEW(DoubleLinkedListNodeType, Forward<ElementType>(Element)));
 		}
 		GDINL void InsertFirst(ElementType const& Element)
 		{
-			this->InsertNodeFirst(GD_NEW(DoubleLinkedListNodeType(Element)));
+			this->InsertNodeFirst(GD_NEW(DoubleLinkedListNodeType, Element));
 		}
 		//! @}
 
-		//! @brief Inserts the node to the end of the list.
+		//! Inserts the node to the end of the list.
 		//! @param Node Node that would be inserted.
 		GDINL void InsertNodeLast(DoubleLinkedListNodeType* const Node)
 		{
@@ -731,20 +732,20 @@ GD_NAMESPACE_BEGIN
 			this->Length += 1;
 		}
 
-		//! @brief Inserts the element to the end of the list.
+		//! Inserts the element to the end of the list.
 		//! @param Element Element that would be inserted.
 		//! @{
 		GDINL void InsertLast(ElementType&& Element = ElementType())
 		{
-			this->InsertNodeLast(GD_NEW(DoubleLinkedListNodeType(Forward<ElementType>(Element))));
+			this->InsertNodeLast(GD_NEW(DoubleLinkedListNodeType, Forward<ElementType>(Element)));
 		}
 		GDINL void InsertLast(ElementType const& Element)
 		{
-			this->InsertNodeLast(GD_NEW(DoubleLinkedListNodeType(Element)));
+			this->InsertNodeLast(GD_NEW(DoubleLinkedListNodeType, Element));
 		}
 		//! @}
 
-		//! @brief Inserts the node after the specified node.
+		//! Inserts the node after the specified node.
 		//! @param Node Node that would be inserted.
 		//! @param After Node after that new one would be inserted. By default, it is last node.
 		GDINL void InsertNodeAfter(DoubleLinkedListNodeType* const Node, DoubleLinkedListNodeType* const After = nullptr)
@@ -765,7 +766,7 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		//! @brief Inserts the element after the specified node.
+		//! Inserts the element after the specified node.
 		//! @param Element Element that would be inserted.
 		//! @param After Node after that new one would be inserted. By default, it is last node.
 		//! @{
@@ -779,7 +780,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Removes the node from the list.
+		//! Removes the node from the list.
 		//! @param Node	Node that would be removed from the list.
 		GDINL void RemoveNode(DoubleLinkedListNodeType* const Node)
 		{
@@ -816,22 +817,22 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		//! @brief Removes first node of the list.
+		//! Removes first node of the list.
 		GDINL void RemoveFirstNode()
 		{
 			this->RemoveNode(this->FirstNode);
 		}
 
-		//! @brief Removes last node of the list.
+		//! Removes last node of the list.
 		GDINL void RemoveLastNode()
 		{
 			this->RemoveNode(this->LastNode);
 		}
 
-		//! @brief Destroys all nodes of the list.
+		//! Destroys all nodes of the list.
 		GDINL void Clear()
 		{
-			DoubleLinkedListNodeType* IterNode = this->FirstNode;
+			DoubleLinkedListNodeType* IterNode;
 			while (this->FirstNode != nullptr)
 			{
 				IterNode = this->FirstNode->Next;
@@ -844,7 +845,7 @@ GD_NAMESPACE_BEGIN
 			this->Length = 0;
 		}
 
-		//! @brief Moves other list here.
+		//! Moves other list here.
 		//! @param OtherList list would be moved into current object.
 		//! @returns this.
 		GDINL DoubleLinkedList& operator= (DoubleLinkedList&& OtherList)
@@ -865,7 +866,7 @@ GD_NAMESPACE_BEGIN
 		}
 	};	// class DoubleLinkedList
 
-	//! @brief Simplest-possible single-linked template list class.
+	//! Simplest-possible single-linked template list class.
 	//! @tparam ElementType Container element type.
 	template<typename ElementType>
 	class List final : IUncopiable

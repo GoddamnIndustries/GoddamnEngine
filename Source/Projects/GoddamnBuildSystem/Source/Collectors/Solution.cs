@@ -15,46 +15,41 @@ using System.Linq;
 
 namespace GoddamnEngine.BuildSystem
 {
-    //! @brief Represents a solution (set of projects).
-    public class Solution : Collector
+	// ------------------------------------------------------------------------------------------
+    //! Represents a solution (set of projects).
+    public abstract class Solution : Collector
     {
-        //! @brief Collects list of projects in solution.
+        // ------------------------------------------------------------------------------------------
+        //! Collects list of projects in solution.
         //! @note All unsupported projects should be filtered by this function.
         //! @returns Iterator for list of projects in solution.
         public virtual IEnumerable<ProjectCache> EnumerateProjects()
         {
-            foreach (string ProjectFile in Directory.EnumerateFiles(Path.Combine(GetLocation(), "Projects"), "*.gdproj.cs", SearchOption.AllDirectories))
-            {
-                ProjectCache Project = ProjectFactory.Create(ProjectFile);
-                if (Project.m_IsSupported)
-                {
-                    yield return Project;
-                }
-            }
+            return Directory.EnumerateFiles(Path.Combine(GetLocation(), "Projects"), "*.gdproj.cs", SearchOption.AllDirectories)
+                .Select(ProjectFactory.Create).Where(Project => Project.IsSupported);
         }
-
     }   // class Solution
 
-    //! @brief Represents a collection of cached data that was by dependency object.
-    public sealed class SolutionCache : CollectorCache
+    // ------------------------------------------------------------------------------------------
+    //! Represents a collection of cached data that was by dependency object.
+    public abstract class SolutionCache : CollectorCache
     {
-        public string m_GeneratedSolutionPath;
-        public readonly ProjectCache[] m_CachedProjects;
+        public string GeneratedSolutionPath;
+        public readonly ProjectCache[] CachedProjects;
 
-        //! @brief Generates cache for specified dependency.
+        // ------------------------------------------------------------------------------------------
+        //! Generates cache for specified dependency.
         //! @param Solution Solution which dynamic properties would be cached.
-        public SolutionCache(Solution Solution)
+        protected SolutionCache(Solution Solution)
             : base(Solution)
         {
-            if (m_IsSupported)
-            {
-                m_CachedProjects = Solution.EnumerateProjects().ToArray();
-            }
+            if (IsSupported)
+                CachedProjects = Solution.EnumerateProjects().ToArray();
         }
     }   // class DependencyCache
 
-    //! @brief Represents a factory of dependencies.
-    public /*static*/ sealed class SolutionFactory : CollectorFactory<Solution, SolutionCache>
+    //! Represents a factory of dependencies.
+    public abstract class SolutionFactory : CollectorFactory<Solution, SolutionCache>
     {
     }   // class SolutionFactory
 }   // namespace GoddamnEngine.BuildSystem

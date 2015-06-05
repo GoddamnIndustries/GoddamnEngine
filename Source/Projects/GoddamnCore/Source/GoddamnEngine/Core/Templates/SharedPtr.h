@@ -1,14 +1,15 @@
-//! ==========================================================================================
-//! SharedPtr.h - shared smart pointer interface/implementation.
-//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
-//! 
-//! History:
-///		* 26.06.2014 - Created by James Jhuighuy
-//! ==========================================================================================
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file GoddamnEngine/Core/Templates/SharedPtr.h
+//! Shared smart pointer interface/implementation.
 
 #pragma once
-#ifndef GD_CORE_CONTAINERS_SHARED_PTR
-#define GD_CORE_CONTAINERS_SHARED_PTR
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Utility.h>
@@ -17,7 +18,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! Describes types of avaliable shared pointers.
+	//! Describes types of available shared pointers.
 	enum SharedPtrType : UInt8
 	{
 		GD_SHARED_PTR_FAST  = 0,	//!< Fast, but not thread-safe shared pointer.
@@ -273,5 +274,3 @@ GD_NAMESPACE_BEGIN
 	};	// struct SharedPtr<PointerType, GD_SHARED_PTR_THREAD_SAFE>
 
 GD_NAMESPACE_END
-
-#endif

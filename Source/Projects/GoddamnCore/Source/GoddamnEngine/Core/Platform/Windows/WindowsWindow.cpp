@@ -25,14 +25,14 @@ GD_NAMESPACE_BEGIN
 	// WindowsWindow : IMicrosoftWindow interface implementation.
 	// ------------------------------------------------------------------------------------------
 
-	//! @brief Name of a window class.
+	//! Name of a window class.
 #if defined(GD_NAMESPACE)
 	CHAR const WindowsWindow::WndClassName[] = GD_GLUE(GD_STRIGIFY(GD_NAMESPACE), "_WindowsWindow");
 #else	// if defined(GD_NAMESPACE)
 	CHAR const WindowsWindow::WndClassName[] = "Goddamn_WindowsWindow";
 #endif	// if defined(GD_NAMESPACE)
 
-	//! @brief Initializes a window.
+	//! Initializes a window.
 	//! @param WndFlags Default flags of a window.
 	//! @param WndMode Initial mode of a window.
 	//! @param WndRect Initial rectangle of a window.
@@ -52,7 +52,7 @@ GD_NAMESPACE_BEGIN
 		this->WndPlacementBeforeParentMinimized.length = sizeof(this->WndPlacementBeforeParentMinimized);
 	}
 
-	//! @brief Initializes a window.
+	//! Initializes a window.
 	GDAPI void WindowsWindow::InitializeWindow()
 	{
 		GD_DEBUG_ASSERT(this->WndNativeHandle == nullptr, "Error: 'WindowWindow' class was already initialized.");
@@ -136,7 +136,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Destroys a window.
+	//! Destroys a window.
 	GDAPI void WindowsWindow::DestroyWindow()
 	{
 		GD_DEBUG_ASSERT(this->WndNativeHandle != nullptr, "Error: 'WindowWindow' class was not initialized.");
@@ -151,7 +151,7 @@ GD_NAMESPACE_BEGIN
 		this->WndNativeHandle = nullptr;
 	}
 
-	//! @brief Disables or enables a window.
+	//! Disables or enables a window.
 	//! @param WndDoEnable True to enable window, false to disable.
 	GDAPI void WindowsWindow::EnableWindow(bool const WndDoEnable)
 	{
@@ -161,7 +161,7 @@ GD_NAMESPACE_BEGIN
 		::EnableWindow(this->WndNativeHandle, this->WndIsEnabled);
 	}
 
-	//! @brief Returns true if window is enabled.
+	//! Returns true if window is enabled.
 	//! @returns True if window is enabled.
 	GDAPI bool WindowsWindow::IsWindowEnabled() const
 	{
@@ -170,7 +170,7 @@ GD_NAMESPACE_BEGIN
 		return this->WndIsEnabled;
 	}
 
-	//! @brief Shows or hides a window.
+	//! Shows or hides a window.
 	//! @param DoShow True to show window, false to hide.
 	GDAPI void WindowsWindow::ShowWindow(bool const DoShow)
 	{
@@ -195,7 +195,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Returns true if window is shown.
+	//! Returns true if window is shown.
 	//! @returns True if window is shown.
 	GDAPI bool WindowsWindow::IsWindowShown() const
 	{
@@ -204,7 +204,7 @@ GD_NAMESPACE_BEGIN
 		return this->WndIsVisible;
 	}
 
-	//! @brief Maximizes a window.
+	//! Maximizes a window.
 	GDAPI void WindowsWindow::MaximizeWindow()
 	{
 		GD_DEBUG_ASSERT(this->WndNativeHandle != nullptr, "Error: 'WindowWindow' class was not initialized.");
@@ -215,7 +215,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Returns true if window is maximized.
+	//! Returns true if window is maximized.
 	//! @returns True if window is maximized.
 	GDAPI bool WindowsWindow::IsWindowMaximized() const
 	{
@@ -228,7 +228,7 @@ GD_NAMESPACE_BEGIN
 		return false;
 	}
 
-	//! @brief Minimizes a window.
+	//! Minimizes a window.
 	GDAPI void WindowsWindow::MininizeWindow()
 	{
 		GD_DEBUG_ASSERT(this->WndNativeHandle != nullptr, "Error: 'WindowWindow' class was not initialized.");
@@ -239,7 +239,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Returns true if window is minimized.
+	//! Returns true if window is minimized.
 	//! @returns True if window is minimized.
 	GDAPI bool WindowsWindow::IsWindowMinimized() const
 	{
@@ -252,7 +252,7 @@ GD_NAMESPACE_BEGIN
 		return false;
 	}
 
-	//! @brief Makes window a top-most window.
+	//! Makes window a top-most window.
 	//! @param Force Do bring window to front forcedly (via hacks).
 	GDAPI void WindowsWindow::BringWindowToFront(bool const Force /*= false*/)
 	{
@@ -277,7 +277,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Returns true if window is top most.
+	//! Returns true if window is top most.
 	//! @returns True if window is foreground.
 	GDAPI bool WindowsWindow::IsWindowForeground() const
 	{
@@ -286,7 +286,7 @@ GD_NAMESPACE_BEGIN
 		return GetForegroundWindow() == this->WndNativeHandle;
 	}
 
-	//! @brief Restores a window (?!)
+	//! Restores a window (?!)
 	GDAPI void WindowsWindow::RestoreWindow()
 	{
 		GD_DEBUG_ASSERT(this->WndNativeHandle != nullptr, "Error: 'WindowWindow' class was not initialized.");
@@ -294,14 +294,14 @@ GD_NAMESPACE_BEGIN
 		::ShowWindow(this->WndNativeHandle, SW_RESTORE);
 	}
 
-	//! @brief Returns mode of a window.
+	//! Returns mode of a window.
 	//! @returns Mode of a window.
 	GDAPI WindowModeTp WindowsWindow::GetWindowMode() const
 	{
 		return this->WndMode;
 	}
 
-	//! @brief Applies new mode to a window.
+	//! Applies new mode to a window.
 	//! @param WndMode New mode of a window.
 	GDAPI void WindowsWindow::SetWindowMode(WindowModeTp const WndMode)
 	{
@@ -373,7 +373,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Returns rectangle of a window.
+	//! Returns rectangle of a window.
 	//! @param WndRect Output for rectangle of a window.
 	//! @returns True if operation succeeded.
 	GDAPI bool WindowsWindow::GetWindowRect(Rectangle& WndRect) const
@@ -384,7 +384,7 @@ GD_NAMESPACE_BEGIN
 		return true;
 	}
 
-	//! @brief Applies new position to a window.
+	//! Applies new position to a window.
 	//! @param WndPosition New position of a window.
 	GDAPI void WindowsWindow::SetWindowPosition(Vector2 const& WndPosition)
 	{
@@ -404,7 +404,7 @@ GD_NAMESPACE_BEGIN
 		this->WndRect.Top = WndPosition.Top;
 	}
 
-	//! @brief Applies new rectangle to a window.
+	//! Applies new rectangle to a window.
 	//! @param WndRect New rectangle of a window.
 	GDAPI void WindowsWindow::SetWindowRect(Rectangle const& WndRect)
 	{
@@ -456,7 +456,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Returns title of a window.
+	//! Returns title of a window.
 	//! @returns Title of a window.
 	GDAPI String const& WindowsWindow::GetWindowTitle() const
 	{
@@ -465,7 +465,7 @@ GD_NAMESPACE_BEGIN
 		return this->WndTitle;
 	}
 
-	//! @brief Applies new title to a window.
+	//! Applies new title to a window.
 	//! @param WndTitle New title of a window.
 	GDAPI void WindowsWindow::SetWindowTitle(String const& WndTitle)
 	{
@@ -475,7 +475,7 @@ GD_NAMESPACE_BEGIN
 		GD_ASSERT(SetWindowTextA(this->WndNativeHandle, this->WndTitle.CStr()), "Failed to set window title.");
 	}
 
-	//! @brief Returns opacity of a window.
+	//! Returns opacity of a window.
 	//! @returns Opacity of a window.
 	GDAPI Float32 WindowsWindow::GetWindowOpacity() const
 	{
@@ -484,7 +484,7 @@ GD_NAMESPACE_BEGIN
 		return this->WndOpacity;
 	}
 
-	//! @brief Applies new opacity to a window.
+	//! Applies new opacity to a window.
 	//! @param WndOpacity New opacity of a window.
 	GDAPI void WindowsWindow::SetWindowOpacity(Float32 const WndOpacity)
 	{
@@ -497,14 +497,14 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Returns native handle of a window.
+	//! Returns native handle of a window.
 	//! @returns Native handle of a window.
 	GDAPI Handle WindowsWindow::GetWindowNativeHandle() const
 	{
 		return this->WndNativeHandle;
 	}
 
-	//! @brief Returns native size of a window border.
+	//! Returns native size of a window border.
 	//! @returns Native size of a window border.
 	GDAPI Int32 WindowsWindow::GetWindowBorderSize() const
 	{
@@ -517,7 +517,7 @@ GD_NAMESPACE_BEGIN
 		return WndWindowInfo.cxWindowBorders;
 	}
 
-	//! @brief Returns true if point with specified coordinates in inside window.
+	//! Returns true if point with specified coordinates in inside window.
 	//! @returns True if point with specified coordinates in inside window.
 	GDAPI bool WindowsWindow::IsPointInWindow(Vector2 const& WndPoint) const
 	{
@@ -529,7 +529,7 @@ GD_NAMESPACE_BEGIN
 		return WndHitResult;
 	}
 
-	//! @brief Creates a internal region of a window.
+	//! Creates a internal region of a window.
 	//! @returns Creates window region.
 	GDINT HRGN WindowsWindow::CreateWindowRegion() const
 	{
@@ -564,7 +564,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Modifies a window region.
+	//! Modifies a window region.
 	//! @param WndRegionWidth New width of a window region.
 	//! @param WndRegionHeight New height of a window region.
 	GDINT void WindowsWindow::AdjustWindowRegion(Int32 const WndRegionWidth, Int32 const WndRegionHeight)

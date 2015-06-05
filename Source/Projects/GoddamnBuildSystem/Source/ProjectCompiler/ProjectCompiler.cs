@@ -20,7 +20,7 @@ using System.Text.RegularExpressions;
 
 namespace GoddamnEngine.BuildSystem.ProjectCompiler
 {
-    //! @brief Represents list of compiler commands.
+    //! Represents list of compiler commands.
     public enum ProjectCompilerCommand : byte
     {
         Unknown,
@@ -29,11 +29,11 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
         Clean,
     }   // enum ProjectCompilerCommand
 
-    //! @brief Represents an exception, thrown by ProjectCompiler code.
+    //! Represents an exception, thrown by ProjectCompiler code.
     [Serializable]
     public sealed class ProjectCompilerException : BuildSystemException
     {
-        //! @brief Constructs the build system exception with a string.
+        //! Constructs the build system exception with a string.
         //! @param Format Format string.
         //! @param Arguments Formatting arguments.
         public ProjectCompilerException(string Format, params object[] Arguments)
@@ -42,11 +42,11 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
         }
     }   // class ProjectCompilerException
 
-    //! @brief Project file generation module.
+    //! Project file generation module.
     [BuildSystemModule("--generate-project")]
     public sealed class ProjectCompilerModule : BuildSystemModule
     {
-        //! @brief Handles input of some Clang/GCC-like compiler and converts it into VS format.
+        //! Handles input of some Clang/GCC-like compiler and converts it into VS format.
         //! @param Sender Unused.
         //! @param ReceivedOutputData Object with output data.
         private static void CompileOutputReceivedDataEventHandler(object Sender, DataReceivedEventArgs ReceivedOutputData)
@@ -110,10 +110,10 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
 
                 List<ProjectBuildableSourceFile> AllSourceFiles = new List<ProjectBuildableSourceFile>();
                 List<ProjectBuildableSourceFile> BuildableSourceFiles = new List<ProjectBuildableSourceFile>();
-                foreach (var ProjectSource in Project.m_CachedSourceFiles)
+                foreach (var ProjectSource in Project.CachedSourceFiles)
                 {
                     AllSourceFiles.Add(new ProjectBuildableSourceFile(ProjectSource));
-                    if ((ProjectSource.m_FileType == ProjectSourceFileType.SourceCode) && (!ProjectSource.ShouldBeExcluded(Platform, Configuration)))
+                    if ((ProjectSource.FileType == ProjectSourceFileType.SourceCode) && (!ProjectSource.ShouldBeExcluded(Platform, Configuration)))
                     {
                         BuildableSourceFiles.Add(new ProjectBuildableSourceFile(ProjectSource));
                     }
@@ -132,11 +132,11 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
                 StringBuilder CompilerArguments = new StringBuilder();
                 CompilerArguments.Append(" -Wno-warn-absolute-paths");
                 CompilerArguments.Append(" -std=c++11");
-                if (ConfigurationInfo.m_Optimize)
+                if (ConfigurationInfo.Optimize)
                 {
                     CompilerArguments.Append(" -O3");
                 }
-                if (!PlatformInfo.m_RequiresRTTI)
+                if (!PlatformInfo.RequiresRTTI)
                 {
                     CompilerArguments.Append(" -fno-rtti");
                 }
@@ -145,12 +145,12 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
                 CompilerArguments.Append(" -I").Append(Project.GenerateIncludePaths(" -I"));
 
                 // Specifing output paths..
-                CompilerArguments.Append(" -o ").Append(Project.m_CachedOutputPaths[Platform, Configuration]);
+                CompilerArguments.Append(" -o ").Append(Project.CachedOutputPaths[Platform, Configuration]);
 
                 // Specifing dependencies paths..
-                foreach (var ProjectDependency in Project.m_CachedDependencies)
+                foreach (var ProjectDependency in Project.CachedDependencies)
                 {
-                    foreach (var ProjectDependencyPath in ProjectDependency.m_CachedLinkedLibraries[Platform, Configuration])
+                    foreach (var ProjectDependencyPath in ProjectDependency.CachedLinkedLibraries[Platform, Configuration])
                     {
                         CompilerArguments.Append(" \"").Append(ProjectDependencyPath).Append('\"');
                         //CompilerArguments.Append(@" D:/GoddamnEngine/bin/GoddamnCore.Debug.bc");
@@ -171,7 +171,7 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
                 CompilerProcessInfo.UseShellExecute = false;
                 CompilerProcessInfo.RedirectStandardError = true;
                 CompilerProcessInfo.RedirectStandardOutput = true;
-                CompilerProcessInfo.FileName = PlatformInfo.m_CompilerPath;
+                CompilerProcessInfo.FileName = PlatformInfo.CompilerPath;
                 CompilerProcessInfo.WorkingDirectory = Environment.CurrentDirectory;
                 CompilerProcessInfo.Arguments = CompilerArguments.ToString();
 

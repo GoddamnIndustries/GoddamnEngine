@@ -20,14 +20,14 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Name of a Splash screen window class.
+	//! Name of a Splash screen window class.
 #if defined(GD_NAMESPACE)
 	CHAR const WindowsSplashScreen::SplashScreenClassName[] = GD_GLUE(GD_STRIGIFY(GD_NAMESPACE), "_WindowsSplashScreen");
 #else	// if defined(GD_NAMESPACE)
 	CHAR const WindowsSplashScreen::SplashScreenClassName[] = "Goddamn_WindowsSplashScreen";
 #endif	// if defined(GD_NAMESPACE)
 
-	//! @brief Initializes a splash screen.
+	//! Initializes a splash screen.
 	//! @note This method should be invoked in child class.
 	GDAPI void WindowsSplashScreen::InitializeObject_Inst()
 	{
@@ -42,7 +42,7 @@ GD_NAMESPACE_BEGIN
 		GD_ASSERT(this->SplashScreenThread != nullptr, "Failed to create a Splash screen UI thread.");
 	}
 
-	//! @brief Destroys a splash screen.
+	//! Destroys a splash screen.
 	GDAPI void WindowsSplashScreen::DestroyObject_Inst()
 	{
 		GD_DEBUG_ASSERT(this->SplashScreenThread != nullptr, "Error: 'WindowsSplashScreen' class was not initialized.");
@@ -60,7 +60,7 @@ GD_NAMESPACE_BEGIN
 		this->SplashScreenGuard = nullptr;
 	}
 
-	//! @brief Shows or hides a splash screen.
+	//! Shows or hides a splash screen.
 	//! @param SplashDoShow Whether to show or hide splash screen.
 	GDAPI void WindowsSplashScreen::ShowSplash_Inst(bool const SplashDoShow)
 	{
@@ -84,7 +84,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Returns true, if splash is shown.
+	//! Returns true, if splash is shown.
 	//! @returns True, if splash is shown.
 	GDAPI bool WindowsSplashScreen::IsSplashShown_Inst() const
 	{
@@ -92,7 +92,7 @@ GD_NAMESPACE_BEGIN
 		return this->SplashScreenIsShown;
 	}
 
-	//! @brief Sets text that is displayed in some region of a splash screen.
+	//! Sets text that is displayed in some region of a splash screen.
 	//! @param SplashTextRegion Region to which set new text.
 	//! @param SplashText Text to set.
 	GDAPI void WindowsSplashScreen::SetSplashText_Inst(SplashScreenTextRegionTp const SplashTextRegion, String const& SplashText)
@@ -115,7 +115,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Splash screen thread routine.
+	//! Splash screen thread routine.
 	GDINT DWORD WINAPI WindowsSplashScreen::SplashScreenThreadProc(LPVOID const SplashScreenThreadParameter)
 	{
 		auto SplashScreen = reinterpret_cast<WindowsSplashScreen*>(SplashScreenThreadParameter);
@@ -321,7 +321,7 @@ GD_NAMESPACE_BEGIN
 		return 0;
 	}
 
-	//! @brief Splash screen thread routine.
+	//! Splash screen thread routine.
 	GDINT LRESULT WINAPI WindowsSplashScreen::SplashScreenWindowProc(HWND const SplashScreenWindowHandle, UINT const SplashScreenMessage, WPARAM const SplashScreenWParam, LPARAM const SplashScreenLParam)
 	{
 		static WindowsSplashScreen* SplashScreen = nullptr;

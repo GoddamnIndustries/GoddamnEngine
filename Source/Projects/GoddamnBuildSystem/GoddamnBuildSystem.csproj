@@ -85,6 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Collectors\Solution.cs" />
     <Compile Include="Source\BuildSystem.cs" />
     <Compile Include="Source\OtherUtilities\CopyrightVerifier.cs" />
     <Compile Include="Source\ProjectCompiler\ProjectCompiler.cs" />
@@ -92,7 +93,6 @@
     <Compile Include="Source\Support\CommandLineUI.cs" />
     <Compile Include="Source\Support\Extensions.cs" />
     <Compile Include="Source\Collectors\Collector.cs" />
-    <Compile Include="Source\Collectors\Solution.cs" />
     <Compile Include="Source\Support\Compiler.cs" />
     <Compile Include="Source\Collectors\Dependency.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

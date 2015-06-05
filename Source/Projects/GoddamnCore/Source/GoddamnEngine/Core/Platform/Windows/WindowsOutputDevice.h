@@ -20,10 +20,10 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Implements a Windows-specific console output device.
+	//! Implements a Windows-specific console output device.
 	typedef MicrosoftOutputDeviceConsole WindowsOutputDeviceConsole;
 
-	//! @brief Implements a console output device.
+	//! Implements a console output device.
 	typedef WindowsOutputDeviceConsole OutputDeviceConsole;
 
 GD_NAMESPACE_END

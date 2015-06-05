@@ -18,7 +18,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Four-dimensional vector class.
+	//! Four-dimensional vector class.
 	//! @code
 	//!  Y ^  > Z
 	//!    | /    ...W...
@@ -44,7 +44,7 @@ GD_NAMESPACE_BEGIN
 
 	public /* Constructors */:
 
-		//! @brief Initializes a 4D vector with value {X:0, Y:0, Z:0, W:1}.
+		//! Initializes a 4D vector with value {X:0, Y:0, Z:0, W:1}.
 		GDINL explicit Vector4t()
 			: _0(static_cast<ElementType>(0))
 			, _1(static_cast<ElementType>(0))
@@ -53,7 +53,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 4D vector.
+		//! Initializes a 4D vector.
 		//! @param Vector4Value Value of the all coordinates of the vector.
 		GDINL explicit Vector4t(ElementTypeConstRef const Vector4Value)
 			: _0(Vector4Value)
@@ -63,7 +63,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 4D vector.
+		//! Initializes a 4D vector.
 		//! @param Vector4Value0 Value of the first coordinate of the vector.
 		//! @param Vector4Value1 Value of the second coordinate of the vector.
 		//! @param Vector4Value2 Value of the third coordinate of the vector.
@@ -76,7 +76,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 4D vector.
+		//! Initializes a 4D vector.
 		//! @param Vector4Value0 Value of the first coordinate of the vector.
 		//! @param Vector4Value1 Value of the second coordinate of the vector.
 		//! @param Vector4Value23 Value of the third and fourth coordinates of the vector.
@@ -88,7 +88,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 4D vector.
+		//! Initializes a 4D vector.
 		//! @param Vector4Value0 Value of the first coordinate of the vector.
 		//! @param Vector4Value12 Value of the second and third coordinates of the vector.
 		//! @param Vector4Value3 Value of the fourth coordinate of the vector.
@@ -100,7 +100,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 4D vector.
+		//! Initializes a 4D vector.
 		//! @param Vector4Value0 Value of the first coordinate of the vector.
 		//! @param Vector4Value123 Value of the second, third and fourth coordinates of the vector.
 		GDINL Vector4t(ElementTypeConstRef const Vector4Value0, Vector3t<ElementType> const& Vector4Value123)
@@ -111,7 +111,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 3D vector. Third coordinate is set to 0, fourth - to 1.
+		//! Initializes a 3D vector. Third coordinate is set to 0, fourth - to 1.
 		//! @param Vector4Value01 Value of the first two coordinates of the vector.
 		GDINL explicit Vector4t(Vector2t<ElementType> const& Vector4Value01)
 			: _0(Vector4Value01._0)
@@ -121,7 +121,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 4D vector.
+		//! Initializes a 4D vector.
 		//! @param Vector4Value01 Value of the first two coordinates of the vector.
 		//! @param Vector4Value2 Value of the third coordinate of the vector.
 		//! @param Vector4Value3 Value of the fourth coordinate of the vector.
@@ -133,7 +133,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 4D vector.
+		//! Initializes a 4D vector.
 		//! @param Vector4Value01 Value of the first two coordinates of the vector.
 		//! @param Vector4Value23 Value of the third and fourth coordinates of the vector.
 		GDINL Vector4t(Vector2t<ElementType> const& Vector4Value01, Vector2t<ElementType> const& Vector4Value23)
@@ -144,7 +144,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 3D vector. Fourth is set to 1.
+		//! Initializes a 3D vector. Fourth is set to 1.
 		//! @param Vector4Value012 Value of the first, second and third coordinates of the vector.
 		GDINL explicit Vector4t(Vector3t<ElementType> const& Vector4Value012)
 			: _0(Vector4Value012._0)
@@ -154,7 +154,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 4D vector.
+		//! Initializes a 4D vector.
 		//! @param Vector4Value012 Value of the first, second and third coordinates of the vector.
 		//! @param Vector4Value3 Value of the fourth coordinate of the vector.
 		GDINL Vector4t(Vector3t<ElementType> const& Vector4Value012, ElementTypeConstRef const Vector4Value3)
@@ -167,7 +167,7 @@ GD_NAMESPACE_BEGIN
 
 	public /* Class API */:
 
-		//! @brief Computes dot product of two vectors.
+		//! Computes dot product of two vectors.
 		//! @returns Dot product of two vectors.
 		GDINL ElementType Dot(Vector3t<ElementType> const& Other) const
 		{

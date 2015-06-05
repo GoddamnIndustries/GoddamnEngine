@@ -12,32 +12,39 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
-namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
+namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
 {
-    //! @brief Generator of the project/solution files for Visual Studio.
-    internal class VisualStudioProjectGenerator : ProjectGenerator
+    // ------------------------------------------------------------------------------------------
+    //! Generator of the project/solution files for Visual Studio.
+    // ReSharper disable once UnusedMember.Global
+    internal class VisualStudioProjectGenerator : GoddamnEngine.BuildSystem.ProjectGenerator.ProjectGenerator
     {
-        private const string s_MSBuild2003Namespace = @"http://schemas.microsoft.com/developer/msbuild/2003";
-        private const string s_SLNVCXProjProjectGUID = @"{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}";
-        private const string s_SLNCSProjProjectGUID = @"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
-        private const string s_SLNDProjProjectGUID = @"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
-        private const string s_SLNFilterProjectGUID = @"{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
+        private const string MsBuild2003Namespace  = @"http://schemas.microsoft.com/developer/msbuild/2003";
+        private const string SlnVcxProjProjectGuid = @"{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}";
+        private const string SlnCsProjProjectGuid  = @"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
+/*
+        private const string SlnDprojProjectGuid   = @"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
+*/
+        private const string SlnFilterProjectGuid  = @"{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 
-        private readonly string m_ToolsVersion = "14.0";
-        private readonly string m_ToolsFiltersVersion = "4.0";
+        private const string ToolsVersion          = "14.0";
+        private const string ToolsFiltersVersion   = "4.0";
 
-        //! @brief Returns formated GUID.
-        //! @returns Formated GUID.
-        internal static string CreateMSBuildGUID()
+        // ------------------------------------------------------------------------------------------
+        //! Returns formatted GUID.
+        //! @returns Formatted GUID.
+        private static string CreateMsBuildGuid()
         {
             return string.Format("{{{0}}}", Guid.NewGuid().ToString()).ToUpperInvariant();
         }
 
-        //! @brief Converts specified source file type into name of the node in MSBuild.
+        // ------------------------------------------------------------------------------------------
+        //! Converts specified source file type into name of the node in MSBuild.
         //! @returns Name of the node in MSBuild.
-        private static string ConvertFileTypeToVCXProjElement(ProjectSourceFileType FileType)
+        private static string ConvertFileTypeToVcxProjElement(ProjectSourceFileType FileType)
         {
             switch (FileType)
             {
@@ -54,21 +61,24 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
             }
         }
 
-        //! @brief Converts target platform into MSBuild compatible one.
+        // ------------------------------------------------------------------------------------------
+        //! Converts target platform into MSBuild compatible one.
         //! @param Platform Some platform.
         //! @returns MSBuild compatible one.
-        private static string ConvertPlatformToMSBuildPlatform(TargetPlatform Platform)
+        private static string ConvertPlatformToMsBuildPlatform(TargetPlatform Platform)
         {
             switch (Platform)
             {
                 case TargetPlatform.iOS:
                 case TargetPlatform.Android:
                 case TargetPlatform.Emscripten:
-                //return "Win32";
+                    //! @todo Fix correct toolset selection.
+                    //return "Win32";
 
                 case TargetPlatform.WindowsRT:
                 case TargetPlatform.WindowsPhone:
-                //return "ARM";
+                    //! @todo Fix correct toolset selection.
+                    //return "ARM";
 
                 case TargetPlatform.Windows:
                 case TargetPlatform.WindowsStore:
@@ -83,21 +93,23 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
             }
         }
 
-        //! @brief Loads a GUID from an existing project file.
+        // ------------------------------------------------------------------------------------------
+        //! Loads a GUID from an existing project file.
         //! @param ProjectPath Path to project file.
         //! @returns A loaded GUID on success or new generated GUID on failure.
-        private static string QueryGUIDFromProject(string ProjectPath)
+        private static string QueryGuidFromProject(string ProjectPath)
         {
             XmlDocument Proj = new XmlDocument();
             XmlNamespaceManager ProjNamespaceMgr = new XmlNamespaceManager(Proj.NameTable);
-            ProjNamespaceMgr.AddNamespace("msb", s_MSBuild2003Namespace);
+            ProjNamespaceMgr.AddNamespace("msb", MsBuild2003Namespace);
             Proj.Load(ProjectPath);
 
-            XmlNode ProjGUIDNode = Proj.SelectSingleNode("//msb:PropertyGroup/msb:ProjectGuid", ProjNamespaceMgr);
-            return ProjGUIDNode.InnerText;
+            var ProjGuidNode = Proj.SelectSingleNode("//msb:PropertyGroup/msb:ProjectGuid", ProjNamespaceMgr);
+            return ProjGuidNode != null ? ProjGuidNode.InnerText : null;
         }
 
-        //! @brief Checks if specified platform is natively supported by VS.
+        // ------------------------------------------------------------------------------------------
+        //! Checks if specified platform is natively supported by VS.
         //! @param Platform Some platform.
         //! @returns True if platform is natively supported by VS, false otherwise.
         public override bool IsPlatformNativelySupported(TargetPlatform Platform)
@@ -116,98 +128,99 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
             return false;
         }
 
-        //! @brief Generates project files for Visual Studio: .vcxproj and .vcxproj.filter.
+        // ------------------------------------------------------------------------------------------
+        //! Generates project files for Visual Studio: .vcxproj and .vcxproj.filter.
         //! @param Project Parsed project object.
         //! @param Configurations Array of target configurations.
         //! @returns Path to Visual Studio's .vcxproj file.
         public sealed override string GenerateProjectFiles(ProjectCache Project)
         {
-            string VCXProjPath = Path.Combine(base.GenerateProjectFiles(Project), Project.m_CachedName) + ".vcxproj";
+            var VcxProjPath = Path.Combine(base.GenerateProjectFiles(Project), Project.CachedName) + ".vcxproj";
 
             // For build tools the best was is to load a GUID from project files: this causes exceptions 
             // in Visual Studio when reloading of solution, and all opened tabs would be terminated..
             try
             {
-                Project.m_AdditionalCache.m_GUID = QueryGUIDFromProject(VCXProjPath);
+                Project.AdditionalCache.GUID = QueryGuidFromProject(VcxProjPath);
             }
             catch (Exception)
             {
-                Project.m_AdditionalCache.m_GUID = CreateMSBuildGUID();
+                Project.AdditionalCache.GUID = CreateMsBuildGuid();
             }
 
             // ==========================================================================================
             // Generating VCXPROJ files.
             // ==========================================================================================
-            using (XmlTextWriter VCXProj = new XmlTextWriter(VCXProjPath, null) { Formatting = Formatting.Indented, Indentation = 1, IndentChar = '\t' })
+            using (var VcxProj = new XmlTextWriter(VcxProjPath, null) { Formatting = Formatting.Indented, Indentation = 1, IndentChar = '\t' })
             {
-                VCXProj.WriteStartDocument();
-                VCXProj./**/WriteStartElement("Project", s_MSBuild2003Namespace);
-                VCXProj./**//**/WriteAttributeString("ToolsVersion", m_ToolsVersion);
-                VCXProj./**//**/WriteAttributeString("DefaultTargets", "Build");
+                VcxProj.WriteStartDocument();
+                VcxProj./**/WriteStartElement("Project", MsBuild2003Namespace);
+                VcxProj./**//**/WriteAttributeString("ToolsVersion", ToolsVersion);
+                VcxProj./**//**/WriteAttributeString("DefaultTargets", "Build");
 
                 // ------------------------------------------------------------------------------------------
                 // Defining list of configurations.
                 // ------------------------------------------------------------------------------------------
-                VCXProj.WriteStartElement("ItemGroup");
-                VCXProj./**/WriteAttributeString("Label", "ProjectConfigurations");
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
+                VcxProj.WriteStartElement("ItemGroup");
+                VcxProj./**/WriteAttributeString("Label", "ProjectConfigurations");
+                foreach (var Platform in Target.EnumerateAllPlatforms())
                 {
-                    string PlatformString = ConvertPlatformToMSBuildPlatform(Platform);
-                    foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations())
+                    var PlatformString = ConvertPlatformToMsBuildPlatform(Platform);
+                    var Platform1 = Platform;   // Access to foreach variable in closure shit..
+                    foreach (var ConfigurationName in Target.EnumerateAllConfigurations().Select(Configuration => string.Concat(Configuration, Platform1)))
                     {
-                        string ConfigurationName = string.Concat(Configuration, Platform);
-                        VCXProj./**/WriteStartElement("ProjectConfiguration");
-                        VCXProj./**//**/WriteAttributeString("Include", ConfigurationName + '|' + PlatformString);
-                        VCXProj./**//**/WriteElementString("Configuration", ConfigurationName);
-                        VCXProj./**//**/WriteElementString("Platform", PlatformString);
-                        VCXProj./**/WriteEndElement();
+                        VcxProj./**/WriteStartElement("ProjectConfiguration");
+                        VcxProj./**//**/WriteAttributeString("Include", ConfigurationName + '|' + PlatformString);
+                        VcxProj./**//**/WriteElementString("Configuration", ConfigurationName);
+                        VcxProj./**//**/WriteElementString("Platform", PlatformString);
+                        VcxProj./**/WriteEndElement();
                     }
                 }
-                VCXProj.WriteEndElement();
+                VcxProj.WriteEndElement();
 
                 // ------------------------------------------------------------------------------------------
                 // Defining list of source files.
                 // ------------------------------------------------------------------------------------------
-                VCXProj.WriteStartElement("ItemGroup");
-                foreach (var ProjectSource in Project.m_CachedSourceFiles)
+                VcxProj.WriteStartElement("ItemGroup");
+                foreach (var ProjectSource in Project.CachedSourceFiles)
                 {
-                    VCXProj./**/WriteStartElement(ConvertFileTypeToVCXProjElement(ProjectSource.m_FileType));
-                    VCXProj./**//**/WriteAttributeString("Include", ProjectSource.m_FileName);
-                    foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
+                    VcxProj./**/WriteStartElement(ConvertFileTypeToVcxProjElement(ProjectSource.FileType));
+                    VcxProj./**//**/WriteAttributeString("Include", ProjectSource.FileName);
+                    foreach (var Platform in Target.EnumerateAllPlatforms())
                     {
-                        string PlatformString = ConvertPlatformToMSBuildPlatform(Platform);
-                        foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations())
+                        var PlatformString = ConvertPlatformToMsBuildPlatform(Platform);
+                        foreach (var Configuration in Target.EnumerateAllConfigurations())
                         {
                             if (ProjectSource.ShouldBeExcluded(Platform, Configuration))
                             {
-                                string ConfigurationName = string.Concat(Configuration, Platform);
-                                VCXProj./**//**/WriteStartElement("ExcludedFromBuild");
-                                VCXProj./**//**//**/WriteAttributeStringFormat("Condition", @"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
-                                VCXProj./**//**//**/WriteString("true");
-                                VCXProj./**//**/WriteEndElement();
+                                var ConfigurationName = string.Concat(Configuration, Platform);
+                                VcxProj./**//**/WriteStartElement("ExcludedFromBuild");
+                                VcxProj./**//**//**/WriteAttributeStringFormat("Condition", @"'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
+                                VcxProj./**//**//**/WriteString("true");
+                                VcxProj./**//**/WriteEndElement();
                             }
                         }
                     }
-                    VCXProj./**/WriteEndElement();
+                    VcxProj./**/WriteEndElement();
                 }
-                VCXProj.WriteEndElement();
+                VcxProj.WriteEndElement();
 
                 // ------------------------------------------------------------------------------------------
                 // Overriding global project properties.
                 // ------------------------------------------------------------------------------------------
-                VCXProj.WriteStartElement("PropertyGroup");
-                VCXProj./**/WriteAttributeString("Label", "Globals");
-                VCXProj./**/WriteElementString("ProjectGuid", Project.m_AdditionalCache.m_GUID);
-                VCXProj./**/WriteElementString("RootNamespace", Project.m_CachedName);
-                VCXProj.WriteEndElement();
+                VcxProj.WriteStartElement("PropertyGroup");
+                VcxProj./**/WriteAttributeString("Label", "Globals");
+                VcxProj./**/WriteElementString("ProjectGuid", Project.AdditionalCache.GUID);
+                VcxProj./**/WriteElementString("RootNamespace", Project.CachedName);
+                VcxProj.WriteEndElement();
 
                 // ------------------------------------------------------------------------------------------
                 // Overriding main configuration properties.
                 // ------------------------------------------------------------------------------------------
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
+                foreach (var Platform in Target.EnumerateAllPlatforms())
                 {
-                    string PlatformString = ConvertPlatformToMSBuildPlatform(Platform);
-                    string PlatformToolset = null;
+                    var PlatformString = ConvertPlatformToMsBuildPlatform(Platform);
+                    string PlatformToolset;
                     switch (Platform)
                     {
                         case TargetPlatform.Windows:
@@ -229,41 +242,41 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
                     foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations())
                     {
                         string ConfigurationName = string.Concat(Configuration, Platform);
-                        VCXProj.WriteStartElement("PropertyGroup");
-                        VCXProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
-                        VCXProj./**/WriteAttributeString("Label", "Configuration");
-                        VCXProj./**/WriteElementString("PlatformToolset", PlatformToolset);
+                        VcxProj.WriteStartElement("PropertyGroup");
+                        VcxProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
+                        VcxProj./**/WriteAttributeString("Label", "Configuration");
+                        VcxProj./**/WriteElementString("PlatformToolset", PlatformToolset);
                         if (IsPlatformNativelySupported(Platform))
                         {
-                            VCXProj./**/WriteElementString("ConfigurationType", Project.m_CachedBuildTypes[Platform, Configuration].ToString());
-                            VCXProj./**/WriteElementString("CharacterSet", "MultiByte");
-                            if (TargetPlatformInfo.Get(Platform).m_RequiresRTTI)
+                            VcxProj./**/WriteElementString("ConfigurationType", Project.CachedBuildTypes[Platform, Configuration].ToString());
+                            VcxProj./**/WriteElementString("CharacterSet", "MultiByte");
+                            if (TargetPlatformInfo.Get(Platform).RequiresRTTI)
                             {
-                                VCXProj./**/WriteElementString("CLRSupport", "true");
+                                VcxProj./**/WriteElementString("CLRSupport", "true");
                             }
                         }
                         else
                         {
-                            VCXProj./**/WriteElementString("ConfigurationType", "Makefile");
+                            VcxProj./**/WriteElementString("ConfigurationType", "Makefile");
                         }
-                        VCXProj.WriteEndElement();
+                        VcxProj.WriteEndElement();
                     }
                 }
 
-                VCXProj.WriteStartElement("Import");
-                VCXProj./**/WriteAttributeString("Project", @"$(VCTargetsPath)\Microsoft.Cpp.Default.props");
-                VCXProj.WriteEndElement();
-                VCXProj.WriteStartElement("Import");
-                VCXProj./**/WriteAttributeString("Project", @"$(VCTargetsPath)\Microsoft.Cpp.props");
-                VCXProj.WriteEndElement();
-                VCXProj.WriteStartElement("PropertyGroup");
-                VCXProj./**/WriteAttributeString("Label", "UserMacros");
-                VCXProj.WriteEndElement();
-                VCXProj.WriteStartElement("PropertyGroup");
-                VCXProj./**/WriteElementString("NMakeForcedIncludes", "$(NMakeForcedIncludes)");
-                VCXProj./**/WriteElementString("NMakeAssemblySearchPath", "$(NMakeAssemblySearchPath)");
-                VCXProj./**/WriteElementString("NMakeForcedUsingAssemblies", "$(NMakeForcedUsingAssemblies)");
-                VCXProj.WriteEndElement();
+                VcxProj.WriteStartElement("Import");
+                VcxProj./**/WriteAttributeString("Project", @"$(VCTargetsPath)\Microsoft.Cpp.Default.props");
+                VcxProj.WriteEndElement();
+                VcxProj.WriteStartElement("Import");
+                VcxProj./**/WriteAttributeString("Project", @"$(VCTargetsPath)\Microsoft.Cpp.props");
+                VcxProj.WriteEndElement();
+                VcxProj.WriteStartElement("PropertyGroup");
+                VcxProj./**/WriteAttributeString("Label", "UserMacros");
+                VcxProj.WriteEndElement();
+                VcxProj.WriteStartElement("PropertyGroup");
+                VcxProj./**/WriteElementString("NMakeForcedIncludes", "$(NMakeForcedIncludes)");
+                VcxProj./**/WriteElementString("NMakeAssemblySearchPath", "$(NMakeAssemblySearchPath)");
+                VcxProj./**/WriteElementString("NMakeForcedUsingAssemblies", "$(NMakeForcedUsingAssemblies)");
+                VcxProj.WriteEndElement();
 
                 // ------------------------------------------------------------------------------------------
                 // Overriding VC++ compiler and linker properties OR NMake commands..
@@ -271,7 +284,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
                 foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
                 {
                     TargetPlatformInfo PlatformInfo = TargetPlatformInfo.Get(Platform);
-                    string PlatformString = ConvertPlatformToMSBuildPlatform(Platform);
+                    string PlatformString = ConvertPlatformToMsBuildPlatform(Platform);
 
                     // Building list of header directories.
                     string IncludePathes = Project.GenerateIncludePaths();
@@ -303,17 +316,17 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
                         StandartLinkedLibraries += "%(AdditionalDependencies)";
 
                         string ConfigurationName = string.Concat(Configuration, Platform);
-                        string OutputPath = Project.m_CachedOutputPaths[Platform, Configuration];
+                        string OutputPath = Project.CachedOutputPaths[Platform, Configuration];
 
-                        VCXProj.WriteStartElement("ImportGroup");
-                        VCXProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
-                        VCXProj./**/WriteAttributeString("Label", "PropertySheets");
-                        VCXProj./**/WriteStartElement("Import");
-                        VCXProj./**//**/WriteAttributeString("Project", @"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props");
-                        VCXProj./**//**/WriteAttributeString("Condition", @"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')");
-                        VCXProj./**//**/WriteAttributeString("Label", "LocalAppDataPlatform");
-                        VCXProj./**/WriteEndElement();
-                        VCXProj.WriteEndElement();
+                        VcxProj.WriteStartElement("ImportGroup");
+                        VcxProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
+                        VcxProj./**/WriteAttributeString("Label", "PropertySheets");
+                        VcxProj./**/WriteStartElement("Import");
+                        VcxProj./**//**/WriteAttributeString("Project", @"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props");
+                        VcxProj./**//**/WriteAttributeString("Condition", @"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')");
+                        VcxProj./**//**/WriteAttributeString("Label", "LocalAppDataPlatform");
+                        VcxProj./**/WriteEndElement();
+                        VcxProj.WriteEndElement();
 
                         if (IsPlatformNativelySupported(Platform))
                         {
@@ -322,48 +335,48 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
                             // ------------------------------------------------------------------------------------------
 
                             // Include paths..
-                            VCXProj.WriteStartElement("PropertyGroup");
-                            VCXProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
-                            VCXProj./**/WriteElementString("IncludePath", IncludePathes + "$(IncludePath)");
-                            VCXProj./**/WriteElementString("OutDir", Path.GetDirectoryName(OutputPath) + Path.DirectorySeparatorChar);
-                            VCXProj./**/WriteElementString("TargetName", Path.GetFileNameWithoutExtension(OutputPath));
-                            VCXProj.WriteEndElement();
+                            VcxProj.WriteStartElement("PropertyGroup");
+                            VcxProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
+                            VcxProj./**/WriteElementString("IncludePath", IncludePathes + "$(IncludePath)");
+                            VcxProj./**/WriteElementString("OutDir", Path.GetDirectoryName(OutputPath) + Path.DirectorySeparatorChar);
+                            VcxProj./**/WriteElementString("TargetName", Path.GetFileNameWithoutExtension(OutputPath));
+                            VcxProj.WriteEndElement();
 
                             // Compiler properties..
-                            VCXProj.WriteStartElement("ItemDefinitionGroup");
-                            VCXProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
-                            VCXProj./**/WriteStartElement("ClCompile");
-                            VCXProj./**//**/WriteElementString("FavorSizeOrSpeed", "Speed");
-                            VCXProj./**//**/WriteElementString("PrecompiledHeader", "NotUsing");
-                            VCXProj./**//**/WriteElementString("CallingConvention", "FastCall");
-                            VCXProj./**//**/WriteElementString("WarningLevel", "Level" + TargetCppCompilerInformation.s_WarningLevel);
-                            VCXProj./**//**/WriteElementString("TreatWarningAsError", TargetCppCompilerInformation.s_WarningsAreErrors.ToString());
-                            VCXProj./**//**/WriteElementString("PreprocessorDefinitions", Macros + "%(PreprocessorDefinition)");
-                            VCXProj./**//**/WriteElementString("Optimization", ConfigurationInfo.m_Optimize ? "Full" : "Disabled");
-                            if (ConfigurationInfo.m_IsDebug)
+                            VcxProj.WriteStartElement("ItemDefinitionGroup");
+                            VcxProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
+                            VcxProj./**/WriteStartElement("ClCompile");
+                            VcxProj./**//**/WriteElementString("FavorSizeOrSpeed", "Speed");
+                            VcxProj./**//**/WriteElementString("PrecompiledHeader", "NotUsing");
+                            VcxProj./**//**/WriteElementString("CallingConvention", "FastCall");
+                            VcxProj./**//**/WriteElementString("WarningLevel", "Level" + TargetCppCompilerInformation.WarningLevel);
+                            VcxProj./**//**/WriteElementString("TreatWarningAsError", TargetCppCompilerInformation.WarningsAreErrors.ToString());
+                            VcxProj./**//**/WriteElementString("PreprocessorDefinitions", Macros + "%(PreprocessorDefinition)");
+                            VcxProj./**//**/WriteElementString("Optimization", ConfigurationInfo.Optimize ? "Full" : "Disabled");
+                            if (ConfigurationInfo.IsDebug)
                             {
-                                VCXProj.WriteElementString("RuntimeLibrary", "MultiThreadedDebugDLL");
+                                VcxProj.WriteElementString("RuntimeLibrary", "MultiThreadedDebugDLL");
                             }
-                            if (!PlatformInfo.m_RequiresRTTI)
+                            if (!PlatformInfo.RequiresRTTI)
                             {
-                                VCXProj.WriteElementString("RuntimeTypeInfo", "false");
+                                VcxProj.WriteElementString("RuntimeTypeInfo", "false");
                             }
-                            if (!PlatformInfo.m_RequiresExceptions)
+                            if (!PlatformInfo.RequiresExceptions)
                             {
-                                VCXProj.WriteElementString("ExceptionHandling", "false");
+                                VcxProj.WriteElementString("ExceptionHandling", "false");
                             }
-                            VCXProj./**/WriteEndElement(); // </ VC++ COMPILER PROPERTIES
+                            VcxProj./**/WriteEndElement(); // </ VC++ COMPILER PROPERTIES
 
                             // Linker properties.
-                            VCXProj./**/WriteStartElement("Link");
-                            VCXProj./**//**/WriteElementString("AdditionalDependencies", LinkedLibraries + StandartLinkedLibraries);
-                            VCXProj./**//**/WriteElementString("GenerateDebugInformation", ConfigurationInfo.m_GenerateDebugInformation.ToString().ToLowerInvariant());
-                            if (Project.m_CachedBuildTypes[Platform, Configuration] == ProjectBuildType.DynamicLibrary)
+                            VcxProj./**/WriteStartElement("Link");
+                            VcxProj./**//**/WriteElementString("AdditionalDependencies", LinkedLibraries + StandartLinkedLibraries);
+                            VcxProj./**//**/WriteElementString("GenerateDebugInformation", ConfigurationInfo.GenerateDebugInformation.ToString().ToLowerInvariant());
+                            if (Project.CachedBuildTypes[Platform, Configuration] == ProjectBuildType.DynamicLibrary)
                             {
-                                VCXProj./**//**/WriteElementString("ImportLibrary", Project.m_CachedImportLibraryOutputPaths[Platform, Configuration]);
+                                VcxProj./**//**/WriteElementString("ImportLibrary", Project.CachedImportLibraryOutputPaths[Platform, Configuration]);
                             }
-                            VCXProj./**/WriteEndElement();
-                            VCXProj.WriteEndElement();
+                            VcxProj./**/WriteEndElement();
+                            VcxProj.WriteEndElement();
 
                         }
                         else
@@ -375,66 +388,66 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
 
                             string NMakeCommand = string.Format("\"{0}\" --compile-project \"{1}\" {2} {3} ",
                                 System.Reflection.Assembly.GetExecutingAssembly().Location,
-                                Project.m_CachedSource,
+                                Project.CachedSource,
                                 Platform, Configuration
                             );
 
-                            VCXProj.WriteStartElement("PropertyGroup");
-                            VCXProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
-                            VCXProj./**/WriteElementString("OutDir", Path.GetDirectoryName(OutputPath) + Path.DirectorySeparatorChar);
-                            VCXProj./**/WriteElementString("NMakeOutput", OutputPath);
-                            VCXProj./**/WriteElementString("NMakePreprocessorDefinitions", Macros + StandartMacros + ";GD_PLATFORM_NOT_WINDOWS=1");
-                            VCXProj./**/WriteElementString("NMakeIncludeSearchPath", IncludePathes + StandartLibrariesPaths);
-                            VCXProj./**/WriteElementString("NMakeBuildCommandLine", NMakeCommand);
-                            VCXProj./**/WriteElementString("NMakeReBuildCommandLine", NMakeCommand + "Rebuild");
-                            VCXProj./**/WriteElementString("NMakeCleanCommandLine", NMakeCommand + "Clean");
-                            VCXProj.WriteEndElement();
+                            VcxProj.WriteStartElement("PropertyGroup");
+                            VcxProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", ConfigurationName, PlatformString);
+                            VcxProj./**/WriteElementString("OutDir", Path.GetDirectoryName(OutputPath) + Path.DirectorySeparatorChar);
+                            VcxProj./**/WriteElementString("NMakeOutput", OutputPath);
+                            VcxProj./**/WriteElementString("NMakePreprocessorDefinitions", Macros + StandartMacros + ";GD_PLATFORNOT_WINDOWS=1");
+                            VcxProj./**/WriteElementString("NMakeIncludeSearchPath", IncludePathes + StandartLibrariesPaths);
+                            VcxProj./**/WriteElementString("NMakeBuildCommandLine", NMakeCommand);
+                            VcxProj./**/WriteElementString("NMakeReBuildCommandLine", NMakeCommand + "Rebuild");
+                            VcxProj./**/WriteElementString("NMakeCleanCommandLine", NMakeCommand + "Clean");
+                            VcxProj.WriteEndElement();
                         }
                     }
                 }
 
-                VCXProj.WriteStartElement("Import");
-                VCXProj./**/WriteAttributeString("Project", @"$(VCTargetsPath)\Microsoft.Cpp.targets");
-                VCXProj.WriteEndElement();
+                VcxProj.WriteStartElement("Import");
+                VcxProj./**/WriteAttributeString("Project", @"$(VCTargetsPath)\Microsoft.Cpp.targets");
+                VcxProj.WriteEndElement();
 
-                VCXProj./**/WriteEndElement();
-                VCXProj.WriteEndDocument();
+                VcxProj./**/WriteEndElement();
+                VcxProj.WriteEndDocument();
             }
 
             // ==========================================================================================
             // Generating VCPROJ.FILTER files.
             // ==========================================================================================
-            string VCXProjFiltersPath = VCXProjPath + ".filters";
-            using (XmlTextWriter VCXProjFilters = new XmlTextWriter(VCXProjFiltersPath, null) { Formatting = Formatting.Indented, Indentation = 1, IndentChar = '\t' })
+            var VcxProjFiltersPath = VcxProjPath + ".filters";
+            using (var VcxProjFilters = new XmlTextWriter(VcxProjFiltersPath, null) { Formatting = Formatting.Indented, Indentation = 1, IndentChar = '\t' })
             {
-                VCXProjFilters.WriteStartDocument();
-                VCXProjFilters./**/WriteStartElement("Project", s_MSBuild2003Namespace);
-                VCXProjFilters./**/WriteAttributeString("ToolsVersion", m_ToolsFiltersVersion);
+                VcxProjFilters.WriteStartDocument();
+                VcxProjFilters./**/WriteStartElement("Project", MsBuild2003Namespace);
+                VcxProjFilters./**/WriteAttributeString("ToolsVersion", ToolsFiltersVersion);
 
                 HashSet<string> ProjectFoldersCache = new HashSet<string>();
-                foreach (var ProjectSourceFile in Project.m_CachedSourceFiles)
+                foreach (var ProjectSourceFile in Project.CachedSourceFiles)
                 {
-                    string ProjectSourceFileDirectory = Path.GetDirectoryName(ProjectSourceFile.m_FileName);
+                    string ProjectSourceFileDirectory = Path.GetDirectoryName(ProjectSourceFile.FileName);
                     string ProjectSourceFilter;
 
                     // Checking if this source can have a filter: it is located in project directory and it not in it's root.
                     // We also add "Source" to each filter to separate config and source files.  
-                    if (ProjectSourceFileDirectory.StartsWith(Project.m_CachedSourcesFilterOrigin, StringComparison.InvariantCultureIgnoreCase)
-                     && (ProjectSourceFileDirectory.Length > (Project.m_CachedSourcesFilterOrigin.Length + 1)))
+                    if (ProjectSourceFileDirectory != null && (ProjectSourceFileDirectory.StartsWith(Project.CachedSourcesFilterOrigin, StringComparison.InvariantCultureIgnoreCase)
+                                                           && (ProjectSourceFileDirectory.Length > (Project.CachedSourcesFilterOrigin.Length + 1))))
                     {
-                        ProjectSourceFilter = "Source\\" + ProjectSourceFileDirectory.Substring(Project.m_CachedSourcesFilterOrigin.Length + 1);
+                        ProjectSourceFilter = "Source\\" + ProjectSourceFileDirectory.Substring(Project.CachedSourcesFilterOrigin.Length + 1);
                         string ProjectSourceFilterIter = ProjectSourceFilter;
                         while ((!ProjectFoldersCache.Contains(ProjectSourceFilterIter)) && (!string.IsNullOrEmpty(ProjectSourceFilterIter)))
                         {
                             // ------------------------------------------------------------------------------------------
                             // Defining group of filters.
                             // ------------------------------------------------------------------------------------------
-                            VCXProjFilters.WriteStartElement("ItemGroup");
-                            VCXProjFilters./**/WriteStartElement("Filter");
-                            VCXProjFilters./**//**/WriteAttributeString("Include", ProjectSourceFilterIter);
-                            VCXProjFilters./**//**/WriteElementString("UniqueIdentifier", CreateMSBuildGUID());
-                            VCXProjFilters./**/WriteEndElement();
-                            VCXProjFilters.WriteEndElement();
+                            VcxProjFilters.WriteStartElement("ItemGroup");
+                            VcxProjFilters./**/WriteStartElement("Filter");
+                            VcxProjFilters./**//**/WriteAttributeString("Include", ProjectSourceFilterIter);
+                            VcxProjFilters./**//**/WriteElementString("UniqueIdentifier", CreateMsBuildGuid());
+                            VcxProjFilters./**/WriteEndElement();
+                            VcxProjFilters.WriteEndElement();
 
                             ProjectFoldersCache.Add(ProjectSourceFilterIter);
                             ProjectSourceFilterIter = Path.GetDirectoryName(ProjectSourceFilterIter);
@@ -448,22 +461,23 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
                     // ------------------------------------------------------------------------------------------
                     // Defining source's filters.
                     // ------------------------------------------------------------------------------------------
-                    VCXProjFilters.WriteStartElement("ItemGroup");
-                    VCXProjFilters./**/WriteStartElement(ConvertFileTypeToVCXProjElement(ProjectSourceFile.m_FileType));
-                    VCXProjFilters./**//**/WriteAttributeString("Include", ProjectSourceFile.m_FileName);
-                    VCXProjFilters./**//**/WriteElementString("Filter", ProjectSourceFilter);
-                    VCXProjFilters./**/WriteEndElement();
-                    VCXProjFilters.WriteEndElement();
+                    VcxProjFilters.WriteStartElement("ItemGroup");
+                    VcxProjFilters./**/WriteStartElement(ConvertFileTypeToVcxProjElement(ProjectSourceFile.FileType));
+                    VcxProjFilters./**//**/WriteAttributeString("Include", ProjectSourceFile.FileName);
+                    VcxProjFilters./**//**/WriteElementString("Filter", ProjectSourceFilter);
+                    VcxProjFilters./**/WriteEndElement();
+                    VcxProjFilters.WriteEndElement();
                 }
 
-                VCXProjFilters./**/WriteEndElement();
-                VCXProjFilters.WriteEndDocument();
+                VcxProjFilters./**/WriteEndElement();
+                VcxProjFilters.WriteEndDocument();
             }
 
-            return VCXProjPath;
+            return VcxProjPath;
         }
 
-        //! @brief Generates solution files for Visual Studio.
+        // ------------------------------------------------------------------------------------------
+        //! Generates solution files for Visual Studio.
         //! @param Solution Parsed solution object.
         //! @returns Path to Visual Studio's .sln file.
         public sealed override string GenerateSolutionFiles(SolutionCache Solution)
@@ -471,55 +485,55 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
             // ==========================================================================================
             // Generating SLN files..
             // ==========================================================================================
-            string SLNPath = Path.Combine(base.GenerateSolutionFiles(Solution), Solution.m_CachedName + ".sln");
-            using (StreamWriter SLN = new StreamWriter(SLNPath))
+            var SlnPath = Path.Combine(base.GenerateSolutionFiles(Solution), Solution.CachedName + ".sln");
+            using (var Sln = new StreamWriter(SlnPath))
             {
-                SLN.WriteLine();
-                SLN.WriteLine("Microsoft Visual Studio Solution File, Format Version 12.00");
-                SLN.WriteLine("# Generated by the GoddamnBuildSystem.");
+                Sln.WriteLine();
+                Sln.WriteLine("Microsoft Visual Studio Solution File, Format Version 12.00");
+                Sln.WriteLine("# Generated by the GoddamnBuildSystem.");
 
                 // ------------------------------------------------------------------------------------------
                 // Caching GUIDs of projects and filters and defining filters.
                 // ------------------------------------------------------------------------------------------
-                var SolutionFiltersGUIDCache = new Dictionary<int, string>();
-                foreach (var SolutionProject in Solution.m_CachedProjects)
+                var SolutionFiltersGuidCache = new Dictionary<int, string>();
+                foreach (var SolutionProject in Solution.CachedProjects)
                 {
 
                     // Loading the GUID of a build tool..
-                    if (SolutionProject.m_IsBuildTool)
+                    if (SolutionProject.IsBuildTool)
                     {
                         // For build tools the best was is to load a GUID from project files: this causes exceptions 
                         // in Visual Studio when reloading of solution, and all opened tabs would be terminated..
                         try
                         {
-                            SolutionProject.m_AdditionalCache.m_GUID = QueryGUIDFromProject(SolutionProject.m_GeneratorOutputPath);
+                            SolutionProject.AdditionalCache.GUID = QueryGuidFromProject(SolutionProject.GeneratorOutputPath);
                         }
                         catch (Exception Exception)
                         {
-                            Console.Error.WriteLine("Unable to load a GUID of C# project \"{0}\". Check this out...", Solution.m_GeneratedSolutionPath);
+                            Console.Error.WriteLine("Unable to load a GUID of C# project \"{0}\". Check this out...", Solution.GeneratedSolutionPath);
                             Console.Error.WriteLine(Exception.ToString());
 
-                            SolutionProject.m_AdditionalCache.m_GUID = CreateMSBuildGUID();
+                            SolutionProject.AdditionalCache.GUID = CreateMsBuildGuid();
                         }
                     }
 
                     // Looking for projects with filters which we have not already cached.
-                    if (!string.IsNullOrEmpty(SolutionProject.m_CachedFilter))
+                    if (!string.IsNullOrEmpty(SolutionProject.CachedFilter))
                     {
-                        int SolutionProjectFilterHash = SolutionProject.m_CachedFilter.GetHashCode();
-                        if (!SolutionFiltersGUIDCache.ContainsKey(SolutionProjectFilterHash))
+                        int SolutionProjectFilterHash = SolutionProject.CachedFilter.GetHashCode();
+                        if (!SolutionFiltersGuidCache.ContainsKey(SolutionProjectFilterHash))
                         {
                             // Generating and caching filter GUIDS.
-                            SolutionProject.m_AdditionalCache.m_FilterGUID = CreateMSBuildGUID();
-                            SolutionFiltersGUIDCache.Add(SolutionProjectFilterHash, SolutionProject.m_AdditionalCache.m_FilterGUID);
+                            SolutionProject.AdditionalCache.FilterGUID = CreateMsBuildGuid();
+                            SolutionFiltersGuidCache.Add(SolutionProjectFilterHash, SolutionProject.AdditionalCache.FilterGUID);
 
                             // E.g. 'Project({Filter-GUID}) = "Name", "Name", "Filter-GUID"'
-                            SLN.WriteLine("Project(\"{0}\") = \"{1}\", \"{1}\", \"{2}\"", s_SLNFilterProjectGUID, SolutionProject.m_CachedFilter, SolutionProject.m_AdditionalCache.m_FilterGUID);
-                            SLN.WriteLine("EndProject");
+                            Sln.WriteLine("Project(\"{0}\") = \"{1}\", \"{1}\", \"{2}\"", SlnFilterProjectGuid, SolutionProject.CachedFilter, SolutionProject.AdditionalCache.FilterGUID);
+                            Sln.WriteLine("EndProject");
                         }
                         else
                         {
-                            SolutionProject.m_AdditionalCache.m_FilterGUID = SolutionFiltersGUIDCache[SolutionProjectFilterHash];
+                            SolutionProject.AdditionalCache.FilterGUID = SolutionFiltersGuidCache[SolutionProjectFilterHash];
                         }
                     }
                 }
@@ -527,105 +541,99 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio
                 // ------------------------------------------------------------------------------------------
                 // Defining Solution projects.
                 // ------------------------------------------------------------------------------------------
-                foreach (var SolutionProject in Solution.m_CachedProjects)
+                foreach (var SolutionProject in Solution.CachedProjects)
                 {
                     // E.g. 'Project({Type-GUID}) = "Name", "Path-ToProject-File", "Project-GUID"'
-                    SLN.WriteLine("Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"",
-                        /* 0 */ SolutionProject.m_IsBuildTool ? s_SLNCSProjProjectGUID : s_SLNVCXProjProjectGUID,
-                        /*1,2*/ SolutionProject.m_CachedName, SolutionProject.m_GeneratorOutputPath,
-                        /* 3 */ SolutionProject.m_AdditionalCache.m_GUID);
+                    Sln.WriteLine("Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"",
+                        /* 0 */ SolutionProject.IsBuildTool ? SlnCsProjProjectGuid : SlnVcxProjProjectGuid,
+                        /*1,2*/ SolutionProject.CachedName, SolutionProject.GeneratorOutputPath,
+                        /* 3 */ SolutionProject.AdditionalCache.GUID);
                     // Defining projects this one depends.
-                    SLN.WriteLine("\tProjectSection(ProjectDependencies) = postProject");
-                    foreach (var SolutionDependentProject in Solution.m_CachedProjects)
+                    Sln.WriteLine("\tProjectSection(ProjectDependencies) = postProject");
+                    var Project = SolutionProject;
+                    foreach (var SolutionDependentProject in Solution.CachedProjects.Where(SolutionDependentProject => SolutionDependentProject.CachedPriority > Project.CachedPriority))
                     {
                         // Writing projects with higher priority as ones we depend from.
-                        if (SolutionDependentProject.m_CachedPriority > SolutionProject.m_CachedPriority)
-                        {
-                            SLN.WriteLine("\t\t{0} = {0}", SolutionDependentProject.m_AdditionalCache.m_GUID);
-                        }
+                        Sln.WriteLine("\t\t{0} = {0}", SolutionDependentProject.AdditionalCache.GUID);
                     }
-                    SLN.WriteLine("\tEndProjectSection");
-                    SLN.WriteLine("EndProject");
+                    Sln.WriteLine("\tEndProjectSection");
+                    Sln.WriteLine("EndProject");
                 }
 
-                SLN.WriteLine("Global");
+                Sln.WriteLine("Global");
 
                 // ------------------------------------------------------------------------------------------
                 // Linking platforms & configurations.
                 // ------------------------------------------------------------------------------------------
-                SLN.WriteLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
+                Sln.WriteLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
+                foreach (var Platform in Target.EnumerateAllPlatforms())
                 {
-                    TargetPlatformInfo PlatformInfo = TargetPlatformInfo.Get(Platform);
-                    foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations())
+                    var PlatformInfo = TargetPlatformInfo.Get(Platform);
+                    foreach (var ConfigurationInfo in Target.EnumerateAllConfigurations().Select(TargetConfigurationInfo.Get))
                     {
-                        TargetConfigurationInfo ConfigurationInfo = TargetConfigurationInfo.Get(Configuration);
                         // E.g. \tConfiguration-Name|Platform-Name = Configuration-Name|Platform-Name
-                        SLN.WriteLine("\t\t{0}|{1} = {0}|{1}", ConfigurationInfo.m_HumanReadableName, PlatformInfo.m_HumanReadableName);
+                        Sln.WriteLine("\t\t{0}|{1} = {0}|{1}", ConfigurationInfo.HumanReadableName, PlatformInfo.HumanReadableName);
                     }
                 }
-                SLN.WriteLine("\tEndGlobalSection");
+                Sln.WriteLine("\tEndGlobalSection");
 
-                SLN.WriteLine("\tGlobalSection(ProjectConfigurationPlatforms) = postSolution");
-                foreach (var SolutionProject in Solution.m_CachedProjects)
+                Sln.WriteLine("\tGlobalSection(ProjectConfigurationPlatforms) = postSolution");
+                foreach (var SolutionProject in Solution.CachedProjects)
                 {
-                    foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
+                    foreach (var Platform in Target.EnumerateAllPlatforms())
                     {
-                        TargetPlatformInfo PlatformInfo = TargetPlatformInfo.Get(Platform);
-                        foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations())
+                        var PlatformInfo = TargetPlatformInfo.Get(Platform);
+                        foreach (var Configuration in Target.EnumerateAllConfigurations())
                         {
-                            TargetConfigurationInfo ConfigurationInfo = TargetConfigurationInfo.Get(Configuration);
-                            string PlatfromConfig = null;
-                            if (SolutionProject.m_IsBuildTool)
+                            string PlatfromConfig;
+                            var ConfigurationInfo = TargetConfigurationInfo.Get(Configuration);
+                            if (SolutionProject.IsBuildTool)
                             {
                                 // C# projects have only Debug/Release configurations. 
                                 // If we specify others - projects would not be enabled in the configuration dispatcher.
                                 // E.g. \t{Project-GUID}.Configuration-Name|Platform-Name.* = Configuration|Any CPU
                                 PlatfromConfig = string.Format("\t\t{0}.{1}|{2}.* = {3}|Any CPU",
-                                    /* 0 */ SolutionProject.m_AdditionalCache.m_GUID,              // GUID
-                                    /*1,2*/ ConfigurationInfo.m_HumanReadableName, PlatformInfo.m_HumanReadableName,  // Human readable names
-                                    /* 3 */ ConfigurationInfo.m_IsDebug ? "Debug" : "Release"        // Configuration.
+                                    /* 0 */ SolutionProject.AdditionalCache.GUID,                                   // GUID
+                                    /*1,2*/ ConfigurationInfo.HumanReadableName, PlatformInfo.HumanReadableName,    // Human readable names
+                                    /* 3 */ ConfigurationInfo.IsDebug ? "Debug" : "Release"                         // Configuration.
                                 );
                             }
                             else
                             {
                                 // E.g. \t{Project-GUID}.Configuration-Name|Platform-Name.* = Configuration|MSBuild-Plaform
                                 PlatfromConfig = string.Format("\t\t{0}.{1}|{2}.* = {3}{4}|{5}",
-                                    /* 0 */ SolutionProject.m_AdditionalCache.m_GUID,              // GUID
-                                    /*1,2*/ ConfigurationInfo.m_HumanReadableName, PlatformInfo.m_HumanReadableName,  // Human readable names
-                                    /*3,4*/ Configuration, Platform,                // Internal names
-                                    /* 5 */ ConvertPlatformToMSBuildPlatform(Platform)             // MSBuild platform
+                                    /* 0 */ SolutionProject.AdditionalCache.GUID,                                   // GUID
+                                    /*1,2*/ ConfigurationInfo.HumanReadableName, PlatformInfo.HumanReadableName,    // Human readable names
+                                    /*3,4*/ Configuration, Platform,                                                // Internal names
+                                    /* 5 */ ConvertPlatformToMsBuildPlatform(Platform)                              // MSBuild platform
                                 );
                             }
 
-                            SLN.WriteLine(PlatfromConfig.Replace("*", "ActiveCfg"));
-                            SLN.WriteLine(PlatfromConfig.Replace("*", "Build.0"));
+                            Sln.WriteLine(PlatfromConfig.Replace("*", "ActiveCfg"));
+                            Sln.WriteLine(PlatfromConfig.Replace("*", "Build.0"));
                             //SLN.WriteLine(PlatfromConfig.Replace("*", "Deploy.0"));   // @todo Do something with deployment..
                         }
                     }
                 }
-                SLN.WriteLine("\tEndGlobalSection");
+                Sln.WriteLine("\tEndGlobalSection");
 
-                SLN.WriteLine("\tGlobalSection(SolutionProperties) = postSolution");
-                SLN.WriteLine("\t\tHideSolutionNode = FALSE");
-                SLN.WriteLine("\tEndGlobalSection");
+                Sln.WriteLine("\tGlobalSection(SolutionProperties) = postSolution");
+                Sln.WriteLine("\t\tHideSolutionNode = FALSE");
+                Sln.WriteLine("\tEndGlobalSection");
 
                 // ------------------------------------------------------------------------------------------
                 // Matching projects and filters hierarchy.
                 // ------------------------------------------------------------------------------------------
-                SLN.WriteLine("\tGlobalSection(NestedProjects) = preSolution");
-                foreach (var SolutionProject in Solution.m_CachedProjects)
+                Sln.WriteLine("\tGlobalSection(NestedProjects) = preSolution");
+                foreach (var SolutionProject in Solution.CachedProjects.Where(SolutionProject => !string.IsNullOrEmpty(SolutionProject.CachedFilter)))
                 {
-                    if (!string.IsNullOrEmpty(SolutionProject.m_CachedFilter))
-                    {
-                        SLN.WriteLine("\t\t{0} = {1}", SolutionProject.m_AdditionalCache.m_GUID, SolutionProject.m_AdditionalCache.m_FilterGUID);
-                    }
+                    Sln.WriteLine("\t\t{0} = {1}", SolutionProject.AdditionalCache.GUID, SolutionProject.AdditionalCache.FilterGUID);
                 }
-                SLN.WriteLine("\tEndGlobalSection");
-                SLN.WriteLine("EndGlobal");
+                Sln.WriteLine("\tEndGlobalSection");
+                Sln.WriteLine("EndGlobal");
             }
 
-            return SLNPath;
+            return SlnPath;
         }
     }   // class VisualStudioProjectGenerator
 }   // namespace GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudio

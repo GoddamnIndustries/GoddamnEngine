@@ -20,13 +20,13 @@
 #	error Unsupported SSE version. At least major version 2 is required.
 #endif	// if GD_SSE_VERSION_MAJOR < 2
 
-//! @brief Represents true.
+//! Represents true.
 #define GD_SSE_YES 1
 
-//! @brief Represents false.
+//! Represents false.
 #define GD_SSE_NO 0
 
-//! @brief Represents axes.
+//! Represents axes.
 //! @{
 #define GD_SSE_X 0
 #define GD_SSE_Y 1
@@ -34,7 +34,7 @@
 #define GD_SSE_W 3
 //! @}
 
-//! @brief Generates a shuffle mask for SSE.
+//! Generates a shuffle mask for SSE.
 //! @param A0 Selects which element (0 - 3) from 'A' into first slot in the result.
 //! @param A1 Selects which element (0 - 3) from 'A' into second slot in the result.
 //! @param B2 Selects which element (0 - 3) from 'B' into third slot in the result.
@@ -43,7 +43,7 @@
 
 #if GD_SSE_VERSION_MAJOR >= 4
 
-//! @brief Generates a dot product computation mask for SSE.
+//! Generates a dot product computation mask for SSE.
 //! @param DoUseSlot0 Determines whether slot 0 of input is used during dot product computation.
 //! @param DoUseSlot1 Determines whether slot 1 of input is used during dot product computation.
 //! @param DoUseSlot2 Determines whether slot 2 of input is used during dot product computation.
@@ -76,14 +76,14 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief 4D Vector type stored in single register.
+	//! 4D Vector type stored in single register.
 	typedef __m128 SIMDRegisterSSE;
 
-	//! @brief SIMD register math x86 SSE implementation.
+	//! SIMD register math x86 SSE implementation.
 	class SIMDSSE : public SIMDGeneric<SIMDRegisterSSE>
 	{
 	public:
-		//! @brief Creates a new SIMD register based on four floats.
+		//! Creates a new SIMD register based on four floats.
 		//! @param X First component of the SIMD register.
 		//! @param Y Second component of the SIMD register.
 		//! @param Z Third component of the SIMD register.
@@ -94,7 +94,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_setr_ps(X, Y, Z, W);
 		}
 
-		//! @brief Creates a new SIMD register based on bitwise equivalent of four integers.
+		//! Creates a new SIMD register based on bitwise equivalent of four integers.
 		//! @param X First component of the SIMD register bitwise value.
 		//! @param Y Second component of the SIMD register bitwise value.
 		//! @param Z Third component of the SIMD register bitwise value.
@@ -111,7 +111,7 @@ GD_NAMESPACE_BEGIN
 			return Wrapper.F32Register;
 		}
 
-		//! @brief Gets a single component of a vector.
+		//! Gets a single component of a vector.
 		//! @param Register Specified register.
 		//! @tparam ElementIndex Specified index of the element.
 		//! @returns Specified single component of a vector.
@@ -140,7 +140,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Sets a single component of a vector.
+		//! Sets a single component of a vector.
 		//! @param Register Specified register.
 		//! @param Value Value of the component to be set.
 		//! @tparam ElementIndex Specified index of the element.
@@ -173,7 +173,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Creates a vector through selecting two components from each vector via a shuffle mask. 
+		//! Creates a vector through selecting two components from each vector via a shuffle mask. 
 		//! @param First First register to shuffle.
 		//! @param Second Second register to shuffle.
 		//! @tparam X Index for which component to use for X (literal 0-3).
@@ -191,7 +191,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_shuffle_ps(First, Second, GD_SSE_SHUFFLEMASK(X, Y, Z, W));
 		}
 
-		//! @brief Returns swizzling result of all components of a specified vector.
+		//! Returns swizzling result of all components of a specified vector.
 		//! @param Register Specified register.
 		//! @tparam X Index for which component to use for X (literal 0-3).
 		//! @tparam Y Index for which component to use for Y (literal 0-3).
@@ -208,7 +208,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_shuffle_ps(Register, Register, GD_SSE_SHUFFLEMASK(X, Y, Z, W));
 		}
 
-		//! @brief Returns new register with all components assigned with specified component of a specified register.
+		//! Returns new register with all components assigned with specified component of a specified register.
 		//! @param Register Specified register.
 		//! @tparam ElementIndex Specified index of the element.
 		template<UInt32 const ElementIndex>
@@ -218,7 +218,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_shuffle_ps(Register, Register, GD_SSE_SHUFFLEMASK(ElementIndex, ElementIndex, ElementIndex, ElementIndex));
 		}
 
-		//! @brief Returns component-wise absolute value of the register.
+		//! Returns component-wise absolute value of the register.
 		//! @param Register Specified register.
 		//! @returns Component-wise negated value of the register.
 		GDINL static SIMDRegister GD_VECTORCALL Abs(SIMDRegister const Register)
@@ -228,7 +228,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_and_ps(Register, SignMask);
 		}
 
-		//! @brief Performers bitwise OR for two registers.
+		//! Performers bitwise OR for two registers.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Bitwise OR for two registers.
@@ -237,7 +237,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_or_ps(First, Second);
 		}
 
-		//! @brief Performers bitwise XOR for two registers.
+		//! Performers bitwise XOR for two registers.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Bitwise XOR for two registers.
@@ -246,7 +246,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_xor_ps(First, Second);
 		}
 
-		//! @brief Performers bitwise AND for two registers.
+		//! Performers bitwise AND for two registers.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Bitwise AND for two registers.
@@ -255,7 +255,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_and_ps(First, Second);
 		}
 
-		//! @brief Returns component-wise negated value of the register.
+		//! Returns component-wise negated value of the register.
 		//! @param Register Specified register.
 		//! @returns Component-wise negated value of the register.
 		GDINL static SIMDRegister GD_VECTORCALL Negate(SIMDRegister const Register)
@@ -263,7 +263,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_sub_ps(_mm_setzero_ps(), Register);
 		}
 
-		//! @brief Adds two registers and returns a result.
+		//! Adds two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component sum of two registers.
@@ -272,7 +272,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_add_ps(First, Second);
 		}
 
-		//! @brief Subtracts two registers and returns a result.
+		//! Subtracts two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component subtraction product of two registers.
@@ -281,7 +281,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_sub_ps(First, Second);
 		}
 
-		//! @brief Multiplies two registers and returns a result.
+		//! Multiplies two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component multiplication product of two registers.
@@ -290,7 +290,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_mul_ps(First, Second);
 		}
 
-		//! @brief Divides two registers and returns a result.
+		//! Divides two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component division product of two registers.
@@ -299,7 +299,7 @@ GD_NAMESPACE_BEGIN
 			return _mm_div_ps(First, Second);
 		}
 
-		//! @brief Computes dot product of two SIMD registers, treated as 3D vectors..
+		//! Computes dot product of two SIMD registers, treated as 3D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Dot product of two registers.
@@ -313,7 +313,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if GD_SSE_VERSION_MAJOR >= 4
 		}
 
-		//! @brief Computes dot product of two SIMD registers, treated as 4D vectors..
+		//! Computes dot product of two SIMD registers, treated as 4D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Dot product of two registers.
@@ -330,7 +330,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if GD_SSE_VERSION_MAJOR >= 4
 		}
 
-		//! @brief Computes cross product of two SIMD registers, treated as 3D vectors..
+		//! Computes cross product of two SIMD registers, treated as 3D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Cross product of two registers.
@@ -343,7 +343,7 @@ GD_NAMESPACE_BEGIN
 			return Sub(Mul(FirstYZXW, SecondZXYW), Mul(FirstZXYW, SecondYZXW));
 		}
 
-		//! @brief Computes cross product of three SIMD registers, treated as 4D vectors..
+		//! Computes cross product of three SIMD registers, treated as 4D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @param Third Third specified register.

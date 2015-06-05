@@ -26,11 +26,13 @@ GD_NAMESPACE_BEGIN
 		//! Returns integer representation of this hash summ.
 		GDINL HashValueType GetValue() const { return this->Value; }
 
-		//! Compares to hash summes.
+		//! Compares to hash summs.
 		GDINL bool operator== (HashCode const& HashCode) const { return (this->Value == HashCode.Value); }
 		GDINL bool operator!= (HashCode const& HashCode) const { return (this->Value != HashCode.Value); }
 		GDINL bool operator>  (HashCode const& HashCode) const { return (this->Value >  HashCode.Value); }
+		GDINL bool operator>= (HashCode const& HashCode) const { return (this->Value >= HashCode.Value); }
 		GDINL bool operator<  (HashCode const& HashCode) const { return (this->Value <  HashCode.Value); }
+		GDINL bool operator<= (HashCode const& HashCode) const { return (this->Value <= HashCode.Value); }
 	};	// struct HashCode
 
 GD_NAMESPACE_END

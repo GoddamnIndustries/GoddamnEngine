@@ -25,43 +25,43 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Defines a LibSDL2 splash screen class.
+	//! Defines a LibSDL2 splash screen class.
 	class SDL2SplashScreen : public IGenericSplashScreen
 	{
 	public:
-		//! @brief Name of a Splash screen window class.
+		//! Name of a Splash screen window class.
 		CHAR static const	SplashScreenClassName[];
 
 	private:
 
 	public:
-		//! @brief Initializes a splash screen.
+		//! Initializes a splash screen.
 		GDINL SDL2SplashScreen()
 		{
 		}
 
-		//! @brief Destroys a splash screen.
+		//! Destroys a splash screen.
 		GDINL virtual ~SDL2SplashScreen()
 		{ 
 			this->DestroySplash(); 
 		}
 
 	public:
-		//! @brief Initializes a splash screen.
+		//! Initializes a splash screen.
 		GDAPI virtual void InitializeSplash() override;
 
-		//! @brief Destroys a splash screen.
+		//! Destroys a splash screen.
 		GDAPI virtual void DestroySplash() override;
 
-		//! @brief Shows or hides a splash screen.
+		//! Shows or hides a splash screen.
 		//! @param SplashDoShow Whether to show or hide splash screen.
 		GDAPI virtual void ShowSplash(bool const SplashDoShow) override;
 
-		//! @brief Returns true, if splash is shown.
+		//! Returns true, if splash is shown.
 		//! @returns True, if splash is shown.
 		GDAPI virtual bool IsSplashShown() const override;
 
-		//! @brief Sets text that is displayed in some region of a splash screen.
+		//! Sets text that is displayed in some region of a splash screen.
 		//! @param SplashTextRegion Region to which set new text.
 		//! @param SplashText Text to set.
 		GDAPI virtual void SetSplashText(SplashScreenTextRegionTp const SplashTextRegion, String const& SplashText) override;

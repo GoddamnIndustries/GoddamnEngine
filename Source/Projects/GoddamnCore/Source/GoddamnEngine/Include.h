@@ -12,7 +12,7 @@
 #pragma once
 #define GD_INSIDE_INCLUDE_H
 
-//! @brief Defines a type-independent boolean constants. 
+//! Defines a type-independent boolean constants. 
 //! @note Please, consider using native 'true' and 'false' for native bool type.
 //! @{
 #define GD_TRUE								1	
@@ -51,7 +51,6 @@
 #if !GD_RESOURCE_COMPILER
 #	define fallthrough						/*fallthrough*/
 #	define abstract							= 0
-#	define impl_abstract					abstract
 #	define object_cast						static_cast
 
 #	define GD_NOT_USED(Argument)			(static_cast<void>(Argument))
@@ -62,16 +61,22 @@
 #	define GD_TRUNC_TO_INT32(Float32V)		static_cast<Int32>(Float32V)
 
 //! Some 'stringification' magic.
+//! @{
 #	define GD_STRIGIFY_(A)					#A
 #	define GD_STRIGIFY(A)					GD_STRIGIFY_(A)
+//! @}
 
 //! Some glue magic.
+//! @{
 #	define GD_GLUE_(A, B)					A ## B
 #	define GD_GLUE(A, B)					GD_GLUE_(A, B)
+//! @}
 
 //! Some widening magic.
+//! @{
 #	define GD_WIDEN_(String)				L ## String
 #	define GD_WIDEN(String)					GD_WIDEN_(String)
+//! @}
 
 #	define GD_BIT(Bit)						(1 << (Bit))
 

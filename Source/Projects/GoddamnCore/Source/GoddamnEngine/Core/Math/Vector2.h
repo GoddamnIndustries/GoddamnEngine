@@ -13,7 +13,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Two-dimensional vector class.
+	//! Two-dimensional vector class.
 	//! @code
 	//!  Y ^ 
 	//!    |
@@ -43,14 +43,14 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes a 2D vector with value {X:0, Y:0}.
+		//! Initializes a 2D vector with value {X:0, Y:0}.
 		GDINL explicit Vector2t()
 			: _0(static_cast<ElementType>(0))
 			, _1(static_cast<ElementType>(0))
 		{
 		}
 
-		//! @brief Initializes a 2D vector.
+		//! Initializes a 2D vector.
 		//! @param Vector2Value Value of the both coordinates of the vector.
 		GDINL explicit Vector2t(ElementTypeConstRef const Vector2Value)
 			: _0(Vector2Value)
@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Initializes a 2D vector.
+		//! Initializes a 2D vector.
 		//! @param Vector2Value0 Value of the first coordinate of the vector.
 		//! @param Vector2Value1 Value of the second coordinate of the vector.
 		GDINL Vector2t(ElementTypeConstRef const Vector2Value0, ElementTypeConstRef const Vector2Value1)
@@ -69,21 +69,21 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Computes dot product of two vectors.
+		//! Computes dot product of two vectors.
 		//! @returns Dot product of two vectors.
 		GDINL ElementType Dot(Vector2t const& Other) const
 		{
 			return (this->x * Other.x + this->y * Other.y);
 		}
 
-		//! @brief Computes length of the vector.
+		//! Computes length of the vector.
 		//! @returns Length of the vector.
 		GDINL ElementType Length() const
 		{
 			return SquareRoot(this->Dot(*this));
 		}
 
-		//! @brief Returns normalized version of this vector.
+		//! Returns normalized version of this vector.
 		//! @returns Normalized version of this vector.
 		GDINL Vector2t Normalize() const
 		{

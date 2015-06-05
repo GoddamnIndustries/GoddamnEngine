@@ -26,19 +26,19 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Defines a Windows input interface.
+	//! Defines a Windows input interface.
 	class WindowsInput final : public IGenericInput
 	{
 
 	public:
 
-		//! @brief Initializes an input interface.
+		//! Initializes an input interface.
 		GDINL WindowsInput()
 		{
 			CMemory::Memset(&this->InputGamepadStates, 0, sizeof(this->InputGamepadStates));
 		}
 
-		//! @brief Destroys an input interface.
+		//! Destroys an input interface.
 		GDAPI virtual ~WindowsInput()
 		{
 			this->DestroyObject();
@@ -46,20 +46,20 @@ GD_NAMESPACE_BEGIN
 
 	protected:
 
-		//! @brief Initializes an input interface.
+		//! Initializes an input interface.
 		GD_PLATFORM_OVERRIDE_METHOD0(void, InitializeObject, override final);
 
-		//! @brief Destroys an input interface.
+		//! Destroys an input interface.
 		GD_PLATFORM_OVERRIDE_METHOD0(void, DestroyObject, override final);
 
-		//! @brief Ticks a frame.
+		//! Ticks a frame.
 		GD_PLATFORM_OVERRIDE_METHOD0(void, TickObject, override final);
 
 	public:
 
 	};	// class WindowsInput
 
-	//! @brief Defines a Input interface.
+	//! Defines a Input interface.
 	typedef WindowsInput Input;
 
 GD_NAMESPACE_END

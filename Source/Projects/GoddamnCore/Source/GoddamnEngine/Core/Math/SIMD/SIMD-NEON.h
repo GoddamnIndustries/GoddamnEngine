@@ -14,14 +14,14 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief 4D Vector type stored in single register.
+	//! 4D Vector type stored in single register.
 	typedef GD_ALIGN_MSVC(16) float32x4_t GD_ALIGN_GCC(16) SIMDRegisterNEON;
 
-	//! @brief SIMD register math ARM NEON implementation.
+	//! SIMD register math ARM NEON implementation.
 	class SIMDNEON : public SIMDGeneric<SIMDRegisterNEON>
 	{
 	public:
-		//! @brief Creates a new SIMD register based on four floats.
+		//! Creates a new SIMD register based on four floats.
 		//! @param X First component of the SIMD register.
 		//! @param Y Second component of the SIMD register.
 		//! @param Z Third component of the SIMD register.
@@ -41,7 +41,7 @@ GD_NAMESPACE_BEGIN
 			return Wrapper.Register;
 		}
 
-		//! @brief Creates a new SIMD register based on bitwise equivalent of four integers.
+		//! Creates a new SIMD register based on bitwise equivalent of four integers.
 		//! @param X First component of the SIMD register bitwise value.
 		//! @param Y Second component of the SIMD register bitwise value.
 		//! @param Z Third component of the SIMD register bitwise value.
@@ -61,7 +61,7 @@ GD_NAMESPACE_BEGIN
 			return Wrapper.Register;
 		}
 
-		//! @brief Gets a single component of a vector.
+		//! Gets a single component of a vector.
 		//! @param Register Specified register.
 		//! @tparam ElementIndex Specified index of the element.
 		//! @returns Specified single component of a vector.
@@ -72,7 +72,7 @@ GD_NAMESPACE_BEGIN
 			return vgetq_lane_f32(Register, ElementIndex);
 		}
 
-		//! @brief Sets a single component of a vector.
+		//! Sets a single component of a vector.
 		//! @param Register Specified register.
 		//! @param Value Value of the component to be set.
 		//! @tparam ElementIndex Specified index of the element.
@@ -84,7 +84,7 @@ GD_NAMESPACE_BEGIN
 			return vsetq_lane_f32(Value, Register, ElementIndex);
 		}
 
-		//! @brief Creates a vector through selecting two components from each vector via a shuffle mask. 
+		//! Creates a vector through selecting two components from each vector via a shuffle mask. 
 		//! @param First First register to shuffle.
 		//! @param Second Second register to shuffle.
 		//! @tparam X Index for which component to use for X (literal 0-3).
@@ -125,7 +125,7 @@ GD_NAMESPACE_BEGIN
 		//! @todo Create explicit specializations for specific values.
 		//! @}
 
-		//! @brief Returns swizzling result of all components of a specified vector.
+		//! Returns swizzling result of all components of a specified vector.
 		//! @param Register Specified register.
 		//! @tparam X Index for which component to use for X (literal 0-3).
 		//! @tparam Y Index for which component to use for Y (literal 0-3).
@@ -314,7 +314,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Returns new register with all components assigned with specified component of a specified register.
+		//! Returns new register with all components assigned with specified component of a specified register.
 		//! @param Register Specified register.
 		//! @tparam ElementIndex Specified index of the element.
 		template<UInt32 const ElementIndex>
@@ -324,7 +324,7 @@ GD_NAMESPACE_BEGIN
 			return vdupq_n_f32(vgetq_lane_f32(Register, ElementIndex));
 		}
 
-		//! @brief Returns component-wise absolute value of the register.
+		//! Returns component-wise absolute value of the register.
 		//! @param Register Specified register.
 		//! @returns Component-wise negated value of the register.
 		GDINL static SIMDRegister GD_VECTORCALL Abs(SIMDRegister const Register)
@@ -332,7 +332,7 @@ GD_NAMESPACE_BEGIN
 			return vabsq_f32(Register);
 		}
 
-		//! @brief Returns component-wise negated value of the register.
+		//! Returns component-wise negated value of the register.
 		//! @param Register Specified register.
 		//! @returns Component-wise negated value of the register.
 		GDINL static SIMDRegister GD_VECTORCALL Negate(SIMDRegister const Register)
@@ -340,7 +340,7 @@ GD_NAMESPACE_BEGIN
 			return vnegq_f32(Register);
 		}
 
-		//! @brief Performers bitwise OR for two registers.
+		//! Performers bitwise OR for two registers.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Bitwise OR for two registers.
@@ -349,7 +349,7 @@ GD_NAMESPACE_BEGIN
 			return static_cast<SIMDRegister>(vorrq_u32(static_cast<uint32x4_t>(First), static_cast<uint32x4_t>(Second)));
 		}
 
-		//! @brief Performers bitwise XOR for two registers.
+		//! Performers bitwise XOR for two registers.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Bitwise XOR for two registers.
@@ -358,7 +358,7 @@ GD_NAMESPACE_BEGIN
 			return static_cast<SIMDRegister>(veorq_u32(static_cast<uint32x4_t>(First), static_cast<uint32x4_t>(Second)));
 		}
 
-		//! @brief Performers bitwise AND for two registers.
+		//! Performers bitwise AND for two registers.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Bitwise AND for two registers.
@@ -367,7 +367,7 @@ GD_NAMESPACE_BEGIN
 			return static_cast<SIMDRegister>(vandq_u32(static_cast<uint32x4_t>(First), static_cast<uint32x4_t>(Second)));
 		}
 
-		//! @brief Adds two registers and returns a result.
+		//! Adds two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component sum of two registers.
@@ -376,7 +376,7 @@ GD_NAMESPACE_BEGIN
 			return vaddq_f32(First, Second);
 		}
 
-		//! @brief Subtracts two registers and returns a result.
+		//! Subtracts two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component subtraction product of two registers.
@@ -385,7 +385,7 @@ GD_NAMESPACE_BEGIN
 			return vsubq_f32(First, Second);
 		}
 
-		//! @brief Multiplies two registers and returns a result.
+		//! Multiplies two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component multiplication product of two registers.
@@ -394,7 +394,7 @@ GD_NAMESPACE_BEGIN
 			return vmulq_f32(First, Second);
 		}
 
-		//! @brief Divides two registers and returns a result.
+		//! Divides two registers and returns a result.
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Per-component division product of two registers.
@@ -406,7 +406,7 @@ GD_NAMESPACE_BEGIN
 			return vmulq_f32(First, Reciprocal);
 		}
 
-		//! @brief Computes dot product of two SIMD registers, treated as 3D vectors..
+		//! Computes dot product of two SIMD registers, treated as 3D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Dot product of two registers.
@@ -421,7 +421,7 @@ GD_NAMESPACE_BEGIN
 			return vcombine_f32(Temp1, Temp1);
 		}
 
-		//! @brief Computes dot product of two SIMD registers, treated as 4D vectors..
+		//! Computes dot product of two SIMD registers, treated as 4D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Dot product of two registers.
@@ -436,7 +436,7 @@ GD_NAMESPACE_BEGIN
 			return vcombine_f32(Temp1, Temp1);
 		}
 
-		//! @brief Computes cross product of two SIMD registers, treated as 3D vectors..
+		//! Computes cross product of two SIMD registers, treated as 3D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @returns Cross product of two registers.
@@ -449,7 +449,7 @@ GD_NAMESPACE_BEGIN
 			return Result;
 		}
 
-		//! @brief Computes cross product of three SIMD registers, treated as 3D vectors..
+		//! Computes cross product of three SIMD registers, treated as 3D vectors..
 		//! @param First First specified register.
 		//! @param Second Second specified register.
 		//! @param Third Third specified register.

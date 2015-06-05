@@ -20,17 +20,17 @@ namespace GoddamnEngine.BuildSystem
     //! Inline dynamic C# compiler.
     internal static class CSharpCompiler
     {
-        private readonly static object s_TemporaryAssemblyMutex = new object();
-        private static CompilerParameters s_Parameters;
+        private readonly static object TemporaryAssemblyMutex = new object();
+        private static CompilerParameters Parameters;
 
         //! Compiles C# source file into Assembly object.
         internal static Assembly CompileSourceFile(string PathToSource)
         {
-            lock (s_TemporaryAssemblyMutex)
+            lock (TemporaryAssemblyMutex)
             {
-                if (s_Parameters == null)
+                if (Parameters == null)
                 {
-                    s_Parameters = new CompilerParameters(new string[] { 
+                    Parameters = new CompilerParameters(new string[] { 
                         "System.dll",                            // Only symbols from System.dll are available in config files.
                         Assembly.GetExecutingAssembly().Location // Adding current assembly.
                     })
@@ -42,7 +42,7 @@ namespace GoddamnEngine.BuildSystem
                     };
                 }
 
-                CompilerResults CompilingResults = new CSharpCodeProvider().CompileAssemblyFromFile(s_Parameters, PathToSource);
+                CompilerResults CompilingResults = new CSharpCodeProvider().CompileAssemblyFromFile(Parameters, PathToSource);
                 if (CompilingResults.Errors.HasErrors || CompilingResults.Errors.HasWarnings)
                 {
                     // Seams we have compiling errors/warnings (assume using /wx compiling options) here

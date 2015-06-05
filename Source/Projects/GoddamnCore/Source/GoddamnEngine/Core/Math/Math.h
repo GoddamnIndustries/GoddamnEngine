@@ -10,13 +10,13 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/TypeTraits.h>
 
-//! @brief Defines a PI constant.
+//! Defines a PI constant.
 //! @{
 #define GD_F32_PI (3.1415926535897932f)
 #define GD_F64_PI (3.1415926535897932384626433832795)
 //! @}
 
-//! @brief Defines a E constant.
+//! Defines a E constant.
 //! @{
 #define GD_F32_E  (2.7182818284590452f)
 #define GD_F64_E  (2.7182818284590452353602874713527)

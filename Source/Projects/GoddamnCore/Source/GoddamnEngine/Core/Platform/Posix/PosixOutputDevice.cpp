@@ -14,7 +14,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Sets new color of data printed to OutputDevice.
+	//! Sets new color of data printed to OutputDevice.
 	//! @param DeviceColor New color of data printed to OutputDevice.
 	GDAPI void PosixOutputDeviceConsole::SetDataColor(OutputDeviceColorTp const DeviceColor)
 	{
@@ -100,26 +100,26 @@ GD_NAMESPACE_BEGIN
 		this->Print(String::Format("\x1B[%d;%d;%dm", ParsedAttributes, ParsedForeground, ParsedBackground));
 	}
 
-	//! @brief Internally dumps all buffered data to output device.
+	//! Internally dumps all buffered data to output device.
 	GDAPI void PosixOutputDeviceConsole::Flush()
 	{
 		// Nothing to do
 	}
 
-	//! @brief Closes output device and cleans all data.
+	//! Closes output device and cleans all data.
 	GDAPI void PosixOutputDeviceConsole::TearDown()
 	{
 		this->Flush();
 	}
 
-	//! @brief Internally writes a string to OutputDevice.
+	//! Internally writes a string to OutputDevice.
 	//! @param Message Message to print.
 	GDAPI void PosixOutputDeviceConsole::Print(String const& Message)
 	{
 		std::printf("%s", Message.CStr());
 	}
 
-	//! @brief Shows or hides a console window.
+	//! Shows or hides a console window.
 	//! @param DoShow Whether to show or hide a console window.
 	GDAPI void PosixOutputDeviceConsole::ShowConsole(bool DoShow)
 	{
@@ -127,14 +127,14 @@ GD_NAMESPACE_BEGIN
 		// Nothing to do
 	}
 
-	//! @brief Returns true if console window is currently shown or not.
+	//! Returns true if console window is currently shown or not.
 	//! @returns True if console window is currently shown or not.
 	GDAPI bool PosixOutputDeviceConsole::IsConsoleShown() const
 	{
 		return true;
 	}
 
-	//! @brief Returns true if application is already attached to some console window.
+	//! Returns true if application is already attached to some console window.
 	//! @returns True if application is already attached to some console window.
 	GDAPI bool PosixOutputDeviceConsole::IsConsoleAttached() const
 	{

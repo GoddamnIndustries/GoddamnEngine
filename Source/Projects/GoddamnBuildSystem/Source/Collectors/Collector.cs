@@ -17,70 +17,71 @@ using System.IO;
 
 namespace GoddamnEngine.BuildSystem
 {
-    //! @brief Represents an abstract data collector.
+    // ------------------------------------------------------------------------------------------
+    //! Represents an abstract data collector.
     public abstract class Collector
     {
-        internal string m_Source = null;
-        private string m_Location;
-        private string m_Name;
+        internal string Source = null;
+        private  string Location;
+        private  string Name;
 
-        //! @brief Returns path to source file of this collector.
+        // ------------------------------------------------------------------------------------------
+        //! Returns path to source file of this collector.
         //! @returns Path to source file of this collector.
         public string GetSource()
         {
-            Debug.Assert(m_Source != null);
-            return m_Source;
+            Debug.Assert(Source != null);
+            return Source;
         }
 
-        //! @brief Returns path directory of this collector.
+        // ------------------------------------------------------------------------------------------
+        //! Returns path directory of this collector.
         //! @returns Path directory of this collector.
         public string GetLocation()
         {
-            if (m_Location == null)
-            {
-                m_Location = Path.GetDirectoryName(GetSource());
-            }
-
-            return m_Location;
+            return Location ?? (Location = Path.GetDirectoryName(GetSource()));
         }
 
-        //! @brief Returns name of this collector.
+        // ------------------------------------------------------------------------------------------
+        //! Returns name of this collector.
         //! @returns Name of this collector.
         public string GetName()
         {
-            if (m_Name == null)
+            if (Name == null)
             {
-                m_Name = GetSource();
-                while (!string.IsNullOrEmpty(Path.GetExtension(m_Name)))
+                Name = GetSource();
+                while (!string.IsNullOrEmpty(Path.GetExtension(Name)))
                 {
-                    m_Name = Path.GetFileNameWithoutExtension(m_Name);
+                    Name = Path.GetFileNameWithoutExtension(Name);
                 }
             }
 
-            return m_Name;
+            return Name;
         }
 
-        //! @brief Returns false is this object should be skipped.
+        // ------------------------------------------------------------------------------------------
+        //! Returns false is this object should be skipped.
         //! @returns False is this object should be skipped.
         public virtual bool GetIsSupported()
         {
             return true;
         }
 
-        //! @brief Returns true if object on specified path has platform/configuration data and matches it.
+        // ------------------------------------------------------------------------------------------
+        //! Returns true if object on specified path has platform/configuration data and matches it.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
         //! @returns True if object on specified path has platform/configuration data and matches it.
         public static bool MatchesPlatformConfiguration(string ObjectPath, TargetPlatform Platform, TargetConfiguration Configuration)
         {
-            string ObjectPathExtensionless = Path.GetFileNameWithoutExtension(ObjectPath);
-            string ObjectPlatform = Path.GetExtension(ObjectPathExtensionless);
+            var ObjectPathExtensionless = Path.GetFileNameWithoutExtension(ObjectPath);
+            var ObjectPlatform = Path.GetExtension(ObjectPathExtensionless);
             if (!string.IsNullOrEmpty(ObjectPlatform))
             {
                 // Checking if platform information is defined and it is of type TargetPlatform.
                 if (ObjectPlatform == string.Concat('.', Platform))
                 {
-                    string LibraryConfiguration = Path.GetExtension(Path.GetFileNameWithoutExtension(ObjectPathExtensionless));
+                    var LibraryConfiguration = Path.GetExtension(Path.GetFileNameWithoutExtension(ObjectPathExtensionless));
                     if (!string.IsNullOrEmpty(LibraryConfiguration))
                     {
                         // Checking if platform information is defined and it is of type TargetConfiguration.
@@ -98,92 +99,99 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class TargetCollector
 
-    //! @brief Represents a data structure, that contains pre-cached from collector for different platforms/configurations.
+    // ------------------------------------------------------------------------------------------
+    //! Represents a data structure, that contains pre-cached from collector for different platforms/configurations.
     //! @tparam T Type of data stored in the container.
     public sealed class CollectorContainer<T>
     {
-        private Dictionary<UInt16, T> m_Container;
+        private Dictionary<UInt16, T> Container;
 
-        //! @brief Packs target platform and configuration into single value.
+        // ------------------------------------------------------------------------------------------
+        //! Packs target platform and configuration into single value.
         //! @param Platform Platform to be packed.
         //! @param Configuration Configuration to be packed.
         //! @returns Packed target platform and configuration as a single value.
         private static UInt16 CompressPlatformConfiguration(TargetPlatform Platform, TargetConfiguration Configuration)
         {
-            UInt16 PlatformValue = (byte)Convert.ChangeType(Platform, Platform.GetTypeCode());
-            UInt16 ConfigurationValue = (byte)Convert.ChangeType(Configuration, Platform.GetTypeCode());
+            ushort PlatformValue = (byte)Convert.ChangeType(Platform, Platform.GetTypeCode());
+            ushort ConfigurationValue = (byte)Convert.ChangeType(Configuration, Platform.GetTypeCode());
 
-            return (UInt16)(PlatformValue | (ConfigurationValue << 8));
+            return (ushort)(PlatformValue | (ConfigurationValue << 8));
         }
 
-        //! @brief Initializes the container with all values.
+        // ------------------------------------------------------------------------------------------
+        //! Initializes the container with all values.
         //! @param Accessor Function that returns a value depending on platform/configuration.
         public CollectorContainer(Func<TargetPlatform, TargetConfiguration, T> Accessor)
         {
-            m_Container = new Dictionary<UInt16, T>();
-            foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
+            Container = new Dictionary<ushort, T>();
+            foreach (var Platform in Target.EnumerateAllPlatforms())
             {
-                foreach (TargetConfiguration Configuration in Target.EnumerateAllConfigurations())
+                foreach (var Configuration in Target.EnumerateAllConfigurations())
                 {
-                    m_Container.Add(CompressPlatformConfiguration(Platform, Configuration), Accessor(Platform, Configuration));
+                    Container.Add(CompressPlatformConfiguration(Platform, Configuration), Accessor(Platform, Configuration));
                 }
             }
         }
 
-        //! @brief Accesses the platform/configuration specific value of the container.
+        // ------------------------------------------------------------------------------------------
+        //! Accesses the platform/configuration specific value of the container.
         //! @param Platform Some platform.
         //! @param Configuration Some configuration.
         //! @return Platform/configuration specific value of the container.
         public T this[TargetPlatform Platform, TargetConfiguration Configuration]
         {
-            get { return m_Container[CompressPlatformConfiguration(Platform, Configuration)]; }
-            set { m_Container[CompressPlatformConfiguration(Platform, Configuration)] = value; }
+            get { return Container[CompressPlatformConfiguration(Platform, Configuration)]; }
+            set { Container[CompressPlatformConfiguration(Platform, Configuration)] = value; }
         }
     }   // class CollectorContainer<T>
 
-    //! @brief Contains cached data of some abstract collector.
+    // ------------------------------------------------------------------------------------------
+    //! Contains cached data of some abstract collector.
     public class CollectorCache
     {
-        public readonly Collector m_Collector;
-        public dynamic m_AdditionalCache;
-        public readonly bool m_IsSupported;
-        public readonly string m_CachedSource;
-        public readonly string m_CachedName;
-        public readonly string m_CachedLocation;
+        public readonly Collector Collector;
+        public dynamic AdditionalCache;
+        public readonly bool IsSupported;
+        public readonly string CachedSource;
+        public readonly string CachedName;
+        public readonly string CachedLocation;
 
-        //! @brief Initializes a new generic collector cache.
+        // ------------------------------------------------------------------------------------------
+        //! Initializes a new generic collector cache.
         //! @param Collector Collector which dynamic properties would be cached.
-        public CollectorCache(Collector Collector)
+        protected CollectorCache(Collector Collector)
         {
-            m_Collector = Collector;
-            m_IsSupported = Collector.GetIsSupported();
-            if (m_IsSupported)
+            this.Collector = Collector;
+            IsSupported = Collector.GetIsSupported();
+            if (IsSupported)
             {
-                m_AdditionalCache = new ExpandoObject();
-                m_CachedSource = Collector.GetSource();
-                m_CachedName = Collector.GetName();
-                m_CachedLocation = Collector.GetLocation();
+                AdditionalCache = new ExpandoObject();
+                CachedSource = Collector.GetSource();
+                CachedName = Collector.GetName();
+                CachedLocation = Collector.GetLocation();
             }
         }
     }   // class TargetCollectorCache
 
-    //! @brief Collects data and generates cache.
+    // ------------------------------------------------------------------------------------------
+    //! Collects data and generates cache.
     //! @tparam TCollector Type of collector.
     //! @tparam TCache Type of cache of collector.
-    public /*static*/ class CollectorFactory<TCollector, TCache>
+    public abstract class CollectorFactory<TCollector, TCache>
         where TCollector : Collector
         where TCache : CollectorCache
     {
-        private readonly static Dictionary<string, TCache> s_CachedCache = new Dictionary<string, TCache>();
+        private readonly static Dictionary<string, TCache> CachedCache = new Dictionary<string, TCache>();
 
-        //! @brief Constructs new collector instance and cached it data.
+        // ------------------------------------------------------------------------------------------
+        //! Constructs new collector instance and cached it data.
         //! @param CollectorSourcePath Path so source file of the collector.
         //! @returns Created instance of cached collector data.
         public static TCache Create(string CollectorSourcePath)
         {
-            if (!s_CachedCache.ContainsKey(CollectorSourcePath))
+            if (!CachedCache.ContainsKey(CollectorSourcePath))
             {
-
                 TCollector Collector = null;
                 if (CollectorSourcePath != null)
                 {
@@ -202,16 +210,16 @@ namespace GoddamnEngine.BuildSystem
                     Collector = Activator.CreateInstance<TCollector>();
                 }
 
-                Collector.m_Source = CollectorSourcePath;
+                Collector.Source = CollectorSourcePath;
 
-                TCache Cache = (TCache)Activator.CreateInstance(typeof(TCache), Collector);
-                s_CachedCache.Add(CollectorSourcePath, Cache);
+                var Cache = (TCache)Activator.CreateInstance(typeof(TCache), Collector);
+                CachedCache.Add(CollectorSourcePath, Cache);
 
                 return Cache;
             }
             else
             {
-                return s_CachedCache[CollectorSourcePath];
+                return CachedCache[CollectorSourcePath];
             }
         }
     }   // class TargetCollectorFactory<TCollector, TCache>

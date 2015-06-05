@@ -16,7 +16,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Flags of a single entry in global symbol table.
+	//! Flags of a single entry in global symbol table.
 	//! @{
 	struct SymbolTableRecordFlags
 	{
@@ -29,7 +29,7 @@ GD_NAMESPACE_BEGIN
 	typedef SymbolTableRecordFlags::Type SymbolTableRecordFlagsTp;
 	//! @}
 
-	//! @brief A single entry in global symbol table.
+	//! A single entry in global symbol table.
 	class SymbolTableRecord final
 	{
 		friend class Symbol;
@@ -54,39 +54,39 @@ GD_NAMESPACE_BEGIN
 		GDINL SymbolTableRecord() { }
 		GDINL ~SymbolTableRecord() { }
 
-		//! @brief Helper function that can compute hash code of an abstract amount of data by flags.
+		//! Helper function that can compute hash code of an abstract amount of data by flags.
 		//! @param SymbolData Symbol data.
 		//! @param SymbolFlags Flags of a data.
 		//! @returns Unique hash code of a symbol.
 		GDAPI static HashCode ComputeHashCode(CHandle const SymbolData, SymbolTableRecordFlagsTp const SymbolFlags);
 
-		//! @brief Allocates a new symbol entry.
+		//! Allocates a new symbol entry.
 		//! @param SymbolData String symbol data.
 		//! @param SymbolLength Length of a symbol data.
 		//! @param SymbolFlags Initial flags of a symbol.
 		//! @returns Allocated name entry.
 		GDAPI static SymbolTableRecord* AllocateSymbolTableRecord(CHandle const SymbolData, SizeTp const SymbolLength, SymbolTableRecordFlagsTp const SymbolFlags);
 
-		//! @brief Deallocates a symbol entry.
+		//! Deallocates a symbol entry.
 		//! @param TableRecord A symbol entry to deallocate.
 		GDAPI static void DeallocateSymbolTableRecord(SymbolTableRecord* const TableRecord);
 	};	// class SymbolTableRecord
 
-	//! @brief Contains a reference to unique string stored in global table. 
-	class Symbol final : IContainer
+	//! Contains a reference to unique string stored in global table. 
+	class Symbol final
 	{
 	private:
 		SymbolTableRecord const* TableRecord;
 
 	public:
 
-		//! @brief Initializes a symbol with some data, it's length and flags.
+		//! Initializes a symbol with some data, it's length and flags.
 		//! @param SymbolData Symbol data.
 		//! @param SymbolLength Length of a symbol data.
 		//! @param SymbolFlags Flags of a data.
 		GDAPI Symbol(CHandle const SymbolData, SizeTp const SymbolLength, SymbolTableRecordFlagsTp const SymbolFlags);
 
-		//! @brief Initializes a symbol with ANSI string data.
+		//! Initializes a symbol with ANSI string data.
 		//! @param SymbolData Initial symbol data.
 		//! @{
 		GDINL explicit Symbol(CStr const SymbolData)
@@ -100,7 +100,7 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Initializes a symbol with Wide string data.
+		//! Initializes a symbol with Wide string data.
 		//! @param SymbolDataWide Initial symbol data.
 		//! @{
 		GDAPI explicit Symbol(WideCStr const SymbolDataWide)

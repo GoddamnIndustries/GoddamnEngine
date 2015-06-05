@@ -26,25 +26,25 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Defines a Microsoft date/time manager class.
+	//! Defines a Microsoft date/time manager class.
 	class MicrosoftDateTime : public IGenericDateTime
 	{
 	public:
 
-		//! @brief Initializes a date/time class.
+		//! Initializes a date/time class.
 		GDINL MicrosoftDateTime() { }
 
-		//! @brief Deinitializes a date/time class.
+		//! Deinitializes a date/time class.
 		GDAPI virtual ~MicrosoftDateTime() { }
 
 	protected:
 
-		//! @brief Initializes a date/time class.
+		//! Initializes a date/time class.
 		GD_PLATFORM_OVERRIDE_METHOD0(void, InitializeObject, override);
 
 	public:
 
-		//! @brief Returns time in seconds passed till Engine launch.
+		//! Returns time in seconds passed till Engine launch.
 		//! @returns Time in seconds passed till Engine launch.
 		GD_PLATFORM_OVERRIDE_METHOD0(Float64, GetSeconds, override
 		{
@@ -53,7 +53,7 @@ GD_NAMESPACE_BEGIN
 			return this->TimeSecondsPerCycle * static_cast<Float64>(TimeTicksCount.QuadPart) - this->TimeStartTime;
 		});
 
-		//! @brief Returns local time in UTC.
+		//! Returns local time in UTC.
 		//! @returns Local time in UTC.
 		//! @note Not all implementations can return full time. Unresolved fields would be set to zero.
 		GD_PLATFORM_OVERRIDE_METHOD0(DateTimeTp, GetDateTimeUTC);

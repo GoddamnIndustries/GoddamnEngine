@@ -14,74 +14,75 @@ using System.IO;
 
 namespace GoddamnEngine.BuildSystem
 {
-    //! @brief Represents an exception, thrown by BuildSystem code.
+    // ------------------------------------------------------------------------------------------
+    //! Represents an exception, thrown by BuildSystem code.
     [Serializable]
     public class BuildSystemException : Exception
     {
-        //! @brief Constructs the build system exception with a String.
-        //! @param Format Format String.
+        // ------------------------------------------------------------------------------------------
+        //! Constructs the build system exception with a string.
+        //! @param Format Format string.
         //! @param Arguments Formatting arguments.
-        public BuildSystemException(String Format, params object[] Arguments)
-            : base(String.Format(Format, Arguments))
+        public BuildSystemException(string Format, params object[] Arguments)
+            : base(string.Format(Format, Arguments))
         {
         }
     }   // class ProjectException
 
-    //! @brief Represents a attribute of a build system module.
+    // ------------------------------------------------------------------------------------------
+    //! Represents a attribute of a build system module.
     [AttributeUsage(AttributeTargets.Class)]
     internal sealed class BuildSystemModuleAttribute : Attribute
     {
-        public readonly String m_CommandLineName;
-        public BuildSystemModuleAttribute(String m_CommandLineName)
+        public readonly string CommandLineName;
+        public BuildSystemModuleAttribute(string CommandLineName)
         {
-            this.m_CommandLineName = m_CommandLineName;
+            this.CommandLineName = CommandLineName;
         }
     }   // class BuildSystemModuleAttribute
 
-    //! @brief Represents a module of a build system.
+    // ------------------------------------------------------------------------------------------
+    //! Represents a module of a build system.
     public abstract class BuildSystemModule
     {
-        //! @brief Entry point of a module.
-        public virtual int Execute(String[] Arguments)
+        // ------------------------------------------------------------------------------------------
+        //! Entry point of a module.
+        public virtual int Execute(string[] Arguments)
         {
             return 0;
         }
     }   // class BuildSystemModule
 
-    //! @brief Main class of build system.
+    // ------------------------------------------------------------------------------------------
+    //! Main class of build system.
     public static class BuildSystem
     {
-        private static String s_SDKPath = null;
+        private static string SDKPath = null;
 
-        //! @brief Returns path to GoddamnSDK installation location.
+        // ------------------------------------------------------------------------------------------
+        //! Returns path to GoddamnSDK installation location.
         //! @returns Path to GoddamnSDK installation location.
-        public static String GetSDKLocation()
+        public static string GetSDKLocation()
         {
-            if (s_SDKPath == null)
+            if (SDKPath == null)
             {
-                String ExecutableLocation = Environment.CurrentDirectory;
-                String ExecutableShouldBe = Path.Combine("Bin", "ThirdParty");
-                if (ExecutableLocation.EndsWith(ExecutableShouldBe, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    s_SDKPath = ExecutableLocation.Substring(0, ExecutableLocation.Length - ExecutableShouldBe.Length - 1);
-                }
-                else
-                {
-                    s_SDKPath = @"D:\GoddamnEngine";
-                    //throw new BuildSystemException("Unable to determine where build system is located relatively to Goddamn SDK root.");
-                }
+                var ExecutableLocation = Environment.CurrentDirectory;
+                var ExecutableShouldBe = Path.Combine("Bin", "ThirdParty");
+                SDKPath = ExecutableLocation.EndsWith(ExecutableShouldBe, StringComparison.InvariantCultureIgnoreCase) 
+                    ? ExecutableLocation.Substring(0, ExecutableLocation.Length - ExecutableShouldBe.Length - 1) : @"D:\GoddamnEngine";
             }
-
-            return s_SDKPath;
+            return SDKPath;
         }
 
-        //! @brief Application entry point.
-        private static void Main(String[] Arguments)
+        // ------------------------------------------------------------------------------------------
+        //! Application entry point.
+        //! @param Arguments Command line arguments.
+        private static void Main(string[] Arguments)
         {
             try
             {
                 BuildSystemModule ExecutingModule = null;
-                String[] ExecutingModuleArguments = null;
+                string[] ExecutingModuleArguments = null;
                 if (Arguments.Length > 0)
                 {
                     ExecutingModuleArguments = Arguments.SubArray(1);

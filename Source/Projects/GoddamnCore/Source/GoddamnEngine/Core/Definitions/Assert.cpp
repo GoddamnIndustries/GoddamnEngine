@@ -27,7 +27,7 @@
 	do { \
 		assert(false && (Message)); \
 		std::abort(); /*Simulating "noreturn" behavior. */ \
-		} while(false)
+	} while(false)
 
 #if (defined(GD_PLATFORM_API_MICROSOFT))
 #	define GD_PLATFORM_LINEBREAK "\r\n"
@@ -57,12 +57,12 @@ GD_NAMESPACE_BEGIN
 
 	struct AssertCache;
 
-	//! @brief Should show UI that notifies user about assertion failure and would request a decision from him.
+	//! Should show UI that notifies user about assertion failure and would request a decision from him.
 	//! @param TheAssertCache Assertion data.
 	//! @returns The assertion status, selected by user.
 	GDINT static AssertState HandleAssertImpl(AssertCache const* const TheAssertCache);
 
-	//! @brief Should report about a bug to developers and return false on failure.
+	//! Should report about a bug to developers and return false on failure.
 	//! @returns False on reporting failure.
 	GDINT static bool ReportAssertImpl(AssertCache const* const TheAssertCache);
 
@@ -78,7 +78,7 @@ GD_NAMESPACE_BEGIN
 		Invalid,
 	};	// enum class AssertLocation
 
-	//! @brief Returns the approximate location of assertion in the source of the engine.
+	//! Returns the approximate location of assertion in the source of the engine.
 	//!        This information is crucial for determining whether bug is located inside engine code (and we made mistakes)
 	//!        or is cause by crooked hands of some game developers (no offenses, all assertion are caused by crookedness).
 	//! @param FileName Name of the specified file.
@@ -243,7 +243,7 @@ GD_NAMESPACE_END
 // Win32 Dialog builder helpers.
 // ------------------------------------------------------------------------------------------
 
-//! @brief Defines initial dialog window header.
+//! Defines initial dialog window header.
 //! @param TheTitle The title string.
 //! @param TheFont The font string.
 #define GD_DEFINE_DIALOG_HEADER(TheTitle, TheFont) \
@@ -254,7 +254,7 @@ GD_NAMESPACE_END
 	WORD PointSize; \
 	WCHAR Font[sizeof(TheFont) / 2] \
 
-//! @brief Defines some item inside dialog window.
+//! Defines some item inside dialog window.
 //! @param Text Some text that would be defined inside dialog.
 #define GD_DEFINE_DIALOG_ITEM(Text) \
 	DialogItem<sizeof(Text) / 2> GD_GLUE(SomeDialogItemDefinedAtLine, __LINE__)
@@ -280,7 +280,7 @@ GD_NAMESPACE_END
 // Assert dialog's IDs.
 // ------------------------------------------------------------------------------------------
 
-//! @brief Some Dialog-Box constant.
+//! Some Dialog-Box constant.
 //! @{
 #define GD_ASSERT_DLG_IDD				101
 #define GD_ASSERT_DLG_TITLE				GD_WIDEN(GD_ASSERT_DIALOG_TITLE)
@@ -338,7 +338,7 @@ GD_NAMESPACE_BEGIN
 #undef GD_TEXTEDIT_PROPS
 #pragma pack(pop)
 
-	//! @brief Defines a main procedure for an assertion dialog.
+	//! Defines a main procedure for an assertion dialog.
 	//! @param HDialog Pointer to dialog window.
 	//! @param Message Message sent by user/OS.
 	//! @param WParam ID of the used widget of the dialog.
@@ -407,7 +407,7 @@ GD_NAMESPACE_BEGIN
 		return INT_PTR(FALSE);
 	}
 
-	//! @brief Should show UI that notifies user about assertion failure and would request a decision from him.
+	//! Should show UI that notifies user about assertion failure and would request a decision from him.
 	//! @param TheAssertCache Assertion data.
 	//! @returns The assertion status, selected by user.
 	GDINT static AssertState HandleAssertImpl(AssertCache const* const TheAssertCache)
@@ -422,7 +422,7 @@ GD_NAMESPACE_BEGIN
 		return static_cast<AssertState>(DialogResult);
 	}
 
-	//! @brief Should report about a bug to developers and return false on failure.
+	//! Should report about a bug to developers and return false on failure.
 	//! @returns False on reporting failure.
 	GDINT static bool ReportAssertImpl(AssertCache const* const TheAssertCache)
 	{
@@ -446,7 +446,7 @@ extern "C" void emscripten_log(int flags, ...);
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Should show UI that notifies user about assertion failure and would request a decision from him.
+	//! Should show UI that notifies user about assertion failure and would request a decision from him.
 	//! @param TheAssertCache Assertion data.
 	//! @returns The assertion status, selected by user.
 	GDINT static AssertState HandleAssertImpl(AssertCache const* const TheAssertCache)
@@ -459,7 +459,7 @@ GD_NAMESPACE_BEGIN
 		return AssertState::Abort;
 	}
 
-	//! @brief Should report about a bug to developers and return false on failure.
+	//! Should report about a bug to developers and return false on failure.
 	//! @returns False on reporting failure.
 	GDINT static bool ReportAssertImpl(AssertCache const* const TheAssertCache)
 	{
@@ -510,7 +510,7 @@ GD_NAMESPACE_BEGIN
 #else	// if (GD_ASSERT_LEVEL == GD_ASSERT_LEVEL_DEBUG)
 		ButtonsData[0].flags |= SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
 #endif	// if (GD_ASSERT_LEVEL == GD_ASSERT_LEVEL_DEBUG)
-		GD_DEBUG_ASSERT(ButtonsSize <= GD_ARRAY_SIZE(ButtonsData), "Running out of bounds");
+		GD_DEBUG_ASSERT(ButtonsSize <= GD_ARRAY_LENGTH(ButtonsData), "Running out of bounds");
 
 		String ReformattedMessage(String::Format(GD_ASSERT_DIALOG_DESCRIPTION_TEXT GD_PLATFORM_LINEBREAK GD_PLATFORM_LINEBREAK "%s", TheAssertCache->FormattedMessage.CStr()));
 		SDL_MessageBoxData const TheAssertMessageBoxDesc = {
@@ -528,7 +528,7 @@ GD_NAMESPACE_BEGIN
 		return static_cast<AssertState>(DialogResult);
 	}
 
-	//! @brief Should report about a bug to developers and return false on failure.
+	//! Should report about a bug to developers and return false on failure.
 	//! @returns False on reporting failure.
 	GDINT static bool ReportAssertImpl(AssertCache const* const TheAssertCache)
 	{
@@ -584,7 +584,7 @@ GD_NAMESPACE_BEGIN
 			char Buffer[32] = { '\0' };
 			std::fprintf(stderr, "\a");
 			std::fflush(stderr);
-			if (std::fgets(&Buffer[0], GD_ARRAY_SIZE(Buffer), stdin) != nullptr) {
+			if (std::fgets(&Buffer[0], GD_ARRAY_LENGTH(Buffer), stdin) != nullptr) {
 				if (std::strcmp(&Buffer[0], "a") == 0) {
 					return AssertState::Abort;
 				} else if (std::strcmp(&Buffer[0], "r\n") == 0) {
@@ -605,7 +605,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	//! @brief Should report about a bug to developers and return false on failure.
+	//! Should report about a bug to developers and return false on failure.
 	//! @returns False on reporting failure.
 	GDINT static bool ReportAssertImpl(AssertCache const* const TheAssertCache)
 	{

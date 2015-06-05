@@ -14,10 +14,10 @@ using System.Xml;
 
 namespace GoddamnEngine.BuildSystem
 {
-    //! @brief Represents extensions to .NET standart library's "Array" class.
+    //! Represents extensions to .NET standart library's "Array" class.
     internal static class ArrayExtensions
     {
-        //! @brief Similar to String's "Substring" function.
+        //! Similar to string's "Substring" function.
         internal static T[] SubArray<T>(this T[] Data, int Index, int Length = -1)
         {
             Length = (Length > 0) ? Length : (Data.Length - Index);
@@ -27,7 +27,7 @@ namespace GoddamnEngine.BuildSystem
             return Result;
         }
 
-        //! @brief Similar to String's "Concat" function.
+        //! Similar to string's "Concat" function.
         public static T[] Concat<T>(this T[] First, T[] Second)
         {
             int OldLength = First.Length;
@@ -38,16 +38,16 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class ArrayExtensions
 
-    //! @brief Represents extensions to .NET standart library's "XmlTextWriter" class.
+    //! Represents extensions to .NET standart library's "XmlTextWriter" class.
     internal static class XmlTextWriterExtensions
     {
-        //! @brief Adds formatting support for "WriteAttributeString" function.
+        //! Adds formatting support for "WriteAttributeString" function.
         public static void WriteAttributeStringFormat(this XmlTextWriter Writer, string LocalName, string ValueFormat, params object[] ValueArguments)
         {
             Writer.WriteAttributeString(LocalName, string.Format(ValueFormat, ValueArguments));
         }
 
-        //! @brief Adds formatting support for "WriteElementString" function.
+        //! Adds formatting support for "WriteElementString" function.
         public static void WriteElementStringFormat(this XmlTextWriter Writer, string LocalName, string ValueFormat, params object[] ValueArguments)
         {
             Writer.WriteElementString(LocalName, string.Format(ValueFormat, ValueArguments));

@@ -19,7 +19,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Defines a flags for a window.
+	//! Defines a flags for a window.
 	//! @{
 	struct WindowFlags final
 	{
@@ -40,7 +40,7 @@ GD_NAMESPACE_BEGIN
 	typedef WindowFlags::Type WindowFlagsTp;
 	//! @}
 
-	//! @brief Defines a mode for a window.
+	//! Defines a mode for a window.
 	//! @{
 	struct WindowMode final
 	{
@@ -53,7 +53,7 @@ GD_NAMESPACE_BEGIN
 	typedef WindowMode::Type WindowModeTp;
 	//! @}
 
-	//! @brief Defines an activation mode for a window.
+	//! Defines an activation mode for a window.
 	//! @{
 	struct WindowActivation final
 	{
@@ -65,7 +65,7 @@ GD_NAMESPACE_BEGIN
 	typedef WindowActivation::Type WindowActivationTp;
 	//! @}
 
-	//! @brief Defines an action, done by user.
+	//! Defines an action, done by user.
 	//! @{
 	struct WindowAction final
 	{
@@ -78,7 +78,7 @@ GD_NAMESPACE_BEGIN
 	typedef WindowAction::Type WindowActionTp;
 	//! @}
 
-	//! @brief Defines a zone of a window.
+	//! Defines a zone of a window.
 	//! @{
 	struct WindowZone final
 	{
@@ -103,7 +103,7 @@ GD_NAMESPACE_BEGIN
 	typedef WindowZone::Type WindowZoneTp;
 	//! @}
 
-	//! @brief Defines a generic window class.
+	//! Defines a generic window class.
 	class IGenericWindow
 	{
 	protected:
@@ -117,7 +117,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		//! @brief Initializes a window.
+		//! Initializes a window.
 		//! @param WndFlags Default flags of a window.
 		//! @param WndMode Initial mode of a window.
 		//! @param WndRect Initial rectangle of a window.
@@ -134,113 +134,113 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 
-		//! @brief Destroys a window.
+		//! Destroys a window.
 		GDAPI virtual ~IGenericWindow() 
 		{
 		}
 
 	public:
 
-		//! @brief Initializes a window.
+		//! Initializes a window.
 		GDAPI virtual void InitializeWindow() abstract;
 
-		//! @brief Destroys a window.
+		//! Destroys a window.
 		GDAPI virtual void DestroyWindow() abstract;
 
-		//! @brief Disables or enables a window.
+		//! Disables or enables a window.
 		//! @param DoEnable True to enable window, false to disable.
 		GDAPI virtual void EnableWindow(bool const DoEnable) abstract;
 
-		//! @brief Returns true if window is enabled.
+		//! Returns true if window is enabled.
 		//! @returns True if window is enabled.
 		GDAPI virtual bool IsWindowEnabled() const abstract;
 
-		//! @brief Shows or hides a window.
+		//! Shows or hides a window.
 		//! @param DoShow True to show window, false to hide.
 		GDAPI virtual void ShowWindow(bool const DoShow) abstract;
 
-		//! @brief Returns true if window is shown.
+		//! Returns true if window is shown.
 		//! @returns True if window is shown.
 		GDAPI virtual bool IsWindowShown() const abstract;
 
-		//! @brief Maximizes a window.
+		//! Maximizes a window.
 		GDAPI virtual void MaximizeWindow() abstract;
 
-		//! @brief Returns true if window is maximized.
+		//! Returns true if window is maximized.
 		//! @returns True if window is maximized.
 		GDAPI virtual bool IsWindowMaximized() const abstract;
 
-		//! @brief Minimizes a window.
+		//! Minimizes a window.
 		GDAPI virtual void MininizeWindow() abstract;
 
-		//! @brief Returns true if window is minimized.
+		//! Returns true if window is minimized.
 		//! @returns True if window is minimized.
 		GDAPI virtual bool IsWindowMinimized() const abstract;
 
-		//! @brief Makes window a top-most window.
+		//! Makes window a top-most window.
 		//! @param Force Do bring window to front forcedly (via hacks).
 		GDAPI virtual void BringWindowToFront(bool const Force = false) abstract;
 
-		//! @brief Returns true if window is top most.
+		//! Returns true if window is top most.
 		//! @returns True if window is foreground.
 		GDAPI virtual bool IsWindowForeground() const abstract;
 
-		//! @brief Restores a window (?!)
+		//! Restores a window (?!)
 		GDAPI virtual void RestoreWindow() abstract;
 
-		//! @brief Return flags of a window.
+		//! Return flags of a window.
 		//! @returns Flags of a window.
 		GDINL WindowFlagsTp GetWindowFlags() const
 		{
 			return this->WndFlags;
 		}
 
-		//! @brief Returns mode of a window.
+		//! Returns mode of a window.
 		//! @returns Mode of a window.
 		GDAPI virtual WindowModeTp GetWindowMode() const abstract;
 
-		//! @brief Applies new mode to a window.
+		//! Applies new mode to a window.
 		//! @param WndMode New mode of a window.
 		GDAPI virtual void SetWindowMode(WindowModeTp const WndMode) abstract;
 
-		//! @brief Returns rectangle of a window.
+		//! Returns rectangle of a window.
 		//! @param WndRect Output for rectangle of a window.
 		//! @returns True if operation succeeded.
 		GDAPI virtual bool GetWindowRect(Rectangle& WndRect) const abstract;
 
-		//! @brief Applies new position to a window.
+		//! Applies new position to a window.
 		//! @param WndPosition New position of a window.
 		GDAPI virtual void SetWindowPosition(Vector2 const& WndPosition) abstract;
 
-		//! @brief Applies new rectangle to a window.
+		//! Applies new rectangle to a window.
 		//! @param WndRect New rectangle of a window.
 		GDAPI virtual void SetWindowRect(Rectangle const& WndRect) abstract;
 
-		//! @brief Returns title of a window.
+		//! Returns title of a window.
 		//! @returns Title of a window.
 		GDAPI virtual String const& GetWindowTitle() const abstract;
 		
-		//! @brief Applies new title to a window.
+		//! Applies new title to a window.
 		//! @param WndTitle New title of a window.
 		GDAPI virtual void SetWindowTitle(String const& WndTitle) abstract;
 
-		//! @brief Returns opacity of a window.
+		//! Returns opacity of a window.
 		//! @returns Opacity of a window.
 		GDAPI virtual Float32 GetWindowOpacity() const abstract;
 
-		//! @brief Applies new opacity to a window.
+		//! Applies new opacity to a window.
 		//! @param WndOpacity New opacity of a window.
 		GDAPI virtual void SetWindowOpacity(Float32 const WndOpacity) abstract;
 
-		//! @brief Returns native handle of a window.
+		//! Returns native handle of a window.
 		//! @returns Native handle of a window.
 		GDAPI virtual Handle GetWindowNativeHandle() const abstract;
 
-		//! @brief Returns native size of a window border.
+		//! Returns native size of a window border.
 		//! @returns Native size of a window border.
 		GDAPI virtual Int32 GetWindowBorderSize() const abstract;
 
-		//! @brief Returns true if point with specified coordinates in inside window.
+		//! Returns true if point with specified coordinates in inside window.
 		//! @returns True if point with specified coordinates in inside window.
 		GDAPI virtual bool IsPointInWindow(Vector2 const& WndPoint) const abstract;
 	};	// class IGenericWindow

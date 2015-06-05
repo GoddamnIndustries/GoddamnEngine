@@ -20,10 +20,10 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Windows Critical Section class.
+	//! Windows Critical Section class.
 	typedef MicrosoftCriticalSection WindowsCriticalSection;
 
-	//! @brief Represents definitions for Critical Section.
+	//! Represents definitions for Critical Section.
 	typedef WindowsCriticalSection CriticalSection;
 
 GD_NAMESPACE_END

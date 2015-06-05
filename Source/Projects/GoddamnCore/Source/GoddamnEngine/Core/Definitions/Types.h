@@ -18,6 +18,13 @@
 
 GD_NAMESPACE_BEGIN
 
+	// Never use this type directly!
+#if !GD_DOCUMENTATION
+	typedef bool Bool;
+	typedef float Matrix3x3[3][3];
+	typedef float Matrix3x4[3][4];
+#endif	// if !GD_DOCUMENTATION
+
 	typedef char    const* CStr;
 	typedef wchar_t const* WideCStr;
 
@@ -25,15 +32,19 @@ GD_NAMESPACE_BEGIN
 	typedef void const   * CHandle;
 	typedef void         *  Handle;
 
+	template<typename Tp>
+	struct Dummy { };
+
 #if GD_COMPILER_MSVC_COMPATIBLE
 	typedef ::std::nullptr_t NullptrTp;
 #else	// if GD_COMPILER_MSVC_COMPATIBLE
 	typedef decltype(nullptr) NullptrTp;
 #endif	// if GD_COMPILER_MSVC_COMPATIBLE
 
-	// ------------------------------------------------------------------------------------------
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Platform-Independent types. Size is constant on all architectures.
-	// ------------------------------------------------------------------------------------------
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 	template<typename IntegerTp>
 	struct IntegerLimits;
 #define GD_DEFINE_INT_LIMITS(Tp) \
@@ -90,9 +101,9 @@ GD_NAMESPACE_BEGIN
 	typedef float			Float32;
 	typedef double			Float64;
 
-	// ------------------------------------------------------------------------------------------
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Platform-Dependent types. Size may vary on different architectures.
-	// ------------------------------------------------------------------------------------------
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #if GD_ARCHITECTURE_X64 || GD_ARCHITECTURE_ARM64
 	static_assert(sizeof(void*) == 8, "Invalidely selected 64-bit platform.");
 
@@ -136,11 +147,13 @@ GD_NAMESPACE_BEGIN
 	GD_DEPRECATED("Please, use 'SizeTp' instead of 'size_t'")		typedef ::std::size_t    size_t;
 	GD_DEPRECATED("Please, use 'PtrDiffTp' instead of 'ptrdiff_t'") typedef ::std::ptrdiff_t ptrdiff_t;
 
-	// ------------------------------------------------------------------------------------------
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Container limits.
-	// ------------------------------------------------------------------------------------------
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	//! @brief Interface that disables copy constructor and copy assignment operators in all child classes.
+	// ------------------------------------------------------------------------------------------
+	//! Interface that disables copy constructor and copy assignment operators in all 
+	//!        child classes.
 	class IUncopiable
 	{
 	protected:
@@ -150,7 +163,9 @@ GD_NAMESPACE_BEGIN
 		GDINT IUncopiable& operator= (IUncopiable const& Other) = delete;
 	};	// class IUncopiable
 
-	//! @brief Interface that disables move constructor and move assignment operators in all child classes.
+	// ------------------------------------------------------------------------------------------
+	//! Interface that disables move constructor and move assignment operators in all
+	//!        child classes.
 	class IUnmovable
 	{
 	protected:
@@ -160,7 +175,8 @@ GD_NAMESPACE_BEGIN
 		GDINT IUnmovable& operator= (IUnmovable&& Other) = delete;
 	};	// class IUnmovalbe
 
-	//! @brief Interface that disables assignment operators in all child classes.
+	// ------------------------------------------------------------------------------------------
+	//! Interface that disables assignment operators in all child classes.
 	class IUnassignable
 	{
 	protected:
@@ -170,7 +186,8 @@ GD_NAMESPACE_BEGIN
 		GDINT IUnassignable& operator= (IUnassignable     && Other) = delete;
 	};	// class IUnassignable
 
-	//! @brief Interface that disables swab function in all child classes.
+	// ------------------------------------------------------------------------------------------
+	//! Interface that disables swab function in all child classes.
 	class IUnswappable
 	{
 	protected:
@@ -181,22 +198,16 @@ GD_NAMESPACE_BEGIN
 		GDINT friend void Swap(IUnswappable&& First, IUnswappable&& Second) = delete;
 	};	// class IUnswappable
 
-#if 0	// These are old and deprecated...
-#	define GD_CLASS_UNASSIGNABLE(Class)	private: GDINT Class& operator= (Class const&) = delete; \
-										private: GDINT Class& operator= (Class  &&) = delete;
-#	define GD_CLASS_UNSWAPPABLE(Class)	//! @todo: GCC does not compiles this: private: GDINT friend void Swap(Class&, Class&) = delete;
-#	define GD_CLASS_UNCOPIABLE(Class)	private: GDINT Class(Class const&) = delete;
-#	define GD_CLASS_UNMOVABLE(Class)	private: GDINT Class(Class  &&) = delete;
-#endif	// if 0
-
-	// ------------------------------------------------------------------------------------------
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Basic interfaces.
-	// ------------------------------------------------------------------------------------------
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	struct IContainer 
+	struct IVirtuallyDestructible : public IUncopiable
 	{
-	};	// struct IContainer 
+		GDINL virtual ~IVirtuallyDestructible() = default;
+	};	// struct IVirtuallyDestructible
 
+	// ------------------------------------------------------------------------------------------
 	struct IRunnable
 	{
 	protected:
@@ -214,13 +225,15 @@ GD_NAMESPACE_BEGIN
 		GDAPI virtual void OnFixedUpdate() { }
 	};	// struct IRunnable
 
-	// ------------------------------------------------------------------------------------------
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Array size counting safe macros.
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	// ------------------------------------------------------------------------------------------
-	template <typename Type, SizeTp const Count>
-	GDINT char(&ArraySizeHelper(Type(&Array)[Count]))[Count];
-
-	//! @brief Useful macro for safely counting array length.
-#define GD_ARRAY_SIZE(Array) static_cast<SizeTp>(sizeof(ArraySizeHelper((Array))))				
+	//! Useful macro for safely counting array length.
+	//! @param Array Array, the length of ones would be determined.
+#define GD_ARRAY_LENGTH(Array) static_cast<SizeTp>(sizeof(ArrayLengthHelper((Array))))				
+	template <typename Tp, SizeTp Length>
+	GDINT UInt8 (&ArrayLengthHelper(Tp(&Array)[Length]))[Length];
 
 GD_NAMESPACE_END

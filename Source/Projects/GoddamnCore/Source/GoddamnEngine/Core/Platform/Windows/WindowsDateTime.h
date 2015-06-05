@@ -20,10 +20,10 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Defines a Windows date/time manager class.
+	//! Defines a Windows date/time manager class.
 	typedef MicrosoftDateTime WindowsDateTime;
 
-	//! @brief Defines a date/time manager class.
+	//! Defines a date/time manager class.
 	typedef WindowsDateTime DateTime;
 
 GD_NAMESPACE_END

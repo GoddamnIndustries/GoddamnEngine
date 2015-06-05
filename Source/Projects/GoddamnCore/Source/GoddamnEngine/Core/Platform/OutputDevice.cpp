@@ -13,7 +13,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	//! @brief Writes a formatted string to OutputDevice.
+	//! Writes a formatted string to OutputDevice.
 	//! @param Verbosity Verbosity level of a message.
 	//! @param Color Overridden color of the output.
 	//! @param Message Message to print.
