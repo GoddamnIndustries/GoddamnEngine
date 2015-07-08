@@ -6,18 +6,18 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-using System.IO;
-using GoddamnEngine.BuildSystem;
+#include <GoddamnEngine/DInterface/DEngineCore.h>
 
-public sealed class GoddamnCoreProject : Project
-{
-    public sealed override ProjectPriority GetPriority()
-    {
-        return ProjectPriority.CoreLevel;
-    }
+GD_NAMESPACE_BEGIN
 
-    public sealed override string GetSourceFiltersOrigin()
-    {
-        return Path.Combine(base.GetSourceFiltersOrigin());
-    }
-}   // class GoddamnCoreProject
+	/*!
+	 * Creates an instance of the class that maintains the whole C++ engine core functionality
+	 * in D programming language-written runtime.
+	 * \returns Newly created instance of the main interface or nullptr on internal error.
+	 */
+	GDAPI extern DEngineCoreIterface* CreateDEngineCoreIterface()
+	{
+		return GD_NEW(DEngineCoreIterface);
+	}
+
+GD_NAMESPACE_END

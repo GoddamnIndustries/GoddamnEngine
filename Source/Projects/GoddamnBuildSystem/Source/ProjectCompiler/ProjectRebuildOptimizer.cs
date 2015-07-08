@@ -56,7 +56,7 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
                         else if (Line.StartsWith("GD_PLATFORINCLUDE("))
                         {
                             throw new NotImplementedException();
-                            // IncludedFilePath = Line.Substring("GD_PLATFORINCLUDE(".Length, Line.IndexOf(",") - "GD_PLATFORINCLUDE(".Length).Trim();
+                            // IncludedFilePath = Line.Substring("GD_PLATFORINCLUDE("._Length, Line.IndexOf(",") - "GD_PLATFORINCLUDE("._Length).Trim();
                         }
 
 

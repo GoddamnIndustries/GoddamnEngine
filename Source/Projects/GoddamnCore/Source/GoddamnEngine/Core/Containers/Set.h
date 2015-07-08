@@ -11,9 +11,9 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Containers/Containers.h>
+#include <GoddamnEngine/Core/Iterators.h>
+#include <GoddamnEngine/Core/Containers/RedBlackTree.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>
-#include <GoddamnEngine/Core/Containers/RedBlackTree/RedBlackTree.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -21,22 +21,23 @@ GD_NAMESPACE_BEGIN
 	// class Set<T>
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 	// ------------------------------------------------------------------------------------------
 	//! Dynamically sized associative container that is implemented with Red-Black Trees.
-	//! 	   Current implementation has a MASSIVE overhead per each element (33 bytes by Red-Black Tree). 
-	//! 	   Red-Black Tree is used for elements access and searching, Lists for elements rapid iteration.
+	//! Current implementation has a MASSIVE overhead per each element (33 bytes by Red-Black Tree). 
+	//! Red-Black Tree is used for elements access and searching, Lists for elements rapid iteration.
 	template<typename ElementTypeTp>
 	class Set final : public RedBlackTree<ElementTypeTp>
 	{
 	public:
-		typedef ElementTypeTp															ElementType;
-		typedef RedBlackTree<ElementType>												RedBlackTreeType;
-		typedef RedBlackTreeNode<ElementType>											RedBlackTreeNodeType;
-		typedef RedBlackTreeIterator<Set, RedBlackTreeNodeType>							Iterator;
-		typedef RedBlackTreeIterator<Set const, RedBlackTreeNode<ElementType> const>	ConstIterator;
-		typedef ReverseContainerIterator<Iterator>										ReverseIterator;
-		typedef ReverseContainerIterator<ConstIterator>									ReverseConstIterator;
+		using ElementType          = ElementTypeTp;
+		using RedBlackTreeType     = RedBlackTree<ElementType>;
+		using RedBlackTreeNodeType = typename RedBlackTreeType::RedBlackTreeNodeType;
+		using Iterator             = typename RedBlackTreeType::Iterator;
+		using ConstIterator        = typename RedBlackTreeType::ConstIterator;
+		using ReverseIterator      = typename RedBlackTreeType::ReverseIterator;
+		using ReverseConstIterator = typename RedBlackTreeType::ReverseConstIterator;
+
+	private:
 		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(Set);
 
 	public:

@@ -7,7 +7,7 @@ rem ============================================================================
 call ".\LocateVisualStudio.bat"
 
 rem Setting up debug visualizers for Visual Studio..
-mkdir "%UserProfile%\Documents\Visual Studio %VSCompilerYear%\Visualizers\" 1>nul 2>nul
-copy /y ".\Natvis\GoddamnTemplateLibrary.natvis" "%UserProfile%\Documents\Visual Studio %VSCompilerYear%\Visualizers\" 1>nul 2>nul
+mkdir "%UserProfile%\Documents\Visual Studio %VSCompilerYear%\Visualizers\"
+copy /y ".\Natvis\GoddamnTemplateLibrary.natvis" "%UserProfile%\Documents\Visual Studio %VSCompilerYear%\Visualizers\"
 
 pause

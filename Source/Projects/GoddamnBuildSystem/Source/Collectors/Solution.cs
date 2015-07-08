@@ -15,11 +15,11 @@ using System.Linq;
 
 namespace GoddamnEngine.BuildSystem
 {
-	// ------------------------------------------------------------------------------------------
+	//[
     //! Represents a solution (set of projects).
-    public abstract class Solution : Collector
+    public class Solution : Collector
     {
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Collects list of projects in solution.
         //! @note All unsupported projects should be filtered by this function.
         //! @returns Iterator for list of projects in solution.
@@ -30,17 +30,17 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class Solution
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a collection of cached data that was by dependency object.
-    public abstract class SolutionCache : CollectorCache
+    public class SolutionCache : CollectorCache
     {
         public string GeneratedSolutionPath;
         public readonly ProjectCache[] CachedProjects;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates cache for specified dependency.
         //! @param Solution Solution which dynamic properties would be cached.
-        protected SolutionCache(Solution Solution)
+        public SolutionCache(Solution Solution)
             : base(Solution)
         {
             if (IsSupported)
@@ -49,7 +49,7 @@ namespace GoddamnEngine.BuildSystem
     }   // class DependencyCache
 
     //! Represents a factory of dependencies.
-    public abstract class SolutionFactory : CollectorFactory<Solution, SolutionCache>
+    public class SolutionFactory : CollectorFactory<Solution, SolutionCache>
     {
     }   // class SolutionFactory
 }   // namespace GoddamnEngine.BuildSystem

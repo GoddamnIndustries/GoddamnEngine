@@ -14,18 +14,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
+using System.Linq;
 
 namespace GoddamnEngine.BuildSystem
 {
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents an abstract data collector.
-    public abstract class Collector
+    public class Collector
     {
         internal string Source = null;
         private  string Location;
         private  string Name;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns path to source file of this collector.
         //! @returns Path to source file of this collector.
         public string GetSource()
@@ -34,7 +35,7 @@ namespace GoddamnEngine.BuildSystem
             return Source;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns path directory of this collector.
         //! @returns Path directory of this collector.
         public string GetLocation()
@@ -42,7 +43,7 @@ namespace GoddamnEngine.BuildSystem
             return Location ?? (Location = Path.GetDirectoryName(GetSource()));
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns name of this collector.
         //! @returns Name of this collector.
         public string GetName()
@@ -59,7 +60,7 @@ namespace GoddamnEngine.BuildSystem
             return Name;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns false is this object should be skipped.
         //! @returns False is this object should be skipped.
         public virtual bool GetIsSupported()
@@ -67,7 +68,7 @@ namespace GoddamnEngine.BuildSystem
             return true;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns true if object on specified path has platform/configuration data and matches it.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -99,14 +100,14 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class TargetCollector
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a data structure, that contains pre-cached from collector for different platforms/configurations.
     //! @tparam T Type of data stored in the container.
     public sealed class CollectorContainer<T>
     {
         private Dictionary<UInt16, T> Container;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Packs target platform and configuration into single value.
         //! @param Platform Platform to be packed.
         //! @param Configuration Configuration to be packed.
@@ -119,7 +120,7 @@ namespace GoddamnEngine.BuildSystem
             return (ushort)(PlatformValue | (ConfigurationValue << 8));
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Initializes the container with all values.
         //! @param Accessor Function that returns a value depending on platform/configuration.
         public CollectorContainer(Func<TargetPlatform, TargetConfiguration, T> Accessor)
@@ -134,7 +135,7 @@ namespace GoddamnEngine.BuildSystem
             }
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Accesses the platform/configuration specific value of the container.
         //! @param Platform Some platform.
         //! @param Configuration Some configuration.
@@ -146,7 +147,7 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class CollectorContainer<T>
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Contains cached data of some abstract collector.
     public class CollectorCache
     {
@@ -157,7 +158,7 @@ namespace GoddamnEngine.BuildSystem
         public readonly string CachedName;
         public readonly string CachedLocation;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Initializes a new generic collector cache.
         //! @param Collector Collector which dynamic properties would be cached.
         protected CollectorCache(Collector Collector)
@@ -174,17 +175,17 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class TargetCollectorCache
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Collects data and generates cache.
     //! @tparam TCollector Type of collector.
     //! @tparam TCache Type of cache of collector.
-    public abstract class CollectorFactory<TCollector, TCache>
+    public class CollectorFactory<TCollector, TCache>
         where TCollector : Collector
         where TCache : CollectorCache
     {
         private readonly static Dictionary<string, TCache> CachedCache = new Dictionary<string, TCache>();
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Constructs new collector instance and cached it data.
         //! @param CollectorSourcePath Path so source file of the collector.
         //! @returns Created instance of cached collector data.
@@ -195,13 +196,10 @@ namespace GoddamnEngine.BuildSystem
                 TCollector Collector = null;
                 if (CollectorSourcePath != null)
                 {
-                    foreach (Type InternalType in CSharpCompiler.CompileSourceFile(CollectorSourcePath).GetTypes())
+                    foreach (var InternalType in CSharpCompiler.CompileSourceFile(CollectorSourcePath).GetTypes().Where(InternalType => InternalType.IsSubclassOf(typeof(TCollector))))
                     {
-                        if (InternalType.IsSubclassOf(typeof(TCollector)))
-                        {
-                            Collector = (TCollector)Activator.CreateInstance(InternalType);
-                            break;
-                        }
+                        Collector = (TCollector)Activator.CreateInstance(InternalType);
+                        break;
                     }
                 }
 

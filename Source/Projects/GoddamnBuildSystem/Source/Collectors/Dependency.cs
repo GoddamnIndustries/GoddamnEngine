@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace GoddamnEngine.BuildSystem
 {
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a single project's dependency.
     public class Dependency : Collector
     {
@@ -36,7 +36,7 @@ namespace GoddamnEngine.BuildSystem
             }
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Collects list of files that should be copied to project build output directory.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -60,7 +60,7 @@ namespace GoddamnEngine.BuildSystem
             }
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Collects list of libraries that should be linked with project build file.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -120,13 +120,13 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class Dependency
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Adapter that converts projects to dependencies for other projects.
     public class ProjectDependency : Dependency
     {
         private ProjectCache Project = null;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns project caches that is used in this dependency.
         //! @returns Project caches that is used in this dependency.
         public virtual ProjectCache GetProject()
@@ -147,7 +147,7 @@ namespace GoddamnEngine.BuildSystem
             return Project;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Collects list of directories that contain header files.
         //! @returns Iterator for list of header files.
         public sealed override IEnumerable<string> EnumerateHeaderDirectories()
@@ -155,7 +155,7 @@ namespace GoddamnEngine.BuildSystem
             yield return Path.Combine(GetProject().CachedLocation, "Source");
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Collects list of files that should be copied to project build output directory.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -168,7 +168,7 @@ namespace GoddamnEngine.BuildSystem
             }
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Collects list of libraries that should be linked with project build file.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -191,7 +191,7 @@ namespace GoddamnEngine.BuildSystem
 
     }   // class ProjectDependency
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a collection of cached data that was by dependency object.
     public sealed class DependencyCache : CollectorCache
     {
@@ -199,7 +199,7 @@ namespace GoddamnEngine.BuildSystem
         public readonly CollectorContainer<string[]> CachedCopyFiles;
         public readonly CollectorContainer<string[]> CachedLinkedLibraries;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates cache for specified dependency.
         //! @param Dependency Dependency which dynamic properties would be cached.
         public DependencyCache(Dependency Dependency)
@@ -215,7 +215,7 @@ namespace GoddamnEngine.BuildSystem
 
     }   // class DependencyCache
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a factory of dependencies.
     public /*static*/ sealed class DependencyFactory : CollectorFactory<Dependency, DependencyCache>
     {
@@ -223,7 +223,7 @@ namespace GoddamnEngine.BuildSystem
         private static DependencyCache GoddamnCoreDependency = null;
         private static DependencyCache GoddamnEngineDependency = null;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns cached dependency for GoddamnCore project.
         //! @returns Cached dependency for GoddamnCore project.
         public static DependencyCache GetGoddamnCoreDependency()
@@ -245,7 +245,7 @@ namespace GoddamnEngine.BuildSystem
             return GoddamnCoreDependency;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns cached dependency for GoddamnEngine project.
         //! @returns Cached dependency for GoddamnEngine project.
         public static DependencyCache GetGoddamnEngineDependency()

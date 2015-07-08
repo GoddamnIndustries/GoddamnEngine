@@ -11,10 +11,9 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Templates/Algorithm.h>
-#include <GoddamnEngine/Core/Containers/Containers.h>
+#include <GoddamnEngine/Core/Algorithm.h>
+#include <GoddamnEngine/Core/Iterators.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>
-
 
 GD_NAMESPACE_BEGIN
 
@@ -29,17 +28,21 @@ GD_NAMESPACE_BEGIN
 	class Vector final 
 	{
 	public:
-		typedef ElementTypeTp								ElementType;
-		typedef IndexedContainerIterator<Vector>			Iterator;
-		typedef IndexedContainerIterator<Vector const>		ConstIterator;
-		typedef ReverseContainerIterator<Iterator>			ReverseIterator;
-		typedef ReverseContainerIterator<ConstIterator>		ReverseConstIterator;
-		typedef ElementType*								PtrIterator;
-		typedef ElementType const*							PtrConstIterator;
-		typedef ReverseContainerIterator<PtrIterator>		ReversePtrIterator;
-		typedef ReverseContainerIterator<PtrConstIterator>	ReversePtrConstIterator;
+		using ElementType             = ElementTypeTp;
+		using PtrIterator             = ElementType*;
+		using PtrConstIterator        = ElementType const*;
+		using Iterator                = IndexedContainerIterator<Vector>;
+		using ConstIterator           = IndexedContainerIterator<Vector const>;
+		using ReverseIterator         = ReverseContainerIterator<Iterator>;
+		using ReverseConstIterator    = ReverseContainerIterator<ConstIterator>;
+		using ReversePtrIterator      = ReverseContainerIterator<PtrIterator>;
+		using ReversePtrConstIterator = ReverseContainerIterator<PtrConstIterator>;
 
 		GD_CONTAINER_DEFINE_PTR_ITERATION_SUPPORT(Vector);
+
+	private:
+		template<typename SomeElementType>
+		GDINL friend void Swap(Vector<SomeElementType>& First, Vector<SomeElementType>& Second);
 
 	private:
 		Handle Memory	= nullptr;	// layout of variables should be saved.
@@ -59,8 +62,8 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit Vector(SizeTp const InitialLength = 0, SizeTp const InitialCapacity = SizeTpMax)
 		{
 			this->Reserve(InitialCapacity != SizeTpMax ? InitialCapacity : InitialLength);
-			this->Resize(InitialLength);
-			InitializeRange(this->PtrBegin(), this->PtrEnd());
+			this->Length = InitialLength;
+			InitializeRange(this->_PtrBegin(), this->_PtrEnd());
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -70,7 +73,7 @@ GD_NAMESPACE_BEGIN
 		GDINL Vector(ConstIterator const StartIterator, ConstIterator const EndIterator)
 		{
 			this->Resize(EndIterator - StartIterator);
-			CopyFromRange(StartIterator, EndIterator, this->PtrBegin());
+			CopyRange(StartIterator, EndIterator, this->_PtrBegin());
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -79,7 +82,7 @@ GD_NAMESPACE_BEGIN
 		GDINL Vector(InitializerList<ElementType> const& InitializerList)
 		{
 			this->Resize(InitializerList.size());
-			CopyFromRange(InitializerList.begin(), InitializerList.end(), this->PtrBegin());
+			CopyRange(InitializerList.begin(), InitializerList.end(), this->_PtrBegin());
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -102,7 +105,7 @@ GD_NAMESPACE_BEGIN
 		GDINL Vector(Vector const& OtherVector)
 		{
 			this->Resize(OtherVector.Length);
-			CopyFromRange(OtherVector.PtrBegin(), OtherVector.PtrEnd(), this->PtrBegin());
+			CopyRange(OtherVector._PtrBegin(), OtherVector._PtrEnd(), this->_PtrBegin());
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -119,58 +122,119 @@ GD_NAMESPACE_BEGIN
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// ------------------------------------------------------------------------------------------
-		//! Iterator that points to first container element.
+		//! Returns iterator that points to first container element.
 		//! @returns Iterator that points to first container element.
-		//! @{
-	public:
-		GDINL Iterator Begin() { return Iterator(*this); }
-		GDINL ConstIterator Begin() const { return ConstIterator(*this); }
-	private:
-		GDINL PtrIterator PtrBegin() { return reinterpret_cast<PtrIterator>(this->Memory); }
-		GDINL PtrConstIterator PtrBegin() const { return reinterpret_cast<PtrConstIterator>(this->Memory); }
-		//! @}
+		/// @{
+		GDINL Iterator Begin()
+		{
+			return Iterator(*this);
+		}
+		GDINL ConstIterator Begin() const
+		{
+			return ConstIterator(*this);
+		}
+		/// @}
 
+		
 		// ------------------------------------------------------------------------------------------
 		//! Returns iterator that points to past the end container element.
 		//! @returns Iterator that points to past the end container element.
-		//! @{
-	public:
-		GDINL Iterator End() { return this->Begin() + this->Length; }
-		GDINL ConstIterator End() const { return this->Begin() + this->Length; }
-	private:
-		GDINL PtrIterator PtrEnd() { return this->PtrBegin() + this->Length; }
-		GDINL PtrConstIterator PtrEnd() const { return this->PtrBegin() + this->Length; }
-		//! @}
+		/// @{
+		GDINL Iterator End()
+		{
+			return this->Begin() + this->Length;
+		}
+		GDINL ConstIterator End() const
+		{
+			return this->Begin() + this->Length;
+		}
+		/// @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Returns iterator that points to last container element.
 		//! @returns Iterator that points to last container element.
-		//! @{
-	public:
-		GDINL ReverseIterator ReverseBegin() { return ReverseIterator(this->End() - 1); }
-		GDINL ReverseConstIterator ReverseBegin() const { return ReverseConstIterator(this->End() - 1); }
-	private:
-		GDINL ReversePtrIterator ReversePtrBegin() { return ReversePtrIterator(this->PtrEnd() - 1); }
-		GDINL ReversePtrConstIterator ReversePtrBegin() const { return ReversePtrConstIterator(this->PtrEnd() - 1);	}
-		//! @}
+		/// @{
+		GDINL ReverseIterator ReverseBegin()
+		{
+			return ReverseIterator(this->End() - 1);
+		}
+		GDINL ReverseConstIterator ReverseBegin() const
+		{
+			return ReverseConstIterator(this->End() - 1);
+		}
+		/// @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Returns iterator that points to preceding the first container element.
 		//! @returns Iterator that points to preceding the first container element.
-		//! @{
-	public:
-		GDINL ReverseIterator ReverseEnd() { return ReverseIterator(this->Begin() - 1);	}
-		GDINL ReverseConstIterator ReverseEnd() const { return ReverseConstIterator(this->Begin() - 1);	}
+		/// @{
+		GDINL ReverseIterator ReverseEnd()
+		{
+			return ReverseIterator(this->Begin() - 1);
+		}
+		GDINL ReverseConstIterator ReverseEnd() const
+		{
+			return ReverseConstIterator(this->Begin() - 1);
+		}
+		/// @}
+
 	private:
-		GDINL ReversePtrIterator ReversePtrEnd() { return ReversePtrIterator(this->PtrBegin() - 1); }
-		GDINL ReversePtrConstIterator ReversePtrEnd() const	{ return ReversePtrConstIterator(this->PtrBegin() - 1);	}
-		//! @}
+
+		GDINL PtrIterator _PtrBegin()
+		{
+			return PtrIterator(this->GetData());
+		}
+		GDINL PtrConstIterator _PtrBegin() const
+		{
+			return PtrConstIterator(this->GetData());
+		}
+		
+		GDINL PtrIterator _PtrEnd()
+		{
+			return this->_PtrBegin() + this->Length;
+		}
+		GDINL PtrConstIterator _PtrEnd() const
+		{
+			return this->_PtrBegin() + this->Length;
+		}
+		
+		GDINL ReversePtrIterator _ReversePtrBegin()
+		{
+			return ReversePtrIterator(this->_PtrEnd() - 1);
+		}
+		GDINL ReversePtrConstIterator _ReversePtrBegin() const
+		{
+			return ReversePtrConstIterator(this->_PtrEnd() - 1);
+		}
+		
+		GDINL ReversePtrIterator _ReversePtrEnd()
+		{
+			return ReversePtrIterator(this->_PtrBegin() - 1);
+		}
+		GDINL ReversePtrConstIterator _ReversePtrEnd() const
+		{
+			return ReversePtrConstIterator(this->_PtrBegin() - 1);
+		}
 
 	public:
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		// Dynamic size management.
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+		// ------------------------------------------------------------------------------------------
+		//! Returns pointer to the data stored in vector.
+		//! @returns pointer to the data stored in vector.
+		/// @{
+		GDINL ElementType const* GetData() const
+		{
+			return reinterpret_cast<ElementType const*>(this->Memory);
+		}
+		GDINL ElementType* GetData()
+		{
+			return reinterpret_cast<ElementType*>(this->Memory);
+		}
+		/// @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Returns number of elements that exist in vector.
@@ -202,15 +266,15 @@ GD_NAMESPACE_BEGIN
 		GDINL void Resize(SizeTp const NewLength)
 		{
 			if (this->Length != NewLength)
-			{	// We do not need to resize our element with same size.
+			{	
 				if (this->Length < NewLength)
-				{	// Increasing size of container, we need to initialize new elements.
+				{	
 					this->ReserveToLength(NewLength);
-					InitializeRange(this->PtrEnd(), this->PtrBegin() + NewLength);
+					InitializeRange(this->_PtrEnd(), this->_PtrBegin() + NewLength);
 				}
 				else
-				{	// Decreasing size of container, we need to destroy last elements there.
-					DeinitializeRange(this->PtrBegin() + NewLength, this->PtrEnd());
+				{	
+					DeinitializeRange(this->_PtrBegin() + NewLength, this->_PtrEnd());
 				}
 				this->Length = NewLength;
 			}
@@ -218,19 +282,18 @@ GD_NAMESPACE_BEGIN
 
 		// ------------------------------------------------------------------------------------------
 		//! Reserves memory for vector to make it contain specified number of elements without 
-		//! reallocation when calling Resize/PushBack/Insert method.
+		//! reallocation when calling Resize/Insert/InsertLast method.
 		//! @param NewCapacity New required capacity of the container.
 		GDINL void Reserve(SizeTp const NewCapacity)
 		{
-			// Moving elements into other memory block. Note that elements outside range keep uninitialized.
+			// Note that elements outside range keep uninitialized.
 			if (this->Capacity != NewCapacity)
 			{
-				// Clamping container size to capacity.
 				if (NewCapacity < this->Length)
 					this->Resize(NewCapacity);
-				ElementType* NewMemory = reinterpret_cast<ElementType*>(GD_MALLOC(NewCapacity * sizeof(ElementType)));
-				MoveFromRange(this->PtrBegin(), this->PtrEnd(), reinterpret_cast<PtrIterator>(NewMemory));
-				DeinitializeRange(this->PtrBegin(), this->PtrEnd());
+				ElementType* const NewMemory = reinterpret_cast<ElementType*>(GD_MALLOC(NewCapacity * sizeof(ElementType)));
+				MoveRange(this->_PtrBegin(), this->_PtrEnd(), reinterpret_cast<PtrIterator>(NewMemory));
+				DeinitializeRange(this->_PtrBegin(), this->_PtrEnd());
 				this->Memory = NewMemory;
 				this->Capacity = NewCapacity;
 			}
@@ -243,7 +306,10 @@ GD_NAMESPACE_BEGIN
 		GDINL void ReserveToLength(SizeTp const NewLength)
 		{
 			if (NewLength > this->Capacity)
-				this->Reserve(static_cast<SizeTp>(1.3 * static_cast<double>(Max(this->Capacity, NewLength))));
+			{
+				SizeTp const NewCapacity = 13 * (Max(this->Capacity, NewLength) + 1) / 10;
+				this->Reserve(NewCapacity);
+			}
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -276,7 +342,7 @@ GD_NAMESPACE_BEGIN
 		// ------------------------------------------------------------------------------------------
 		//! Returns reference on last element in container.
 		//! @returns Reference on last element in the container.
-		//! @{
+		/// @{
 		GDINL ElementType const& GetLastElement() const
 		{
 			return (*this)[this->Length - 1];
@@ -285,32 +351,56 @@ GD_NAMESPACE_BEGIN
 		{
 			return (*this)[this->Length - 1];
 		}
-		//! @}
+		/// @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Inserts specified element into collection at desired index.
 		//! @param Index At this index new element would be inserted. All existing elements would be shifted to right.
 		//! @param Element New element that would be inserted.
-		//! @{
-		GDINL void InsertElementAt(SizeTp const Index, ElementType&& Element)
+		//! @returns Index at which new element was inserted, or the value of @ref Index param.
+		/// @{
+		GDINL SizeTp InsertElementAt(SizeTp const Index, ElementType&& Element)
 		{
 			GD_DEBUG_ASSERT(Index <= this->Length, "Index is out of bounds");
 			this->ReserveToLength(this->Length + 1);
-			for (PtrIterator Iterator = this->PtrEnd(); Iterator != this->PtrBegin() + Index - 1; --Iterator)
+			for (PtrIterator Iterator = this->_PtrEnd(); Iterator != this->_PtrBegin() + Index - 1; --Iterator)
 				*(Iterator - 1) = Move(*Iterator);
 			this->Length += 1;
-			InitializeIterator(this->PtrBegin() + Index, Forward<ElementType>(Element));
+			InitializeIterator(this->_PtrBegin() + Index, Forward<ElementType>(Element));
+			return Index;
 		}
-		GDINL void InsertElementAt(SizeTp const Index, ElementType const& Element)
+		GDINL SizeTp InsertElementAt(SizeTp const Index, ElementType const& Element)
 		{
 			GD_DEBUG_ASSERT(Index <= this->Length, "Index is out of bounds");
 			this->ReserveToLength(this->Length + 1);
-			for (PtrIterator Iterator = this->PtrEnd(); Iterator != this->PtrBegin() + Index - 1; --Iterator)
+			for (PtrIterator Iterator = this->_PtrEnd(); Iterator != this->_PtrBegin() + Index - 1; --Iterator)
 				*(Iterator - 1) = *Iterator;
 			this->Length += 1;
-			InitializeIterator(this->PtrBegin() + Index, Element);
+			InitializeIterator(this->_PtrBegin() + Index, Element);
+			return Index;
 		}
-		//! @}
+		/// @}
+
+		// ------------------------------------------------------------------------------------------
+		//! Appends new element to container.
+		//! @param NewElement New element that would be inserted into the end of container.
+		//! @returns Index at which new element was inserted.
+		/// @{
+		GDINL SizeTp InsertLast(ElementType&& NewElement = ElementType())
+		{
+			this->ReserveToLength(this->Length + 1);
+			this->Length += 1;
+			InitializeIterator(this->_PtrEnd() - 1, Forward<ElementType>(NewElement));
+			return this->Length - 1;
+		}
+		GDINL SizeTp InsertLast(ElementType const& NewElement)
+		{
+			this->ReserveToLength(this->Length + 1);
+			this->Length += 1;
+			InitializeIterator(this->_PtrEnd() - 1, NewElement);
+			return this->Length - 1;
+		}
+		/// @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Removes existing element from array at specified index.
@@ -318,29 +408,11 @@ GD_NAMESPACE_BEGIN
 		GDINL void RemoveElementAt(SizeTp const Index)
 		{
 			GD_ASSERT(Index < this->Length, "Index is out of bounds");
-			for (PtrIterator Iterator = this->PtrBegin() + Index; Iterator != (this->PtrEnd() - 1); ++Iterator)
+			for (PtrIterator Iterator = this->_PtrBegin() + Index; Iterator != (this->_PtrEnd() - 1); ++Iterator)
 				*Iterator = Move(*(Iterator + 1));
 			this->Length -= 1;
-			DeinitializeIterator(this->PtrEnd());
+			DeinitializeIterator(this->_PtrEnd());
 		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Appends new element to container.
-		//! @param NewElement New element that would be inserted into the end of container.
-		//! @{
-		GDINL void InsertLast(ElementType&& NewElement = ElementType())
-		{
-			this->ReserveToLength(this->Length + 1);
-			this->Length += 1;
-			InitializeIterator(this->PtrEnd() - 1, Forward<ElementType>(NewElement));
-		}
-		GDINL void InsertLast(ElementType const& NewElement)
-		{
-			this->ReserveToLength(this->Length + 1);
-			this->Length += 1;
-			InitializeIterator(this->PtrEnd() - 1, NewElement);
-		}
-		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Removes last element from container.
@@ -353,142 +425,9 @@ GD_NAMESPACE_BEGIN
 	public:
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		// Searching for elements and sorting. 
-		//! @todo Move this code to Algorithms.h and make if abstract for all containers.
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-		// ------------------------------------------------------------------------------------------
-		//! Searches for first element in container by predicate.
-		//! @param Predicate Object with () operator overloaded that returns true if both specified objects are equal.
-		//! @returns Index of found element or @c SizeTpMax if nothing was found.
-		template<typename SearchingPredicateType>
-		GDINL SizeTp FindFirstElement(SearchingPredicateType const& Predicate) const
-		{
-			for (PtrConstIterator Iterator = this->PtrBegin(); Iterator != this->PtrEnd(); ++Iterator)
-				if (Predicate(*Iterator))
-					return (Iterator - this->PtrBegin());
-			return SizeTpMax;
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Searches for first element in container by checking equality.
-		//! @param Element Object that function would be looking for.
-		//! @returns Index of found element or @c SizeTpMax if nothing was found.
-		GDINL SizeTp FindFirstElement(ElementType const& Element) const
-		{
-			return this->FindFirstElement([&Element](ElementType const& OtherElement)
-			{
-				return (OtherElement == Element);
-			});
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Searches for last element in container by predicate.
-		//! @param Predicate Object with () operator overloaded that returns true if both specified objects are equal.
-		//! @returns Index of found element or @c SizeTpMax if nothing was found.
-		template<typename SearchingPredicateType>
-		GDINL SizeTp FindLastElement(SearchingPredicateType const& Predicate) const
-		{
-			for (PtrConstIterator Iterator = (this->PtrEnd() - 1); Iterator != (this->PtrBegin() - 1); --Iterator)
-				if (Predicate(*Iterator))
-					return (Iterator - this->ReversePtrEnd());
-			return SizeTpMax;
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Searches for last element in container by checking equality.
-		//! @param Element Object that function would be looking for.
-		//! @returns Index of found element or @c SizeTpMax if nothing was found.
-		GDINL SizeTp FindLastElement(ElementType const& Element) const
-		{
-			return this->FindFirstElement([&Element](ElementType const& OtherElement)
-			{
-				return (OtherElement == Element);
-			});
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Searches for all elements in container by predicate.
-		//! @param Predicate Object with () operator overloaded that returns true if both specified objects are equal.
-		//! @returns A container with all elements that were found by the predicate.
-		template<typename SearchingPredicateType>
-		GDINL Vector FindAllElements(SearchingPredicateType const& Predicate) const
-		{
-			Vector SearchingResult;
-			for (PtrConstIterator Iterator = this->PtrBegin(); Iterator != this->PtrEnd(); ++Iterator)
-				if (Predicate(*Iterator))
-					SearchingResult.InsertLast(*Iterator);
-			return SearchingResult;
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Sorts all elements in collection by predicate using Quick Sort.
-		//! @param Predicate Object with () operator overloaded that returns true that this object should locate upper in collection.
-		//! @param Left Left border of sorting.
-		//! @param Right Right border of sorting.
-		template<typename SortingPredicateType>
-		GDINL void Sort(SortingPredicateType const& Predicate, Iterator const _Left, Iterator const _Right)
-		{
-			//! @todo Implementation is a little broken if container includes equal values.
-			Iterator Left = _Left, Right = _Right;
-			Iterator const Pivot = this->Begin() + (((Left - this->Begin()) + (Right - this->Begin())) / 2);
-			while (Left <= Right)
-			{
-				while (Predicate(*Left, *Pivot))
-				{
-					Left += 1;
-				}
-				while (Predicate(*Pivot, *Right))
-				{
-					Right -= 1;
-				}
-				if (Left <= Right)
-				{
-					Swap(*Left, *Right);
-					Left += 1;
-					Right -= 1;
-				}
-			}
-
-			if (_Left < Right)
-			{
-				this->Sort(Predicate, _Left, Right);
-			}
-			if (Left < _Right)
-			{
-				this->Sort(Predicate, Left, _Right);
-			}
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Sorts all elements in collection by predicate using Quick Sort.
-		//! @param Predicate Object with () operator overloaded that returns true that this object should locate upper in collection.
-		template<typename SortingPredicateType>
-		GDINL void Sort(SortingPredicateType const& Predicate)
-		{
-			this->Sort(Predicate, this->Begin(), (this->End() - 1));
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Sorts all elements in collection using Quick Sort.
-		GDINL void Sort()
-		{
-			this->Sort([](ElementType const& Right, ElementType const& Left)
-			{
-				return (Right < Left);
-			});
-		}
-
-	public:
-
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		// Overloaded operators.
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		// ------------------------------------------------------------------------------------------
-		//! Moves other vector here.
-		//! @param OtherVector Vector would be moved into current object.
-		//! @returns this.
 		GDINL Vector& operator= (Vector&& OtherVector)
 		{
 			if (&OtherVector != this)
@@ -504,11 +443,6 @@ GD_NAMESPACE_BEGIN
 			}
 			return *this;
 		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Assigns vector with copy of other vector.
-		//! @param OtherVector Vector would be assigned.
-		//! @returns this.
 		GDINL Vector& operator= (Vector const& OtherVector)
 		{
 			if ((&OtherVector) != this)
@@ -517,7 +451,7 @@ GD_NAMESPACE_BEGIN
 				{
 					this->Emptify();
 					this->Length = OtherVector.Length;
-					CopyFromRange(OtherVector.PtrBegin(), OtherVector.PtrEnd(), this->PtrBegin());
+					CopyRange(OtherVector._PtrBegin(), OtherVector._PtrEnd(), this->_PtrBegin());
 				}
 				else
 				{
@@ -526,18 +460,13 @@ GD_NAMESPACE_BEGIN
 			}
 			return *this;
 		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Assigned vector the default C++11's initializer list. You should not use this constructor manually.
-		//! @param InitializerList Initializer list passed by the compiler.
-		//! @returns this.
 		GDINL Vector& operator= (InitializerList<ElementType> const& InitializerList)
 		{
-			if (this->Capacity >= InitializerList.size())
+			if (this->Capacity >= InitializerList.GetLength())
 			{
 				this->Emptify();
-				this->Length = InitializerList.size();
-				CopyFromRange(InitializerList.begin(), InitializerList.end(), this->PtrBegin());
+				this->Length = InitializerList.GetLength();
+				CopyRange(InitializerList.begin(), InitializerList.end(), this->_PtrBegin());
 			}
 			else
 			{
@@ -546,117 +475,151 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns reference on element at specified index.
-		//! @param Index Index of the desired element in vector.
-		//! @returns Reference on some element in the container.
-		//! @{
-		GDINL ElementType& operator[] (SizeTp const Index) { return const_cast<ElementType&>(const_cast<Vector const&>(*this)[Index]); }
+		GDINL ElementType& operator[] (SizeTp const Index)
+		{
+			return const_cast<ElementType&>(const_cast<Vector const&>(*this)[Index]);
+		}
 		GDINL ElementType const& operator[] (SizeTp const Index) const
 		{
 			GD_ASSERT(Index < this->Length, "Index is out of bounds");
-			return *(this->PtrBegin() + Index);
+			return *(this->GetData() + Index);
 		}
-		//! @}
-
-		// ------------------------------------------------------------------------------------------
-		//! Checks if this vector is same to specified one.
-		//! @param OtherVector Other vector to compare to.
-		//! @returns True if both vectors have same length and elements.
-		GDINL bool operator== (Vector const& OtherVector) const
-		{
-			if (this->Length == OtherVector.Length)
-				return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
-				{
-					return (First == Second);
-				});
-			return false;
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Checks if this vector is different to specified one.
-		//! @param OtherVector Other vector to compare to.
-		//! @returns True if both vectors have different length or elements.
-		GDINL bool operator!= (Vector const& OtherVector) const
-		{
-			return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
-			{
-				return (First != Second);
-			});
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Checks if this vector is greater to specified one.
-		//! @param OtherVector Other vector to compare to.
-		//! @returns True if this's of the first different elements in vectors is greater than other's or strings are equal.
-		GDINL bool operator> (Vector const& OtherVector) const
-		{
-			return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
-			{
-				return (First >= Second);
-			});
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Checks if this vector is greater to specified one.
-		//! @param OtherVector Other vector to compare to.
-		//! @returns True if this's of the first different elements in vectors is less than other's or strings are equal.
-		GDINL bool operator< (Vector const& OtherVector) const
-		{
-			return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
-			{
-				return (First <= Second);
-			});
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Concatenates two vectors.
-		//! @param OtherVector Other vector to concatenate with.
-		//! @returns Result of the vector concatenation.
-		//! @{
-		GDINL Vector& operator+= (Vector&& OtherVector)
-		{
-			this->ReserveToLength(this->Length + OtherVector.Length);
-			for (Iterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); ++Iterator)
-				this->InsertLast(Move(*Iterator));
-			return *this;
-		}
-		GDINL Vector& operator+= (Vector const& OtherVector)
-		{
-			this->ReserveToLength(this->Length + OtherVector.Length);
-			for (Iterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); ++Iterator)
-				this->InsertLast(*Iterator);
-			return *this;
-		}
-		GDINL Vector operator+ (Vector&& OtherVector) const
-		{
-			return Vector(*this) += Forward<Vector>(OtherVector);
-		}
-		GDINL Vector operator+ (Vector const& OtherVector) const
-		{
-			return Vector(*this) + Move(Vector(OtherVector));
-		}
-		//! @}
-
-	private:
-
-		template<typename SomeElementType>
-		GDINL friend void Swap(Vector<SomeElementType>& First, Vector<SomeElementType>& Second);
 	};	// class Vector
 
-	// ------------------------------------------------------------------------------------------
-	//! Swaps two vectors.
-	//! @param First The first vector.
-	//! @param Second The second vector.
+	template<typename ElementType>
+	GDINL static bool operator== (Vector<ElementType> const& LHS, Vector<ElementType> const& RHS)
+	{
+		if (LHS.GetLength() == RHS.GetLength())
+			return LexicographicalCompare(LHS, RHS, EqualTp<ElementType>());
+		return false;
+	}
+
+	template<typename ElementType>
+	GDINL static bool operator!= (Vector<ElementType> const& LHS, Vector<ElementType> const& RHS)
+	{
+		if (LHS.GetLength() == RHS.GetLength())
+			return LexicographicalCompare(LHS, RHS, NotEqualTp<ElementType>());
+		return true;
+	}
+
+	template<typename ElementType>
+	GDINL static bool operator> (Vector<ElementType> const& LHS, Vector<ElementType> const& RHS)
+	{
+		return LexicographicalCompare(LHS, RHS, GreaterEqualTp<ElementType>());
+	}
+
+	template<typename ElementType>
+	GDINL static bool operator< (Vector<ElementType> const& LHS, Vector<ElementType> const& RHS)
+	{
+		return LexicographicalCompare(LHS, RHS, GreaterEqualTp<ElementType>());
+	}
+
+	template<typename ElementType>
+	GDINL static Vector<ElementType>& operator+= (Vector<ElementType>& LHS, Vector<ElementType>&& RHS)
+	{
+		typedef typename Vector<ElementType>::Iterator IteratorType;
+		LHS.ReserveToLength(LHS.GetLength() + RHS.GetLength());
+		for (IteratorType Iterator = RHS.Begin(); Iterator != RHS.End(); ++Iterator)
+			LHS.InsertLast(Move(*Iterator));
+		RHS.Clear();
+		return LHS;
+	}
+
+	template<typename ElementType>
+	GDINL static Vector<ElementType>& operator+= (Vector<ElementType>& LHS, Vector<ElementType> const& RHS)
+	{
+		typedef typename Vector<ElementType>::Iterator IteratorType;
+		LHS.ReserveToLength(LHS.GetLength() + RHS.GetLength());
+		for (IteratorType Iterator = RHS.Begin(); Iterator != RHS.End(); ++Iterator)
+			LHS.InsertLast(*Iterator);
+		return LHS;
+	}
+
+	template<typename ElementType>
+	GDINL static Vector<ElementType> operator+ (Vector<ElementType> const& LHS, Vector<ElementType>&& RHS)
+	{
+		return Vector<ElementType>(LHS) += Forward<Vector<ElementType>>(RHS);
+	}
+
+	template<typename ElementType>
+	GDINL static Vector<ElementType> operator+ (Vector<ElementType> const& LHS, Vector<ElementType> const& RHS)
+	{
+		return Vector<ElementType>(LHS) + Move(Vector<ElementType>(RHS));
+	}
+
+	template<typename ElementType>
+	GDINL static Vector<ElementType>& operator+= (Vector<ElementType>& LHS, ElementType&& RHS)
+	{
+		LHS.InsertLast(Forward<ElementType>(RHS));
+		return LHS;
+	}
+
+	template<typename ElementType>
+	GDINL static Vector<ElementType>& operator+= (Vector<ElementType>& LHS, ElementType const& RHS)
+	{
+		LHS.InsertLast(RHS);
+		return LHS;
+	}
+	
+	template<typename ElementType>
+	GDINL static Vector<ElementType> operator+ (Vector<ElementType> const& LHS, ElementType&& RHS)
+	{
+		return Vector<ElementType>(LHS) += Forward<ElementType>(RHS);
+	}
+	
+	template<typename ElementType>
+	GDINL static Vector<ElementType> operator+ (Vector<ElementType> const& LHS, ElementType const& RHS)
+	{
+		return Vector<ElementType>(LHS) += RHS;
+	}
+
 	template<typename SomeElementType>
 	GDINL void Swap(Vector<SomeElementType>& First, Vector<SomeElementType>& Second)
 	{
 		if (&First != &Second)
 		{
 			Swap(First.Memory, Second.Memory);
-			Swap(First.Length, Second.Length);
+			Swap(First._Length, Second._Length);
 			Swap(First.Capacity, Second.Capacity);
 		}
+	}
+
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// DVectorRef<T> class.
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	// ------------------------------------------------------------------------------------------
+	//! Defines a simple reference on @ref Vector class that can be safely passed to D by value.
+	//! @tparam ElementTypeTp Element type of the desired vector.
+	template<typename ElementTypeTp>
+	class DVectorRef final
+	{
+		using ElementType = ElementTypeTp;
+
+	private:
+		ElementType const* _DataReference;
+		SizeTp             _DataLength;
+
+	public:
+
+		// ------------------------------------------------------------------------------------------
+		//! Initializes a vector reference.
+		//! @param TheVector The vector to reference.
+		GDINL explicit DVectorRef(Vector<ElementType> const& TheVector)
+			: _DataReference(TheVector.GetData())
+			, _DataLength(TheVector.GetLength())
+		{
+		}
+	};	// class DVectorRef<ElementTypeTp>
+
+	// ------------------------------------------------------------------------------------------
+	//! Initializes a vector reference.
+	//! @param TheVector The vector to reference.
+	//! @returns Created D reference.
+	template<typename ElementType>
+	GDINL static DVectorRef<ElementType> MakeDVectorRef(Vector<ElementType> const& TheVector)
+	{
+		return DVectorRef<ElementType>(TheVector);
 	}
 
 GD_NAMESPACE_END

@@ -5,7 +5,7 @@ rem Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
 rem =========================================================================================
 
 rem Checking whether Visual Studio 2015 / 2013 (with November CTP) is installed..
-if not "%VS140ComnTools%" == "" ( 
+if not "%VS141ComnTools%" == "" ( 
 	rem Visual Studio 2015 has a full support of C++11.
 	set "VSCompilerYear=2015"
 	set "VSCompilerVersion=14"

@@ -14,12 +14,12 @@ using System.IO;
 
 namespace GoddamnEngine.BuildSystem
 {
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents an exception, thrown by BuildSystem code.
     [Serializable]
     public class BuildSystemException : Exception
     {
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Constructs the build system exception with a string.
         //! @param Format Format string.
         //! @param Arguments Formatting arguments.
@@ -29,7 +29,7 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class ProjectException
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a attribute of a build system module.
     [AttributeUsage(AttributeTargets.Class)]
     internal sealed class BuildSystemModuleAttribute : Attribute
@@ -41,11 +41,11 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class BuildSystemModuleAttribute
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a module of a build system.
     public abstract class BuildSystemModule
     {
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Entry point of a module.
         public virtual int Execute(string[] Arguments)
         {
@@ -53,13 +53,13 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class BuildSystemModule
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Main class of build system.
     public static class BuildSystem
     {
         private static string SDKPath = null;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns path to GoddamnSDK installation location.
         //! @returns Path to GoddamnSDK installation location.
         public static string GetSDKLocation()
@@ -74,7 +74,7 @@ namespace GoddamnEngine.BuildSystem
             return SDKPath;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Application entry point.
         //! @param Arguments Command line arguments.
         private static void Main(string[] Arguments)
@@ -110,18 +110,19 @@ namespace GoddamnEngine.BuildSystem
                     ExecutingModuleArguments = Arguments;
                 }
 
-                Environment.Exit(ExecutingModule.Execute(ExecutingModuleArguments));
+                if (ExecutingModule != null) 
+                    Environment.Exit(ExecutingModule.Execute(ExecutingModuleArguments));
             }
             catch (BuildSystemException Exception)
             {
                 Console.Error.WriteLine("Internal unhanded error was caught while running the Build System:");
                 Console.Error.WriteLine(Exception.Message);
             }
-            catch (Exception Exception)
-            {
-                Console.Error.WriteLine("Unhanded error was caught while running the Build System:");
-                Console.Error.WriteLine(Exception.ToString());
-            }
+            //catch (Exception Exception)
+            //{
+            //    Console.Error.WriteLine("Unhanded error was caught while running the Build System:");
+            //    Console.Error.WriteLine(Exception.ToString());
+            //}
 
             Environment.Exit(1);
         }

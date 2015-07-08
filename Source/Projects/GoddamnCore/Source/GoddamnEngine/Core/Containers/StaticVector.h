@@ -11,7 +11,7 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Containers/Containers.h>
+#include <GoddamnEngine/Core/Iterators.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>
 
 GD_NAMESPACE_BEGIN
@@ -28,15 +28,15 @@ GD_NAMESPACE_BEGIN
 	class StaticVector final
 	{
 	public:
-		typedef ElementTypeTp									ElementType;
-		typedef IndexedContainerIterator<StaticVector>			Iterator;
-		typedef IndexedContainerIterator<StaticVector const>	ConstIterator;
-		typedef ReverseContainerIterator<Iterator>				ReverseIterator;
-		typedef ReverseContainerIterator<ConstIterator>			ReverseConstIterator;
-		typedef ElementType*									PtrIterator;
-		typedef ElementType const*								PtrConstIterator;
-		typedef ReverseContainerIterator<PtrIterator>			ReversePtrIterator;
-		typedef ReverseContainerIterator<PtrConstIterator>		ReversePtrConstIterator;
+		using ElementType             = ElementTypeTp;
+		using PtrIterator             = ElementType*;
+		using PtrConstIterator        = ElementType const*;
+		using Iterator                = IndexedContainerIterator<StaticVector>;
+		using ConstIterator           = IndexedContainerIterator<StaticVector const>;
+		using ReverseIterator         = ReverseContainerIterator<Iterator>;
+		using ReverseConstIterator    = ReverseContainerIterator<ConstIterator>;
+		using ReversePtrIterator      = ReverseContainerIterator<PtrIterator>;
+		using ReversePtrConstIterator = ReverseContainerIterator<PtrConstIterator>;
 
 		GD_CONTAINER_DEFINE_PTR_ITERATION_SUPPORT(StaticVector);
 
@@ -67,7 +67,7 @@ GD_NAMESPACE_BEGIN
 		GDINL StaticVector(ConstIterator const StartIterator, ConstIterator const EndIterator)
 		{
 			this->Resize(EndIterator - StartIterator);
-			CopyFromRange(StartIterator, EndIterator, this->PtrBegin());
+			CopyRange(StartIterator, EndIterator, this->PtrBegin());
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -75,8 +75,8 @@ GD_NAMESPACE_BEGIN
 		//! @param InitializerList Initializer list passed by the compiler.
 		GDINL StaticVector(InitializerList<ElementType> const& InitializerList)
 		{
-			this->Resize(InitializerList.size());
-			CopyFromRange(InitializerList.begin(), InitializerList.end(), this->PtrBegin());
+			this->Resize(InitializerList.GetLength());
+			CopyRange(InitializerList.begin(), InitializerList.end(), this->PtrBegin());
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -85,9 +85,9 @@ GD_NAMESPACE_BEGIN
 		template<SizeTp OtherCapacity>
 		GDINL StaticVector(StaticVector<ElementType, OtherCapacity> const& OtherVector)
 		{
-			GD_DEBUG_ASSERT(OtherVector.Length <= Capacity, "Length of the specified vector is greater, than capacity of this one.");
-			this->Resize(OtherVector.Length);
-			CopyFromRange(OtherVector.PtrBegin(), OtherVector.PtrEnd(), this->PtrBegin());
+			GD_DEBUG_ASSERT(OtherVector._Length <= Capacity, "_Length of the specified vector is greater, than capacity of this one.");
+			this->Resize(OtherVector._Length);
+			CopyRange(OtherVector._PtrBegin(), OtherVector._PtrEnd(), this->PtrBegin());
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ GD_NAMESPACE_BEGIN
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// ------------------------------------------------------------------------------------------
-		//! Iterator that points to first container element.
+		//! Returns iterator that points to first container element.
 		//! @returns Iterator that points to first container element.
 		//! @{
 	public:
@@ -186,7 +186,7 @@ GD_NAMESPACE_BEGIN
 		//! @param NewLength New required length of the container.
 		GDINL void Resize(SizeTp const NewLength)
 		{
-			// We do not need to resize our container with same size.
+			// We do not need to Resize our container with same size.
 			if (this->Length != NewLength)
 			{
 				GD_DEBUG_ASSERT(NewLength <= Capacity, "Static vector is running out of capacity.");
@@ -269,11 +269,11 @@ GD_NAMESPACE_BEGIN
 		template<SizeTp OtherCapacity>
 		GDINL StaticVector& operator= (StaticVector<ElementType, OtherCapacity> const& OtherVector)
 		{
-			GD_DEBUG_ASSERT(OtherVector.Length <= Capacity, "Length of the specified vector is greater, than capacity of this one.");
+			GD_DEBUG_ASSERT(OtherVector._Length <= Capacity, "_Length of the specified vector is greater, than capacity of this one.");
 			if (&OtherVector != this)
 			{
-				this->Length = OtherVector.Length;
-				CopyFromRange(OtherVector.PtrBegin(), OtherVector.PtrEnd(), this->PtrBegin());
+				this->Length = OtherVector._Length;
+				CopyRange(OtherVector._PtrBegin(), OtherVector._PtrEnd(), this->PtrBegin());
 			}
 			return *this;
 		}
@@ -298,9 +298,9 @@ GD_NAMESPACE_BEGIN
 		template<SizeTp OtherCapacity>
 		GDINL bool operator== (StaticVector<ElementType, OtherCapacity> const& OtherVector) const
 		{
-			GD_DEBUG_ASSERT(OtherVector.Length <= Capacity, "Length of the specified vector is greater, than capacity of this one.");
-			if (this->Length == OtherVector.Length)
-				return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
+			GD_DEBUG_ASSERT(OtherVector._Length <= Capacity, "_Length of the specified vector is greater, than capacity of this one.");
+			if (this->Length == OtherVector._Length)
+				return LexicographicalCompare(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
 				{
 					return (First == Second);
 				});
@@ -314,8 +314,8 @@ GD_NAMESPACE_BEGIN
 		template<SizeTp OtherCapacity>
 		GDINL bool operator!= (StaticVector<ElementType, OtherCapacity> const& OtherVector) const
 		{
-			GD_DEBUG_ASSERT(OtherVector.Length <= Capacity, "Length of the specified vector is greater, than capacity of this one.");
-			return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
+			GD_DEBUG_ASSERT(OtherVector._Length <= Capacity, "_Length of the specified vector is greater, than capacity of this one.");
+			return LexicographicalCompare(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
 			{
 				return (First != Second);
 			});
@@ -328,8 +328,8 @@ GD_NAMESPACE_BEGIN
 		template<SizeTp OtherCapacity>
 		GDINL bool operator> (StaticVector<ElementType, OtherCapacity> const& OtherVector) const
 		{
-			GD_DEBUG_ASSERT(OtherVector.Length <= Capacity, "Length of the specified vector is greater, than capacity of this one.");
-			return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
+			GD_DEBUG_ASSERT(OtherVector._Length <= Capacity, "_Length of the specified vector is greater, than capacity of this one.");
+			return LexicographicalCompare(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
 			{
 				return (First >= Second);
 			});
@@ -342,8 +342,8 @@ GD_NAMESPACE_BEGIN
 		template<SizeTp OtherCapacity>
 		GDINL bool operator< (StaticVector<ElementType, OtherCapacity> const& OtherVector) const
 		{
-			GD_DEBUG_ASSERT(OtherVector.Length <= Capacity, "Length of the specified vector is greater, than capacity of this one.");
-			return CompareTo(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
+			GD_DEBUG_ASSERT(OtherVector._Length <= Capacity, "_Length of the specified vector is greater, than capacity of this one.");
+			return LexicographicalCompare(*this, OtherVector, [](ElementType const& First, ElementType const& Second) -> bool
 			{
 				return (First <= Second);
 			});
@@ -357,7 +357,7 @@ GD_NAMESPACE_BEGIN
 		template<SizeTp OtherCapacity>
 		GDINL StaticVector& operator+= (StaticVector<ElementType, OtherCapacity>&& OtherVector)
 		{
-			GD_DEBUG_ASSERT(OtherVector.Length <= Capacity, "Length of the specified vector is greater, than capacity of this one.");
+			GD_DEBUG_ASSERT(OtherVector._Length <= Capacity, "_Length of the specified vector is greater, than capacity of this one.");
 			for (Iterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); ++Iterator)
 				this->InsertLast(Move(*Iterator));
 			return *this;
@@ -365,7 +365,7 @@ GD_NAMESPACE_BEGIN
 		template<SizeTp OtherCapacity>
 		GDINL StaticVector& operator+= (StaticVector<ElementType, OtherCapacity> const& OtherVector)
 		{
-			GD_DEBUG_ASSERT(OtherVector.Length <= Capacity, "Length of the specified vector is greater, than capacity of this one.");
+			GD_DEBUG_ASSERT(OtherVector._Length <= Capacity, "_Length of the specified vector is greater, than capacity of this one.");
 			for (Iterator Iterator = OtherVector.Begin(); Iterator != OtherVector.End(); ++Iterator)
 				this->InsertLast(*Iterator);
 			return *this;

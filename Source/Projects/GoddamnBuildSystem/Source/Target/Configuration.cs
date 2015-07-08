@@ -16,7 +16,7 @@ using System.Reflection;
 
 namespace GoddamnEngine.BuildSystem
 {
-    // ------------------------------------------------------------------------------------------
+    //[
     //! List of supported target configurations.
     public enum TargetConfiguration : byte
     {
@@ -27,7 +27,7 @@ namespace GoddamnEngine.BuildSystem
         Shipping,
     }   // enum TargetConfigurations
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! List of properties for specific configuration.
     public class TargetConfigurationInfo
     {
@@ -38,13 +38,13 @@ namespace GoddamnEngine.BuildSystem
         public bool GenerateDebugInformation { get; protected set; }
         public bool Optimize { get; protected set; }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Initializes a configuration information. Should setup properties.
         protected TargetConfigurationInfo()
         {
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns the information for specific platform.
         //! @param TheConfiguration Desired configuration.
         //! @returns The information for specific platform.
@@ -70,7 +70,7 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class TargetConfigurationInfo
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! "Debug" configuration information.
     // ReSharper disable once UnusedMember.Global
     public sealed class DebugConfigurationInfo : TargetConfigurationInfo
@@ -84,7 +84,7 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class DebugConfigurationInfo
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! "Release" configuration information.
     // ReSharper disable once UnusedMember.Global
     public sealed class ReleaseConfigurationInfo : TargetConfigurationInfo
@@ -98,7 +98,7 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class ReleaseConfigurationInfo
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! "Development" configuration information.
     // ReSharper disable once UnusedMember.Global
     public sealed class DevelopmentConfigurationInfo : TargetConfigurationInfo
@@ -112,7 +112,7 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class DevelopmentConfigurationInfo
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! "Shipping" configuration information.
     // ReSharper disable once UnusedMember.Global
     public sealed class ShippingConfigurationInfo : TargetConfigurationInfo

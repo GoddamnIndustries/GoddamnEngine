@@ -39,7 +39,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.XCode
         public XCodeReference(string ReferenceName) { this.ReferenceName = ReferenceName; }
         public sealed override string ToString()
         {
-            return new string('0', 24 - PropertyNameHash.Length) + this.ReferenceName.GetHashCode().ToString("X");
+            return new string('0', 24 - PropertyNameHash._Length) + this.ReferenceName.GetHashCode().ToString("X");
         }
     }   // public sealed class XCodeReference
 
@@ -60,8 +60,8 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator.XCode
             Builder.Append(this.Reference.ToString()).Append(" = {");
             foreach (FieldInfo Property in this.GetType().GetFields()) {   // Searching throw all fields inside object
                 XCodeProperty[] PropertyAttributes = Property.GetCustomAttributes(typeof(XCodeProperty), true) as XCodeProperty[];
-                Debug.Assert(PropertyAttributes.Length <= 1, "Invalid XCodeProperty attribute was found");
-                if (PropertyAttributes.Length == 1) {
+                Debug.Assert(PropertyAttributes._Length <= 1, "Invalid XCodeProperty attribute was found");
+                if (PropertyAttributes._Length == 1) {
                     string PropertyName = PropertyAttributes[0].PropertyName;
                     string PropertyValue = Property.GetValue(this).ToString();
                     Builder.AppendFormat("{0} = {1}; ", PropertyName, PropertyValue);

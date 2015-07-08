@@ -20,7 +20,7 @@ GD_NAMESPACE_BEGIN
 	//! Represents mutable sequence of characters.
 	//! @tparam CharType Character type of this string.
 	template<typename CharType>
-	class BaseStringBuilder final : public IContainer
+	class BaseStringBuilder final
 	{
 	private:
 		typedef Vector<CharType> ContainerType;
@@ -96,7 +96,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		//! Appends a character to this string builder.
-		//! @param Character Character to append.
+		//! @param Character Character to Append.
 		//! @returns this.
 		GDINL BaseStringBuilder& Append(CharType const Character)
 		{
@@ -121,7 +121,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 		//! Appends a C string with specified length to this string builder.
-		//! @param String C string to append.
+		//! @param String C string to Append.
 		//! @returns this.
 		GDINL BaseStringBuilder& Append(CharType const* const CString, SizeTp const Length)
 		{
@@ -133,22 +133,22 @@ GD_NAMESPACE_BEGIN
 		}
 
 		//! Appends a C string to this string builder.
-		//! @param String C string to append.
+		//! @param String C string to Append.
 		//! @returns this.
 		//! @{
-		template <SizeTp const Length>	// Length of string constant is determined at compile time..
+		template <SizeTp const Length>	// _Length of string constant is determined at compile time..
 		GDINL BaseStringBuilder& Append(CharType const(&CString)[Length])
 		{
 			return this->Append(CString, Length - 1);
 		}
 		GDINL BaseStringBuilder& Append(CharType const* const CString)
 		{
-			return this->Append(CString, CCharTraits<CharType>::StrLen(CString));
+			return this->Append(CString, BaseCChar<CharType>::StrLen(CString));
 		}
 		//! @}
 
 		//! Appends a Goddamn string to this string builder.
-		//! @param TheString Goddamn string to append.
+		//! @param TheString Goddamn string to Append.
 		//! @returns this.
 		GDINL BaseStringBuilder& Append(BaseStringType const& TheString)
 		{

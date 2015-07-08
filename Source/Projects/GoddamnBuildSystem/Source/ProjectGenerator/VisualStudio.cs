@@ -17,7 +17,7 @@ using System.Xml;
 
 namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
 {
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Generator of the project/solution files for Visual Studio.
     // ReSharper disable once UnusedMember.Global
     internal class VisualStudioProjectGenerator : GoddamnEngine.BuildSystem.ProjectGenerator.ProjectGenerator
@@ -33,7 +33,7 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
         private const string ToolsVersion          = "14.0";
         private const string ToolsFiltersVersion   = "4.0";
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns formatted GUID.
         //! @returns Formatted GUID.
         private static string CreateMsBuildGuid()
@@ -41,7 +41,7 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
             return string.Format("{{{0}}}", Guid.NewGuid().ToString()).ToUpperInvariant();
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Converts specified source file type into name of the node in MSBuild.
         //! @returns Name of the node in MSBuild.
         private static string ConvertFileTypeToVcxProjElement(ProjectSourceFileType FileType)
@@ -61,7 +61,7 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
             }
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Converts target platform into MSBuild compatible one.
         //! @param Platform Some platform.
         //! @returns MSBuild compatible one.
@@ -93,7 +93,7 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
             }
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Loads a GUID from an existing project file.
         //! @param ProjectPath Path to project file.
         //! @returns A loaded GUID on success or new generated GUID on failure.
@@ -108,7 +108,7 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
             return ProjGuidNode != null ? ProjGuidNode.InnerText : null;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Checks if specified platform is natively supported by VS.
         //! @param Platform Some platform.
         //! @returns True if platform is natively supported by VS, false otherwise.
@@ -128,7 +128,7 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
             return false;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates project files for Visual Studio: .vcxproj and .vcxproj.filter.
         //! @param Project Parsed project object.
         //! @param Configurations Array of target configurations.
@@ -158,9 +158,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
                 VcxProj./**//**/WriteAttributeString("ToolsVersion", ToolsVersion);
                 VcxProj./**//**/WriteAttributeString("DefaultTargets", "Build");
 
-                // ------------------------------------------------------------------------------------------
+                //[
                 // Defining list of configurations.
-                // ------------------------------------------------------------------------------------------
+                //[
                 VcxProj.WriteStartElement("ItemGroup");
                 VcxProj./**/WriteAttributeString("Label", "ProjectConfigurations");
                 foreach (var Platform in Target.EnumerateAllPlatforms())
@@ -178,9 +178,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
                 }
                 VcxProj.WriteEndElement();
 
-                // ------------------------------------------------------------------------------------------
+                //[
                 // Defining list of source files.
-                // ------------------------------------------------------------------------------------------
+                //[
                 VcxProj.WriteStartElement("ItemGroup");
                 foreach (var ProjectSource in Project.CachedSourceFiles)
                 {
@@ -205,18 +205,18 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
                 }
                 VcxProj.WriteEndElement();
 
-                // ------------------------------------------------------------------------------------------
+                //[
                 // Overriding global project properties.
-                // ------------------------------------------------------------------------------------------
+                //[
                 VcxProj.WriteStartElement("PropertyGroup");
                 VcxProj./**/WriteAttributeString("Label", "Globals");
                 VcxProj./**/WriteElementString("ProjectGuid", Project.AdditionalCache.GUID);
                 VcxProj./**/WriteElementString("RootNamespace", Project.CachedName);
                 VcxProj.WriteEndElement();
 
-                // ------------------------------------------------------------------------------------------
+                //[
                 // Overriding main configuration properties.
-                // ------------------------------------------------------------------------------------------
+                //[
                 foreach (var Platform in Target.EnumerateAllPlatforms())
                 {
                     var PlatformString = ConvertPlatformToMsBuildPlatform(Platform);
@@ -278,9 +278,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
                 VcxProj./**/WriteElementString("NMakeForcedUsingAssemblies", "$(NMakeForcedUsingAssemblies)");
                 VcxProj.WriteEndElement();
 
-                // ------------------------------------------------------------------------------------------
+                //[
                 // Overriding VC++ compiler and linker properties OR NMake commands..
-                // ------------------------------------------------------------------------------------------
+                //[
                 foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
                 {
                     TargetPlatformInfo PlatformInfo = TargetPlatformInfo.Get(Platform);
@@ -330,9 +330,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
 
                         if (IsPlatformNativelySupported(Platform))
                         {
-                            // ------------------------------------------------------------------------------------------
+                            //[
                             // Defining VC++ compiler and linker properties.
-                            // ------------------------------------------------------------------------------------------
+                            //[
 
                             // Include paths..
                             VcxProj.WriteStartElement("PropertyGroup");
@@ -382,9 +382,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
                         else
                         {
 
-                            // ------------------------------------------------------------------------------------------
+                            //[
                             // Defining NMake properties..
-                            // ------------------------------------------------------------------------------------------
+                            //[
 
                             string NMakeCommand = string.Format("\"{0}\" --compile-project \"{1}\" {2} {3} ",
                                 System.Reflection.Assembly.GetExecutingAssembly().Location,
@@ -439,9 +439,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
                         string ProjectSourceFilterIter = ProjectSourceFilter;
                         while ((!ProjectFoldersCache.Contains(ProjectSourceFilterIter)) && (!string.IsNullOrEmpty(ProjectSourceFilterIter)))
                         {
-                            // ------------------------------------------------------------------------------------------
+                            //[
                             // Defining group of filters.
-                            // ------------------------------------------------------------------------------------------
+                            //[
                             VcxProjFilters.WriteStartElement("ItemGroup");
                             VcxProjFilters./**/WriteStartElement("Filter");
                             VcxProjFilters./**//**/WriteAttributeString("Include", ProjectSourceFilterIter);
@@ -458,9 +458,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
                         ProjectSourceFilter = "Source";
                     }
 
-                    // ------------------------------------------------------------------------------------------
+                    //[
                     // Defining source's filters.
-                    // ------------------------------------------------------------------------------------------
+                    //[
                     VcxProjFilters.WriteStartElement("ItemGroup");
                     VcxProjFilters./**/WriteStartElement(ConvertFileTypeToVcxProjElement(ProjectSourceFile.FileType));
                     VcxProjFilters./**//**/WriteAttributeString("Include", ProjectSourceFile.FileName);
@@ -476,7 +476,7 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
             return VcxProjPath;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates solution files for Visual Studio.
         //! @param Solution Parsed solution object.
         //! @returns Path to Visual Studio's .sln file.
@@ -492,9 +492,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
                 Sln.WriteLine("Microsoft Visual Studio Solution File, Format Version 12.00");
                 Sln.WriteLine("# Generated by the GoddamnBuildSystem.");
 
-                // ------------------------------------------------------------------------------------------
+                //[
                 // Caching GUIDs of projects and filters and defining filters.
-                // ------------------------------------------------------------------------------------------
+                //[
                 var SolutionFiltersGuidCache = new Dictionary<int, string>();
                 foreach (var SolutionProject in Solution.CachedProjects)
                 {
@@ -538,9 +538,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
                     }
                 }
 
-                // ------------------------------------------------------------------------------------------
+                //[
                 // Defining Solution projects.
-                // ------------------------------------------------------------------------------------------
+                //[
                 foreach (var SolutionProject in Solution.CachedProjects)
                 {
                     // E.g. 'Project({Type-GUID}) = "Name", "Path-ToProject-File", "Project-GUID"'
@@ -562,9 +562,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
 
                 Sln.WriteLine("Global");
 
-                // ------------------------------------------------------------------------------------------
+                //[
                 // Linking platforms & configurations.
-                // ------------------------------------------------------------------------------------------
+                //[
                 Sln.WriteLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
                 foreach (var Platform in Target.EnumerateAllPlatforms())
                 {
@@ -621,9 +621,9 @@ namespace GoddamnEngine.BuildSystem.Source.ProjectGenerator
                 Sln.WriteLine("\t\tHideSolutionNode = FALSE");
                 Sln.WriteLine("\tEndGlobalSection");
 
-                // ------------------------------------------------------------------------------------------
+                //[
                 // Matching projects and filters hierarchy.
-                // ------------------------------------------------------------------------------------------
+                //[
                 Sln.WriteLine("\tGlobalSection(NestedProjects) = preSolution");
                 foreach (var SolutionProject in Solution.CachedProjects.Where(SolutionProject => !string.IsNullOrEmpty(SolutionProject.CachedFilter)))
                 {

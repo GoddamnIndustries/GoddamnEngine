@@ -18,7 +18,7 @@ using System.Text;
 
 namespace GoddamnEngine.BuildSystem
 {
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Describes priority of the project.
     public enum ProjectPriority : byte
     {
@@ -29,7 +29,7 @@ namespace GoddamnEngine.BuildSystem
         BuildToolLevel,
     }   // enum ProjectPriority
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Types of file in project (sub)directory.
     public enum ProjectSourceFileType : byte
     {
@@ -41,7 +41,7 @@ namespace GoddamnEngine.BuildSystem
         SupportFile = InlineImplementation, //!< Some other file types.
     }   // enum SourceFileType
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents build type of project.
     public enum ProjectBuildType : byte
     {
@@ -51,7 +51,7 @@ namespace GoddamnEngine.BuildSystem
         DynamicLibrary          //!< Project represents a dynamic library (where is supported) and static library otherwise.
     }   // public enum ProjectBuildType
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a language in which project is written in.
     public enum ProjectLanguge : byte
     {
@@ -60,11 +60,11 @@ namespace GoddamnEngine.BuildSystem
         CPP
     }   // public enum ProjectLanguge
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a simple source file added to project.
     public sealed class ProjectSourceFile
     {
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns true if this file is excluded on some platform.
         //! @returns True if this file is excluded on some platform.
         public delegate bool IsExcludedDelegate(TargetPlatform Platform);
@@ -74,7 +74,7 @@ namespace GoddamnEngine.BuildSystem
         public readonly string FileName;
         public readonly ProjectSourceFileType FileType;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Initializes new source file.
         //! @param FileName Path to source file.
         //! @param FileType Type of source file.
@@ -86,7 +86,7 @@ namespace GoddamnEngine.BuildSystem
             this.IsExcluded = IsExcluded ?? NotExcludedDelegate;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns true if object on specified path has platform/configuration data and matches it.
         public bool ShouldBeExcluded(TargetPlatform Platform, TargetConfiguration Configuration)
         {
@@ -99,14 +99,14 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class ProjectSourceFile
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a simple preprocessor definition.
     public sealed class ProjectMacro
     {
         private readonly string Name;
         private readonly string Value;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Initializes a new preprocessor definition.
         //! @param Name Name of the macro.
         //! @param Value Value of the macro.
@@ -116,7 +116,7 @@ namespace GoddamnEngine.BuildSystem
             this.Value = Value;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns string version of this definition in format "NAME=VALUE".
         //! @returns string version of this definition in format "NAME=VALUE".
         public override string ToString()
@@ -125,11 +125,11 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class ProjectMacro
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Representation of a normal C++ project.
     public class Project : Collector
     {
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns a programming language, in which project is written in.
         //! @returns A programming language, in which project is written in.
         public virtual ProjectLanguge GetProgrammingLanguage()
@@ -137,7 +137,7 @@ namespace GoddamnEngine.BuildSystem
             return ProjectLanguge.CPP;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns name of the filter of this project in generated solution.
         //!        May return null if no filter is required.
         //! @returns Returns name of the filter of this project in generated solution.
@@ -146,7 +146,7 @@ namespace GoddamnEngine.BuildSystem
             return null;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns priority of this project. Higher priority - earlier project is compiled.
         //! @returns Priority of this project. Higher priority - earlier project is compiled.
         public virtual ProjectPriority GetPriority()
@@ -154,7 +154,7 @@ namespace GoddamnEngine.BuildSystem
             return ProjectPriority.GameLevel;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns type of compiler/linker output.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -165,7 +165,7 @@ namespace GoddamnEngine.BuildSystem
             return Target.IsDesktopPlatform(Platform) ? ProjectBuildType.DynamicLibrary : ProjectBuildType.StaticLibrary;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns path to which compilation result would be stored.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -237,7 +237,7 @@ namespace GoddamnEngine.BuildSystem
             );
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns path to which the import library would be stored (only actual for Windows DLLs), or null if no import library needs to be generated.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -257,7 +257,7 @@ namespace GoddamnEngine.BuildSystem
             return null;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns offset some path that should be treated as origin of source files (and filters of source files).
         //! @returns Offset some path that should be treated as origin of source files (and filters of source files).
         public virtual string GetSourceFiltersOrigin()
@@ -269,7 +269,7 @@ namespace GoddamnEngine.BuildSystem
 #endif  // INCLUDE_GODDAMNSDK_SPECIFIC
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Collects list of directories that contain header files.
         //! @returns Iterator for list of directories that contain header files.
         public virtual IEnumerable<string> EnumerateHeaderDirectories()
@@ -283,7 +283,7 @@ namespace GoddamnEngine.BuildSystem
             yield return ProjectSourceFiles;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Collects list of files with source code, which would be added to generated project data.
         //! @returns Iterator for list of files with source code, which would be added to generated project data.
         public virtual IEnumerable<ProjectSourceFile> EnumerateSourceFiles()
@@ -351,7 +351,7 @@ namespace GoddamnEngine.BuildSystem
             }
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Collects list of dependencies for this project.
         //! @returns Iterator for list of list of dependencies for this project.
         //! @note All unsupported projects should be filtered by this function.
@@ -388,7 +388,7 @@ namespace GoddamnEngine.BuildSystem
 #endif  // INCLUDE_GODDAMNSDK_SPECIFIC
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Collects list of additional preprocessor definitions added to this project.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -417,11 +417,11 @@ namespace GoddamnEngine.BuildSystem
 
     }   // class Project
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Representation of some build tool.
-    public abstract class BuildToolProject : Project
+    public class BuildToolProject : Project
     {
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns a programming language, in which project is written in.
         //! @returns A programming language, in which project is written in.
         public override ProjectLanguge GetProgrammingLanguage()
@@ -429,7 +429,7 @@ namespace GoddamnEngine.BuildSystem
             return ProjectLanguge.CS;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns path to project file of the build tool.
         //!        By default, it set to ".csproj" file with same name, as project.
         //! @returns Path to project file of the build tool.
@@ -446,7 +446,7 @@ namespace GoddamnEngine.BuildSystem
             }
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns name of the filter of this project in generated solution.
         //!        By default, returns "Build tools".
         //! @returns Name of the filter of this project in generated solution.
@@ -455,7 +455,7 @@ namespace GoddamnEngine.BuildSystem
             return "Build tools";
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Returns priority of this project. Higher priority - earlier project is compiled.
         //!        Obviously, build tool priority is constantly set to BuildToolLevel.
         //! @returns Returns priority of this project. Higher priority - earlier project is compiled.
@@ -464,56 +464,56 @@ namespace GoddamnEngine.BuildSystem
             return ProjectPriority.BuildToolLevel;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! @warning Method is not supported for a build tool.
         public sealed override ProjectBuildType GetBuildType(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             throw new NotSupportedException();
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! @warning Method is not supported for a build tool.
         public sealed override string GetOutputPathDelegate(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             throw new NotSupportedException();
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! @warning Method is not supported for a build tool.
         public sealed override string GetImportLibraryOutputPathDelegate(TargetPlatform Platform, TargetConfiguration Configuration)
         {
             throw new NotSupportedException();
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! @warning Method is not supported for a build tool.
         public sealed override string GetSourceFiltersOrigin()
         {
             throw new NotSupportedException();
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! @warning Method is not supported for a build tool.
         public sealed override IEnumerable<ProjectSourceFile> EnumerateSourceFiles()
         {
             throw new NotSupportedException();
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! @warning Method is not supported for a build tool.
         public sealed override IEnumerable<string> EnumerateHeaderDirectories()
         {
             throw new NotSupportedException();
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! @warning Method is not supported for a build tool.
         public sealed override IEnumerable<DependencyCache> EnumerateDependencies()
         {
             throw new NotSupportedException();
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! @warning Method is not supported for a build tool.
         public sealed override IEnumerable<ProjectMacro> EnumerateMacros(TargetPlatform Platform, TargetConfiguration Configuration)
         {
@@ -522,9 +522,9 @@ namespace GoddamnEngine.BuildSystem
 
     }   // class BuildToolProject
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a collection of cached data that was collected by project object.
-    public abstract class ProjectCache : CollectorCache
+    public class ProjectCache : CollectorCache
     {
         //public Dictionary<TargetPlatform, string> MakefilePathes;
         public string GeneratorOutputPath;
@@ -540,10 +540,10 @@ namespace GoddamnEngine.BuildSystem
         public readonly DependencyCache[] CachedDependencies;
         public readonly CollectorContainer<ProjectMacro[]> CachedMacros;
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates cache for specified project.
         //! @param Project Project which dynamic properties would be cached.
-        protected ProjectCache(Project Project)
+        public ProjectCache(Project Project)
             : base(Project)
         {
             if (IsSupported)
@@ -570,7 +570,7 @@ namespace GoddamnEngine.BuildSystem
             }
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates a strigified list of include paths.
         //! @param Separator Separator string between include paths. ';' By default.
         //! @returns A strigified include paths.
@@ -581,24 +581,24 @@ namespace GoddamnEngine.BuildSystem
                 Separator = Path.PathSeparator.ToString();
             }
 
-            StringBuilder IncludePathesBuilder = new StringBuilder(Separator);
+            StringBuilder IncludePathesBuilder = new StringBuilder();
 
             // Adding header paths from this projects.
             Array.ForEach(CachedHeaderDirectories, HeaderDirectory =>
-                IncludePathesBuilder.Append(Separator).Append(HeaderDirectory)
+                IncludePathesBuilder.Append(HeaderDirectory).Append(Separator)
             );
 
             // Adding header paths from dependencies.
             Array.ForEach(CachedDependencies, Dependency =>
                 Array.ForEach(Dependency.CachedHeaderDirectories, DependencyIncludePath =>
-                    IncludePathesBuilder.Append(Separator).Append(DependencyIncludePath)
+                    IncludePathesBuilder.Append(DependencyIncludePath).Append(Separator)
                 )
             );
 
             return IncludePathesBuilder.ToString();
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates a strigified list of macros.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -619,7 +619,7 @@ namespace GoddamnEngine.BuildSystem
             return MacrosBuilder.ToString();
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates a strigified list of linked libraries paths.
         //! @param Platform One of the target platforms.
         //! @param Configuration One of the target configurations.
@@ -642,9 +642,9 @@ namespace GoddamnEngine.BuildSystem
         }
     }   // class ProjectCache
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a factory of projects.
-    public abstract class ProjectFactory : CollectorFactory<Project, ProjectCache>
+    public class ProjectFactory : CollectorFactory<Project, ProjectCache>
     {
     }   // class ProjectFactory
 }   // namespace GoddamnEngine.BuildSystem

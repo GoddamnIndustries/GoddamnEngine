@@ -11,9 +11,8 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Templates/Pair.h>
+#include <GoddamnEngine/Core/Containers/RedBlackTree.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>
-#include <GoddamnEngine/Core/Containers/RedBlackTree/RedBlackTree.h>
 
 GD_NAMESPACE_BEGIN
 	
@@ -35,12 +34,15 @@ GD_NAMESPACE_BEGIN
 		typedef ValueTypeTp											ValueType;
 		typedef Pair<KeyType const, ValueType>						PairType;
 		typedef PairType											ElementType;
-		typedef RedBlackTree<Pair<KeyTypeTp const, ValueTypeTp>>	RedBlackTreeType;
+		typedef RedBlackTree<ElementType>							RedBlackTreeType;
 		typedef typename RedBlackTreeType::RedBlackTreeNodeType		RedBlackTreeNodeType;
 		typedef typename RedBlackTreeType::Iterator					Iterator;
 		typedef typename RedBlackTreeType::ConstIterator			ConstIterator;
 		typedef typename RedBlackTreeType::ReverseIterator			ReverseIterator;
 		typedef typename RedBlackTreeType::ReverseConstIterator		ReverseConstIterator;
+
+	private:
+		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(Map);
 
 	public:
 
@@ -111,17 +113,19 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL void InsertKeyValue(KeyType&& Key, ValueType&& Value = ValueType())
 		{
-			this->InsertNode(GD_NEW(RedBlackTreeNodeType, GD_NEW(PairType, Forward<KeyType>(Key), Forward<ValueType>(Value))));
+			RedBlackTreeNodeType* const NewNode = this->CreateNode(Forward<KeyType>(Key), Forward<ValueType>(Value));
+			this->InsertNode(NewNode);
 		}
 		GDINL void InsertKeyValue(KeyType const& Key, ValueType const& Value)
 		{
-			this->InsertNode(GD_NEW(RedBlackTreeNodeType, GD_NEW(PairType, Key, Value)));
+			RedBlackTreeNodeType* const NewNode = this->CreateNode(Key, Value);
+			this->InsertNode(NewNode);
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Removes existing element from array at specified index.
-		//! @param Key Key of the element that is going to be removed.
+		//! @param Key Key of the element that is going to be RemoveFromSelfd.
 		GDINL void RemoveElementWithKey(KeyType const& Key)
 		{
 			this->RemovePtr(&Key);
@@ -151,7 +155,7 @@ GD_NAMESPACE_BEGIN
 		GDINL ValueType& operator[] (KeyType const& Key) { return const_cast<ValueType&>(const_cast<Map const&>(*this)[Key]); }
 		GDINL ValueType const& operator[] (KeyType const& Key) const
 		{
-			ConstIterator QueriedIterator = this->QueryIterator(Key);
+			ConstIterator QueriedIterator = this->QueryIteratorWithKey(Key);
 			GD_ASSERT(QueriedIterator != this->End(), "Element with specified key does not exist.");
 			return QueriedIterator->Value;
 		}

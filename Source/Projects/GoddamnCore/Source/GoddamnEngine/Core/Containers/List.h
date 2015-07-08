@@ -12,7 +12,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Utility.h>
-#include <GoddamnEngine/Core/Containers/Containers.h>
+#include <GoddamnEngine/Core/Containers/Iterators.h>
 #include "ICCIRef.h"
 
 GD_NAMESPACE_BEGIN
@@ -302,7 +302,7 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		//! Removes the node from the list.
-		//! @param Node	Node that would be removed from the list.
+		//! @param Node	Node that would be RemoveFromSelfd from the list.
 		GDINL void RemoveNode(LinkedListNodeType* const Node)
 		{
 			GD_DEBUG_ASSERT(Node != nullptr, "Null pointer node specified.");
@@ -781,7 +781,7 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		//! Removes the node from the list.
-		//! @param Node	Node that would be removed from the list.
+		//! @param Node	Node that would be RemoveFromSelfd from the list.
 		GDINL void RemoveNode(DoubleLinkedListNodeType* const Node)
 		{
 			GD_DEBUG_ASSERT(Node != nullptr, "Null pointer node specified.");

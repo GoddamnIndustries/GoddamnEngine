@@ -16,7 +16,7 @@ using System.Reflection;
 
 namespace GoddamnEngine.BuildSystem.ProjectGenerator
 {
-    // ------------------------------------------------------------------------------------------
+    //[
     //! List of supported target make systems.
     public enum ProjectGenerators : byte
     {
@@ -26,11 +26,11 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         XCode,
     }   //enum TargetBuildSystem
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a project generation algorithm interface.
     public abstract class ProjectGenerator
     {
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Checks if specified platform is natively supported by IDE.
         //! @param Platform Some platform.
         public virtual bool IsPlatformNativelySupported(TargetPlatform Platform)
@@ -38,7 +38,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             return false;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates project files for specified project.
         //! @param Project Parsed project object.
         //! @returns Path to main project file.
@@ -50,7 +50,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             return ProjectDirectoryPath;
         }
 
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates solution files for specified solution.
         //! @param Solution Parsed solution object.
         //! @returns Path to main project file.
@@ -63,11 +63,11 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         }
     }   // class TargetProjectGenerator
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents a factory of IDE project files generator.
     public static class ProjectGeneratorFactory
     {
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Constructs new IDE project files generator instance.
         public static ProjectGenerator Create()
         {
@@ -97,7 +97,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         }
     }   // class TargetProjectGeneratorFactory
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Represents an exception, thrown by ProjectGenerator code.
     [Serializable]
     public sealed class ProjectGeneratorException : BuildSystemException
@@ -111,12 +111,12 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         }
     }   // class ProjectGeneratorException
 
-    // ------------------------------------------------------------------------------------------
+    //[
     //! Project file generation module.
     [BuildSystemModule("--generate-project")]
     public sealed class ProjectGeneratorModule : BuildSystemModule
     {
-        // ------------------------------------------------------------------------------------------
+        //[
         //! Generates project files.
         public override int Execute(string[] Arguments)
         {
