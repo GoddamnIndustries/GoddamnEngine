@@ -15,180 +15,224 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Microsoft.Win32;
 
 namespace GoddamnEngine.BuildSystem
 {
+    // ------------------------------------------------------------------------------------------
     //! List of supported target platforms.
     public enum TargetPlatform : byte
     {
         Unknown,
         Windows,
-        WindowsRT,
-        WindowsStore,
+        WindowsUap,
         WindowsPhone,
         XboxOne,
-        OSX,
+        OsX,
+        // ReSharper disable once InconsistentNaming
         iOS,
         PlayStation4,
         Android,
         Linux,
-        Emscripten,
+        Emscripten
     }   // enum TargetPlatforms
 
+    // ------------------------------------------------------------------------------------------
     //! List of properties for specific platform.
     public class TargetPlatformInfo
     {
-        private static Dictionary<TargetPlatform, TargetPlatformInfo> CachedInformation;
+        private static Dictionary<TargetPlatform, TargetPlatformInfo> _cachedInformation;
         public readonly TargetPlatform Platform;
         public string HumanReadableName { get; protected set; }
-        public bool IsSDKInstalled { get; protected set; }
+        public bool IsSdkInstalled { get; protected set; }
         public string CompilerPath { get; protected set; }
         public string[] StandartHeadersPathes { get; protected set; }
         public string[] StandartMacros { get; protected set; }
         public string[] StandartLibraries { get; protected set; }
         public bool RequiresExceptions { get; protected set; }
-        public bool RequiresRTTI { get; protected set; }
+        public bool RequiresRtti { get; protected set; }
 
+        // ------------------------------------------------------------------------------------------
         //! Initializes a platform information. Should setup properties.
-        protected TargetPlatformInfo()
+        protected TargetPlatformInfo(TargetPlatform platform)
         {
+            Platform = platform;
         }
 
-        //! Generates a strigified list of standart include paths.
-        //! @param Separator Separator string between include paths. ';' By default.
+        // ------------------------------------------------------------------------------------------
+        //! Generates a strigified list of standard include paths.
+        //! @param separator Separator string between include paths. ';' By default.
         //! @returns A strigified include paths.
-        public string GenerateStandartIncludePaths(string Separator = null)
+        public string GenerateStandartIncludePaths(string separator = null)
         {
             if (StandartHeadersPathes != null)
             {
-                if (Separator == null)
+                if (separator == null)
                 {
-                    Separator = Path.PathSeparator.ToString();
+                    separator = Path.PathSeparator.ToString();
                 }
 
-                StringBuilder StandartIncludePathsBuilder = new StringBuilder();
-                Array.ForEach(StandartHeadersPathes, StandartHeadersPath =>
-                    StandartIncludePathsBuilder.Append(StandartHeadersPath).Append(Separator)
+                var standartIncludePathsBuilder = new StringBuilder();
+                Array.ForEach(StandartHeadersPathes, standartHeadersPath =>
+                    standartIncludePathsBuilder.Append(standartHeadersPath).Append(separator)
                 );
 
-                return StandartIncludePathsBuilder.ToString();
+                return standartIncludePathsBuilder.ToString();
             }
 
             return null;
         }
 
-        //! Generates a strigified list of standart macros.
-        //! @param Separator Separator string between macros. ';' By default.
+        //! Generates a strigified list of standard macros.
+        //! @param separator Separator string between macros. ';' By default.
         //! @returns A strigified list of macros.
-        public string GenerateStandartMacrosList(string Separator = null)
+        public string GenerateStandartMacrosList(string separator = null)
         {
             if (StandartMacros != null)
             {
-                if (Separator == null)
+                if (separator == null)
                 {
-                    Separator = Path.PathSeparator.ToString();
+                    separator = Path.PathSeparator.ToString();
                 }
 
-                StringBuilder StandartMacrosListBuilder = new StringBuilder();
-                Array.ForEach(StandartMacros, StandartMacro =>
-                 StandartMacrosListBuilder.Append(StandartMacro).Append(Separator)
+                var standartMacrosListBuilder = new StringBuilder();
+                Array.ForEach(StandartMacros, standartMacro =>
+                    standartMacrosListBuilder.Append(standartMacro).Append(separator)
                 );
 
-                return StandartMacrosListBuilder.ToString();
+                return standartMacrosListBuilder.ToString();
             }
 
             return null;
         }
 
-        //! Generates a strigified list of standart linked libraries paths.
-        //! @param Separator Separator string between linked libraries paths. ';' By default.
+        // ------------------------------------------------------------------------------------------
+        //! Generates a strigified list of standard linked libraries paths.
+        //! @param separator Separator string between linked libraries paths. ';' By default.
         //! @returns A strigified list of linked libraries paths.
-        public string GenerateStandartLinkedLibrariesPaths(string Separator = null)
+        public string GenerateStandartLinkedLibrariesPaths(string separator = null)
         {
             if (StandartLibraries != null)
             {
-                if (Separator == null)
+                if (separator == null)
                 {
-                    Separator = Path.PathSeparator.ToString();
+                    separator = Path.PathSeparator.ToString();
                 }
 
-                StringBuilder StandartLinkedLibraries = new StringBuilder();
+                var standartLinkedLibraries = new StringBuilder();
 
                 // Linking with default libraries on specified platform.
-                Array.ForEach(StandartLibraries, StandartLibrary =>
-                 StandartLinkedLibraries.Append(StandartLibrary).Append(Path.PathSeparator)
+                Array.ForEach(StandartLibraries, standartLibrary =>
+                    standartLinkedLibraries.Append(standartLibrary).Append(separator)
                 );
 
-                return StandartLinkedLibraries.ToString();
+                return standartLinkedLibraries.ToString();
             }
 
             return null;
         }
 
+        // ------------------------------------------------------------------------------------------
         //! Returns the information for specific platform.
-        //! @param ThePlatform Desired platform.
+        //! @param thePlatform Desired platform.
         //! @returns The information for specific platform.
-        public static TargetPlatformInfo Get(TargetPlatform ThePlatform)
+        public static TargetPlatformInfo Get(TargetPlatform thePlatform)
         {
-            if (CachedInformation == null)
+            if (_cachedInformation == null)
             {
-                CachedInformation = new Dictionary<TargetPlatform, TargetPlatformInfo>();
-                foreach (TargetPlatform Platform in Target.EnumerateAllPlatforms())
+                _cachedInformation = new Dictionary<TargetPlatform, TargetPlatformInfo>();
+                foreach (var platform in Target.EnumerateAllPlatforms())
                 {
-                    Type PlatformInfoType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(T => T.Name.EndsWith(Platform + "PlatformInfo"));
-                    if (PlatformInfoType != null)
+                    var platformInfoType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name.EndsWith(platform + "PlatformInfo"));
+                    if (platformInfoType != null)
                     {
-                        TargetPlatformInfo PlatformInfo = (TargetPlatformInfo)Activator.CreateInstance(PlatformInfoType);
-                        CachedInformation.Add(Platform, PlatformInfo);
+                        var platformInfo = (TargetPlatformInfo)Activator.CreateInstance(platformInfoType);
+                        _cachedInformation.Add(platform, platformInfo);
                     }
                     else
                     {
-                        throw new BuildSystemException("Not platform information exists for platform {0}.", Platform);
+                        throw new BuildSystemException("Not platform information exists for platform {0}.", platform);
                     }
                 }
             }
 
-            return CachedInformation[ThePlatform];
+            return _cachedInformation[thePlatform];
         }
     }   // class TargetPlatformInfo
 
+    // ------------------------------------------------------------------------------------------
     //! "Windows" platform information.
     public sealed class WindowsPlatformInfo : TargetPlatformInfo
     {
-        public WindowsPlatformInfo()
+        public WindowsPlatformInfo() : base(TargetPlatform.Windows)
         {
-            IsSDKInstalled = true;
+            IsSdkInstalled = true;
             HumanReadableName = "Windows (x64)";
             StandartHeadersPathes = null;
             CompilerPath = "cl.exe";
-            StandartLibraries = new string[] { "winmm.lib", "imm32.lib", "version.lib", "Dwmapi.lib" };
+            StandartLibraries = new[] { "winmm.lib", "imm32.lib", "version.lib", "Dwmapi.lib" };
             RequiresExceptions = true;
-            RequiresRTTI = false;
+            RequiresRtti = false;
         }
     }   // class WindowsPlatformInfo
 
+    // ------------------------------------------------------------------------------------------
+    //! "Universal Windows Platform Application" platform information.
+    public sealed class WindowsUapPlatformInfo : TargetPlatformInfo
+    {
+        public WindowsUapPlatformInfo() : base(TargetPlatform.WindowsUap)
+        {
+            IsSdkInstalled = true;
+            HumanReadableName = "Windows (Universal Application)";
+            StandartHeadersPathes = null;
+            CompilerPath = "cl.exe";
+            StandartLibraries = new[] { "winmm.lib", "imm32.lib", "version.lib", "Dwmapi.lib" };
+            RequiresExceptions = true;
+            RequiresRtti = true;
+        }
+    }   // class WindowsPlatformInfo
+
+    // ------------------------------------------------------------------------------------------
+    //! Android platform information.
+    public sealed class AndroidPlatformInfo : TargetPlatformInfo
+    {
+        public AndroidPlatformInfo() : base(TargetPlatform.WindowsUap)
+        {
+            IsSdkInstalled = true;
+            HumanReadableName = "Google Android";
+            StandartHeadersPathes = null;
+            CompilerPath = "cl.exe";
+            StandartLibraries = new[] { "winmm.lib", "imm32.lib", "version.lib", "Dwmapi.lib" };
+            RequiresExceptions = true;
+            RequiresRtti = true;
+        }
+    }   // class AndroidPlatformInfo
+
+    // ------------------------------------------------------------------------------------------
     //! "Emscripten" platform information.
     public sealed class EmscriptenPlatformInfo : TargetPlatformInfo
     {
-        public EmscriptenPlatformInfo()
+        public EmscriptenPlatformInfo() : base(TargetPlatform.Emscripten)
         {
+            IsSdkInstalled = false;
+#if FALSE
             HumanReadableName = "Emscripten (HTML5)";
             RequiresExceptions = true;
-            RequiresRTTI = false;
+            RequiresRtti = false;
 
             // Getting the installation directory of the Emscripten.
-            string EmscriptenSDKPath = null;
-            var Emscripten64Key = Microsoft.Win32.RegistryKey
-                .OpenBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, Microsoft.Win32.RegistryView.Registry64)
+            string emscriptenSdkPath;
+            var emscripten64Key = RegistryKey
+                .OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)
                 .OpenSubKey("Software\\Emscripten64");
-            if (Emscripten64Key != null)
+            if (emscripten64Key != null)
             {
-                string Emscripten64SDKLocation = (string)Emscripten64Key.GetValue("Install_Dir");
-                string Emscripten64LatestVersion = Directory.EnumerateDirectories(Path.Combine(Emscripten64SDKLocation, "emscripten")).LastOrDefault();
-                if (Emscripten64LatestVersion != null)
+                var emscripten64SdkLocation = (string)emscripten64Key.GetValue("Install_Dir");
+                var emscripten64LatestVersion = Directory.EnumerateDirectories(Path.Combine(emscripten64SdkLocation, "emscripten")).LastOrDefault();
+                if (emscripten64LatestVersion != null)
                 {
-                    IsSDKInstalled = true;
-                    EmscriptenSDKPath = Emscripten64LatestVersion;
+                    IsSdkInstalled = true;
+                    emscriptenSdkPath = emscripten64LatestVersion;
                 }
                 else
                 {
@@ -197,22 +241,24 @@ namespace GoddamnEngine.BuildSystem
             }
             else
             {
-                string EmscriptenVar = Environment.GetEnvironmentVariable("EMSCRIPTEN");
-                if (EmscriptenVar != null)
+                var emscriptenVar = Environment.GetEnvironmentVariable("EMSCRIPTEN");
+                if (emscriptenVar != null)
                 {
-                    EmscriptenSDKPath = EmscriptenVar;
+                    emscriptenSdkPath = emscriptenVar;
                 }
                 else
                 {
-                    IsSDKInstalled = false;
+                    IsSdkInstalled = false;
+                    return;
                 }
             }
 
-            string EmscriptenIncludePath = Path.Combine(EmscriptenSDKPath, "system", "include");
-            CompilerPath = string.Format("\"{0}\"", Path.Combine(EmscriptenSDKPath, "emcc" + (Environment.OSVersion.Platform == PlatformID.Win32NT ? ".bat" : "")));
-            StandartHeadersPathes = new string[] { EmscriptenIncludePath, Path.Combine(EmscriptenIncludePath, "libc"), Path.Combine(EmscriptenIncludePath, "libcxx") };
-            StandartMacros = new string[] { "__EMSCRIPTEN__", "__clang__" };
+            var emscriptenIncludePath = Path.Combine(emscriptenSdkPath, "system", "include");
+            CompilerPath = string.Format("\"{0}\"", Path.Combine(emscriptenSdkPath, "emcc" + (Environment.OSVersion.Platform == PlatformID.Win32NT ? ".bat" : "")));
+            StandartHeadersPathes = new[] { emscriptenIncludePath, Path.Combine(emscriptenIncludePath, "libc"), Path.Combine(emscriptenIncludePath, "libcxx") };
+            StandartMacros = new[] { "__EMSCRIPTEN__", "__clang__" };
             StandartLibraries = null;
+#endif  // if FALSE
         }
     }   // class EmscriptenPlatformInfo
 

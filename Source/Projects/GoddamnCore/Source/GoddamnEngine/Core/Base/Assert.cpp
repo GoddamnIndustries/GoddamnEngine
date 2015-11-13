@@ -7,7 +7,7 @@
 // ==========================================================================================
 
 //! @file GoddamnEngine/Core/Definitions/Assert.cpp
-//! Contains Assert mechanism implementation.
+//! Contains Assert mechanism Implementation.
 
 // Note: code inside this file needs to be asserted too. To do that use default assert macro.
 #define GD_CORE_DIAGNOSTICS_ASSERT_CPP
@@ -18,14 +18,14 @@
 #include <GoddamnEngine/Core/Containers/String.h>
 
 // ------------------------------------------------------------------------------------------
-// We are inside assertion implementation source, so we cannot use our asserts in order 
+// We are inside assertion Implementation source, so we cannot use our asserts in order 
 // of possible cycle dependencies.
 #undef GD_ENABLED_ASSERT
 #undef GD_ENABLED_FALSE_ASSERT
-#define GD_ENABLED_ASSERT(Expression, Message, ...) assert((Expression) && (Message))
-#define GD_ENABLED_FALSE_ASSERT(Message, ...) \
+#define GD_ENABLED_ASSERT(expression, message, ...) assert((expression) && (message))
+#define GD_ENABLED_FALSE_ASSERT(message, ...) \
 	do { \
-		assert(false && (Message)); \
+		assert(false && (message)); \
 		std::abort(); /*Simulating "noreturn" behavior. */ \
 	} while(false)
 
@@ -52,19 +52,19 @@
 GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------	
-	// Platform-dependent methods for handling/reporting assertions. This needs to be implemented.
+	// Platform-dependent methods for handling/reporting assertions. This needs to be Implemented.
 	// ------------------------------------------------------------------------------------------	
 
 	struct AssertCache;
 
 	//! Should show UI that notifies user about assertion failure and would request a decision from him.
-	//! @param TheAssertCache Assertion data.
+	//! @param assertCache Assertion data.
 	//! @returns The assertion status, selected by user.
-	GDINT static AssertState HandleAssertImpl(AssertCache const* const TheAssertCache);
+	GDINT static AssertState HandleAssertIMPL(AssertCache const* const assertCache);
 
 	//! Should report about a bug to developers and return false on failure.
 	//! @returns False on reporting failure.
-	GDINT static bool ReportAssertImpl(AssertCache const* const TheAssertCache);
+	GDINT static bool ReportAssertIMPL(AssertCache const* const assertCache);
 
 	// ------------------------------------------------------------------------------------------	
 	// Location of the assertion in code.
@@ -81,11 +81,11 @@ GD_NAMESPACE_BEGIN
 	//! Returns the approximate location of assertion in the source of the engine.
 	//!        This information is crucial for determining whether bug is located inside engine code (and we made mistakes)
 	//!        or is cause by crooked hands of some game developers (no offenses, all assertion are caused by crookedness).
-	//! @param FileName Name of the specified file.
+	//! @param fileName Name of the specified file.
 	//! @returns The approximate location of assertion in the source of the engine.
-	GDINT static AssertLocation GetAssertLocationForSource(CStr const FileName)
+	GDINT static AssertLocation GetAssertLocationForSource(CStr const fileName)
 	{
-		CStr const EngineSDKLocation = CString::Strstr(FileName, GD_PLATFORM_SLASH "GoddamnEngine" GD_PLATFORM_SLASH "source");
+		CStr const EngineSDKLocation = CString::Strstr(fileName, GD_PLATFORM_SLASH "GoddamnEngine" GD_PLATFORM_SLASH "source");
 		if (EngineSDKLocation != nullptr)
 		{
 			if (CString::Strstr(EngineSDKLocation, GD_PLATFORM_SLASH "Dependencies") != nullptr)
@@ -117,69 +117,70 @@ GD_NAMESPACE_BEGIN
 
 	static const char ReportGithubURL [] = "https://github.com/QuaternionStudios/GoddamnEngine/issues/new";
 
-	void ReportAssert(AssertCache const* const TheAssertCache)
+	void ReportAssert(AssertCache const* const assertCache)
 	{
-		GD_DEBUG_ASSERT(ReportAssertImpl(TheAssertCache), "Failed to report an error");
+		GD_DEBUG_ASSERT(ReportAssertIMPL(assertCache), "Failed to report an error");
 	}
 
 	//! ------------------------------------------------------------------------------------------
 	//! Fatal assertion mechanisms.
 	//! ------------------------------------------------------------------------------------------
 
-	void HandleFatalAssertVa(FatalAssertData const* const Data, va_list Args)
+	void HandleFatalAssertVa(FatalAssertData const* const data, va_list args)
 	{
 		//! @todo Restore code here
 		//CriticalSection static CriticalAssertCriticalSection;
 		//CriticalAssertCriticalSection.Enter();
 
-		AssertCache TheAssertCache;
-		TheAssertCache.IsFatal = true;
-		TheAssertCache.TheAssertData = Data;
-		TheAssertCache.FormattedMessage = String::Format((
+		AssertCache assertCache;
+		assertCache.IsFatal = true;
+		assertCache.TheAssertData = data;
+		assertCache.FormattedMessage = String::Format(
 			"Fatal error occurred!" GD_PLATFORM_LINEBREAK
-			"At: " GD_PLATFORM_LINEBREAK
-			"[File]: %s" GD_PLATFORM_LINEBREAK
-			"[Line]: %u" GD_PLATFORM_LINEBREAK
-			"[Function]: %s" GD_PLATFORM_LINEBREAK GD_PLATFORM_LINEBREAK
-			"%s"), Data->FileName, Data->Line, Data->FunctionName, String::FormatVa(Data->Message, Args).CStr());
+		    "At: " GD_PLATFORM_LINEBREAK
+		    "[File]: %s" GD_PLATFORM_LINEBREAK
+		    "[Line]: %u" GD_PLATFORM_LINEBREAK
+		    "[Function]: %s" GD_PLATFORM_LINEBREAK GD_PLATFORM_LINEBREAK
+		    "%s", data->fileName, data->Line, data->FunctionName, String::FormatVa(data->Message, args).CStr()
+			);
 
-		AssertState const TheAssertState = HandleAssertImpl(&TheAssertCache);
-		if (TheAssertState == AssertState::Report)
+		AssertState const assertState = HandleAssertIMPL(&assertCache);
+		if (assertState == AssertState::Report)
 		{
-			ReportAssert(&TheAssertCache);
+			ReportAssert(&assertCache);
 		}
 
-		std::exit(-1);
+		::exit(-1);
 	}
 
 	//! ------------------------------------------------------------------------------------------
 	//! Regular assertion mechanisms.
 	//! ------------------------------------------------------------------------------------------
 
-	AssertState HandleRegularAssertVa(RegularAssertData* const Data, va_list Args)
+	AssertState HandleRegularAssertVa(RegularAssertData* const data, va_list args)
 	{
-		bool static ShouldIgnoreAllRegularAsserts = false;
-		if (!ShouldIgnoreAllRegularAsserts)
+		bool static shouldIgnoreAllRegularAsserts = false;
+		if (!shouldIgnoreAllRegularAsserts)
 		{
 			//! @todo Restore code here
 			//CriticalSection static RegularAssertCriticalSection;
-			//ScopedLock RegularAssertLock(RegularAssertCriticalSection);
+			//ScopedCriticalSection RegularAssertLock(RegularAssertCriticalSection);
 
-			AssertCache TheAssertCache;
-			TheAssertCache.TheAssertData = Data;
-			TheAssertCache.TheAssertLocation = GetAssertLocationForSource(Data->FileName);
-			TheAssertCache.FormattedMessage = String::Format((
+			AssertCache assertCache;
+			assertCache.TheAssertData = data;
+			assertCache.TheAssertLocation = GetAssertLocationForSource(data->fileName);
+			assertCache.FormattedMessage = String::Format(
 				"%s" GD_PLATFORM_LINEBREAK
-				GD_PLATFORM_LINEBREAK
-				"At: " GD_PLATFORM_LINEBREAK
-				"[File]: %s" GD_PLATFORM_LINEBREAK
-				"[Line]: %u" GD_PLATFORM_LINEBREAK
-				"[Function]: %s" GD_PLATFORM_LINEBREAK
-				"[Expression]: %s" GD_PLATFORM_LINEBREAK
-				), String::FormatVa(Data->Message, Args).CStr(), Data->FileName, Data->Line, Data->FunctionName, Data->Expression);
+			    GD_PLATFORM_LINEBREAK
+			    "At: " GD_PLATFORM_LINEBREAK
+			    "[File]: %s" GD_PLATFORM_LINEBREAK
+			    "[Line]: %u" GD_PLATFORM_LINEBREAK
+			    "[Function]: %s" GD_PLATFORM_LINEBREAK
+			    "[Expression]: %s" GD_PLATFORM_LINEBREAK, String::FormatVa(data->Message, args).CStr(), data->fileName, data->Line, data->FunctionName, data->Expression
+				);
 
-			AssertState const TheAssertState = HandleAssertImpl(&TheAssertCache);
-			switch (TheAssertState)
+			AssertState const assertState = HandleAssertIMPL(&assertCache);
+			switch (assertState)
 			{
 				case AssertState::Abort: {
 					::fprintf(stderr, GD_PLATFORM_LINEBREAK "Aborting the application...");
@@ -187,13 +188,13 @@ GD_NAMESPACE_BEGIN
 					::abort();
 				} break;
 				case AssertState::Report: {
-					ReportAssert(&TheAssertCache);
+					ReportAssert(&assertCache);
 				} break;
 				case AssertState::Ignore: {
-					Data->ShouldAlwaysIgnoreThisAssert = true;
+					data->ShouldAlwaysIgnoreThisAssert = true;
 				} break;
 				case AssertState::IgnoreAll: {
-					ShouldIgnoreAllRegularAsserts = true;
+					shouldIgnoreAllRegularAsserts = true;
 				} break;
 				case AssertState::Retry:
 				case AssertState::Break: {
@@ -204,11 +205,11 @@ GD_NAMESPACE_BEGIN
 				} break;
 			}
 
-			return TheAssertState;
+			return assertState;
 		}
 		else
 		{
-			Data->ShouldAlwaysIgnoreThisAssert = true;
+			data->ShouldAlwaysIgnoreThisAssert = true;
 			return AssertState::Ignore;
 		}
 	}
@@ -216,16 +217,16 @@ GD_NAMESPACE_BEGIN
 GD_NAMESPACE_END
 
 // ==========================================================================================
-// Assert UI implementation.
+// Assert UI Implementation.
 // ==========================================================================================
 
 // ==========================================================================================
-// Win32 API Dialog implementation.
+// Win32 API Dialog Implementation.
 // Here comes real hardcore inlined dialog box programming. God is with us!
 // ==========================================================================================
 
 #if GD_PLATFORM_WINDOWS
-#pragma region Win32 Assert UI implementation.
+#pragma region Win32 Assert UI Implementation.
 #define GD_ASSERT_UI_IMPLEMENTED 1
 
 #include <Windows.h>
@@ -247,7 +248,7 @@ GD_NAMESPACE_END
 //! @param TheTitle The title string.
 //! @param TheFont The font string.
 #define GD_DEFINE_DIALOG_HEADER(TheTitle, TheFont) \
-	DLGTEMPLATE Data; \
+	DLGTEMPLATE data; \
 	WORD Menu; \
 	WORD Class; \
 	WCHAR Title[sizeof(TheTitle) / 2]; \
@@ -286,7 +287,7 @@ GD_NAMESPACE_END
 #define GD_ASSERT_DLG_TITLE				GD_WIDEN(GD_ASSERT_DIALOG_TITLE)
 #define GD_ASSERT_DLG_FONT				L"MS Sans Serif"
 #define GD_ASSERT_DLG_ITEMS_COUNT		9
-#define GD_ASSERT_DLG_TEXTEDIT_IDC		1000	//	TextEdit into which the debug message is been written.
+#define GD_ASSERT_DLG_TEXTEDIT_IDC		1000	//	TextEdit into which the debug Message is been written.
 #define GD_ASSERT_DLG_TEXTEDIT_TEXT		L""
 #define GD_ASSERT_DLG_BTNABORT_IDC		1001
 #define GD_ASSERT_DLG_BTNABORT_TEXT		GD_WIDEN(GD_ASSERT_DIALOG_BTNABORT_TEXT)
@@ -339,19 +340,19 @@ GD_NAMESPACE_BEGIN
 #pragma pack(pop)
 
 	//! Defines a main procedure for an assertion dialog.
-	//! @param HDialog Pointer to dialog window.
+	//! @param HDialog pointer to dialog window.
 	//! @param Message Message sent by user/OS.
 	//! @param WParam ID of the used widget of the dialog.
-	//! @param LParam Pointer to the assertion cache.
+	//! @param LParam pointer to the assertion cache.
 	//! @returns 'FALSE'.
-	GDINT INT_PTR CALLBACK AssertDialogProc(HWND const HDialog, UINT const Message, WPARAM const WParam, LPARAM const LParam)
+	GDINT INT_PTR CALLBACK AssertDialogProc(HWND const HDialog, UINT const message, WPARAM const WParam, LPARAM const LParam)
 	{
-		static AssertCache* TheAssertCache = nullptr;
-		switch (Message)
+		static AssertCache* assertCache = nullptr;
+		switch (message)
 		{
 			case WM_INITDIALOG: {
-				TheAssertCache = reinterpret_cast<AssertCache*>(LParam);
-				GD_DEBUG_ASSERT(TheAssertCache != nullptr, "No Assert Data specified");
+				assertCache = reinterpret_cast<AssertCache*>(LParam);
+				GD_DEBUG_ASSERT(assertCache != nullptr, "No Assert data specified");
 
 #if (GD_ASSERT_LEVEL != GD_ASSERT_LEVEL_DEBUG)
 				::EnableWindow(::GetDlgItem(HDialog, GD_ASSERT_DLG_BTNBREAK_IDC), FALSE);
@@ -361,19 +362,19 @@ GD_NAMESPACE_BEGIN
 #endif	// if (GD_ASSERT_LEVEL != GD_ASSERT_LEVEL_DEBUG)
 
 				// We cannot ignore fatal expressions.
-				if (TheAssertCache->IsFatal)
+				if (assertCache->IsFatal)
 				{
 					::EnableWindow(::GetDlgItem(HDialog, GD_ASSERT_DLG_BTNRETRY_IDC), FALSE);
 					::EnableWindow(::GetDlgItem(HDialog, GD_ASSERT_DLG_BTNIGNORE_IDC), FALSE);
 					::EnableWindow(::GetDlgItem(HDialog, GD_ASSERT_DLG_BTNIGNOREALL_IDC), FALSE);
 				}
 				// We cannot report bugs in external code.
-				if (TheAssertCache->TheAssertLocation != AssertLocation::EngineCode)
+				if (assertCache->TheAssertLocation != AssertLocation::EngineCode)
 				{
 					::EnableWindow(::GetDlgItem(HDialog, GD_ASSERT_DLG_BTNREPORT_IDC), FALSE);
 				}
 
-				::SetWindowTextA(::GetDlgItem(HDialog, GD_ASSERT_DLG_TEXTEDIT_IDC), TheAssertCache->FormattedMessage.CStr());
+				::SetWindowTextA(::GetDlgItem(HDialog, GD_ASSERT_DLG_TEXTEDIT_IDC), assertCache->FormattedMessage.CStr());
 				::Beep(750, 300);
 			} break;
 			case WM_COMMAND: {
@@ -408,38 +409,38 @@ GD_NAMESPACE_BEGIN
 	}
 
 	//! Should show UI that notifies user about assertion failure and would request a decision from him.
-	//! @param TheAssertCache Assertion data.
+	//! @param assertCache Assertion data.
 	//! @returns The assertion status, selected by user.
-	GDINT static AssertState HandleAssertImpl(AssertCache const* const TheAssertCache)
+	GDINT static AssertState HandleAssertIMPL(AssertCache const* const assertCache)
 	{
-		HINSTANCE static const HInstance = static_cast<HINSTANCE>(::GetModuleHandleA(nullptr));
-		INT_PTR const DialogResult = ::DialogBoxIndirectParamW(HInstance
+		HINSTANCE static const hinstance = static_cast<HINSTANCE>(::GetModuleHandleA(nullptr));
+		INT_PTR const dialogResult = ::DialogBoxIndirectParamW(hinstance
 			, reinterpret_cast<LPCDLGTEMPLATEW>(const_cast<AssertDialogDataType*>(&AssertDialogData))
-			, nullptr, &AssertDialogProc, reinterpret_cast<LPARAM>(TheAssertCache));
+			, nullptr, &AssertDialogProc, reinterpret_cast<LPARAM>(assertCache));
 
-		GD_DEBUG_ASSERT(DialogResult != -1, "Failed to create a dialog (Win32 API implementation).");
-		GD_DEBUG_ASSERT((DialogResult >= 0) && (DialogResult < static_cast<INT_PTR>(AssertState::Invalid)), "Dialog returned an invalid result (Win32 API implementation).");
-		return static_cast<AssertState>(DialogResult);
+		GD_DEBUG_ASSERT(dialogResult != -1, "Failed to create a dialog (Win32 API Implementation).");
+		GD_DEBUG_ASSERT((dialogResult >= 0) && (dialogResult < static_cast<INT_PTR>(AssertState::Invalid)), "Dialog returned an invalid result (Win32 API Implementation).");
+		return static_cast<AssertState>(dialogResult);
 	}
 
 	//! Should report about a bug to developers and return false on failure.
 	//! @returns False on reporting failure.
-	GDINT static bool ReportAssertImpl(AssertCache const* const TheAssertCache)
+	GDINT static bool ReportAssertIMPL(AssertCache const* const assertCache)
 	{
-		GD_NOT_USED(TheAssertCache);
+		GD_NOT_USED(assertCache);
 		GD_NOT_IMPLEMENTED();
 	}
 
 GD_NAMESPACE_END
 
-#pragma endregion Win32 Assert UI implementation.
+#pragma endregion Win32 Assert UI Implementation.
 #endif	// if GD_PLATFORM_WINDOWS
 
 // ==========================================================================================
-// Emscripten implementation. 
+// Emscripten Implementation. 
 // ==========================================================================================
 #if GD_PLATFORM_HTML5
-#pragma region Emscripten Assert UI implementation.
+#pragma region Emscripten Assert UI Implementation.
 #define GD_ASSERT_UI_IMPLEMENTED 1
 
 extern "C" void emscripten_log(int flags, ...);
@@ -447,43 +448,43 @@ extern "C" void emscripten_log(int flags, ...);
 GD_NAMESPACE_BEGIN
 
 	//! Should show UI that notifies user about assertion failure and would request a decision from him.
-	//! @param TheAssertCache Assertion data.
+	//! @param assertCache Assertion data.
 	//! @returns The assertion status, selected by user.
-	GDINT static AssertState HandleAssertImpl(AssertCache const* const TheAssertCache)
+	GDINT static AssertState HandleAssertIMPL(AssertCache const* const assertCache)
 	{
 		::emscripten_log(255, "\n -------------------------------------------------------------------------------");
 		::emscripten_log(255, "\n" GD_ASSERT_DIALOG_DESCRIPTION_TEXT);
 		::emscripten_log(255, "\n-------------------------------------------------------------------------------");
-		::emscripten_log(255, "\n%s", TheAssertCache->FormattedMessage.CStr());
+		::emscripten_log(255, "\n%s", assertCache->FormattedMessage.CStr());
 
 		return AssertState::Abort;
 	}
 
 	//! Should report about a bug to developers and return false on failure.
 	//! @returns False on reporting failure.
-	GDINT static bool ReportAssertImpl(AssertCache const* const TheAssertCache)
+	GDINT static bool ReportAssertIMPL(AssertCache const* const assertCache)
 	{
-		GD_NOT_USED(TheAssertCache);
+		GD_NOT_USED(assertCache);
 		GD_NOT_IMPLEMENTED();
 	}
 
 GD_NAMESPACE_END
 
-#pragma endregion Emscripten Assert UI implementation.
+#pragma endregion Emscripten Assert UI Implementation.
 #endif	// if GD_PLATFORM_HTML5
 
 // ==========================================================================================
-// SDL 2.0 MessageBox-driven implementation. 
+// SDL 2.0 MessageBox-driven Implementation. 
 // ==========================================================================================
-#if GD_PLATFORM_API_LIBSDL2 && (!defined(GD_ASSERT_UI_IMPLEMENTED))
-#pragma region SDL 2.0 Assert UI implementation.
+#if GD_PLATFORM_API_LIBSDL2 && (!defined(GD_ASSERT_UI_IMPLEMENTED)) && 0
+#pragma region SDL 2.0 Assert UI Implementation.
 #define GD_ASSERT_UI_IMPLEMENTED 1
 
 #include <SDL2/SDL_messagebox.h>
 
 GD_NAMESPACE_BEGIN
 
-	static AssertState HandleAssertImpl(AssertCache const* const TheAssertCache)
+	static AssertState HandleAssertIMPL(AssertCache const* const assertCache)
 	{
 		SizeTp ButtonsSize = 0;
 		SDL_MessageBoxButtonData ButtonsData[static_cast<SizeTp>(AssertState::Invalid)];
@@ -493,14 +494,14 @@ GD_NAMESPACE_BEGIN
 		ButtonsData[ButtonsSize++] = { 0, static_cast<int>(AssertState::Abort), GD_ASSERT_DIALOG_BTNABORT_TEXT };
 
 		// If this assert is not fatal, enabling Retry and Ignore[All] buttons.
-		if (!TheAssertCache->IsFatal) {
+		if (!assertCache->IsFatal) {
 			ButtonsData[ButtonsSize++] = { 0, static_cast<int>(AssertState::Retry), GD_ASSERT_DIALOG_BTNRETRY_TEXT };
 			ButtonsData[ButtonsSize++] = { 0, static_cast<int>(AssertState::Ignore), GD_ASSERT_DIALOG_BTNIGNORE_TEXT };
 			ButtonsData[ButtonsSize++] = { 0, static_cast<int>(AssertState::IgnoreAll), GD_ASSERT_DIALOG_BTNIGNOREALL_TEXT };
 		}
 
 		// If the assertion is inside engine code, enabling report button.
-		if (TheAssertCache->TheAssertLocation == AssertLocation::EngineCode) {
+		if (assertCache->TheAssertLocation == AssertLocation::EngineCode) {
 			ButtonsData[ButtonsSize++] = { 0, static_cast<int>(AssertState::Report), GD_ASSERT_DIALOG_BTNREPORT_TEXT };
 		}
 
@@ -512,7 +513,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if (GD_ASSERT_LEVEL == GD_ASSERT_LEVEL_DEBUG)
 		GD_DEBUG_ASSERT(ButtonsSize <= GD_ARRAY_LENGTH(ButtonsData), "Running out of bounds");
 
-		String ReformattedMessage(String::Format(GD_ASSERT_DIALOG_DESCRIPTION_TEXT GD_PLATFORM_LINEBREAK GD_PLATFORM_LINEBREAK "%s", TheAssertCache->FormattedMessage.CStr()));
+		String ReformattedMessage(String::format(GD_ASSERT_DIALOG_DESCRIPTION_TEXT GD_PLATFORM_LINEBREAK GD_PLATFORM_LINEBREAK "%s", assertCache->FormattedMessage.CStr()));
 		SDL_MessageBoxData const TheAssertMessageBoxDesc = {
 			SDL_MESSAGEBOX_ERROR, nullptr,
 			GD_ASSERT_DIALOG_TITLE, ReformattedMessage.CStr(),
@@ -522,30 +523,30 @@ GD_NAMESPACE_BEGIN
 
 		int DialogResult = -1;
 		int const MessageBoxResult = ::SDL_ShowMessageBox(&TheAssertMessageBoxDesc, &DialogResult);
-		GD_DEBUG_ASSERT(MessageBoxResult != -1, "Failed to create a dialog (Win32 API implementation).");
-		GD_DEBUG_ASSERT((DialogResult >= 0) && (DialogResult < static_cast<int>(AssertState::Invalid)), "Dialog returned an invalid result (LibSDL2 implementation).");
+		GD_DEBUG_ASSERT(MessageBoxResult != -1, "Failed to create a dialog (Win32 API Implementation).");
+		GD_DEBUG_ASSERT((DialogResult >= 0) && (DialogResult < static_cast<int>(AssertState::Invalid)), "Dialog returned an invalid result (LibSDL2 Implementation).");
 
 		return static_cast<AssertState>(DialogResult);
 	}
 
 	//! Should report about a bug to developers and return false on failure.
 	//! @returns False on reporting failure.
-	GDINT static bool ReportAssertImpl(AssertCache const* const TheAssertCache)
+	GDINT static bool ReportAssertIMPL(AssertCache const* const assertCache)
 	{
-		GD_NOT_USED(TheAssertCache);
+		GD_NOT_USED(assertCache);
 		GD_NOT_IMPLEMENTED();
 	}
 
 GD_NAMESPACE_END
 
-#pragma endregion SDL 2.0 Assert UI implementation.
+#pragma endregion SDL 2.0 Assert UI Implementation.
 #endif	// if GD_PLATFORM_API_LIBSDL2 && (!defined(GD_ASSERT_UI_IMPLEMENTED))
 
 // ==========================================================================================
-// Platforms that do not have any way to show debug message (or I do not know about it).
+// Platforms that do not have any way to show debug Message (or I do not know about it).
 // ==========================================================================================
 #if (!defined(GD_ASSERT_UI_IMPLEMENTED))
-#pragma region Generic Assert "UI" implementation.
+#pragma region Generic Assert "UI" Implementation.
 
 #define GD_ASSERT_UI_IMPLEMENTED 1
 #include <cstdio>
@@ -553,23 +554,23 @@ GD_NAMESPACE_END
 
 GD_NAMESPACE_BEGIN
 
-	static AssertState HandleAssertImpl(AssertCache const* const TheAssertCache)
+	static AssertState HandleAssertIMPL(AssertCache const* const assertCache)
 	{
 		std::fprintf(stderr, GD_PLATFORM_LINEBREAK "-------------------------------------------------------------------------------");
 		std::fprintf(stderr, GD_PLATFORM_LINEBREAK GD_ASSERT_DIALOG_DESCRIPTION_TEXT);
 		std::fprintf(stderr, GD_PLATFORM_LINEBREAK "-------------------------------------------------------------------------------");
-		std::fprintf(stderr, GD_PLATFORM_LINEBREAK "%s", TheAssertCache->FormattedMessage.CStr());
+		std::fprintf(stderr, GD_PLATFORM_LINEBREAK "%s", assertCache->FormattedMessage.CStr());
 		std::fprintf(stderr, GD_PLATFORM_LINEBREAK "Abort (a)/");
 
 		// If this assert is not fatal, enabling Retry and Ignore[All] buttons.
-		if (!TheAssertCache->IsFatal) {
+		if (!assertCache->IsFatal) {
 			std::fprintf(stderr, "Retry (r)/");
 			std::fprintf(stderr, "Ignore (i)/");
 			std::fprintf(stderr, "Ignore All (I)/");
 		}
 
 		// If the assertion is inside engine code, enabling report button.
-		if (TheAssertCache->TheAssertLocation == AssertLocation::EngineCode) {
+		if (assertCache->TheAssertLocation == AssertLocation::EngineCode) {
 			std::fprintf(stderr, "Report (R)");
 		}
 
@@ -585,17 +586,17 @@ GD_NAMESPACE_BEGIN
 			std::fprintf(stderr, "\a");
 			std::fflush(stderr);
 			if (std::fgets(&Buffer[0], GD_ARRAY_LENGTH(Buffer), stdin) != nullptr) {
-				if (std::strcmp(&Buffer[0], "a") == 0) {
+				if (::strcmp(&Buffer[0], "a") == 0) {
 					return AssertState::Abort;
-				} else if (std::strcmp(&Buffer[0], "r\n") == 0) {
+				} else if (::strcmp(&Buffer[0], "r\n") == 0) {
 					return AssertState::Retry;
-				} else if (std::strcmp(&Buffer[0], "i\n") == 0) {
+				} else if (::strcmp(&Buffer[0], "i\n") == 0) {
 					return AssertState::Ignore;
-				} else if (std::strcmp(&Buffer[0], "I\n") == 0) {
+				} else if (::strcmp(&Buffer[0], "I\n") == 0) {
 					return AssertState::IgnoreAll;
-				} else if (std::strcmp(&Buffer[0], "R\n") == 0) {
+				} else if (::strcmp(&Buffer[0], "R\n") == 0) {
 					return AssertState::Report;
-				} else if (std::strcmp(&Buffer[0], "b\n") == 0) {
+				} else if (::strcmp(&Buffer[0], "b\n") == 0) {
 					return AssertState::Break;
 				} 
 			} else {
@@ -607,17 +608,17 @@ GD_NAMESPACE_BEGIN
 
 	//! Should report about a bug to developers and return false on failure.
 	//! @returns False on reporting failure.
-	GDINT static bool ReportAssertImpl(AssertCache const* const TheAssertCache)
+	GDINT static bool ReportAssertIMPL(AssertCache const* const assertCache)
 	{
-		GD_NOT_USED(TheAssertCache);
+		GD_NOT_USED(assertCache);
 		GD_NOT_IMPLEMENTED();
 	}
 
 GD_NAMESPACE_END
 
-#pragma endregion Generic Assert "UI" implementation.
+#pragma endregion Generic Assert "UI" Implementation.
 #endif	// if (!defined(GD_ASSERT_UI_IMPLEMENTED))
 
 #if (!defined(GD_ASSERT_UI_IMPLEMENTED)) || (!GD_ASSERT_UI_IMPLEMENTED)
-#	error No Assert UI was implemented.
+#	error No Assert UI was Implemented.
 #endif	// if (!defined(GD_ASSERT_UI_IMPLEMENTED)) || (!GD_ASSERT_UI_IMPLEMENTED)

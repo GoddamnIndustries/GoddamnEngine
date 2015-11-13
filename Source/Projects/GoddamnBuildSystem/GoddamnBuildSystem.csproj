@@ -85,8 +85,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\Collectors\Solution.cs" />
     <Compile Include="Source\BuildSystem.cs" />
+    <Compile Include="Source\Collectors\Solution.cs" />
     <Compile Include="Source\OtherUtilities\CopyrightVerifier.cs" />
     <Compile Include="Source\ProjectCompiler\ProjectCompiler.cs" />
     <Compile Include="Source\ProjectCompiler\ProjectRebuildOptimizer.cs" />
@@ -102,7 +102,7 @@
     <Compile Include="Source\Target\Toolchain.cs" />
     <Compile Include="Source\ProjectGenerator\ProjectGenerator.cs" />
     <Compile Include="Source\Target\Target.cs" />
-    <Compile Include="Source\ProjectGenerator\VisualStudio.cs" />
+    <Compile Include="Source\ProjectGenerator\VisualStudioProjectGenerator.cs" />
     <Compile Include="Source\ProjectGenerator\XCode.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -6,8 +6,10 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-//! @file GoddamnEngine/Core/Containers/String.h
-//! Constantly sized string class.
+/*!
+ * @file GoddamnEngine/Core/Containers/String.h
+ * Constantly sized string class.
+ */
 #pragma once
 
 #include <GoddamnEngine/Include.h>
@@ -22,40 +24,48 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! A base string class used by the engine.
-	//! @tparam CharTypeTp Character type of this string.
-	template<typename CharTypeTp>
+	//! @tparam TChar character type of this string.
+	template<typename TChar>
 	class BaseString final
 	{
 	public:
-		using CharType                = CharTypeTp;
-		using ElementType             = CharTypeTp;
-		using PtrIterator             = ElementType*;
-		using PtrConstIterator        = ElementType const*;
+		using CharType                = TChar;
+		using ElementType             = CharType;
 		using Iterator                = IndexedContainerIterator<BaseString>;
 		using ConstIterator           = IndexedContainerIterator<BaseString const>;
 		using ReverseIterator         = ReverseContainerIterator<Iterator>;
 		using ReverseConstIterator    = ReverseContainerIterator<ConstIterator>;
-		using ReversePtrIterator      = ReverseContainerIterator<PtrIterator>;
-		using ReversePtrConstIterator = ReverseContainerIterator<PtrConstIterator>;
 	
-		GD_CONTAINER_DEFINE_PTR_ITERATION_SUPPORT(BaseString);
+		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(BaseString);
 
 	private:
-		using CChar                   = BaseCChar<CharTypeTp>;
-		using CString                 = BaseCString<CharTypeTp>;
+		using CChar   = BaseCChar<TChar>;
+		using CString = BaseCString<TChar>;
 
 	private:
-		template<typename SomeCharType>
-		GDINL friend void Swap(BaseString<SomeCharType>& First, BaseString<SomeCharType>& Second);
-
-	private:
-		SizeTp _Length = 0;
-		SizeTp static const _MaxStackLength = 2 * (sizeof(CharType*) / sizeof(CharType));
-		static_assert((_MaxStackLength >= 2) && (_MaxStackLength >= sizeof(CharType*)), "'_MaxStackLength' has invalid size");
+#if !GD_RELEASE && GD_PLATFORM_WINDOWS && _MSC_VER >= 1900 && _MSC_VER <= 2000
+		
+		// On Windows, while debugging with VisualStudio, NATVIS is unable to catch the static constant variable 's_MaxInlineLength'.
+		// So we have to cache it in the local variable.
+		SizeTp static const _s_MaxInlineLength = sizeof(CharType*) / sizeof(CharType);
+		SizeTp m_Length = 0;
 		union {
-			CharType _StackMemory[_MaxStackLength];
-			CharType* _HeapMemory;
+			CharType  m_InlineMemory[_s_MaxInlineLength];
+			CharType* m_HeapMemory;
 		};	// anonymous union
+
+		UInt8 const s_MaxInlineLength = _s_MaxInlineLength;
+
+#else	// !GD_RELEASE && GD_PLATFORM_WINDOWS && _MSC_VER >= 1900 && _MSC_VER <= 2000
+
+		SizeTp static const s_MaxInlineLength = sizeof(CharType*) / sizeof(CharType);
+		SizeTp m_Length = 0;
+		union {
+			CharType  m_InlineMemory[s_MaxInlineLength];
+			CharType* m_HeapMemory;
+		};	// anonymous union
+
+#endif	// !GD_RELEASE && GD_PLATFORM_WINDOWS && _MSC_VER >= 1900
 
 	public:
 
@@ -67,109 +77,109 @@ GD_NAMESPACE_BEGIN
 		//! Initializes an empty string.
 		GDINL BaseString()
 		{
-			this->_Length = 0;
-			this->_StackMemory[0] = GD_LITERAL(CharType, '\0');
+			m_Length = 0;
+			m_InlineMemory[0] = GD_LITERAL(CharType, '\0');
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Initializes a string with a single character.
-		//! @param Character Initial String character.
-		GDINL explicit BaseString(Char const Character)
+		//! @param character Initial String character.
+		GDINL explicit BaseString(Char const character)
 		{
-			this->_Length = 1;
-			this->_StackMemory[0] = Character;
-			this->_StackMemory[1] = GD_LITERAL(CharType, '\0');
+			m_Length = 1;
+			m_InlineMemory[0] = character;
+			m_InlineMemory[1] = GD_LITERAL(CharType, '\0');
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Fills a String with specified number of characters.
-		//! @param Size A length of the string.
-		//! @param FillWith A character that String would be filled with.
-		GDINL explicit BaseString(SizeTp const Length, CharType const FillWith = GD_LITERAL(CharType, '\0'))
+		//! @param theLength A m_Length of the string.
+		//! @param fillWith A character that String would be filled with.
+		GDINL explicit BaseString(SizeTp const theLength, CharType const fillWith = GD_LITERAL(CharType, '\0'))
 		{
-			this->_Length = Length;
-			if (this->_Length >= BaseString::_MaxStackLength)
+			m_Length = theLength;
+			if (m_Length >= s_MaxInlineLength)
 			{
-				auto const DataSizeInBytes = (Length + 1) * sizeof(CharType);
-				this->_HeapMemory = reinterpret_cast<CharType*>(GD_MALLOC(DataSizeInBytes));
+				auto const dataSizeInBytes = (m_Length + 1) * sizeof(CharType);
+				m_HeapMemory = reinterpret_cast<CharType*>(GD_MALLOC(dataSizeInBytes));
 			}
 			if (sizeof(CharType) != 1)
 			{
-				for (auto& Character : (*this))
-					Character = FillWith;
+				for (auto& character : (*this))
+					character = fillWith;
 			}
 			else
 			{
-				CMemory::Memset(this->CStr(), FillWith, Length);
+				CMemory::Memset(CStr(), fillWith, m_Length);
 			}
-			*this->_PtrEnd() = GD_LITERAL(CharType, '\0');
+			*End() = GD_LITERAL(CharType, '\0');
 		}
 
 		// ------------------------------------------------------------------------------------------
-		//! Initializes a String with some C String with known length.
-		//! @param Chars String's initial data.
-		//! @param Size Size of String initial data.
-		GDINL BaseString(CharType const* const Chars, SizeTp const Length)
+		//! Initializes a String with some C String with known m_Length.
+		//! @param chars String's initial data.
+		//! @param theLength Size of String initial data.
+		GDINL BaseString(CharType const* const chars, SizeTp const theLength)
 		{
-			GD_DEBUG_ASSERT(Chars != nullptr, "Null pointer data specified");
-			this->_Length = Length;
-			auto const DataSizeInBytes = (Length + 1) * sizeof(CharType);
-			if (this->_Length >= BaseString::_MaxStackLength)
+			GD_DEBUG_ASSERT(chars != nullptr, "Null pointer data specified");
+			m_Length = theLength;
+			auto const dataSizeInBytes = (m_Length + 1) * sizeof(CharType);
+			if (m_Length >= s_MaxInlineLength)
 			{
-				this->_HeapMemory = reinterpret_cast<CharType*>(GD_MALLOC(DataSizeInBytes));
-				CMemory::Memcpy(this->_HeapMemory, DataSizeInBytes, Chars, DataSizeInBytes);
+				m_HeapMemory = reinterpret_cast<CharType*>(GD_MALLOC(dataSizeInBytes));
+				CMemory::Memcpy(m_HeapMemory, dataSizeInBytes, chars);
 			}
 			else
 			{
-				CMemory::Memcpy(&this->_StackMemory[0], GD_ARRAY_LENGTH(this->_StackMemory), Chars, DataSizeInBytes);
+				CMemory::Memcpy_s(&m_InlineMemory[0], sizeof(m_InlineMemory), chars, dataSizeInBytes);
 			}
 		}
 
 		// ------------------------------------------------------------------------------------------
-		//! Initializes a String with some C String with unknown length.
-		//! @param Chars String initial data.
+		//! Initializes a String with some C String with unknown m_Length.
+		//! @param chars String initial data.
 		//! @{   
-		template <SizeTp const Length>	// _Length of string constant is determined at compile time..
-		GDINL BaseString(CharType const(&Chars)[Length])
-			: BaseString(&Chars[0], Length - 1)
+		template <SizeTp const TLength>	// m_Length of string constant is determined at compile time..
+		GDINL implicit BaseString(CharType const(&chars)[TLength])
+			: BaseString(&chars[0], TLength - 1)
 		{
 		}
-		GDINL BaseString(CharType const* const Chars)
-			: BaseString(Chars, CString::Strlen(Chars))
+		GDINL implicit BaseString(CharType const* const chars)
+			: BaseString(chars, CString::Strlen(chars))
 		{
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Initializes this string with copy of other String.
-		//! @param Other Other String to copy.
-		GDINL BaseString(BaseString const& Other)
-			: BaseString(Other.CStr(), Other.GetLength())
+		//! @param other The other String to copy.
+		GDINL BaseString(BaseString const& other)
+			: BaseString(other.CStr(), other.GetLength())
 		{
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Moves other string into this String.
-		//! @param Other Other String to move into this.
-		GDINL BaseString(BaseString&& Other)
+		//! @param other The other String to move into this.
+		GDINL BaseString(BaseString&& other)
 		{
-			*this = Forward<BaseString>(Other);
+			*this = Forward<BaseString>(other);
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Deinitializes string.
 		GDINL ~BaseString()
 		{
-			if (this->_Length >= _MaxStackLength)
+			if (m_Length >= s_MaxInlineLength)
 			{
-				GD_DEALLOC(this->_HeapMemory);
-				this->_HeapMemory = nullptr;
+				GD_DEALLOC(m_HeapMemory);
+				m_HeapMemory = nullptr;
 			}
 			else
 			{
-				this->_StackMemory[0] = GD_LITERAL(CharType, '\0');
+				m_InlineMemory[0] = GD_LITERAL(CharType, '\0');
 			}
-			this->_Length = 0;
+			m_Length = 0;
 		}
 
 	public:
@@ -178,10 +188,6 @@ GD_NAMESPACE_BEGIN
 		// Iteration API.
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns iterator that points to first container element.
-		//! @returns Iterator that points to first container element.
-		//! @{
 		GDINL Iterator Begin()
 		{
 			return Iterator(*this);
@@ -190,88 +196,32 @@ GD_NAMESPACE_BEGIN
 		{
 			return ConstIterator(*this);
 		}
-		//! @}
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns iterator that points to past the end container element.
-		//! @returns Iterator that points to past the end container element.
-		//! @{
 		GDINL Iterator End()
 		{
-			return this->Begin() + this->_Length;
+			return Begin() + m_Length;
 		}
 		GDINL ConstIterator End() const
 		{
-			return this->Begin() + this->_Length;
+			return Begin() + m_Length;
 		}
-		//! @}
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns iterator that points to last container element.
-		//! @returns Iterator that points to last container element.
-		//! @{
-	public:
 		GDINL ReverseIterator ReverseBegin()
 		{
-			return ReverseIterator(this->End() - 1);
+			return ReverseIterator(End() - 1);
 		}
 		GDINL ReverseConstIterator ReverseBegin() const
 		{
-			return ReverseConstIterator(this->End() - 1);
+			return ReverseConstIterator(End() - 1);
 		}
-		//! @}
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns iterator that points to preceding the first container element.
-		//! @returns Iterator that points to preceding the first container element.
-		//! @{
-	public:
 		GDINL ReverseIterator ReverseEnd()
 		{
-			return ReverseIterator(this->Begin() - 1);
+			return ReverseIterator(Begin() - 1);
 		}
 		GDINL ReverseConstIterator ReverseEnd() const
 		{
-			return ReverseConstIterator(this->Begin() - 1);
-		}
-		//! @}
-
-	private:
-
-		GDINL PtrIterator _PtrBegin()
-		{
-			return reinterpret_cast<PtrIterator>(this->CStr());
-		}
-		GDINL PtrConstIterator _PtrBegin() const
-		{
-			return reinterpret_cast<PtrConstIterator>(this->CStr());
-		}
-
-		GDINL PtrIterator _PtrEnd()
-		{
-			return this->_PtrBegin() + this->_Length;
-		}
-		GDINL PtrConstIterator _PtrEnd() const
-		{
-			return this->_PtrBegin() + this->_Length;
-		}
-
-		GDINL ReversePtrIterator _ReversePtrBegin()
-		{
-			return ReversePtrIterator(this->_PtrEnd() - 1);
-		}
-		GDINL ReversePtrConstIterator _ReversePtrBegin() const
-		{
-			return ReversePtrConstIterator(this->_PtrEnd() - 1);
-		}
-
-		GDINL ReversePtrIterator _ReversePtrEnd()
-		{
-			return ReversePtrIterator(this->_PtrBegin() - 1);
-		}
-		GDINL ReversePtrConstIterator ReversePtrEnd() const
-		{
-			return ReversePtrConstIterator(this->_PtrBegin() - 1);
+			return ReverseConstIterator(Begin() - 1);
 		}
 
 	public:
@@ -281,21 +231,21 @@ GD_NAMESPACE_BEGIN
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// ------------------------------------------------------------------------------------------
-		//! Returns length of this string.
+		//! Returns m_Length of this string.
 		//! @returns Size of this String.
 		GDINL SizeTp GetLength() const
 		{
-			return this->_Length;
+			return m_Length;
 		}
 
 		// ------------------------------------------------------------------------------------------
-		//! Returns available size of the container.
-		//! @returns Available size of the container.
+		//! Returns available size of the string.
+		//! @returns Available size of the string.
 		GDINL SizeTp GetAllocatedSize() const
 		{
-			if (this->GetLength() >= BaseString::_MaxStackLength)
-				return (this->_Length + 1) * sizeof(CharType);
-			return GD_ARRAY_LENGTH(this->_StackMemory);
+			if (m_Length >= s_MaxInlineLength)
+				return (m_Length + 1) * sizeof(CharType);
+			return sizeof(m_InlineMemory);
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -303,7 +253,7 @@ GD_NAMESPACE_BEGIN
 		//! @returns True if this String is empty, false otherwise.
 		GDINL bool IsEmpty() const
 		{
-			return this->_Length == 0;
+			return m_Length == 0;
 		}
 
 	public:
@@ -319,18 +269,18 @@ GD_NAMESPACE_BEGIN
 		GDINL CharType* CStr() { return const_cast<CharType*>(const_cast<BaseString const*>(this)->CStr()); }
 		GDINL CharType const* CStr() const
 		{
-			if (this->GetLength() >= BaseString::_MaxStackLength)
-				return this->_HeapMemory;
-			return &this->_StackMemory[0];
+			if (GetLength() >= s_MaxInlineLength)
+				return m_HeapMemory;
+			return m_InlineMemory;
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Returns last character of the string.
 		//! @returns Last character of the string.
-		GDINL CharType GetLastElement() const
+		GDINL CharType GetLast() const
 		{
-			return *(this->_PtrEnd() - 1);
+			return *(End() - 1);
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -338,10 +288,10 @@ GD_NAMESPACE_BEGIN
 		//! @returns Constant-time comparable unique signature of the string. 
 		GDINL HashCode GetHashCode() const
 		{
-			HashValueType Computed = 0;
-			for (auto const MyCharacter : (*this))
-				Computed = 65599 * Computed + MyCharacter;
-			return HashCode((Computed >> 16) ^ Computed);
+			HashValue computed = 0;
+			for (auto const character : (*this))
+				computed = 65599 * computed + character;
+			return HashCode(computed >> 16 ^ computed);
 		}
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -350,158 +300,158 @@ GD_NAMESPACE_BEGIN
 
 		// ------------------------------------------------------------------------------------------
 		//! Concatenates two strings.
-		//! @param Other Other string to concatenate with.
-		//! @returns Result of the string concatenation.
+		//! @param other The other string to concatenate with.
+		//! @returns result of the string concatenation.
 		//! @{
-		GDINL BaseString Concatenate(BaseString const& Other) const
+		GDINL BaseString Concatenate(BaseString const& other) const
 		{
-			BaseString Result(this->_Length + Other.GetLength());
-			CMemory::Memcpy(Result.CStr(), Result.GetAllocatedSize(), this->CStr(), this->_Length * sizeof(CharType));
-			CMemory::Memcpy(Result.CStr() + this->_Length, Result.GetAllocatedSize(), Other.CStr(), Other._Length * sizeof(CharType));
-			return Result;
+			BaseString result(m_Length + other.GetLength());
+			CMemory::Memcpy_s(result.CStr(), result.GetAllocatedSize(), CStr(), m_Length * sizeof(CharType));
+			CMemory::Memcpy_s(result.CStr() + m_Length, result.GetAllocatedSize(), other.CStr(), other.m_Length * sizeof(CharType));
+			return result;
 		}
-		GDINL BaseString Concatenate(CharType const* const Other) const
+		GDINL BaseString Concatenate(CharType const* const other) const
 		{
-			SizeTp const OtherLength = CString::Strlen(Other);
-			BaseString Result(this->_Length + OtherLength);
-			CMemory::Memcpy(Result.CStr(), Result.GetAllocatedSize(), this->CStr(), this->_Length * sizeof(CharType));
-			CMemory::Memcpy(Result.CStr() + this->_Length, Result.GetAllocatedSize(), Other, OtherLength * sizeof(CharType));
-			return Result;
+			SizeTp const otherLength = CString::Strlen(other);
+			BaseString result(m_Length + otherLength);
+			CMemory::Memcpy_s(result.CStr(), result.GetAllocatedSize(), CStr(), m_Length * sizeof(CharType));
+			CMemory::Memcpy_s(result.CStr() + m_Length, result.GetAllocatedSize(), other, otherLength * sizeof(CharType));
+			return result;
 		}
-		GDINL BaseString Concatenate(CharType const Other) const
+		GDINL BaseString Concatenate(CharType const other) const
 		{
-			BaseString Result(this->_Length + 1);
-			CMemory::Memcpy(Result.CStr(), Result.GetAllocatedSize(), this->CStr(), this->_Length * sizeof(CharType));
-			*(Result.End() - 1) = Other;
-			return Result;
+			BaseString result(m_Length + 1);
+			CMemory::Memcpy_s(result.CStr(), result.GetAllocatedSize(), CStr(), m_Length * sizeof(CharType));
+			*(result.End() - 1) = other;
+			return result;
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Appends specified string to this string.
-		//! @param Character Character to Append.
+		//! @param character The character to Append.
 		//! @todo Implement this code properly.
 		//! @{
-		GDINL BaseString& Append(BaseString const& Other)
+		GDINL BaseString& Append(BaseString const& other)
 		{
-			BaseString Copy(Move(*this));
-			return (*this = Move(Copy.Concatenate(Other)));
+			BaseString copy(Move(*this));
+			return (*this = Move(copy.Concatenate(other)));
 		}
-		GDINL BaseString& Append(CharType const* const Other)
+		GDINL BaseString& Append(CharType const* const other)
 		{
-			BaseString Copy(Move(*this));
-			return (*this = Move(Copy.Concatenate(Other)));
+			BaseString copy(Move(*this));
+			return (*this = Move(copy.Concatenate(other)));
 		}
-		GDINL BaseString& Append(CharType const Other)
+		GDINL BaseString& Append(CharType const other)
 		{
-			BaseString Copy(Move(*this));
-			return (*this = Move(Copy.Concatenate(Other)));
+			BaseString copy(Move(*this));
+			return (*this = Move(copy.Concatenate(other)));
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Prepends specified string to this string.
-		//! @param Character Character to Append.
+		//! @param character The character to Append.
 		//! @todo Implement this code properly.
 		//! @{
-		GDINL BaseString& Prepend(BaseString const& Other)
+		GDINL BaseString& Prepend(BaseString const& other)
 		{
-			BaseString Copy(Other);
-			return (*this = Move(Copy.Concatenate(Move(*this))));
+			BaseString copy(other);
+			return (*this = Move(copy.Concatenate(Move(*this))));
 		}
-		GDINL BaseString& Prepend(CharType const* const Other)
+		GDINL BaseString& Prepend(CharType const* const other)
 		{
-			BaseString Copy(Other);
-			return (*this = Move(Copy.Concatenate(Move(*this))));
+			BaseString copy(other);
+			return (*this = Move(copy.Concatenate(Move(*this))));
 		}
-		GDINL BaseString& Prepend(CharType const Other)
+		GDINL BaseString& Prepend(CharType const other)
 		{
-			BaseString Copy(Other);
-			return (*this = Move(Copy.Concatenate(Move(*this))));
+			BaseString copy(other);
+			return (*this = Move(copy.Concatenate(Move(*this))));
 		}
 		//! @}
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		// Substringing.
+		// Sub-stringing.
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// ------------------------------------------------------------------------------------------
-		//! Extracts a substring from this string from specified index to the specified index.
-		//! @param From Index of the first character that would be extracted to the substring.
-		//! @param To Index of the last character that would be extracted to the substring.
+		//! Extracts a substring from this string from specified Index to the specified Index.
+		//! @param from Index of the first character that would be extracted to the substring.
+		//! @param to Index of the last character that would be extracted to the substring.
 		//! @returns A part of this string.
 		//! @{
-		GDINL BaseString Substring(SizeTp const From, SizeTp const To) const
+		GDINL BaseString Substring(SizeTp const from, SizeTp const to) const
 		{
-			GD_DEBUG_ASSERT(To >= From, "Invalid substring indices.");
-			BaseString Result(To - From);
-			CMemory::Memcpy(Result.CStr(), Result.GetAllocatedSize(), &(*this)[From], (To - From) * sizeof(CharType));
-			return Result;
+			GD_DEBUG_ASSERT(to >= from, "Invalid substring indices.");
+			BaseString result(to - from);
+			CMemory::Memcpy_s(result.CStr(), result.GetAllocatedSize(), &(*this)[from], (to - from) * sizeof(CharType));
+			return result;
 		}
-		GDINL BaseString& SubstringSelf(SizeTp const From, SizeTp const To)
+		GDINL BaseString& SubstringSelf(SizeTp const from, SizeTp const to)
 		{
-			return *this = Forward<BaseString&&>(this->Substring(From, To));
+			return *this = Forward<BaseString&&>(Substring(from, to));
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
-		//! Extracts a substring from this string from specified index with specified length.
-		//! @param From Index of the first character that would be extracted to the substring.
-		//! @param _Length The length of the desired substring.
+		//! Extracts a substring from this string from specified Index with specified length.
+		//! @param from Index of the first character that would be extracted to the substring.
+		//! @param length The length of the desired substring.
 		//! @returns A part of this string.
 		//! @{
-		GDINL BaseString SubstringL(SizeTp const From, SizeTp const Length) const
+		GDINL BaseString SubstringL(SizeTp const from, SizeTp const length) const
 		{
-			return this->Substring(From, From + Length);
+			return Substring(from, from + length);
 		}
-		GDINL BaseString& SubstringLSelf(SizeTp const From, SizeTp const Length)
+		GDINL BaseString& SubstringLSelf(SizeTp const from, SizeTp const length)
 		{
-			return *this = Forward<BaseString&&>(this->Substring(From, Length));
+			return *this = Forward<BaseString&&>(Substring(from, length));
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
-		//! Extracts a substring from this string from specified index to the end.
-		//! @param From Index of the first character that would be extracted to the substring.
+		//! Extracts a substring from this string from specified Index to the end.
+		//! @param from Index of the first character that would be extracted to the substring.
 		//! @returns A part of this string.
 		//! @{
-		GDINL BaseString Substring(SizeTp const From) const
+		GDINL BaseString Substring(SizeTp const from) const
 		{
-			return this->Substring(From, this->GetLength());
+			return Substring(from, GetLength());
 		}
-		GDINL BaseString& SubstringSelf(SizeTp const From) 
+		GDINL BaseString& SubstringSelf(SizeTp const from) 
 		{
-			return *this = Forward<BaseString&&>(this->Substring(From));
+			return *this = Forward<BaseString&&>(Substring(from));
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Extracts a substring fro this string from start to ChopSelfped end.
-		//! @param _Length Amount of bytes to skip from end.
+		//! @param m_Length Amount of bytes to skip from end.
 		//! @returns A part of this string.
 		//! @{
-		GDINL BaseString Remove(SizeTp const From, SizeTp const Length) const
+		GDINL BaseString Remove(SizeTp const from, SizeTp const length) const
 		{
-			return this->Substring(0, From).Concatenate(this->Substring(From + Length + 1));
+			return Substring(0, from).Concatenate(Substring(from + length + 1));
 		}
-		GDINL BaseString& RemoveFromSelf(SizeTp const From, SizeTp const Length)
+		GDINL BaseString& RemoveFromSelf(SizeTp const from, SizeTp const length)
 		{
-			return *this = Forward<BaseString&&>(this->Remove(From, Length));
+			return *this = Forward<BaseString&&>(Remove(from, length));
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Extracts a substring fro this string from start to ChopSelfped end.
-		//! @param _Length Amount of bytes to skip from end.
+		//! @param m_Length Amount of bytes to skip from end.
 		//! @returns A part of this string.
 		//! @{
-		GDINL BaseString Chop(SizeTp const Length) const
+		GDINL BaseString Chop(SizeTp const length) const
 		{
-			return this->Substring(0, this->GetLength() - Length);
+			return Substring(0, GetLength() - length);
 		}
-		GDINL BaseString& ChopSelf(SizeTp const Length)
+		GDINL BaseString& ChopSelf(SizeTp const length)
 		{
-			return *this = Forward<BaseString&&>(this->Chop(Length));
+			return *this = Forward<BaseString&&>(Chop(length));
 		}
 		//! @}
 
@@ -517,143 +467,156 @@ GD_NAMESPACE_BEGIN
 		GDINL bool MatchesWildcard(CharType const* const Wildcard) const 
 		{
 			// Originally written by Jack Handy - <A href="mailto:jakkhandy@hotmail.com">jakkhandy@hotmail.com</A>.
-			CharType const* CString = this->CStr();
-			CharType const* WildcardPtr = Wildcard;
-			CharType const* CharPtr = nullptr;
-			CharType const* MatchPointer = nullptr;
-			while ((*CString != GD_LITERAL(CharType, '\0')) && (*WildcardPtr != GD_LITERAL(CharType, '*')))
+			CharType const* cstring = CStr();
+			CharType const* wildcardPtr = Wildcard;
+			CharType const* charPtr = nullptr;
+			CharType const* matchPointer = nullptr;
+			while ((*cstring != GD_LITERAL(CharType, '\0')) && (*wildcardPtr != GD_LITERAL(CharType, '*')))
 			{
-				if ((*WildcardPtr != *CString) && (*WildcardPtr != GD_LITERAL(CharType, '?')))
+				if ((*wildcardPtr != *cstring) && (*wildcardPtr != GD_LITERAL(CharType, '?')))
 					return false;
-				++WildcardPtr;
-				++CString;
+				++wildcardPtr;
+				++cstring;
 			}
-			while (*CString != GD_LITERAL(CharType, '\0'))
+			while (*cstring != GD_LITERAL(CharType, '\0'))
 			{
-				if (*WildcardPtr == GD_LITERAL(CharType, '*'))
+				if (*wildcardPtr == GD_LITERAL(CharType, '*'))
 				{
-					if (!*++WildcardPtr)
+					if (!*++wildcardPtr)
 						return true;
-					MatchPointer = WildcardPtr;
-					CharPtr = CString + 1;
+					matchPointer = wildcardPtr;
+					charPtr = cstring + 1;
 				}
-				else if ((*WildcardPtr == *CString) || (*WildcardPtr == GD_LITERAL(CharType, '?')))
+				else if ((*wildcardPtr == *cstring) || (*wildcardPtr == GD_LITERAL(CharType, '?')))
 				{
-					++WildcardPtr;
-					++CString;
+					++wildcardPtr;
+					++cstring;
 				}
 				else
 				{
-					WildcardPtr = MatchPointer;
-					CString = CharPtr++;
+					wildcardPtr = matchPointer;
+					cstring = charPtr++;
 				}
 			}
-			while (*WildcardPtr == GD_LITERAL(CharType, '*'))
-				++WildcardPtr;
-			return (*WildcardPtr == GD_LITERAL(CharType, '\0'));
+			while (*wildcardPtr == GD_LITERAL(CharType, '*'))
+				++wildcardPtr;
+			return (*wildcardPtr == GD_LITERAL(CharType, '\0'));
 		}
 		GDINL bool MatchesWildcard(BaseString const& Wildcard) const
 		{
-			return this->MatchesWildcard(Wildcard.CStr());
+			return MatchesWildcard(Wildcard.CStr());
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
-		//! Searches for first occurrence of the character in the string.
-		//! @param Character Character we are looking for.
-		//! @returns Index of the first occurrence of the character in the string or @c SizeTpMax if nothing was found.
-		GDINL SizeTp Find(CharType const Character) const
+		GDINL BaseString UnwrapEscapeSequences() const
 		{
-			CharType const* const CString = this->CStr();
-			CharType const* const Location = CString::Strchr(CString, Character);
-			if (Location != nullptr)
-				return static_cast<SizeTp>(Location - CString);
+			return *this;
+		}
+
+
+		// ------------------------------------------------------------------------------------------
+		GDINL BaseString WrapEscapeSequences() const
+		{
+			return *this;
+		}
+
+		// ------------------------------------------------------------------------------------------
+		//! Searches for first occurrence of the character in the string.
+		//! @param character The character we are looking for.
+		//! @returns Index of the first occurrence of the character in the string or @c SizeTpMax if nothing was found.
+		GDINL SizeTp Find(CharType const character) const
+		{
+			CharType const* const cstring = CStr();
+			CharType const* const location = CString::Strchr(cstring, character);
+			if (location != nullptr)
+				return static_cast<SizeTp>(location - cstring);
 			return SizeTpMax;
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Searches for first occurrence of the C string in the string.
-		//! @param OtherCString C string we are looking for.
+		//! @param otherCString C string we are looking for.
 		//! @returns Index of the first occurrence of the C string in the string or @c SizeTpMax if nothing was found.
-		GDINL SizeTp Find(CharType const* const OtherCString) const
+		GDINL SizeTp Find(CharType const* const otherCString) const
 		{
-			CharType const* const CString = this->CStr();
-			CharType const* const Location = CString::Strstr(CString, OtherCString);
-			if (Location != nullptr)
-				return static_cast<SizeTp>(Location - CString);
+			CharType const* const cstring = CStr();
+			CharType const* const location = CString::Strstr(cstring, otherCString);
+			if (location != nullptr)
+				return static_cast<SizeTp>(location - cstring);
 			return SizeTpMax;
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//!	Searches for last occurrence of the character in the string.
-		//! @param Character Character we are looking for.
+		//! @param character The character we are looking for.
 		//! @returns Index of the last occurrence of the character in the string or @c SizeTpMax if nothing was found.
-		GDINL SizeTp ReverseFind(CharType const Character) const
+		GDINL SizeTp ReverseFind(CharType const character) const
 		{
-			CharType const* const CString = this->CStr();
-			CharType const* const Location = CString::Strrchr(CString, Character);
-			if (Location != nullptr)
-				return static_cast<SizeTp>(Location - CString);
+			CharType const* const cstring = CStr();
+			CharType const* const location = CString::Strrchr(cstring, character);
+			if (location != nullptr)
+				return static_cast<SizeTp>(location - cstring);
 			return SizeTpMax;
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//!	Searches for last occurrence of the C string in the string.
-		//! @param OtherCString C string we are looking for.
+		//! @param otherCString C string we are looking for.
 		//! @returns Index of the last occurrence of the C string in the string or @c SizeTpMax if nothing was found.
-		GDINL SizeTp ReverseFind(CharType const* const OtherCString) const
+		GDINL SizeTp ReverseFind(CharType const* const otherCString) const
 		{
-			CharType const* const CString = this->CStr();
-			CharType const* const Location = CString::Strrstr(CString, OtherCString);
-			if (Location != nullptr)
-				return static_cast<SizeTp>(Location - CString);
+			CharType const* const cstring = CStr();
+			CharType const* const location = CString::Strrstr(cstring, otherCString);
+			if (location != nullptr)
+				return static_cast<SizeTp>(location - cstring);
 			return SizeTpMax;
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Returns true if this string starts with specified expression.
-		//! @param OtherCString C string we are testing against.
+		//! @param otherCString C string we are testing against.
 		//! @return True if this string starts with specified expression.
 		//! @{
-		GDINL bool StartsWith(CharType const* const OtherCString) const
+		GDINL bool StartsWith(CharType const* const otherCString) const
 		{
 			//! @todo Implement this code properly.
-			return this->Find(OtherCString) == 0;
+			return Find(otherCString) == 0;
 		}
-		GDINL bool StartsWith(CharType const Character) const
+		GDINL bool StartsWith(CharType const character) const
 		{
-			return *this->CStr() == Character;
+			return *CStr() == character;
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Returns true if this string ends with specified expression.
-		//! @param OtherCString C string we are testing against.
+		//! @param otherCString C string we are testing against.
 		//! @return True if this string ends with specified expression.
 		//! @{
-		GDINL bool EndsWith(CharType const* const OtherCString) const
+		GDINL bool EndsWith(CharType const* const otherCString) const
 		{
 			//! @todo Implement this code properly.
-			return this->Find(OtherCString) == (this->_Length - CString::Strlen(OtherCString));
+			return Find(otherCString) == (m_Length - CString::Strlen(otherCString));
 		}
-		GDINL bool EndsWith(CharType const Character) const
+		GDINL bool EndsWith(CharType const character) const
 		{
-			return *(this->_PtrEnd() - 1) == Character;
+			return *(End() - 1) == character;
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Returns integer representation of this string.
-		//! @param Succeeded Would be written true if this is an integer.
-		//! @param Notation Notation in which value is represented.
+		//! @param succeeded Would be written true if this is an integer.
+		//! @param notation The notation in which value is represented.
 		//! @returns Integer representation of this string.
-		GDINL Int64 ToInt64(bool* const Succeeded = nullptr, SizeTp const Notation = 0) const
+		GDINL Int64 ToInt64(bool* const succeeded = nullptr, SizeTp const notation = 0) const
 		{
-			CharType const* EndPtr = nullptr;
-			Int64 const Value = CString::Strtoi64(this->CStr(), &EndPtr, Notation);
-			if (Succeeded != nullptr)
-				*Succeeded = EndPtr == this->_PtrEnd();
-			return Value;
+			CharType const* endPtr = nullptr;
+			Int64 const value = CString::Strtoi64(CStr(), &endPtr, notation);
+			if (succeeded != nullptr)
+				*succeeded = endPtr == &*End();
+			return value;
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -661,10 +624,10 @@ GD_NAMESPACE_BEGIN
 		//! @returns Lowercased version of this string.
 		GDINL BaseString ToUpper() const
 		{
-			BaseString Result(*this);
-			for (auto& Character : Result)
-				Character = static_cast<CharType>(CChar::ToUpper(Character));
-			return Result;
+			BaseString result(*this);
+			for (auto& character : result)
+				character = static_cast<CharType>(CChar::ToUpper(character));
+			return result;
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -672,10 +635,10 @@ GD_NAMESPACE_BEGIN
 		//! @returns Uppercased version of this string.
 		GDINL BaseString ToLower() const
 		{
-			BaseString Result(*this);
-			for (auto& Character : Result)
-				Character = static_cast<CharType>(CChar::ToLower(Character));
-			return Result;
+			BaseString result(*this);
+			for (auto& character : result)
+				character = static_cast<CharType>(CChar::ToLower(character));
+			return result;
 		}
 
 	public:
@@ -686,35 +649,29 @@ GD_NAMESPACE_BEGIN
 
 		// ------------------------------------------------------------------------------------------
 		//! Formats a specified string using C-like formatting.
-		//! @param Format Initial format of the string.
-		//! @param List Varying arguments list for formatting.
-		GDINL static BaseString FormatVa(CharType const* const Format, va_list List)
+		//! @param format Initial format of the string.
+		//! @param list Varying arguments list for formatting.
+		GDINL static BaseString FormatVa(CharType const* const format, va_list list)
 		{
-#if 0
-			CharType Buffer1024[1024];
-			CMemory::Memset(&Buffer1024[0], 0, sizeof(Buffer1024));
-			int const Result1204 = CString::Vsnprintf(&Buffer1024[0], GD_ARRAY_LENGTH(Buffer1024), Format, List);
-			if ((Result1204 > 0) && (Result1204 < GD_ARRAY_LENGTH(Buffer1024)))
-			{
-				return BaseString(&Buffer1024[0]);
-			}
-#endif	// if 0
-			CharType Buffer2048[2048];
-			CMemory::Memset(&Buffer2048[0], 0, sizeof(Buffer2048));
-			int const Result2048 = CString::Vsnprintf(&Buffer2048[0], GD_ARRAY_LENGTH(Buffer2048), Format, List);
-			if ((Result2048 > 0) && (Result2048 < GD_ARRAY_LENGTH(Buffer2048)))
-				return BaseString(&Buffer2048[0]);
-			GD_DEBUG_ASSERT_FALSE("String formatting failed due internal buffers error.");
+			CharType buffer[32000];
+			CMemory::Memset(&buffer[0], 0, sizeof(buffer));
+			CString::Vsnprintf(&buffer[0], GD_ARRAY_LENGTH(buffer), format, list);
+			return BaseString(buffer);
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Formats a specified string using C-like formatting.
-		//! @param Format Initial format of the string.
-		GDINL static BaseString Format(CharType const* const Format, ...)
+		//! @param format Initial format of the string.
+		GDINL static BaseString Format(CharType const* const format, ...)
 		{
 			va_list List; 
-			va_start(List, Format);
-			return BaseString::FormatVa(Format, List);
+			va_start(List, format);
+			return BaseString::FormatVa(format, List);
+		}
+
+		GDINL static BaseString FromFloat64(Float64 const value)
+		{
+			return Format("%f", value);
 		}
 
 	public:
@@ -723,214 +680,150 @@ GD_NAMESPACE_BEGIN
 		// Overloaded operators.
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		// ------------------------------------------------------------------------------------------
-		//! Assigns string with copy of other string.
-		//! @param OtherVector String would be assigned.
-		//! @returns this.
-		GDINL BaseString& operator= (BaseString const& Other)
+		GDINL BaseString& operator= (BaseString const& other)
 		{
 			this->~BaseString();
-			this->_Length = Other._Length;
-			SizeTp const DataSizeInBytes = (this->_Length + 1) * sizeof(CharType);
-			if (this->_Length >= BaseString::_MaxStackLength)
+			m_Length = other.m_Length;
+			auto const dataSizeInBytes = (m_Length + 1) * sizeof(CharType);
+			if (m_Length >= s_MaxInlineLength)
 			{
-				this->_HeapMemory = reinterpret_cast<CharType*>(GD_MALLOC(DataSizeInBytes));
-				CMemory::Memcpy(this->_HeapMemory, DataSizeInBytes, Other.CStr(), DataSizeInBytes);
+				m_HeapMemory = reinterpret_cast<CharType*>(GD_MALLOC(dataSizeInBytes));
+				CMemory::Memcpy_s(m_HeapMemory, dataSizeInBytes, other.CStr(), dataSizeInBytes);
 			}
 			else
 			{
-				CMemory::Memcpy(&this->_StackMemory[0], GD_ARRAY_LENGTH(this->_StackMemory), Other.CStr(), DataSizeInBytes);
+				CMemory::Memcpy_s(&m_InlineMemory[0], GD_ARRAY_LENGTH(m_InlineMemory), other.CStr(), dataSizeInBytes);
+			}
+			return *this;
+		}
+		GDINL BaseString& operator= (BaseString&& other)
+		{
+			this->~BaseString();
+			m_Length = other.m_Length;
+			other.m_Length = 0;
+			if (m_Length >= s_MaxInlineLength)
+			{
+				m_HeapMemory = other.m_HeapMemory;
+				other.m_HeapMemory = nullptr;
+			}
+			else
+			{
+				auto const dataSizeInBytes = (m_Length + 1) * sizeof(CharType);
+				CMemory::Memcpy_s(m_InlineMemory, sizeof(m_InlineMemory), &other.m_InlineMemory[0], dataSizeInBytes);
 			}
 			return *this;
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Moves other string here.
-		//! @param Other String would be moved into current object.
-		//! @returns this.
-		GDINL BaseString& operator= (BaseString&& Other)
+		GDINL CharType const& operator[] (SizeTp const index) const
 		{
-			this->~BaseString();
-			this->_Length = Other._Length;
-			Other._Length = 0;
-			if (this->_Length >= BaseString::_MaxStackLength)
-			{
-				this->_HeapMemory = Other._HeapMemory;
-				Other._HeapMemory = nullptr;
-			}
-			else
-			{
-				SizeTp const DataSizeInBytes = (this->_Length + 1) * sizeof(CharType);
-				CMemory::Memcpy(this->_StackMemory, GD_ARRAY_LENGTH(this->_StackMemory), &Other._StackMemory[0], DataSizeInBytes);
-			}
-			return *this;
+			GD_DEBUG_ASSERT(index <= GetLength(), "Invalid String subindex.");
+			return *(CStr() + index);
 		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Returns reference on the character at specified index.
-		//! @param Index Index of the desired character in vector.
-		//! @returns Reference on some character in the container.
-		//! @{
-		GDINL CharType& operator[] (SizeTp const Index) { return const_cast<Char&>(const_cast<BaseString const&>(*this)[Index]); }
-		GDINL CharType const& operator[] (SizeTp const Index) const
+		GDINL CharType& operator[] (SizeTp const index)
 		{
-			GD_DEBUG_ASSERT(Index <= this->GetLength(), "Invalid String subindex.");
-			return *(this->CStr() + Index);
+			return const_cast<Char&>(const_cast<BaseString const&>(*this)[index]);
 		}
-		//! @}
 	};	// class BaseString
 
-	// ------------------------------------------------------------------------------------------
-	//! Swaps two strings.
-	//! @param First The first strings.
-	//! @param Second The second strings.
-	template<typename SomeCharType>
-	GDINL void Swap(BaseString<SomeCharType>& First, BaseString<SomeCharType>& Second)
-	{
-		if (&First != &Second)
-		{
-			Swap(First._Length, Second._Length);
-			Swap(First._StackMemory, Second._StackMemory); // Swapping _StackMemory because it supposed to be greater than _HeapMemory pointer.
-		}
-	}
-
-	// ------------------------------------------------------------------------------------------
-	//! Checks whether two strings are same.
-	//! @param LHS First string to compare.
-	//! @param RHS Second string to compare.
-	//! @returns True if both strings have same length and elements.
-	//! @{
 	template<typename CharType>
-	GDINL static bool operator== (BaseString<CharType> const& LHS, BaseString<CharType> const& RHS)
+	GDINL static bool operator== (BaseString<CharType> const& lhs, BaseString<CharType> const& rhs)
 	{
-		if (LHS.GetLength() == RHS.GetLength())
-			return (CString::Strncmp(LHS.CStr(), RHS.CStr(), LHS.GetLength()) == 0);
+		if (lhs.GetLength() == rhs.GetLength())
+			return (CString::Strncmp(lhs.CStr(), rhs.CStr(), lhs.GetLength()) == 0);
 		return false;
 	}
 	template<typename CharType>
-	GDINL static bool operator== (BaseString<CharType> const& LHS, CharType const* const RHS)
+	GDINL static bool operator== (BaseString<CharType> const& lhs, CharType const* const rhs)
 	{
-		return (CString::Strncmp(LHS.CStr(), RHS, LHS.GetLength()) == 0);
+		return (CString::Strncmp(lhs.CStr(), rhs, lhs.GetLength()) == 0);
 	}
 	template<typename CharType>
-	GDINL static bool operator== (CharType const* const LHS, BaseString<CharType> const& RHS)
+	GDINL static bool operator== (CharType const* const lhs, BaseString<CharType> const& rhs)
 	{
-		return (CString::Strncmp(LHS, RHS.CStr(), RHS.GetLength()) == 0);
+		return (CString::Strncmp(lhs, rhs.CStr(), rhs.GetLength()) == 0);
 	}
-	//! @}
 
-	// ------------------------------------------------------------------------------------------
-	//! Checks if this string is different to specified one.
-	//! @param RHS RHS string to compare to.
-	//! @returns True if both string have different length or characters set.
-	//! @{
 	template<typename CharType>
-	GDINL static bool operator!= (BaseString<CharType> const& LHS, BaseString<CharType> const & RHS)
+	GDINL static bool operator!= (BaseString<CharType> const& lhs, BaseString<CharType> const & rhs)
 	{
-		return !(LHS == RHS);
+		return !(lhs == rhs);
 	}
 	template<typename CharType>
-	GDINL static bool operator!= (BaseString<CharType> const& LHS, CharType const* const RHS)
+	GDINL static bool operator!= (BaseString<CharType> const& lhs, CharType const* const rhs)
 	{
-		return !(LHS == RHS);
+		return !(lhs == rhs);
 	}
-	//! @}
 
-	// ------------------------------------------------------------------------------------------
-	//! Checks if string contains single character that is same two specified one.
-	//! @param LHS String to compare.
-	//! @param Character Character to compare to.
-	//! @returns True if this string contains single character that is same two specified one, false otherwise.
 	template<typename CharType>
-	GDINL static bool operator== (BaseString<CharType> const& LHS, CharType const Character)
+	GDINL static bool operator== (BaseString<CharType> const& lhs, CharType const character)
 	{
-		if (LHS.GetLength() == 1)
-			return (LHS->CStr() == Character);
+		if (lhs.GetLength() == 1)
+			return (*lhs.CStr() == character);
 		return false;
 	}
-
-	// ------------------------------------------------------------------------------------------
-	//! Checks if string is not equal to single character.
-	//! @param LHS String to compare.
-	//! @param Character Character to compare to.
-	//! @returns False if this string contains single character that is same two specified one, true otherwise.
 	template<typename CharType>
-	GDINL static bool operator!= (BaseString<CharType> const& LHS, CharType const Character)
+	GDINL static bool operator!= (BaseString<CharType> const& lhs, CharType const character)
 	{
-		return !(LHS == Character);
+		return !(lhs == character);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Checks if first string is greater to second one.
-	//! @param LHS First string to compare.
-	//! @param RHS Second string to compare.
-	//! @returns True if first string is greater than second one.
 	template<typename CharType>
-	GDINL static bool operator> (BaseString<CharType> const& LHS, BaseString<CharType> const& RHS)
+	GDINL static bool operator> (BaseString<CharType> const& lhs, BaseString<CharType> const& rhs)
 	{
-		return (CString::Strncmp(LHS.CStr(), RHS.CStr(), LHS.GetLength()) > 0);
+		return (CString::Strncmp(lhs.CStr(), rhs.CStr(), lhs.GetLength()) > 0);
+	}
+	template<typename CharType>
+	GDINL static bool operator< (BaseString<CharType> const& lhs, BaseString<CharType> const& rhs)
+	{
+		return (CString::Strncmp(lhs.CStr(), rhs.CStr(), lhs.GetLength()) < 0);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Checks if first string is less to second one.
-	//! @param LHS First string to compare.
-	//! @param RHS Second string to compare.
-	//! @returns True if first string is less than second one.
+	
 	template<typename CharType>
-	GDINL static bool operator< (BaseString<CharType> const& LHS, BaseString<CharType> const& RHS)
+	GDINL static BaseString<CharType> operator+ (BaseString<CharType> const& lhs, BaseString<CharType> const& rhs)
 	{
-		return (CString::Strncmp(LHS.CStr(), RHS.CStr(), LHS.GetLength()) < 0);
+		return lhs.Concatenate(rhs);
+	}
+	
+	template<typename CharType>
+	GDINL static BaseString<CharType> operator+ (BaseString<CharType> const& lhs, CharType const* const rhs)
+	{
+		return lhs.Concatenate(rhs);
+	}
+	template<typename CharType>
+	GDINL static BaseString<CharType> operator+ (CharType const* const lhs, BaseString<CharType> const& rhs)
+	{
+		return BaseString<CharType>(lhs).Concatenate(rhs);
+	}
+	
+	template<typename CharType>
+	GDINL static BaseString<CharType> operator+ (BaseString<CharType> const& lhs, CharType const rhs)
+	{
+		return lhs.Concatenate(rhs);
+	}
+	template<typename CharType>
+	GDINL static BaseString<CharType> operator+ (CharType const lhs, BaseString<CharType> const& rhs)
+	{
+		return BaseString<CharType>(lhs).Concatenate(rhs);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Concatenates two strings.
-	//! @param LHS First string to concatenate to.
-	//! @param RHS Second string to concatenate with.
-	//! @returns Result of the string concatenation.
-	//! @{
 	template<typename CharType>
-	GDINL static BaseString<CharType> operator+ (BaseString<CharType> const& LHS, BaseString<CharType> const& RHS)
+	GDINL static BaseString<CharType>& operator+= (BaseString<CharType>& lhs, BaseString<CharType> const& rhs)
 	{
-		return LHS.Concatenate(RHS);
+		return lhs.Append(rhs);
 	}
 	template<typename CharType>
-	GDINL static BaseString<CharType> operator+ (BaseString<CharType> const& LHS, CharType const* const RHS)
+	GDINL static BaseString<CharType>& operator+= (BaseString<CharType>& lhs, CharType const* const rhs)
 	{
-		return LHS.Concatenate(RHS);
+		return lhs.Append(rhs);
 	}
 	template<typename CharType>
-	GDINL static BaseString<CharType> operator+ (CharType const* const LHS, BaseString<CharType> const& RHS)
+	GDINL static BaseString<CharType>& operator+= (BaseString<CharType>& lhs, CharType const rhs)
 	{
-		return BaseString<CharType>(LHS).Concatenate(RHS);
+		return lhs.Append(rhs);
 	}
-	template<typename CharType>
-	GDINL static BaseString<CharType> operator+ (BaseString<CharType> const& LHS, CharType const RHS)
-	{
-		return LHS.Concatenate(RHS);
-	}
-	template<typename CharType>
-	GDINL static BaseString<CharType> operator+ (CharType const LHS, BaseString<CharType> const& RHS)
-	{
-		return BaseString<CharType>(LHS).Concatenate(RHS);
-	}
-	template<typename CharType>
-	GDINL static BaseString<CharType>& operator+= (BaseString<CharType>& LHS, BaseString<CharType> const& RHS)
-	{
-		return LHS.Append(RHS);
-	}
-	template<typename CharType>
-	GDINL static BaseString<CharType>& operator+= (BaseString<CharType>& LHS, CharType const* const RHS)
-	{
-		return LHS.Append(RHS);
-	}
-	template<typename CharType>
-	GDINL static BaseString<CharType>& operator+= (BaseString<CharType>& LHS, CharType const RHS)
-	{
-		return LHS.Append(RHS);
-	}
-	//! @}
 
-	typedef BaseString<Char> String;
-	typedef BaseString<WideChar> WideString;
+	using String = BaseString<Char>;			//!< A string class used by the engine.
+	using WideString = BaseString<WideChar>;	//!< A wide-character string class used by the engine.
 
 GD_NAMESPACE_END

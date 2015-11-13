@@ -34,7 +34,7 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
     public sealed class ProjectCompilerException : BuildSystemException
     {
         //! Constructs the build system exception with a string.
-        //! @param Format Format string.
+        //! @param Format the format string.
         //! @param Arguments Formatting arguments.
         public ProjectCompilerException(string Format, params object[] Arguments)
             : base(Format, Arguments)
@@ -83,7 +83,7 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
         }
 
         //! Compiles project files.
-        public sealed override int Execute(string[] Arguments)
+        public sealed override int Execute(string[] arguments)
         {
             try
             {
@@ -94,10 +94,10 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
 
                 try
                 {
-                    ProjectFilePath = Arguments[0];
-                    Platform = (TargetPlatform)Enum.Parse(typeof(TargetPlatform), Arguments[1]);
-                    Configuration = (TargetConfiguration)Enum.Parse(typeof(TargetConfiguration), Arguments[2]);
-                    Command = Arguments.Length > 3 ? (ProjectCompilerCommand)Enum.Parse(typeof(ProjectCompilerCommand), Arguments[3]) : ProjectCompilerCommand.Build;
+                    ProjectFilePath = arguments[0];
+                    Platform = (TargetPlatform)Enum.Parse(typeof(TargetPlatform), arguments[1]);
+                    Configuration = (TargetConfiguration)Enum.Parse(typeof(TargetConfiguration), arguments[2]);
+                    Command = arguments.Length > 3 ? (ProjectCompilerCommand)Enum.Parse(typeof(ProjectCompilerCommand), arguments[3]) : ProjectCompilerCommand.Build;
                 }
                 catch (Exception)
                 {
@@ -136,7 +136,7 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
                 {
                     CompilerArguments.Append(" -O3");
                 }
-                if (!PlatformInfo.RequiresRTTI)
+                if (!PlatformInfo.RequiresRtti)
                 {
                     CompilerArguments.Append(" -fno-rtti");
                 }

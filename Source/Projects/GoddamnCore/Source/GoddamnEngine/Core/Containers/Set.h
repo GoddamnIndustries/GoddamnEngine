@@ -7,13 +7,13 @@
 // ==========================================================================================
 
 //! @file GoddamnEngine/Core/Containers/Set.h
-//! Dynamically sized associative container interface.
+//! Dynamically sized associative m_Container interface.
 #pragma once
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Iterators.h>
-#include <GoddamnEngine/Core/Containers/RedBlackTree.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>
+#include <GoddamnEngine/Core/Containers/RedBlackTree/RedBlackTree.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -22,8 +22,8 @@ GD_NAMESPACE_BEGIN
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// ------------------------------------------------------------------------------------------
-	//! Dynamically sized associative container that is implemented with Red-Black Trees.
-	//! Current implementation has a MASSIVE overhead per each element (33 bytes by Red-Black Tree). 
+	//! Dynamically sized associative container that is Implemented with Red-Black Trees.
+	//! Current Implementation has a MASSIVE overhead per each element (33 bytes by Red-Black Tree). 
 	//! Red-Black Tree is used for elements access and searching, Lists for elements rapid iteration.
 	template<typename ElementTypeTp>
 	class Set final : public RedBlackTree<ElementTypeTp>
@@ -48,23 +48,26 @@ GD_NAMESPACE_BEGIN
 
 		// ------------------------------------------------------------------------------------------
 		//! Initializes an empty map.
-		GDINL Set() : RedBlackTreeType()
+		GDINL Set() 
+			: RedBlackTreeType()
 		{
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Initializes set with default C++11's initializer list. You should not use this constructor manually.
 		//! @param InitializerList Initializer list passed by the compiler.
-		GDINL Set(InitializerList<ElementType> const& InitializerList) : RedBlackTreeType()
+		GDINL Set(InitializerList<ElementType> const& initializerList) 
+			: RedBlackTreeType()
 		{
-			for (auto const& Element : InitializerList)
-				this->InsertKeyValue(Element.Key, Element.Value);
+			for (auto const& element : initializerList)
+				Insert(element);
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Moves other set here.
 		//! @param OtherSet Set would be moved into current object.
-		GDINL Set(Set&& OtherSet) : RedBlackTreeType(Forward<Set>(OtherSet))
+		GDINL Set(Set&& otherSet) 
+			: RedBlackTreeType(Forward<Set>(otherSet))
 		{
 		}
 
@@ -82,22 +85,63 @@ GD_NAMESPACE_BEGIN
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// ------------------------------------------------------------------------------------------
-		//! Determines whether the element with specified key exists in the container.
-		//! @param Element Element we are looking for.
-		//! @returns True if element with specified key exists in the container, false otherwise.
-		GDINL bool Contains(ElementType const& Element) const
+		//! Queries for the Iterator of the element with specified Key.
+		//! @param element The element we are looking for.
+		//! @returns Iterator on the element if it was found and End Iterator otherwise.
+		//! @{
+		GDINL ConstIterator QueryIterator(ElementType const& element) const
 		{
-			return this->QueryIterator(Element) != this->End();
+			return ConstIterator(*this, this->_QueryNode(&element));
 		}
+		GDINL Iterator QueryIterator(ElementType const& element)
+		{
+			return Iterator(*this, this->_QueryNode(&element));
+		}
+		//! @}
+
+		// ------------------------------------------------------------------------------------------
+		//! Determines whether the element with specified Key exists in the m_Container.
+		//! @param element The element we are looking for.
+		//! @returns True if element with specified Key exists in the m_Container, false otherwise.
+		GDINL bool Contains(ElementType const& element) const
+		{
+			return QueryIterator(element) != this->End();
+		}
+
+		// ------------------------------------------------------------------------------------------
+		//! Performs an insertion of the new node with specified Key and value.
+		//! @param element The element that would be inserted.
+		//! @{
+		GDINL void Insert(ElementType&& element)
+		{
+			this->_InsertNode(GD_NEW(RedBlackTreeNodeType, Forward<ElementType>(element)));
+		}
+		GDINL void Insert(ElementType const& element)
+		{
+			this->_InsertNode(GD_NEW(RedBlackTreeNodeType, element));
+		}
+		//! @}
+
+		// ------------------------------------------------------------------------------------------
+		//! Removes existing element from the tree.
+		//! @param element The element that is going to be RemoveFromSelfd.
+		//! @{
+		GDINL void Erase(ElementType const& element)
+		{
+			EraseByPtr(&element);
+		}
+		GDINL void EraseByPtr(ElementType const* const element)
+		{
+			auto QueriedNode = this->_QueryNode(element);
+			GD_DEBUG_ASSERT(QueriedNode != nullptr, "Specified element Key does not exist.");
+			this->_RemoveNode(QueriedNode);
+		}
+		//! @}
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		// Overloaded operators.
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		// ------------------------------------------------------------------------------------------
-		//! Moves other set here.
-		//! @param OtherSet Other set that would be moved into current object.
-		//! @returns This.
 		GDINL Set& operator= (Set&& OtherSet)
 		{
 			RedBlackTreeType::operator= (Forward<Set>(OtherSet));

@@ -1,58 +1,38 @@
-#include <GoddamnEngine/DInterface/DGFX/DGFX.h>
-#include <GoddamnEngine/DInterface/DGFX/_DGFXDX11/_DGFXDX11.h>
-#include <GoddamnEngine/DInterface/DEngineCore.h>
+#define GD_DLL_IMPORT 1
+#include <GoddamnEngine/Core/JSON/Json.h>
+#include <GoddamnEngine/Core/IO/Stream/FileStream/FileStream.h>
 using namespace GD_NAMESPACE;
 
-typedef float float4[4];
-struct VertexType
+#include <vector>
+
+int main(int argc, const char** argv)
 {
-	float4 position;
-	float4 color;
-};
-
-static const VertexType triangle [] = 
-{
-	{ { -1.0f, -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-	{ { 0.0f, 1.0f, 0.0f, 0.0f },   { 0.0f, 1.0f, 0.0f, 1.0f } },
-	{ { 1.0f, -1.0f, 0.0f, 0.0f },  { 0.0f, 0.0f, 1.0f, 1.0f } }
-};
-UINT indices [] = { 0, 1, 2 };
-
-int main()
-{
-	DEngineCoreIterface* D = CreateDEngineCoreIterface();
-	_DGFXDX11* G = GD_NEW(_DGFXDX11);
-
-	G->Runtime_PreInitialize();
-	G->Runtime_Initialize();
-	G->Runtime_PostInitialize();
-
-	DGFXHandle VertexBuffer, IndexBuffer;
-	G->Gfx_BufferCreate(&VertexBuffer, DGFX_BUFFER_TYPE_VERTEX, sizeof(triangle), triangle);
-	G->Gfx_BufferCreate(&IndexBuffer, DGFX_BUFFER_TYPE_INDEX, sizeof(indices), indices);
-
-	DGFXHandle IndexedShape;
-	G->Gfx_IndexedShapeCreate(&IndexedShape, DGFX_TOPOLOGY_TYPE_TRAINGLELIST);
-	G->Gfx_IndexedShapeAttachVertexBuffer(IndexedShape, VertexBuffer);
-	G->Gfx_IndexedShapeAttachIndexBuffer(IndexedShape, IndexBuffer);
-
-	/*DGFXHandle VertexShader, PixelShader;
-	G->Gfx_ShaderCreate(&VertexShader, DGFX_SHADER_TYPE_VERTEX, L"xvs.hlsl");
-	G->Gfx_ShaderCreate(&PixelShader, DGFX_SHADER_TYPE_PIXEL, L"xps.hlsl");*/
-
-	/*DGFXHandle LinkagePoint;
-	G->Gfx_LinkagePointCreate(&LinkagePoint);
-	G->Gfx_LinkagePointSetIndexedShape(LinkagePoint, IndexedShape);
-	G->Gfx_LinkagePointSetShader(LinkagePoint, DGFX_SHADER_TYPE_VERTEX, VertexShader);
-	G->Gfx_LinkagePointSetShader(LinkagePoint, DGFX_SHADER_TYPE_PIXEL, PixelShader);*/
-
-	while (true)
 	{
-		G->Runtime_PreUpdate();
-		G->Runtime_Update();
-		/*G->Gfx_LinkagePointRender(LinkagePoint);*/
-		G->Runtime_PostUpdate();
+		Map<String, String> a;
+		RedBlackTree<Pair<String, String>>& b = a;
+
+		a.Insert("1", "1");
+		a.Insert("2", "2");
+		a.Insert("3", "4");
+
+	//	a.Erase("2");
+
+		typedef char* t;
+		t* u = nullptr;
+		u->~t();
+
+		int j = 0;
+		for (auto i = a.Begin(); i != a.End(); ++i)
+		{
+			j += 1;
+			printf_s("\n%s %s", i->Key.CStr(), i->Value.CStr());
+		}
 	}
 
-	return 0;
-}
+	int i = sizeof(String);
+	
+	FileInputStream stream("D:\\GoddamnEngine\\Source\\Projects\\GoddamnCore\\Source\\GoddamnEngine\\Core\\JSON\\test.json");
+	auto const json = JsonSerializer::Parse(&stream);
+
+	JsonSerializer::Write(json.Result, nullptr);
+ }

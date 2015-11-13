@@ -15,36 +15,36 @@ using System.Linq;
 
 namespace GoddamnEngine.BuildSystem
 {
-	//[
+	// ------------------------------------------------------------------------------------------
     //! Represents a solution (set of projects).
     public class Solution : Collector
     {
-        //[
+        // ------------------------------------------------------------------------------------------
         //! Collects list of projects in solution.
         //! @note All unsupported projects should be filtered by this function.
         //! @returns Iterator for list of projects in solution.
         public virtual IEnumerable<ProjectCache> EnumerateProjects()
         {
             return Directory.EnumerateFiles(Path.Combine(GetLocation(), "Projects"), "*.gdproj.cs", SearchOption.AllDirectories)
-                .Select(ProjectFactory.Create).Where(Project => Project.IsSupported);
+                .Select(ProjectFactory.Create).Where(project => project.IsSupported);
         }
     }   // class Solution
 
-    //[
+    // ------------------------------------------------------------------------------------------
     //! Represents a collection of cached data that was by dependency object.
     public class SolutionCache : CollectorCache
     {
         public string GeneratedSolutionPath;
         public readonly ProjectCache[] CachedProjects;
 
-        //[
+        // ------------------------------------------------------------------------------------------
         //! Generates cache for specified dependency.
-        //! @param Solution Solution which dynamic properties would be cached.
-        public SolutionCache(Solution Solution)
-            : base(Solution)
+        //! @param solution Solution which dynamic properties would be cached.
+        public SolutionCache(Solution solution)
+            : base(solution)
         {
             if (IsSupported)
-                CachedProjects = Solution.EnumerateProjects().ToArray();
+                CachedProjects = solution.EnumerateProjects().ToArray();
         }
     }   // class DependencyCache
 

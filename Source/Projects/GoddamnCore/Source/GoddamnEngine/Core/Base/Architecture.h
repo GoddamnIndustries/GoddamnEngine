@@ -27,11 +27,11 @@
 // ------------------------------------------------------------------------------------------
 // Microsoft Windows (R) Platforms family.
 // ------------------------------------------------------------------------------------------
-#if (defined(_WIN32)) && (!defined(GD_PLATFORM_NOT_WINDOWS)) || defined(__INTELLISENSE__)
+#if (defined(_WIN32)) && (!defined(GD_PLATFORM_NOT_WINDOWS)) 
 #	define _USE_MATH_DEFINES    										GD_TRUE
 #	define WIN32_LEAN_AND_MEAN											GD_TRUE
 #	define VC_EXTRALEAN													GD_TRUE
-#	define _CRT_SECURE_NO_WARNINGS										GD_TRUE
+//#	define _CRT_SECURE_NO_WARNINGS										GD_TRUE
 #	if 0																// These enables heap debugging.
 #	define _CRTDBG_MAP_ALLOC											GD_TRUE
 #	define _CRTDBG_MAP_ALLOC_NEW										GD_TRUE
@@ -42,11 +42,11 @@
 #		define GD_PLATFORM_WINDOWS										GD_TRUE
 #		define GD_PLATFORM_DESKTOP										GD_TRUE
 #	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PHONE_APP))				//   Windows Phone 8 application.
-#		define GD_PLATFORM_WINDOWS_PHONE8								GD_TRUE
+#		define GD_PLATFORM_WINDOWS_PHONE								GD_TRUE
 #		define GD_PLATFORM_MOBILE										GD_TRUE
 #	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PC_APP))				//   Windows Store application (Windows Desktop or Windows RT).
 #		if (defined(__WRL_WINRT_STRICT__))								//   Windows RT application.
-#			define GD_PLATFORM_WINDOWS_RT								GD_TRUE
+#			define GD_PLATFORM_WINDOWS_UAP								GD_TRUE
 #			define GD_PLATFORM_MOBILE									GD_TRUE
 #		else	// if (defined(__WRL_WINRT_STRICT__))					//   Windows Desktop application.
 #			define GD_PLATFORM_WINDOWS									GD_TRUE
@@ -124,8 +124,8 @@
 #	define GD_PLATFORM_API_LIBSDL1										GD_TRUE
 #endif	// if (defined(__EMSCRIPTEN__))
 
-// Currently only HTML5 does not support multithreading.
-#if (!defined(GD_PLATFORM_HTML5))
+// Currently only HTML5 does not support multi-threading.
+#if (!defined(GD_PLATFORM_HTML5)) 
 #	define GD_PLATFORM_HAS_MULTITHREADING								GD_TRUE
 #else	// if (!defined(GD_PLATFORM_HTML5))
 #	define GD_PLATFORM_HAS_MULTITHREADING								GD_FALSE
@@ -135,12 +135,12 @@
 #if (!defined(GD_PLATFORM_WINDOWS))
 #	define GD_PLATFORM_WINDOWS											GD_FALSE
 #endif	// if (!defined(GD_PLATFORM_WINDOWS))
-#if (!defined(GD_PLATFORM_WINDOWS_PHONE8))
-#	define GD_PLATFORM_WINDOWS_PHONE8									GD_FALSE
-#endif	// if (!defined(GD_PLATFORM_WINDOWS_PHONE8))
-#if (!defined(GD_PLATFORM_WINDOWS_RT))
-#	define GD_PLATFORM_WINDOWS_RT										GD_FALSE
-#endif	// if (!defined(GD_PLATFORM_WINDOWS_RT))
+#if (!defined(GD_PLATFORM_WINDOWS_PHONE))
+#	define GD_PLATFORM_WINDOWS_PHONE									GD_FALSE
+#endif	// if (!defined(GD_PLATFORM_WINDOWS_PHONE))
+#if (!defined(GD_PLATFORM_WINDOWS_UAP))
+#	define GD_PLATFORM_WINDOWS_UAP										GD_FALSE
+#endif	// if (!defined(GD_PLATFORM_WINDOWS_UAP))
 #if (!defined(GD_PLATFORM_OS_X))
 #	define GD_PLATFORM_OS_X												GD_FALSE
 #endif	// if (!defined(GD_PLATFORM_OS_X))
@@ -164,8 +164,8 @@
 #endif	// if (!defined(GD_PLATFORM_HTML5))
 #if (!(0 \
 	^ GD_PLATFORM_WINDOWS \
-	^ GD_PLATFORM_WINDOWS_PHONE8 \
-	^ GD_PLATFORM_WINDOWS_RT \
+	^ GD_PLATFORM_WINDOWS_PHONE \
+	^ GD_PLATFORM_WINDOWS_UAP \
 	^ GD_PLATFORM_OS_X \
 	^ GD_PLATFORM_IOS \
 	^ GD_PLATFORM_GNU_LINUX \
@@ -238,10 +238,10 @@
 #define GD_PLATFORM_WINDOWS												Compile-Time Value
 
 //! Engine is being built as a Microsoft Windows Phone 8 application.
-#define GD_PLATFORM_WINDOWS_PHONE8										Compile-Time Value
+#define GD_PLATFORM_WINDOWS_PHONE										Compile-Time Value
 
 //! Engine is being built as a Microsoft Windows RT application.
-#define GD_PLATFORM_WINDOWS_RT											Compile-Time Value
+#define GD_PLATFORM_WINDOWS_UAP											Compile-Time Value
 
 //! Engine is being built as an Apple OS X application.
 #define GD_PLATFORM_OS_X												Compile-Time Value
@@ -419,7 +419,7 @@
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Architecture Determination.
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#pragma region Platform Determination
+#pragma region Architecture Determination
 #if !GD_DOCUMENTATION
 
 // http://sourceforge.net/p/predef/wiki/Architectures/
@@ -509,7 +509,7 @@
 #			error "Standart C++ RTTI should be disabled in MSVC compiler."
 #		endif	// if (defined(_CPP_RTTI))
 #	endif	// if (defined(__cplusplus_cli))
-#elif GD_COMPILER_GCC_COMPATIBLE
+#elif GD_COMPILER_GCC_COMPATIBLE && 0
 #	if (defined(__GXX_RTTI))
 #		error "Standart C++ RTTI should be disabled in GCC compiler."
 #	endif	// if (defined(__GXX_RTTI))
@@ -518,27 +518,11 @@
 #	if (!(defined(_CPPUNWIND)))
 #		error "Exceptions should be enabled in MSVC compiler."
 #	endif	// if (!(defined(_CPPUNWIND)))
-#elif GD_COMPILER_GCC_COMPATIBLE
-#	if (!(defined(__EXCEPTIONS)))
+#elif GD_COMPILER_GCC_COMPATIBLE && 0
+#	if !__EXCEPTIONS
 #		error "Exceptions should be enabled in GCC compiler."
 #	endif	// if (!(defined(__EXCEPTIONS)))
 #endif	// *** C++ exceptions check. ***
-
-// Disabled warnings.
-#if GD_COMPILER_MSVC_COMPATIBLE
-#	pragma warning(disable : 4100)	// unreferenced formal parameter. Actually, this should not be disabled.
-#	pragma warning(disable : 4127)	// conditional expression is constant
-//#	pragma warning(disable : 4189)
-#	pragma warning(disable : 4201)	// nonstandard extension used : nameless struct/union
-//#	pragma warning(disable : 4301)
-#	pragma warning(disable : 4324)	// structure was padded due to __declspec(align())
-#	pragma warning(disable : 4373)	// virtual function overrides '___', previous versions of the compiler did not override when parameters only differed by const/volatile qualifiers
-//#	pragma warning(disable : 4456)
-//#	pragma warning(disable : 4458)
-#	pragma warning(disable : 4505)	// unreferenced local function has been RemoveFromSelfd. Actually, this should not be disabled.
-#	pragma warning(disable : 4714)	// function '...' marked as __forceinline not inlined. Actually, this should not be disabled.
-#elif GD_COMPILER_GCC_COMPATIBLE
-#endif	// *** Warnings. ***
 
 #else	// if !GD_DOCUMENTATION
 
@@ -692,7 +676,7 @@
 
 // ------------------------------------------------------------------------------------------
 //! Definition would be local to the thread.
-//! @todo Remove this when MSVC would support 'thread_local'.
+//! @todo Erase this when MSVC would support 'thread_local'.
 #define GD_THREAD_LOCAL \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(thread_local) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__declspec(thread)) 
@@ -700,7 +684,7 @@
 // ------------------------------------------------------------------------------------------
 //! Definition would be defined deprecated.
 //! @param Text Deprecation notation message.
-//! @todo Remove this when compiler would support attributes.
+//! @todo Erase this when compiler would support attributes.
 #define GD_DEPRECATED(Text) \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((deprecated(Text)))) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__declspec(deprecated(Text)))
@@ -723,7 +707,7 @@
 //! Defines an API method.
 #define GDAPI \
 	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((visibility("default")))) \
-	GD_COMPILER_MSVC_COMPATIBLE_CODE(GD_EXPORT(__declspec(dllexport)) GD_IMPORT(__declspec(dllexport)))
+	GD_COMPILER_MSVC_COMPATIBLE_CODE(GD_EXPORT(__declspec(dllexport)) GD_IMPORT(__declspec(dllimport)))
 
 // ------------------------------------------------------------------------------------------
 //! Defines a method that stays internal for the Assembly.
@@ -766,8 +750,8 @@
 
 // ------------------------------------------------------------------------------------------
 //! Defines a function that smell like printf. Does some real static analysis on GCC-compatible compilers.
-//! @param StringIndex Index of a Format-string parameter.
-//! @param FirstToCheck Index of first Format-value parameter.
+//! @param StringIndex m_Index of a format-string parameter.
+//! @param FirstToCheck m_Index of first format-value parameter.
 #define GD_PRINTF_LIKE(StringIndex, FirstToCheck) \
 	GD_COMPILER_GCC_COMPATIBLE(__attribute__((format(printf, StringIndex, FirstToCheck)))) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE() 
@@ -780,6 +764,25 @@
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__vectorcall) 
 
 #pragma endregion Compiler Directives
+
+// Disabled warnings.
+#if GD_COMPILER_MSVC_COMPATIBLE
+#	if !GD_RELEASE
+#		pragma warning(disable : 4189)	// 'identifier' : local variable is initialized but not referenced
+#	endif	// if !GD_RELEASE
+#	pragma warning(disable : 4100)	// unreferenced formal parameter. Actually, this should not be disabled.
+#	pragma warning(disable : 4127)	// conditional expression is constant
+//#	pragma warning(disable : 4189)
+#	pragma warning(disable : 4201)	// nonstandard extension used : nameless struct/union
+//#	pragma warning(disable : 4301)
+#	pragma warning(disable : 4324)	// structure was padded due to __declspec(align())
+#	pragma warning(disable : 4373)	// virtual function overrides '___', previous versions of the compiler did not override when parameters only differed by const/volatile qualifiers
+//#	pragma warning(disable : 4456)
+//#	pragma warning(disable : 4458)
+#	pragma warning(disable : 4505)	// unreferenced local function has been RemoveFromSelfd. Actually, this should not be disabled.
+#	pragma warning(disable : 4714)	// function '...' marked as __forceinline not inlined. Actually, this should not be disabled.
+#elif GD_COMPILER_GCC_COMPATIBLE
+#endif	// *** Warnings. ***
 
 // ------------------------------------------------------------------------------------------
 // System includes.
@@ -798,7 +801,7 @@
 #	include <cctype>
 #	include <cwchar>
 #	include <cfloat>
-#	include <cmath>
-#	include <ctime>
+#	include <math.h>
+#	include <time.h>
 #	include <new>
 #endif	// if !GD_RESOURCE_COMPILER

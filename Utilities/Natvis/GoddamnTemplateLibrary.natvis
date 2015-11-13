@@ -13,38 +13,23 @@ terms of Goddamn Industries End User License Agreement.
   Contains debug visualizers for Visual Studio Native Visualizer.
 -->
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-  <!-- 
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  Templates.
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  -->
 
   <!-- UniquePtr<T> class. -->
   <Type Name="Goddamn::UniquePtr&lt;*&gt;">
-    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
-    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
+    <DisplayString Condition="m_RawPointer == 0">Empty</DisplayString>
+    <DisplayString Condition="m_RawPointer != 0">{*m_RawPointer}</DisplayString>
     <Expand>
-      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
+      <Item Condition="m_RawPointer != 0" Name="Pointer">m_RawPointer</Item>
     </Expand>
   </Type>
 
   <!-- SharedPtr<T> class. -->
   <Type Name="Goddamn::SharedPtr&lt;*&gt;">
-    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
-    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
+    <DisplayString Condition="m_RawPointer == 0">Empty</DisplayString>
+    <DisplayString Condition="m_RawPointer != 0">{*m_RawPointer}</DisplayString>
     <Expand>
-      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
-      <Item Condition="Pointer != 0" Name="Reference counter">*ReferenceCount</Item>
-    </Expand>
-  </Type>
-
-  <!-- RefPtr<T> class. -->
-  <Type Name="Goddamn::RefPtr&lt;*&gt;">
-    <DisplayString Condition="Pointer == 0">Empty</DisplayString>
-    <DisplayString Condition="Pointer != 0">{*Pointer}</DisplayString>
-    <Expand>
-      <Item Condition="Pointer != 0" Name="Pointer">Pointer</Item>
-      <Item Condition="Pointer != 0" Name="Reference counter">Pointer->ReferenceCount</Item>
+      <Item Condition="m_RawPointer != 0" Name="Reference counter">*m_ReferenceCount</Item>
+      <Item Condition="m_RawPointer != 0" Name="Pointer">m_RawPointer</Item>
     </Expand>
   </Type>
 
@@ -54,133 +39,86 @@ terms of Goddamn Industries End User License Agreement.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   -->
 
-  <!-- LinkedList<T> class. -->
-  <Type Name="Goddamn::LinkedList&lt;*&gt;">
-    <DisplayString Condition="Length == 0">Empty</DisplayString>
-    <DisplayString Condition="Length != 0">{{ Length = {Length} }}</DisplayString>
-    <Expand>
-      <Item Condition="Length != 0" Name="Length">Length</Item>
-      <LinkedListItems Condition="Length != 0">
-        <Size>Length</Size>
-        <HeadPointer>First</HeadPointer>
-        <NextPointer>Next</NextPointer>
-        <ValueNode>Element</ValueNode>
-      </LinkedListItems>
-    </Expand>
-  </Type>
-
-  <!-- DoubleLinkedList<T> class. -->
-  <Type Name="Goddamn::DoubleLinkedList&lt;*&gt;">
-    <DisplayString Condition="Length == 0">Empty</DisplayString>
-    <DisplayString Condition="Length != 0">{{ Length = {Length} }}</DisplayString>
-    <Expand>
-      <Item Condition="Length != 0" Name="Length">Length</Item>
-      <LinkedListItems Condition="Length != 0">
-        <Size>Length</Size>
-        <HeadPointer>First</HeadPointer>
-        <NextPointer>Next</NextPointer>
-        <ValueNode>Element</ValueNode>
-      </LinkedListItems>
-    </Expand>
-  </Type>
-
-  <!-- LockFreeList<T> class. -->
-  <Type Name="Goddamn::LockFreeList&lt;*&gt;">
-    <DisplayString Condition="Length == 0">Empty</DisplayString>
-    <DisplayString Condition="Length != 0">{{ Length = {Length} }}</DisplayString>
-    <Expand>
-      <Item Condition="Length != 0" Name="Length">Length</Item>
-      <LinkedListItems Condition="Length != 0">
-        <Size>Length</Size>
-        <HeadPointer>First</HeadPointer>
-        <NextPointer>Next</NextPointer>
-        <ValueNode>Element</ValueNode>
-      </LinkedListItems>
-    </Expand>
-  </Type>
-
-  <!-- RedBlackTree<T>|RedBlackTreeBase class. -->
-  <Type Name="Goddamn::RedBlackTree&lt;*&gt;">
+  <!-- InitializerList class. -->
+  <!-- Typedef from STL's container, no need to overload it here. -->
+  
+  <!-- Set<T> class. -->
+  <Type Name="Goddamn::Set&lt;*&gt;">
+    <!-- Let's define base classes, such as RedBlackTree(Base) too. -->
     <AlternativeType Name="Goddamn::RedBlackTreeBase"/>
-    <DisplayString Condition="Length == 0">Empty</DisplayString>
-    <DisplayString Condition="Length != 0">{{ Length = {Length} }}</DisplayString>
+    <AlternativeType Name="Goddamn::RedBlackTree&lt;*&gt;"/>
+    <DisplayString Condition="m_Length == 0">Empty</DisplayString>
+    <DisplayString Condition="m_Length != 0">{{ Length = {m_Length} }}</DisplayString>
     <Expand>
-      <Item Condition="Length != 0" Name="Length">Length</Item>
-      <TreeItems Condition="Length != 0">
-        <Size>Length</Size>
-        <HeadPointer>RootNode-&gt;Left</HeadPointer>
-        <LeftPointer>Left</LeftPointer>
-        <RightPointer>Right</RightPointer>
-        <ValueNode>*(($T1*)ElementFirstByte)</ValueNode>
+      <Item Condition="m_Length != 0" Name="Length">m_Length</Item>
+      <TreeItems Condition="m_Length != 0">
+        <Size>m_Length</Size>
+        <HeadPointer>m_RootNode-&gt;m_Left</HeadPointer>
+        <LeftPointer>m_Left</LeftPointer>
+        <RightPointer>m_Right</RightPointer>
+        <ValueNode Condition="!m_IsNull">*(($T1*)(&amp;m_DataUntyped[0]))</ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
   <!-- Map<K, V> class. -->
   <Type Name="Goddamn::Map&lt;*,*&gt;">
-    <DisplayString Condition="Length == 0">Empty</DisplayString>
-    <DisplayString Condition="Length != 0">{{ Length = {Length} }}</DisplayString>
+    <DisplayString Condition="m_Length == 0">Empty</DisplayString>
+    <DisplayString Condition="m_Length != 0">{{ Length = {m_Length} }}</DisplayString>
     <Expand>
-      <Item Condition="Length != 0" Name="Length">Length</Item>
-      <TreeItems Condition="Length != 0">
-        <Size>Length</Size>
-        <HeadPointer>RootNode-&gt;Left</HeadPointer>
-        <LeftPointer>Left</LeftPointer>
-        <RightPointer>Right</RightPointer>
-        <ValueNode>*((Goddamn::Pair&lt;$T1,$T2&gt;*)(ElementFirstByte))</ValueNode>
+      <Item Condition="m_Length != 0" Name="Length">m_Length</Item>
+      <TreeItems Condition="m_Length != 0">
+        <Size>m_Length</Size>
+        <HeadPointer>m_RootNode-&gt;m_Left</HeadPointer>
+        <LeftPointer>m_Left</LeftPointer>
+        <RightPointer>m_Right</RightPointer>
+        <ValueNode Condition="!m_IsNull">*((Goddamn::Pair&lt;$T1,$T2&gt;*)(&amp;m_DataUntyped[0]))</ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
   <!-- BaseString<T> class. -->
   <Type Name="Goddamn::BaseString&lt;*&gt;">
-    <DisplayString Condition="Length == 0">Empty</DisplayString>
-    <DisplayString Condition="Length &gt;= MaxStackLength">{HeapMemory}</DisplayString>
-    <DisplayString Condition="Length &lt; MaxStackLength">{&amp;StackMemory[0]}</DisplayString>
-    <StringView Condition="(Length &gt;= MaxStackLength) &amp;&amp; (Length != 0)">HeapMemory</StringView>
-    <StringView Condition="(Length &lt; MaxStackLength) &amp;&amp; (Length != 0)">&amp;StackMemory[0]</StringView>
+    <DisplayString Condition="m_Length == 0">Empty</DisplayString>
+    <DisplayString Condition="m_Length &gt;= s_MaxInlineLength">{m_HeapMemory}</DisplayString>
+    <DisplayString Condition="m_Length &lt; s_MaxInlineLength">{&amp;m_InlineMemory[0]}</DisplayString>
+    <StringView Condition="(m_Length &gt;= s_MaxInlineLength) &amp;&amp; (m_Length != 0)">m_HeapMemory</StringView>
+    <StringView Condition="(m_Length &lt; s_MaxInlineLength) &amp;&amp; (m_Length != 0)">m_InlineMemory</StringView>
     <Expand>
-      <Item Condition="Length != 0" Name="Length">Length</Item>
-      <ArrayItems Condition="Length != 0">
-        <Size>Length</Size>
-        <ValuePointer Condition="Length &gt;= MaxStackLength">HeapMemory</ValuePointer>
-        <ValuePointer Condition="Length &lt; MaxStackLength">&amp;StackMemory[0]</ValuePointer>
+      <Item Condition="m_Length != 0" Name="Length">m_Length</Item>
+      <ArrayItems Condition="m_Length != 0">
+        <Size>m_Length</Size>
+        <ValuePointer Condition="m_Length &gt;= s_MaxInlineLength">m_HeapMemory</ValuePointer>
+        <ValuePointer Condition="m_Length &lt; s_MaxInlineLength">m_InlineMemory</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
 
   <!-- BaseStringBuilder<T> class. -->
   <Type Name="Goddamn::BaseStringBuilder&lt;*&gt;">
-    <DisplayString Condition="Length == 0">Empty</DisplayString>
-    <DisplayString Condition="Length != 0">{{ Length = {Container.Length - 1} }}</DisplayString>
-    <StringView Condition="Length != 0">Container.Memory</StringView>
+    <DisplayString Condition="m_Container.m_Length == 0">Empty</DisplayString>
+    <DisplayString Condition="m_Container.m_Length != 0">{{ Length = {m_Container.m_Length - 1} }}</DisplayString>
+    <StringView Condition="m_Container.m_Length != 0">m_Container.m_Memory</StringView>
     <Expand>
-      <Item Name="Length">Container.Length - 1</Item>
-      <Item Name="Capacity">Container.Capacity</Item>
+      <Item Condition="m_Container.m_Length &gt; 1" Name="Length">m_Container.m_Length - 1</Item>
+      <Item Name="Capacity">m_Container.m_Capacity</Item>
       <ArrayItems>
-        <Size>Container.Length</Size>
-        <ValuePointer>Container.Memory</ValuePointer>
+        <Size>m_Container.m_Length</Size>
+        <ValuePointer>($T1*)m_Container.m_Memory</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
 
-  <!-- Symbol class. -->
-  <Type Name="Goddamn::Symbol">
-    <DisplayString Condition="TableRecord == 0">Invalid</DisplayString>
-    <DisplayString Condition="TableRecord != 0">&amp;(*TableRecord).SymbolData[0]</DisplayString>
-  </Type>
-
   <!-- Vector<T> class. -->
   <Type Name="Goddamn::Vector&lt;*&gt;">
-    <DisplayString Condition="Length == 0">Empty</DisplayString>
-    <DisplayString Condition="Length != 0">{{ Length = {Length} }}</DisplayString>
+    <DisplayString Condition="m_Length == 0">Empty</DisplayString>
+    <DisplayString Condition="m_Length != 0">{{ Length = {m_Length} }}</DisplayString>
     <Expand>
-      <Item Condition="Length != 0" Name="Length">Length</Item>
-      <Item Name="Capacity">Capacity</Item>
-      <!-- Capacity should be shown anyway -->
-      <ArrayItems Condition="Length != 0">
-        <Size>Length</Size>
-        <ValuePointer>($T1*)Memory</ValuePointer>
+      <Item Condition="m_Length != 0" Name="Length">m_Length</Item>
+      <Item Name="Capacity">m_Capacity</Item>
+      <ArrayItems Condition="m_Length != 0">
+        <Size>m_Length</Size>
+        <ValuePointer>m_Memory</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>

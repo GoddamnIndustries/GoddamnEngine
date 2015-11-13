@@ -14,116 +14,116 @@ using System.IO;
 
 namespace GoddamnEngine.BuildSystem
 {
-    //[
+    // ------------------------------------------------------------------------------------------
     //! Represents an exception, thrown by BuildSystem code.
     [Serializable]
     public class BuildSystemException : Exception
     {
-        //[
+        // ------------------------------------------------------------------------------------------
         //! Constructs the build system exception with a string.
-        //! @param Format Format string.
-        //! @param Arguments Formatting arguments.
-        public BuildSystemException(string Format, params object[] Arguments)
-            : base(string.Format(Format, Arguments))
+        //! @param Format the format string.
+        //! @param arguments Formatting arguments.
+        public BuildSystemException(string format, params object[] arguments)
+            : base(string.Format(format, arguments))
         {
         }
     }   // class ProjectException
 
-    //[
+    // ------------------------------------------------------------------------------------------
     //! Represents a attribute of a build system module.
     [AttributeUsage(AttributeTargets.Class)]
     internal sealed class BuildSystemModuleAttribute : Attribute
     {
         public readonly string CommandLineName;
-        public BuildSystemModuleAttribute(string CommandLineName)
+        public BuildSystemModuleAttribute(string commandLineName)
         {
-            this.CommandLineName = CommandLineName;
+            CommandLineName = commandLineName;
         }
     }   // class BuildSystemModuleAttribute
 
-    //[
+    // ------------------------------------------------------------------------------------------
     //! Represents a module of a build system.
     public abstract class BuildSystemModule
     {
-        //[
+        // ------------------------------------------------------------------------------------------
         //! Entry point of a module.
-        public virtual int Execute(string[] Arguments)
+        public virtual int Execute(string[] arguments)
         {
             return 0;
         }
     }   // class BuildSystemModule
 
-    //[
+    // ------------------------------------------------------------------------------------------
     //! Main class of build system.
     public static class BuildSystem
     {
-        private static string SDKPath = null;
+        private static string _sdkPath;
 
-        //[
+        // ------------------------------------------------------------------------------------------
         //! Returns path to GoddamnSDK installation location.
         //! @returns Path to GoddamnSDK installation location.
-        public static string GetSDKLocation()
+        public static string GetSdkLocation()
         {
-            if (SDKPath == null)
-            {
-                var ExecutableLocation = Environment.CurrentDirectory;
-                var ExecutableShouldBe = Path.Combine("Bin", "ThirdParty");
-                SDKPath = ExecutableLocation.EndsWith(ExecutableShouldBe, StringComparison.InvariantCultureIgnoreCase) 
-                    ? ExecutableLocation.Substring(0, ExecutableLocation.Length - ExecutableShouldBe.Length - 1) : @"D:\GoddamnEngine";
-            }
-            return SDKPath;
+            if (_sdkPath != null) return _sdkPath;
+            var executableLocation = Environment.CurrentDirectory;
+            var executableShouldBe = Path.Combine("Bin", "ThirdParty");
+            _sdkPath = executableLocation.EndsWith(executableShouldBe, StringComparison.InvariantCultureIgnoreCase) 
+                ? executableLocation.Substring(0, executableLocation.Length - executableShouldBe.Length - 1) : @"D:\GoddamnEngine";
+            return _sdkPath;
         }
 
-        //[
+        // ------------------------------------------------------------------------------------------
         //! Application entry point.
-        //! @param Arguments Command line arguments.
-        private static void Main(string[] Arguments)
+        //! @param arguments Command line arguments.
+        private static void Main(string[] arguments)
         {
             try
             {
-                BuildSystemModule ExecutingModule = null;
-                string[] ExecutingModuleArguments = null;
-                if (Arguments.Length > 0)
+                BuildSystemModule executingModule = null;
+                string[] executingModuleArguments;
+                if (arguments.Length > 0)
                 {
-                    ExecutingModuleArguments = Arguments.SubArray(1);
-                    switch (Arguments[0])
+                    executingModuleArguments = arguments.SubArray(1);
+                    switch (arguments[0])
                     {
                         case "--generate-project-files":
-                            ExecutingModule = new ProjectGenerator.ProjectGeneratorModule();
+                            executingModule = new ProjectGenerator.ProjectGeneratorModule();
                             break;
 
                         case "--compile-project":
-                            ExecutingModule = new ProjectCompiler.ProjectCompilerModule();
+                            executingModule = new ProjectCompiler.ProjectCompilerModule();
                             break;
 
                         case "--copyright-verify":
                             break;
 
                         default:
-                            ExecutingModuleArguments = Arguments;
+                            executingModuleArguments = arguments;
                             goto case "--generate-project-files";
                     }
                 }
                 else
                 {
-                    ExecutingModule = new ProjectGenerator.ProjectGeneratorModule();
-                    ExecutingModuleArguments = Arguments;
+                    executingModule = new ProjectGenerator.ProjectGeneratorModule();
+                    executingModuleArguments = arguments;
                 }
 
-                if (ExecutingModule != null) 
-                    Environment.Exit(ExecutingModule.Execute(ExecutingModuleArguments));
+                if (executingModule != null) 
+                    Environment.Exit(executingModule.Execute(executingModuleArguments));
             }
-            catch (BuildSystemException Exception)
+            catch (BuildSystemException exception)
             {
                 Console.Error.WriteLine("Internal unhanded error was caught while running the Build System:");
-                Console.Error.WriteLine(Exception.Message);
+                Console.Error.WriteLine(exception.Message);
             }
-            //catch (Exception Exception)
-            //{
-            //    Console.Error.WriteLine("Unhanded error was caught while running the Build System:");
-            //    Console.Error.WriteLine(Exception.ToString());
-            //}
-
+#if !DEBUG
+            // We need Visual Studio to debug break when the exception is thrown, not just silently shut down.
+            catch (Exception Exception)
+            {
+                Console.Error.WriteLine("Unhanded error was caught while running the Build System:");
+                Console.Error.WriteLine(Exception.ToString());
+            }
+#endif  // if !DEBUG
             Environment.Exit(1);
         }
 

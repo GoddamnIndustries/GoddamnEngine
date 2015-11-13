@@ -11,6 +11,7 @@
 
 namespace GoddamnEngine.BuildSystem
 {
+    // ------------------------------------------------------------------------------------------
     //! List of properties for C++ compiler.
     public static class TargetCppCompilerInformation
     {

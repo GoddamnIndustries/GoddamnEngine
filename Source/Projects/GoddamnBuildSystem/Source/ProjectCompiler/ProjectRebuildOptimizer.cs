@@ -18,7 +18,8 @@ using System.Threading.Tasks;
 
 namespace GoddamnEngine.BuildSystem.ProjectCompiler
 {
-    //[Serializable]
+    // ------------------------------------------------------------------------------------------
+    [Serializable]
     public class ProjectBuildableSourceFile
     {
         public readonly ProjectSourceFile Source;
@@ -56,7 +57,7 @@ namespace GoddamnEngine.BuildSystem.ProjectCompiler
                         else if (Line.StartsWith("GD_PLATFORINCLUDE("))
                         {
                             throw new NotImplementedException();
-                            // IncludedFilePath = Line.Substring("GD_PLATFORINCLUDE("._Length, Line.IndexOf(",") - "GD_PLATFORINCLUDE("._Length).Trim();
+                            // IncludedFilePath = Line.Substring("GD_PLATFORINCLUDE(".m_Length, Line.IndexOf(",") - "GD_PLATFORINCLUDE(".m_Length).Trim();
                         }
 
 

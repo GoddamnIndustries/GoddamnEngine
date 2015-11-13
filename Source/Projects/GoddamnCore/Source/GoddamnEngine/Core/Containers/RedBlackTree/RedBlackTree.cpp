@@ -1,0 +1,602 @@
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+//! @file GoddamnEngine/Core/Containers/RedBlackTree/RedBlackTree.cpp
+//! m_IsRed Black this data structure Implementation.
+// ------------------------------------------------------------------------------------------
+// Low-level Red-Black Tree algorithms.
+// Adapted from the following code written by Emin Martinian:
+// http://web.mit.edu/~emin/www.old/source_code/red_black_tree/m_Index.html
+//
+// Copyright (c) 2001 Emin Martinian
+//
+// Redistribution and use in source and binary forms, with or without modification, are 
+// permitted provided that neither the name of Emin Martinian nor the names of any 
+// contributors are be used to endorse or promote products derived from this software without 
+// specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS 
+// OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+// COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+// GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+// AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+// OF THE POSSIBILITY OF SUCH DAMAGE.
+// ------------------------------------------------------------------------------------------
+
+#include <GoddamnEngine/Core/Containers/RedBlackTree/RedBlackTree.h>
+
+GD_NAMESPACE_BEGIN
+
+	// ==========================================================================================
+	// RedBlackTree class.
+	// ==========================================================================================
+
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Constructor and destructor.
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	// ------------------------------------------------------------------------------------------
+	//! Initializes a new Red-Black Tree.
+	GDAPI RedBlackTreeBase::RedBlackTreeBase()
+	{
+		_InternalCreateNode(m_NullNode);
+		_InternalCreateNode(m_RootNode);
+#if GD_PLATFORM_WINDOWS && !GD_RELEASE
+		m_NullNode->m_IsNull = true;
+#endif	// if GD_PLATFORM_WINDOWS && !GD_RELEASE
+}
+
+	// ------------------------------------------------------------------------------------------
+	//! Moves other Red-Black Tree here.
+	//! @param other The other tree to move here.
+	GDAPI RedBlackTreeBase::RedBlackTreeBase(RedBlackTreeBase&& other)
+	{
+		m_RootNode = other.m_RootNode;
+		m_NullNode = other.m_NullNode;
+		m_Length = other.m_Length;
+
+		other.m_RootNode = nullptr;
+		other.m_NullNode = nullptr;
+		other.m_Length = 0;
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Deinitializes a Red-Black Tree and destroys all internal data.
+	GDAPI RedBlackTreeBase::~RedBlackTreeBase()
+	{
+		Clear();
+		GD_DELETE(m_RootNode);
+		GD_DELETE(m_NullNode);
+	}
+
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Tree iteration.
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	// ------------------------------------------------------------------------------------------
+	//! Returns the first node of the tree or null.
+	//! @returns The first node of the tree or null if no first node exists.
+	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::_GetFirstNode() const
+	{
+		RedBlackTreeBaseNode const* iterNode = m_RootNode->m_Left;
+		while (iterNode->m_Left != m_NullNode)
+		{
+			iterNode = iterNode->m_Left;
+		}
+
+		return iterNode;
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Returns the first node of the tree or null.
+	//! @returns The first node of the tree or null if no first node exists.
+	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::_GetLastNode() const
+	{
+		RedBlackTreeBaseNode const* iterNode = m_RootNode->m_Left;
+		while (iterNode->m_Right != m_NullNode)
+		{
+			iterNode = iterNode->m_Right;
+		}
+
+		return iterNode;
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Returns next node to specified one or null.
+	//! @param node Some node.
+	//! @returns Next node to this one or null node if not exists.
+	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::_GetNextNode(RedBlackTreeBaseNode const* x) const
+	{
+		RedBlackTreeBaseNode const* y;
+		if (m_NullNode == x)
+		{
+			return m_NullNode;
+		}
+		if (m_NullNode != (y = x->m_Right))
+		{
+			// assignment to y is intentional 
+			while (y->m_Left != m_NullNode)
+			{
+				// returns the minimum of the m_Right subtree of x 
+				y = y->m_Left;
+			}
+			return y;
+		}
+		else
+		{
+			y = x->m_Parent;
+			while (x == y->m_Right)
+			{
+				// sentinel used instead of checking for m_NullNode 
+				x = y;
+				y = y->m_Parent;
+			}
+			if (y == m_RootNode)
+				return m_NullNode;
+			return y;
+		}
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Returns previous node to specified one or null.
+	//! @param node Some node.
+	//! @returns Previous node to this one or null node if not exists.
+	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::_GetPrevNode(RedBlackTreeBaseNode const* x) const
+	{
+		RedBlackTreeBaseNode const* y = nullptr;
+		if (m_NullNode == x)
+		{
+			return _GetLastNode();
+		}
+		if (m_NullNode != (y = x->m_Left))
+		{		
+			// assignment to Y is intentional
+			while (y->m_Right != m_NullNode)
+			{	
+				// returns the maximum of the m_Left subtree of x
+				y = y->m_Right;
+			}
+			return y;
+		}
+		y = x->m_Parent;
+		while (x == y->m_Left)
+		{
+			if (y == m_RootNode)
+			{
+				return(m_NullNode);
+			}
+			x = y;
+			y = y->m_Parent;
+		}
+		return y;
+	}
+
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Tree manipulation.
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	// ------------------------------------------------------------------------------------------
+	//! Internally creates a new node.
+	//! @param newNode Reference to new node.
+	GDAPI void RedBlackTreeBase::_InternalCreateNode(RedBlackTreeBaseNode*& newNode)
+	{
+		newNode = reinterpret_cast<RedBlackTreeBaseNode*>(GD_MALLOC(sizeof(RedBlackTreeBaseNode) - sizeof(Byte)));
+		new (newNode) RedBlackTreeBaseNode();
+		newNode->m_Left   = m_NullNode;
+		newNode->m_Right  = m_NullNode;
+		newNode->m_Parent = m_NullNode;
+		newNode->m_IsRed  = false;
+#if GD_PLATFORM_WINDOWS && !GD_RELEASE
+		newNode->m_IsNull = false;
+#endif	// if GD_PLATFORM_WINDOWS && !GD_RELEASE
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Internally destroys a specified node and all is children.
+	//! @param node The node that is going to be destroyed.
+	GDAPI void RedBlackTreeBase::_InternalDestroyNode(RedBlackTreeBaseNode* const node)
+	{
+		if (node != m_NullNode) 
+		{
+			_InternalDestroyNode(node->m_Left);
+			_InternalDestroyNode(node->m_Right);
+			_DestroyNode(node);
+		}
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Performs a m_Left rotation of the tree.
+	//! @param node The node to rotate on.
+	GDAPI void RedBlackTreeBase::_InternalRotateLeft(RedBlackTreeBaseNode* x)
+	{
+		RedBlackTreeBaseNode* y;
+
+		//  I originally wrote this function to use the sentinel for
+		//  m_NullNode to avoid checking for m_NullNode.  However this introduces a
+		//  very subtle bug because sometimes this function modifies
+		//  the m_Parent pointer of m_NullNode.  This can be a problem if a
+		//  function which calls _InternalRotateLeft also uses the m_NullNode sentinel
+		//  and expects the m_NullNode sentinel's m_Parent pointer to be unchanged
+		//  after calling this function.  For example, when RBDeleteFixUP
+		//  calls _InternalRotateLeft it expects the m_Parent pointer of m_NullNode to be
+		//  unchanged.
+
+		y = x->m_Right;
+		x->m_Right = y->m_Left;
+
+		if (y->m_Left != m_NullNode)
+		{
+			y->m_Left->m_Parent = x;
+			// used to use sentinel here
+			// and do an unconditional assignment instead of testing for m_NullNode
+		}
+
+		y->m_Parent = x->m_Parent;
+
+		// instead of checking if x->m_Parent is the m_RootNode as in the book, we
+		// count on the m_RootNode sentinel to IMPLicitly take care of this case
+		if (x == x->m_Parent->m_Left)
+		{
+			x->m_Parent->m_Left = y;
+		}
+		else
+		{
+			x->m_Parent->m_Right = y;
+		}
+		y->m_Left = x;
+		x->m_Parent = y;
+
+		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in _InternalRotateLeft");
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Performs a m_Right rotation of the tree.
+	//! @param node The node to rotate on.
+	GDAPI void RedBlackTreeBase::_InternalRotateRight(RedBlackTreeBaseNode* y)
+	{
+		RedBlackTreeBaseNode* x;
+
+		/*  I originally wrote this function to use the sentinel for */
+		/*  m_NullNode to avoid checking for m_NullNode.  However this introduces a */
+		/*  very subtle bug because sometimes this function modifies */
+		/*  the m_Parent pointer of m_NullNode.  This can be a problem if a */
+		/*  function which calls LeftRotate also uses the m_NullNode sentinel */
+		/*  and expects the m_NullNode sentinel's m_Parent pointer to be unchanged */
+		/*  after calling this function.  For example, when RBDeleteFixUP */
+		/*  calls LeftRotate it expects the m_Parent pointer of m_NullNode to be */
+		/*  unchanged. */
+		x = y->m_Left;
+		y->m_Left = x->m_Right;
+
+		if (m_NullNode != x->m_Right)
+		{
+			/*used to use sentinel here */
+			/* and do an unconditional assignment instead of testing for m_NullNode */
+			x->m_Right->m_Parent = y;
+		}
+
+		/* instead of checking if x->m_Parent is the m_RootNode as in the book, we */
+		/* count on the m_RootNode sentinel to implicitly take care of this case */
+		x->m_Parent = y->m_Parent;
+		if (y == y->m_Parent->m_Left)
+		{
+			y->m_Parent->m_Left = x;
+		}
+		else
+		{
+			y->m_Parent->m_Right = x;
+		}
+		x->m_Right = y;
+		y->m_Parent = x;
+
+		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in _RightRotate");
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Fixes the tree and restores it's Red-Black properties.
+	//! @param node The node to start fixing.
+	GDAPI void RedBlackTreeBase::_InternalRepair(RedBlackTreeBaseNode* x)
+	{
+		RedBlackTreeBaseNode* w;
+		while (!x->m_IsRed && m_RootNode != x)
+		{
+			if (x == x->m_Parent->m_Left)
+			{
+				w = x->m_Parent->m_Right;
+				if (w->m_IsRed)
+				{
+					w->m_IsRed = 0;
+					x->m_Parent->m_IsRed = 1;
+					_InternalRotateLeft(x->m_Parent);
+					w = x->m_Parent->m_Right;
+				}
+				if (!w->m_Right->m_IsRed && !w->m_Left->m_IsRed)
+				{
+					w->m_IsRed = 1;
+					x = x->m_Parent;
+				}
+				else
+				{
+					if (!w->m_Right->m_IsRed)
+					{
+						w->m_Left->m_IsRed = 0;
+						w->m_IsRed = 1;
+						_InternalRotateRight(w);
+						w = x->m_Parent->m_Right;
+					}
+					w->m_IsRed = x->m_Parent->m_IsRed;
+					x->m_Parent->m_IsRed = 0;
+					w->m_Right->m_IsRed = 0;
+					_InternalRotateLeft(x->m_Parent);
+					/* this is to exit while loop */
+					x = m_RootNode;
+				}
+			}
+			else
+			{
+				/* the code below is has m_Left and m_Right switched from above */
+				w = x->m_Parent->m_Left;
+				if (w->m_IsRed)
+				{
+					w->m_IsRed = 0;
+					x->m_Parent->m_IsRed = 1;
+					_InternalRotateRight(x->m_Parent);
+					w = x->m_Parent->m_Left;
+				}
+				if (!w->m_Right->m_IsRed && !w->m_Left->m_IsRed)
+				{
+					w->m_IsRed = 1;
+					x = x->m_Parent;
+				}
+				else
+				{
+					if (!w->m_Left->m_IsRed)
+					{
+						w->m_Right->m_IsRed = 0;
+						w->m_IsRed = 1;
+						_InternalRotateLeft(w);
+						w = x->m_Parent->m_Left;
+					}
+					w->m_IsRed = x->m_Parent->m_IsRed;
+					x->m_Parent->m_IsRed = 0;
+					w->m_Left->m_IsRed = 0;
+					_InternalRotateRight(x->m_Parent);
+					/* this is to exit while loop */
+					x = m_RootNode;
+				}
+			}
+		}
+		x->m_IsRed = 0;
+		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not black in _RemoveNodeFixUp");
+	}
+
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Tree modification.
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	// ------------------------------------------------------------------------------------------
+	//! Searches for node with specified Key.
+	//! @param Key Key we are looking for.
+	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::_QueryNode(CHandle const element) const
+	{
+		auto x = m_RootNode->m_Left;
+		if (x == m_NullNode)
+		{
+			// return(0);
+			return x;
+		}
+
+		auto CompVal = _CompareElements(x->GetDataUntyped(), element);
+		while (0 != CompVal)
+		{
+			//assignment
+			if (1 == CompVal)
+			{ 
+				// X->GetDataUntyped() > q
+				x = x->m_Left;
+			}
+			else
+			{
+				x = x->m_Right;
+			}
+			if (x == m_NullNode)
+			{
+				// return(0);
+				return x;
+			}
+			CompVal = _CompareElements(x->GetDataUntyped(), element);
+		}
+		return x;
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Performs an insertion of the new node with specified Key and value.
+	//! @param newNode The node that would be inserted. Should be already created.
+	GDAPI void RedBlackTreeBase::_InsertNode(RedBlackTreeBaseNode* z)
+	{
+		GD_DEBUG_ASSERT(z != nullptr, "Null pointer node.");
+		GD_DEBUG_ASSERT(_QueryNode(z->GetDataUntyped()) == _GetNullNode()
+			, "node with specified element already exist in the tree.");
+		m_Length += 1;
+
+		RedBlackTreeBaseNode* y;
+		RedBlackTreeBaseNode* x;
+
+		z->m_Left = z->m_Right = m_NullNode;
+		y = m_RootNode;
+		x = m_RootNode->m_Left;
+		while (x != m_NullNode)
+		{
+			y = x;
+			if (1 == _CompareElements(x->GetDataUntyped(), z->GetDataUntyped()))
+			{ 
+				// X.Key > z.Key
+				x = x->m_Left;
+			}
+			else
+			{ 
+				// X,Key <= z.Key
+				x = x->m_Right;
+			}
+		}
+		z->m_Parent = y;
+		if (y == m_RootNode || 1 == _CompareElements(y->GetDataUntyped(), z->GetDataUntyped()))
+		{ 
+			// Y.Key > z.Key
+			y->m_Left = z;
+		}
+		else
+		{
+			y->m_Right = z;
+		}
+
+		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in TreeInsertHelp");
+
+		x = z;
+		x->m_IsRed = true;
+		while (x->m_Parent->m_IsRed)
+		{ 
+			// use sentinel instead of checking for m_RootNode
+			if (x->m_Parent == x->m_Parent->m_Parent->m_Left)
+			{
+				y = x->m_Parent->m_Parent->m_Right;
+				if (y->m_IsRed)
+				{
+					x->m_Parent->m_IsRed = false;
+					y->m_IsRed = false;
+					x->m_Parent->m_Parent->m_IsRed = true;
+					x = x->m_Parent->m_Parent;
+				}
+				else
+				{
+					if (x == x->m_Parent->m_Right)
+					{
+						x = x->m_Parent;
+						_InternalRotateLeft(x);
+					}
+					x->m_Parent->m_IsRed = false;
+					x->m_Parent->m_Parent->m_IsRed = true;
+					_InternalRotateRight(x->m_Parent->m_Parent);
+				}
+			}
+			else
+			{ 
+				// case for X->m_Parent == X->m_Parent->m_Parent->m_Right
+				y = x->m_Parent->m_Parent->m_Left;
+				if (y->m_IsRed)
+				{
+					x->m_Parent->m_IsRed = false;
+					y->m_IsRed = false;
+					x->m_Parent->m_Parent->m_IsRed = true;
+					x = x->m_Parent->m_Parent;
+				}
+				else
+				{
+					if (x == x->m_Parent->m_Left)
+					{
+						x = x->m_Parent;
+						_InternalRotateRight(x);
+					}
+					x->m_Parent->m_IsRed = false;
+					x->m_Parent->m_Parent->m_IsRed = true;
+					_InternalRotateLeft(x->m_Parent->m_Parent);
+				}
+			}
+		}
+		m_RootNode->m_Left->m_IsRed = false;
+
+		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in Insert");
+		GD_DEBUG_ASSERT(!m_RootNode->m_IsRed, "m_RootNode not m_IsRed in Insert");
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Deletes the node from the tree.
+	//! @param node The node that would be deleted. Should be manually deleted.
+	GDAPI void RedBlackTreeBase::_RemoveNode(RedBlackTreeBaseNode* const z)
+	{
+		RedBlackTreeBaseNode* y;
+		RedBlackTreeBaseNode* x;
+
+		y = z->m_Left == m_NullNode || z->m_Right == m_NullNode ? z : _GetNextNode(z);
+		x = y->m_Left == m_NullNode ? y->m_Right : y->m_Left;
+		if (m_RootNode == (x->m_Parent = y->m_Parent))
+		{ 
+			// assignment of Y->p to X->p is intentional
+			m_RootNode->m_Left = x;
+		}
+		else
+		{
+			if (y == y->m_Parent->m_Left)
+			{
+				y->m_Parent->m_Left = x;
+			}
+			else
+			{
+				y->m_Parent->m_Right = x;
+			}
+		}
+		if (y != z)
+		{ 
+			// Y should not be m_NullNode in this case
+			GD_DEBUG_ASSERT(y != m_NullNode, "Y is m_NullNode in RBDelete\n");
+			
+			// Y is the node to splice out and X is its child
+			if (!y->m_IsRed)
+			{
+				_InternalRepair(x);
+			}
+
+			//DestroyKey(z->GetDataUntyped());
+			//DestroyInfo(z->info);
+			y->m_Left = z->m_Left;
+			y->m_Right = z->m_Right;
+			y->m_Parent = z->m_Parent;
+			y->m_IsRed = z->m_IsRed;
+			z->m_Left->m_Parent = z->m_Right->m_Parent = y;
+			if (z == z->m_Parent->m_Left)
+			{
+				z->m_Parent->m_Left = y;
+			}
+			else
+			{
+				z->m_Parent->m_Right = y;
+			}
+			//free(z);
+			_DestroyNode(z);
+		}
+		else
+		{
+			//DestroyKey(Y->GetDataUntyped());
+			//DestroyInfo(Y->info);
+			if (!(y->m_IsRed))
+			{
+				_InternalRepair(x);
+			}
+			_DestroyNode(y);
+			//free(Y);
+		}
+
+		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not black in RBDelete");
+		--m_Length;
+	}
+
+	// ------------------------------------------------------------------------------------------
+	//! Destroys all elements in m_Container with memory deallocation.
+	GDAPI void RedBlackTreeBase::Clear()
+	{
+		_InternalDestroyNode(m_RootNode->m_Left);
+		_InternalDestroyNode(m_RootNode->m_Right);
+		m_RootNode->m_Left = m_NullNode;
+		m_RootNode->m_Right = m_NullNode;
+		m_Length = 0;
+	}
+
+GD_NAMESPACE_END

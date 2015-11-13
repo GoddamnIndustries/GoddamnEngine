@@ -6,7 +6,7 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-//! @file GoddamnEngine/Core/Templates/Utility.h
+//! @file GoddamnEngine/Core/Utility.h
 #pragma once
 
 #include <GoddamnEngine/Include.h>
@@ -15,7 +15,7 @@
 GD_NAMESPACE_BEGIN
 	
 	
-	//! @defgroup GDCoreUtilities Utilities <GoddamnEngine/Core/Templates/Utility.h>
+	//! @defgroup GDCoreUtilities Utilities <GoddamnEngine/Core/Utility.h>
 	//! @ingroup  GDCoreTemplates
 	//! Base template utilities.
 	
@@ -27,45 +27,45 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Swaps values of two iterators.
-	//! @param First First iterator to swap.
-	//! @param Second Second iterator to swap.
+	//! @param lhs First Iterator to swap.
+	//! @param rhs Second Iterator to swap.
 	//! @{
 #if !GD_DOCUMENTATION
-	template<typename SignatureType>
-	GDINL static void Swap(SignatureType& First, SignatureType& Second);
+	template<typename TSingature>
+	GDINL static void Swap(TSingature& lhs, TSingature& rhs);
 #endif	// if !GD_DOCUMENTATION
-	template<typename IteratorType>
-	GDINL static void IteratorSwap(IteratorType const FirstIter, IteratorType const SecondIter)
+	template<typename TIterator>
+	GDINL static void IteratorSwap(TIterator const lhsIter, TIterator const rhsIter)
 	{
-		Swap(*FirstIter, *SecondIter);
+		Swap(*lhsIter, *rhsIter);
 	}
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
 	//! Swaps value between two objects.
-	//! @param First First value to swap.
-	//! @param Second Second value to swap.
+	//! @param lhs First value to swap.
+	//! @param rhs Second value to swap.
 	//! @note You can overload this function for more efficient swapping operation.
 	//! @{
-	template<typename SignatureType>
-	GDINL static void Swap(SignatureType& First, SignatureType& Second)
+	template<typename TSingature>
+	GDINL static void Swap(TSingature& lhs, TSingature& rhs)
 	{	
-		if (&First != &Second)
+		if (&lhs != &rhs)
 		{
-			SignatureType Temporary = Move(First);
-			First = Move(Second);
-			Second = Move(Temporary);
+			TSingature temp = Move(lhs);
+			lhs = Move(rhs);
+			rhs = Move(temp);
 		}
 	}
-	template<typename SignatureArrayType, SizeTp SignatureArraySize>
-	GDINL static void Swap(SignatureArrayType(&First)[SignatureArraySize], SignatureArrayType(&Second)[SignatureArraySize])
+	template<typename TSingatureArray, SizeTp SignatureArraySize>
+	GDINL static void Swap(TSingatureArray(&lhs)[SignatureArraySize], TSingatureArray(&rhs)[SignatureArraySize])
 	{
-		if (&First != &Second)
+		if (&lhs != &rhs)
 		{
-			SignatureArrayType* const StartSource = First;
-			SignatureArrayType* const EndSource = First + SignatureArraySize;
-			for (SignatureArrayType* Iter = StartSource; Iter != EndSource; ++Iter)
-				IteratorSwap(Iter, Second + (Iter - StartSource));
+			TSingatureArray* const startSource = lhs;
+			TSingatureArray* const endSource = lhs + SignatureArraySize;
+			for (TSingatureArray* iterator = startSource; iterator != endSource; ++iterator)
+				IteratorSwap(iterator, rhs + (iterator - startSource));
 		}
 	}
 	//! @}
@@ -76,134 +76,133 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Returns RValue reference to specified object.
-	//! @param Instance Some object.
+	//! @param instance Some object.
 	//! @returns RValue reference to specified object.
-	template<typename SignatureType> 
-	GDINL typename TypeTraits::RemoveReference<SignatureType>::Type&& Move(SignatureType&& Instance)
+	template<typename TSingature> 
+	GDINL typename TypeTraits::RemoveReference<TSingature>::Type&& Move(TSingature&& instance)
 	{
-		return static_cast<typename TypeTraits::RemoveReference<SignatureType>::Type&&>(Instance);
+		return static_cast<typename TypeTraits::RemoveReference<TSingature>::Type&&>(instance);
 	}
 	
 	// ------------------------------------------------------------------------------------------
 	//! Returns an RValue reference to specified object if it is not an l-value reference. 
 	//! If specified object is an l-value reference, the function returns it without modifying it's type.
-	//! @param Instance Some object.
+	//! @param instance Some object.
 	//! @returns RValue reference to specified object if it is not an l-value reference.
 	//! @{
-	template<typename SignatureType>
-	GDINL SignatureType&& Forward(typename TypeTraits::RemoveReference<SignatureType>::Type& Instance)
+	template<typename TSingature>
+	GDINL TSingature&& Forward(typename TypeTraits::RemoveReference<TSingature>::Type& instance)
 	{	
-		return (static_cast<SignatureType&&>(Instance));
+		return (static_cast<TSingature&&>(instance));
 	}
-	template<typename SignatureType>
-	GDINL SignatureType&& Forward(typename TypeTraits::RemoveReference<SignatureType>::Type&& Instance)
+	template<typename TSingature>
+	GDINL TSingature&& Forward(typename TypeTraits::RemoveReference<TSingature>::Type&& instance)
 	{	
-		static_assert(!TypeTraits::IsLValueReference<SignatureType>::Value, "Invocation of forward function with non-LValue reference type.");
-		return static_cast<SignatureType&&>(Instance);
+		static_assert(!TypeTraits::IsLValueReference<TSingature>::Value, "Invocation of forward function with non-LValue reference type.");
+		return static_cast<TSingature&&>(instance);
 	}
 	//! @}
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Other utilities.
+	// other utilities.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// ------------------------------------------------------------------------------------------
 	//! Returns RValue reference on type without creating any instance.
 	//! @returns RValue reference on type without creating any instance.
-	template<typename SignatureType>
-	GDINT SignatureType&& DeclValue();
+	template<typename TSingature>
+	GDINT TSingature&& DeclValue()
+	{
+		return{};
+	}
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Pair structure utilities.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	// ------------------------------------------------------------------------------------------
-	//! Stores key-value pair of objects. 
+	//! Stores Key-value pair of objects. 
 	//! Two pairs are compared by their keys only, this behavior is uncommon to STL-like pairs.
-	//! @tparam KeyTypeTp Type of the key element.
-	//! @tparam ValueTypeTp Type of the value element.
-	template<typename KeyTypeTp, typename ValueTypeTp>
-	struct Pair final : public IUnassignable
+	//! @tparam KeyType Type of the Key element.
+	//! @tparam ValueType Type of the value element.
+	template<typename TKey, typename TValue>
+	struct Pair final //: public IUnassignable
 	{
-		using KeyType   = KeyTypeTp;
-		using ValueType = ValueTypeTp;
+		using KeyType   = TKey;
+		using ValueType = TValue;
 
 	public:
-		KeyType		Key;	//!< First element of the pair.
-		ValueType	Value;	//!< Second element of the pair.
+		TKey	Key;	//!< First element of the pair.
+		TValue	Value;	//!< Second element of the pair.
 
 	public:
-
 		
-		//! Initializes key and value with default values.
-		
+		// ------------------------------------------------------------------------------------------
+		//! Initializes Key and value with default values.
 		GDINL Pair() : Key(), Value() {}
-
 		
-		//! Initializes key and value with specified values.
-		
+		// ------------------------------------------------------------------------------------------
+		//! Initializes Key and value with specified values.
 		//! @{
-		GDINL Pair(KeyType&& Key, ValueType&& Value) : Key(Forward<KeyType>(Key)), Value(Forward<ValueType>(Value)) { }
-		GDINL Pair(KeyType const& Key, ValueType const& Value) : Key(Key), Value(Value) { }
+		GDINL Pair(TKey&& key, TValue&& value) : Key(Forward<TKey>(key)), Value(Forward<TValue>(value)) { }
+		GDINL Pair(TKey const& key, TValue const& value) : Key(key), Value(value) { }
 		//! @}
 	};	// struct Pair
 
-	template<typename KeyType, typename ValueType>
-	GDINL static bool operator> (Pair<KeyType, ValueType> const& LHS, Pair<KeyType, ValueType> const& RHS)
+	template<typename TKey, typename TValue>
+	GDINL static bool operator> (Pair<TKey, TValue> const& lhs, Pair<TKey, TValue> const& rhs)
 	{
-		return LHS.Key > RHS.Key;
+		return lhs.Key > rhs.Key;
 	}
 
-	template<typename KeyType, typename ValueType>
-	GDINL static bool operator< (Pair<KeyType, ValueType> const& LHS, Pair<KeyType, ValueType> const& RHS)
+	template<typename TKey, typename TValue>
+	GDINL static bool operator< (Pair<TKey, TValue> const& lhs, Pair<TKey, TValue> const& rhs)
 	{
-		return LHS.Key < RHS.Key;
+		return lhs.Key < rhs.Key;
 	}
 
-	template<typename KeyType, typename ValueType>
-	GDINL static bool operator== (Pair<KeyType, ValueType> const& LHS, Pair<KeyType, ValueType> const& RHS)
+	template<typename TKey, typename TValue>
+	GDINL static bool operator== (Pair<TKey, TValue> const& lhs, Pair<TKey, TValue> const& rhs)
 	{
-		return LHS.Key == RHS.Key;
+		return lhs.Key == rhs.Key;
 	}
 
-	template<typename KeyType, typename ValueType>
-	GDINL static bool operator!= (Pair<KeyType, ValueType> const& LHS, Pair<KeyType, ValueType> const& RHS)
+	template<typename TKey, typename TValue>
+	GDINL static bool operator!= (Pair<TKey, TValue> const& lhs, Pair<TKey, TValue> const& rhs)
 	{
-		return LHS.Key != RHS.Key;
+		return lhs.Key != rhs.Key;
 	}
-
 	
 	// ------------------------------------------------------------------------------------------
-	//! Initializes a key-value pair with specified parameters.
+	//! Initializes a Key-value pair with specified parameters.
 	//! @param Key Key of the pair being created.
 	//! @param Value Value of the pair being created.
-	//! @returns The key-value pair instance.
+	//! @returns The Key-value pair instance.
 	//! @{
-	template<typename KeyType, typename ValueType>
-	GDINL static Pair<KeyType, ValueType> MakePair(KeyType&& Key, ValueType&& Value)
+	template<typename TKey, typename TValue>
+	GDINL static Pair<TKey, TValue> MakePair(TKey&& key, TValue&& value)
 	{
-		return Pair<KeyType, ValueType>(Forward<KeyType>(Key), Forward<ValueType>(Value));
+		return Pair<TKey, TValue>(Forward<TKey>(key), Forward<TValue>(value));
 	}
-	template<typename KeyType, typename ValueType>
-	GDINL static Pair<KeyType, ValueType> MakePair(KeyType const& Key, ValueType const& Value)
+	template<typename TKey, typename TValue>
+	GDINL static Pair<TKey, TValue> MakePair(TKey const& key, TValue const& value)
 	{
-		return Pair<KeyType, ValueType>(Key, Value);
+		return Pair<TKey, TValue>(key, value);
 	}
 	//! @}
-
 	
 	// ------------------------------------------------------------------------------------------
-	//! Initializes a key-value pair with specified parameters in the heap. Instance could be safely deallocated within @ref GD_DELETE macro.
+	//! Initializes a Key-value pair with specified parameters in the heap. instance could be safely deallocated within @ref GD_DELETE macro.
 	//! @param Key Key of the pair being created.
 	//! @param Value Value of the pair being created.
-	//! @returns Pointer to the key-value pair instance.
+	//! @returns pointer to the Key-value pair instance.
 	//! @{
-	template<typename KeyType, typename ValueType>	// Implemented inside Allocator.h - it depends on stuff, declared there.
-	GDINL static Pair<KeyType, ValueType>* AllocatePair(KeyType&& Key, ValueType&& Value);
-	template<typename KeyType, typename ValueType>
-	GDINL static Pair<KeyType, ValueType>* AllocatePair(KeyType const& Key, ValueType const& Value);
+	template<typename TKey, typename TValue>	// Implemented inside Allocator.h - it depends on stuff, declared there.
+	GDINL static Pair<TKey, TValue>* AllocatePair(TKey&& key, TValue&& value);
+	template<typename TKey, typename TValue>
+	GDINL static Pair<TKey, TValue>* AllocatePair(TKey const& key, TValue const& value);
 	//! @}
 
-	//! @}	// Utilities GoddamnEngine/Core/Templates/Utility.h
+	//! @}	// Utilities GoddamnEngine/Core/Utility.h
 
 GD_NAMESPACE_END

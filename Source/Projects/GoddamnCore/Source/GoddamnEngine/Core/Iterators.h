@@ -6,8 +6,8 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-//! @file GoddamnEngine/Core/Templates/Iterators.h
-//! Common algorithms for container iterator interfaces.
+//! @file GoddamnEngine/Core/Iterators.h
+//! Common algorithms for m_Container Iterator interfaces.
 #pragma once
 
 #include <GoddamnEngine/Include.h>
@@ -15,8 +15,7 @@
 
 // ------------------------------------------------------------------------------------------
 //! Adds support of ranged-for iteration to the container. 
-//! @param this_type Type of this container. Should contain const and mutable versions of 'Begin' and 'End' methods.
-//! @note If this container has '_PtrBegin' and '_PtrEnd' methods, preferably to use @c 'GD_CONTAINER_DEFINE_PTR_ITERATION_SUPPORT' macro instead.
+//! @param this_type Type of this m_Container. Should contain const and mutable versions of 'Begin' and 'End' methods.
 #define GD_CONTAINER_DEFINE_ITERATION_SUPPORT(this_type) \
 	GDINL friend Iterator begin(this_type& some_container) \
 	{ \
@@ -35,29 +34,8 @@
 		return some_container.End(); \
 	} \
 
-// ------------------------------------------------------------------------------------------
-//! Adds support of ranged-for iteration to the container. 
-//! @param this_type Type of this container. Should contain const and mutable versions of '_PtrBegin' and '_PtrEnd' methods.
-#define GD_CONTAINER_DEFINE_PTR_ITERATION_SUPPORT(this_type) \
-	GDINL friend PtrIterator begin(this_type& some_container) \
-	{ \
-		return some_container._PtrBegin(); \
-	} \
-	GDINL friend PtrConstIterator begin(this_type const& some_container) \
-	{ \
-		return some_container._PtrBegin(); \
-	} \
-	GDINL friend PtrIterator end(this_type& some_container) \
-	{ \
-		return some_container._PtrEnd(); \
-	} \
-	GDINL friend PtrConstIterator end(this_type const& some_container) \
-	{ \
-		return some_container._PtrEnd(); \
-	} \
-
 GD_NAMESPACE_BEGIN
-	
+
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Iterator traits.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,20 +53,20 @@ GD_NAMESPACE_BEGIN
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// ------------------------------------------------------------------------------------------
-	//! Iterator for container that have constant-time (preferably) index access operators.
-	//! @tparam ContainerType Type of container.
-	template<typename ContainerTypeTp>
+	//! Iterator for m_Container that have constant-time (preferably) index access operators.
+	//! @tparam ContainerType Type of m_Container.
+	template<typename TContainer>
 	struct IndexedContainerIterator final
 	{
 	public:
-		using ContainerType = ContainerTypeTp;
-		using ElementType = typename Conditional<TypeTraits::IsConst<ContainerType>::Value
-			, typename ContainerType::ElementType const
-			, typename ContainerType::ElementType>::Type;
+		using ContainerType = TContainer;
+		using ElementType   = typename Conditional<TypeTraits::IsConst<TContainer>::Value
+			, typename TContainer::ElementType const
+			, typename TContainer::ElementType>::Type;
 
 	private:
-		ContainerType&	Container;
-		SizeTp			Index = 0;
+		TContainer&	m_Container;
+		SizeTp		m_Index = 0;
 
 	public:
 
@@ -97,147 +75,94 @@ GD_NAMESPACE_BEGIN
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// ------------------------------------------------------------------------------------------
-		//! Initializes iterator that points on the first element of the specified container.
-		//! @param Container Container that is going to be iterated.
-		GDINL explicit IndexedContainerIterator(ContainerType& Container)
-			: Container(Container), Index(0)
+		//! Initializes Iterator that points on the first element of the specified m_Container.
+		//! @param container The container that is going to be iterated.
+		GDINL explicit IndexedContainerIterator(TContainer& container)
+			: m_Container(container), m_Index(0)
 		{
 		}
-
+			
 	public:
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		// Overloaded operators.
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		// ------------------------------------------------------------------------------------------
-		//! Assigns this iterator other one.
-		//! @param Other Other iterator to assign.
-		//! @returns this.
-		GDINL IndexedContainerIterator& operator= (IndexedContainerIterator const& Other)
+		GDINL IndexedContainerIterator& operator= (IndexedContainerIterator const& other)
 		{
-			GD_ASSERT(&this->Container == &Other.Container, "Iterators have different base containers.");
-			this->Index = Other.Index;
+			GD_ASSERT(&m_Container == &other.m_Container, "Iterators have different base containers.");
+			m_Index = other.m_Index;
 			return *this;
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Assigns the iterator next element of the indexed container.
-		//! @returns Incremented iterator.
 		GDINL IndexedContainerIterator& operator++ ()
 		{
-			++this->Index;
+			++m_Index;
 			return *this;
 		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Assigns the iterator next element of the indexed container.
-		//! @param Unused Unused parameter passed be compiler.
-		//! @returns Iterator before incrementing.
-		GDINL IndexedContainerIterator operator++ (int const Unused)
+		GDINL IndexedContainerIterator operator++ (int const unused)
 		{
-			GD_NOT_USED(Unused);
-			IndexedContainerIterator Copy(*this);
-			++this->Index;
-			return Copy;
+			GD_NOT_USED(unused);
+			IndexedContainerIterator copy(*this);
+			++m_Index;
+			return copy;
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Assigns the iterator previous element of the indexed container.
-		//! @returns Decremented iterator.
 		GDINL IndexedContainerIterator& operator-- ()
 		{
-			--this->Index;
+			--m_Index;
 			return *this;
 		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Assigns the iterator previous element of the indexed container.
-		//! @param Unused Unused parameter passed be compiler.
-		//! @returns Iterator before decrementing.
-		GDINL IndexedContainerIterator operator-- (int const Unused)
+		GDINL IndexedContainerIterator operator-- (int const unused)
 		{
-			GD_NOT_USED(Unused);
-			IndexedContainerIterator Copy(*this);
-			--this->Index;
-			return Copy;
+			GD_NOT_USED(unused);
+			IndexedContainerIterator copy(*this);
+			--m_Index;
+			return copy;
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Positively advances iterator on specified value.
-		//! @param Offset Advanced from current position.
-		//! @returns Positively advanced iterator.
-		//! @{
-		GDINL IndexedContainerIterator& operator+= (PtrDiffTp const Offset)
+		GDINL IndexedContainerIterator& operator+= (PtrDiffTp const offset)
 		{
-			this->Index += Offset;
+			m_Index += offset;
 			return *this;
 		}
-		GDINL IndexedContainerIterator operator+ (PtrDiffTp const Offset) const
+		GDINL IndexedContainerIterator operator+ (PtrDiffTp const offset) const
 		{
-			IndexedContainerIterator Copy(*this);
-			return Copy += Offset;
+			IndexedContainerIterator copy(*this);
+			return copy += offset;
 		}
-		//! @}
 
-		// ------------------------------------------------------------------------------------------
-		//! Negatively advances iterator on specified value.
-		//! @param Offset Advanced from current position.
-		//! @returns Negatively advanced iterator.
-		//! @{
-		GDINL IndexedContainerIterator& operator-= (PtrDiffTp const Offset)
+		GDINL IndexedContainerIterator& operator-= (PtrDiffTp const offset)
 		{
-			this->Index -= Offset;
+			m_Index -= offset;
 			return *this;
 		}
-		GDINL IndexedContainerIterator operator- (PtrDiffTp const Offset) const
+		GDINL IndexedContainerIterator operator- (PtrDiffTp const offset) const
 		{
-			IndexedContainerIterator Copy(*this);
-			return Copy -= Offset;
+			IndexedContainerIterator copy(*this);
+			return copy -= offset;
 		}
-		//! @}
-
-		// ------------------------------------------------------------------------------------------
-		//! Returns distance between this iterator and specified one.
-		//! @param Other Some iterator to compute distance with.
-		//! @returns Distance between this iterator and specified one. 
-		GDINL PtrDiffTp operator- (IndexedContainerIterator const& Other) const
+		GDINL PtrDiffTp operator- (IndexedContainerIterator const& other) const
 		{
-			return this->Index - Other.Index;
+			return m_Index - other.m_Index;
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Compares two iterators on equality.
-		//! @param Other Other iterator that would be compared.
-		//! @returns True if iterators point to the same container at same indices, false otherwise.
-		GDINL bool operator== (IndexedContainerIterator const& Other) const
+		GDINL bool operator== (IndexedContainerIterator const& other) const
 		{
-			return (&this->Container == &Other.Container) && (this->Index == Other.Index);
+			return (&m_Container == &other.m_Container) && (m_Index == other.m_Index);
+		}
+		GDINL bool operator!= (IndexedContainerIterator const& other) const
+		{
+			return (&m_Container != &other.m_Container) || (m_Index != other.m_Index);
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Compares two iterators on inequality.
-		//! @param Other Other iterator that would be compared.
-		//! @returns False if iterators point to the same container at same indices, true otherwise.
-		GDINL bool operator!= (IndexedContainerIterator const& Other) const
-		{
-			return (&this->Container != &Other.Container) || (this->Index != Other.Index);
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Dereferences value of the iterator.
-		//! @returns Reference to the element of the container at iterator index.
 		GDINL ElementType& operator* () const
 		{
-			return this->Container[this->Index];
+			return m_Container[m_Index];
 		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Dereferences value of the iterator.
-		//! @returns Pointer to the element of the container at iterator index.
 		GDINL ElementType* operator-> () const
 		{
-			return &this->Container[this->Index];
+			return &m_Container[m_Index];
 		}
 	};	// struct IndexedContainerIterator
 
@@ -246,20 +171,20 @@ GD_NAMESPACE_BEGIN
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// ------------------------------------------------------------------------------------------
-	//! Adapter that inverses iterator of a specified type.
-	//! @tparam DirectIteratorType Reversible bidirectional iterator type.
-	template<typename DirectIteratorTypeTp>
+	//! Adapter that inverses Iterator of a specified type.
+	//! @tparam DirectIteratorType Reversible bidirectional Iterator type.
+	template<typename TDirectIterator>
 	struct ReverseContainerIterator final
 	{
 	public:
-		using DirectIteratorType = DirectIteratorTypeTp;
+		using DirectIteratorType = TDirectIterator;
 		using ContainerType      = typename DirectIteratorType::ContainerType;
-		using ElementType        = typename Conditional<TypeTraits::IsPointer<DirectIteratorTypeTp>::Value
-			, typename TypeTraits::RemovePointer<DirectIteratorTypeTp>::Type
+		using ElementType        = typename Conditional<TypeTraits::IsPointer<TDirectIterator>::Value
+			, typename TypeTraits::RemovePointer<TDirectIterator>::Type
 			, typename DirectIteratorType::ElementType>::Type;
 
 	private:
-		DirectIteratorType DirectIterator;
+		DirectIteratorType directIterator;
 
 	public:
 
@@ -268,10 +193,10 @@ GD_NAMESPACE_BEGIN
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// ------------------------------------------------------------------------------------------
-		//! Initializes reverse iterator this direct one.
-		//! @param DirectIterator Iterator that advancing operation would be inverted.
+		//! Initializes reverse Iterator this direct one.
+		//! @param directIterator Iterator that advancing operation would be inverted.
 		GDINL explicit ReverseContainerIterator(DirectIteratorType DirectIterator)
-			: DirectIterator(DirectIterator)
+			: directIterator(DirectIterator)
 		{
 		}
 
@@ -281,134 +206,85 @@ GD_NAMESPACE_BEGIN
 		// Overloaded operators.
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		// ------------------------------------------------------------------------------------------
-		//! Assigns the iterator previous element of the container.
-		//! @returns Incremented iterator.
 		GDINL ReverseContainerIterator& operator++ ()
 		{
-			--this->DirectIterator;
+			--directIterator;
 			return *this;
 		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Assigns the iterator previous element of the container.
-		//! @param Unused Unused parameter passed be compiler.
-		//! @returns Iterator before incrementing.
-		GDINL ReverseContainerIterator operator++ (int const Unused)
+		GDINL ReverseContainerIterator operator++ (int const unused)
 		{
-			GD_NOT_USED(Unused);
-			ReverseContainerIterator Copy(*this);
-			--this->DirectIterator;
-			return Copy;
+			GD_NOT_USED(unused);
+			ReverseContainerIterator copy(*this);
+			--directIterator;
+			return copy;
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Assigns the iterator next element of the container.
-		//! @returns Decremented iterator.
 		GDINL ReverseContainerIterator& operator-- ()
 		{
-			++this->DirectIterator;
+			++directIterator;
 			return *this;
 		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Assigns the iterator next element of the container.
-		//! @param Unused Unused parameter passed be compiler.
-		//! @returns Iterator before decrementing.
-		GDINL ReverseContainerIterator operator-- (int const Unused)
+		GDINL ReverseContainerIterator operator-- (int const unused)
 		{
-			GD_NOT_USED(Unused);
-			ReverseContainerIterator Copy(*this);
-			++this->DirectIterator;
-			return Copy;
+			GD_NOT_USED(unused);
+			ReverseContainerIterator copy(*this);
+			++directIterator;
+			return copy;
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Negatively advances iterator on specified value.
-		//! @param Offset Advanced from current position.
-		//! @returns Negatively advanced iterator.
-		//! @{
-		GDINL ReverseContainerIterator& operator+= (PtrDiffTp const Offset)
+		GDINL ReverseContainerIterator& operator+= (PtrDiffTp const offset)
 		{
-			this->DirectIterator -= Offset;
+			directIterator -= offset;
 			return *this;
 		}
-		GDINL ReverseContainerIterator operator+ (PtrDiffTp const Offset) const
+		GDINL ReverseContainerIterator operator+ (PtrDiffTp const offset) const
 		{
-			ReverseContainerIterator Copy(*this);
-			return Copy += Offset;
+			ReverseContainerIterator copy(*this);
+			return copy += offset;
 		}
-		//! @}
 
-		// ------------------------------------------------------------------------------------------
-		//! Positively advances iterator on specified value.
-		//! @param Offset Advanced from current position.
-		//! @returns Positively advanced iterator.
-		//! @{
-		GDINL ReverseContainerIterator& operator-= (PtrDiffTp const Offset)
+		GDINL ReverseContainerIterator& operator-= (PtrDiffTp const offset)
 		{
-			this->DirectIterator += Offset;
+			directIterator += offset;
 			return *this;
 		}
-		GDINL ReverseContainerIterator operator- (PtrDiffTp const Offset) const
+		GDINL ReverseContainerIterator operator- (PtrDiffTp const offset) const
 		{
-			ReverseContainerIterator Copy(*this);
-			return Copy -= Offset;
+			ReverseContainerIterator copy(*this);
+			return copy -= offset;
 		}
-		//! @}
-
-		// ------------------------------------------------------------------------------------------
-		//! Returns distance between this iterator and specified one.
-		//! @param Other Some iterator to compute distance with.
-		//! @returns Distance between this iterator and specified one. 
-		GDINL PtrDiffTp operator- (ReverseContainerIterator const& Other) const
+		GDINL PtrDiffTp operator- (ReverseContainerIterator const& other) const
 		{
-			return this->DirectIterator - Other.DirectIterator;
+			return directIterator - other.directIterator;
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Compares two iterators on equality.
-		//! @param Other Other iterator that would be compared.
-		//! @returns True if direct iterators are same.
-		GDINL bool operator== (ReverseContainerIterator const& Other) const
+		GDINL bool operator== (ReverseContainerIterator const& other) const
 		{
-			return this->DirectIterator == Other.DirectIterator;
+			return directIterator == other.directIterator;
+		}
+		GDINL bool operator!= (ReverseContainerIterator const& other) const
+		{
+			return directIterator != other.directIterator;
 		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Compares two iterators on inequality.
-		//! @param Other Other iterator that would be compared.
-		//! @returns True if direct iterators are different.
-		GDINL bool operator!= (ReverseContainerIterator const& Other) const
-		{
-			return this->DirectIterator != Other.DirectIterator;
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Dereferences value of the iterator.
-		//! @returns Reference to the element of the container at iterator index.
 		GDINL ElementType& operator* () const
 		{
-			return this->DirectIterator.operator*();
+			return *directIterator;
 		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Dereferences value of the iterator.
-		//! @returns Pointer to the element of the container at iterator index.
 		GDINL ElementType* operator-> () const
 		{
-			return this->DirectIterator.operator->();
+			return directIterator.operator->();
 		}
 	};	// struct ReverseContainerIterator
 
 	// ------------------------------------------------------------------------------------------
-	//! Adapter that reverses direct iterator functions of specified type.
-	//! @tparam ContainerType Direct-treatable container type. 
-	template<typename ContainerTypeTp>
+	//! Adapter that reverses direct Iterator functions of specified type.
+	//! @tparam ContainerType Direct-treatable m_Container type. 
+	template<typename TContainer>
 	class ReverseContainerAdapter final
 	{
 	public:
-		using ContainerType        = ContainerTypeTp;
+		using ContainerType        = TContainer;
 		using ElementType          = typename ContainerType::ElementType;
 		using Iterator             = decltype(DeclValue<ContainerType>().ReverseBegin());
 		using ReverseIterator      = decltype(DeclValue<ContainerType>().Begin());
@@ -418,7 +294,7 @@ GD_NAMESPACE_BEGIN
 		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(ReverseContainerAdapter);
 
 	private:
-		ContainerType* Container;	// should be stored by pointer to make this adapter copiable and assignable.
+		ContainerType* container;	
 
 	public:
 
@@ -427,10 +303,10 @@ GD_NAMESPACE_BEGIN
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// ------------------------------------------------------------------------------------------
-		//! Initializes an adapter that reverses direct iterator functions of specified type.
-		//! @param Container Container that would be indirectly iterated.
-		GDINL explicit ReverseContainerAdapter(ContainerType& Container)
-			: Container(&Container)
+		//! Initializes an adapter that reverses direct Iterator functions of specified type.
+		//! @param m_Container The m_Container that would be indirectly iterated.
+		GDINL explicit ReverseContainerAdapter(ContainerType& container)
+			: container(&container)
 		{
 		}
 
@@ -440,37 +316,41 @@ GD_NAMESPACE_BEGIN
 		// Iteration API.
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns iterator that points to first container element.
-		//! @returns Iterator that points to first container element.
-		//! @{
-		GDINL Iterator Begin() { return this->Container->ReverseBegin(); }
-		GDINL ConstIterator Begin() const { return this->Container->ReverseBegin(); }
-		//! @}
+		GDINL Iterator Begin()
+		{
+			return container->ReverseBegin();
+		}
+		GDINL ConstIterator Begin() const
+		{
+			return container->ReverseBegin();
+		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns iterator that points to past the end container element.
-		//! @returns Iterator that points to past the end container element.
-		//! @{
-		GDINL Iterator End() { return this->Container->ReverseEnd(); }
-		GDINL ConstIterator End() const { return this->Container->ReverseEnd(); }
-		//! @}
+		GDINL Iterator End()
+		{
+			return container->ReverseEnd();
+		}
+		GDINL ConstIterator End() const
+		{
+			return container->ReverseEnd();
+		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns iterator that points to last container element.
-		//! @returns Iterator that points to last container element.
-		//! @{
-		GDINL ReverseIterator ReverseBegin() { return this->Container->Begin(); }
-		GDINL ReverseConstIterator ReverseBegin() const { return this->Container->Begin(); }
-		//! @}
+		GDINL ReverseIterator ReverseBegin()
+		{
+			return container->Begin();
+		}
+		GDINL ReverseConstIterator ReverseBegin() const
+		{
+			return container->Begin();
+		}
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns iterator that points to preceding the first container element.
-		//! @returns Iterator that points to preceding the first container element.
-		//! @{
-		GDINL ReverseIterator ReverseEnd() { return this->Container->End(); }
-		GDINL ReverseConstIterator ReverseEnd() const { return this->Container->End(); }
-		//! @}
+		GDINL ReverseIterator ReverseEnd()
+		{
+			return container->End();
+		}
+		GDINL ReverseConstIterator ReverseEnd() const
+		{
+			return container->End();
+		}
 	};	// class ReverseContainerAdapter
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -478,39 +358,39 @@ GD_NAMESPACE_BEGIN
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// ------------------------------------------------------------------------------------------
-	//! Returns iterator that points to first container element.
-	//! @returns Iterator that points to first container element.
+	//! Returns Iterator that points to first m_Container element.
+	//! @returns Iterator that points to first m_Container element.
 	//! @{
-	template<typename ContainerType>
-	GDINL static auto Begin(ContainerType const& Container) -> decltype(Container.Begin())
+	template<typename TContainer>
+	GDINL static auto Begin(TContainer const& container) -> decltype(container.Begin())
 	{
-		return Container.Begin();
+		return container.Begin();
 	}
-	template<typename ContainerType>
-	GDINL static auto Begin(ContainerType& Container) -> decltype(Container.Begin())
+	template<typename TContainer>
+	GDINL static auto Begin(TContainer& container) -> decltype(container.Begin())
 	{
-		return Container.Begin();
+		return container.Begin();
 	}
-	template<typename ArrayElementType, SizeTp ArrayLength>
-	GDINL static ArrayElementType* Begin(ArrayElementType(&Array)[ArrayLength])
+	template<typename TArrayElement, SizeTp ArrayLength>
+	GDINL static TArrayElement* Begin(TArrayElement(&Array)[ArrayLength])
 	{
 		return &Array[0];
 	}
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
-	//! Returns iterator that points to past the end container element.
-	//! @returns Iterator that points to past the end container element.
+	//! Returns Iterator that points to past the end m_Container element.
+	//! @returns Iterator that points to past the end m_Container element.
 	//! @{
-	template<typename ContainerType>
-	GDINL static auto End(ContainerType const& Container) -> decltype(Container.End())
+	template<typename TContainer>
+	GDINL static auto End(TContainer const& container) -> decltype(container.End())
 	{
-		return Container.End();
+		return container.End();
 	}
-	template<typename ContainerType>
-	GDINL static auto End(ContainerType& Container) -> decltype(Container.End())
+	template<typename TContainer>
+	GDINL static auto End(TContainer& container) -> decltype(container.End())
 	{
-		return Container.End();
+		return container.End();
 	}
 	template<typename ArrayElementType, SizeTp ArrayLength>
 	GDINL static ArrayElementType* End(ArrayElementType(&Array)[ArrayLength])
@@ -520,13 +400,13 @@ GD_NAMESPACE_BEGIN
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
-	//! Returns a version of the specified container with Begin and ReverseBegin, End and ReverseEnd functions reversed.
-	//! @param Container Some container to invert.
-	//! @returns A version of the specified container with Begin and ReverseBegin, End and ReverseEnd functions reversed.
-	template<typename ContainerType>
-	GDINL ReverseContainerAdapter<ContainerType> Reverse(ContainerType& Container)
+	//! Returns a version of the specified m_Container with Begin and ReverseBegin, End and ReverseEnd functions reversed.
+	//! @param m_Container Some m_Container to invert.
+	//! @returns A version of the specified m_Container with Begin and ReverseBegin, End and ReverseEnd functions reversed.
+	template<typename TContainer>
+	GDINL ReverseContainerAdapter<TContainer> Reverse(TContainer& container)
 	{
-		return ReverseContainerAdapter<ContainerType>(Container);
+		return ReverseContainerAdapter<TContainer>(container);
 	}
 
 GD_NAMESPACE_END

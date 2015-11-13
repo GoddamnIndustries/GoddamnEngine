@@ -7,12 +7,12 @@
 // ==========================================================================================
 
 //! @file GoddamnEngine/Core/Containers/Map.h
-//! Dynamically sized associative container interface.
+//! Dynamically sized associative m_Container interface.
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Containers/RedBlackTree.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>
+#include <GoddamnEngine/Core/Containers/RedBlackTree/RedBlackTree.h>
 
 GD_NAMESPACE_BEGIN
 	
@@ -21,27 +21,26 @@ GD_NAMESPACE_BEGIN
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// ------------------------------------------------------------------------------------------
-	//! Dynamically sized associative container that is implemented with Red-Black Trees.
-	//! 	   Current implementation has a MASSIVE overhead per each element (33 bytes by Red-Black Tree). 
-	//! 	   Red-Black Tree is used for elements access and searching, Lists for elements rapid iteration.
-	//! @tparam KeyTypeTp Key type, used for searching.
-	//! @tparam ValueTypeTp Type of elements stored in the container.
-	template<typename KeyTypeTp, typename ValueTypeTp>
-	class Map final : public RedBlackTree<Pair<KeyTypeTp const, ValueTypeTp>>
+	//! Dynamically sized associative container that is Implemented with Red-Black Trees.
+	//! Current Implementation has a MASSIVE overhead per each element (33 bytes by Red-Black Tree). 
+	//! Red-Black Tree is used for elements access and searching, Lists for elements rapid iteration.
+	//! @tparam TKey key type, used for searching.
+	//! @tparam TValue Type of elements stored in the m_Container.
+	template<typename TKey, typename TValue>
+	class Map final : public RedBlackTree<Pair<TKey, TValue>>
 	{
 	public:
-		typedef KeyTypeTp											KeyType;
-		typedef ValueTypeTp											ValueType;
-		typedef Pair<KeyType const, ValueType>						PairType;
-		typedef PairType											ElementType;
-		typedef RedBlackTree<ElementType>							RedBlackTreeType;
-		typedef typename RedBlackTreeType::RedBlackTreeNodeType		RedBlackTreeNodeType;
-		typedef typename RedBlackTreeType::Iterator					Iterator;
-		typedef typename RedBlackTreeType::ConstIterator			ConstIterator;
-		typedef typename RedBlackTreeType::ReverseIterator			ReverseIterator;
-		typedef typename RedBlackTreeType::ReverseConstIterator		ReverseConstIterator;
+		using KeyType              = TKey;
+		using ValueType            = TValue;
+		using PairType             = Pair<KeyType, ValueType>;
+		using ElementType          = PairType;
+		using RedBlackTreeType     = RedBlackTree<ElementType>;
+		using RedBlackTreeNodeType = typename RedBlackTreeType::RedBlackTreeNodeType;
+		using Iterator             = typename RedBlackTreeType::Iterator;
+		using ConstIterator        = typename RedBlackTreeType::ConstIterator;
+		using ReverseIterator      = typename RedBlackTreeType::ReverseIterator;
+		using ReverseConstIterator = typename RedBlackTreeType::ReverseConstIterator;
 
-	private:
 		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(Map);
 
 	public:
@@ -61,14 +60,15 @@ GD_NAMESPACE_BEGIN
 		//! @param InitializerList Initializer list passed by the compiler.
 		GDINL Map(InitializerList<PairType> const& InitializerList)
 		{
-			for (auto const& Element : InitializerList)
-				this->InsertKeyValue(Element.Key, Element.Value);
+			for (auto const& element : InitializerList)
+				Insert(element.Key, element.Value);
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Moves other map here.
 		//! @param OtherMap Map would be moved into current object.
-		GDINL Map(Map&& OtherMap) : RedBlackTree(Forward<Map>(OtherMap))
+		GDINL Map(Map&& OtherMap) 
+			: RedBlackTree(Forward<Map>(OtherMap))
 		{
 		}
 
@@ -86,49 +86,68 @@ GD_NAMESPACE_BEGIN
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// ------------------------------------------------------------------------------------------
-		//! Queries for the iterator of the element with specified key.
-		//! @param Element Element we are looking for.
-		//! @returns Iterator on the element if it was found and End iterator otherwise.
+		//! Queries for the Iterator of the element with specified key.
+		//! @param element The element we are looking for.
+		//! @returns Iterator on the element if it was found and End Iterator otherwise.
 		//! @{
-		GDINL ConstIterator QueryIteratorWithKey(KeyType const& Key) const { return ConstIterator(*this, this->QueryNode(&Key)); }
-		GDINL Iterator QueryIteratorWithKey(KeyType const& Key)
+		GDINL ConstIterator QueryIterator(KeyType const& key) const
 		{
-			return Iterator(*this, this->QueryNode(&Key));
+			return ConstIterator(*this, this->_QueryNode(&key));
+		}
+		GDINL Iterator QueryIterator(KeyType const& key)
+		{
+			return Iterator(*this, this->_QueryNode(&key));
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
-		//! Determines whether the element with specified key exists in the container.
-		//! @param Key Key of the element we are looking for.
-		//! @returns True if element with specified key exists in the container, false otherwise.
-		GDINL bool ContainsElementWithKey(KeyType const& Key) const
+		//! Queries for the Iterator of the element with specified key.
+		//! @param key The element we are looking for.
+		//! @returns Iterator on the element if it was found and End Iterator otherwise.
+		//! @{
+		GDINL ValueType const* Query(KeyType const& key) const
 		{
-			return this->QueryNode(&Key) != nullptr;
+			auto const node = static_cast<RedBlackTreeNodeType*>(_QueryNode(&key));
+			return (node != this->_GetNullNode()) ? &node->GetData()->value : nullptr;
+		}
+		GDINL ValueType* Query(KeyType const& key)
+		{
+			return const_cast<ValueType*>(const_cast<Map const*>(this)->Query(key));
+		}
+		//! @}
+
+		// ------------------------------------------------------------------------------------------
+		//! Determines whether the element with specified key exists in the m_Container.
+		//! @param key The key of the element we are looking for.
+		//! @returns True if element with specified key exists in the m_Container, false otherwise.
+		GDINL bool Contains(KeyType const& key) const
+		{
+			return this->_QueryNode(&key) != this->_GetNullNode();
 		}
 
 		// ------------------------------------------------------------------------------------------
-		//! Inserts specified element into collection at desired index.
-		//! @param Key Key of the element that is going to be inserted.
-		//! @param Value Value of the element that is going to be inserted.
+		//! Inserts specified element into collection at desired m_Index.
+		//! @param key The key of the element that is going to be inserted.
+		//! @param value The value of the element that is going to be inserted.
 		//! @{
-		GDINL void InsertKeyValue(KeyType&& Key, ValueType&& Value = ValueType())
+		GDINL void Insert(KeyType&& key, ValueType&& value = ValueType())
 		{
-			RedBlackTreeNodeType* const NewNode = this->CreateNode(Forward<KeyType>(Key), Forward<ValueType>(Value));
-			this->InsertNode(NewNode);
+			RedBlackTreeNodeType* const newNode = CreateNode(Forward<KeyType>(key), Forward<ValueType>(value));
+			this->_InsertNode(newNode);
 		}
-		GDINL void InsertKeyValue(KeyType const& Key, ValueType const& Value)
+		GDINL void Insert(KeyType const& key, ValueType const& value)
 		{
-			RedBlackTreeNodeType* const NewNode = this->CreateNode(Key, Value);
-			this->InsertNode(NewNode);
+			RedBlackTreeNodeType* const newNode = CreateNode(key, value);
+			this->_InsertNode(newNode);
 		}
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		//! Removes existing element from array at specified index.
-		//! @param Key Key of the element that is going to be RemoveFromSelfd.
-		GDINL void RemoveElementWithKey(KeyType const& Key)
+		//! @param key The key of the element that is going to be RemoveFromSelfd.
+		GDINL void Erase(KeyType const& key)
 		{
-			this->RemovePtr(&Key);
+			this->Erase(&key);
 		}
 
 	public:
@@ -137,10 +156,6 @@ GD_NAMESPACE_BEGIN
 		// Overloaded operators.
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		// ------------------------------------------------------------------------------------------
-		//! Moves other map here.
-		//! @param OtherMap Other map that would be moved into current object.
-		//! @returns This.
 		GDINL Map& operator= (Map&& OtherMap)
 		{
 			RedBlackTreeType::operator= (Forward<Map>(OtherMap));
@@ -149,15 +164,18 @@ GD_NAMESPACE_BEGIN
 
 		// ------------------------------------------------------------------------------------------
 		//! Returns reference on value of the element with specified key.
-		//! @param Key Key of the element we are looking for.
-		//! @returns Reference on some element in the container.
+		//! @param key The key of the element we are looking for.
+		//! @returns Reference on some element in the m_Container.
 		//! @{
-		GDINL ValueType& operator[] (KeyType const& Key) { return const_cast<ValueType&>(const_cast<Map const&>(*this)[Key]); }
-		GDINL ValueType const& operator[] (KeyType const& Key) const
+		GDINL ValueType const& operator[] (KeyType const& key) const
 		{
-			ConstIterator QueriedIterator = this->QueryIteratorWithKey(Key);
-			GD_ASSERT(QueriedIterator != this->End(), "Element with specified key does not exist.");
+			ConstIterator QueriedIterator = QueryIterator(key);
+			GD_ASSERT(QueriedIterator != this->End(), "element with specified key does not exist.");
 			return QueriedIterator->Value;
+		}
+		GDINL ValueType& operator[] (KeyType const& key)
+		{
+			return const_cast<ValueType&>(const_cast<Map const&>(*this)[key]);
 		}
 		//! @}
 	};	// class Map

@@ -6,7 +6,7 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-//! @file GoddamnEngine/Core/Templates/Algorithm.h
+//! @file GoddamnEngine/Core/Algorithm.h
 //! Template algorithms definitions. 
 #pragma once
 
@@ -23,50 +23,50 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Default predicate for 'equal' operation.
-	template<typename ValueType>
+	template<typename TValue>
 	struct EqualTp final
 	{
-		GDINL bool operator()(ValueType const& LHS, ValueType const& RHS) const { return LHS == RHS; }
+		GDINL bool operator()(TValue const& lhs, TValue const& rhs) const { return lhs == rhs; }
 	};	// struct EqualTp final
 
 	// ------------------------------------------------------------------------------------------
 	//! Default predicate for 'not equal' operation.
-	template<typename ValueType>
+	template<typename TValue>
 	struct NotEqualTp final
 	{
-		GDINL bool operator()(ValueType const& LHS, ValueType const& RHS) const { return LHS != RHS; }
+		GDINL bool operator()(TValue const& lhs, TValue const& rhs) const { return lhs != rhs; }
 	};	// struct NotEqualTp final
 
 	// ------------------------------------------------------------------------------------------
 	//! Default predicate for 'greater' operation.
-	template<typename ValueType>
+	template<typename TValue>
 	struct LessTp final
 	{
-		GDINL bool operator()(ValueType const& LHS, ValueType const& RHS) const { return LHS < RHS; }
+		GDINL bool operator()(TValue const& lhs, TValue const& rhs) const { return lhs < rhs; }
 	};	// struct LessTp final
 
 	// ------------------------------------------------------------------------------------------
 	//! Default predicate for 'less equal' operation.
-	template<typename ValueType>
+	template<typename TValue>
 	struct LessEqualTp final
 	{
-		GDINL bool operator()(ValueType const& LHS, ValueType const& RHS) const { return LHS <= RHS; }
+		GDINL bool operator()(TValue const& lhs, TValue const& rhs) const { return lhs <= rhs; }
 	};	// struct LessTp final
 
 	// ------------------------------------------------------------------------------------------
 	//! Default predicate for 'greater' operation.
-	template<typename ValueType>
+	template<typename TValue>
 	struct GreaterTp final
 	{
-		GDINL bool operator()(ValueType const& LHS, ValueType const& RHS) const { return LHS > RHS; }
+		GDINL bool operator()(TValue const& lhs, TValue const& rhs) const { return lhs > rhs; }
 	};	// struct GreaterTp final
 
 	// ------------------------------------------------------------------------------------------
 	//! Default predicate for 'less equal' operation.
-	template<typename ValueType>
+	template<typename TValue>
 	struct GreaterEqualTp final
 	{
-		GDINL bool operator()(ValueType const& LHS, ValueType const& RHS) const { return LHS >= RHS; }
+		GDINL bool operator()(TValue const& lhs, TValue const& rhs) const { return lhs >= rhs; }
 	};	// struct GreaterEqualTp final
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,117 +74,119 @@ GD_NAMESPACE_BEGIN
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// ------------------------------------------------------------------------------------------
-	//! Initializes value of the specified iterator.
-	//! @param Iterator Value of this iterator would be initialized.
-	template<typename IteratorType>
-	GDINL static void InitializeIterator(IteratorType const Iterator)
+	//! Initializes value of the specified Iterator.
+	//! @param Iterator Value of this Iterator would be initialized.
+	template<typename TIterator>
+	GDINL static void InitializeIterator(TIterator const iterator)
 	{
-		typedef typename TypeTraits::RemoveReference<decltype(*Iterator)>::Type ElementType;
+		using ElementType = typename TypeTraits::RemoveReference<decltype(*iterator)>::Type;
 		if (!TypeTraits::IsPOD<ElementType>::Value)
-			new (Iterator) ElementType();
+			new (&*iterator) ElementType();
 	}
 
 	// ------------------------------------------------------------------------------------------
-	//! Initializes value of the specified iterator.
-	//! @param Iterator Value of this iterator would be initialized.
-	//! @param Element Initial value of the iterator.
+	//! Initializes value of the specified Iterator.
+	//! @param Iterator Value of this Iterator would be initialized.
+	//! @param element Initial value of the Iterator.
 	//! @{
-	template<typename IteratorType, typename ElementType>
-	GDINL static void InitializeIterator(IteratorType const Iterator, ElementType&& Element)
+	template<typename TIterator, typename TElement>
+	GDINL static void InitializeIterator(TIterator const iterator, TElement&& element)
 	{
-		new (Iterator) ElementType(Forward<ElementType>(Element));
+		using ElementType = typename TypeTraits::RemoveReference<decltype(*iterator)>::Type;
+		new (&*iterator) ElementType(Forward<ElementType>(element));
 	}
-	template<typename IteratorType, typename ElementType>
-	GDINL static void InitializeIterator(IteratorType const Iterator, ElementType const& Element)
+	template<typename TIterator, typename TElement>
+	GDINL static void InitializeIterator(TIterator const iterator, TElement const& element)
 	{
-		new (Iterator) ElementType(Element);
+		using ElementType = typename TypeTraits::RemoveReference<decltype(*iterator)>::Type;
+		new (&*iterator) ElementType(element);
 	}
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
 	//! Initializes all values of the iterators in specified range.
-	//! @param StartIterator Start of the iterators range.
-	//! @param EndIterator End of the iterators range.
-	template<typename ForwardIteratorType
+	//! @param startIterator Start of the iterators range.
+	//! @param endIterator End of the iterators range.
+	template<typename TForwardIterator
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<ForwardIteratorType>::IsForward>::Type
+		, typename = typename EnableIf<IteratorTraits<TForwardIterator>::IsForward>::Type
 #endif	// if !GD_DOCUMENTATION
 	> 
-	GDINL static void InitializeRange(ForwardIteratorType const StartIterator, ForwardIteratorType const EndIterator)
+	GDINL static void InitializeRange(TForwardIterator const startIterator, TForwardIterator const endIterator)
 	{
-		typedef typename TypeTraits::RemoveReference<decltype(*StartIterator)>::Type ElementType;
+		using ElementType = typename TypeTraits::RemoveReference<decltype(*startIterator)>::Type;
 		if (!TypeTraits::IsPOD<ElementType>::Value)
-			for (ForwardIteratorType Iterator = StartIterator; Iterator != EndIterator; ++Iterator)
-				InitializeIterator(Iterator);
+		{
+			for (TForwardIterator iterator = startIterator; iterator != endIterator; ++iterator)
+				InitializeIterator(iterator);
+		}
 	}
 
 	// ------------------------------------------------------------------------------------------
-	//! Deinitializes value of the specified iterator.
-	//! @param Iterator Value of this iterator would be initialized.
-	template<typename IteratorType>
-	GDINL static void DeinitializeIterator(IteratorType const Iterator)
+	//! Deinitializes value of the specified Iterator.
+	//! @param Iterator Value of this Iterator would be initialized.
+	template<typename TIterator>
+	GDINL static void DeinitializeIterator(TIterator const iterator)
 	{
-		typedef typename TypeTraits::RemoveReference<decltype(*Iterator)>::Type ElementType;
+		using ElementType = typename TypeTraits::RemoveReference<decltype(*iterator)>::Type;
 		if (!TypeTraits::IsPOD<ElementType>::Value)
-			Iterator->~ElementType();
+			(*iterator).~ElementType();
 	}
 
 	// ------------------------------------------------------------------------------------------
 	//! Deinitializes all values of the iterators in specified range.
-	//! @param StartIterator Start of the iterators range.
-	//! @param EndIterator End of the iterators range.
-	template<typename ForwardIteratorType
+	//! @param startIterator Start of the iterators range.
+	//! @param endIterator End of the iterators range.
+	template<typename TForwardIterator
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<ForwardIteratorType>::IsForward>::Type
+		, typename = typename EnableIf<IteratorTraits<TForwardIterator>::IsForward>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static void DeinitializeRange(ForwardIteratorType const StartIterator, ForwardIteratorType const EndIterator)
+	GDINL static void DeinitializeRange(TForwardIterator const startIterator, TForwardIterator const endIterator)
 	{
-		typedef typename TypeTraits::RemoveReference<decltype(*StartIterator)>::Type ElementType;
+		using ElementType = typename TypeTraits::RemoveReference<decltype(*startIterator)>::Type;
 		if (!TypeTraits::IsPOD<ElementType>::Value)
-			for (ForwardIteratorType Iterator = StartIterator; Iterator != EndIterator; ++Iterator)
-				DeinitializeIterator(Iterator);
+		{
+			for (TForwardIterator iterator = startIterator; iterator != endIterator; ++iterator)
+				DeinitializeIterator(iterator);
+		}
 	}
 
 	// ------------------------------------------------------------------------------------------
 	//! Copies values of the iterators from source range to destination.
-	//! @param StartSource Start of the source iterators range.
-	//! @param EndSource End of the source iterators range.
-	//! @param Destination First destination iterator.
-	template<typename SourceForwardIteratorType, typename DestinationForwardIteratorType
+	//! @param startSource Start of the source iterators range.
+	//! @param endSource End of the source iterators range.
+	//! @param destination lhs destination Iterator.
+	template<typename TSourceForwardIterator, typename TDestinationForwardIterator
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<SourceForwardIteratorType>::IsForward>::Type
-		, typename = typename EnableIf<IteratorTraits<DestinationForwardIteratorType>::IsForward>::Type
+		, typename = typename EnableIf<IteratorTraits<TSourceForwardIterator>::IsForward>::Type
+		, typename = typename EnableIf<IteratorTraits<TDestinationForwardIterator>::IsForward>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static DestinationForwardIteratorType CopyRange(SourceForwardIteratorType const& StartSource
-		, SourceForwardIteratorType const& EndSource, DestinationForwardIteratorType Destination)
+	GDINL static void CopyRange(TSourceForwardIterator const& startSource
+		, TSourceForwardIterator const& endSource, TDestinationForwardIterator destination)
 	{
-		SourceForwardIteratorType Iterator = StartSource;
-		for (; Iterator != EndSource; ++Iterator)
-			InitializeIterator(Destination + (Iterator - StartSource), *Iterator);
-		return Iterator;
+		for (TSourceForwardIterator iterator = startSource; iterator != endSource; ++iterator)
+			InitializeIterator(destination + (iterator - startSource), *iterator);
 	}
 
 	// ------------------------------------------------------------------------------------------
 	//! Moves values of the iterators from source range to destination.
-	//! @param StartSource Start of the source iterators range.
-	//! @param EndSource End of the source iterators range.
-	//! @param Destination First destination iterator.
-	template<typename SourceForwardIteratorType, typename DestinationForwardIteratorType
+	//! @param startSource Start of the source iterators range.
+	//! @param endSource End of the source iterators range.
+	//! @param destination lhs destination Iterator.
+	template<typename TSourceForwardIterator, typename TDestinationForwardIterator
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<SourceForwardIteratorType>::IsForward>::Type
-		, typename = typename EnableIf<IteratorTraits<DestinationForwardIteratorType>::IsForward>::Type
+		, typename = typename EnableIf<IteratorTraits<TSourceForwardIterator>::IsForward>::Type
+		, typename = typename EnableIf<IteratorTraits<TDestinationForwardIterator>::IsForward>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static DestinationForwardIteratorType MoveRange(SourceForwardIteratorType const& StartSource
-		, SourceForwardIteratorType const& EndSource, DestinationForwardIteratorType Destination)
+	GDINL static void MoveRange(TSourceForwardIterator const& startSource
+		, TSourceForwardIterator const& endSource, TDestinationForwardIterator destination)
 	{
-		typedef typename TypeTraits::RemoveReference<decltype(*Destination)>::Type ElementType;
-		SourceForwardIteratorType Iterator = StartSource;
-		for (; Iterator != EndSource; ++Iterator)
-			InitializeIterator(Destination + (Iterator - StartSource), Forward<ElementType>(*Iterator));
-		return Iterator;
+		using ElementType = typename TypeTraits::RemoveReference<decltype(*destination)>::Type;
+		for (TSourceForwardIterator iterator = startSource; iterator != endSource; ++iterator)
+			InitializeIterator(destination + (iterator - startSource), Forward<ElementType>(*iterator));
 	}
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -193,161 +195,165 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Linearly searches through all iterators for one that matches the specified predicate.
-	//! @param StartIterator Start of the iterators range.
-	//! @param EndIterator End of the iterators range.
-	//! @param Predicate The unary predicate instance.
-	//! @returns First iterator found that matched specified predicate or the end iterator.
+	//! @param startIterator Start of the iterators range.
+	//! @param endIterator End of the iterators range.
+	//! @param predicate The unary predicate instance.
+	//! @returns lhs Iterator found that matched specified predicate or the end Iterator.
 	//! @{
-	template<typename ForwardIteratorType, typename PredicateType
+	template<typename TForwardIterator, typename TPredicate
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<ForwardIteratorType>::IsForward>::Type
+		, typename = typename EnableIf<IteratorTraits<TForwardIterator>::IsForward>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static ForwardIteratorType FindFirstIf(ForwardIteratorType const StartIterator, ForwardIteratorType const EndIterator, PredicateType const& Predicate)
+	GDINL static TForwardIterator FindFirstIf(TForwardIterator const startIterator, TForwardIterator const endIterator, TPredicate const& predicate)
 	{
-		for (ForwardIteratorType Iterator = StartIterator; Iterator != EndIterator; ++Iterator)
-			if (Predicate(*Iterator))
-				return Iterator;
-		return EndIterator;
+		for (TForwardIterator iterator = startIterator; iterator != endIterator; ++iterator)
+		{
+			if (predicate(*iterator))
+				return iterator;
+		}
+		return endIterator;
 	}
-	template<typename ForwardIteratorType, typename ElementType>
-	GDINL static ForwardIteratorType FindFirst(ForwardIteratorType const StartIterator, ForwardIteratorType const EndIterator, ElementType const& Predicate)
+	template<typename TForwardIterator, typename TElement>
+	GDINL static TForwardIterator FindFirst(TForwardIterator const startIterator, TForwardIterator const endIterator, TElement const& predicate)
 	{
-		return FindFirstIf(StartIterator, EndIterator
-			, [&Predicate](ElementType const& Value) { return Value == Predicate; });
+		return FindFirstIf(startIterator, endIterator
+			, [&predicate](TElement const& Value) { return Value == predicate; });
 	}
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
-	//! Linearly searches through the container for the first element that matches the specified predicate.
-	//! @param StartIterator Start of the iterators range.
-	//! @param EndIterator End of the iterators range.
-	//! @param Predicate The unary predicate instance.
-	//! @returns First iterator found that matched specified predicate or the end iterator.
+	//! Linearly searches through the m_Container for the first element that matches the specified predicate.
+	//! @param startIterator Start of the iterators range.
+	//! @param endIterator End of the iterators range.
+	//! @param predicate The unary predicate instance.
+	//! @returns lhs Iterator found that matched specified predicate or the end Iterator.
 	//! @{
-	template<typename ContainerType, typename PredicateType>
-	GDINL static auto FindFirstIf(ContainerType const& Container, PredicateType const& Predicate) -> decltype(Begin(Container))
+	template<typename TContainer, typename TPredicate>
+	GDINL static auto FindFirstIf(TContainer const& container, TPredicate const& predicate) -> decltype(Begin(container))
 	{
-		return FindFirstIf(Begin(Container), End(Container), Predicate);
+		return FindFirstIf(Begin(container), End(container), predicate);
 	}
-	template<typename ContainerType, typename PredicateType>
-	GDINL static auto FindFirstIf(ContainerType& Container, PredicateType const& Predicate) -> decltype(Begin(Container))
+	template<typename TContainer, typename TPredicate>
+	GDINL static auto FindFirstIf(TContainer& container, TPredicate const& predicate) -> decltype(Begin(container))
 	{
-		return FindFirstIf(Begin(Container), End(Container), Predicate);
+		return FindFirstIf(Begin(container), End(container), predicate);
 	}
-	template<typename ContainerType, typename ElementType>
-	GDINL static auto FindFirst(ContainerType const& Container, ElementType const& Predicate) -> decltype(Begin(Container))
+	template<typename TContainer, typename TElement>
+	GDINL static auto FindFirst(TContainer const& container, TElement const& predicate) -> decltype(Begin(container))
 	{
-		return FindFirst(Begin(Container), End(Container), Predicate);
+		return FindFirst(Begin(container), End(container), predicate);
 	}
-	template<typename ContainerType, typename ElementType>
-	GDINL static auto FindFirst(ContainerType& Container, ElementType const& Predicate) -> decltype(Begin(Container))
+	template<typename TContainer, typename TElement>
+	GDINL static auto FindFirst(TContainer& container, TElement const& predicate) -> decltype(Begin(container))
 	{
-		return FindFirst(Begin(Container), End(Container), Predicate);
+		return FindFirst(Begin(container), End(container), predicate);
 	}
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
 	//! Linearly searches through all iterators (in reverse order) for one that matches the specified predicate.
-	//! @param StartIterator Start of the iterators range.
-	//! @param EndIterator End of the iterators range.
-	//! @param Predicate The unary predicate instance.
-	//! @returns Last iterator found that matched specified predicate or the end iterator.
+	//! @param startIterator Start of the iterators range.
+	//! @param endIterator End of the iterators range.
+	//! @param predicate The unary predicate instance.
+	//! @returns Last Iterator found that matched specified predicate or the end Iterator.
 	//! @{
-	template<typename BidirectionalIteratorType, typename PredicateType
+	template<typename TBidirectionalIterator, typename TPredicate
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<BidirectionalIteratorType>::IsBidirectional>::Type
+		, typename = typename EnableIf<IteratorTraits<TBidirectionalIterator>::IsBidirectional>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static BidirectionalIteratorType FindLastIf(BidirectionalIteratorType const StartIterator, BidirectionalIteratorType const EndIterator, PredicateType const& Predicate)
+	GDINL static TBidirectionalIterator FindLastIf(TBidirectionalIterator const startIterator, TBidirectionalIterator const endIterator, TPredicate const& predicate)
 	{
-		BidirectionalIteratorType const ReverseStartIterator = EndIterator - 1;
-		BidirectionalIteratorType const ReverseEndIterator = StartIterator - 1;
-		for (BidirectionalIteratorType Iterator = ReverseStartIterator; Iterator != ReverseEndIterator; --Iterator)
-			if (Predicate(*Iterator))
-				return Iterator;
-		return EndIterator;
+		TBidirectionalIterator const reverseStartIterator = endIterator - 1;
+		TBidirectionalIterator const reverseEndIterator = startIterator - 1;
+		for (TBidirectionalIterator iterator = reverseStartIterator; iterator != reverseEndIterator; --iterator)
+		{
+			if (predicate(*iterator))
+				return iterator;
+		}
+		return endIterator;
 	}
-	template<typename BidirectionalIteratorType, typename ElementType>
-	GDINL static BidirectionalIteratorType FindLast(BidirectionalIteratorType const StartIterator, BidirectionalIteratorType const EndIterator
-		, ElementType const& Predicate)
+	template<typename TBidirectionalIterator, typename TElement>
+	GDINL static TBidirectionalIterator FindLast(TBidirectionalIterator const startIterator, TBidirectionalIterator const endIterator
+		, TElement const& predicate)
 	{
-		return FindLastIf(StartIterator, EndIterator
-			, [&Predicate](ElementType const& Value) { return Value == Predicate; });
+		return FindLastIf(startIterator, endIterator
+			, [&predicate](TElement const& Value) { return Value == predicate; });
 	}
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
-	//! Linearly searches through the container for the last element that matches the specified predicate.
-	//! @param StartIterator Start of the iterators range.
-	//! @param EndIterator End of the iterators range.
-	//! @param Predicate The unary predicate instance.
-	//! @returns First iterator found that matched specified predicate or the end iterator.
+	//! Linearly searches through the m_Container for the last element that matches the specified predicate.
+	//! @param startIterator Start of the iterators range.
+	//! @param endIterator End of the iterators range.
+	//! @param predicate The unary predicate instance.
+	//! @returns lhs Iterator found that matched specified predicate or the end Iterator.
 	//! @{
-	template<typename ContainerType, typename PredicateType>
-	GDINL static auto FindLastIf(ContainerType const& Container, PredicateType const& Predicate) -> decltype(Begin(Container))
+	template<typename TContainer, typename TPredicate>
+	GDINL static auto FindLastIf(TContainer const& container, TPredicate const& predicate) -> decltype(Begin(container))
 	{
-		return FindLastIf(Begin(Container), End(Container), Predicate);
+		return FindLastIf(Begin(container), End(container), predicate);
 	}
-	template<typename ContainerType, typename PredicateType>
-	GDINL static auto FindLastIf(ContainerType& Container, PredicateType const& Predicate) -> decltype(Begin(Container))
+	template<typename TContainer, typename TPredicate>
+	GDINL static auto FindLastIf(TContainer& container, TPredicate const& predicate) -> decltype(Begin(container))
 	{
-		return FindLastIf(Begin(Container), End(Container), Predicate);
+		return FindLastIf(Begin(container), End(container), predicate);
 	}
-	template<typename ContainerType, typename ElementType>
-	GDINL static auto FindLast(ContainerType const& Container, ElementType const& Predicate) -> decltype(Begin(Container))
+	template<typename TContainer, typename TElement>
+	GDINL static auto FindLast(TContainer const& container, TElement const& predicate) -> decltype(Begin(container))
 	{
-		return FindLast(Begin(Container), End(Container), Predicate);
+		return FindLast(Begin(container), End(container), predicate);
 	}
-	template<typename ContainerType, typename ElementType>
-	GDINL static auto FindLast(ContainerType& Container, ElementType const& Predicate) -> decltype(Begin(Container))
+	template<typename TContainer, typename TElement>
+	GDINL static auto FindLast(TContainer& container, TElement const& predicate) -> decltype(Begin(container))
 	{
-		return FindLast(Begin(Container), End(Container), Predicate);
+		return FindLast(Begin(container), End(container), predicate);
 	}
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
 	//! Searches through all iterators for one that matches the specified predicate via binary searching algorithm.
 	//! The range must me sorted in ascending order. See @ref UnstableSort method.
-	//! @param StartIterator Start of the iterators range.
-	//! @param EndIterator End of the iterators range.
-	//! @param Predicate Element we are searching for.
-	//! @returns First iterator found that matched specified predicate or the end iterator.
-	template<typename RandomAccessIteratorType, typename ElementType
+	//! @param startIterator Start of the iterators range.
+	//! @param endIterator End of the iterators range.
+	//! @param predicate element we are searching for.
+	//! @returns lhs Iterator found that matched specified predicate or the end Iterator.
+	template<typename TRandomAccessIterator, typename TElement
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<RandomAccessIteratorType>::IsRandomAccess>::Type
+		, typename = typename EnableIf<IteratorTraits<TRandomAccessIterator>::IsRandomAccess>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static RandomAccessIteratorType BinaryFind(RandomAccessIteratorType const StartIterator, RandomAccessIteratorType const EndIterator, ElementType const& Predicate)
+	GDINL static TRandomAccessIterator BinaryFind(TRandomAccessIterator const startIterator, TRandomAccessIterator const endIterator, TElement const& predicate)
 	{
-		for (RandomAccessIteratorType LeftIterator = StartIterator, RightIterator = (EndIterator - 1); LeftIterator != RightIterator; )
+		for (TRandomAccessIterator LeftIterator = startIterator, RightIterator = (endIterator - 1); LeftIterator != RightIterator; )
 		{
-			SizeTp const IteratorsDistance = (RightIterator - LeftIterator);
-			RandomAccessIteratorType const PivotIterator = LeftIterator + IteratorsDistance / 2;
-			ElementType const& PivotElement = *PivotIterator;
-			if (PivotElement == Predicate)
-				return PivotIterator;
-			((PivotElement < Predicate) ? LeftIterator : RightIterator) = PivotIterator;
+			SizeTp const iteratorsDistance = (RightIterator - LeftIterator);
+			TRandomAccessIterator const pivotIterator = LeftIterator + iteratorsDistance / 2;
+			TElement const& pivotElement = *pivotIterator;
+			if (pivotElement == predicate)
+				return pivotIterator;
+			((pivotElement < predicate) ? LeftIterator : RightIterator) = pivotIterator;
 		}
-		return EndIterator;
+		return endIterator;
 	}
 
 	// ------------------------------------------------------------------------------------------
-	//! Searches through the container for one that matches the specified predicate via binary searching algorithm.
-	//! @param StartIterator Start of the iterators range.
-	//! @param EndIterator End of the iterators range.
-	//! @param Predicate Element we are searching for.
-	//! @returns First iterator found that matched specified predicate or the end iterator.
+	//! Searches through the m_Container for one that matches the specified predicate via binary searching algorithm.
+	//! @param startIterator Start of the iterators range.
+	//! @param endIterator End of the iterators range.
+	//! @param predicate element we are searching for.
+	//! @returns lhs Iterator found that matched specified predicate or the end Iterator.
 	//! @{
-	template<typename ContainerType, typename ElementType>
-	GDINL static auto BinaryFind(ContainerType const& Container, ElementType const& Predicate) -> decltype(Begin(Container))
+	template<typename TContainer, typename TElement>
+	GDINL static auto BinaryFind(TContainer const& container, TElement const& predicate) -> decltype(Begin(container))
 	{
-		return BinaryFind(Begin(Container), End(Container), Predicate);
+		return BinaryFind(Begin(container), End(container), predicate);
 	}
-	template<typename ContainerType, typename ElementType>
-	GDINL static auto BinaryFind(ContainerType& Container, ElementType const& Predicate) -> decltype(Begin(Container))
+	template<typename TContainer, typename TElement>
+	GDINL static auto BinaryFind(TContainer& container, TElement const& predicate) -> decltype(Begin(container))
 	{
-		return BinaryFind(Begin(Container), End(Container), Predicate);
+		return BinaryFind(Begin(container), End(container), predicate);
 	}
 	//! @}
 
@@ -357,206 +363,210 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	// Sort two iterators by predicate.
-	template<typename IteratorType, typename LessPredicateType>
-	GDINL static void _PairSort(IteratorType const FirstIterator, IteratorType const SecondIterator, LessPredicateType const& LessPredicate)
+	template<typename TIterator, typename TLessPredicate>
+	GDINL static void _PairSort(TIterator const FirstIterator, TIterator const SecondIterator, TLessPredicate const& lessPredicate)
 	{
-		if (LessPredicate(*SecondIterator, *FirstIterator))
+		if (lessPredicate(*SecondIterator, *FirstIterator))
 			IteratorSwap(FirstIterator, SecondIterator);
 	}
 
 	// ------------------------------------------------------------------------------------------
 	// https://en.wikipedia.org/wiki/Insertion_sort
-	template<typename RandomAccessIteratorType, typename LessPredicateType
+	template<typename TRandomAccessIterator, typename TLessPredicate
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<RandomAccessIteratorType>::IsRandomAccess>::Type
+		, typename = typename EnableIf<IteratorTraits<TRandomAccessIterator>::IsRandomAccess>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static void _InsertionSort(RandomAccessIteratorType const StartIterator, RandomAccessIteratorType const EndIterator, LessPredicateType const& LessPredicate)
+	GDINL static void _InsertionSort(TRandomAccessIterator const startIterator, TRandomAccessIterator const endIterator, TLessPredicate const& lessPredicate)
 	{
-		if (EndIterator != StartIterator)
+		if (endIterator != startIterator)
 		{
-			RandomAccessIteratorType const ReverseEndIterator = StartIterator - 1;
-			for (RandomAccessIteratorType Iterator = StartIterator + 1; Iterator != EndIterator; ++Iterator)
+			TRandomAccessIterator const reverseEndIterator = startIterator - 1;
+			for (TRandomAccessIterator iterator = startIterator + 1; iterator != endIterator; ++iterator)
 			{
-				for (RandomAccessIteratorType SortedIterator = Iterator; (SortedIterator != ReverseEndIterator)
-					&& LessPredicate(*SortedIterator, *(SortedIterator - 1)); --SortedIterator)
-					IteratorSwap(SortedIterator, SortedIterator - 1);
+				for (TRandomAccessIterator sortedIterator = iterator; (sortedIterator != reverseEndIterator)
+					&& lessPredicate(*sortedIterator, *(sortedIterator - 1)); --sortedIterator)
+					IteratorSwap(sortedIterator, sortedIterator - 1);
 			}
 		}
 	}
 
 	// ------------------------------------------------------------------------------------------
 	// https://en.wikipedia.org/wiki/Quicksort
-	template<typename RandomAccessIteratorType, typename LessPredicateType
+	template<typename TRandomAccessIterator, typename TLessPredicate
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<RandomAccessIteratorType>::IsRandomAccess>::Type
+		, typename = typename EnableIf<IteratorTraits<TRandomAccessIterator>::IsRandomAccess>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static void _QuickSort(RandomAccessIteratorType const StartIterator, RandomAccessIteratorType const EndIterator, LessPredicateType const& LessPredicate)
+	GDINL static void _QuickSort(TRandomAccessIterator const startIterator, TRandomAccessIterator const endIterator, TLessPredicate const& lessPredicate)
 	{
-		if (StartIterator != EndIterator)
+		if (startIterator != endIterator)
 		{
-			RandomAccessIteratorType LeftIterator = StartIterator;
-			RandomAccessIteratorType RightIterator = EndIterator - 1;
-			if (LeftIterator != RightIterator)
+			TRandomAccessIterator leftIterator = startIterator;
+			TRandomAccessIterator rightIterator = endIterator - 1;
+			if (leftIterator != rightIterator)
 			{
-				RandomAccessIteratorType const PivotIterator = LeftIterator++;
-				while (LeftIterator != RightIterator)
+				TRandomAccessIterator const pivotIterator = leftIterator++;
+				while (leftIterator != rightIterator)
 				{
-					if (LessPredicate(*LeftIterator, *PivotIterator))
+					if (lessPredicate(*leftIterator, *pivotIterator))
 					{
-						++LeftIterator;
+						++leftIterator;
 					}
 					else
 					{
-						while ((LeftIterator != RightIterator) && LessPredicate(*PivotIterator, *RightIterator))
-							--RightIterator;
-						IteratorSwap(LeftIterator, RightIterator);
+						while ((leftIterator != rightIterator) && lessPredicate(*pivotIterator, *rightIterator))
+							--rightIterator;
+						IteratorSwap(leftIterator, rightIterator);
 					}
 				}
-				IteratorSwap(PivotIterator, LeftIterator - 1);
-				_QuickSort(StartIterator, LeftIterator, LessPredicate);
-				_QuickSort(RightIterator, EndIterator, LessPredicate);
+				IteratorSwap(pivotIterator, leftIterator - 1);
+				_QuickSort(startIterator, leftIterator, lessPredicate);
+				_QuickSort(rightIterator, endIterator, lessPredicate);
 			}
 		}
 	}
 
 	// ------------------------------------------------------------------------------------------
 	// https://en.wikipedia.org/wiki/Smoothsort
-	template<typename RandomAccessIteratorType, typename LessPredicateType
+	template<typename TRandomAccessIterator, typename TLessPredicate
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<RandomAccessIteratorType>::IsRandomAccess>::Type
+		, typename = typename EnableIf<IteratorTraits<TRandomAccessIterator>::IsRandomAccess>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static void _SmoothSort(RandomAccessIteratorType const StartIterator, RandomAccessIteratorType const EndIterator, LessPredicateType const& LessPredicate)
+	GDINL static void _SmoothSort(TRandomAccessIterator const startIterator, TRandomAccessIterator const endIterator, TLessPredicate const& lessPredicate)
 	{
 		//! @todo Implement smooth sorting.
-		_QuickSort(StartIterator, EndIterator, LessPredicate);
+		_QuickSort(startIterator, endIterator, lessPredicate);
 	}
 
 	// ------------------------------------------------------------------------------------------
 	// https://en.wikipedia.org/wiki/Merge_sort
-	template<typename RandomAccessIteratorType, typename LessPredicateType
+	template<typename TRandomAccessIterator, typename TLessPredicate
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<RandomAccessIteratorType>::IsRandomAccess>::Type
+		, typename = typename EnableIf<IteratorTraits<TRandomAccessIterator>::IsRandomAccess>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static void _MergeSort(RandomAccessIteratorType const StartIterator, RandomAccessIteratorType const EndIterator, LessPredicateType const& LessPredicate)
+	GDINL static void _MergeSort(TRandomAccessIterator const startIterator, TRandomAccessIterator const endIterator, TLessPredicate const& lessPredicate)
 	{
 		//! @todo Implement merge sorting.
-		_InsertionSort(StartIterator, EndIterator, LessPredicate);
+		_InsertionSort(startIterator, endIterator, lessPredicate);
 	}
 
 	// ------------------------------------------------------------------------------------------
-	//! Performs fast unstable (in case of >= 2 elements) sorting of iterator range. 
-	//! @param StartIterator Start of the iterators range.
-	//! @param EndIterator End of the iterators range.
-	//! @param LessPredicate Binary predicate that determines, whether left expression is less than right.
+	//! Performs fast unstable (in case of >= 2 elements) sorting of Iterator range. 
+	//! @param startIterator Start of the iterators range.
+	//! @param endIterator End of the iterators range.
+	//! @param lessPredicate Binary predicate that determines, whether m_Left expression is less than m_Right.
 	//! @{
-	template<typename RandomAccessIteratorType, typename LessPredicateType
+	template<typename TRandomAccessIterator, typename TLessPredicate
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<RandomAccessIteratorType>::IsRandomAccess>::Type
+		, typename = typename EnableIf<IteratorTraits<TRandomAccessIterator>::IsRandomAccess>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static void UnstableSort(RandomAccessIteratorType const StartIterator, RandomAccessIteratorType const EndIterator, LessPredicateType const& LessPredicate)
+	GDINL static void UnstableSort(TRandomAccessIterator const startIterator, TRandomAccessIterator const endIterator, TLessPredicate const& lessPredicate)
 	{
-		SizeTp const IteratorsDistance = EndIterator - StartIterator;
-		if (IteratorsDistance > 1)
+		SizeTp const iteratorsDistance = endIterator - startIterator;
+		if (iteratorsDistance > 1)
 		{
-			if (IteratorsDistance != 2)
+			if (iteratorsDistance != 2)
 			{
-				SizeTp static const MaxInsertionSortDistance = 8;
-				if (IteratorsDistance > MaxInsertionSortDistance)
+				SizeTp static const maxInsertionSortDistance = 8;
+				if (iteratorsDistance > maxInsertionSortDistance)
 				{
-					SizeTp static const MaxQuickSortDistance = 150;
-					if (IteratorsDistance <= MaxQuickSortDistance)
-						 _QuickSort(StartIterator, EndIterator, LessPredicate);
-					else _SmoothSort(StartIterator, EndIterator, LessPredicate);
+					SizeTp static const maxQuickSortDistance = 150;
+					iteratorsDistance <= maxQuickSortDistance ? _QuickSort(startIterator, endIterator, lessPredicate) : _SmoothSort(startIterator, endIterator, lessPredicate);
 				}
 				else
-					_InsertionSort(StartIterator, EndIterator, LessPredicate);
+				{
+					_InsertionSort(startIterator, endIterator, lessPredicate);
+				}
 			}
 			else
-				_PairSort(StartIterator, EndIterator - 1, LessPredicate);
+			{
+				_PairSort(startIterator, endIterator - 1, lessPredicate);
+			}
 		}
 	}
-	template<typename RandomAccessIteratorType>
-	GDINL static void UnstableSort(RandomAccessIteratorType const StartIterator, RandomAccessIteratorType const EndIterator)
+	template<typename TRandomAccessIterator>
+	GDINL static void UnstableSort(TRandomAccessIterator const startIterator, TRandomAccessIterator const endIterator)
 	{
-		typedef typename TypeTraits::RemoveReference<decltype(*StartIterator)>::Type ElementType;
-		UnstableSort(StartIterator, EndIterator, LessTp<ElementType>());
+		typedef typename TypeTraits::RemoveReference<decltype(*startIterator)>::Type ElementType;
+		UnstableSort(startIterator, endIterator, LessTp<ElementType>());
 	}
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
-	//! Performs fast unstable (in case of >= 2 elements) sorting of the container. 
-	//! @param Container Container to be sorted.
-	template<typename ContainerType>
-	GDINL static void UnstableSort(ContainerType& Container)
+	//! Performs fast unstable (in case of >= 2 elements) sorting of the m_Container. 
+	//! @param m_Container The m_Container to be sorted.
+	template<typename TContainer>
+	GDINL static void UnstableSort(TContainer& container)
 	{
-		UnstableSort(Begin(Container), End(Container));
+		UnstableSort(Begin(container), End(container));
 	}
 
 	// ------------------------------------------------------------------------------------------
-	//! Performs fast stable sorting of iterator range. Stable sorting is slower than unstable one.
-	//! @param StartIterator Start of the iterators range.
-	//! @param EndIterator End of the iterators range.
-	//! @param LessPredicate Binary predicate that determines, whether left expression is less than right.
+	//! Performs fast stable sorting of Iterator range. Stable sorting is slower than unstable one.
+	//! @param startIterator Start of the iterators range.
+	//! @param endIterator End of the iterators range.
+	//! @param lessPredicate Binary predicate that determines, whether m_Left expression is less than m_Right.
 	//! @{
-	template<typename RandomAccessIteratorType, typename LessPredicateType
+	template<typename TRandomAccessIterator, typename TLessPredicate
 #if !GD_DOCUMENTATION
-		, typename = typename EnableIf<IteratorTraits<RandomAccessIteratorType>::IsRandomAccess>::Type
+		, typename = typename EnableIf<IteratorTraits<TRandomAccessIterator>::IsRandomAccess>::Type
 #endif	// if !GD_DOCUMENTATION
 	>
-	GDINL static void StableSort(RandomAccessIteratorType const StartIterator, RandomAccessIteratorType const EndIterator
-		, LessPredicateType const& LessPredicate)
+	GDINL static void StableSort(TRandomAccessIterator const startIterator, TRandomAccessIterator const endIterator
+		, TLessPredicate const& lessPredicate)
 	{
-		SizeTp const IteratorsDistance = EndIterator - StartIterator;
-		if (IteratorsDistance > 1)
+		SizeTp const iteratorsDistance = endIterator - startIterator;
+		if (iteratorsDistance > 1)
 		{
-			if (IteratorsDistance != 2)
+			if (iteratorsDistance != 2)
 			{
-				SizeTp static const MaxInsertionSortDistance = 5;
-				if (MaxInsertionSortDistance >= IteratorsDistance)
-					 _InsertionSort(StartIterator, EndIterator, LessPredicate);
-				else _MergeSort(StartIterator, EndIterator, LessPredicate);
+				SizeTp static const maxInsertionSortDistance = 5;
+				maxInsertionSortDistance >= iteratorsDistance ? _InsertionSort(startIterator, endIterator, lessPredicate) : _MergeSort(startIterator, endIterator, lessPredicate);
 			}
 			else
-				_PairSort(StartIterator, EndIterator - 1, LessPredicate);
+			{
+				_PairSort(startIterator, endIterator - 1, lessPredicate);
+			}
 		}
 	}
-	template<typename RandomAccessIteratorType>
-	GDINL static void StableSort(RandomAccessIteratorType const StartIterator, RandomAccessIteratorType const EndIterator)
+	template<typename TRandomAccessIterator>
+	GDINL static void StableSort(TRandomAccessIterator const startIterator, TRandomAccessIterator const endIterator)
 	{
-		typedef typename TypeTraits::RemoveReference<decltype(*StartIterator)>::Type ElementType;
-		StableSort(StartIterator, EndIterator, LessTp<ElementType>());
+		typedef typename TypeTraits::RemoveReference<decltype(*startIterator)>::Type ElementType;
+		StableSort(startIterator, endIterator, LessTp<ElementType>());
 	}
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
-	//! Performs fast stable sorting of the container. Stable sorting is slower than unstable one.
-	//! @param Container Container to be sorted.
-	template<typename ContainerType>
-	GDINL static void StableSort(ContainerType& Container)
+	//! Performs fast stable sorting of the m_Container. Stable sorting is slower than unstable one.
+	//! @param m_Container The m_Container to be sorted.
+	template<typename TContainer>
+	GDINL static void StableSort(TContainer& container)
 	{
-		StableSort(Begin(Container), End(Container));
+		StableSort(Begin(container), End(container));
 	}
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Other algorithms.
+	// other algorithms.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// ------------------------------------------------------------------------------------------
-	//! Compares this container and some other by a predicate.
-	//! @param OtherVector Other container against which we are comparing.
-	//! @param Predicate Object with () operator overloaded that takes two elements and compares then somehow.
-	template<typename ContainerType, typename BinaryPredicateType>
-	GDINL bool LexicographicalCompare(ContainerType const& First, ContainerType const& Second, BinaryPredicateType const& Predicate)
+	//! Compares this m_Container and some other by a predicate.
+	//! @param otherVector other m_Container against which we are comparing.
+	//! @param predicate Object with () operator overloaded that takes two elements and compares then somehow.
+	template<typename TContainer, typename TBinaryPredicate>
+	GDINL bool LexicographicalCompare(TContainer const& lhs, TContainer const& rhs, TBinaryPredicate const& predicate)
 	{
-		SizeTp const MinLength = Min(First.GetLength(), Second.GetLength());
-		for (SizeTp Index = 0; Index < MinLength; ++Index)
-			if (!Predicate(*(First.Begin() + Index), *(Second.Begin() + Index)))
+		SizeTp const minLength = Min(lhs.GetLength(), rhs.GetLength());
+		for (SizeTp cnt = 0; cnt < minLength; ++cnt)
+		{
+			if (!predicate(*(lhs.Begin() + cnt), *(rhs.Begin() + cnt)))
 				return false;
+		}
 		return true;
 	}
 
@@ -566,62 +576,62 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Returns a minimal object of the two specified.
-	//! @param First First comparand.
-	//! @param Second Second comparand.
+	//! @param lhs First comparand.
+	//! @param lhs rhs comparand.
 	//! @returns Minimal of two comparands.
 	//! @{
-	template<typename ComparandType>
-	GDINL ComparandType const& Min(ComparandType const& First, ComparandType const& Second)
+	template<typename TComparand>
+	GDINL TComparand const& Min(TComparand const& lhs, TComparand const& rhs)
 	{
-		return (First < Second) ? First : Second;
+		return (lhs < rhs) ? lhs : rhs;
 	}
-	template<typename ComparandType>
-	GDINL ComparandType& Min(ComparandType& First, ComparandType& Second)
+	template<typename TComparand>
+	GDINL TComparand& Min(TComparand& lhs, TComparand& rhs)
 	{
-		return (First < Second) ? First : Second;
+		return (lhs < rhs) ? lhs : rhs;
 	}
 	//! @}
 
 	// ------------------------------------------------------------------------------------------
 	//! Returns a maximum object of the two specified.
-	//! @param First First comparand.
-	//! @param Second Second comparand.
+	//! @param lhs First comparand.
+	//! @param rhs Second comparand.
 	//! @returns Maximum of two comparands.
 	//! @{
-	template<typename ComparandType>
-	GDINL ComparandType& Max(ComparandType& First, ComparandType& Second)
+	template<typename TComparand>
+	GDINL TComparand& Max(TComparand& lhs, TComparand& rhs)
 	{
-		return (First > Second) ? First : Second;
+		return (lhs > rhs) ? lhs : rhs;
 	}
-	template<typename ComparandType>
-	GDINL ComparandType const& Max(ComparandType const& First, ComparandType const& Second)
+	template<typename TComparand>
+	GDINL TComparand const& Max(TComparand const& lhs, TComparand const& rhs)
 	{
-		return (First > Second) ? First : Second;
+		return (lhs > rhs) ? lhs : rhs;
 	}
 	//! @}
 
-	typedef Int32 HashValueType;
+	typedef Int32 HashValue;
 
-	//! Represents hash summ that can not be implcilty casted to integer type. 
+	//! Represents hash code that can not be IMPLcilty casted to integer type. 
 	struct HashCode final
 	{
 	private:
-		HashValueType Value = 0;
+		HashValue Value = 0;
 
 	public:
-		//! Initializes hash summ with precomputed integer value.
-		GDINL explicit HashCode(HashValueType const HashValue = 0) : Value(HashValue) {}
+		//! Initializes hash code with precomputed integer value.
+		GDINL explicit HashCode(HashValue const HashValue = 0) : Value(HashValue) {}
 
-		//! Returns integer representation of this hash summ.
-		GDINL HashValueType GetValue() const { return this->Value; }
+		//! Returns integer representation of this hash code.
+		GDINL HashValue GetValue() const { return Value; }
 
-		//! Compares to hash summs.
-		GDINL bool operator== (HashCode const& HashCode) const { return (this->Value == HashCode.Value); }
-		GDINL bool operator!= (HashCode const& HashCode) const { return (this->Value != HashCode.Value); }
-		GDINL bool operator>  (HashCode const& HashCode) const { return (this->Value >  HashCode.Value); }
-		GDINL bool operator>= (HashCode const& HashCode) const { return (this->Value >= HashCode.Value); }
-		GDINL bool operator<  (HashCode const& HashCode) const { return (this->Value <  HashCode.Value); }
-		GDINL bool operator<= (HashCode const& HashCode) const { return (this->Value <= HashCode.Value); }
+		//! Compares to hash code.
+		GDINL bool operator== (HashCode const& HashCode) const { return (Value == HashCode.Value); }
+		GDINL bool operator!= (HashCode const& HashCode) const { return (Value != HashCode.Value); }
+		GDINL bool operator>  (HashCode const& HashCode) const { return (Value >  HashCode.Value); }
+		GDINL bool operator>= (HashCode const& HashCode) const { return (Value >= HashCode.Value); }
+		GDINL bool operator<  (HashCode const& HashCode) const { return (Value <  HashCode.Value); }
+		GDINL bool operator<= (HashCode const& HashCode) const { return (Value <= HashCode.Value); }
 	};	// struct HashCode
 
 GD_NAMESPACE_END

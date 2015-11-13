@@ -14,43 +14,49 @@ using System.Xml;
 
 namespace GoddamnEngine.BuildSystem
 {
+    // ------------------------------------------------------------------------------------------
     //! Represents extensions to .NET standart library's "Array" class.
     internal static class ArrayExtensions
     {
+        // ------------------------------------------------------------------------------------------
         //! Similar to string's "Substring" function.
-        internal static T[] SubArray<T>(this T[] Data, int Index, int Length = -1)
+        internal static T[] SubArray<T>(this T[] data, int index, int length = -1)
         {
-            Length = (Length > 0) ? Length : (Data.Length - Index);
-            T[] Result = new T[Length];
-            Array.Copy(Data, Index, Result, 0, Length);
+            length = (length > 0) ? length : (data.Length - index);
+            var result = new T[length];
+            Array.Copy(data, index, result, 0, length);
 
-            return Result;
+            return result;
         }
 
+        // ------------------------------------------------------------------------------------------
         //! Similar to string's "Concat" function.
-        public static T[] Concat<T>(this T[] First, T[] Second)
+        public static T[] Concat<T>(this T[] first, T[] second)
         {
-            int OldLength = First.Length;
-            Array.Resize<T>(ref First, First.Length + Second.Length);
-            Array.Copy(Second, 0, First, OldLength, Second.Length);
+            var oldLength = first.Length;
+            Array.Resize(ref first, first.Length + second.Length);
+            Array.Copy(second, 0, first, oldLength, second.Length);
 
-            return First;
+            return first;
         }
     }   // class ArrayExtensions
 
+    // ------------------------------------------------------------------------------------------
     //! Represents extensions to .NET standart library's "XmlTextWriter" class.
     internal static class XmlTextWriterExtensions
     {
+        // ------------------------------------------------------------------------------------------
         //! Adds formatting support for "WriteAttributeString" function.
-        public static void WriteAttributeStringFormat(this XmlTextWriter Writer, string LocalName, string ValueFormat, params object[] ValueArguments)
+        public static void WriteAttributeStringFormat(this XmlTextWriter writer, string localName, string valueFormat, params object[] valueArguments)
         {
-            Writer.WriteAttributeString(LocalName, string.Format(ValueFormat, ValueArguments));
+            writer.WriteAttributeString(localName, string.Format(valueFormat, valueArguments));
         }
 
+        // ------------------------------------------------------------------------------------------
         //! Adds formatting support for "WriteElementString" function.
-        public static void WriteElementStringFormat(this XmlTextWriter Writer, string LocalName, string ValueFormat, params object[] ValueArguments)
+        public static void WriteElementStringFormat(this XmlTextWriter writer, string localName, string valueFormat, params object[] valueArguments)
         {
-            Writer.WriteElementString(LocalName, string.Format(ValueFormat, ValueArguments));
+            writer.WriteElementString(localName, string.Format(valueFormat, valueArguments));
         }
     }   // class XmlTextWriterExtensions
 }   // namespace GoddamnEngine.BuildSystem

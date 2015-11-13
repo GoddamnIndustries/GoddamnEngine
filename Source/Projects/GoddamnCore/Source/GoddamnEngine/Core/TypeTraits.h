@@ -6,37 +6,27 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-//! @file GoddamnEngine/Core/Templates/TypeTraits.h
+//! @file GoddamnEngine/Core/TypeTraits.h
 //! Compile-time types information and modifiers management.
 #pragma once
 
 #include <GoddamnEngine/Include.h>
 
-#if GD_DOCUMENTATION || GD_COMPILER_MSVC
+#if GD_DOCUMENTATION || GD_COMPILER_MSVC || GD_COMPILER_CLANG
 
 // ------------------------------------------------------------------------------------------
 //! Compiler intrinsic for traits. Hope are 'cross-platform'.
 //! @param Type The type to be checked.
 //! @{
-#define GD_TYPE_TRAITS_IS_ENUM(Type)			__is_enum(Type)
-#define GD_TYPE_TRAITS_IS_CLASS(Type)			__is_class(Type)
-#define GD_TYPE_TRAITS_IS_POD(Type)				__is_pod(Type)
-#define GD_TYPE_TRAITS_IS_ABSTARCT(Type)		__is_abstract(Type)
-#define GD_TYPE_TRAITS_UNDERLYING_TYPE(Type)	__underlying_type(Type)
+#define TYPE_TRAITS_IS_ENUM(Type)			__is_enum(Type)
+#define TYPE_TRAITS_IS_CLASS(Type)			__is_class(Type)
+#define TYPE_TRAITS_IS_POD(Type)			__is_pod(Type)
+#define TYPE_TRAITS_IS_ABSTARCT(Type)		__is_abstract(Type)
+#define TYPE_TRAITS_UNDERLYING_TYPE(Type)	__underlying_type(Type)
 //! @}
 
 #else	// if GD_DOCUMENTATION || GD_COMPILER_MSVC
-#	if GD_COMPILER_CLANG
-#		if __has_feature(__is_enum) && __has_feature(__is_pod) && __has_feature(__is_abstract)
-#			define GD_TYPE_TRAITS_IS_ENUM(Type)		__is_enum(Type)
-#			define GD_TYPE_TRAITS_IS_POD(Type)		__is_pod(Type)
-#			define GD_TYPE_TRAITS_IS_ABSTARCT(Type) __is_abstract(Type)
-#		else	// if __has_feature(__is_enum) && __has_feature(__is_pod) && __has_feature(__is_abstract)
-#			error Type traits features are not supported on compiler level (Clang).
-#		endif	// if __has_feature(__is_enum) && __has_feature(__is_pod) && __has_feature(__is_abstract)
-#	else	//if GD_COMPILER_CLANG
-#		error Unimplemented compiler-level type traits.
-#	endif	//if GD_COMPILER_CLANG
+#	error Unimplemented compiler-level type traits.
 #endif	// if GD_DOCUMENTATION || GD_COMPILER_MSVC
 
 // ------------------------------------------------------------------------------------------
@@ -47,8 +37,8 @@
 	private: \
 		typedef char NoTp [1]; \
 		typedef char YesTp[2]; \
-		template<typename Tp, Tp Instance> struct TestTp; \
-		template<typename Tp> GDINT static YesTp& Test(TestTp<decltype(&Tp::FunctionName), &Tp::FunctionName>* const Unused); \
+		template<typename Tp, Tp instance> struct TestTp; \
+		template<typename Tp> GDINT static YesTp& Test(TestTp<decltype(&Tp::FunctionName), &Tp::FunctionName>* const unused); \
 		template<           > GDINT static NoTp&  Test(...); \
 		\
 	public: \
@@ -95,9 +85,9 @@ GD_NAMESPACE_BEGIN
 		{
 		private:
 			enum SomeEnum {};
-			typedef typename Conditional<GD_TYPE_TRAITS_IS_ENUM(InType), InType, SomeEnum>::Type SafeType;
+			typedef typename Conditional<TYPE_TRAITS_IS_ENUM(InType), InType, SomeEnum>::Type SafeType;
 		public:
-			typedef GD_TYPE_TRAITS_UNDERLYING_TYPE(SafeType) Type;
+			typedef TYPE_TRAITS_UNDERLYING_TYPE(SafeType) Type;
 		};	// struct Underlying
 
 		// ------------------------------------------------------------------------------------------
@@ -143,7 +133,7 @@ GD_NAMESPACE_BEGIN
 		//! Base struct for all traits.
 		//! @tparam	TraitsValue	Trait check result value.
 		template<bool const TraitsValue> 
-		struct TypeTraitsBase {	enum ValueType { Value = static_cast<int>(TraitsValue) }; };
+		struct TypeTraitsBase {	enum TValue { Value = static_cast<int>(TraitsValue) }; };
 
 		// ------------------------------------------------------------------------------------------
 		//! Checks if specified type is integral.
@@ -176,12 +166,12 @@ GD_NAMESPACE_BEGIN
 		// ------------------------------------------------------------------------------------------
 		//! Checks if specified type is enumeration.
 		//! @tparam Type Type to perform checks on.
-		template<typename Type> struct IsEnum final : public TypeTraitsBase<GD_TYPE_TRAITS_IS_ENUM(Type)> { };
+		template<typename Type> struct IsEnum final : public TypeTraitsBase<TYPE_TRAITS_IS_ENUM(Type)> { };
 
 		// ------------------------------------------------------------------------------------------
 		//! Checks if specified type is class.
 		//! @tparam Type Type to perform checks on.
-		template<typename Type> struct IsClass final : public TypeTraitsBase<GD_TYPE_TRAITS_IS_CLASS(Type)> { };
+		template<typename Type> struct IsClass final : public TypeTraitsBase<TYPE_TRAITS_IS_CLASS(Type)> { };
 
 		// ------------------------------------------------------------------------------------------
 		//! Checks if specified type is character type.
@@ -270,25 +260,25 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		// ------------------------------------------------------------------------------------------
-		//! Checks if 'First' type is same to 'Second'.
-		//! @tparam First First comparand type.
-		//! @tparam Second Second comparand type.
+		//! Checks if 'lhs' type is same to 'rhs'.
+		//! @tparam lhs First comparand type.
+		//! @tparam rhs Second comparand type.
 		//! @{
-		template<typename First, typename Second> struct IsSame               final : TypeTraitsBase<false> {};
+		template<typename lhs, typename rhs> struct IsSame           final : TypeTraitsBase<false> {};
 #if !GD_DOCUMENTATION
-		template<typename First		            > struct IsSame<First, First> final : TypeTraitsBase<true> {};
+		template<typename lhs		       > struct IsSame<lhs, lhs> final : TypeTraitsBase<true> {};
 #endif	// if !GD_DOCUMENTATION
 		//! @}
 		
 		// ------------------------------------------------------------------------------------------
 		//! Checks if type is POD (Plain Old Data).
 		//! @tparam Type Type to perform checks on.
-		template<typename Type> struct IsPOD final : public TypeTraitsBase<GD_TYPE_TRAITS_IS_POD(Type)> { };
+		template<typename Type> struct IsPOD final : public TypeTraitsBase<TYPE_TRAITS_IS_POD(Type)> { };
 
 		// ------------------------------------------------------------------------------------------
 		//! Checks if type contains pure virtual methods.
 		//! @tparam Type Type to perform checks on.
-		template<typename Type> struct IsAbstract final : public TypeTraitsBase<GD_TYPE_TRAITS_IS_ABSTARCT(Type)> { };
+		template<typename Type> struct IsAbstract final : public TypeTraitsBase<TYPE_TRAITS_IS_ABSTARCT(Type)> { };
 
 		// ------------------------------------------------------------------------------------------
 		//! Checks if 'DerivedType' is derived from 'BaseType'.
@@ -308,8 +298,20 @@ GD_NAMESPACE_BEGIN
 			GDINT static No	& Test(...);
 
 		public:
-			enum ValueType { Value = (sizeof(Test(static_cast<DerivedTypeUnPtr const*>(nullptr))) == sizeof(Yes)) };
+			enum TValue { Value = sizeof(Test(static_cast<DerivedTypeUnPtr const*>(nullptr))) == sizeof(Yes) };
 		};	// struct IsBase
 	}; // namespace TypeTraits
+
+	template<typename lhs, typename rhs>
+	struct And : public TypeTraits::TypeTraitsBase<lhs::Value && rhs::Value> {  };
+
+	template<typename lhs, bool RHSValue>
+	struct AndV : public TypeTraits::TypeTraitsBase<lhs::Value && RHSValue> {  };
+
+	template<typename lhs, typename rhs>
+	struct Or : public TypeTraits::TypeTraitsBase<lhs::Value || rhs::Value> {  };
+
+	template<typename lhs, bool RHSValue>
+	struct OrV : public TypeTraits::TypeTraitsBase<lhs::Value || RHSValue> {  };
 
 GD_NAMESPACE_END

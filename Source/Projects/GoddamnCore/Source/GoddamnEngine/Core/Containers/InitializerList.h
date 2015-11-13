@@ -11,15 +11,17 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Iterators.h>
-
 #include <initializer_list>	// for std::initializer_list
 
 GD_NAMESPACE_BEGIN
 
-	//! Workaround of standart initializer list with Goddamn-Like naming conversion.
-	//! @todo Possibly write a wrapper container class with Goddamn-Like methods naming.
-	template<typename ElementType>
-	using InitializerList = std::initializer_list<ElementType>;
+	//! Workaround of standard initializer list with Goddamn-Like naming conversion.
+	//! @todo Possibly write a wrapper m_Container class with Goddamn-Like methods naming.
+	template<typename TElement>
+	using InitializerList = ::std::initializer_list<TElement>;
+
+#if !GD_DOCUMENTATION
+	namespace std { enum { initializer_list }; }
+#endif	// if !GD_DOCUMENTATION
 
 GD_NAMESPACE_END

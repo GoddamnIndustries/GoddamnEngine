@@ -9,28 +9,31 @@
 //! @file Compiler.cs
 //! Inline dynamic C# compiler.
 
-using Microsoft.CSharp;
-using System;
 using System.CodeDom.Compiler;
 using System.Reflection;
 using System.Text;
+using Microsoft.CSharp;
 
 namespace GoddamnEngine.BuildSystem
 {
+    // ------------------------------------------------------------------------------------------
     //! Inline dynamic C# compiler.
     internal static class CSharpCompiler
     {
         private readonly static object TemporaryAssemblyMutex = new object();
-        private static CompilerParameters Parameters;
+        private static CompilerParameters _parameters;
 
+        // ------------------------------------------------------------------------------------------
         //! Compiles C# source file into Assembly object.
-        internal static Assembly CompileSourceFile(string PathToSource)
+        //! @param pathToSource Path to the source file.
+        //! @returns Compiled assembly object.
+        internal static Assembly CompileSourceFile(string pathToSource)
         {
             lock (TemporaryAssemblyMutex)
             {
-                if (Parameters == null)
+                if (_parameters == null)
                 {
-                    Parameters = new CompilerParameters(new string[] { 
+                    _parameters = new CompilerParameters(new[] { 
                         "System.dll",                            // Only symbols from System.dll are available in config files.
                         Assembly.GetExecutingAssembly().Location // Adding current assembly.
                     })
@@ -42,20 +45,20 @@ namespace GoddamnEngine.BuildSystem
                     };
                 }
 
-                CompilerResults CompilingResults = new CSharpCodeProvider().CompileAssemblyFromFile(Parameters, PathToSource);
-                if (CompilingResults.Errors.HasErrors || CompilingResults.Errors.HasWarnings)
+                var compilingResults = new CSharpCodeProvider().CompileAssemblyFromFile(_parameters, pathToSource);
+                if (compilingResults.Errors.HasErrors || compilingResults.Errors.HasWarnings)
                 {
-                    // Seams we have compiling errors/warnings (assume using /wx compiling options) here
-                    StringBuilder CompilingErrorsAndWarnings = new StringBuilder();
-                    foreach (var CompilingErrorOrWarning in CompilingResults.Errors)
+                    // Seams we have compiling errors/warnings (assume compiling using /wx options) here..
+                    var compilingErrorsAndWarnings = new StringBuilder();
+                    foreach (var compilingErrorOrWarning in compilingResults.Errors)
                     {
-                        CompilingErrorsAndWarnings.AppendLine(CompilingErrorOrWarning.ToString());
+                        compilingErrorsAndWarnings.AppendLine(compilingErrorOrWarning.ToString());
                     }
 
-                    throw new BuildSystemException(CompilingErrorsAndWarnings.ToString());
+                    throw new BuildSystemException(compilingErrorsAndWarnings.ToString());
                 }
 
-                return CompilingResults.CompiledAssembly;
+                return compilingResults.CompiledAssembly;
             }
         }
     }   // class CSharpCompiler

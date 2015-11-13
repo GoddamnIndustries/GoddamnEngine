@@ -7,7 +7,7 @@
 // ==========================================================================================
 
 //! @file GoddamnEngine/Core/Definitions/Allocator.cpp
-//! Contains memory allocator implementation.
+//! Contains memory allocator Implementation.
 
 #include <GoddamnEngine/Include.h>
 
@@ -43,7 +43,7 @@
 #	if GD_PLATFORM_API_MICROSOFT || GD_PLATFORM_API_COCOA					// On this platforms Allocator is thread safe.
 #		define GD_ALLOCATOR_IS_THREAD_SAFE								GD_TRUE
 #	else	// if GD_PLATFORM_API_MICROSOFT || GD_PLATFORM_API_COCOA		// Generally ANSI Allocator is not guaranteed to be thread safe.
-#		define GD_ALLOCATOR_IS_THREAD_SAFE								GD_FALSE
+#		define GD_ALLOCATOR_IS_THREAD_SAFE								!GD_PLATFORM_HAS_MULTITHREADING
 #	endif	// if GD_PLATFORM_API_MICROSOFT || GD_PLATFORM_API_COCOA
 #endif	// if (GD_PLATFORM_MOBILE || GD_PLATFORM_CONSOLE || GD_PLATFORM_HTML5) && (!defined(GD_PLATFORM_HAS_DEBUG_CRT_MALLOC))
 
@@ -105,7 +105,7 @@ GD_NAMESPACE_BEGIN
 		if (AllocationSize != 0) 
 		{
 #if !GD_ALLOCATOR_IS_THREAD_SAFE
-			ScopedLock AllocatorLock(GetAllocatorLock());
+			ScopedCriticalSection AllocatorLock(GetAllocatorLock());
 #endif	// if !GD_ALLOCATOR_IS_THREAD_SAFE
 
 			static Int32 AllocatorNotInitialized = GD_TRUE;
@@ -125,8 +125,8 @@ GD_NAMESPACE_BEGIN
 				_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
 				struct MemoryLeakReporter {
 					_CrtMemState InitialMemoryState;
-					GDINT  MemoryLeakReporter() { _CrtMemCheckpoint(&this->InitialMemoryState); }
-					GDINT ~MemoryLeakReporter() { _CrtMemDumpAllObjectsSince(&this->InitialMemoryState); }
+					GDINT  MemoryLeakReporter() { _CrtMemCheckpoint(&InitialMemoryState); }
+					GDINT ~MemoryLeakReporter() { _CrtMemDumpAllObjectsSince(&InitialMemoryState); }
 				}  static  MemoryLeakReporterInstance;
 #endif	// if GD_PLATFORM_HAS_DEBUG_CRT_MALLOC
 			}
@@ -142,7 +142,7 @@ GD_NAMESPACE_BEGIN
 				je_aligned_malloc(Alignment, AllocationSize);
 #endif	// if GD_PLATFORM_HAS_JEMALLOC
 #if GD_PLATFORM_HAS_ANSI_MALLOC
-				aligned_alloc(Alignment, AllocationSize);
+				memalign(Alignment, AllocationSize);
 #endif	// if GD_PLATFORM_HAS_ANSI_MALLOC
 
 			GD_ASSERT(Memory != nullptr, "Failed to allocate memory.");
@@ -152,25 +152,25 @@ GD_NAMESPACE_BEGIN
 		return nullptr;
 	}
 
-	GDAPI void Allocator::DeallocateMemory(Handle const Memory)
+	GDAPI void Allocator::DeallocateMemory(CHandle const Memory)
 	{
 		if (Memory != nullptr) 
 		{
 #if !GD_ALLOCATOR_IS_THREAD_SAFE
-			ScopedLock AllocatorLock(GetAllocatorLock());
+			ScopedCriticalSection AllocatorLock(GetAllocatorLock());
 #endif	// if !GD_ALLOCATOR_IS_THREAD_SAFE
 
 #if GD_PLATFORM_HAS_DEBUG_CRT_MALLOC
-			_aligned_free_dbg(Memory);
+			_aligned_free_dbg(const_cast<Handle>(Memory));
 #endif	// if GD_PLATFORM_HAS_DEBUG_CRT_MALLOC
 #if GD_PLATFORM_HAS_INTEL_TBB
-			scalable_aligned_free(Memory);
+			scalable_aligned_free(const_cast<Handle>(memory));
 #endif	// if GD_PLATFORM_HAS_INTEL_TBB
 #if GD_PLATFORM_HAS_JEMALLOC
-			je_aligned_free(Memory);
+			je_aligned_free(const_cast<Handle>(memory));
 #endif	// if GD_PLATFORM_HAS_JEMALLOC
 #if GD_PLATFORM_HAS_ANSI_MALLOC
-			free(Memory);
+			free(const_cast<Handle>(memory));
 #endif	// if GD_PLATFORM_HAS_ANSI_MALLOC
 		}
 	}

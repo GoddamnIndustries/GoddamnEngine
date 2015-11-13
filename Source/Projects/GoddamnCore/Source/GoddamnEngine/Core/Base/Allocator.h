@@ -60,7 +60,7 @@ GD_NAMESPACE_BEGIN
 		{
 			CStr const File;
 			int  const Line;
-			GDINL SourceInfo(CStr const File, int  const Line) : File(File), Line(Line) {}
+			GDINL SourceInfo(CStr const file, int  const line) : File(file), Line(line) {}
 			GDINL SourceInfo() : File(nullptr), Line(0) {}
 		};	// struct SourceInfo
 
@@ -72,18 +72,18 @@ GD_NAMESPACE_BEGIN
 
 		// ------------------------------------------------------------------------------------------
 		//! Allocates block of memory with specified size that is aligned by specified value and returns pointer to it.
-		//! @param Location Information about place in code, where this allocation accures.
-		//! @param AllocationSize Size of required memory in bytes.
-		//! @param Alignment Pointer to memory would be aligned by this value.
-		//! @returns Pointer on the allocated memory. This function never returns nullptr except specified size is 0.
+		//! @param location Information about place in code, where this allocation occurs.
+		//! @param allocationSize Size of required memory in bytes.
+		//! @param alignment pointer to memory would be aligned by this value.
+		//! @returns pointer on the allocated memory. This function never returns nullptr except specified size is 0.
 		//! @note This function should not be directly invoked. Use 'GD_MALLOC'/'GD_MALLOC_ALIGNED' macro instead.
-		GDAPI static Handle AllocateMemory(SourceInfo const& Location, SizeTp const AllocationSize, SizeTp const Alignment = DefaultAlignment);
+		GDAPI static Handle AllocateMemory(SourceInfo const& location, SizeTp const allocationSize, SizeTp const alignment = DefaultAlignment);
 
 		// ------------------------------------------------------------------------------------------
 		//! Deallocates block of memory.
-		//! @param Memory Memory that would be deallocated. If specified block is nullptr then does nothing.
+		//! @param memory The memory that would be deallocated. If specified block is nullptr then does nothing.
 		//! @note This function should not be directly invoked. Use 'GD_DEALLOC' macro instead.
-		GDAPI static void DeallocateMemory(Handle const Memory);
+		GDAPI static void DeallocateMemory(CHandle const memory);
 
 	public:
 
@@ -93,77 +93,77 @@ GD_NAMESPACE_BEGIN
 
 		// ------------------------------------------------------------------------------------------
 		//! Allocates and initializes object of a specified type.
-		//! @param Location Information about place in code, where this allocation happens.
-		//! @param Arguments Arguments passed to object constructor.
+		//! @param location Information about place in code, where this allocation happens.
+		//! @param arguments The arguments passed to object constructor.
 		//! @returns Allocated object.
 		//! @note This function should not be directly invoked. Use 'GD_NEW' macro instead.
 		template<typename Tp, typename... ArgumentTypes>
-		GDINL static Tp* New(SourceInfo const& Location, ArgumentTypes&&... Arguments)
+		GDINL static Tp* New(SourceInfo const& location, ArgumentTypes&&... arguments)
 		{
-			Tp* const Allocated = reinterpret_cast<Tp*>(AllocateMemory(Location, sizeof(Tp)));
+			Tp* const allocated = reinterpret_cast<Tp*>(AllocateMemory(location, sizeof(Tp)));
 			if (TypeTraits::IsPOD<Tp>::Value == GD_FALSE)
-				new (Allocated) Tp(Forward<ArgumentTypes>(Arguments)...);
-			return Allocated;
+				new (allocated) Tp(Forward<ArgumentTypes>(arguments)...);
+			return allocated;
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Allocates and initializes array of objects of a specified type.
-		//! @param Location Information about place in code, where this allocation happens.
-		//! @param Count _Length of an array.
+		//! @param location Information about place in code, where this allocation happens.
+		//! @param count m_Length of an array.
 		//! @returns Allocated object.
 		//! @note This function should not be directly invoked. Use 'GD_NEW_ARRAY' macro instead.
 		template<typename Tp>
-		GDINL static Tp* NewArray(SourceInfo const& Location, SizeTp const Count)
+		GDINL static Tp* NewArray(SourceInfo const& location, SizeTp const count)
 		{
 			if (TypeTraits::IsPOD<Tp>::Value == GD_FALSE)
 			{
-				if (Count != 0)
+				if (count != 0)
 				{
-					UInt8* const Allocated = reinterpret_cast<UInt8*>(AllocateMemory(Location, sizeof(Tp) * Count + sizeof(SizeTp)));
-					*reinterpret_cast<SizeTp*>(Allocated) = Count;
-					Tp* const ArrayStart = reinterpret_cast<Tp*>(Allocated + sizeof(SizeTp));
-					for (SizeTp Cnt = 0; Cnt < Count; ++Cnt)
-						new (&ArrayStart[Cnt]) Tp();
-					return ArrayStart;
+					UInt8* const allocated = reinterpret_cast<UInt8*>(AllocateMemory(location, sizeof(Tp) * count + sizeof(SizeTp)));
+					*reinterpret_cast<SizeTp*>(allocated) = count;
+					Tp* const arrayStart = reinterpret_cast<Tp*>(allocated + sizeof(SizeTp));
+					for (SizeTp cnt = 0; cnt < count; ++cnt)
+						new (&arrayStart[cnt]) Tp();
+					return arrayStart;
 				}
 				return nullptr;
 			}
-			return reinterpret_cast<Tp*>(AllocateMemory(Location, sizeof(Tp) * Count));
+			return reinterpret_cast<Tp*>(AllocateMemory(location, sizeof(Tp) * count));
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Wrapped operator 'delete'.
-		//! @param Memory Memory that would be deallocated. If specified block is nullptr then does nothing.
+		//! @param memory The memory that would be deallocated. If specified block is nullptr then does nothing.
 		//! @note This function should not be directly invoked. Use 'GD_DELETE' macro instead.
 		template<typename Tp>
-		GDINL static void Delete(Tp* const Memory)
+		GDINL static void Delete(Tp* const memory)
 		{
-			if (!TypeTraits::IsPOD<Tp>::Value && (Memory != nullptr))
-				Memory->~Tp();
-			DeallocateMemory(Memory);
+			if (!TypeTraits::IsPOD<Tp>::Value && (memory != nullptr))
+				memory->~Tp();
+			DeallocateMemory(memory);
 		}
 
 		// ------------------------------------------------------------------------------------------
 		//! Wrapped operator 'delete[]'.
-		//! @param Array Memory that would be deallocated. If specified block is nullptr then does nothing.
+		//! @param array memory that would be deallocated. If specified block is nullptr then does nothing.
 		//! @note This function should not be directly invoked. Use 'GD_DELETE_ARRAY' macro instead.
 		template<typename Tp>
-		GDINL static void DeleteArray(Tp* const Array)
+		GDINL static void DeleteArray(Tp* const array)
 		{
 			if (TypeTraits::IsPOD<Tp>::Value == GD_FALSE)
 			{
-				if (Array != nullptr)
+				if (array != nullptr)
 				{
-					UInt8* const Allocated = reinterpret_cast<UInt8*>(Array) -sizeof(SizeTp);
-					SizeTp const Count = *reinterpret_cast<SizeTp*>(Allocated);
-					for (SizeTp Cnt = 0; Cnt < Count; ++Cnt)
-						Array[Cnt].~Tp();
-					DeallocateMemory(Allocated);
+					UInt8* const allocated = reinterpret_cast<UInt8*>(array) - sizeof(SizeTp);
+					SizeTp const count = *reinterpret_cast<SizeTp*>(allocated);
+					for (SizeTp cnt = 0; cnt < count; ++cnt)
+						array[cnt].~Tp();
+					DeallocateMemory(allocated);
 				}
 			}
 			else
 			{
-				DeallocateMemory(Array);
+				DeallocateMemory(array);
 			}
 		}
 	};	// class Allocator
@@ -176,14 +176,14 @@ GD_NAMESPACE_END
 
 // ------------------------------------------------------------------------------------------
 //! Allocates block of memory with specified size that is aligned by default value and returns pointer to it.
-//! @param AllocationSize Size of required memory in bytes.
-#define GD_MALLOC(AllocationSize)	(GD::Allocator::AllocateMemory(GD::Allocator::SourceInfo(__FILE__, __LINE__), (AllocationSize)))
+//! @param allocationSize Size of required memory in bytes.
+#define GD_MALLOC(allocationSize)	(GD::Allocator::AllocateMemory(GD::Allocator::SourceInfo(__FILE__, __LINE__), (allocationSize)))
 
 // ------------------------------------------------------------------------------------------
 //! Allocates block of memory with specified size that is aligned by specified value and returns pointer to it.
-//! @param AllocationSize Size of required memory in bytes.
-//! @param CustomAlignment Pointer to memory would be aligned by this value.
-#define GD_MALLOC_ALIGNED(AllocationSize, CustomAlignment)	(GD::Allocator::SourceInfo(__FILE__, __LINE__), (AllocationSize), (CustomAlignment)))
+//! @param allocationSize Size of required memory in bytes.
+//! @param customAlignment pointer to memory would be aligned by this value.
+#define GD_MALLOC_ALIGNED(allocationSize, customAlignment)	(GD::Allocator::SourceInfo(__FILE__, __LINE__), (allocationSize), (customAlignment)))
 
 // ------------------------------------------------------------------------------------------
 //! Wrapped operator 'new'.
@@ -194,18 +194,23 @@ GD_NAMESPACE_END
 // ------------------------------------------------------------------------------------------
 //! Wrapped operator 'new[]'.
 //! @param Tp Type to allocate.
-//! @param Count _Length of an array.
-#define GD_NEW_ARRAY(Tp, Count)		(GD::Allocator::NewArray<Tp>(GD::Allocator::SourceInfo(__FILE__, __LINE__) Count))
+//! @param count m_Length of an array.
+#define GD_NEW_ARRAY(Tp, count)		(GD::Allocator::NewArray<Tp>(GD::Allocator::SourceInfo(__FILE__, __LINE__), count))
 
 // ------------------------------------------------------------------------------------------
 //! Deallocates block of memory.
-//! @param Memory Memory that would be deallocated. If specified block is nullptr then does nothing.
-#define GD_DEALLOC(Memory)			(GD::Allocator::DeallocateMemory((Memory)))
+//! @param memory The memory that would be deallocated. If specified block is nullptr then does nothing.
+#define GD_DEALLOC(memory)			(GD::Allocator::DeallocateMemory((memory)))
 
 // ------------------------------------------------------------------------------------------
 //! Wrapped operator 'delete'.
-//! @param Memory Memory that would be deallocated. If specified block is nullptr then does nothing.
-#define GD_DELETE(Memory)			(GD::Allocator::Delete((Memory)))
+//! @param memory The memory that would be deallocated. If specified block is nullptr then does nothing.
+#define GD_DELETE(memory)			(GD::Allocator::Delete((memory)))
+
+// ------------------------------------------------------------------------------------------
+//! Wrapped operator 'delete'.
+//! @param memory The memory that would be deallocated. If specified block is nullptr then does nothing.
+#define GD_DELETE_ARRAY(memory)		(GD::Allocator::DeleteArray((memory)))
 
 // // I hope, this can prevent using of default operator new.
 // // But this lines may cause conflicts with some external libraries.
@@ -218,16 +223,16 @@ GD_NAMESPACE_END
 #if !GD_DOCUMENTATION
 GD_NAMESPACE_BEGIN
 
-	template<typename KeyType, typename ValueType>
-	GDINL static Pair<KeyType, ValueType>* AllocatePair(KeyType&& Key, ValueType&& Value)
+	template<typename TKey, typename TValue>
+	GDINL static Pair<TKey, TValue>* AllocatePair(TKey&& Key, TValue&& Value)
 	{
-		typedef Pair<KeyType, ValueType> PairType;
-		return GD_NEW(PairType, Forward<KeyType>(Key), Forward<ValueType>(Value));
+		typedef Pair<TKey, TValue> PairType;
+		return GD_NEW(PairType, Forward<TKey>(Key), Forward<TValue>(Value));
 	}
-	template<typename KeyType, typename ValueType>
-	GDINL static Pair<KeyType, ValueType>* AllocatePair(KeyType const& Key, ValueType const& Value)
+	template<typename TKey, typename TValue>
+	GDINL static Pair<TKey, TValue>* AllocatePair(TKey const& Key, TValue const& Value)
 	{
-		typedef Pair<KeyType, ValueType> PairType;
+		typedef Pair<TKey, TValue> PairType;
 		return GD_NEW(PairType, Key, Value);
 	}
 

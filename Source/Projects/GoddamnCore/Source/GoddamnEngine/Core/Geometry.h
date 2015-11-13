@@ -25,7 +25,7 @@ GD_NAMESPACE_BEGIN
 	{
 		Tp Width, Height;
 	};	// struct GeomSizeTp final
-	using GeomSize = GeomSizeTp<Int32>;
+	using GeomSize = GeomSizeTp<UInt32>;
 
 	template<typename Tp>
 	struct GeomResolutionTp final
@@ -33,7 +33,7 @@ GD_NAMESPACE_BEGIN
 		Tp Width, Height;
 		Tp VsyncNumerator, VsyncDenominator;
 	};	// struct GeomResolutionTp final
-	using GeomResolution = GeomResolutionTp<Int32>;
+	using GeomResolution = GeomResolutionTp<UInt32>;
 
 	template<typename Tp>
 	struct GeomRectTp final
@@ -42,5 +42,15 @@ GD_NAMESPACE_BEGIN
 		Tp Width, Height;
 	};	// struct GeomRectTp final
 	using GeomRect = GeomRectTp<Int32>;
+
+	template<typename Tp>
+	struct GeomColorTp final
+	{
+		Tp R, G, B, A;
+		GDINL Tp const* GetData() const { return &R; }
+		GDINL static GeomColorTp Black() { return{ Tp(0.0f), Tp(0.0f), Tp(0.0f), Tp(0.0f), Tp(0.0f) }; }
+	};	// struct GeomColorTp final
+	using GeomColor = GeomColorTp<Float32>;
+	using GeomColor32 = GeomColorTp<Byte>;
 
 GD_NAMESPACE_END

@@ -15,6 +15,7 @@
 #endif	// if !defined(GD_INSIDE_INCLUDE_H)
 
 #include <GoddamnEngine/Include.h>
+#include <stdint.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -36,9 +37,9 @@ GD_NAMESPACE_BEGIN
 	struct Dummy { };
 
 #if GD_COMPILER_MSVC_COMPATIBLE
-	typedef ::std::nullptr_t NullptrTp;
+	//typedef ::std::nullptr_t NullptrTp;
 #else	// if GD_COMPILER_MSVC_COMPATIBLE
-	typedef decltype(nullptr) NullptrTp;
+	//typedef decltype(nullptr) NullptrTp;
 #endif	// if GD_COMPILER_MSVC_COMPATIBLE
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,45 +53,45 @@ GD_NAMESPACE_BEGIN
 		typedef Tp Type; \
 		Tp static const Min = Tp##Min; \
 		Tp static const Max = Tp##Max; \
-	};	/* struct IntegerLimits<Tp>*/
+	};	/* struct IntegerLimits<TType>*/
 
-	typedef ::std::int8_t	Int8;		
+	typedef ::int8_t		Int8;		
 	Int8 static const		Int8Min		= INT8_MAX;
 	Int8 static const		Int8Max		= INT8_MAX;
 	GD_DEFINE_INT_LIMITS(	Int8		);
 
-	typedef ::std::uint8_t	UInt8;		
+	typedef ::uint8_t		UInt8;		
 	UInt8 static const		UInt8Min	= 0;
 	UInt8 static const		UInt8Max	= UINT8_MAX;
 	GD_DEFINE_INT_LIMITS(	UInt8		);
 	typedef UInt8 Byte;
 
-	typedef ::std::int16_t	Int16;		
+	typedef ::int16_t		Int16;		
 	Int16 static const		Int16Min	= INT16_MIN;
 	Int16 static const		Int16Max	= INT16_MAX;
 	GD_DEFINE_INT_LIMITS(	Int16		);
 
-	typedef ::std::uint16_t	UInt16;		
+	typedef ::uint16_t		UInt16;		
 	UInt16 static const		UInt16Min	= 0;
 	UInt16 static const		UInt16Max	= UINT16_MAX;
 	GD_DEFINE_INT_LIMITS(	UInt16		);
 
-	typedef ::std::int32_t	Int32;
+	typedef ::int32_t		Int32;
 	Int32 static const		Int32Min	= INT32_MIN;
 	Int32 static const		Int32Max	= INT32_MAX;
 	GD_DEFINE_INT_LIMITS(	Int32		);
 
-	typedef ::std::uint32_t	UInt32;
+	typedef ::uint32_t		UInt32;
 	UInt32 static const		UInt32Min	= 0;
 	UInt32 static const		UInt32Max	= UINT32_MAX;
 	GD_DEFINE_INT_LIMITS(	UInt32		);
 
-	typedef ::std::int64_t	Int64;
+	typedef ::int64_t		Int64;
 	Int64 static const		Int64Min	= INT64_MIN;
 	Int64 static const		Int64Max	= INT64_MAX;
 	GD_DEFINE_INT_LIMITS(	Int64		);
 
-	typedef ::std::uint64_t	UInt64;
+	typedef ::uint64_t		UInt64;
 	UInt64 static const		UInt64Min	= 0;
 	UInt64 static const		UInt64Max	= UINT64_MAX;
 	GD_DEFINE_INT_LIMITS(	UInt64		);
@@ -145,12 +146,66 @@ GD_NAMESPACE_BEGIN
 
 #endif	// if GD_ARCHITECTURE_X86 || GD_ARCHITECTURE_ARM32
 
-//	GD_DEPRECATED("Please, use 'SizeTp' instead of 'size_t'")		typedef ::std::size_t    size_t;
+//	GD_DEPRECATED("Please, use 'SizeTp' instead of 'SizeTp'")		typedef ::std::SizeTp    SizeTp;
 //	GD_DEPRECATED("Please, use 'PtrDiffTp' instead of 'ptrdiff_t'") typedef ::std::ptrdiff_t ptrdiff_t;
+
+	// ------------------------------------------------------------------------------------------
+	//! Defines bit-wise operation for the enumeration.
+	//! @param EnumType Enumeration type to define for.
+#define GD_ENUM_DEFINE_FLAG_OPERATORS(EnumType) \
+	extern "C++" \
+	{ \
+		GDINL static EnumType operator~ (EnumType const Enum) \
+		{ \
+			typedef GD::TypeTraits::Underlying<EnumType>::Type EnumInteger; \
+			return static_cast<EnumType>(~static_cast<EnumInteger>(Enum)); \
+		} \
+		\
+		GDINL static EnumType operator| (EnumType const lhs, EnumType const rhs) \
+		{ \
+			typedef GD::TypeTraits::Underlying<EnumType>::Type EnumInteger; \
+			return static_cast<EnumType>(static_cast<EnumInteger>(lhs) | static_cast<EnumInteger>(rhs)); \
+		} \
+		GDINL static EnumType& operator|= (EnumType& lhs, EnumType const rhs) \
+		{\
+			return lhs = (lhs | rhs); \
+		} \
+		\
+		GDINL static EnumType operator& (EnumType const lhs, EnumType const rhs) \
+		{ \
+			typedef GD::TypeTraits::Underlying<EnumType>::Type EnumInteger; \
+			return static_cast<EnumType>(static_cast<EnumInteger>(lhs) & static_cast<EnumInteger>(rhs)); \
+		} \
+		GDINL static EnumType& operator&= (EnumType& lhs, EnumType const rhs) \
+		{ \
+			return lhs = (lhs & rhs); \
+		} \
+		\
+		GDINL static EnumType operator^ (EnumType const lhs, EnumType const rhs) \
+		{ \
+			typedef GD::TypeTraits::Underlying<EnumType>::Type EnumInteger; \
+			return static_cast<EnumType>(static_cast<EnumInteger>(lhs) ^ static_cast<EnumInteger>(rhs)); \
+		} \
+		GDINL static EnumType& operator^= (EnumType& lhs, EnumType const rhs) \
+		{ \
+			return lhs = (lhs ^ rhs); \
+		} \
+	}
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Container limits.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	// ------------------------------------------------------------------------------------------
+	//! Interface that disables any constructor or copy assignment operators in all 
+	//! child classes.
+	class IUncreatable
+	{
+	public:
+		GDINL IUncreatable() = delete;
+		GDINT IUncreatable(IUncreatable const& other) = delete;
+		GDINT IUncreatable& operator= (IUncreatable const& other) = delete;
+	};	// class IUncreatable
 
 	// ------------------------------------------------------------------------------------------
 	//! Interface that disables copy constructor and copy assignment operators in all 
@@ -160,8 +215,8 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINL IUncopiable() = default;
 	private:
-		GDINT IUncopiable(IUncopiable const& Other) = delete;
-		GDINT IUncopiable& operator= (IUncopiable const& Other) = delete;
+		GDINT IUncopiable(IUncopiable const& other) = delete;
+		GDINT IUncopiable& operator= (IUncopiable const& other) = delete;
 	};	// class IUncopiable
 
 	// ------------------------------------------------------------------------------------------
@@ -172,8 +227,8 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINL IUnmovable() = default;
 	private:
-		GDINT IUnmovable(IUnmovable&& Other) = delete;
-		GDINT IUnmovable& operator= (IUnmovable&& Other) = delete;
+		GDINT IUnmovable(IUnmovable&& other) = delete;
+		GDINT IUnmovable& operator= (IUnmovable&& other) = delete;
 	};	// class IUnmovalbe
 
 	// ------------------------------------------------------------------------------------------
@@ -183,8 +238,8 @@ GD_NAMESPACE_BEGIN
 	public:
 		GDINL IUnassignable() = default;
 	private:
-		GDINT IUnassignable& operator= (IUnassignable const& Other) = delete;
-		GDINT IUnassignable& operator= (IUnassignable     && Other) = delete;
+		GDINT IUnassignable& operator= (IUnassignable const& other) = delete;
+		GDINT IUnassignable& operator= (IUnassignable     && other) = delete;
 	};	// class IUnassignable
 
 	// ------------------------------------------------------------------------------------------
@@ -195,16 +250,19 @@ GD_NAMESPACE_BEGIN
 		GDINL IUnswappable() = default;
 	private: 
 		//! @todo GCC does not compiles this: 
-		GDINT friend void Swap(IUnswappable&  First, IUnswappable&  Second) = delete;
-		GDINT friend void Swap(IUnswappable&& First, IUnswappable&& Second) = delete;
+		GDINT friend void Swap(IUnswappable&  lhs, IUnswappable&  rhs) = delete;
+		GDINT friend void Swap(IUnswappable&& lhs, IUnswappable&& rhs) = delete;
 	};	// class IUnswappable
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Basic interfaces.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+	
+	// ------------------------------------------------------------------------------------------
+	//! An uncopiable class with a virtual constructor.
 	struct IVirtuallyDestructible : public IUncopiable
 	{
+	public:
 		GDINL virtual ~IVirtuallyDestructible() = default;
 	};	// struct IVirtuallyDestructible
 
@@ -231,10 +289,14 @@ GD_NAMESPACE_BEGIN
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	// ------------------------------------------------------------------------------------------
-	//! Useful macro for safely counting array length.
-	//! @param Array Array, the length of ones would be determined.
-#define GD_ARRAY_LENGTH(Array) static_cast<SizeTp>(sizeof(ArrayLengthHelper((Array))))				
-	template <typename Tp, SizeTp Length>
-	GDINT UInt8 (&ArrayLengthHelper(Tp(&Array)[Length]))[Length];
+	//! Useful macro for safely counting array m_Length.
+	//! @param array The array, the m_Length of ones would be determined.
+#define GD_ARRAY_LENGTH(array) static_cast<SizeTp>(sizeof(ArrayLengthHelper((array))))				
+	template <typename TType, SizeTp TLength>
+	GDINT UInt8(&ArrayLengthHelper(TType(&array)[TLength]))[TLength] 
+	{ 
+		GD_NOT_USED(array);
+		return{}; 
+	}
 
 GD_NAMESPACE_END
