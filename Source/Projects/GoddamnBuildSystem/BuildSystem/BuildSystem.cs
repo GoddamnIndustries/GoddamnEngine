@@ -62,7 +62,7 @@ namespace GoddamnEngine.BuildSystem
     /// </summary>
     public static class BuildSystem
     {
-        private static string s_SdkPath;
+        private static string s_SdkPath = null;
 
         /// <summary>
         /// Returns path to GoddamnSDK installation location.
@@ -76,9 +76,10 @@ namespace GoddamnEngine.BuildSystem
 
             var executableLocation = Environment.CurrentDirectory;
             var executableShouldBe = Path.Combine("Bin", "Tools");
-            return s_SdkPath = executableLocation.EndsWith(executableShouldBe, StringComparison.InvariantCultureIgnoreCase) 
-                ? executableLocation.Substring(0, executableLocation.Length - executableShouldBe.Length - 1) 
-                : @"D:\GoddamnEngine";
+            return Path.GetFullPath("../..");
+            //return s_SdkPath = executableLocation.EndsWith(executableShouldBe, StringComparison.InvariantCultureIgnoreCase) 
+            //    ? executableLocation.Substring(0, executableLocation.Length - executableShouldBe.Length - 1) 
+            //    : @"D:\GoddamnEngine";
         }
 
         /// <summary>

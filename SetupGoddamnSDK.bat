@@ -111,11 +111,11 @@ echo Please, do not close this window.
 
 rem Removing the Visual Studio's visualizers..
 if not "%VS140ComnTools%" == "" ( 
-	del "%UserProfile%\My Documents\Visual Studio 2014\Visualizers\GoddamnTemplateLibrary.natvis" 1>nul
+	del "%UserProfile%\Documents\Visual Studio 2014\Visualizers\GoddamnTemplateLibrary.natvis" 1>nul
 	reg delete "HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\14.0_Config\Debugger" /v "EnableNatvisDiagnostics" /f 1>nul
 ) else (
 	if not "%VS120ComnTools%" == "" (
-		del "%UserProfile%\My Documents\Visual Studio 2013\Visualizers\GoddamnTemplateLibrary.natvis" 1>nul
+		del "%UserProfile%\Documents\Visual Studio 2013\Visualizers\GoddamnTemplateLibrary.natvis" 1>nul
 		reg delete "HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\12.0_Config\Debugger" /v "EnableNatvisDiagnostics" /f 1>nul
 	) 
 )
