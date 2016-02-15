@@ -74,11 +74,13 @@ namespace GoddamnEngine.BuildSystem
                 return s_SdkPath;
             }
 
-            var executableLocation = Environment.CurrentDirectory;
+            var executableLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             var executableShouldBe = Path.Combine("Bin", "Tools");
-            return s_SdkPath = executableLocation.EndsWith(executableShouldBe, StringComparison.InvariantCultureIgnoreCase) 
-                ? executableLocation.Substring(0, executableLocation.Length - executableShouldBe.Length - 1) 
-                : ".";
+            if (executableLocation == null || !executableLocation.EndsWith(executableShouldBe, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new BuildSystemException("Invalid GoddamnBuildSystemExecutable location {0}", executableLocation);
+            }
+            return Path.GetFullPath(Path.Combine(executableLocation, "..", ".."));
         }
 
         /// <summary>
