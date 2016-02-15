@@ -1,10 +1,16 @@
-//! ==========================================================================================
-//! GoddamnEngine.gddep.cs - GoddamnEngine dependency file.
-//! Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved.
-//! ==========================================================================================
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
 
-using GoddamnEngine.BuildSystem;
+using GoddamnEngine.BuildSystem.Collectors;
 
-public sealed class GoddamnEngineDependency : ProjectDependency
+/// <summary>
+/// Represents a 'GoddamnEngine' project Dependency.
+/// </summary>
+public sealed class GoddamnEngineProjectDependency : ProjectDependency
 {
-}   // class GoddamnEngineDependency
+}   // class GoddamnEngineProjectDependency

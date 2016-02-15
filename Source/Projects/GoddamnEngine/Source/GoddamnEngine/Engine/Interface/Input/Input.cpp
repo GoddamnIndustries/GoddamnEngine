@@ -11,7 +11,9 @@
  * File contains export interface for the input subsystem.
  */
 #include <GoddamnEngine/Engine/Interface/Input/Input.h>
-#include <GoddamnEngine/Engine/Pipeline/Pipeline.h>
+//#include <GoddamnEngine/Engine/Pipeline/Pipeline.h>
+
+#if 0
 
 GD_NAMESPACE_BEGIN
 
@@ -24,7 +26,7 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Global input interface pointer.
-	GDAPI IUniqueInterfacePointer<IInput> Input(CreateIInputInstance(), PipelineManager->GetMainThreadPipeline());
+	//GDAPI IUniqueInterfacePointer<IInput> Input(CreateIInputInstance(), PipelineManager->GetMainThreadPipeline());
 	GD_SINGLETON_IMPLEMENTATION(IInput);
 
 	// ==========================================================================================
@@ -43,3 +45,5 @@ GD_NAMESPACE_BEGIN
 #endif	// if 0
 
 GD_NAMESPACE_END
+
+#endif

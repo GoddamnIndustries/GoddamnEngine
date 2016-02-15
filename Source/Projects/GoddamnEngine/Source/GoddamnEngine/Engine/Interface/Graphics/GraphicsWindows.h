@@ -42,12 +42,12 @@ GD_NAMESPACE_BEGIN
 			bool  DataWasMaximized;
 		};	// struct HwndStateData
 		
-		CHAR static const hwndBackgroundClassName[];
-		CHAR static const hwndMainClassName[];
-		HINSTANCE         hwndHinstance  = HINSTANCE();      
-		HWND			  hwndBackground = HWND();
-		HWND			  hwndMain       = HWND();
-		HwndStateData     hwndStateData;
+		CHAR static const s_HwndBackgroundClassName[];
+		CHAR static const s_HwndMainClassName[];
+		HINSTANCE         m_HwndHinstance  = HINSTANCE();      
+		HWND			  m_HwndBackground = HWND();
+		HWND			  m_HwndMain       = HWND();
+		HwndStateData     m_HwndStateData;
 #endif	// if GD_PLATFORM_WINDOWS
 
 	protected:

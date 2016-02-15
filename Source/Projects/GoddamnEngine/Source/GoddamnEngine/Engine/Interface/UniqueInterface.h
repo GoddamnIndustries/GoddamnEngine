@@ -14,9 +14,15 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/UniquePtr.h>
+#include <GoddamnEngine/Core/Templates/SharedPtr.h>
+#include <GoddamnEngine/Core/Templates/UniquePtr.h>
 #include <GoddamnEngine/Core/Object/Object.h>
 
+#define GD_DEFINE_CLASS_INFORMATION(...)
+#define GD_IMPLEMENT_CLASS_INFORMATION(...)
+#define GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(...)
+#define GD_IMPLEMENT_CLASS_INFORMATION_FORCE_NO_TAGS(...)
+#define IClassConstrutorProc void*
 // Attributes declaration for the reflector utility.
 #if !GD_D_REFLECTOR
 #	define GD_DCODE(...)
@@ -108,10 +114,7 @@ GD_NAMESPACE_BEGIN
 	// ------------------------------------------------------------------------------------------
 	//!	The most base class for all engine (unique) interfaces.
 	GD_DINTERFACE()
-	uinterface IInterface 
-#if !GD_D_REFLECTOR
-		: public Object
-#endif	// if !GD_D_REFLECTOR
+	uinterface IInterface : public ReferenceTarget
 	{
 		GD_DEFINE_CLASS_INFORMATION(IInterface, Object);
 
@@ -125,30 +128,6 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Atomically increments the reference counter of this object.
-		//! @returns Value of the counter after operation proceeded.
-		GD_DFUNCTION()
-		GDAPI virtual Int32 AddRereference() const final
-		{
-			//! @todo Add atomic operation for this increment.
-			++DReferenceCount;
-			return DReferenceCount;
-		}
-
-		// ------------------------------------------------------------------------------------------
-		//! Atomically decrements the reference counter of this object.
-		//! If the value of the counter reaches zero, then object is going to be safely destroyed.
-		//! \returns Value of the counter after operation proceeded.
-		GD_DFUNCTION()
-		GDAPI virtual Int32 Release() const final
-		{
-			//! @todo Add atomic operation for this decrement.
-			--DReferenceCount;
-			if (DReferenceCount == 0)
-				GD_DELETE(const_cast<IInterface*>(this));
-			return DReferenceCount;
-		}
 	};	// struct IInterface
 
 	// ------------------------------------------------------------------------------------------
@@ -292,7 +271,7 @@ GD_NAMESPACE_BEGIN
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #if !GD_DOCUMENTATION
-	struct IUniqueInterfacePointerBase : public IUncopiable
+	struct IUniqueInterfacePointerBase : public TNonCopyable
 	{
 	public:
 		// See PPipeline.cpp for the implementations.

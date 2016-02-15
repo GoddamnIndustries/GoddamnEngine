@@ -1,0 +1,251 @@
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+/*! 
+ * @file GoddamnEngine/Core/System/IO/FileUtilities.cpp
+ * File contains file and directory utilities generic interface.
+ */
+#include <GoddamnEngine/Core/System/IO/FileUtilities.h>
+#include <GoddamnEngine/Core/System/IO/FileStream.h>
+#include <GoddamnEngine/Core/System/IO/Directory.h>
+#include <GoddamnEngine/Core/System/IO/Paths.h>
+#include <GoddamnEngine/Core/System/Misc/Misc.h>
+
+GD_NAMESPACE_BEGIN
+
+	// ReSharper disable CppRedundantQualifier
+
+	// ------------------------------------------------------------------------------------------
+	// File utilities.
+	// ------------------------------------------------------------------------------------------
+
+	/*
+	 * Returns true if the specified file exists and is not directory.
+	 * @param filename Path to the file.
+	 */
+	GDAPI bool FileUtilitiesGeneric::FileExists(WideString const& filename)
+	{
+		FileInputStream const fileStream(filename.CStr());
+		return fileStream.IsValid();
+	}
+
+	/*!
+	 * Returns size of the file in bytes, or -1 if it does not exist.
+	 * @param filename Path to the file.
+	 */
+	GDAPI UInt64 FileUtilitiesGeneric::FileSize(WideString const& filename)
+	{
+		FileInputStream const fileStream(filename.CStr());
+		return fileStream.IsValid() ? fileStream.GetLength() : UInt64Max;
+	}
+
+	/*!
+	 * Creates an empty file with the specified file name.
+	 * If file already exists, nothing is done.
+	 *
+	 * @param filename Path to the file.
+	 * @returns True if file exists or was successfully created.
+	 */
+	GDAPI bool FileUtilitiesGeneric::FileCreateEmpty(WideString const& filename)
+	{
+		FileOutputStream const fileStream(filename.CStr(), true);
+		return fileStream.IsValid();
+	}
+
+	/*!
+	 * Removes the existing file.
+	 *
+	 * @param filename Path to the file.
+	 * @returns True if file was successfully deleted.
+	 */
+	GDAPI bool FileUtilitiesGeneric::FileRemove(WideString const& filename)
+	{
+		auto const filenameSystem = Paths::Platformize(filename);
+		if (CStdio::Remove(filenameSystem.CStr()) != 0)
+		{
+			PlatformMisc::Sleep(0);
+			return CStdio::Remove(filenameSystem.CStr()) == 0;
+		}
+		return true;
+	}
+
+	/*!
+	 * Moves file from source path to destination.
+	 *
+	 * @param sourceFilename Path to the file.
+	 * @param destFilename Destination file path.
+	 * @param doOverwrite Do overwrite destination file if it exists.
+	 * @returns True if file was successfully moved.
+	 */
+	GDAPI bool FileUtilitiesGeneric::FileMove(WideString const& sourceFilename, WideString const& destFilename, bool const doOverwrite /*= false*/)
+	{
+		if (FileUtilities::FileExists(destFilename) && !doOverwrite)
+		{
+			auto const sourceFilenameSystem = Paths::Platformize(sourceFilename);
+			auto const destFilenameSystem = Paths::Platformize(destFilename);
+			if (CStdio::Rename(sourceFilenameSystem.CStr(), destFilenameSystem.CStr()) != 0)
+			{
+				PlatformMisc::Sleep(0);
+				return CStdio::Rename(sourceFilenameSystem.CStr(), destFilenameSystem.CStr()) == 0;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/*!
+	 * Copies file from source path to destination.
+	 *
+	 * @param sourceFilename Path to the file.
+	 * @param destFilename Destination file path.
+	 * @param doOverwrite Do overwrite destination file if it exists.
+	 * @returns True if file was successfully moved.
+	 */
+	GDAPI bool FileUtilitiesGeneric::FileCopy(WideString const& sourceFilename, WideString const& destFilename, bool const doOverwrite /*= false*/)
+	{
+		if (FileUtilities::FileExists(sourceFilename) && FileUtilities::FileExists(destFilename) && !doOverwrite)
+		{
+			// Trying to copy file two times.
+			for (SizeTp i = 0; i < 2; ++i)
+			{
+				FileInputStream sourceFileStream(sourceFilename.CStr());
+				FileOutputStream destFileStream(destFilename.CStr());
+				if (sourceFileStream.IsValid() && destFileStream.IsValid())
+				{
+					auto operationResult = true;
+					auto const sourceFileSize = sourceFileStream.GetLength();
+
+					// Copying file from source to the destination using 4KB blocks.
+					SizeTp const bufferBlockSize = 4 * 1024 * 1024;
+					auto const buffer = static_cast<Byte*>(GD_MALLOC(Min(bufferBlockSize, sourceFileSize) * sizeof(Byte)));
+					for (SizeTp cnt = 0; cnt < sourceFileSize / bufferBlockSize && operationResult; ++cnt)
+					{
+						operationResult = sourceFileStream.Read(buffer, bufferBlockSize, 1) == 1;
+						if (operationResult)
+							operationResult = destFileStream.Write(buffer, bufferBlockSize, 1) == 1;
+					}
+					if (operationResult)
+					{
+						// Copying what is left in the source file.
+						auto const leftoverSize = sourceFileSize % bufferBlockSize;
+						if (leftoverSize != 0)
+						{
+							operationResult = sourceFileStream.Read(buffer, leftoverSize, 1) == 1;
+							if (operationResult)
+								operationResult = destFileStream.Write(buffer, leftoverSize, 1) == 1;
+						}
+					}
+					GD_DEALLOC(buffer);
+
+					if (!operationResult)
+					{
+						// If failed, removing destination file as this function was never called. 
+						destFileStream.Close();
+						FileUtilities::FileRemove(destFilename);
+					}
+					else
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	// ------------------------------------------------------------------------------------------
+	// Directory utilities.
+	// ------------------------------------------------------------------------------------------
+
+	/*
+	 * Returns true if the specified file exists and is a directory.
+	 * @param directoryName Name to the directory.
+	 */
+	GDAPI bool FileUtilitiesGeneric::DirectoryExists(WideString const& directoryName)
+	{
+		Directory directory(directoryName.CStr());
+		return directory.IsValid();
+	}
+
+	/*!
+	 * Creates an empty directory with the specified directory name.
+	 * If directory already exists, nothing is done.
+	 *
+	 * @param directoryName Path to the directory.
+	 * @returns True if directory exists or was successfully created.
+	 */
+	GDAPI bool FileUtilitiesGeneric::DirectoryCreateEmpty(WideString const& directoryName)
+	{
+		if (!FileUtilities::DirectoryExists(directoryName))
+		{
+			// Could not find any other cross-platform ways for generating a directory.
+			//! @todo Implement CStdlib class and move '_wsystem' command there.
+			WideChar mkdirCommand[2048] = L"mkdir ";
+			WideCString::Strcat(mkdirCommand, GD_ARRAY_LENGTH(mkdirCommand), Paths::Platformize(directoryName).CStr());
+			return _wsystem(mkdirCommand) == 0;
+		}
+		return true;
+	}
+
+	/*!
+	 * Removes the existing empty directory.
+	 *
+	 * @param directoryName Path to the directory.
+	 * @returns True if directory was successfully deleted.
+	 */
+	GDAPI bool FileUtilitiesGeneric::DirectoryRemove(WideString const& directoryName)
+	{
+		if (!FileUtilities::DirectoryExists(directoryName))
+		{
+			// Could not find any other cross-platform ways for removing a directory.
+			//! @todo Implement CStdlib class and move '_wsystem' command there.
+			WideChar rmdirCommand[2048] = L"rmdir ";
+			WideCString::Strcat(rmdirCommand, GD_ARRAY_LENGTH(rmdirCommand), Paths::Platformize(directoryName).CStr());
+			if (_wsystem(rmdirCommand) != 0)
+			{
+				PlatformMisc::Sleep(0);
+				return _wsystem(rmdirCommand) == 0;
+			}
+		}
+		return true;
+	}
+
+	/*!
+	 * Removes the existing directory and everything inside it.
+	 *
+	 * @param directoryName Path to the directory.
+	 * @returns True if directory was successfully deleted.
+	 */
+	GDAPI bool FileUtilitiesGeneric::DirectoryRemoveRecursive(WideString const& directoryName)
+	{
+		Directory directory(directoryName.CStr());
+		if (directory.IsValid())
+		{
+			for (auto directoryEntry = directory.ReadEntry(); directoryEntry.EntryName != nullptr; directoryEntry = directory.ReadEntry())
+			{
+				auto const directoryEntryPath = Paths::Combine(directoryName, directoryEntry.EntryName);
+				if (directoryEntry.EntryIsDirectory)
+				{
+					FileUtilities::DirectoryRemoveRecursive(directoryEntryPath);
+				}
+				else
+				{
+					FileUtilities::FileRemove(directoryEntryPath);
+				}
+			}
+			directory.Close();
+
+			// If any internal removal has failed, attempt of removal outer directory will fail and false would be returned.
+			return FileUtilities::DirectoryRemove(directoryName);
+		}
+		return false;
+	}
+
+	// ReSharper restore CppRedundantQualifier
+
+GD_NAMESPACE_END

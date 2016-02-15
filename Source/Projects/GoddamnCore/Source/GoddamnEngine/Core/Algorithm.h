@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -11,9 +11,8 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Utility.h>
-#include <GoddamnEngine/Core/Iterators.h>
-#include <GoddamnEngine/Core/TypeTraits.h>
+#include <GoddamnEngine/Core/Templates/Utility.h>
+#include <GoddamnEngine/Core/Templates/Iterators.h>
 
 GD_NAMESPACE_BEGIN
 	
@@ -81,7 +80,10 @@ GD_NAMESPACE_BEGIN
 	{
 		using ElementType = typename TypeTraits::RemoveReference<decltype(*iterator)>::Type;
 		if (!TypeTraits::IsPOD<ElementType>::Value)
+		{
+			// ReSharper disable once CppNonReclaimedResourceAcquisition
 			new (&*iterator) ElementType();
+		}
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -275,8 +277,7 @@ GD_NAMESPACE_BEGIN
 		return endIterator;
 	}
 	template<typename TBidirectionalIterator, typename TElement>
-	GDINL static TBidirectionalIterator FindLast(TBidirectionalIterator const startIterator, TBidirectionalIterator const endIterator
-		, TElement const& predicate)
+	GDINL static TBidirectionalIterator FindLast(TBidirectionalIterator const startIterator, TBidirectionalIterator const endIterator, TElement const& predicate)
 	{
 		return FindLastIf(startIterator, endIterator
 			, [&predicate](TElement const& Value) { return Value == predicate; });
@@ -558,14 +559,16 @@ GD_NAMESPACE_BEGIN
 	//! Compares this m_Container and some other by a predicate.
 	//! @param otherVector other m_Container against which we are comparing.
 	//! @param predicate Object with () operator overloaded that takes two elements and compares then somehow.
-	template<typename TContainer, typename TBinaryPredicate>
-	GDINL bool LexicographicalCompare(TContainer const& lhs, TContainer const& rhs, TBinaryPredicate const& predicate)
+	template<typename TContainerLHS, typename TContainerRHS, typename TBinaryPredicate>
+	GDINL bool LexicographicalCompare(TContainerLHS const& lhs, TContainerRHS const& rhs, TBinaryPredicate const& predicate)
 	{
 		SizeTp const minLength = Min(lhs.GetLength(), rhs.GetLength());
 		for (SizeTp cnt = 0; cnt < minLength; ++cnt)
 		{
 			if (!predicate(*(lhs.Begin() + cnt), *(rhs.Begin() + cnt)))
+			{
 				return false;
+			}
 		}
 		return true;
 	}
@@ -619,8 +622,11 @@ GD_NAMESPACE_BEGIN
 		HashValue Value = 0;
 
 	public:
+
+		GDINL HashCode() {}
+
 		//! Initializes hash code with precomputed integer value.
-		GDINL explicit HashCode(HashValue const HashValue = 0) : Value(HashValue) {}
+		GDINL explicit HashCode(HashValue const HashValue) : Value(HashValue) {}
 
 		//! Returns integer representation of this hash code.
 		GDINL HashValue GetValue() const { return Value; }

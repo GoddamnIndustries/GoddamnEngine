@@ -11,7 +11,9 @@
  * File contains export interface for the engine 2D graphics subsystem.
  */
 #include <GoddamnEngine/Engine/Interface/Graphics2D/Graphics2D.h>
-#include <GoddamnEngine/Engine/Pipeline/Pipeline.h>
+//#include <GoddamnEngine/Engine/Pipeline/Pipeline.h>
+
+#if 0
 
 GD_NAMESPACE_BEGIN
 
@@ -43,7 +45,9 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Global 2D graphics interface pointer.
-	GDAPI IUniqueInterfacePointer<IGraphics2D> Graphics2D(CreateIGraphics2DInstance(), PipelineManager->GetAppropriateRenderingPipeline());
+//	GDAPI IUniqueInterfacePointer<IGraphics2D> Graphics2D(CreateIGraphics2DInstance(), PipelineManager->GetAppropriateRenderingPipeline());
 	GD_SINGLETON_IMPLEMENTATION(IGraphics2D);
 
 GD_NAMESPACE_END
+
+#endif

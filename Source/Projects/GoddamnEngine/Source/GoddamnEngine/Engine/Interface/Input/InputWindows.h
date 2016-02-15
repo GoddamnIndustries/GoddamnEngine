@@ -16,7 +16,7 @@
 #if GD_PLATFORM_WINDOWS || GD_PLATFORM_WINDOWS_UAP || GD_PLATFORM_WINDOWS_PHONE
 
 #include <GoddamnEngine/Engine/Interface/Input/Input.h>
-#include <GoddamnEngine/Core/UniquePtr.h>
+#include <GoddamnEngine/Core/Templates/UniquePtr.h>
 
 #include <Windows.h>
 #include <atlbase.h>
@@ -53,20 +53,20 @@ GD_NAMESPACE_BEGIN
 
 	private:
 #if !GD_PLATFORM_WINDOWS_PHONE
-		GamepadState                 inputGamepadStates[4];
+		GamepadState                 m_InputGamepadStates[4];
 #endif	// if !GD_PLATFORM_WINDOWS_PHONE
 #if GD_PLATFORM_WINDOWS
-		IInputButtonState            inputKeyboardButtons[256] = {};
-		IInputButtonState            inputMouseButtons[8] = {};
+		IInputButtonState            m_InputKeyboardButtons[256] = {};
+		IInputButtonState            m_InputMouseButtons[8] = {};
 
-		CComPtr<IDirectInput8>       inputDirectInputInterface;
-		CComPtr<IDirectInputDevice8> inputDeviceKeyboard;
-		CComPtr<IDirectInputDevice8> inputDeviceMouse;
-		UniquePtr<KeyboardState>     inputDeviceKeyboardCurrentState;
-		UniquePtr<KeyboardState>     inputDeviceKeyboardPreviousState;
-		UniquePtr<DIMOUSESTATE2>     inputDeviceMouseCurrentState;
-		UniquePtr<DIMOUSESTATE2>     inputDeviceMousePreviousState;
-		GeomPoint                    inputDeviceMousePosition;
+		CComPtr<IDirectInput8>       m_InputDirectInputInterface;
+		CComPtr<IDirectInputDevice8> m_InputDeviceKeyboard;
+		CComPtr<IDirectInputDevice8> m_InputDeviceMouse;
+		UniquePtr<KeyboardState>     m_InputDeviceKeyboardCurrentState;
+		UniquePtr<KeyboardState>     m_InputDeviceKeyboardPreviousState;
+		UniquePtr<DIMOUSESTATE2>     m_InputDeviceMouseCurrentState;
+		UniquePtr<DIMOUSESTATE2>     m_InputDeviceMousePreviousState;
+		GeomPoint                    m_InputDeviceMousePosition;
 #endif	// if GD_PLATFORM_WINDOWS
 
 	public:
@@ -78,17 +78,13 @@ GD_NAMESPACE_BEGIN
 	public:
 
 		// Gamepad support..
-		GDAPI virtual SizeTp Gamepad_GetMaxSupportedDevices() const override final;
-		GDAPI virtual IInputButtonState Gamepad_GetButtonState(IInputGamepadButton const inputGamepadButton
-			, SizeTp const inputGamepadIndex = 0) override final;
-		GDAPI virtual Float32 Gamepad_GetRawAxisValue(IInputGamepadAxis const inputGamepadAxis
-			, SizeTp const inputGamepadIndex = 0) override final;
-		GDAPI virtual void Gamepad_Vibrate(Float64 const inputGamepadDuration
-			, Float32 const inputGamepadRightMotor, Float32 const inputGamepadLeftMotor
-			, SizeTp const inputGamepadIndex = 0) override final;
+		GDAPI virtual SizeTp GetGamepadMaxSupportedDevices() const override final;
+		GDAPI virtual IInputButtonState GetGamepadButtonState(IInputGamepadButton const inputGamepadButton, SizeTp const inputGamepadIndex = 0) override final;
+		GDAPI virtual Float32 GetGamepadRawAxisValue(IInputGamepadAxis const inputGamepadAxis, SizeTp const inputGamepadIndex = 0) override final;
+		GDAPI virtual void GamepadVibrate(Float64 const inputGamepadDuration, Float32 const inputGamepadRightMotor, Float32 const inputGamepadLeftMotor, SizeTp const inputGamepadIndex = 0) override final;
 
 		// Keyboard support..
-		GDAPI virtual IInputButtonState Keyboard_GetButtonState(IInputKeyboardButton const inputKeyboardButton) override final;
+		GDAPI virtual IInputButtonState GetKeyboardButtonState(IInputKeyboardButton const inputKeyboardButton) override final;
 #if GD_PLATFORM_DESKTOP
 #endif	// if GD_PLATFORM_DESKTOP
 

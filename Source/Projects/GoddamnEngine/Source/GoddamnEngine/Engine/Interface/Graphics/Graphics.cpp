@@ -11,7 +11,9 @@
  * File contains export interface for the engine graphics subsystem.
  */
 #include <GoddamnEngine/Engine/Interface/Graphics/Graphics.h>
-#include <GoddamnEngine/Engine/Pipeline/Pipeline.h>
+//#include <GoddamnEngine/Engine/Pipeline/Pipeline.h>
+
+#if 0
 
 GD_NAMESPACE_BEGIN
 	
@@ -60,7 +62,9 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Global graphics interface pointer.
-	GDAPI IUniqueInterfacePointer<IGraphics> Graphics(CreateIGraphicsInstance(), PipelineManager->GetAppropriateRenderingPipeline());
+	GDAPI IUniqueInterfacePointer<IGraphics> Graphics(/*CreateIGraphicsInstance()*/nullptr, /*PipelineManager->GetAppropriateRenderingPipeline()*/nullptr);
 	GD_SINGLETON_IMPLEMENTATION(IGraphics);
 
 GD_NAMESPACE_END
+
+#endif

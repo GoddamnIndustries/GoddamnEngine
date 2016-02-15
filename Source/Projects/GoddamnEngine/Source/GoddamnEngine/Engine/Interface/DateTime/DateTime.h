@@ -15,7 +15,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Engine/Interface/UniqueInterface.h>
-#include <GoddamnEngine/Core/Singleton.h>
+#include <GoddamnEngine/Core/Templates/Singleton.h>
 #include <GoddamnEngine/Core/Containers/String.h>
 
 GD_NAMESPACE_BEGIN

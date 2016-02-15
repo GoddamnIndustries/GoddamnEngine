@@ -15,8 +15,8 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Engine/Interface/Graphics/Graphics.h>
 
-#include <GoddamnEngine/Core/Geometry.h>
-#include <GoddamnEngine/Core/Singleton.h>
+#include <GoddamnEngine/Core/Math/Geometry.h>
+#include <GoddamnEngine/Core/Templates/Singleton.h>
 
 GD_NAMESPACE_BEGIN
 	struct IGraphics2DFontCreationInfo;
@@ -328,14 +328,10 @@ GD_NAMESPACE_BEGIN
 	struct IGraphics2DTextRendererCreationInfo final
 	{
 	public:
-#if !GD_D_REFLECTOR	// DReflector should not parse union declarations.
 		union {
 			WideCStr								TextRendererDataWide;				//!< Text data as wide characters array.
 				CStr							    TextRendererDataANSI;				//!< Text data as multi-Byte characters array.
 		};	// anonymous union
-#else	// if !GD_D_REFLECTOR
-		CHandle										TextRendererDataPtr;				//!< Pointer to the text data - wide characters or multi-Byte ones.
-#endif	// if !GD_D_REFLECTOR
 		bool									    TextRendererIsWideString;			//!< Tests, whether we are rendering a wide string or the multi-Byte one.
 		IGraphics2DFont const*						TextRendererFont;					//!< Pointer to the font.
 		Float32										TextRendererSize;					//!< Size of the text font.

@@ -16,8 +16,8 @@
 #include <GoddamnEngine/Engine/Interface/UniqueInterface.h>
 #include <GoddamnEngine/Engine/Interface/Graphics/GraphicsFormat.h>
 
-#include <GoddamnEngine/Core/Geometry.h>
-#include <GoddamnEngine/Core/Singleton.h>
+#include <GoddamnEngine/Core/Math/Geometry.h>
+#include <GoddamnEngine/Core/Templates/Singleton.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
 
 GD_NAMESPACE_BEGIN
@@ -52,9 +52,9 @@ GD_NAMESPACE_BEGIN
 	// Canvas output.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines the list of the supported canvas output modes.
-	GD_DENUM()
+	/*!
+	 * Defines the list of the supported canvas output modes.
+	 */
 	enum IGraphicsCanvasMode : UInt8
 	{
 		IGRAPHICS_OUTPUT_MODE_WINDOWED,
@@ -63,9 +63,9 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_OUTPUT_MODE_UNKNOWN,
 	};	// enum IGraphicsCanvasMode
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines the list of the supported canvas vsync modes.
-	GD_DENUM()
+	/*!
+	 * Defines the list of the supported canvas vsync modes.
+	 */
 	enum IGraphicsCanvasVsyncMode : UInt8
 	{
 		IGRAPHICS_OUTPUT_VSYNC_DISABLED,
@@ -74,68 +74,67 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_OUTPUT_VSYNC_UNKNOWN,
 	};	// enum IGraphicsCanvasVsyncMode 
 
-	// ------------------------------------------------------------------------------------------
-	//! Adds canvas output support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	/*!
+	 * Adds canvas output support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithCanvas, IGraphics)
 	{
 	public:
 		
-		// ------------------------------------------------------------------------------------------
-		//! Retrieves the mode in which graphics canvas device is running. 
-		//! @returns The mode in which graphics canvas device is running.
-		GD_DFUNCTION()
+		/*!
+		 * Retrieves the mode in which graphics canvas device is running. 
+		 */
 		GDAPI virtual IGraphicsCanvasMode Canvas_GetMode() const GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Changes the mode in which the graphics canvas device is running. 
-		//! @param GfxCanvasMode The new canvas mode that would be set.
-		//! @param gfxForcelyReapply Do forcedly reapply mode, even if device is running is the same mode.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult Canvas_SetMode(IGraphicsCanvasMode const gfxCanvasMode
-			, bool const gfxForcelyReapply = false)  GD_PURE_VIRTUAL;
+		/*!
+		 * Changes the mode in which the graphics canvas device is running. 
+		 *
+		 * @param gfxCanvasMode The new canvas mode that would be set.
+		 * @param gfxForcelyReapply Do forcedly reapply mode, even if device is running is the same mode.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult Canvas_SetMode(IGraphicsCanvasMode const gfxCanvasMode, bool const gfxForcelyReapply = false) GD_PURE_VIRTUAL;
 
 #if 0
-		// ------------------------------------------------------------------------------------------
-		//! Returns mode, in which graphics device is performing vertical sync.
-		//! @returns Mode, in which graphics device is performing vertical sync.
-		GD_DFUNCTION()
+		/*!
+		 * Returns mode, in which graphics device is performing vertical sync.
+		 */
 		GDAPI virtual IGraphicsCanvasVsyncMode Canvas_GetVsyncMode() const GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Changes mode, in which graphics device is performing vertical sync.
-		//! @param GfxVsyncMode The mode in which graphics device is performing vertical sync.
-		//! @param gfxForcelyReapply Do forcedly reapply mode, even if vsync is running is the same mode.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult Canvas_SetVsyncEnabled(IGraphicsCanvasVsyncMode const GfxVsyncMode
-			, bool const gfxForcelyReapply = false) GD_PURE_VIRTUAL;
+		/*!
+		 * Changes mode, in which graphics device is performing vertical sync.
+		 *
+		 * @param gfxVsyncMode The mode in which graphics device is performing vertical sync.
+		 * @param gfxForcelyReapply Do forcedly reapply mode, even if vsync is running is the same mode.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult Canvas_SetVsyncEnabled(IGraphicsCanvasVsyncMode const gfxVsyncMode, bool const gfxForcelyReapply = false) GD_PURE_VIRTUAL;
 #endif	// if 0
 
 		//! @todo Do something with pointer here. It is not very safe.
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns a vector reference with all supported resolution descriptors.
-		//! @returns A vector reference with all supported resolution descriptors.
-		GD_DFUNCTION()
+		/*!
+		 * Returns a vector reference with all supported resolution descriptors.
+		 */
 		GDAPI virtual GeomResolution const* Canvas_GetSupportedResolutions() const GD_PURE_VIRTUAL;
 	
-		// ------------------------------------------------------------------------------------------
-		//! Returns pointer to the resolution descriptor that is currently set.
-		//! @returns Pointer to the resolution descriptor that is currently set or null on failure.
-		GD_DFUNCTION()
+		/*!
+		 * Returns pointer to the resolution descriptor that is currently set.
+		 */
 		GDAPI virtual GeomResolution const* Canvas_GetResolution() const GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Changes resolution in which graphics canvas device is rendering and resize several frame
-		//! buffers (those, that have a corresponding flag specified).
-		//! @param gfxResolution Pointer to the resolution descriptor that would be set.
-		//! @param gfxForcelyReapply Do forcedly resolution mode, even if device is running is the same resolution.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult Canvas_SetResolution(GeomResolution const* const gfxResolution
-			, bool const gfxForcelyReapply = false) GD_PURE_VIRTUAL;
+		/*!
+		 * Changes resolution in which graphics canvas device is rendering and resize several frame
+		 * buffers (those, that have a corresponding flag specified).
+		 *
+		 * @param gfxResolution Pointer to the resolution descriptor that would be set.
+		 * @param gfxForcelyReapply Do forcedly resolution mode, even if device is running is the same resolution.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult Canvas_SetResolution(GeomResolution const* const gfxResolution, bool const gfxForcelyReapply = false) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithCanvas
 
@@ -143,54 +142,56 @@ GD_NAMESPACE_BEGIN
 	// Command lists.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines an interface for the GPU commands list.
-	GD_DINTERFACE()
+	/*!
+	 * Defines an interface for the GPU commands list.
+	 */
 	uinterface IGraphicsCommandList : public IGraphicsInterface
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsCommandList, IGraphicsInterface);
 		//! @todo Implement command lists here.
 	};	// uinterface IGraphicsCommandList
 
-	// ------------------------------------------------------------------------------------------
-	//! Adds command lists support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	/*!
+	 * Adds command lists support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithCommandLists, IGraphics)
 	{
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Creates a GPU command list with specified parameters.
-		//! @param gfxCommandListPtr Pointer for output.
-		//! @param gfxCommandListCreationInfo Pointer to the command list creation information.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_CommandListCreate(IGraphicsCommandList** const gfxCommandListPtr
-			, void const* const gfxCommandListCreationInfo) { return IResult::Ok; }
+		/*!
+		 * Creates a GPU command list with specified parameters.
+		 *
+		 * @param gfxCommandListPtr Pointer for output.
+		 * @param gfxCommandListCreationInfo Pointer to the command list creation information.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_CommandListCreate(IGraphicsCommandList** const gfxCommandListPtr, void const* const gfxCommandListCreationInfo) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Clears current render target depth buffer.
-		//! @param gfxCommandList Command list into which this command would be written.
-		GDAPI virtual void GfxCmd_RenderTargetClearDepth(IGraphicsCommandList* const gfxCommandList) {}
+		/*!
+		 * Clears current render target depth buffer.
+		 * @param gfxCommandList Command list into which this command would be written.
+		 */
+		GDAPI virtual void GfxCmd_RenderTargetClearDepth(IGraphicsCommandList* const gfxCommandList) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Clear current render target with a specified color.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxClearColor Color that would be used to fill the render target.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_RenderTargetClearColor(IGraphicsCommandList* const gfxCommandList
-			, GeomColor const gfxClearColor) {}
+		/*!
+		 * Clear current render target with a specified color.
+		 *
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxClearColor Color that would be used to fill the render target.
+		 */
+		GDAPI virtual void GfxCmd_RenderTargetClearColor(IGraphicsCommandList* const gfxCommandList, GeomColor const gfxClearColor) GD_PURE_VIRTUAL;
 
 		//! @todo Implement command lists here.
+
 	};	// uinterface IGraphicsBase_WithCommandLists
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Buffers.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines types of supported buffer objects.
-	GD_DENUM()
+	/*!
+	 * Defines types of supported buffer objects.
+	 */
 	enum IGraphicsBufferType : UInt8
 	{
 		IGRAPHICS_BUFFER_TYPE_VERTEX,
@@ -200,9 +201,10 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_BUFFER_TYPES_COUNT,
 	};	// enum IGraphicsBufferType
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines the flags for the GPU buffer.
-	GD_DENUM(FlagsEnum)
+	/*!
+	 * Defines the flags for the GPU buffer.
+	 */
+	//! @{
 	enum IGraphicsBufferFlags : UInt8
 	{
 		IGRAPHICS_BUFFER_FLAGS_NONE          = 0,
@@ -210,10 +212,11 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_BUFFER_FLAGS_DYNAMIC_WRITE = GD_BIT(1),
 	};	// enum IGraphicsBufferFlags
 	GD_ENUM_DEFINE_FLAG_OPERATORS(IGraphicsBufferFlags);
+	//! @}
 
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains information that is required to create a GPU buffer.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Structure that contains information that is required to create a GPU buffer.
+	 */
 	struct IGraphicsBufferCreationInfo final
 	{
 	public:
@@ -222,59 +225,61 @@ GD_NAMESPACE_BEGIN
 		IGraphicsBufferFlags gfxBufferFlags;	//!< Flags of the buffer to create.
 	};	// struct BufferCreationInfo
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU buffer interface. Engine's graphics abstraction layer provides no separation for
-	//! buffers of different type.
-	GD_DINTERFACE()
+	/*!
+	 * GPU buffer interface. Engine's graphics abstraction layer provides no separation for
+	 * buffers of different type.
+	 */
 	uinterface IGraphicsBuffer : public IGraphicsInterface
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsBuffer, IGraphicsInterface);
 	public:
 		IGraphicsBufferCreationInfo const gfxBufferCreationInfo;
+
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsBuffer(IGraphicsBufferCreationInfo const* const gfxBufferCreationInfo)
-			: gfxBufferCreationInfo(*gfxBufferCreationInfo) {}
+		GDINL explicit IGraphicsBuffer(IGraphicsBufferCreationInfo const* const gfxBufferCreationInfo) : gfxBufferCreationInfo(*gfxBufferCreationInfo) {}
+	
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Maps all GPU's buffer data on the CPU memory.
-		//! @param gfxMappedWOMemory Pointer to the write-only memory Handle.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
+		/*!
+		 * Maps all GPU's buffer data on the CPU memory.
+		 *
+		 * @param gfxMappedWOMemory Pointer to the write-only memory Handle.
+		 * @returns Non-negative value if the operation succeeded.
+		 */
 		GDAPI virtual IResult Imm_MapForWriting(Handle* const gfxMappedWOMemory) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Maps all GPU's buffer data on the CPU memory.
-		//! @param gfxMappedROMemory Pointer to the read-only memory Handle.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
+		/*!
+		 * Maps all GPU's buffer data on the CPU memory.
+		 *
+		 * @param gfxMappedROMemory Pointer to the read-only memory Handle.
+		 * @returns Non-negative value if the operation succeeded.
+		 */
 		GDAPI virtual IResult Imm_MapForReading(CHandle* const gfxMappedROMemory) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Unmaps the buffer from the CPU memory.
-		//! @param gfxBuffer Buffer that would be unmapped.
-		GD_DFUNCTION()
+		/*!
+		 * Unmaps the buffer from the CPU memory.
+		 * @param gfxBuffer Buffer that would be unmapped.
+		 */
 		GDAPI virtual void Imm_Unmap() GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBuffer
 
-	// ------------------------------------------------------------------------------------------
-	//! Adds buffers support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	/*!
+	 * Adds buffers support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithBuffers, IGraphics)
 	{
 	public:
 		
-		// ------------------------------------------------------------------------------------------
-		//! Creates a GPU buffer with specified parameters.
-		//! @param gfxBufferPtr Pointer for output.
-		//! @param gfxBufferCreationInfo Pointer to the buffer creation information.
-		//! @param gfxBufferInitialData Initial data of the buffer. Can be null pointer for en empty buffer.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_BufferCreate(IGraphicsBuffer** const gfxBufferPtr
-			, IGraphicsBufferCreationInfo const* const gfxBufferCreationInfo, CHandle const gfxBufferInitialData) GD_PURE_VIRTUAL;
+		/*!
+		 * Creates a GPU buffer with specified parameters.
+		 *
+		 * @param gfxBufferPtr Pointer for output.
+		 * @param gfxBufferCreationInfo Pointer to the buffer creation information.
+		 * @param gfxBufferInitialData Initial data of the buffer. Can be null pointer for en empty buffer.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_BufferCreate(IGraphicsBuffer** const gfxBufferPtr, IGraphicsBufferCreationInfo const* const gfxBufferCreationInfo, CHandle const gfxBufferInitialData) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithBuffers
 
@@ -282,9 +287,9 @@ GD_NAMESPACE_BEGIN
 	// Vertex array objects.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines the list of supported vertex/shader flow semantics.
-	GD_DENUM()
+	/*!
+	 * Defines the list of supported vertex/shader flow semantics.
+	 */
 	enum IGraphicsSemanticType : UInt8
 	{
 		IGRAPHICS_SEMANTIC_POSITION,
@@ -299,9 +304,9 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_SEMANTICS_COUNT
 	};	// enum IGraphicsSemanticType
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines a list of the supported vertex slots classes.
-	GD_DENUM()
+	/*!
+	 * Defines a list of the supported vertex slots classes.
+	 */
 	enum IGraphicsInputSlotClass : UInt8
 	{
 		IGRAPHICS_INPUT_SLOT_CLASS_PER_VERTEX,
@@ -310,9 +315,9 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_INPUT_SLOT_CLASSES_COUNT,
 	};	// enum IGraphicsInputSlotClass
 
-	// ------------------------------------------------------------------------------------------
-	//! Helper struct that describes the single slot of the vertex array input data.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Helper struct that describes the single slot of the vertex array input data.
+	 */
 	struct IGraphicsVertexArrayLayoutSlot final
 	{
 	public:
@@ -323,9 +328,9 @@ GD_NAMESPACE_BEGIN
 		UInt32					SlotDataStepRate;	//!< Number of the instances using same per-instance data.
 	};	// struct IGraphicsVertexArrayLayoutSlot
 
-	// ------------------------------------------------------------------------------------------
-	//! Layout for the shader input/vertex array data.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Layout for the shader input/vertex array data.
+	 */
 	struct IGraphicsVertexArrayLayout final
 	{
 	public:
@@ -333,48 +338,49 @@ GD_NAMESPACE_BEGIN
 		SizeTp                           LayoutSlotsCount;	//!< Number of the slots, used by this layout.
 	};	// struct IGraphicsVertexArrayLayout 
 
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains information that is required to create a GPU buffer.
+	/*!
+	 * Structure that contains information that is required to create a GPU vertex array.
+	 */
 	GD_DSTRUCT(CopyFields)
 	struct IGraphicsVertexArrayCreationInfo final
 	{
 	public:
-		IGraphicsVertexArrayLayout const* gfxVertexArrayLayout;		//!< The layout of the current input data.
-		IGraphicsBuffer const* const*	  gfxArrayVertexBuffers;	//!< Vertex buffers list of the current input data.
-		IGraphicsBuffer const*	          gfxArrayIndexBuffer;		//!< m_Index buffer of the current input data.
+		IGraphicsVertexArrayLayout const* VertexArrayLayout;		//!< The layout of the current input data.
+		IGraphicsBuffer const* const*	  ArrayVertexBuffers;	//!< Vertex buffers list of the current input data.
+		IGraphicsBuffer const*	          ArrayIndexBuffer;		//!< Index buffer of the current input data.
 	};	// struct IGraphicsVertexArrayCr eationInfo
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU input data interface.
-	GD_DINTERFACE()
+	/*!
+	 * GPU input data interface.
+	 */
 	uinterface IGraphicsVertexArray : public IGraphicsInterface
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsVertexArray, IGraphicsInterface);
 	public:
 		IGraphicsVertexArrayCreationInfo const gfxVertexArrayCreationInfo;
+
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsVertexArray(IGraphicsVertexArrayCreationInfo const* const gfxVertexArrayCreationInfo)
-			: gfxVertexArrayCreationInfo(*gfxVertexArrayCreationInfo) {}
+		GDINL explicit IGraphicsVertexArray(IGraphicsVertexArrayCreationInfo const* const gfxVertexArrayCreationInfo) : gfxVertexArrayCreationInfo(*gfxVertexArrayCreationInfo) {}
+	
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsVertexArray
 	
-	// ------------------------------------------------------------------------------------------
-	//! Adds vertex arrays support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	/*!
+	 * Adds vertex arrays support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithVertexArrays, IGraphics)
 	{
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Creates a GPU vertex array with specified parameters.
-		//! @param gfxVertexArrayPtr Pointer for output.
-		//! @param gfxVertexArrayCreationInfo Pointer to the vertex array creation information.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_VertexArrayCreate(IGraphicsVertexArray** const gfxVertexArrayPtr
-			, IGraphicsVertexArrayCreationInfo const* const gfxVertexArrayCreationInfo) GD_PURE_VIRTUAL;
+		/*!
+		 * Creates a GPU vertex array with specified parameters.
+		 *
+		 * @param gfxVertexArrayPtr Pointer for output.
+		 * @param gfxVertexArrayCreationInfo Pointer to the vertex array creation information.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_VertexArrayCreate(IGraphicsVertexArray** const gfxVertexArrayPtr, IGraphicsVertexArrayCreationInfo const* const gfxVertexArrayCreationInfo) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithVertexArrays
 
@@ -382,9 +388,9 @@ GD_NAMESPACE_BEGIN
 	// Sampler state objects.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines the Wrap mode for some dimension of the texture.
-	GD_DENUM()
+	/*!
+	 * Defines the Wrap mode for some dimension of the texture.
+	 */
 	enum IGraphicsTextureAddressMode : UInt8
 	{
 		IGRAPHICS_TEXTURE_ADDRESS_MODE_CLAMP_TO_EDGE,
@@ -395,9 +401,9 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_TEXTURE_ADDRESS_MODES_COUNT,
 	};	// enum IGraphicsTextureAddressMode 
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines the minification and magnification filtering modes.
-	GD_DENUM()
+	/*!
+	 * Defines the minification and magnification filtering modes.
+	 */
 	enum IGraphicsTextureMinMagFilter : UInt8
 	{
 		IGRAPHICS_TEXTURE_MINMAG_FILTER_NEAREST,
@@ -406,9 +412,9 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_TEXTURE_MINMAG_FILTERS_COUNT,
 	};	// enum IGraphicsTextureMinMagFilter
 
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains information that is required to create a GPU sampler state.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Structure that contains information that is required to create a GPU sampler state.
+	 */
 	struct IGraphicsSamplerStateCreationInfo final
 	{
 	public:
@@ -423,37 +429,37 @@ GD_NAMESPACE_BEGIN
 		UInt32	                     SamplerMaxAnisotropy;		//!< Max anisotropy filtering level.
 	};	// struct IGraphicsSamplerStateCreationInfo
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU sampler state interface.
-	GD_DINTERFACE()
+	/*!
+	 * GPU sampler state interface.
+	 */
 	uinterface IGraphicsSamplerState : public IGraphicsInterface
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsSamplerState, IGraphicsInterface);
 	public:
 		IGraphicsSamplerStateCreationInfo const gfxSamplerStateCreationInfo;
+
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsSamplerState(IGraphicsSamplerStateCreationInfo const* const gfxSamplerStateCreationInfo)
-			: gfxSamplerStateCreationInfo(*gfxSamplerStateCreationInfo) {}
+		GDINL explicit IGraphicsSamplerState(IGraphicsSamplerStateCreationInfo const* const gfxSamplerStateCreationInfo) : gfxSamplerStateCreationInfo(*gfxSamplerStateCreationInfo) {}
+
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsSamplerState;
 
-	// ------------------------------------------------------------------------------------------
-	//! Adds sampler states support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	/*!
+	 * Adds sampler states support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithSamplerStates, IGraphics)
 	{
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Creates a GPU sampler state with specified parameters.
-		//! @param gfxSamplerStatePtr Pointer for output.
-		//! @param gfxSamplerStateCreationInfo Pointer to the sampler state creation information.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_SamplerStateCreate(IGraphicsSamplerState** gfxSamplerStatePtr
-			, IGraphicsSamplerStateCreationInfo const* const gfxSamplerStateCreationInfo) GD_PURE_VIRTUAL;
+		/*!
+		 * Creates a GPU sampler state with specified parameters.
+		 *
+		 * @param gfxSamplerStatePtr Pointer for output.
+		 * @param gfxSamplerStateCreationInfo Pointer to the sampler state creation information.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_SamplerStateCreate(IGraphicsSamplerState** gfxSamplerStatePtr, IGraphicsSamplerStateCreationInfo const* const gfxSamplerStateCreationInfo) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithSamplerStates
 
@@ -461,9 +467,9 @@ GD_NAMESPACE_BEGIN
 	// Shader Resources common.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines types of the supported shader resources.
-	GD_DENUM()
+	/*!
+	 * Defines types of the supported shader resources.
+	 */
 	enum IGraphicsResourceType : UInt8
 	{
 		IGRAPHICS_RESOURCE_TYPE_TEXTURE_2D,
@@ -473,27 +479,26 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_RESOURCE_TYPES_COUNT,
 	};	// enum IGraphicsResourceType
 
-	// ------------------------------------------------------------------------------------------
-	//! A GPU shader resource view interface.
-	GD_DINTERFACE()
+	/*!
+	 * A GPU shader resource view interface.
+	 */
 	uinterface IGraphicsShaderResourceView : public IGraphicsInterface
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsShaderResourceView, IGraphicsInterface);
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsShaderResourceView
 	
-	// ------------------------------------------------------------------------------------------
-	//! A base GPU resource interface.
-	GD_DINTERFACE()
+	/*!
+	 * A base GPU resource interface.
+	 */
 	uinterface IGraphicsResource : public IGraphicsInterface
 	{
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Queries the shader resource for current resource.
-		//! @returns Pointer to the shader resource view. Should be released manually.
-		GD_DFUNCTION()
+		/*!
+		 * Queries the shader resource for current resource.
+		 * @returns Pointer to the shader resource view. Should be released manually.
+		 */
 		GDAPI virtual IGraphicsShaderResourceView const* CPU_GetShaderResourceView() const GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsResource
@@ -502,9 +507,10 @@ GD_NAMESPACE_BEGIN
 	// 2D Textures.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines flags for the 2D texture.
-	GD_DENUM(FlagsEnum)
+	/*!
+	 * Defines flags for the 2D texture.
+	 */
+	//! @{
 	enum IGraphicsTexture2DFlags : UInt8
 	{
 		IGRAPHICS_TEXTURE_2D_DYNAMIC_READ     = GD_BIT(0),
@@ -512,10 +518,11 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_TEXTURE_2D_GENERATE_MIPMAPS = GD_BIT(2),
 	};	// enum IGraphicsTexture2DFlags
 	GD_ENUM_DEFINE_FLAG_OPERATORS(IGraphicsTexture2DFlags);
+	//! @}
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines the natively compression mode for 2D textures data.
-	GD_DENUM()
+	/*!
+	 * Defines the natively compression mode for 2D textures data.
+	 */
 	enum IGraphicsTexture2DCompressionMode : UInt8
 	{
 		IGRAPHICS_TEXTURE_2D_COMPRESSION_RAW,
@@ -526,9 +533,9 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_TEXTURE_2D_COMPRESSIONS_COUNT,
 	};	// enum IGraphicsTexture2DCompressionMode
 
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains information that is required to create a GPU 2D texture.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Structure that contains information that is required to create a GPU 2D texture.
+	 */
 	struct IGraphicsTexture2DCreationInfo final
 	{
 	public:
@@ -540,54 +547,55 @@ GD_NAMESPACE_BEGIN
 		IGraphicsTexture2DFlags			  TextureFlags;
 	};	// struct IGraphicsTexture2DCreationInfo
 		
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains 2D texture data information.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Structure that contains 2D texture data information.
+	 */
 	struct IGraphicsTexture2DData final
 	{
 	public:
 		CHandle TextureData; //!< Pointer to the texture data.
 	};	// struct IGraphicsTexture2DData
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU 2D texture interface.
-	GD_DINTERFACE()
+	/*!
+	 * GPU 2D texture interface.
+	 */
 	uinterface IGraphicsTexture2D : public IGraphicsResource
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsTexture2D, IGraphicsResource);
 	public:
 		IGraphicsTexture2DCreationInfo const gfxTexture2DCreationInfo;
+
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsTexture2D(IGraphicsTexture2DCreationInfo const* const gfxTexture2DCreationInfo)
-			: gfxTexture2DCreationInfo(*gfxTexture2DCreationInfo) {}
+		GDINL explicit IGraphicsTexture2D(IGraphicsTexture2DCreationInfo const* const gfxTexture2DCreationInfo) : gfxTexture2DCreationInfo(*gfxTexture2DCreationInfo) {}
+
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Updates data stored inside texture.
-		//! @param gfxTexture2DData New data that would be uploaded to GPU.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
+		/*!
+		 * Updates data stored inside texture.
+		 *
+		 * @param gfxTexture2DData New data that would be uploaded to GPU.
+		 * @returns Non-negative value if the operation succeeded.
+		 */
 		GDAPI virtual IResult Imm_UpdateData(IGraphicsTexture2DData const* const gfxTexture2DData) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsTexture2D
 	
-	// ------------------------------------------------------------------------------------------
-	//! Adds 2D textures support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	/*!
+	 * Adds 2D textures support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithTextures2D, IGraphics)
 	{
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Creates a GPU 2D texture with specified parameters.
-		//! @param gfxTexture2DPtr Pointer for output.
-		//! @param gfxTexture2DCreationInfo Pointer to the 2D texture creation information.
-		//! @param gfxTexture2DInitialData Initial data for our texture.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_Texture2DCreate(IGraphicsTexture2D** const gfxTexture2DPtr
-			, IGraphicsTexture2DCreationInfo const* const gfxTexture2DCreationInfo
+		/*!
+		 * Creates a GPU 2D texture with specified parameters.
+		 *
+		 * @param gfxTexture2DPtr Pointer for output.
+		 * @param gfxTexture2DCreationInfo Pointer to the 2D texture creation information.
+		 * @param gfxTexture2DInitialData Initial data for our texture.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_Texture2DCreate(IGraphicsTexture2D** const gfxTexture2DPtr, IGraphicsTexture2DCreationInfo const* const gfxTexture2DCreationInfo
 			, IGraphicsTexture2DData const* const gfxTexture2DInitialData) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithTextures2D
@@ -596,59 +604,60 @@ GD_NAMESPACE_BEGIN
 	// Cube map textures.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains information that is required to create a GPU cube texture.
-	GD_DALIAS()
+	/*!
+	 * Structure that contains information that is required to create a GPU cube texture.
+	 */
 	typedef IGraphicsTexture2DCreationInfo IGraphicsTextureCubeCreationInfo;
 
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains cube texture data information.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Structure that contains cube texture data information.
+	 */
 	struct IGraphicsTextureCubeData final
 	{
 	public:
 		IGraphicsTexture2DData TexureCubeSides[6];	//!< Creation data for the side of the cube.
 	};	// struct IGraphicsTextureCubeData
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU Cube texture interface.
-	GD_DINTERFACE()
+	/*!
+	 * GPU Cube texture interface.
+	 */
 	uinterface IGraphicsTextureCube : public IGraphicsResource
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsTextureCube, IGraphicsResource);
 	public:
 		IGraphicsTexture2DCreationInfo const gfxTextureCubeCreationInfo;
+
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsTextureCube(IGraphicsTextureCubeCreationInfo const* const gfxTextureCubeCreationInfo)
-			: gfxTextureCubeCreationInfo(*gfxTextureCubeCreationInfo) {}
+		GDINL explicit IGraphicsTextureCube(IGraphicsTextureCubeCreationInfo const* const gfxTextureCubeCreationInfo) : gfxTextureCubeCreationInfo(*gfxTextureCubeCreationInfo) {}
+	
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Updates data stored inside texture.
-		//! @param gfxTextureCubeData New data that would be uploaded to GPU.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
+		/*!
+		 * Updates data stored inside texture.
+		 *
+		 * @param gfxTextureCubeData New data that would be uploaded to GPU.
+		 * @returns Non-negative value if the operation succeeded.
+		 */
 		GDAPI virtual IResult Imm_UpdateData(IGraphicsTextureCubeData const* const gfxTextureCubeData) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsTextureCube
 
-	// ------------------------------------------------------------------------------------------
-	//! Adds Cube textures support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	/*!
+	 * Adds Cube textures support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithTexturesCube, IGraphics)
 	{
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Creates a GPU Cube texture with specified parameters.
-		//! @param gfxTextureCubePtr Pointer for output.
-		//! @param gfxTextureCubeCreationInfo Pointer to the Cube texture creation information.
-		//! @param gfxTextureInitialCubeData Initial data for our texture.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_TextureCubeCreate(IGraphicsTextureCube** const gfxTextureCubePtr
-			, IGraphicsTextureCubeCreationInfo const* const gfxTextureCubeCreationInfo
+		/*!
+		 * Creates a GPU Cube texture with specified parameters.
+		 *
+		 * @param gfxTextureCubePtr Pointer for output.
+		 * @param gfxTextureCubeCreationInfo Pointer to the Cube texture creation information.
+		 * @param gfxTextureInitialCubeData Initial data for our texture.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_TextureCubeCreate(IGraphicsTextureCube** const gfxTextureCubePtr, IGraphicsTextureCubeCreationInfo const* const gfxTextureCubeCreationInfo
 			, IGraphicsTextureCubeData const* const gfxTextureInitialCubeData) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithTextures2D
@@ -659,9 +668,9 @@ GD_NAMESPACE_BEGIN
 	// 3D Textures.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains information that is required to create a GPU 3D texture.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Structure that contains information that is required to create a GPU 3D texture.
+	 */
 	struct IGraphicsTexture3DCreationInfo final
 	{
 	public:
@@ -672,9 +681,9 @@ GD_NAMESPACE_BEGIN
 		UInt32          TextureMipMapsCount;	//!< Amount of the mipmaps levels of the texture.
 	};	// struct IGraphicsTexture3DCreationInfo
 
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains 3D texture data information.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Structure that contains 3D texture data information.
+	 */
 	struct IGraphicsTexture3DData final
 	{
 	public:
@@ -682,45 +691,46 @@ GD_NAMESPACE_BEGIN
 		CHandle                           TextureData;				//!< Pointer to the texture data.
 	};	// struct IGraphicsTexture3DData
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU 3D texture interface.
-	GD_DINTERFACE()
+	/*!
+	 * GPU 3D texture interface.
+	 */
 	uinterface IGraphicsTexture3D : public IGraphicsResource
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsTexture3D, IGraphicsResource);
 	public:
 		IGraphicsTexture3DCreationInfo const gfxTexture3DCreationInfo;
+
 	protected:
-		GD_DCTOR()
-			GDINL explicit IGraphicsTexture3D(IGraphicsTexture3DCreationInfo const* const gfxTexture3DCreationInfo)
-			: gfxTexture3DCreationInfo(*gfxTexture3DCreationInfo) {}
+		GDINL explicit IGraphicsTexture3D(IGraphicsTexture3DCreationInfo const* const gfxTexture3DCreationInfo) : gfxTexture3DCreationInfo(*gfxTexture3DCreationInfo) {}
+
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Updates data stored inside texture.
-		//! @param gfxTexture3DData New data that would be uploaded to GPU.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
+		/*!
+		 * Updates data stored inside texture.
+		 *
+		 * @param gfxTexture3DData New data that would be uploaded to GPU.
+		 * @returns Non-negative value if the operation succeeded.
+		 */
 		GDAPI virtual IResult Imm_UpdateData(IGraphicsTexture3DData const* const gfxTexture3DData) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsTexture3D
 
-	// ------------------------------------------------------------------------------------------
-	//! Adds 3D textures support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	/*!
+	 * Adds 3D textures support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithTextures3D, IGraphics)
 	{
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Creates a GPU 3D texture with specified parameters.
-		//! @param gfxTexture3DPtr Pointer for output.
-		//! @param gfxTexture3DCreationInfo Pointer to the 3D texture creation information.
-		//! @param gfxTexture3DInitialData Initial data for our texture.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-			GDAPI virtual IResult GfxImm_Texture3DCreate(IGraphicsTexture3D** const gfxTexture3DPtr
-			, IGraphicsTexture3DCreationInfo const* const gfxTexture3DCreationInfo
+		/*!
+		 * Creates a GPU 3D texture with specified parameters.
+		 *
+		 * @param gfxTexture3DPtr Pointer for output.
+		 * @param gfxTexture3DCreationInfo Pointer to the 3D texture creation information.
+		 * @param gfxTexture3DInitialData Initial data for our texture.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_Texture3DCreate(IGraphicsTexture3D** const gfxTexture3DPtr, IGraphicsTexture3DCreationInfo const* const gfxTexture3DCreationInfo
 			, IGraphicsTexture3DData const* const gfxTexture3DInitialData) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithTextures3D
@@ -731,9 +741,9 @@ GD_NAMESPACE_BEGIN
 	// Base shaders.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines a list of the supported shader types.
-	GD_DENUM()
+	/*!
+	 * Defines a list of the supported shader types.
+	 */
 	enum IGraphicsShaderType : UInt32
 	{
 		IGRAPHICS_SHADER_TYPE_VERTEX,
@@ -746,39 +756,41 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_SHADER_TYPES_COUNT,
 	};	// enum IGraphicsShaderType
 	
-	// ------------------------------------------------------------------------------------------
-	//! Defines the flags for the GPU shader.
-	GD_DENUM(FlagsEnum)
+	/*!
+	 * Defines the flags for the GPU shader.
+	 */
+	//! @{
 	enum IGraphicsShaderFlags : Int32
 	{
 		IGRAPHICS_SHADER_FLAGS_DEBUG_COMPILE_FROM_SOURCE = GD_BIT(0),
 	};	// enum IGraphicsShaderFlags
 	GD_ENUM_DEFINE_FLAG_OPERATORS(IGraphicsShaderFlags)
+	//! @}
 
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains information that is required to create a GPU shader.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Structure that contains information that is required to create a GPU shader.
+	 */
 	struct IGraphicsShaderCreationInfo
 	{
 	public:
-		CHandle				 gfxShaderByteCode;			//!< Pointer to the data of the shader Byte code.
-		SizeTp				 gfxShaderByteCodeLength;	//!< m_Length of the shader Byte code data in bytes.
-		IGraphicsShaderFlags gfxShaderFlags;			//!< Flags of the shader.
-		IGraphicsShaderType  gfxShaderType;				//!< Shader type. Could be unspecified, internal usage.
+		CHandle				 ShaderByteCode;		//!< Pointer to the data of the shader Byte code.
+		SizeTp				 ShaderByteCodeLength;	//!< Length of the shader Byte code data in bytes.
+		IGraphicsShaderFlags ShaderFlags;			//!< Flags of the shader.
+		IGraphicsShaderType  ShaderType;			//!< Shader type. Could be unspecified, internal usage.
 	};	// struct IGraphicsShaderCreationInfo
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU shader interface.
+	/*!
+	 * GPU shader interface.
+	 */
 	GD_DINTERFACE()
 	uinterface IGraphicsShader : public IGraphicsInterface
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsShader, IGraphicsInterface);
 	public:
 		IGraphicsShaderCreationInfo const gfxShaderCreationInfo;
+
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo)
-			: gfxShaderCreationInfo(*gfxShaderCreationInfo) {}
+		GDINL explicit IGraphicsShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) : gfxShaderCreationInfo(*gfxShaderCreationInfo) {}
+	
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsShader
@@ -787,68 +799,70 @@ GD_NAMESPACE_BEGIN
 	// Vertex shaders.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU Vertex shader interface.
-	GD_DINTERFACE()
+	/*!
+	 * GPU Vertex shader interface.
+	 */
 	uinterface IGraphicsVertexShader : public IGraphicsShader
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsVertexShader, IGraphicsShader);
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsVertexShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo)
-			: IGraphicsShader(gfxShaderCreationInfo) {}
+		GDINL explicit IGraphicsVertexShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) : IGraphicsShader(gfxShaderCreationInfo) {}
+
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsVertexShader
 	
-	// ------------------------------------------------------------------------------------------
-	//! Adds Vertex shaders support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	/*!
+	 * Adds Vertex shaders support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithVertexShaders, IGraphics)
 	{
 	public:
 		
-		// ------------------------------------------------------------------------------------------
-		//! Creates a new Vertex GPU shader with specified parameters and specifies the input layout
-		//! of the Vertex GPU shader
-		//! @param gfxVertexShaderPtr Pointer for output.
-		//! @param gfxShaderCreationInfo Creation information for the Vertex shader.
-		//! @param gfxVertexArrayLayout input layout of the vertex shader input data.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_VertexShaderCreate(IGraphicsVertexShader** const gfxVertexShaderPtr
-			, IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo
+		/*!
+		 * Creates a new Vertex GPU shader with specified parameters and specifies the input layout
+		 * of the Vertex GPU shader.
+		 *
+		 * @param gfxVertexShaderPtr Pointer for output.
+		 * @param gfxShaderCreationInfo Creation information for the Vertex shader.
+		 * @param gfxVertexArrayLayout input layout of the vertex shader input data.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_VertexShaderCreate(IGraphicsVertexShader** const gfxVertexShaderPtr, IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo
 			, IGraphicsVertexArrayLayout const* const gfxVertexArrayLayout) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified uniform buffers into Vertex shader input. Layout of the buffers in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxUniformBuffers Pointer to the uniform buffers list.
-		//! @param gfxUniformBuffersCount Number of the uniform buffers to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_VertexShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsBuffer const* const* const gfxUniformBuffers, SizeTp const gfxUniformBuffersCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified uniform buffers into Vertex shader input. Layout of the buffers in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxUniformBuffers Pointer to the uniform buffers list.
+		 * @param gfxUniformBuffersCount Number of the uniform buffers to bind.
+		 */
+		GDAPI virtual void GfxCmd_VertexShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList, IGraphicsBuffer const* const* const gfxUniformBuffers
+			, SizeTp const gfxUniformBuffersCount) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified resources into Vertex shader input. Layout of the resources in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxResources Pointer to the resources list.
-		//! @param gfxResourcesCount Number of the resources to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_VertexShaderBindResources(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsShaderResourceView const* const* const gfxResources, SizeTp const gfxResourcesCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified resources into Vertex shader input. Layout of the resources in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxResources Pointer to the resources list.
+		 * @param gfxResourcesCount Number of the resources to bind.
+		 */
+		GDAPI virtual void GfxCmd_VertexShaderBindResources(IGraphicsCommandList* const gfxCommandList, IGraphicsShaderResourceView const* const* const gfxResources
+			, SizeTp const gfxResourcesCount) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified samplers into Vertex shader input. Layout of the resources in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxSamplers Pointer to the samplers list.
-		//! @param gfxSamplersCount Number of the resources to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_VertexShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsSamplerState const* const* const gfxSamplerStates, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified samplers into Vertex shader input. Layout of the resources in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxSamplers Pointer to the samplers list.
+		 * @param gfxSamplersCount Number of the resources to bind.
+		 */
+		GDAPI virtual void GfxCmd_VertexShaderBindSamplers(IGraphicsCommandList* const gfxCommandList, IGraphicsSamplerState const* const* const gfxSamplerStates
+			, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithVertexShaders
 
@@ -856,66 +870,68 @@ GD_NAMESPACE_BEGIN
 	// Pixel shaders.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU Pixel shader interface.
-	GD_DINTERFACE()
+	/*!
+	 * GPU Pixel shader interface.
+	 */
 	uinterface IGraphicsPixelShader : public IGraphicsShader
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsPixelShader, IGraphicsShader);
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsPixelShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo)
-			: IGraphicsShader(gfxShaderCreationInfo) {}
+		GDINL explicit IGraphicsPixelShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) : IGraphicsShader(gfxShaderCreationInfo) {}
+
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsPixelShader
-
-	// ------------------------------------------------------------------------------------------
-	//! Adds Pixel shaders support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	
+	/*!
+	 * Adds Pixel shaders support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithPixelShaders, IGraphics)
 	{
 	public:
 		
-		// ------------------------------------------------------------------------------------------
-		//! Creates a new Pixel GPU shader with specified parameters and specifies the input layout
-		//! of the Pixel GPU shader
-		//! @param gfxPixelShaderPtr Pointer for output.
-		//! @param gfxShaderCreationInfo Creation information for the Pixel shader.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_PixelShaderCreate(IGraphicsPixelShader** const gfxPixelShaderPtr
-			, IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) GD_PURE_VIRTUAL;
+		/*!
+		 * Creates a new Pixel GPU shader with specified parameters and specifies the input layout
+		 * of the Pixel GPU shader.
+		 *
+		 * @param gfxPixelShaderPtr Pointer for output.
+		 * @param gfxShaderCreationInfo Creation information for the Pixel shader.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_PixelShaderCreate(IGraphicsPixelShader** const gfxPixelShaderPtr, IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified uniform buffers into Pixel shader input. Layout of the buffers in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxUniformBuffers Pointer to the uniform buffers list.
-		//! @param gfxUniformBuffersCount Number of the uniform buffers to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_PixelShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsBuffer const* const* const gfxUniformBuffers, SizeTp const gfxUniformBuffersCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified uniform buffers into Pixel shader input. Layout of the buffers in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxUniformBuffers Pointer to the uniform buffers list.
+		 * @param gfxUniformBuffersCount Number of the uniform buffers to bind.
+		 */
+		GDAPI virtual void GfxCmd_PixelShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList, IGraphicsBuffer const* const* const gfxUniformBuffers
+			, SizeTp const gfxUniformBuffersCount) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified resources into Pixel shader input. Layout of the resources in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxResources Pointer to the resources list.
-		//! @param gfxResourcesCount Number of the resources to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_PixelShaderBindResources(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsShaderResourceView const* const* const gfxResources, SizeTp const gfxResourcesCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified resources into Pixel shader input. Layout of the resources in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxResources Pointer to the resources list.
+		 * @param gfxResourcesCount Number of the resources to bind.
+		 */
+		GDAPI virtual void GfxCmd_PixelShaderBindResources(IGraphicsCommandList* const gfxCommandList, IGraphicsShaderResourceView const* const* const gfxResources
+			, SizeTp const gfxResourcesCount) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified samplers into Pixel shader input. Layout of the resources in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxSamplers Pointer to the samplers list.
-		//! @param gfxSamplersCount Number of the resources to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_PixelShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsSamplerState const* const* const gfxSamplerStates, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified samplers into Pixel shader input. Layout of the resources in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxSamplers Pointer to the samplers list.
+		 * @param gfxSamplersCount Number of the resources to bind.
+		 */
+		GDAPI virtual void GfxCmd_PixelShaderBindSamplers(IGraphicsCommandList* const gfxCommandList, IGraphicsSamplerState const* const* const gfxSamplerStates
+			, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithPixelShaders
 
@@ -923,66 +939,68 @@ GD_NAMESPACE_BEGIN
 	// Geometry shaders.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU Geometry shader interface.
-	GD_DINTERFACE()
+	/*!
+	 * GPU Geometry shader interface.
+	 */
 	uinterface IGraphicsGeometryShader : public IGraphicsShader
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsGeometryShader, IGraphicsShader);
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsGeometryShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo)
-			: IGraphicsShader(gfxShaderCreationInfo) {}
+		GDINL explicit IGraphicsGeometryShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) : IGraphicsShader(gfxShaderCreationInfo) {}
+
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsGeometryShader
-
-	// ------------------------------------------------------------------------------------------
-	//! Adds Geometry shaders support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	
+	/*!
+	 * Adds Geometry shaders support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithGeometryShaders, IGraphics)
 	{
 	public:
 		
-		// ------------------------------------------------------------------------------------------
-		//! Creates a new Geometry GPU shader with specified parameters and specifies the input layout
-		//! of the Geometry GPU shader
-		//! @param gfxGeometryShaderPtr Pointer for output.
-		//! @param gfxShaderCreationInfo Creation information for the Geometry shader.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_GeometryShaderCreate(IGraphicsGeometryShader** const gfxGeometryShaderPtr
-			, IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) GD_PURE_VIRTUAL;
+		/*!
+		 * Creates a new Geometry GPU shader with specified parameters and specifies the input layout
+		 * of the Geometry GPU shader.
+		 *
+		 * @param gfxGeometryShaderPtr Pointer for output.
+		 * @param gfxShaderCreationInfo Creation information for the Geometry shader.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_GeometryShaderCreate(IGraphicsGeometryShader** const gfxGeometryShaderPtr, IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified uniform buffers into Geometry shader input. Layout of the buffers in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxUniformBuffers Pointer to the uniform buffers list.
-		//! @param gfxUniformBuffersCount Number of the uniform buffers to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_GeometryShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsBuffer const* const* const gfxUniformBuffers, SizeTp const gfxUniformBuffersCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified uniform buffers into Geometry shader input. Layout of the buffers in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxUniformBuffers Pointer to the uniform buffers list.
+		 * @param gfxUniformBuffersCount Number of the uniform buffers to bind.
+		 */
+		GDAPI virtual void GfxCmd_GeometryShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList, IGraphicsBuffer const* const* const gfxUniformBuffers
+			, SizeTp const gfxUniformBuffersCount) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified resources into Geometry shader input. Layout of the resources in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxResources Pointer to the resources list.
-		//! @param gfxResourcesCount Number of the resources to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_GeometryShaderBindResources(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsShaderResourceView const* const* const gfxResources, SizeTp const gfxResourcesCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified resources into Geometry shader input. Layout of the resources in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxResources Pointer to the resources list.
+		 * @param gfxResourcesCount Number of the resources to bind.
+		 */
+		GDAPI virtual void GfxCmd_GeometryShaderBindResources(IGraphicsCommandList* const gfxCommandList, IGraphicsShaderResourceView const* const* const gfxResources
+			, SizeTp const gfxResourcesCount) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified samplers into Geometry shader input. Layout of the resources in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxSamplers Pointer to the samplers list.
-		//! @param gfxSamplersCount Number of the resources to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_GeometryShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsSamplerState const* const* const gfxSamplerStates, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified samplers into Geometry shader input. Layout of the resources in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxSamplers Pointer to the samplers list.
+		 * @param gfxSamplersCount Number of the resources to bind.
+		 */
+		GDAPI virtual void GfxCmd_GeometryShaderBindSamplers(IGraphicsCommandList* const gfxCommandList, IGraphicsSamplerState const* const* const gfxSamplerStates
+			, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithGeometryShaders
 
@@ -992,133 +1010,141 @@ GD_NAMESPACE_BEGIN
 
 #if GD_FALSE
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU Hull shader interface.
-	GD_DINTERFACE()
+	/*!
+	 * GPU Hull shader interface.
+	 */
 	uinterface IGraphicsHullShader : public IGraphicsShader
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsHullShader, IGraphicsShader);
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsHullShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo)
-			: IGraphicsShader(gfxShaderCreationInfo) {}
+		GDINL explicit IGraphicsHullShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) : IGraphicsShader(gfxShaderCreationInfo) {}
+
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsHullShader
-
-	// ------------------------------------------------------------------------------------------
-	//! Adds Hull shaders support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	
+	/*!
+	 * Adds Hull shaders support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithHullShaders, IGraphics)
 	{
 	public:
 		
-		// ------------------------------------------------------------------------------------------
-		//! Creates a new Hull GPU shader with specified parameters and specifies the input layout
-		//! of the Hull GPU shader
-		//! @param gfxHullShaderPtr Pointer for output.
-		//! @param gfxShaderCreationInfo Creation information for the Hull shader.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_HullShaderCreate(IGraphicsHullShader** const gfxHullShaderPtr
-			, IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) GD_PURE_VIRTUAL;
+		/*!
+		 * Creates a new Hull GPU shader with specified parameters and specifies the input layout
+		 * of the Hull GPU shader.
+		 *
+		 * @param gfxHullShaderPtr Pointer for output.
+		 * @param gfxShaderCreationInfo Creation information for the Hull shader.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_HullShaderCreate(IGraphicsHullShader** const gfxHullShaderPtr, IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified uniform buffers into Hull shader input. Layout of the buffers in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxUniformBuffers Pointer to the uniform buffers list.
-		//! @param gfxUniformBuffersCount Number of the uniform buffers to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_HullShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsBuffer const* const* const gfxUniformBuffers, SizeTp const gfxUniformBuffersCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified uniform buffers into Hull shader input. Layout of the buffers in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxUniformBuffers Pointer to the uniform buffers list.
+		 * @param gfxUniformBuffersCount Number of the uniform buffers to bind.
+		 */
+		GDAPI virtual void GfxCmd_HullShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList, IGraphicsBuffer const* const* const gfxUniformBuffers
+			, SizeTp const gfxUniformBuffersCount) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified resources into Hull shader input. Layout of the resources in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxResources Pointer to the resources list.
-		//! @param gfxResourcesCount Number of the resources to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_HullShaderBindResources(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsShaderResourceView const* const* const gfxResources, SizeTp const gfxResourcesCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified resources into Hull shader input. Layout of the resources in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxResources Pointer to the resources list.
+		 * @param gfxResourcesCount Number of the resources to bind.
+		 */
+		GDAPI virtual void GfxCmd_HullShaderBindResources(IGraphicsCommandList* const gfxCommandList, IGraphicsShaderResourceView const* const* const gfxResources
+			, SizeTp const gfxResourcesCount) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified samplers into Hull shader input. Layout of the resources in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxSamplers Pointer to the samplers list.
-		//! @param gfxSamplersCount Number of the resources to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_HullShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsSamplerState const* const* const gfxSamplerStates, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified samplers into Hull shader input. Layout of the resources in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxSamplers Pointer to the samplers list.
+		 * @param gfxSamplersCount Number of the resources to bind.
+		 */
+		GDAPI virtual void GfxCmd_HullShaderBindSamplers(IGraphicsCommandList* const gfxCommandList, IGraphicsSamplerState const* const* const gfxSamplerStates
+			, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithHullShaders
+
+#endif	// if GD_FALSE
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Domain shaders.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU Domain shader interface.
-	GD_DINTERFACE()
+#if GD_FALSE
+
+	/*!
+	 * GPU Domain shader interface.
+	 */
 	uinterface IGraphicsDomainShader : public IGraphicsShader
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsDomainShader, IGraphicsShader);
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsDomainShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo)
-			: IGraphicsShader(gfxShaderCreationInfo) {}
+		GDINL explicit IGraphicsDomainShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) : IGraphicsShader(gfxShaderCreationInfo) {}
+
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsDomainShader
-
-	// ------------------------------------------------------------------------------------------
-	//! Adds Domain shaders support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	
+	/*!
+	 * Adds Domain shaders support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithDomainShaders, IGraphics)
 	{
 	public:
 		
-		// ------------------------------------------------------------------------------------------
-		//! Creates a new Domain GPU shader with specified parameters and specifies the input layout
-		//! of the Domain GPU shader
-		//! @param gfxDomainShaderPtr Pointer for output.
-		//! @param gfxShaderCreationInfo Creation information for the Domain shader.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_DomainShaderCreate(IGraphicsDomainShader** const gfxDomainShaderPtr
-			, IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) GD_PURE_VIRTUAL;
+		/*!
+		 * Creates a new Domain GPU shader with specified parameters and specifies the input layout
+		 * of the Domain GPU shader.
+		 *
+		 * @param gfxDomainShaderPtr Pointer for output.
+		 * @param gfxShaderCreationInfo Creation information for the Domain shader.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_DomainShaderCreate(IGraphicsDomainShader** const gfxDomainShaderPtr, IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified uniform buffers into Domain shader input. Layout of the buffers in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxUniformBuffers Pointer to the uniform buffers list.
-		//! @param gfxUniformBuffersCount Number of the uniform buffers to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_DomainShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsBuffer const* const* const gfxUniformBuffers, SizeTp const gfxUniformBuffersCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified uniform buffers into Domain shader input. Layout of the buffers in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxUniformBuffers Pointer to the uniform buffers list.
+		 * @param gfxUniformBuffersCount Number of the uniform buffers to bind.
+		 */
+		GDAPI virtual void GfxCmd_DomainShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList, IGraphicsBuffer const* const* const gfxUniformBuffers
+			, SizeTp const gfxUniformBuffersCount) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified resources into Domain shader input. Layout of the resources in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxResources Pointer to the resources list.
-		//! @param gfxResourcesCount Number of the resources to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_DomainShaderBindResources(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsShaderResourceView const* const* const gfxResources, SizeTp const gfxResourcesCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified resources into Domain shader input. Layout of the resources in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxResources Pointer to the resources list.
+		 * @param gfxResourcesCount Number of the resources to bind.
+		 */
+		GDAPI virtual void GfxCmd_DomainShaderBindResources(IGraphicsCommandList* const gfxCommandList, IGraphicsShaderResourceView const* const* const gfxResources
+			, SizeTp const gfxResourcesCount) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Binds specified samplers into Domain shader input. Layout of the resources in
-		//! shader and in parameters should be preserved.
-		//! @param gfxCommandList Command list into which this command would be written.
-		//! @param gfxSamplers Pointer to the samplers list.
-		//! @param gfxSamplersCount Number of the resources to bind.
-		GD_DFUNCTION()
-		GDAPI virtual void GfxCmd_DomainShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
-			, IGraphicsSamplerState const* const* const gfxSamplerStates, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
+		/*!
+		 * Binds specified samplers into Domain shader input. Layout of the resources in
+		 * shader and in parameters should be preserved.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxSamplers Pointer to the samplers list.
+		 * @param gfxSamplersCount Number of the resources to bind.
+		 */
+		GDAPI virtual void GfxCmd_DomainShaderBindSamplers(IGraphicsCommandList* const gfxCommandList, IGraphicsSamplerState const* const* const gfxSamplerStates
+			, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithDomainShaders
 
@@ -1160,9 +1186,9 @@ GD_NAMESPACE_BEGIN
 	// Pipeline state object.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Structure that contains information that is required to create a GPU pipeline.
-	GD_DSTRUCT(CopyFields)
+	/*!
+	 * Structure that contains information that is required to create a GPU pipeline.
+	 */
 	struct IGraphicsPipelineStateCreationInfo
 	{
 	public:
@@ -1175,37 +1201,37 @@ GD_NAMESPACE_BEGIN
 #endif	// if GD_FALSE
 	};	// struct IGraphicsPipelineStateCreationInfo
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU pipeline interface.
-	GD_DINTERFACE()
+	/*!
+	 * GPU pipeline interface.
+	 */
 	uinterface IGraphicsPipelineState : public IGraphicsInterface
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsPipelineState, IGraphicsInterface);
 	public:
 		IGraphicsPipelineStateCreationInfo const gfxPipelineStateCreationInfo;
+
 	protected:
-		GD_DCTOR()
-		GDINL explicit IGraphicsPipelineState(IGraphicsPipelineStateCreationInfo const* const gfxPipelineStateCreationInfo)
-			: gfxPipelineStateCreationInfo(*gfxPipelineStateCreationInfo) {}
+		GDINL explicit IGraphicsPipelineState(IGraphicsPipelineStateCreationInfo const* const gfxPipelineStateCreationInfo) : gfxPipelineStateCreationInfo(*gfxPipelineStateCreationInfo) {}
+
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsPipelineState
 	
-	// ------------------------------------------------------------------------------------------
-	//! Adds command lists support to the zero IGraphics interface.
-	GD_DINTERFACE()
+	/*!
+	 * Adds command lists support to the zero IGraphics interface.
+	 */
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithPipelineStates, IGraphics)
 	{
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Creates a new GPU pipeline with specified parameters.
-		//! @param gfxPipelinePtr Pointer for output.
-		//! @param gfxPipelineCreationInfo Creation information for the pipeline.
-		//! @returns Non-negative value if the operation succeeded.
-		GD_DFUNCTION()
-		GDAPI virtual IResult GfxImm_PipelineCreate(IGraphicsPipelineState** const gfxPipelinePtr
-			, IGraphicsPipelineStateCreationInfo const* const gfxPipelineCreationInfo) GD_PURE_VIRTUAL;
+		/*!
+		 * Creates a new GPU pipeline with specified parameters.
+		 *
+		 * @param gfxPipelinePtr Pointer for output.
+		 * @param gfxPipelineCreationInfo Creation information for the pipeline.
+		 *
+		 * @returns Non-negative value if the operation succeeded.
+		 */
+		GDAPI virtual IResult GfxImm_PipelineCreate(IGraphicsPipelineState** const gfxPipelinePtr, IGraphicsPipelineStateCreationInfo const* const gfxPipelineCreationInfo) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithPipelineStates
 
@@ -1213,22 +1239,17 @@ GD_NAMESPACE_BEGIN
 	// Global interface.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! GPU-accelerated graphics interface.
+	/*!
+	 * GPU-accelerated graphics interface.
+	 */
 	GD_DINTERFACE()
-	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphics, IGraphics)
-#if !GD_D_REFLECTOR	// DReflector should not parse singletons declarations.
-		, public Singleton<IGraphics>
-#endif	// if !GD_D_REFLECTOR
+	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphics, IGraphics), public Singleton<IGraphics>
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphics, IRuntimeUniqueInterface);
 	protected:
-#if !GD_D_REFLECTOR	// DReflector should not parse interface variables declarations.
-		IGraphicsCanvasMode         GfxCanvasMode = IGRAPHICS_OUTPUT_MODE_UNKNOWN;
-		IGraphicsCanvasVsyncMode	GfxVsyncMode  = IGRAPHICS_OUTPUT_VSYNC_UNKNOWN;
-		GeomResolution const*		GfxResolutionSelected = nullptr;
-		Vector<GeomResolution>		GfxResolutionsList;
-#endif	// if !GD_D_REFLECTOR
+		IGraphicsCanvasMode         m_GfxCanvasMode = IGRAPHICS_OUTPUT_MODE_UNKNOWN;
+		IGraphicsCanvasVsyncMode	m_GfxVsyncMode  = IGRAPHICS_OUTPUT_VSYNC_UNKNOWN;
+		GeomResolution const*		m_GfxResolutionSelected = nullptr;
+		Vector<GeomResolution>		m_GfxResolutionsList;
 	};	// uinterface IGraphics
 
 	// ------------------------------------------------------------------------------------------
@@ -1241,7 +1262,7 @@ GD_NAMESPACE_END
 GDINL bool FFF() { return true; }
 #define GD_IGRAPHICS_CHECK_ARGS(Operation) FFF() //GD_GLUE(Check_, Operation)
 
-#include <GoddamnEngine/Core/Platform/Platform.h>
+#include <GoddamnEngine/Core/System/Platform.h>
 #if GD_PLATFORM_API_LIBSDL1 || GD_PLATFORM_API_LIBSDL2
 #	include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Engine/Interface/Graphics, Graphics)
 #else // if GD_PLATFORM_API_LIBSDL1 || GD_PLATFORM_API_LIBSDL2

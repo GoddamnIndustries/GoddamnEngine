@@ -1,8 +1,11 @@
 @echo off
-rem =========================================================================================
-rem SetupGoddamnSDK.bat - installs the Goddamn Software Development Kit [Windows Edition].
-rem Copyright (C) $(GODDAMN_DEV) 2011 - Present. All Rights Reserved.
-rem =========================================================================================
+rem // ==========================================================================================
+rem // Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+rem // 
+rem // This software or any its part is distributed under terms of Goddamn Industries End User
+rem // License Agreement. By downloading or using this software or any its part you agree with 
+rem // terms of Goddamn Industries End User License Agreement.
+rem // ==========================================================================================
 
 rem Parsing command-line arguments..
 if "%1" == "---help" (
@@ -47,7 +50,7 @@ if "%DirectoryTestPassed%" == "" (
 
 rem Checking whether Visual Studio 2015 / 2013 (with November CTP) is installed..
 if not "%VS140ComnTools%" == "" ( 
-	rem Visual Studio 2015 has a full support of C++11.
+	rem Visual Studio 2015 has a full C++11 support.
 	set "VSCompilerYear=2015"
 	set "VSCompilerVersion=14"
 	set "VSCompilerTools=%VS140ComnTools%"
@@ -91,7 +94,7 @@ if not %ErrorLevel% == 0 (
 )
 
 rem Generating solution files..
-call ".\bin\ThirdParty\GoddamnBuildSystem.exe" %* 1>nul
+call ".\bin\Tools\GoddamnBuildSystem.exe" %* 1>nul
 if not %ErrorLevel% == 0 (
 	echo GoddamnBuildSystem failed.
 	goto ExitOnFailure

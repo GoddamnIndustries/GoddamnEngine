@@ -16,7 +16,7 @@
     <ProjectGuid>{7F33DDFE-2186-4EB8-AA7E-DBAF2C7DF966}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GoddamnEngine.BuildSystem</RootNamespace>
+    <RootNamespace>GoddamnEngine</RootNamespace>
     <AssemblyName>GoddamnBuildSystem</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -43,23 +43,21 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\bin\ThirdParty\</OutputPath>
+    <OutputPath>..\..\..\bin\Tools\</OutputPath>
     <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>
-    </NoWarn>
+    <DocumentationFile>..\..\..\bin\Tools\GoddamnBuildSystem.XML</DocumentationFile>
+    <NoWarn>1591;</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\bin\ThirdParty\</OutputPath>
+    <OutputPath>..\..\..\bin\Tools\</OutputPath>
     <DefineConstants>TRACE;CODE_ANALYSIS;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -67,10 +65,8 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>
-    </NoWarn>
+    <DocumentationFile>..\..\..\bin\Tools\GoddamnBuildSystem.XML</DocumentationFile>
+    <NoWarn>1591;</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Reources\Icon.ico</ApplicationIcon>
@@ -78,32 +74,24 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\BuildSystem.cs" />
-    <Compile Include="Source\Collectors\Solution.cs" />
-    <Compile Include="Source\OtherUtilities\CopyrightVerifier.cs" />
-    <Compile Include="Source\ProjectCompiler\ProjectCompiler.cs" />
-    <Compile Include="Source\ProjectCompiler\ProjectRebuildOptimizer.cs" />
-    <Compile Include="Source\Support\CommandLineUI.cs" />
-    <Compile Include="Source\Support\Extensions.cs" />
-    <Compile Include="Source\Collectors\Collector.cs" />
-    <Compile Include="Source\Support\Compiler.cs" />
-    <Compile Include="Source\Collectors\Dependency.cs" />
+    <Compile Include="BuildSystem\BuildSystem.cs" />
+    <Compile Include="BuildSystem\Collectors\Collector.cs" />
+    <Compile Include="BuildSystem\Collectors\Dependency.cs" />
+    <Compile Include="BuildSystem\Collectors\Project.cs" />
+    <Compile Include="BuildSystem\Collectors\Solution.cs" />
+    <Compile Include="BuildSystem\ProjectGenerator\ProjectGenerator.cs" />
+    <Compile Include="BuildSystem\ProjectGenerator\VisualStudioProjectGenerator.cs" />
+    <Compile Include="BuildSystem\Support\Compiler.cs" />
+    <Compile Include="BuildSystem\Support\Extensions.cs" />
+    <Compile Include="BuildSystem\Target\Configuration.cs" />
+    <Compile Include="BuildSystem\Target\Platform.cs" />
+    <Compile Include="BuildSystem\Target\TargetInfo.cs" />
+    <Compile Include="BuildSystem\Target\Toolchain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\Collectors\Project.cs" />
-    <Compile Include="Source\Target\Configuration.cs" />
-    <Compile Include="Source\Target\Platform.cs" />
-    <Compile Include="Source\Target\Toolchain.cs" />
-    <Compile Include="Source\ProjectGenerator\ProjectGenerator.cs" />
-    <Compile Include="Source\Target\Target.cs" />
-    <Compile Include="Source\ProjectGenerator\VisualStudioProjectGenerator.cs" />
-    <Compile Include="Source\ProjectGenerator\XCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\App.config" />

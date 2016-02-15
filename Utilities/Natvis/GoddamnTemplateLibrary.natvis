@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ==========================================================================================
-Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+Copyright (C) Goddamn Industries 2016. All Rights Reserved.
  
 This software or any its part is distributed under terms of Goddamn Industries End User
 License Agreement. By downloading or using this software or any its part you agree with 
@@ -28,7 +28,6 @@ terms of Goddamn Industries End User License Agreement.
     <DisplayString Condition="m_RawPointer == 0">Empty</DisplayString>
     <DisplayString Condition="m_RawPointer != 0">{*m_RawPointer}</DisplayString>
     <Expand>
-      <Item Condition="m_RawPointer != 0" Name="Reference counter">*m_ReferenceCount</Item>
       <Item Condition="m_RawPointer != 0" Name="Pointer">m_RawPointer</Item>
     </Expand>
   </Type>
@@ -72,7 +71,7 @@ terms of Goddamn Industries End User License Agreement.
         <HeadPointer>m_RootNode-&gt;m_Left</HeadPointer>
         <LeftPointer>m_Left</LeftPointer>
         <RightPointer>m_Right</RightPointer>
-        <ValueNode Condition="!m_IsNull">*((Goddamn::Pair&lt;$T1,$T2&gt;*)(&amp;m_DataUntyped[0]))</ValueNode>
+        <ValueNode Condition="!m_IsNull">*((Goddamn::MapPair&lt;$T1,$T2&gt;*)(&amp;m_DataUntyped[0]))</ValueNode>
       </TreeItems>
     </Expand>
   </Type>

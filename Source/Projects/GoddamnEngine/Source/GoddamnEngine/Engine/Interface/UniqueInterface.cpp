@@ -13,9 +13,13 @@
  */
 #include <GoddamnEngine/Engine/Interface/UniqueInterface.h>
 
+#if 0
+
 GD_NAMESPACE_BEGIN
 
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IInterface);
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IRuntimeUniqueInterface);
 
 GD_NAMESPACE_END
+
+#endif

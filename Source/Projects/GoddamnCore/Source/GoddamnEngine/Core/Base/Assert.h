@@ -1,251 +1,244 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-//! @file GoddamnEngine/Core/Definitions/Assert.h
-//! @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
-//! Contains Assert mechanism definitions.
-// Current interface is partly inspired by LibSDL 2.0 Implementation of asserts with modifications providing fatal failures reporting and etc.
+/*!
+ * @file GoddamnEngine/Core/Base/Assert.h
+ * @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
+ * Contains error-checking mechanism definitions.
+ */
 #pragma once
 #if !defined(GD_INSIDE_INCLUDE_H)
 #	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
 #endif	// if !defined(GD_INSIDE_INCLUDE_H)
 
-#include <GoddamnEngine/Include.h>
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Cross-platform debug break.
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#if GD_DEBUG
-#	if GD_PLATFORM_API_MICROSOFT
-#		include <crtdbg.h>
-#		define GD_DEBUG_BREAK() (::_CrtDbgBreak())
-#	elif GD_PLATFORM_HTML5
-#		include <csignal>
-#		define GD_DEBUG_BREAK() (::raise(SIGTRAP))
-#	elif GD_COMPILER_GCC_COMPATIBLE && GD_ARCHITECTURE_X64 || GD_ARCHITECTURE_X86
-#		define GD_DEBUG_BREAK() (__asm__ __volatile__ ("int $3\n\t"))
-#	elif GD_COMPILER_GCC_COMPATIBLE && GD_ARCHITECTURE_ARM32 || GD_ARCHITECTURE_ARM64
-#		define GD_DEBUG_BREAK() (__asm__ __volatile__ (".inst 0xE7F001F0\n\t"))
-#	else	// *** Some other Implementation ***
-#		include <csignal>
-#		define GD_DEBUG_BREAK() (::raise(SIGTRAP))
-#	endif	// *** Some other Implementation ***
-#else	// if GD_DEBUG
-#	define GD_DEBUG_BREAK() (static_cast<void>(false))
-#endif	// if GD_DEBUG
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Fatal Assertion mechanisms.
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ------------------------------------------------------------------------------------------
-//! Defines a disabled fatal assertion. Does nothing.
-//! @param Message Dummy Message.
-#define GD_DISABLED_FALSE_ASSERT(message, ...) \
-	do { \
-		(static_cast<void>(false)); \
-		abort(); \
-	} while (false)
-
-// ------------------------------------------------------------------------------------------
-//! Defines an enabled fatal assertion. Reports a failure via Message box (if is available on target platform) and asks if user wants to send it to tracker.
-//! @param Message A string that describes what is going on, is format-able.
-#define GD_ENABLED_FALSE_ASSERT(message, ...) \
-	do { \
-		GD_USING_NAMESPACE; \
-		FatalAssertData static const fatalAssertData(message, __FILE__, __FUNCTION__, __LINE__); \
-		HandleFatalAssert(&fatalAssertData, ##__VA_ARGS__);  \
-	} while (false)
-
 GD_NAMESPACE_BEGIN
 
-	// ------------------------------------------------------------------------------------------
-	//! Stores the whole assertion data in a single structure. Saves more stack space on failure reporter call.
-	struct FatalAssertData : IUncopiable
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**	
+	// ******                            Common Assert macros.                                 ******
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**	
+
+	/*! 
+	 * Holds all assertion information.
+	 */
+	struct DebugAssertData final : public TNonCopyable
 	{
 	public:
-		CStr   const Message;
-		CStr   const fileName;
-		CStr   const FunctionName;
-		SizeTp const Line;
+		CStr    AssertUnformattedMessage;
+		va_list AssertMessageFormat;
+		CStr    AssertFileName;
+		CStr    AssertFunctionName;
+		UInt32  AssertLineNumber;
+		CStr    AssertExpression;
+		bool    AssertShouldBeAlwaysIgnored;
 
-		GDINL FatalAssertData(CStr const message, CStr const fileName, CStr const functionName, SizeTp const line)
-			: Message(message), fileName(fileName), FunctionName(functionName), Line(line)
+	public:
+		GDINL DebugAssertData(CStr const unformattedMessage, CStr const assertFileName, CStr const assertFunctionName, UInt32 const assertLineNumber, CStr const assertExpression = nullptr)
+			: AssertUnformattedMessage(unformattedMessage), AssertMessageFormat(nullptr)
+			, AssertFileName(assertFileName), AssertFunctionName(assertFunctionName), AssertLineNumber(assertLineNumber)
+			, AssertExpression(assertExpression), AssertShouldBeAlwaysIgnored(false)
 		{
 		}
-	};	// struct FatalAssertData
+	};	// struct PlatformAssertData
 
-	// ------------------------------------------------------------------------------------------
-	//! Provides inner functionality for handling fatal assertions. Should not be invoked directly.
-	//! @param data Pointer to assertion description data structure.
-	//! @param args Arguments for formating Message string.
+	/*! 
+	 * Describes all possible user reactions on the assert.
+	 */
+	enum DebugAssertDialogResult : UInt8
+	{
+		#define GD_ASSERT_DIALOG_TITLE			  "Assert Failed"
+		#define GD_ASSERT_DIALOG_GROUPBOX_TEXT	  "What the mess is going on?"
+		#define GD_ASSERT_DIALOG_DESCRIPTION_TEXT "Whoa, seems that you have just broken the world's most stable piece of code!\n" \
+				"Seriously, some code assertion failed. This may cause unstable work and etc."
+
+		ASSERT_DIALOG_BTN_ABORT,
+		#define GD_ASSERT_DIALOG_BTN_ABORT_TEXT "Abort"
+
+		ASSERT_DIALOG_BTN_RETRY,
+		#define GD_ASSERT_DIALOG_BTN_RETRY_TEXT "Retry"
+
+		ASSERT_DIALOG_BTN_IGNORE,
+		#define GD_ASSERT_DIALOG_BTN_IGNORE_TEXT "Ignore"	
+
+		ASSERT_DIALOG_BTN_IGNORE_ALL,
+		#define GD_ASSERT_DIALOG_BTN_IGNORE_ALL_TEXT "Ignore All"
+
+		ASSERT_DIALOG_BTN_REPORT,
+		#define GD_ASSERT_DIALOG_BTN_REPORT_TEXT "Report an Issue"
+
+		ASSERT_DIALOG_BTN_BREAK,
+		#define GD_ASSERT_DIALOG_BTN_BREAK_TEXT "Break"
+
+		ASSERT_DIALOG_BTN_UNKNOWN,
+		ASSERT_DIALOG_BTNS_COUNT = ASSERT_DIALOG_BTN_UNKNOWN,
+	};	// enum DebugAssertDialogResult
+
+	/*!
+	 * Provides inner functionality for handling fatal asserts. Should not be invoked directly.
+	 *
+	 * @param data Pointer to assertion description data structure.
+	 * @param args Arguments for formating Message string.
+	 */
 	//! @{
-	GD_NORETURN GDAPI extern void HandleFatalAssertVa(FatalAssertData const* const data, va_list const args);
-	GD_NORETURN GDINL extern void HandleFatalAssert(FatalAssertData const* const data, ...)
+	GD_NORETURN GDAPI extern void DebugHandleFatalAssertDataVa(DebugAssertData const* const data, va_list const args);
+	GD_NORETURN GDINL extern void DebugHandleFatalAssertData(DebugAssertData const* const data, ...)
 	{
 		va_list args; 
 		va_start(args, data);
-		HandleFatalAssertVa(data, args);
+		DebugHandleFatalAssertDataVa(data, args);
+	//	va_end(args);
 	}
 	//! @}
 
-GD_NAMESPACE_END
+	/*!
+	 * Provides inner functionality for handling regular asserts. Should not be invoked directly.
+	 *
+	 * @param data Pointer to assertion description data structure.
+	 * @param args Arguments for formating Message string.
+	 */
+	//! @{
+	GDAPI extern DebugAssertDialogResult DebugHandleAssertDataVa(DebugAssertData const* const data, va_list const args);
+	GDINL extern DebugAssertDialogResult DebugHandleAssertData(DebugAssertData const* const data, ...)
+	{
+		va_list args; 
+		va_start(args, data);
+		auto const assertDialogResult = DebugHandleAssertDataVa(data, args);
+		va_end(args);
+		return assertDialogResult;
+	}
+	//! @}
 
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Regular Assertion mechanisms.
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/*!
+	 * @brief Defines a disabled fatal assertion. 
+	 * Does nothing.
+	 *
+	 * @param message Dummy Message.
+	 */
+	#define GD_DISABLED_FALSE_ASSERT(message, ...) \
+		do { \
+			static_cast<void>(false); \
+			abort(); \
+		} while (false)
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines a disabled assertion.
-	//! Does nothing, just validates Expression at compile-time.
-	//! @param Expression The Expression that would be evaluated.
-	//! @param Message A string that describes what is going on, is format-able.
-#define GD_DISABLED_ASSERT(expression, message, ...) \
-	do { \
-		GD_USING_NAMESPACE; \
-		static_cast<void>(sizeof(expression)); \
-	} while (false)
+	/*!
+	 * @brief Defines an enabled fatal assertion. 
+	 * Reports a failure via Message box (if is available on target platform) and asks if user wants to send it to tracker.
+	 *
+	 * @param message A formatable string that describes what is going on.
+	 */
+	#define GD_ENABLED_FALSE_ASSERT(message, ...) \
+		do { \
+			GD_USING_NAMESPACE; \
+			DebugAssertData static const fatalAssertData(message, __FILE__, __FUNCTION__, __LINE__); \
+			DebugHandleFatalAssertData(&fatalAssertData, ##__VA_ARGS__);  \
+		} while (false)
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines a enabled assertion. 
-	//! Reports a failure via Message box (if is available on target platform) and asks if user wants 
-	//! to abort application (control is redirected to failure reporter then with provide of feedback via tracker), 
-	//! or to debug application, or to just to ignore this assertion once or forever during this launch.
-	//! @param Expression The Expression that would be evaluated.
-	//! @param Message A string that describes what is going on, is format-able.
-#define GD_ENABLED_ASSERT(expression, message, ...) \
-	do { \
-		GD_USING_NAMESPACE; \
-		RegularAssertData static assertData(message, __FILE__, __FUNCTION__, __LINE__, #expression); \
-		while ((!(expression)) && (!assertData.ShouldAlwaysIgnoreThisAssert)) { \
-			AssertState const assertState = HandleRegularAssert(&assertData, ##__VA_ARGS__); \
-			if (assertState == AssertState::Break) { \
-				GD_DEBUG_BREAK(); \
-			} else if (assertState != AssertState::Retry) { \
-				break; \
+	/*!
+	 * @brief Defines a disabled assertion.
+	 * Does nothing, just validates expression at compile-time.
+	 *
+	 * @param expression The Expression that would be evaluated.
+	 * @param message A formatable string that describes what is going on.
+	 */
+	#define GD_DISABLED_ASSERT(expression, message, ...) \
+		do { \
+			GD_USING_NAMESPACE; \
+			__analysis_assume(expression); \
+			static_cast<void>(sizeof(expression)); \
+		} while (false)
+
+	/*!
+	 * @brief Defines a enabled assertion. 
+	 * Reports a failure via Message box (if is available on target platform) and asks if user wants 
+	 * to abort application (control is redirected to failure reporter then with provide of feedback via tracker), 
+	 * or to debug application, or to just to ignore this assertion once or forever during this launch.
+	 *
+	 * @param expression The Expression that would be evaluated.
+	 * @param message A formatable string that describes what is going on.
+	 */
+	#define GD_ENABLED_ASSERT(expression, message, ...) \
+		do { \
+			GD_USING_NAMESPACE; \
+			__analysis_assume(expression); \
+			DebugAssertData static const assertData(message, __FILE__, __FUNCTION__, __LINE__, #expression); \
+			while ((!(expression)) && (!assertData.AssertShouldBeAlwaysIgnored)) \
+			{ \
+				auto const assertState = DebugHandleAssertData(&assertData, ##__VA_ARGS__); \
+				if (assertState == ASSERT_DIALOG_BTN_BREAK) \
+				{ \
+					__debugbreak(); \
+				} \
+				else if (assertState != ASSERT_DIALOG_BTN_RETRY) \
+				{ \
+					break; \
+				} \
 			} \
-		} \
-	} while (false)
+		} while (false)
 
-GD_NAMESPACE_BEGIN
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**	
+	// ******                             Debug Assert macros.                                 ******
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**	
 
-	// ------------------------------------------------------------------------------------------
-	//! Storing the whole assertion data in a single structure. Saves more std::stack space on failure reporter call.
-	struct RegularAssertData final : public FatalAssertData
-	{
-		CStr const Expression;
-		bool       ShouldAlwaysIgnoreThisAssert;
+#if GD_DEBUG
 
-		GDINL RegularAssertData(CStr const message, CStr const fileName, CStr const functionName, SizeTp const line, CStr const expression)
-			: FatalAssertData(message, fileName, functionName, line)
-			, Expression(expression), ShouldAlwaysIgnoreThisAssert(false)
-		{
-		}
-	};	// struct AssertData
+	/*!
+	 * Defines a fatal assertion that is enabled only in debug mode. 
+	 * @param message A formatable string that describes what is going on.
+	 */
+	#define GD_DEBUG_ASSERT_FALSE GD_ENABLED_FALSE_ASSERT
+	
+	/*!
+	 * Defines a regular assertion that is enabled only in debug mode. 
+	 *
+	 * @param expression The Expression that would be evaluated.
+	 * @param message A formatable string that describes what is going on.
+	 */
+	#define GD_DEBUG_ASSERT GD_ENABLED_ASSERT
 
-	// ------------------------------------------------------------------------------------------
-	//! Describes abilities that user can do with the failures.
-	enum class AssertState : UInt8
-	{
-		Abort,
-		Retry,
-		Ignore,
-		IgnoreAll,
-		Report,
-		Break,
-		Invalid
-	};	// enum class AssertState
+#else	// if GD_DEBUG
 
-	// ------------------------------------------------------------------------------------------
-	//! Provides inner functionality for handling regular assertions.
-	//! Should not be invoked directly.
-	//! @param expression The Expression that would be evaluated.
-	//! @param message A string that describes what is going on, is format-able.
-	//! @{
-	GDAPI extern AssertState HandleRegularAssertVa(RegularAssertData* const data, va_list const args);
-	GDINL extern AssertState HandleRegularAssert(RegularAssertData* const data, ...)
-	{
-		va_list args; 
-		va_start(args, data);
-		return HandleRegularAssertVa(data, args);
-	}
-	//! @}
+	/*!
+	 * Defines a fatal assertion that is enabled only in debug mode. 
+	 * @param message A formatable string that describes what is going on.
+	 */
+	#define GD_DEBUG_ASSERT_FALSE GD_DISABLED_FALSE_ASSERT
+	
+	/*!
+	 * Defines a regular assertion that is enabled only in debug mode. 
+	 *
+	 * @param expression The Expression that would be evaluated.
+	 * @param message A formatable string that describes what is going on.
+	 */
+	#define GD_DEBUG_ASSERT GD_DISABLED_ASSERT
+
+#endif	// if GD_DEBUG
+
+	/*!
+	 * Defines a fatal assertion. 
+	 * @param message A formatable string that describes what is going on.
+	 */
+	#define GD_ASSERT_FALSE GD_ENABLED_FALSE_ASSERT
+	
+	/*!
+	 * Defines a regular assertion.
+	 *
+	 * @param expression The Expression that would be evaluated.
+	 * @param message A formatable string that describes what is going on.
+	 */
+	#define GD_ASSERT GD_ENABLED_ASSERT
+
+	/*!
+	 * Defines a fatal "Not Implemented" assertion. 
+	 */
+	#define GD_NOT_IMPLEMENTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '%s' not implemented.", __FUNCTION__)
+
+	/*!
+	 * Defines a fatal "Not Supported" assertion. 
+	 */
+	#define GD_NOT_SUPPORTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '%s' is not supported.", __FUNCTION__)
 
 GD_NAMESPACE_END
-
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Assert level handling.
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	// ------------------------------------------------------------------------------------------
-	// Mostly assertion level 0 is actual in release builds where all bugs are checked and no
-	// "not Implemented" places exist. Level 1 represents testing builds: code still contains bugs
-	// and testers can provide feedback for developers. Level 2 is for developers and creating new 
-	// code and catching fatal bugs and debug it.
-
-#define GD_ASSERT_LEVEL_DEBUG	(2)
-#define GD_ASSERT_LEVEL_TESTING	(1)
-#define GD_ASSERT_LEVEL_RELEASE	(0)
-#if (!defined(GD_ASSERT_LEVEL))
-#	if GD_DEBUG
-#		define GD_ASSERT_LEVEL GD_ASSERT_LEVEL_DEBUG
-//	endif	// if GD_DEBUG
-#	elif GD_RELEASE
-#		define GD_ASSERT_LEVEL GD_ASSERT_LEVEL_TESTING
-//	endif	// if GD_RELEASE
-#	else	// *** Assert level selection ***.
-#		define GD_ASSERT_LEVEL GD_ASSERT_LEVEL_RELEASE
-#	endif	// *** Assert level selection ***.
-#endif	// if (!defined(GD_ASSERT_LEVEL))
-
-#if (GD_ASSERT_LEVEL == 0)
-#	define GD_DEBUG_ASSERT_FALSE GD_DISABLED_FALSE_ASSERT
-#	define GD_DEBUG_ASSERT GD_DISABLED_ASSERT
-#	define GD_ASSERT_FALSE GD_DISABLED_FALSE_ASSERT
-#	define GD_ASSERT GD_ENABLED_ASSERT
-//endif	// if (GD_ASSERT_LEVEL == 0)
-#elif (GD_ASSERT_LEVEL == 1)
-#	define GD_DEBUG_ASSERT_FALSE GD_DISABLED_FALSE_ASSERT
-#	define GD_DEBUG_ASSERT GD_DISABLED_ASSERT
-#	define GD_ASSERT_FALSE GD_ENABLED_FALSE_ASSERT
-#	define GD_ASSERT GD_ENABLED_ASSERT
-//endif	// if (GD_ASSERT_LEVEL == 1)
-#elif (GD_ASSERT_LEVEL == 2)
-#	define GD_DEBUG_ASSERT_FALSE GD_ENABLED_FALSE_ASSERT
-#	define GD_DEBUG_ASSERT GD_ENABLED_ASSERT
-#	define GD_ASSERT_FALSE GD_ENABLED_FALSE_ASSERT
-#	define GD_ASSERT GD_ENABLED_ASSERT
-//endif	// if (GD_ASSERT_LEVEL == 2)
-#else	// *** Switch on GD_ASSERT_LEVEL ***
-#	error "Unknown assertion level specified"
-#endif	// *** Switch on GD_ASSERT_LEVEL ***
-
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Common assertion checks.
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	// ------------------------------------------------------------------------------------------
-	// Code block is not Implemented.
-#define GD_NOT_IMPLEMENTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '%s' not Implemented (and probably never would be :[).", __FUNCTION__)
-#define GD_NOT_SUPPORTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '%s' is not supported.", __FUNCTION__)
-
-	// ------------------------------------------------------------------------------------------
-	// Asserts without messages.
-#define GD_ASSERT_DEFAULT_MESSAGE ("*** Someone is too lazy to write a Message for every assert ***")
-#define GD_DEBUG_ASSERT_FALSE_NO_MESSAGE() GD_DEBUG_ASSERT_FALSE(GD_ASSERT_DEFAULT_MESSAGE)
-#define GD_DEBUG_ASSERT_NO_MESSAGE(expression) GD_DEBUG_ASSERT(expression, GD_ASSERT_DEFAULT_MESSAGE)
-#define GD_ASSERT_NO_MESSAGE(expression) GD_ASSERT(expression, GD_ASSERT_DEFAULT_MESSAGE)
-
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Redefining standard C assertion.
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#if (!defined(GD_CORE_DIAGNOSTICS_ASSERT_CPP))
-#	undef assert
-#	define assert(Expression) GD_DEBUG_ASSERT(Expression, "*** STD-C ASSERT MACRO ***")
-#endif	// if (!defined(GD_CORE_DIAGNOSTICS_ASSERT_CPP))

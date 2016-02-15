@@ -14,7 +14,7 @@
  */
 #pragma once
 #if !defined(GD_INSIDE_DATETIME_H)
-//#	error This file should be never directly included, please consider using <GoddamnEngine/Core/Platform/DateTime.h> instead.
+//#	error This file should be never directly included, please consider using <GoddamnEngine/Engine/Interface/DateTime.h> instead.
 #endif	// if !defined(GD_INSIDE_DATETIME_H)
 
 #include <GoddamnEngine/Include.h>

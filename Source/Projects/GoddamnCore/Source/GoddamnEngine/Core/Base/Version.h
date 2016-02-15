@@ -1,14 +1,16 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-//! @file GoddamnEngine/Core/Definitions/Version.h
-//! @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
-//! Contains version definitions for GoddamnEngine.
+/*!
+ * @file GoddamnEngine/Core/Base/Version.h
+ * @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
+ * Contains version definitions for GoddamnEngine.
+ */
 #pragma once
 #if !defined(GD_INSIDE_INCLUDE_H)
 #	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
@@ -16,15 +18,16 @@
 
 #include <GoddamnEngine/Include.h>
 
-#define GD_ENGINE_VERSION_MAJOR					2015			///<
-#define GD_ENGINE_VERSION_MINOR					1				///<
-#define GD_ENGINE_VERSION_PATCH					0				///<
+#define GD_ENGINE_VERSION_MAJOR					2016
+#define GD_ENGINE_VERSION_MINOR					1
+#define GD_ENGINE_VERSION_PATCH					0
+#define GD_ENGINE_VERSION						GD_STRIGIFY(GD_ENGINE_VERSION_MAJOR) "." GD_STRIGIFY(GD_ENGINE_VERSION_MINOR) "." GD_STRIGIFY(GD_ENGINE_VERSION_PATCH) 
 
 #define GD_ENGINE_NAME							L"Goddamn Engine"
 #define GD_ENGINE_TITLE							L"Goddamn Engine"
 #define GD_ENGINE_ASSEMBLY_COMPANY				L"(C) Goddamn Industries"
 #define GD_ENGINE_ASSEMBLY_PRODUCT				L"Goddamn Engine"
-#define GD_ENGINE_ASSEMBLY_COPYRIGHT			L"Copyright \0xA9 2011 - 2015"##GD_ENGINE_ASSEMBLY_COMPANY
+#define GD_ENGINE_ASSEMBLY_COPYRIGHT			L"Copyright \0xA9 2011 - 2016"##GD_ENGINE_ASSEMBLY_COMPANY
 #define GD_ENGINE_ASSEMBLY_TRADEMARK			L"Goddamn Engine"
 #define GD_ENGINE_ASSEMBLY_GUID					L"D2D6C4B5-41CD-4986-8CAA-538591C82A0C"
 #define GD_ENGINE_ASSEMBLY_VERSION				L"1.0.0.0"

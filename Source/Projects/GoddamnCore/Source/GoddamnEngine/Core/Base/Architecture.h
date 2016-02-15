@@ -1,20 +1,20 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-//! @file GoddamnEngine/Core/Definitions/Architecture.h
-//! @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
-//! Contains version definitions for GoddamnEngine.
+/*!
+ * @file GoddamnEngine/Core/Base/Architecture.h
+ * @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
+ * Contains architecture definitions for GoddamnEngine.
+ */
 #pragma once
 #if !defined(GD_INSIDE_INCLUDE_H)
 #	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
 #endif	// if !defined(GD_INSIDE_INCLUDE_H)
-
-//#include <GoddamnEngine/Include.h>
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Platform Determination.
@@ -38,16 +38,16 @@
 #	endif	// if 0
 #	include <winapifamily.h>
 #	define GD_PLATFORM_API_MICROSOFT									GD_TRUE
-#	if (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_DESKTOP_APP))				//   Windows Desktop application.
+#	if (WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP))					//   Windows Desktop application.
 #		define GD_PLATFORM_WINDOWS										GD_TRUE
 #		define GD_PLATFORM_DESKTOP										GD_TRUE
 #	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PHONE_APP))				//   Windows Phone 8 application.
 #		define GD_PLATFORM_WINDOWS_PHONE								GD_TRUE
 #		define GD_PLATFORM_MOBILE										GD_TRUE
 #	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PC_APP))				//   Windows Store application (Windows Desktop or Windows RT).
-#		if (defined(__WRL_WINRT_STRICT__))								//   Windows RT application.
+#		if (defined(__WRL_WINRT_STRICT__))	|| 1						//   Windows RT application.
 #			define GD_PLATFORM_WINDOWS_UAP								GD_TRUE
-#			define GD_PLATFORM_MOBILE									GD_TRUE
+#			define GD_PLATFORM_DESKTOP									GD_TRUE
 #		else	// if (defined(__WRL_WINRT_STRICT__))					//   Windows Desktop application.
 #			define GD_PLATFORM_WINDOWS									GD_TRUE
 #			define GD_PLATFORM_DESKTOP									GD_TRUE
@@ -69,7 +69,7 @@
 #	if (defined(TARGET_OS_MAC))											// OS X application.
 #		define GD_PLATFORM_DESKTOP										GD_TRUE
 #		define GD_PLATFORM_OS_X											GD_TRUE
-#	elif defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_IPHONE) || defined(TARGET_OS_IPAD) // iOS application.
+#	elif defined(TARGET_IPAD_SIMULATOR) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_IPHONE) || defined(TARGET_OS_IPAD)// iOS application.
 #		define GD_PLATFORM_MOBILE										GD_TRUE
 #		define GD_PLATFORM_IOS											GD_TRUE
 #	else	// *** Apple Platform selection ***
@@ -774,6 +774,7 @@
 #	pragma warning(disable : 4127)	// conditional expression is constant
 //#	pragma warning(disable : 4189)
 #	pragma warning(disable : 4201)	// nonstandard extension used : nameless struct/union
+#	pragma warning(disable : 4291)
 //#	pragma warning(disable : 4301)
 #	pragma warning(disable : 4324)	// structure was padded due to __declspec(align())
 #	pragma warning(disable : 4373)	// virtual function overrides '___', previous versions of the compiler did not override when parameters only differed by const/volatile qualifiers

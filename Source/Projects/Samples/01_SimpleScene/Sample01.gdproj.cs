@@ -1,10 +1,11 @@
 //! ==========================================================================================
 //! Sample01.gdproj.cs - Sample #01 project file.
-//! Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+//! Copyright (C) Goddamn Industries 2016. All Rights Reserved.
 //! ==========================================================================================
 
 using System.IO;
-using GoddamnEngine.BuildSystem;
+using GoddamnEngine.BuildSystem.Target;
+using GoddamnEngine.BuildSystem.Collectors;
 
 public sealed class Sample01Project : Project
 {

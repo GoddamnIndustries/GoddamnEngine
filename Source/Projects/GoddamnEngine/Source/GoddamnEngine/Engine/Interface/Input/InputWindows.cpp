@@ -11,11 +11,11 @@
  * File contains Windows input subsystem implementation.
  */
 #include <GoddamnEngine/Include.h>
-#if GD_PLATFORM_WINDOWS || GD_PLATFORM_WINDOWS_UAP || GD_PLATFORM_WINDOWS_PHONE
+#if (GD_PLATFORM_WINDOWS || GD_PLATFORM_WINDOWS_UAP || GD_PLATFORM_WINDOWS_PHONE) && 0
 
 #include <GoddamnEngine/Engine/Interface/Input/InputWindows.h>
 #include <GoddamnEngine/Engine/Interface/Graphics/GraphicsWindows.h>
-#include <GoddamnEngine/Engine/Interface/OutputDevice/OutputDevice.h>
+//#include <GoddamnEngine/Engine/Interface/OutputDevice/OutputDevice.h>
 #include <GoddamnEngine/Engine/Interface/DateTime/DateTime.h>
 #define GD_DLOG_CAT "Input device (Windows)"
 
@@ -39,19 +39,14 @@ GD_NAMESPACE_BEGIN
 		return GD_NEW(IInputWindows);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! @todo Document me.
-	GDINL static IInputButtonState _PressedValuesToState(bool const IsPressed, bool const WasPressed)
+	GDINL static IInputButtonState PressedValuesToState(bool const IsPressed, bool const WasPressed)
 	{
 		return static_cast<IInputButtonState>(((IsPressed ? GD_BIT(1) : 0) | (WasPressed ? GD_BIT(0) : 0)) + 1);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! @todo Document me.
-	GDINL static IInputButtonState _PressedValuesBytesToState(BYTE const* const CurrentlyPressedValues
-		, BYTE const* const PreviousPressedValues, SizeTp const Index)
+	GDINL static IInputButtonState PressedValuesBytesToState(BYTE const* const CurrentlyPressedValues, BYTE const* const PreviousPressedValues, SizeTp const Index)
 	{
-		return _PressedValuesToState((CurrentlyPressedValues[Index] & 0x80) != 0, (PreviousPressedValues[Index] & 0x80) != 0);
+		return PressedValuesToState((CurrentlyPressedValues[Index] & 0x80) != 0, (PreviousPressedValues[Index] & 0x80) != 0);
 	}
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,47 +59,51 @@ GD_NAMESPACE_BEGIN
 	GDAPI IResult IInputWindows::OnRuntimeInitialize()
 	{
 #if GD_PLATFORM_WINDOWS		// We are using the DirectInput API to process the keyboard events on Windows.
+
 		// We need our graphics device to initialize input for the window, into which we are rendering render.
-		auto const* _GraphicsWindows = static_cast<IGraphicsWindows const*>(Graphics.GetPointer());
+		auto const* graphicsWindows = static_cast<IGraphicsWindows const*>(Graphics.Get());
 
 		// We are using DirectInput to Handle keyboard and mouse events on the desktop Windows platform.
-		ThrowIfFailed(DirectInput8Create(_GraphicsWindows->hwndHinstance, DIRECTINPUT_VERSION, IID_IDirectInput8
-			, reinterpret_cast<LPVOID*>(&inputDirectInputInterface.p), nullptr));
+		ThrowIfFailed(DirectInput8Create(graphicsWindows->m_HwndHinstance, DIRECTINPUT_VERSION, IID_IDirectInput8
+			, reinterpret_cast<LPVOID*>(&m_InputDirectInputInterface.p), nullptr));
 
 		// Now we are trying to initialize our Keyboard device.
-		if (SUCCEEDED(inputDirectInputInterface->CreateDevice(GUID_SysKeyboard, &inputDeviceKeyboard.p, nullptr)))
+		if (SUCCEEDED(m_InputDirectInputInterface->CreateDevice(GUID_SysKeyboard, &m_InputDeviceKeyboard.p, nullptr)))
 		{
 			// Keyboard device was successfully initialized.
-			ThrowIfFailed(inputDeviceKeyboard->SetDataFormat(&c_dfDIKeyboard));
-			ThrowIfFailed(inputDeviceKeyboard->SetCooperativeLevel(_GraphicsWindows->hwndMain, DISCL_FOREGROUND | DISCL_EXCLUSIVE));
-			inputDeviceKeyboard->Acquire();
-			inputDeviceKeyboardCurrentState = GD_NEW(KeyboardState);
-			inputDeviceKeyboardPreviousState = GD_NEW(KeyboardState);
+			ThrowIfFailed(m_InputDeviceKeyboard->SetDataFormat(&c_dfDIKeyboard));
+			ThrowIfFailed(m_InputDeviceKeyboard->SetCooperativeLevel(graphicsWindows->m_HwndMain, DISCL_FOREGROUND | DISCL_EXCLUSIVE));
+			m_InputDeviceKeyboard->Acquire();
+			m_InputDeviceKeyboardCurrentState = GD_NEW(KeyboardState);
+			m_InputDeviceKeyboardPreviousState = GD_NEW(KeyboardState);
 		}
 		else
 		{
 			// No Keyboard device was found. Really strange.
-			ConsoleDevice->LogWarning(GD_DLOG_CAT "Failed to create a DirectInput8 keyboard device.");
+			//ConsoleDevice->LogWarning(GD_DLOG_CAT "Failed to create a DirectInput8 keyboard device.");
 		}
 
 		// Now we are trying to initialize our Mouse device.
-		if (SUCCEEDED(inputDirectInputInterface->CreateDevice(GUID_SysMouse, &inputDeviceMouse.p, nullptr)))
+		if (SUCCEEDED(m_InputDirectInputInterface->CreateDevice(GUID_SysMouse, &m_InputDeviceMouse.p, nullptr)))
 		{
 			// Mouse device was successfully initialized.
-			ThrowIfFailed(inputDeviceMouse->SetDataFormat(&c_dfDIMouse2));
-			ThrowIfFailed(inputDeviceMouse->SetCooperativeLevel(_GraphicsWindows->hwndMain, DISCL_FOREGROUND | DISCL_EXCLUSIVE));
-			inputDeviceMouse->Acquire();
-			inputDeviceMouseCurrentState = GD_NEW(DIMOUSESTATE2);
-			inputDeviceMousePreviousState = GD_NEW(DIMOUSESTATE2);
-			inputDeviceMousePosition = {};
+			ThrowIfFailed(m_InputDeviceMouse->SetDataFormat(&c_dfDIMouse2));
+			ThrowIfFailed(m_InputDeviceMouse->SetCooperativeLevel(graphicsWindows->m_HwndMain, DISCL_FOREGROUND | DISCL_EXCLUSIVE));
+			m_InputDeviceMouse->Acquire();
+			m_InputDeviceMouseCurrentState = GD_NEW(DIMOUSESTATE2);
+			m_InputDeviceMousePreviousState = GD_NEW(DIMOUSESTATE2);
+			m_InputDeviceMousePosition = {};
 		}
 		else
 		{
 			// No Mouse device was found. Really strange.
-			ConsoleDevice->LogWarning(GD_DLOG_CAT "Failed to create a DirectInput8 Mouse device.");
+			//ConsoleDevice->LogWarning(GD_DLOG_CAT "Failed to create a DirectInput8 Mouse device.");
 		}
+
 #else	// if GD_PLATFORM_WINDOWS	// ModernUI implementation for Windows Store.
+
 #	error Not implemented.
+
 #endif	// if GD_PLATFORM_WINDOWS
 
 		return IResult::Ok;
@@ -116,28 +115,32 @@ GD_NAMESPACE_BEGIN
 	GDAPI IResult IInputWindows::OnRuntimeDeinitialize()
 	{
 #if GD_PLATFORM_WINDOWS	// We are using the DirectInput API to process the keyboard events on Windows.
+
 		// Releasing the DirectInput's keyboard.
-		if (inputDeviceKeyboard != nullptr)
+		if (m_InputDeviceKeyboard != nullptr)
 		{
-			inputDeviceKeyboard->Unacquire();
-			inputDeviceKeyboardCurrentState = nullptr;
-			inputDeviceKeyboardPreviousState = nullptr;
+			m_InputDeviceKeyboard->Unacquire();
+			m_InputDeviceKeyboardCurrentState = nullptr;
+			m_InputDeviceKeyboardPreviousState = nullptr;
 		}
-		inputDeviceKeyboard.Release();
+		m_InputDeviceKeyboard.Release();
 
 		// Releasing the DirectInput's mouse.
-		if (inputDeviceMouse != nullptr)
+		if (m_InputDeviceMouse != nullptr)
 		{
-			inputDeviceMouse->Unacquire();
-			inputDeviceMouseCurrentState = nullptr;
-			inputDeviceMousePreviousState = nullptr;
+			m_InputDeviceMouse->Unacquire();
+			m_InputDeviceMouseCurrentState = nullptr;
+			m_InputDeviceMousePreviousState = nullptr;
 		}
-		inputDeviceMouse.Release();
+		m_InputDeviceMouse.Release();
 
 		// Releasing the DirectInput interface.
-		inputDirectInputInterface.Release();
+		m_InputDirectInputInterface.Release();
+
 #else	// if GD_PLATFORM_WINDOWS	// ModernUI implementation for Windows Store.
+
 #	error Not implemented.
+
 #endif	// if GD_PLATFORM_WINDOWS
 
 		return IResult::Ok;
@@ -148,57 +151,66 @@ GD_NAMESPACE_BEGIN
 	GDAPI void IInputWindows::OnRuntimeUpdate()
 	{
 #if !GD_PLATFORM_WINDOWS_PHONE	// Currently gamepads are not supported on Windows Phone.
+
 		// Reading the states of the connected gamepad devices.
-		for (DWORD cnt = 0; cnt < Gamepad_GetMaxSupportedDevices(); ++cnt)
+		for (DWORD cnt = 0; cnt < GetGamepadMaxSupportedDevices(); ++cnt)
 		{
 			// Gamepad at current slot was connected, we can attempt to read it's state.
-			auto& inputGamepadState = inputGamepadStates[cnt];
+			auto& inputGamepadState = m_InputGamepadStates[cnt];
 			if (FAILED(XInputGetState(cnt, &inputGamepadState.GamepadCurrentState)))
 				inputGamepadState.GamepadIsDisconnected = true;
 		}
+
 #endif	// if !GD_PLATFORM_WINDOWS_PHONE
 
 		// Reading the states of the connected keyboard device.
 #if GD_PLATFORM_WINDOWS	 // We are using the DirectInput API to process the keyboard events on Windows.
-		if (inputDeviceKeyboard != nullptr)
+
+		if (m_InputDeviceKeyboard != nullptr)
 		{
 			// Trying to read the state of the connected Keyboard.
-			auto const inputDeviceKeyboardResult = inputDeviceKeyboard->GetDeviceState(sizeof(*inputDeviceKeyboardCurrentState), inputDeviceKeyboardCurrentState.GetPointer());
+			auto const inputDeviceKeyboardResult = m_InputDeviceKeyboard->GetDeviceState(sizeof(*m_InputDeviceKeyboardCurrentState), m_InputDeviceKeyboardCurrentState.Get());
 			if (FAILED(inputDeviceKeyboardResult))
 			{
 				// Some problem with the keyboard device: maybe is just lost focus.
 				if (inputDeviceKeyboardResult != DIERR_INPUTLOST && inputDeviceKeyboardResult != DIERR_NOTACQUIRED)
 					ThrowIfFailed(inputDeviceKeyboardResult);
-				inputDeviceKeyboard->Acquire();
+				m_InputDeviceKeyboard->Acquire();
 			}
 		}
 #else	// if GD_PLATFORM_WINDOWS	// ModernUI implementation for Windows Store.
+
 #	error Not implemented.
+
 #endif	// if GD_PLATFORM_WINDOWS
 
 		// Reading the states of the connected mouse device.
 #if GD_PLATFORM_WINDOWS	 // We are using the DirectInput API to process the keyboard events on Windows.
-		if (inputDeviceMouse != nullptr)
+
+		if (m_InputDeviceMouse != nullptr)
 		{
 			// Trying to read the state of the connected Mouse.
-			auto const inputDeviceMouseResult = inputDeviceMouse->GetDeviceState(sizeof(*inputDeviceMouseCurrentState), inputDeviceMouseCurrentState.GetPointer());
+			auto const inputDeviceMouseResult = m_InputDeviceMouse->GetDeviceState(sizeof(*m_InputDeviceMouseCurrentState), m_InputDeviceMouseCurrentState.Get());
 			if (FAILED(inputDeviceMouseResult))
 			{
 				// Some problem with the Mouse device: maybe is just lost focus.
 				if (inputDeviceMouseResult != DIERR_INPUTLOST && inputDeviceMouseResult != DIERR_NOTACQUIRED)
 					ThrowIfFailed(inputDeviceMouseResult);
-				inputDeviceMouse->Acquire();
+				m_InputDeviceMouse->Acquire();
 			}
 			else
 			{
 				// This mouse is connected, we can process it, we need to modify global 
 				// mouse position.
-				inputDeviceMousePosition.X += inputDeviceMouseCurrentState->lX;
-				inputDeviceMousePosition.Y += inputDeviceMouseCurrentState->lY;
+				m_InputDeviceMousePosition.X += m_InputDeviceMouseCurrentState->lX;
+				m_InputDeviceMousePosition.Y += m_InputDeviceMouseCurrentState->lY;
 			}
 		}
+
 #else	// if GD_PLATFORM_WINDOWS	// ModernUI implementation for Windows Store.
+
 #	error Not implemented.
+
 #endif	// if GD_PLATFORM_WINDOWS
 	}
 
@@ -208,10 +220,11 @@ GD_NAMESPACE_BEGIN
 	GDAPI void IInputWindows::OnRuntimePostUpdate()
 	{
 #if !GD_PLATFORM_WINDOWS_PHONE	// Currently gamepads are not supported on Windows Phone.
-		for (DWORD cnt = 0; cnt < Gamepad_GetMaxSupportedDevices(); ++cnt)
+
+		for (DWORD cnt = 0; cnt < GetGamepadMaxSupportedDevices(); ++cnt)
 		{
 			// Swapping states of the connected gamepads.
-			auto& inputGamepadState = inputGamepadStates[cnt];
+			auto& inputGamepadState = m_InputGamepadStates[cnt];
 			if (!inputGamepadState.GamepadIsDisconnected)
 			{
 				// Swapping states of the connected gamepads.
@@ -225,12 +238,13 @@ GD_NAMESPACE_BEGIN
 				}
 			}
 		}
+
 #endif	// if !GD_PLATFORM_WINDOWS_PHONE
 
 		// Swapping states of the connected keyboard and mouse.
 #if GD_PLATFORM_WINDOWS	// DirectInput implementation for Windows.
-		Swap(inputDeviceKeyboardCurrentState, inputDeviceKeyboardPreviousState);
-		Swap(inputDeviceMouseCurrentState, inputDeviceMousePreviousState);
+		Swap(m_InputDeviceKeyboardCurrentState, m_InputDeviceKeyboardPreviousState);
+		Swap(m_InputDeviceMouseCurrentState, m_InputDeviceMousePreviousState);
 #else	// if GD_PLATFORM_WINDOWS	// ModernUI implementation for Windows Store.
 #	error Not implemented.
 #endif	// if GD_PLATFORM_WINDOWS
@@ -240,29 +254,35 @@ GD_NAMESPACE_BEGIN
 	// Gamepad support.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Returns the maximum amount of the supported gamepads.
-	//! @returns The maximum amount of the supported gamepads.
-	GDAPI SizeTp IInputWindows::Gamepad_GetMaxSupportedDevices() const
+	/*!
+	 * Returns the maximum amount of the supported gamepads.
+	 * @returns The maximum amount of the supported gamepads.
+	 */
+	GDAPI SizeTp IInputWindows::GetGamepadMaxSupportedDevices() const
 	{
 #if !GD_PLATFORM_WINDOWS_PHONE	// Currently gamepads are not supported on Windows Phone.
+
 		// According to the link below XInput supports up to four connected gamepads.
 		// https://msdn.microsoft.com/ru-ru/library/windows/desktop/ee417001(v=vs.85).aspx#multiple_controllers
 		return 4;
+
 #else	// if !GD_PLATFORM_WINDOWS_PHONE
+
 		return 0;
+
 #endif	// if !GD_PLATFORM_WINDOWS_PHONE
 	}	
 
-	// ------------------------------------------------------------------------------------------
-	//! Returns the states of the specified gamepad button in the specified device m_Index.
-	//! @param inputGamepadButton ID of the desired gamepad button.
-	//! @param inputGamepadIndex m_Index of the gamepad. Zero by default.
-	//! @returns State of the specified button.
-	GDAPI IInputButtonState IInputWindows::Gamepad_GetButtonState(IInputGamepadButton const inputGamepadButton
-		, SizeTp const inputGamepadIndex /*= 0*/)
+	/*!
+	 * Returns the states of the specified gamepad button in the specified device m_Index.
+	 * @param inputGamepadButton ID of the desired gamepad button.
+	 * @param inputGamepadIndex Index of the gamepad. Zero by default.
+	 * @returns State of the specified button.
+	 */
+	GDAPI IInputButtonState IInputWindows::GetGamepadButtonState(IInputGamepadButton const inputGamepadButton, SizeTp const inputGamepadIndex /*= 0*/)
 	{
-#if !GD_PLATFORM_WINDOWS_PHONE	// Currently gamepads are not supported on Windows Phone.
+#if !GD_PLATFORM_WINDOWS_PHONE	
+
 		WORD static const IInputGamepadButtonToXInputTable[IINPUT_BUTTONS_GAMEPAD_COUNT] = {
 			/* IINPUT_BUTTON_GAMEPAD_XBOX_A            */ XINPUT_GAMEPAD_A,
 			/* IINPUT_BUTTON_GAMEPAD_XBOX_B            */ XINPUT_GAMEPAD_B,
@@ -290,7 +310,7 @@ GD_NAMESPACE_BEGIN
 			/* IINPUT_BUTTON_GAMEPAD_XBOX_MENU         */ XINPUT_GAMEPAD_BACK,
 		};
 
-		auto const& inputGamepadState = inputGamepadStates[inputGamepadIndex];
+		auto const& inputGamepadState = m_InputGamepadStates[inputGamepadIndex];
 		if (!inputGamepadState.GamepadIsDisconnected)
 		{
 			// This gamepad is connected, we can process it.
@@ -298,7 +318,7 @@ GD_NAMESPACE_BEGIN
 			if (inputButtonMask != 0)
 			{
 				// This is a regular button. Just applying the mask to the read states.
-				return _PressedValuesToState((inputGamepadState.GamepadCurrentState.Gamepad.wButtons & inputButtonMask) != 0
+				return PressedValuesToState((inputGamepadState.GamepadCurrentState.Gamepad.wButtons & inputButtonMask) != 0
 					, (inputGamepadState.GamepadPreviousState.Gamepad.wButtons & inputButtonMask) != 0);
 			}
 
@@ -306,101 +326,105 @@ GD_NAMESPACE_BEGIN
 			switch (inputGamepadIndex)
 			{
 				// Trigger button.
-			case IINPUT_BUTTON_GAMEPAD_XBOX_RT:
-				return _PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD
-					, inputGamepadState.GamepadPreviousState.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
-			case IINPUT_BUTTON_GAMEPAD_XBOX_LT:
-				return _PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD
-					, inputGamepadState.GamepadPreviousState.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
+				case IINPUT_BUTTON_GAMEPAD_XBOX_RT:
+					return PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD
+						, inputGamepadState.GamepadPreviousState.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
+				case IINPUT_BUTTON_GAMEPAD_XBOX_LT:
+					return PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD
+						, inputGamepadState.GamepadPreviousState.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
 
-				// m_Right stick.
-			case IINPUT_BUTTON_GAMEPAD_RIGHT_STICK_DOWN:
-				return _PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRY < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE
-					, inputGamepadState.GamepadPreviousState.Gamepad.sThumbRY < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
-			case IINPUT_BUTTON_GAMEPAD_RIGHT_STICK_RIGHT:
-				return _PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRX > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE
-					, inputGamepadState.GamepadPreviousState.Gamepad.sThumbRX > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
-			case IINPUT_BUTTON_GAMEPAD_RIGHT_STICK_LEFT:
-				return _PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRX < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE
-					, inputGamepadState.GamepadPreviousState.Gamepad.sThumbRX < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
-			case IINPUT_BUTTON_GAMEPAD_RIGHT_STICK_UP:
-				return _PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRY > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE
-					, inputGamepadState.GamepadPreviousState.Gamepad.sThumbRY > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+					// Right stick.
+				case IINPUT_BUTTON_GAMEPAD_RIGHT_STICK_DOWN:
+					return PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRY < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE
+						, inputGamepadState.GamepadPreviousState.Gamepad.sThumbRY < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+				case IINPUT_BUTTON_GAMEPAD_RIGHT_STICK_RIGHT:
+					return PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRX > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE
+						, inputGamepadState.GamepadPreviousState.Gamepad.sThumbRX > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+				case IINPUT_BUTTON_GAMEPAD_RIGHT_STICK_LEFT:
+					return PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRX < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE
+						, inputGamepadState.GamepadPreviousState.Gamepad.sThumbRX < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+				case IINPUT_BUTTON_GAMEPAD_RIGHT_STICK_UP:
+					return PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRY > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE
+						, inputGamepadState.GamepadPreviousState.Gamepad.sThumbRY > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
 
-				// m_Left stick.
-			case IINPUT_BUTTON_GAMEPAD_LEFT_STICK_DOWN:
-				return _PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
-					, inputGamepadState.GamepadPreviousState.Gamepad.sThumbLY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
-			case IINPUT_BUTTON_GAMEPAD_LEFT_STICK_LEFT:
-				return _PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
-					, inputGamepadState.GamepadPreviousState.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
-			case IINPUT_BUTTON_GAMEPAD_LEFT_STICK_RIGHT:
-				return _PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
-					, inputGamepadState.GamepadPreviousState.Gamepad.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
-			case IINPUT_BUTTON_GAMEPAD_LEFT_STICK_UP:
-				return _PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
-					, inputGamepadState.GamepadPreviousState.Gamepad.sThumbLY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+				// Left stick.
+				case IINPUT_BUTTON_GAMEPAD_LEFT_STICK_DOWN:
+					return PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
+						, inputGamepadState.GamepadPreviousState.Gamepad.sThumbLY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+				case IINPUT_BUTTON_GAMEPAD_LEFT_STICK_LEFT:
+					return PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
+						, inputGamepadState.GamepadPreviousState.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+				case IINPUT_BUTTON_GAMEPAD_LEFT_STICK_RIGHT:
+					return PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
+						, inputGamepadState.GamepadPreviousState.Gamepad.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+				case IINPUT_BUTTON_GAMEPAD_LEFT_STICK_UP:
+					return PressedValuesToState(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
+						, inputGamepadState.GamepadPreviousState.Gamepad.sThumbLY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
 
-			default:
-				GD_NOT_IMPLEMENTED();
+				default:
+					GD_NOT_IMPLEMENTED();
 			}
 		}
+
 #endif	// if !GD_PLATFORM_WINDOWS_PHONE
 		return IINPUT_BUTTONSTATE_UNKNOWN;
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Returns the raw value of the specified gamepad axis.
-	//! @param inputGamepadAxis ID of the desired gamepad axis.
-	//! @param inputGamepadIndex m_Index of the gamepad. Zero by default.
-	//! @returns Floating value of the axis in the range [-1; +1].
-	GDAPI Float32 IInputWindows::Gamepad_GetRawAxisValue(IInputGamepadAxis const inputGamepadAxis
-		, SizeTp const inputGamepadIndex /*= 0*/)
+	/*!
+	 * Returns the raw value of the specified gamepad axis.
+	 * @param inputGamepadAxis ID of the desired gamepad axis.
+	 * @param inputGamepadIndex Index of the gamepad. Zero by default.
+	 * @returns Floating value of the axis in the range [-1; +1].
+	 */
+	GDAPI Float32 IInputWindows::GetGamepadRawAxisValue(IInputGamepadAxis const inputGamepadAxis, SizeTp const inputGamepadIndex /*= 0*/)
 	{
-#if !GD_PLATFORM_WINDOWS_PHONE	// Currently gamepads are not supported on Windows Phone.
-		auto const& inputGamepadState = inputGamepadStates[inputGamepadIndex];
+#if !GD_PLATFORM_WINDOWS_PHONE	
+
+		auto const& inputGamepadState = m_InputGamepadStates[inputGamepadIndex];
 		if (!inputGamepadState.GamepadIsDisconnected)
 		{
 			// This gamepad is connected, we can process it.
 			switch (inputGamepadAxis)
 			{
 				// Trigger button.
-			case IINPUT_AXIS_GAMEPAD_RIGHT_TRIGGER:
-				return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.bRightTrigger) / static_cast<Float32>(MAXBYTE);
-			case IINPUT_AXIS_GAMEPAD_LEFT_TRIGGER:
-				return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.bLeftTrigger) / static_cast<Float32>(MAXBYTE);
+				case IINPUT_AXIS_GAMEPAD_RIGHT_TRIGGER:
+					return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.bRightTrigger) / static_cast<Float32>(MAXBYTE);
+				case IINPUT_AXIS_GAMEPAD_LEFT_TRIGGER:
+					return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.bLeftTrigger) / static_cast<Float32>(MAXBYTE);
 
-				// m_Right stick.
-			case IINPUT_AXIS_GAMEPAD_RIGHT_STICK_HORIZONTAL:
-				return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRX) / static_cast<Float32>(MAXSHORT);
-			case IINPUT_AXIS_GAMEPAD_RIGHT_STICK_VERTICAL:
-				return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRY) / static_cast<Float32>(MAXSHORT);
+					// Right stick.
+				case IINPUT_AXIS_GAMEPAD_RIGHT_STICK_HORIZONTAL:
+					return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRX) / static_cast<Float32>(MAXSHORT);
+				case IINPUT_AXIS_GAMEPAD_RIGHT_STICK_VERTICAL:
+					return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.sThumbRY) / static_cast<Float32>(MAXSHORT);
 
-				// m_Left stick.
-			case IINPUT_AXIS_GAMEPAD_LEFT_STICK_HORIZONTAL:
-				return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLX) / static_cast<Float32>(MAXSHORT);
-			case IINPUT_AXIS_GAMEPAD_LEFT_STICK_VERTICAL:
-				return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLY) / static_cast<Float32>(MAXSHORT);
+					// Left stick.
+				case IINPUT_AXIS_GAMEPAD_LEFT_STICK_HORIZONTAL:
+					return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLX) / static_cast<Float32>(MAXSHORT);
+				case IINPUT_AXIS_GAMEPAD_LEFT_STICK_VERTICAL:
+					return static_cast<Float32>(inputGamepadState.GamepadCurrentState.Gamepad.sThumbLY) / static_cast<Float32>(MAXSHORT);
 
-			default:
-				GD_NOT_IMPLEMENTED();
+				default:
+					GD_NOT_IMPLEMENTED();
 			}
 		}
+
 #endif	// if !GD_PLATFORM_WINDOWS_PHONE
 		return 0.0f;
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Vibrates the specified gamepad (if the vibration is not supported, does nothing).
-	//! @param inputGamepadDuration Duration of the vibration.
-	//! @param inputGamepadRightMotor The vibration value in range [0; +1] for the m_Right motor.
-	//! @param inputGamepadLeftMotor The vibration value in range [0; +1] for the m_Left motor.
-	//! @param inputGamepadIndex m_Index of the gamepad. Zero by default.
-	GDAPI void IInputWindows::Gamepad_Vibrate(Float64 const inputGamepadDuration, Float32 const inputGamepadRightMotor, Float32 const inputGamepadLeftMotor
-		, SizeTp const inputGamepadIndex /*= 0*/)
+	/*!
+	 * Vibrates the specified gamepad (if the vibration is not supported, does nothing).
+	 * @param inputGamepadDuration Duration of the vibration.
+	 * @param inputGamepadRightMotor The vibration value in range [0; +1] for the m_Right motor.
+	 * @param inputGamepadLeftMotor The vibration value in range [0; +1] for the m_Left motor.
+	 * @param inputGamepadIndex Index of the gamepad. Zero by default.
+	 */
+	GDAPI void IInputWindows::GamepadVibrate(Float64 const inputGamepadDuration, Float32 const inputGamepadRightMotor, Float32 const inputGamepadLeftMotor, SizeTp const inputGamepadIndex /*= 0*/)
 	{
-#if !GD_PLATFORM_WINDOWS_PHONE	// Currently gamepads are not supported on Windows Phone.
-		auto& inputGamepadState = inputGamepadStates[inputGamepadIndex];
+#if !GD_PLATFORM_WINDOWS_PHONE	
+
+		auto& inputGamepadState = m_InputGamepadStates[inputGamepadIndex];
 		if (!inputGamepadState.GamepadIsDisconnected)
 		{
 			// This gamepad is connected, we can process it.
@@ -413,6 +437,7 @@ GD_NAMESPACE_BEGIN
 				inputGamepadState.GamepadVibrationTimeout = inputGamepadDuration;
 			}
 		}
+
 #endif	// if !GD_PLATFORM_WINDOWS_PHONE
 	}
 
@@ -420,14 +445,15 @@ GD_NAMESPACE_BEGIN
 	// Keyboard support.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Returns the states of the specified keyboard button in the specified device m_Index.
-	//! @param inputKeyboardButton ID of the desired keyboard button.
-	//! @returns State of the specified button.
-	GDAPI IInputButtonState IInputWindows::Keyboard_GetButtonState(IInputKeyboardButton const inputKeyboardButton)
+	/*!
+	 * Returns the states of the specified keyboard button in the specified device m_Index.
+	 * @param inputKeyboardButton ID of the desired keyboard button.
+	 * @returns State of the specified button.
+	 */
+	GDAPI IInputButtonState IInputWindows::GetKeyboardButtonState(IInputKeyboardButton const inputKeyboardButton)
 	{
-#if !GD_PLATFORM_WINDOWS_PHONE	// Keyboards are not supported on Windows Phone.
-#	if GD_PLATFORM_WINDOWS	// We are using the DirectInput API to process the keyboard events on Windows.
+#if !GD_PLATFORM_WINDOWS_PHONE	
+#	if GD_PLATFORM_WINDOWS	
 		BYTE static const IInputGamepadButtonToXInputTable[IINPUT_BUTTONS_KEYBOARD_COUNT] = {
 			/* IINPUT_BUTTON_KEYBOARD_F1           */ DIK_F1,	
 			/* IINPUT_BUTTON_KEYBOARD_F2           */ DIK_F2,	
@@ -535,15 +561,19 @@ GD_NAMESPACE_BEGIN
 			/* IINPUT_BUTTON_KEYBOARD_NUMPAD_COMMA */ DIK_NUMPADCOMMA,
 			/* IINPUT_BUTTON_KEYBOARD_NUMPAD_ENTER */ DIK_NUMPADENTER,
 		};
-		if (inputDeviceKeyboard != nullptr)
+		if (m_InputDeviceKeyboard != nullptr)
 		{
 			// The keyboard is connected, we can process it.
 			auto const inputButtonIndex = IInputGamepadButtonToXInputTable[inputKeyboardButton];
-			return _PressedValuesBytesToState(*inputDeviceKeyboardCurrentState, *inputDeviceKeyboardPreviousState, inputButtonIndex);
+			return PressedValuesBytesToState(*m_InputDeviceKeyboardCurrentState, *m_InputDeviceKeyboardPreviousState, inputButtonIndex);
 		}
+
 #	else	// if GD_PLATFORM_WINDOWS	// ModernUI implementation for Windows Store.
+
 #		error Not implemented.
+
 #	endif	// if GD_PLATFORM_WINDOWS
+
 #endif	// if !GD_PLATFORM_WINDOWS_PHONE
 		return IINPUT_BUTTONSTATE_UNKNOWN;
 	}
@@ -565,12 +595,12 @@ GD_NAMESPACE_BEGIN
 	{
 #if !GD_PLATFORM_WINDOWS_PHONE	// Mice are not supported on Windows Phone - we emulate them with touches.
 #	if GD_PLATFORM_WINDOWS	// We are using the DirectInput API to process the mouse events on Windows.
-		if (inputDeviceMouse != nullptr)
+		if (m_InputDeviceMouse != nullptr)
 		{
 			// This mouse is connected, we can process it.
 			auto const inputButtonIndex = inputMouseButton;
-			return _PressedValuesBytesToState(inputDeviceMouseCurrentState->rgbButtons
-				, inputDeviceMousePreviousState->rgbButtons, inputButtonIndex);
+			return PressedValuesBytesToState(m_InputDeviceMouseCurrentState->rgbButtons
+				, m_InputDeviceMousePreviousState->rgbButtons, inputButtonIndex);
 		}
 #	else	// if GD_PLATFORM_WINDOWS	// ModernUI implementation for Windows Store.
 #		error Not implemented.
@@ -588,10 +618,10 @@ GD_NAMESPACE_BEGIN
 	{
 #if !GD_PLATFORM_WINDOWS_PHONE	// Mice are not supported on Windows Phone - we emulate them with touches.
 #	if GD_PLATFORM_WINDOWS	// We are using the DirectInput API to process the mouse events on Windows.
-		if (inputDeviceMouse != nullptr)
+		if (m_InputDeviceMouse != nullptr)
 		{
 			// This mouse is connected, we can process it.
-			return inputDeviceMousePosition;
+			return m_InputDeviceMousePosition;
 		}
 #	else	// if GD_PLATFORM_WINDOWS	// ModernUI implementation for Windows Store.
 #		error Not implemented.
@@ -609,10 +639,10 @@ GD_NAMESPACE_BEGIN
 	{
 #if !GD_PLATFORM_WINDOWS_PHONE	// Mice are not supported on Windows Phone - we emulate them with touches.
 #	if GD_PLATFORM_WINDOWS	// We are using the DirectInput API to process the mouse events on Windows.
-		if (inputDeviceMouse != nullptr)
+		if (m_InputDeviceMouse != nullptr)
 		{
 			// This mouse is connected, we can process it.
-			return static_cast<Float32>(inputDeviceMouseCurrentState->lZ);
+			return static_cast<Float32>(m_InputDeviceMouseCurrentState->lZ);
 		}
 #	else	// if GD_PLATFORM_WINDOWS	// ModernUI implementation for Windows Store.
 #		error Not implemented.

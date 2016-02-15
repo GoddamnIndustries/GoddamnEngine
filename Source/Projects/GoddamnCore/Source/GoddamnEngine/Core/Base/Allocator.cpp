@@ -1,15 +1,19 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-//! @file GoddamnEngine/Core/Definitions/Allocator.cpp
-//! Contains memory allocator Implementation.
-
+/*!
+ * @file GoddamnEngine/Core/Base/Allocator.cpp
+ * Contains memory allocator interface.
+ */
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/System/Misc/Allocator.h>
+
+#define GD_ALLOCATOR_DEBUG_LEAKS GD_TRUE
 
 // ------------------------------------------------------------------------------------------
 // Microsoft CRT's Debug Allocator.
@@ -83,9 +87,9 @@
 #	include <jemalloc/jemalloc.h>
 #endif	// if GD_PLATFORM_HAS_JEMALLOC
 
-//#include <GoddamnEngine/Core/Platform/Atomics.h>
+//#include <GoddamnEngine/Core/System/Atomics.h>
 #if !GD_ALLOCATOR_IS_THREAD_SAFE
-#	include <GoddamnEngine/Core/Platform/Threading.h>
+#	include <GoddamnEngine/Core/System/Threading.h>
 #endif	// if !GD_ALLOCATOR_IS_THREAD_SAFE
 
 GD_NAMESPACE_BEGIN
@@ -99,10 +103,20 @@ GD_NAMESPACE_BEGIN
 	}
 #endif	// if !GD_ALLOCATOR_IS_THREAD_SAFE
 
-	GDAPI Handle Allocator::AllocateMemory(SourceInfo const& Location, SizeTp const AllocationSize, SizeTp const Alignment /*= DefaultAlignment*/)
+	/*!
+	 * Allocates block of memory with specified size that is aligned by specified value and returns pointer to it.
+	 *
+	 * @param location Information about place in code, where this allocation occurs.
+	 * @param allocationSize Size of required memory in bytes.
+	 * @param alignment pointer to memory would be aligned by this value.
+	 *
+	 * @returns Pointer on the allocated memory. This function never returns nullptr except specified size is 0.
+	 * @note This function should not be directly invoked. Use 'GD_MALLOC'/'GD_MALLOC_ALIGNED' macro instead.
+	 */
+	GDAPI Handle Allocator::AllocateMemory(SourceInfo const& location, SizeTp const allocationSize, SizeTp const alignment /*= DefaultAlignment*/)
 	{
-		GD_NOT_USED(Location);	// In case it will be never used.
-		if (AllocationSize != 0) 
+		GD_NOT_USED(location);	// In case it will be never used.
+		if (allocationSize != 0) 
 		{
 #if !GD_ALLOCATOR_IS_THREAD_SAFE
 			ScopedCriticalSection AllocatorLock(GetAllocatorLock());
@@ -131,18 +145,18 @@ GD_NAMESPACE_BEGIN
 #endif	// if GD_PLATFORM_HAS_DEBUG_CRT_MALLOC
 			}
 
-			Handle const Memory = 
+			auto const Memory = 
 #if GD_PLATFORM_HAS_DEBUG_CRT_MALLOC
-				_aligned_malloc_dbg(AllocationSize, Alignment, Location.File, Location.Line);
+				_aligned_malloc_dbg(allocationSize, alignment, location.File, location.Line);
 #endif	// if GD_PLATFORM_HAS_DEBUG_CRT_MALLOC
 #if GD_PLATFORM_HAS_INTEL_TBB
-				scalable_aligned_malloc(AllocationSize, Alignment);
+				scalable_aligned_malloc(allocationSize, alignment);
 #endif	// if GD_PLATFORM_HAS_INTEL_TBB
 #if GD_PLATFORM_HAS_JEMALLOC
-				je_aligned_malloc(Alignment, AllocationSize);
+				je_aligned_malloc(allocationSize, alignment);
 #endif	// if GD_PLATFORM_HAS_JEMALLOC
 #if GD_PLATFORM_HAS_ANSI_MALLOC
-				memalign(Alignment, AllocationSize);
+				memalign(allocationSize, alignment);
 #endif	// if GD_PLATFORM_HAS_ANSI_MALLOC
 
 			GD_ASSERT(Memory != nullptr, "Failed to allocate memory.");
@@ -152,16 +166,22 @@ GD_NAMESPACE_BEGIN
 		return nullptr;
 	}
 
-	GDAPI void Allocator::DeallocateMemory(CHandle const Memory)
+	/*!
+	 * Deallocates block of memory.
+	 *
+	 * @param memory The memory that would be deallocated. If specified block is nullptr then does nothing.
+	 * @note This function should not be directly invoked. Use 'GD_DEALLOC' macro instead.
+	 */
+	GDAPI void Allocator::DeallocateMemory(CHandle const memory)
 	{
-		if (Memory != nullptr) 
+		if (memory != nullptr) 
 		{
 #if !GD_ALLOCATOR_IS_THREAD_SAFE
 			ScopedCriticalSection AllocatorLock(GetAllocatorLock());
 #endif	// if !GD_ALLOCATOR_IS_THREAD_SAFE
 
 #if GD_PLATFORM_HAS_DEBUG_CRT_MALLOC
-			_aligned_free_dbg(const_cast<Handle>(Memory));
+			_aligned_free_dbg(const_cast<Handle>(memory));
 #endif	// if GD_PLATFORM_HAS_DEBUG_CRT_MALLOC
 #if GD_PLATFORM_HAS_INTEL_TBB
 			scalable_aligned_free(const_cast<Handle>(memory));

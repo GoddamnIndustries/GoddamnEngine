@@ -11,7 +11,7 @@
  * Microsoft date/time implementation.
  */
 #include <GoddamnEngine/Include.h>
-#if GD_PLATFORM_API_MICROSOFT
+#if GD_PLATFORM_API_MICROSOFT && 0
 
 #include <GoddamnEngine/Engine/Interface/DateTime/DateTime.h>
 

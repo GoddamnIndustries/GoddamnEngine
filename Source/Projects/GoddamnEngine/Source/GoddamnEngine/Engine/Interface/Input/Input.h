@@ -13,8 +13,8 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Geometry.h>
-#include <GoddamnEngine/Core/Singleton.h>
+#include <GoddamnEngine/Core/Math/Geometry.h>
+#include <GoddamnEngine/Core/Templates/Singleton.h>
 #include <GoddamnEngine/Engine/Interface/UniqueInterface.h>
 
 GD_NAMESPACE_BEGIN
@@ -107,48 +107,49 @@ GD_NAMESPACE_BEGIN
 	GD_DINTERFACE()
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IInputBase_WithGamepad, IInput)
 	{
-		// ------------------------------------------------------------------------------------------
-		//! Returns the maximum amount of the supported gamepads.
-		//! @returns The maximum amount of the supported gamepads.
-		GD_DFUNCTION()
-		GDAPI virtual SizeTp Gamepad_GetMaxSupportedDevices() const GD_PURE_VIRTUAL;
+		/*!
+		 * Returns the maximum amount of the supported gamepads.
+		 * @returns The maximum amount of the supported gamepads.
+		 */
+		GDAPI virtual SizeTp GetGamepadMaxSupportedDevices() const GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns the states of the specified gamepad button in the specified device m_Index.
-		//! @param inputGamepadButton ID of the desired gamepad button.
-		//! @param inputGamepadIndex m_Index of the gamepad. Zero by default.
-		//! @returns State of the specified button.
-		GD_DFUNCTION()
-		GDAPI virtual IInputButtonState Gamepad_GetButtonState(IInputGamepadButton const inputGamepadButton
-			, SizeTp const inputGamepadIndex = 0) GD_PURE_VIRTUAL;
+		/*!
+		 * Returns the states of the specified gamepad button in the specified device index.
+		 *
+		 * @param inputGamepadButton ID of the desired gamepad button.
+		 * @param inputGamepadIndex Index of the gamepad. Zero by default.
+		 *
+		 * @returns State of the specified button.
+		 */
+		GDAPI virtual IInputButtonState GetGamepadButtonState(IInputGamepadButton const inputGamepadButton, SizeTp const inputGamepadIndex = 0) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns the raw value of the specified gamepad axis.
-		//! @param inputGamepadAxis ID of the desired gamepad axis.
-		//! @param inputGamepadIndex m_Index of the gamepad. Zero by default.
-		//! @returns Floating value of the axis in the range [-1; +1].
-		GD_DFUNCTION()
-		GDAPI virtual Float32 Gamepad_GetRawAxisValue(IInputGamepadAxis const inputGamepadAxis
-			, SizeTp const inputGamepadIndex = 0) GD_PURE_VIRTUAL;
+		/*!
+		 * Returns the raw value of the specified gamepad axis.
+		 *
+		 * @param inputGamepadAxis ID of the desired gamepad axis.
+		 * @param inputGamepadIndex Index of the gamepad. Zero by default.
+		 *
+		 * @returns Floating value of the axis in the range [-1; +1].
+		 */
+		GDAPI virtual Float32 GetGamepadRawAxisValue(IInputGamepadAxis const inputGamepadAxis, SizeTp const inputGamepadIndex = 0) GD_PURE_VIRTUAL;
 
-		// ------------------------------------------------------------------------------------------
-		//! Vibrates the specified gamepad (if the vibration is not supported, does nothing).
-		//! @param inputGamepadDuration Duration of the vibration.
-		//! @param inputGamepadRightMotor The vibration value in range [0; +1] for the m_Right motor.
-		//! @param inputGamepadLeftMotor The vibration value in range [0; +1] for the m_Left motor.
-		//! @param inputGamepadIndex m_Index of the gamepad. Zero by default.
-		GD_DFUNCTION()
-		GDAPI virtual void Gamepad_Vibrate(Float64 const inputGamepadDuration
-			, Float32 const inputGamepadRightMotor, Float32 const inputGamepadLeftMotor
-			, SizeTp const inputGamepadIndex = 0) GD_PURE_VIRTUAL;
+		/*!
+		 * Vibrates the specified gamepad (if the vibration is not supported, does nothing).
+		 *
+		 * @param inputGamepadDuration Duration of the vibration.
+		 * @param inputGamepadRightMotor The vibration value in range [0; +1] for the m_Right motor.
+		 * @param inputGamepadLeftMotor The vibration value in range [0; +1] for the m_Left motor.
+		 * @param inputGamepadIndex Index of the gamepad. Zero by default.
+		 */
+		GDAPI virtual void GamepadVibrate(Float64 const inputGamepadDuration, Float32 const inputGamepadRightMotor, Float32 const inputGamepadLeftMotor, SizeTp const inputGamepadIndex = 0) GD_PURE_VIRTUAL;
 
 		//! @todo Add more Dualshock4-specific features here.
 #if GD_PLATFORM_PLAYSTATION4
 
-		// ------------------------------------------------------------------------------------------
-		//! @param inputGamepadIndex m_Index of the gamepad. Zero by default.
-		GDAPI virtual void GamepadDualshock_SetLightBarColor(GeomColor const inputGamepadDualshockColor
-			, SizeTp const inputGamepadIndex = 0) GD_PURE_VIRTUAL;
+		/*
+		 * @param inputGamepadIndex Index of the gamepad. Zero by default.
+		 */
+		GDAPI virtual void SetGamepadDualshockLightBarColor(GeomColor const inputGamepadDualshockColor, SizeTp const inputGamepadIndex = 0) GD_PURE_VIRTUAL;
 
 #endif	// if GD_PLATFORM_PLAYSTATION4
 	};	// uinterface IInputBase_WithGamepad
@@ -278,12 +279,13 @@ GD_NAMESPACE_BEGIN
 	GD_DINTERFACE()
 	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IInputBase_WithKeyboard, IInput)
 	{
-		// ------------------------------------------------------------------------------------------
-		//! Returns the states of the specified keyboard button in the specified device m_Index.
-		//! @param inputKeyboardButton ID of the desired keyboard button.
-		//! @returns State of the specified button.
-		GD_DFUNCTION()
-		GDAPI virtual IInputButtonState Keyboard_GetButtonState(IInputKeyboardButton const inputKeyboardButton) GD_PURE_VIRTUAL;
+		/*!
+		 * Returns the states of the specified keyboard button in the specified device m_Index.
+		 *
+		 * @param inputKeyboardButton ID of the desired keyboard button.
+		 * @returns State of the specified button.
+		 */
+		GDAPI virtual IInputButtonState GetKeyboardButtonState(IInputKeyboardButton const inputKeyboardButton) GD_PURE_VIRTUAL;
 
 		//! @todo Add support for the text input methods.
 #if GD_PLATFORM_DESKTOP

@@ -6,12 +6,14 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-/*! 
+#if 0
+
+/*!
  * @file GoddamnEngine/Engine/Interface/DateTime/DateTime.cpp
  * Cross-platform date/time implementations.
  */
 #include <GoddamnEngine/Engine/Interface/DateTime/DateTime.h>
-#include <GoddamnEngine/Engine/Pipeline/Pipeline.h>
+//#include <GoddamnEngine/Engine/Pipeline/Pipeline.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -23,7 +25,7 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Global input interface pointer.
-	GDAPI IUniqueInterfacePointer<IDateTime> DateTime(CreateIDateTimeInstance(), PipelineManager->GetMainThreadPipeline());
+	//GDAPI IUniqueInterfacePointer<IDateTime> DateTime(CreateIDateTimeInstance(), PipelineManager->GetMainThreadPipeline());
 	GD_SINGLETON_IMPLEMENTATION(IDateTime);
 
 	// ------------------------------------------------------------------------------------------
@@ -139,3 +141,5 @@ GD_NAMESPACE_BEGIN
 	}
 
 GD_NAMESPACE_END
+
+#endif
