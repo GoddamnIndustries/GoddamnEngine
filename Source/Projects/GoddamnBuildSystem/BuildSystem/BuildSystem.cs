@@ -76,10 +76,9 @@ namespace GoddamnEngine.BuildSystem
 
             var executableLocation = Environment.CurrentDirectory;
             var executableShouldBe = Path.Combine("Bin", "Tools");
-            return Path.GetFullPath("../..");
-            //return s_SdkPath = executableLocation.EndsWith(executableShouldBe, StringComparison.InvariantCultureIgnoreCase) 
-            //    ? executableLocation.Substring(0, executableLocation.Length - executableShouldBe.Length - 1) 
-            //    : @"D:\GoddamnEngine";
+            return s_SdkPath = executableLocation.EndsWith(executableShouldBe, StringComparison.InvariantCultureIgnoreCase) 
+                ? executableLocation.Substring(0, executableLocation.Length - executableShouldBe.Length - 1) 
+                : ".";
         }
 
         /// <summary>
