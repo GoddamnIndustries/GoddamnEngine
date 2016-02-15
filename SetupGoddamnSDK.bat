@@ -94,7 +94,10 @@ if not %ErrorLevel% == 0 (
 )
 
 rem Generating solution files..
-call ".\bin\Tools\GoddamnBuildSystem.exe" %* 1>nul
+pushd
+cd ".\bin\Tools\"
+call "GoddamnBuildSystem.exe" %* 1>nul
+popd
 if not %ErrorLevel% == 0 (
 	echo GoddamnBuildSystem failed.
 	goto ExitOnFailure
