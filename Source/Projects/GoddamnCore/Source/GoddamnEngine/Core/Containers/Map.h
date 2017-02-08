@@ -37,38 +37,40 @@ GD_NAMESPACE_BEGIN
 		TValue	Value;	//!< Second element of the pair.
 
 	public:
-		GDINL MapPair() : Key(), Value()
+		GDINL MapPair() 
+			: Key(), Value()
 		{
 		}
 		
-		GDINL MapPair(TKey&& key, TValue&& value) : Key(Forward<TKey>(key)), Value(Forward<TValue>(value))
+		GDINL MapPair(TKey&& key, TValue&& value) 
+			: Key(Forward<TKey>(key)), Value(Forward<TValue>(value))
 		{
 		}
 
-		GDINL MapPair(TKey const& key, TValue const& value) : Key(key), Value(value)
+		GDINL MapPair(TKey const& key, TValue const& value) 
+			: Key(key), Value(value)
 		{
 		}
 
 	public:
-		GDINL bool operator> (MapPair<TKey, TValue> const& rhs) const
+		GDINL friend bool operator> (MapPair<TKey, TValue> const& lhs, MapPair<TKey, TValue> const& rhs)
 		{
-			return Key > rhs.Key;
+			return lhs.Key > rhs.Key;
+		}
+		GDINL friend bool operator< (MapPair<TKey, TValue> const& lhs, MapPair<TKey, TValue> const& rhs)
+		{
+			return lhs.Key < rhs.Key;
 		}
 
-		GDINL bool operator< (MapPair<TKey, TValue> const& rhs) const
+		GDINL friend bool operator== (MapPair<TKey, TValue> const& lhs, MapPair<TKey, TValue> const& rhs)
 		{
-			return Key < rhs.Key;
+			return lhs.Key == rhs.Key;
+		}
+		GDINL friend bool operator!= (MapPair<TKey, TValue> const& lhs, MapPair<TKey, TValue> const& rhs)
+		{
+			return lhs.Key != rhs.Key;
 		}
 
-		GDINL bool operator== (MapPair<TKey, TValue> const& rhs) const
-		{
-			return Key == rhs.Key;
-		}
-
-		GDINL bool operator!= (MapPair<TKey, TValue> const& rhs) const
-		{
-			return Key != rhs.Key;
-		}
 	};	// struct MapPair
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
@@ -108,7 +110,7 @@ GD_NAMESPACE_BEGIN
 
 		/*!
 		 * Moves other map here.
-		 * @param OtherMap Map would be moved into current object.
+		 * @param otherMap Map would be moved into current object.
 		 */
 		GDINL Map(Map&& otherMap) = default;
 
@@ -119,7 +121,9 @@ GD_NAMESPACE_BEGIN
 		GDINL Map(InitializerList<PairType> const& initializerList)
 		{
 			for (auto const& element : initializerList)
+			{
 				this->Insert(element.Key, element.Value);
+			}
 		}
 
 		GDINL ~Map()
@@ -136,7 +140,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Queries for the iterator of the element with specified key.
 		 *
-		 * @param element The element we are looking for.
+		 * @param key The key of the element we are looking for.
 		 * @returns Iterator on the element if it was found and End Iterator otherwise.
 		 */
 		//! @{
@@ -188,14 +192,16 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TValue& Insert(TKey&& key, TValue&& value = TValue())
 		{
-			GD_DEBUG_ASSERT(!this->Contains(key), "Element with specified key already exists.");
-			RedBlackTreeNodeType* const newNode = this->InternalCreateNode(Forward<TKey>(key), Forward<TValue>(value));
+			GD_DEBUG_VERIFY(!this->Contains(key), "Element with specified key already exists.");
+
+			RedBlackTreeNodeType* const newNode = this->InternalCreateNode(Utils::Forward<TKey>(key), Utils::Forward<TValue>(value));
 			this->InsertNodeBase(newNode);
 			return newNode->GetData()->Value;
 		}
-		GDINL TValue& Insert(TKey const& key, TValue const& value)
+		GDINL TValue& Insert(TKey const& key, TValue const& value = TValue())
 		{
-			GD_DEBUG_ASSERT(!this->Contains(key), "Element with specified key already exists.");
+			GD_DEBUG_VERIFY(!this->Contains(key), "Element with specified key already exists.");
+
 			RedBlackTreeNodeType* const newNode = this->InternalCreateNode(key, value);
 			this->InsertNodeBase(newNode);
 			return newNode->GetData()->Value;
@@ -209,7 +215,7 @@ GD_NAMESPACE_BEGIN
 		GDINL void Erase(TKey const& key)
 		{
 			auto const foundNode = this->FindNodeBase(&key);
-			GD_DEBUG_ASSERT(foundNode != this->GetNullNodeBase(), "Element with specified key does not exist.");
+			GD_DEBUG_VERIFY(foundNode != this->GetNullNodeBase(), "Element with specified key does not exist.");
 			this->RemoveNodeBase(foundNode);
 		}
 
@@ -233,7 +239,7 @@ GD_NAMESPACE_BEGIN
 			auto const queriedIterator = this->FindIterator(key);
 			if (queriedIterator == this->End())
 			{
-				return const_cast<Map*>(this)->Insert(Move(TKey(key)), Move(TValue()));
+				return const_cast<Map*>(this)->Insert(key);
 			}
 			return queriedIterator->Value;
 		}
@@ -242,9 +248,7 @@ GD_NAMESPACE_BEGIN
 			return const_cast<TValue&>(const_cast<Map const&>(*this)[key]);
 		}
 		//! @}
-	};	// class VectorMap
 
-	template<typename TKey, typename TValue>
-	using GCMap = Map<TKey, TValue, GCContainerAllocator<Pair<TKey, TValue>>>;
+	};	// class VectorMap
 
 GD_NAMESPACE_END

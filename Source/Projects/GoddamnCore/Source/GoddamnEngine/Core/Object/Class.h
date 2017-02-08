@@ -15,7 +15,7 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Object/Object.h>
 #include <GoddamnEngine/Core/Object/ObjectVisitor.h>
-#include <GoddamnEngine/Core/System/Threading/LiteMutex.h>
+#include <GoddamnEngine/Core/Concurrency/LiteMutex.h>
 #include <GoddamnEngine/Core/Containers/Map.h>
 
 GD_NAMESPACE_BEGIN

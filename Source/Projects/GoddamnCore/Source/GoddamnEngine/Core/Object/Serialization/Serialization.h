@@ -14,7 +14,8 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Object/Object.h>
-#include <GoddamnEngine/Core/System/IO/Stream.h>
+#include <GoddamnEngine/Core/Object/Class.h>
+#include <GoddamnEngine/Core/IO/Stream.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -25,6 +26,7 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	GD_OBJECT_KERNEL class SerializableObject : public Object
 	{
+	private:
 		GD_DECLARE_OBJECT_INTRINSIC_CORE(SerializableObject, Object);
 
 		/*! 
@@ -65,7 +67,7 @@ GD_NAMESPACE_BEGIN
 		 * Properties that are declared with 'PFNotSerializable' flag are not affected by call of this
 		 * function.
 		 *
-		 * @param archive The archive into which object would be serialized.
+		 * @param outputStream The archive into which object would be serialized.
 		 * @returns True if serialization succeeded.
 		 * @see PropertyFlags enum.
 		 */

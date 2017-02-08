@@ -7,7 +7,6 @@
 // ==========================================================================================
 
 // Required to be included first.
-#include <GoddamnEngine/Core/System/Threading/Atomics.h>
 
 /*! 
  * @file GoddamnEngine/Core/Object/Object.cpp
@@ -27,13 +26,13 @@ GD_NAMESPACE_BEGIN
 	 * Initializes the object and registers it inside the system to make garbage collecting
 	 * and recycling work.
 	 *
-	 * @param guid Possible predefined GUID for this object.
+	 * @param objectCtorInfo Construction information for this object.
 	 */
 	GDAPI GD_OBJECT_KERNEL Object::Object(ObjectCtorInfo const& objectCtorInfo)
 		: m_GUID(objectCtorInfo.Guid), m_ReferenceCount(1)
 	{
-		GD_DEBUG_ASSERT(objectCtorInfo.Guid != EmptyGUID, "Empty GUID was specified.");
-		GD_DEBUG_ASSERT(objectCtorInfo.Class != nullptr, "Null pointer class was specified.");
+		GD_DEBUG_VERIFY(objectCtorInfo.Guid != EmptyGUID, "Empty GUID was specified.");
+		GD_DEBUG_VERIFY(objectCtorInfo.Class != nullptr, "Null pointer class was specified.");
 		{	
 			// Registering the object in the class table.
 			ScopedLiteMutex classInstancesRegistryLock(objectCtorInfo.Class->m_ClassInstancesRegistryLock);
@@ -46,7 +45,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI GD_OBJECT_KERNEL Object::~Object()
 	{
-		GD_DEBUG_ASSERT(m_ReferenceCount == 0, "Attempting to delete a referenced object.");
+		GD_DEBUG_VERIFY(m_ReferenceCount == 0, "Attempting to delete a referenced object.");
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -62,8 +61,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI GD_OBJECT_KERNEL UInt32 Object::AddRef()
 	{
-		Atomics::InterlockedIncrementInt32(reinterpret_cast<Int32*>(&m_ReferenceCount));
-		return m_ReferenceCount;
+		return ++m_ReferenceCount;
 	}
 
 	/*!
@@ -76,8 +74,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI GD_OBJECT_KERNEL UInt32 Object::Release()
 	{
-		Atomics::InterlockedDecrementInt32(reinterpret_cast<Int32*>(&m_ReferenceCount));
-		if (m_ReferenceCount == 0)
+		if (--m_ReferenceCount == 0)
 		{
 			// Zero reference counter reached, it is time to recycle object.
 			{	
@@ -101,8 +98,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI GD_OBJECT_KERNEL RefPtr<Object> Object::FindObject(GUID const& guid, ClassPtr const klass)
 	{
-		GD_DEBUG_ASSERT(klass != nullptr, "Null pointer class was specified.");
-		GD_DEBUG_ASSERT(guid != EmptyGUID, "Invalid GUID was specified.");
+		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
+		GD_DEBUG_VERIFY(guid != EmptyGUID, "Invalid GUID was specified.");
 
 		{	// First, trying to find this object among instances of this class.
 			ScopedLiteMutex classInstancesRegistryLock(klass->m_ClassInstancesRegistryLock);
@@ -135,9 +132,9 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns Found or created object.
 	 */
-	GDAPI GD_OBJECT_KERNEL RefPtr<Object> Object::FindOr—reateObject(GUID const& guid, ClassPtr const klass /*= nullptr*/)
+	GDAPI GD_OBJECT_KERNEL RefPtr<Object> Object::FindOrCreateObject(GUID const& guid, ClassPtr const klass /*= nullptr*/)
 	{
-		GD_DEBUG_ASSERT(klass != nullptr, "Null pointer class was specified.");
+		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
 
 		// First, trying to find the object among registered.
 		if (guid != EmptyGUID)
@@ -150,18 +147,21 @@ GD_NAMESPACE_BEGIN
 		}
 
 		// No object was found, and we are sure it does not exist. We need to create it.
-		GD_ASSERT(klass->m_ClassConstructor != nullptr, "Specified class is abstract.");
+		GD_VERIFY(klass->m_ClassConstructor != nullptr, "Specified class is abstract.");
 
 		/*
 		 * Some life principles for the new-born object:
 		 * 1. Happiness lies in its absence. Suffering is a measure of creation.
 		 * 2. Creation justifies any expenses for creation.
 		 * 3. Creation should lead to creation.
+		 * (I was drunk when I've writen this. Sorry)
 		 */
 		ObjectCtorInfo objectCtorInfo = {};
 		objectCtorInfo.Guid = guid == EmptyGUID ? GUID::New() : guid;
 		objectCtorInfo.Class = const_cast<Class*>(klass);
-		return klass->m_ClassConstructor(objectCtorInfo);
+		auto const object = RefPtr<Object>(klass->m_ClassConstructor(objectCtorInfo));
+		object->Release();
+		return object;
 	}
 
 	/*!
@@ -173,7 +173,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI GD_OBJECT_KERNEL Vector<RefPtr<Object>> Object::FindObjects(ClassPtr const klass)
 	{
-		GD_DEBUG_ASSERT(klass != nullptr, "Null pointer class was specified.");
+		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
 		{	
 			// Safely copying all instances of the specified class into array.
 			ScopedLiteMutex classInstancesRegistryLock(klass->m_ClassInstancesRegistryLock);

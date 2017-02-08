@@ -37,7 +37,7 @@ GD_NAMESPACE_BEGIN
 			int static const sdlCurrentDisplay = 0;	// We have no support for multiple display systems.
 			
 			int const sdlDisplayModesCount = SDL_GetNumDisplayModes(sdlCurrentDisplay);
-			GD_ASSERT(sdlDisplayModesCount > 0, "No display mods information was retrieved.");
+			GD_VERIFY(sdlDisplayModesCount > 0, "No display mods information was retrieved.");
 			for (SizeTp sdlDisplayModeIndex = 0; sdlDisplayModeIndex < sdlDisplayModesCount; ++sdlDisplayModeIndex)
 			{
 				// Retrieving display lists in the reverse order..
@@ -83,7 +83,7 @@ GD_NAMESPACE_BEGIN
 #endif	// if GD_DEBUG
 
 		// Initializing the SDL2
-		GD_ASSERT(SDL_Init(SDL_INIT_EVERYTHING) == 0
+		GD_VERIFY(SDL_Init(SDL_INIT_EVERYTHING) == 0
 			, "'SDL_Init' function has failed");
 
 		// Creating the output window..
@@ -91,7 +91,7 @@ GD_NAMESPACE_BEGIN
 			, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED	// Position on screen.
 			, static_cast<int>(GfxResolutionSelected->Width), static_cast<int>(GfxResolutionSelected->Height)
 			, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
-		GD_ASSERT(SDLWindow != nullptr, "'SDL_CreateWindow' function has failed.");
+		GD_VERIFY(SDLWindow != nullptr, "'SDL_CreateWindow' function has failed.");
 		
 		ConsoleDevice->Log(GD_DLOG_CAT ": ... initialized.");
 		return IResult::Ok;
@@ -160,7 +160,7 @@ GD_NAMESPACE_BEGIN
 		ConsoleDevice->LogFormat(GD_DLOG_CAT ": mode is going to be set to %d...", gfxCanvasMode);
 
 		GfxCanvasMode = gfxCanvasMode;
-		GD_ASSERT(SDL_SetWindowFullscreen(SDLWindow, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
+		GD_VERIFY(SDL_SetWindowFullscreen(SDLWindow, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
 			| gfxCanvasMode != IGRAPHICS_OUTPUT_MODE_WINDOWED ? SDL_WINDOW_FULLSCREEN : 0) == 0
 			, "'SDL_SetWindowFullscreen' function has failed.");
 

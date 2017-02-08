@@ -286,21 +286,8 @@ GD_NAMESPACE_BEGIN
 		 * @param value Object output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(JsonObjectPtr& value)
-		{
-			GD_NOT_USED(value);
-			return false;
-		}
-		GDINT virtual bool _TryGetValue(DOMObjectPtr& value) override final 
-		{ 
-			JsonObjectPtr valueJson;
-			if (TryGetValue(valueJson))
-			{
-				value = valueJson;
-				return true;
-			}
-			return false;
-		}
+		GDAPI virtual bool TryGetValue(JsonObjectPtr& value);
+		GDINT virtual bool _TryGetValue(DOMObjectPtr& value) override final;
 
 		// ------------------------------------------------------------------------------------------
 		// Setter operations.
@@ -469,13 +456,81 @@ GD_NAMESPACE_BEGIN
 		 * @param value Object input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(JsonObjectPtr const value)
-		{
-			GD_NOT_USED(value);
-			return false;
-		}
+		GDAPI virtual bool TrySetValue(JsonObjectPtr const value);
 
 	};	// class JsonValue
+
+	// **------------------------------------------------------------------------------------------**
+	//! Interface for JSON object - ORIGINALLY INTENDED FOR INTERNAL USAGE ONLY.
+	// **------------------------------------------------------------------------------------------**
+	class JsonObject final : public DOMObject
+	{
+	private:
+		Map<String, JsonValuePtr> m_Properties;
+
+	public:
+
+		/*!
+		 * Finds DOM value property by name.
+		 *
+		 * @param name The name of the property.
+		 * @returns Pointer to the found value or null pointer.
+		 */
+		GDINT JsonValuePtr GetProperty(String const& name)
+		{
+			auto const propertyPtr = m_Properties.Find(name);
+			return propertyPtr != nullptr ? *propertyPtr : nullptr;
+		}
+		GDINT virtual DOMValuePtr _GetProperty(String const& name) override final { return static_cast<DOMValuePtr>(GetProperty(name)); }
+
+		/*!
+		 * Removes DOM property with specified name.
+		 * If no such property was found, does nothing.
+		 *
+		 * @param name The name of the property.
+		 */
+		GDINT void RemoveProperty(String const& name)
+		{
+			if (m_Properties.Find(name) != nullptr)
+			{
+				m_Properties.Erase(name);
+			}
+		}
+
+		/*!
+		 * Adds a new DOM property with specified name.
+		 *
+		 * @param name The name of the property.
+		 * @param value The value of the property.
+		 */
+		GDINT void AddProperty(String const& name, JsonValuePtr const value)
+		{
+			m_Properties.Insert(name, value);
+		}
+
+	};	// class JsonObject
+
+	// JsonValue->TryGet/SetValue - needs to be here because of checks inside SharedPtr.
+	GDINL bool JsonValue::TryGetValue(JsonObjectPtr& value)
+	{
+		GD_NOT_USED(value);
+		return false;
+	}
+	GDINL bool JsonValue::_TryGetValue(DOMObjectPtr& value)
+	{ 
+		JsonObjectPtr valueJson;
+		if (TryGetValue(valueJson))
+		{
+			value = valueJson;
+			return true;
+		}
+		return false;
+	}
+	GDINL bool JsonValue::TrySetValue(JsonObjectPtr const value)
+	{
+		GD_NOT_USED(value);
+		return false;
+	}
 
 	// **------------------------------------------------------------------------------------------**
 	//! Interface for JSON null value - ORIGINALLY INTENDED FOR INTERNAL USAGE ONLY.
@@ -782,56 +837,6 @@ GD_NAMESPACE_BEGIN
 		}
 
 	};	// class JsonValueObject
-
-	// **------------------------------------------------------------------------------------------**
-	//! Interface for JSON object - ORIGINALLY INTENDED FOR INTERNAL USAGE ONLY.
-	// **------------------------------------------------------------------------------------------**
-	class JsonObject final : public DOMObject
-	{
-	private:
-		Map<String, JsonValuePtr> m_Properties;
-
-	public:
-
-		/*!
-		 * Finds DOM value property by name.
-		 *
-		 * @param name The name of the property.
-		 * @returns Pointer to the found value or null pointer.
-		 */
-		GDINT JsonValuePtr GetProperty(String const& name)
-		{
-			auto const propertyPtr = m_Properties.Find(name);
-			return propertyPtr != nullptr ? *propertyPtr : nullptr;
-		}
-		GDINT virtual DOMValuePtr _GetProperty(String const& name) override final { return static_cast<DOMValuePtr>(GetProperty(name)); }
-
-		/*!
-		 * Removes DOM property with specified name.
-		 * If no such property was found, does nothing.
-		 *
-		 * @param name The name of the property.
-		 */
-		GDINT void RemoveProperty(String const& name)
-		{
-			if (m_Properties.Find(name) != nullptr)
-			{
-				m_Properties.Erase(name);
-			}
-		}
-
-		/*!
-		 * Adds a new DOM property with specified name.
-		 *
-		 * @param name The name of the property.
-		 * @param value The value of the property.
-		 */
-		GDINT void AddProperty(String const& name, JsonValuePtr const value)
-		{
-			m_Properties.Insert(name, value);
-		}
-
-	};	// class JsonObject
 
 	// **------------------------------------------------------------------------------------------**
 	//! Interface for JSON document - ORIGINALLY INTENDED FOR INTERNAL USAGE ONLY.

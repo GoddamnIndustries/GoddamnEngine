@@ -1,17 +1,16 @@
 Goddamn Engine
 ==============
-_Copyright (C) Goddamn Industries 2011 - 2015. All Rights Reserved._
+_Copyright (C) Goddamn Industries 2011 - 2016. All Rights Reserved._
 
-The [GoddamnEngine](http://goddamnengine.com) is cross-platform next-generation-ready realtime game engine. 
-Goal of this project is the creation of the most minimalistic full-featured game development framework that surpasses most three-A engines. Project contains a very small core, but is intended to be very flexible and extensible.
+The [GoddamnEngine](http://goddamnengine.com) is cross-platform next-generation-ready computational and visualisation engine. Goal of this project is the creation of the most minimalistic full-featured game visualisation framework that surpasses most scientific engines. Project contains a very small core, but is intended to be very flexible and extensible.
 Work is in progress now.
 
 Features
 --------
  - Minimalistic but flexible code design: engine is not as monstrous and clumsy piece of code as the others are.
  - Support of the most modern platforms: Windows (Phone & RT), OS X & iOS, Linux & Android, XBox One & PlayStation4, HTML5 (via Emscripten).
- - Advanced rendering pipeline: DirectX ~~12~~ and 11, ~~AMD Mantle~~, ~~Apple Metal~~, OpenGL and OpenGL(ES).
- - Entirely written in native languages: C/C++11, Objective-C/C++.
+ - Advanced and modern rendering pipeline: DirectX 12, Vulkan and Metal.
+ - Entirely written in native languages: C++14, Objective-C++.
 
 Installation
 ------------
@@ -35,4 +34,4 @@ Getting started
 
 Authors
 -------
-_Engine Programmer, Graphics/FX Programmer, Utilities Programmer, CTO - [James Jhuighuy](https://github.com/Jhuighuy)._ 
+_Engine Programmer, Graphics/FX Programmer, Utilities Programmer, CTO - [James Jhuighuy](https://github.com/Jhuighuy)._

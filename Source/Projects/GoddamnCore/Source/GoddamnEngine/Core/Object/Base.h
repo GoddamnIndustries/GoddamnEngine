@@ -51,7 +51,7 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * Represents pointer to class information.
 	 */
-	typedef GD_OBJECT_HELPER Class const* ClassPtr;
+	typedef GD_OBJECT_HELPER /*NotNull<*/ Class const* /*>*/ ClassPtr;
 
 	template<typename TObjectSource, typename TObjectDest>
 	GDINL GD_OBJECT_KERNEL static TObjectDest* object_cast(TObjectSource* const sourceObject);

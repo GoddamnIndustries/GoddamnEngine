@@ -13,7 +13,7 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Iterators.h>
+#include <GoddamnEngine/Core/Templates/Iterators.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>
 #include <GoddamnEngine/Core/Containers/RedBlackTree/RedBlackTree.h>
 
@@ -50,9 +50,13 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Initializes an empty set.
 		 */
-		GDINL Set() 
-		{
-		}
+		GDINL Set() = default;
+
+		/*!
+		* Moves other set here.
+		* @param otherSet Set would be moved into current object.
+		*/
+		GDINL Set(Set&& otherSet) = default;
 
 		/*!
 		 * Initializes set with default C++11's initializer list. You should not use this constructor manually.
@@ -61,14 +65,10 @@ GD_NAMESPACE_BEGIN
 		GDINL Set(InitializerList<TElement> const& initializerList)
 		{
 			for (auto const& element : initializerList)
+			{
 				this->Insert(element);
+			}
 		}
-
-		/*!
-		 * Moves other set here.
-		 * @param OtherSet Set would be moved into current object.
-		 */
-		GDINL Set(Set&& otherSet) = default;
 
 		GDINL ~Set()
 		{
@@ -114,17 +114,19 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TElement& Insert(TElement&& element)
 		{
-			GD_DEBUG_ASSERT(!this->Contains(element), "Specified element already exists.");
-			RedBlackTreeNodeType* const newNode = this->InternalCreateNode(Forward<TElement>(element));
+			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
+			
+			auto const newNode = this->InternalCreateNode(Utils::Forward<TElement>(element));
 			this->InsertNodeBase(newNode);
-			return *newNode->GetData();
+			return newNode->GetData();
 		}
 		GDINL TElement& Insert(TElement const& element)
 		{
-			GD_DEBUG_ASSERT(!this->Contains(element), "Specified element already exists.");
-			RedBlackTreeNodeType* const newNode = this->InternalCreateNode(element);
+			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
+			
+			auto const newNode = this->InternalCreateNode(element);
 			this->InsertNodeBase(newNode);
-			return *newNode->GetData();
+			return newNode->GetData();
 		}
 		//! @}
 
@@ -132,18 +134,12 @@ GD_NAMESPACE_BEGIN
 		 * Removes existing element from the set.
 		 * @param element The element that is going to be removed.
 		 */
-		//! @{
 		GDINL void Erase(TElement const& element)
 		{
-			this->EraseByPtr(&element);
-		}
-		GDINL void EraseByPtr(TElement const* const element)
-		{
-			auto const foundNode = this->FindNodeBase(element);
-			GD_DEBUG_ASSERT(foundNode != this->GetNullNodeBase(), "Specified element does not exist.");
+			auto const foundNode = this->FindNodeBase(&element);
+			GD_DEBUG_VERIFY(foundNode != this->GetNullNodeBase(), "Specified element does not exist.");
 			this->RemoveNodeBase(foundNode);
 		}
-		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		// Overloaded operators.
@@ -152,8 +148,5 @@ GD_NAMESPACE_BEGIN
 		GDINL Set& operator= (Set&& otherSet) = default;
 
 	};	// class Set
-
-	template<typename TElement>
-	using GCSet = Set<TElement, GCContainerAllocator<TElement>>;
 
 GD_NAMESPACE_END

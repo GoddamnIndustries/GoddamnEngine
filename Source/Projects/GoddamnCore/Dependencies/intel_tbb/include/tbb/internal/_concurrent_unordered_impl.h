@@ -1,5 +1,5 @@
 /*
-    Copyright 2005-2015 Intel Corporation.  All Rights Reserved.
+    Copyright 2005-2016 Intel Corporation.  All Rights Reserved.
 
     This file is part of Threading Building Blocks. Threading Building Blocks is free software;
     you can redistribute it and/or modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
     reasons why the executable file might be covered by the GNU General Public License.
 */
 
-/* Container implementations in this header are based on PPL implementations 
+/* Container implementations in this header are based on PPL implementations
    provided by Microsoft. */
 
 #ifndef __TBB__concurrent_unordered_impl_H
@@ -53,6 +53,8 @@
 #if __TBB_INITIALIZER_LISTS_PRESENT
     #include <initializer_list>
 #endif
+
+#include "_tbb_hash_compare_impl.h"
 
 namespace tbb {
 namespace interface5 {
@@ -643,32 +645,6 @@ private:
     nodeptr_t                                             my_head;            // pointer to head node
 };
 
-// Template class for hash compare
-template<typename Key, typename Hasher, typename Key_equality>
-class hash_compare
-{
-public:
-    typedef Hasher hasher;
-    typedef Key_equality key_equal;
-
-    hash_compare() {}
-
-    hash_compare(Hasher a_hasher) : my_hash_object(a_hasher) {}
-
-    hash_compare(Hasher a_hasher, Key_equality a_keyeq) : my_hash_object(a_hasher), my_key_compare_object(a_keyeq) {}
-
-    size_t operator()(const Key& key) const {
-        return ((size_t)my_hash_object(key));
-    }
-
-    bool operator()(const Key& key1, const Key& key2) const {
-        return (!my_key_compare_object(key1, key2));
-    }
-
-    Hasher       my_hash_object;        // The hash object
-    Key_equality my_key_compare_object; // The equality comparator object
-};
-
 #if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
 #pragma warning(push)
 #pragma warning(disable: 4127) // warning C4127: conditional expression is constant
@@ -864,7 +840,7 @@ public:
         return my_solist.max_size();
     }
 
-    // Iterators 
+    // Iterators
     iterator begin() {
         return my_solist.begin();
     }
@@ -911,7 +887,7 @@ public:
             return my_midpoint_node != my_end_node;
         }
         //! Split range.
-        const_range_type( const_range_type &r, split ) : 
+        const_range_type( const_range_type &r, split ) :
             my_table(r.my_table), my_end_node(r.my_end_node)
         {
             r.my_end_node = my_begin_node = r.my_midpoint_node;
@@ -921,7 +897,7 @@ public:
             r.set_midpoint();
         }
         //! Init range with container and grainsize specified
-        const_range_type( const concurrent_unordered_base &a_table ) : 
+        const_range_type( const concurrent_unordered_base &a_table ) :
             my_table(a_table), my_begin_node(a_table.my_solist.begin()),
             my_end_node(a_table.my_solist.end())
         {
@@ -1109,7 +1085,7 @@ public:
         return const_cast<self_type*>(this)->internal_equal_range(key);
     }
 
-    // Bucket interface - for debugging 
+    // Bucket interface - for debugging
     size_type unsafe_bucket_count() const {
         return my_number_of_buckets;
     }
@@ -1162,7 +1138,7 @@ public:
             return end();
 
         raw_iterator it = get_bucket(bucket);
-    
+
         // Find the end of the bucket, denoted by the dummy element
         do ++it;
         while(it != my_solist.raw_end() && !it.get_node_ptr()->is_dummy());
@@ -1179,7 +1155,7 @@ public:
             return end();
 
         raw_const_iterator it = get_bucket(bucket);
-    
+
         // Find the end of the bucket, denoted by the dummy element
         do ++it;
         while(it != my_solist.raw_end() && !it.get_node_ptr()->is_dummy());
@@ -1290,7 +1266,7 @@ private:
         sokey_t order_key = (sokey_t) my_hash_compare(get_key(value));
         size_type bucket = order_key % my_number_of_buckets;
 
-        //TODO:refactor the get_bucket related staff into separate function something like aqcuire_bucket(key_type)
+        //TODO:refactor the get_bucket related stuff into separate function something like acquire_bucket(key_type)
         // If bucket is empty, initialize it first
         if (!is_initialized(bucket))
             init_bucket(bucket);
@@ -1308,14 +1284,17 @@ private:
 
         for (;;)
         {
-            if (where == last || solist_t::get_order_key(where) > order_key)
+            if (where == last || solist_t::get_order_key(where) > order_key ||
+                    // if multimapped, stop at the first item equal to us.
+                    (allow_multimapping && solist_t::get_order_key(where) == order_key &&
+                     !my_hash_compare(get_key(*where), get_key(value))))
             {
                  if (!pnode)
                      pnode = my_solist.create_node(order_key, tbb::internal::forward<ValueType>(value));
-            
-                // Try to insert it in the right place
+
+                // Try to insert 'pnode' between 'it' and 'where'
                 std::pair<iterator, bool> result = my_solist.try_insert(it, where, pnode, &new_count);
-                
+
                 if (result.second)
                 {
                     // Insertion succeeded, adjust the table size, if needed
@@ -1334,14 +1313,13 @@ private:
                     continue;
                 }
             }
-            else if (!allow_multimapping && solist_t::get_order_key(where) == order_key && my_hash_compare(get_key(*where), get_key(value)) == 0)
-            {
+            else if (!allow_multimapping && solist_t::get_order_key(where) == order_key &&
+                    my_hash_compare(get_key(*where), get_key(value)) == 0)
+            { // Element already in the list, return it
                  if (pnode)
-                     my_solist.destroy_node(pnode);            
-                // Element already in the list, return it
+                     my_solist.destroy_node(pnode);
                 return std::pair<iterator, bool>(my_solist.get_iterator(where), false);
             }
-
             // Move the iterator forward
             it = where;
             ++where;
@@ -1562,47 +1540,8 @@ private:
 #pragma warning(pop) // warning 4127 is back
 #endif
 
-//! Hash multiplier
-static const size_t hash_multiplier = tbb::internal::select_size_t_constant<2654435769U, 11400714819323198485ULL>::value;
 } // namespace internal
 //! @endcond
-//! Hasher functions
-template<typename T>
-inline size_t tbb_hasher( const T& t ) {
-    return static_cast<size_t>( t ) * internal::hash_multiplier;
-}
-template<typename P>
-inline size_t tbb_hasher( P* ptr ) {
-    size_t const h = reinterpret_cast<size_t>( ptr );
-    return (h >> 3) ^ h;
-}
-template<typename E, typename S, typename A>
-inline size_t tbb_hasher( const std::basic_string<E,S,A>& s ) {
-    size_t h = 0;
-    for( const E* c = s.c_str(); *c; ++c )
-        h = static_cast<size_t>(*c) ^ (h * internal::hash_multiplier);
-    return h;
-}
-template<typename F, typename S>
-inline size_t tbb_hasher( const std::pair<F,S>& p ) {
-    return tbb_hasher(p.first) ^ tbb_hasher(p.second);
-}
 } // namespace interface5
-using interface5::tbb_hasher;
-
-
-// Template class for hash compare
-template<typename Key>
-class tbb_hash
-{
-public:
-    tbb_hash() {}
-
-    size_t operator()(const Key& key) const
-    {
-        return tbb_hasher(key);
-    }
-};
-
 } // namespace tbb
 #endif // __TBB__concurrent_unordered_impl_H

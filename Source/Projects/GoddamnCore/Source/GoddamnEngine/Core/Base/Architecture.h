@@ -774,6 +774,7 @@
 #	pragma warning(disable : 4127)	// conditional expression is constant
 //#	pragma warning(disable : 4189)
 #	pragma warning(disable : 4201)	// nonstandard extension used : nameless struct/union
+#	pragma warning(disable : 4297)
 #	pragma warning(disable : 4291)
 //#	pragma warning(disable : 4301)
 #	pragma warning(disable : 4324)	// structure was padded due to __declspec(align())
@@ -781,6 +782,7 @@
 //#	pragma warning(disable : 4456)
 //#	pragma warning(disable : 4458)
 #	pragma warning(disable : 4505)	// unreferenced local function has been RemoveFromSelfd. Actually, this should not be disabled.
+#	pragma warning(disable : 4595)	// warning C4595: 'operator delete': non-member operator new or delete functions may not be declared inline.
 #	pragma warning(disable : 4714)	// function '...' marked as __forceinline not inlined. Actually, this should not be disabled.
 #elif GD_COMPILER_GCC_COMPATIBLE
 #endif	// *** Warnings. ***

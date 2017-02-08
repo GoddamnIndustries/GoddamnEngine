@@ -49,7 +49,7 @@ GD_NAMESPACE_BEGIN
 			if (!IGenericReader::TryReadPropertyName(name))
 			{
 				// Selecting top object's property by name.
-				GD_DEBUG_ASSERT(!m_ObjectsScope.IsEmpty(), "Object scoping error.");
+				GD_DEBUG_VERIFY(!m_ObjectsScope.IsEmpty(), "Object scoping error.");
 				
 				auto const topDomObject = m_ObjectsScope.GetLast();
 				m_SelectedValue = topDomObject->_GetProperty(name);
@@ -57,10 +57,10 @@ GD_NAMESPACE_BEGIN
 			}
 
 			// Selecting next element of the array.
-			GD_DEBUG_ASSERT(!m_ArraysScope.IsEmpty(), "Array scoping error.");
+			GD_DEBUG_VERIFY(!m_ArraysScope.IsEmpty(), "Array scoping error.");
 			
 			auto const& topDomArray = m_ArraysScope.GetLast();
-			GD_DEBUG_ASSERT(topDomArray.CurrentIndex < topDomArray.Array.GetLength(), "Reading array element runs out of bounds.");
+			GD_DEBUG_VERIFY(topDomArray.CurrentIndex < topDomArray.Array.GetLength(), "Reading array element runs out of bounds.");
 			m_SelectedValue = topDomArray.Array[topDomArray.CurrentIndex++];
 			return true;
 		}
@@ -72,7 +72,7 @@ GD_NAMESPACE_BEGIN
 		template<typename TValue>
 		GDINL gd_s_virtual bool TryReadPropertyValue(TValue& value) gd_s_override
 		{
-			GD_DEBUG_ASSERT(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
+			GD_DEBUG_VERIFY(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
 			return m_SelectedValue->_TryGetValue(value);
 		}
 
@@ -80,7 +80,7 @@ GD_NAMESPACE_BEGIN
 		// Array properties readers.
 		// ------------------------------------------------------------------------------------------
 
-		GDINL gd_s_virtual bool TryBeginReadArrayPropertyValue(UInt32& arraySize) gd_s_override
+		GDINL gd_s_virtual bool TryBeginReadArrayPropertyValue(SizeTp& arraySize) gd_s_override
 		{
 			if (!IGenericReader::TryBeginReadArrayPropertyValue(arraySize))
 			{

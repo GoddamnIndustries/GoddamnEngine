@@ -23,8 +23,4 @@ GD_NAMESPACE_BEGIN
 	template<typename TElement>
 	using InitializerList = ::std::initializer_list<TElement>;
 
-#if !GD_DOCUMENTATION
-	namespace std { enum { initializer_list }; }
-#endif	// if !GD_DOCUMENTATION
-
 GD_NAMESPACE_END

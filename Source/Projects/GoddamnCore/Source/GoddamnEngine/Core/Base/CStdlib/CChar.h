@@ -12,6 +12,9 @@
  * Wrappers, helper functions and definitions for standard char functions.
  */
 #pragma once
+#if !defined(GD_INSIDE_INCLUDE_H)
+#	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
+#endif	// if !defined(GD_INSIDE_INCLUDE_H)
 
 /*!
  * Selects wide or ANSI character literal based on specified type.
@@ -23,35 +26,35 @@
 
 GD_NAMESPACE_BEGIN
 
-	template <typename CharType>
+	template<typename>
 	struct Literal;
 	
-	template <>
+	template<>
 	struct Literal<Char> final
 	{
-		GDINL static Char Select(Char const ANSI, WideChar const Wide)
+		GDINL static constexpr Char Select(Char const ANSI, WideChar const Wide)
 		{
-			GD_NOT_USED(Wide);
+		//	GD_NOT_USED(Wide);
 			return ANSI;
 		}
-		GDINL static Char const* Select(Char const* const ANSI, WideChar const* const Wide)
+		GDINL static constexpr Char const* Select(Char const* const ANSI, WideChar const* const Wide)
 		{
-			GD_NOT_USED(Wide);
+			//GD_NOT_USED(Wide);
 			return ANSI;
 		}
 	};	// struct Literal<Char>
 
-	template <>
+	template<>
 	struct Literal<WideChar> final
 	{
-		GDINL static WideChar Select(Char const ANSI, WideChar const Wide)
+		GDINL static constexpr WideChar Select(Char const ANSI, WideChar const Wide)
 		{
-			GD_NOT_USED(ANSI);
+			//GD_NOT_USED(ANSI);
 			return Wide;
 		}
-		GDINL static WideChar const* Select(Char const* const ANSI, WideChar const* const Wide)
+		GDINL static constexpr WideChar const* Select(Char const* const ANSI, WideChar const* const Wide)
 		{
-			GD_NOT_USED(ANSI);
+			//GD_NOT_USED(ANSI);
 			return Wide;
 		}
 	};	// struct Literal<WideChar>
@@ -66,41 +69,41 @@ GD_NAMESPACE_BEGIN
 	public:
 
 		/*! 
-		 * Returns true if this character is valid digit in specified notation.
+		 * Returns true if this character is valid digit in specified radix.
 		 *
 		 * @param character Specified character.
-		 * @param notation The notation in which value is represented.
+		 * @param radix The radix in which value is represented.
 		 *
-		 * @returns True if this character is valid digit in specified notation.
+		 * @returns True if this character is valid digit in specified radix.
 		 */
-		GDINL static bool IsDigit(TChar const character, SizeTp const notation)
+		GDINL static bool IsDigit(TChar const character, SizeTp const radix)
 		{
 			// This code is useless for debug check of functions.
-			switch (notation)
+			switch (radix)
 			{
 				case 10: 
 					return IsDigit(character);
 				case 16: 
 					return IsHexDigit(character);
 				default: 
-					GD_ASSERT((notation >= 2) && (notation <= static_cast<SizeTp>(('9' - '0') + ('Z' - 'A') + 2)), "This notation is invalid or not supported");
-					if (notation > 10)
+					GD_VERIFY((radix >= 2) && (radix <= static_cast<SizeTp>(('9' - '0') + ('Z' - 'A') + 2)), "This radix is invalid or not supported");
+					if (radix > 10)
 					{
 						if ((character >= GD_LITERAL(TChar, '0')) && (character <= GD_LITERAL(TChar, '9')))
 						{
 							return true;
 						}
-						if (character >= GD_LITERAL(TChar, 'A') && (character <= (GD_LITERAL(TChar, 'A') + notation - 10)))
+						if (character >= GD_LITERAL(TChar, 'A') && (character <= (GD_LITERAL(TChar, 'A') + radix - 10)))
 						{
 							return true;
 						}
-						if (character >= GD_LITERAL(TChar, 'a') && (character <= (GD_LITERAL(TChar, 'z') + notation - 10)))
+						if (character >= GD_LITERAL(TChar, 'a') && (character <= (GD_LITERAL(TChar, 'z') + radix - 10)))
 						{
 							return true;
 						}
 						return false;
 					}
-					return (character >= GD_LITERAL(TChar, '0')) && (character <= (GD_LITERAL(TChar, '0') + notation));
+					return (character >= GD_LITERAL(TChar, '0')) && (character <= (GD_LITERAL(TChar, '0') + radix));
 			}
 		}
 
@@ -185,14 +188,14 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		/*!
-		 * Converts this character in specified notation to decimal one.
+		 * Converts this character in specified radix to decimal one.
 		 * 
 		 * @param character Specified character.
 		 * @returns Integer representation of this character data.
 		 */
 		GDINL static UInt8 ToDigit(TChar const character)
 		{
-			GD_DEBUG_ASSERT(IsHexDigit(character), "Specified character is not a digit.");
+			GD_DEBUG_VERIFY(IsHexDigit(character), "Specified character is not a digit.");
 			if ((character >= GD_LITERAL(TChar, '0')) && (character <= GD_LITERAL(TChar, '9')))
 			{
 				return character - GD_LITERAL(TChar, '0');

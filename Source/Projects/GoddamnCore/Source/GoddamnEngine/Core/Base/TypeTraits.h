@@ -22,13 +22,13 @@
 	{ \
 		GDINL static constexpr TEnumType operator~ (TEnumType const e) \
 		{ \
-			typedef GD::TypeTraits::Underlying<TEnumType>::Type TEnumInteger; \
+			typedef GD::TypeTraits::Underlying<TEnumType> TEnumInteger; \
 			return static_cast<TEnumType>(~static_cast<TEnumInteger>(e)); \
 		} \
 		\
 		GDINL static constexpr TEnumType operator| (TEnumType const lhs, TEnumType const rhs) \
 		{ \
-			typedef GD::TypeTraits::Underlying<TEnumType>::Type TEnumInteger; \
+			typedef GD::TypeTraits::Underlying<TEnumType> TEnumInteger; \
 			return static_cast<TEnumType>(static_cast<TEnumInteger>(lhs) | static_cast<TEnumInteger>(rhs)); \
 		} \
 		GDINL static TEnumType& operator|= (TEnumType& lhs, TEnumType const rhs) \
@@ -38,7 +38,7 @@
 		\
 		GDINL static constexpr TEnumType operator& (TEnumType const lhs, TEnumType const rhs) \
 		{ \
-			typedef GD::TypeTraits::Underlying<TEnumType>::Type TEnumInteger; \
+			typedef GD::TypeTraits::Underlying<TEnumType> TEnumInteger; \
 			return static_cast<TEnumType>(static_cast<TEnumInteger>(lhs) & static_cast<TEnumInteger>(rhs)); \
 		} \
 		GDINL static TEnumType& operator&= (TEnumType& lhs, TEnumType const rhs) \
@@ -48,7 +48,7 @@
 		\
 		GDINL static constexpr TEnumType operator^ (TEnumType const lhs, TEnumType const rhs) \
 		{ \
-			typedef GD::TypeTraits::Underlying<TEnumType>::Type TEnumInteger; \
+			typedef GD::TypeTraits::Underlying<TEnumType> TEnumInteger; \
 			return static_cast<TEnumType>(static_cast<TEnumInteger>(lhs) ^ static_cast<TEnumInteger>(rhs)); \
 		} \
 		GDINL static TEnumType& operator^= (TEnumType& lhs, TEnumType const rhs) \
@@ -65,16 +65,40 @@
 	GD_ENUM_DEFINE_FLAG_OPERATORS(TEnumType) \
 	extern "C++" \
 	{ \
-		GDINL static constexpr bool operator== (TEnumType const e, typename GD::TypeTraits::Underlying<TEnumType>::Type const i) \
+		GDINL static constexpr bool operator== (TEnumType const e, GD::TypeTraits::Underlying<TEnumType> const i) \
 		{ \
-			typedef GD::TypeTraits::Underlying<TEnumType>::Type TEnumInteger; \
+			typedef GD::TypeTraits::Underlying<TEnumType> TEnumInteger; \
 			return static_cast<TEnumInteger>(e) == i; \
 		} \
-		GDINL static constexpr bool operator!= (TEnumType const e, typename GD::TypeTraits::Underlying<TEnumType>::Type const i) \
+		GDINL static constexpr bool operator!= (TEnumType const e, GD::TypeTraits::Underlying<TEnumType> const i) \
 		{ \
-			typedef GD::TypeTraits::Underlying<TEnumType>::Type TEnumInteger; \
+			typedef GD::TypeTraits::Underlying<TEnumType> TEnumInteger; \
 			return static_cast<TEnumInteger>(e) != i; \
 		} \
+	} 
+
+/*!
+ * Defines helper code for determination whether class contains named member function.
+ * @param TFunctionName Name of the function.
+ */
+#define GD_HAS_MEMBER_FUNCTION(TFunctionName) \
+	namespace TypeTraits \
+	{ \
+		template<typename TClass> \
+		struct HasMemberFunction_ ## TFunctionName final : public TNonCreatable \
+		{ \
+		private: \
+			template<typename TType, TType TInstance> \
+			struct TTest; \
+			\
+			template<typename TType> \
+			GDINT static Internal::TTrue& Test(TTest<decltype(&TType::TFunctionName), &TType::TFunctionName>* const) = delete; \
+			template<typename TType> \
+			GDINT static Internal::TFalse& Test(...) = delete; \
+			\
+		public: \
+			enum { Value = sizeof(Test<TClass const>(nullptr)) == sizeof(Internal::TTrue) };\
+		};	\
 	} 
 
 GD_NAMESPACE_BEGIN
@@ -91,16 +115,24 @@ GD_NAMESPACE_BEGIN
 	 * @tparam TFalseType Type that would be selected if condition is false.
 	 */
 	//! @{
-	template<bool TCondition, typename TTrueType, typename TFalseType> 
-	struct Conditional final : public TNonCreatable
-	{ 
-		typedef TTrueType Type; 
-	};	// struct Conditional 
-	template<typename TTrueType, typename TFalseType> 
-	struct Conditional<false, TTrueType, TFalseType> final : public TNonCreatable
+	namespace TypeTraits
 	{
-		typedef TFalseType Type;
-	};	// struct Conditional 
+		namespace Internal
+		{
+			template<bool TCondition, typename TTrueType, typename TFalseType>
+			struct TConditional final : public TNonCreatable
+			{
+				typedef TTrueType Type;
+			};	// struct TConditional 
+			template<typename TTrueType, typename TFalseType>
+			struct TConditional<false, TTrueType, TFalseType> final : public TNonCreatable
+			{
+				typedef TFalseType Type;
+			};	// struct TConditional 
+		}	// namespace Internal
+	}	// namespace TypeTraits
+	template<bool TCondition, typename TTrueType, typename TFalseType>
+	using Conditional = typename TypeTraits::Internal::TConditional<TCondition, TTrueType, TFalseType>::Type;
 	//! @}
 
 	/*!
@@ -139,16 +171,29 @@ GD_NAMESPACE_BEGIN
 
 	namespace TypeTraits
 	{
+		namespace Internal
+		{
+			typedef Byte TFalse[1];
+			typedef Byte TTrue[2];
+		}	// namespace Internal
+
 		/*!
 		 * Substitutes the underlying type of the specified.
 		 * @tparam TType Type to perform operation on.
 		 */
-		template<typename TType> 
-		struct Underlying final : public TNonCreatable
+		//! @{
+		namespace Internal
 		{
-		public:
-			typedef __underlying_type(TType) Type;
-		};	// struct Underlying
+			template<typename TType>
+			struct TUnderlying final : public TNonCreatable
+			{
+			public:
+				typedef __underlying_type(TType) Type;
+			};	// struct TUnderlying
+		}	// namespace Internal
+		template<typename TType>
+		using Underlying = typename Internal::TUnderlying<TType>::Type;
+		//! @}
 
 		// ------------------------------------------------------------------------------------------
 		// Remove something.
@@ -159,16 +204,21 @@ GD_NAMESPACE_BEGIN
 		 * @tparam TType Type to perform operation on.
 		 */
 		//! @{
-		template<typename TType> 
-		struct RemoveConst final : public TNonCreatable
+		namespace Internal
 		{
-			typedef TType Type;
-		};	// struct RemoveConst
-		template<typename TType> 
-		struct RemoveConst<TType const> final : public TNonCreatable
-		{
-			typedef TType Type;
-		};	// struct RemoveConst<TType const>
+			template<typename TType> 
+			struct TRemoveConst final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct TRemoveConst
+			template<typename TType> 
+			struct TRemoveConst<TType const> final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct TRemoveConst<TType const>
+		}	// namespace Internal
+		template<typename TType>
+		using RemoveConst = typename Internal::TRemoveConst<TType>::Type;
 		//! @}
 
 		/*!
@@ -176,16 +226,21 @@ GD_NAMESPACE_BEGIN
 		 * @tparam TType Type to perform operation on.
 		 */
 		//! @{
-		template<typename TType> 
-		struct RemoveVolatile final : public TNonCreatable
+		namespace Internal
 		{
-			typedef TType Type;
-		};	// struct RemoveVolatile
-		template<typename TType> 
-		struct RemoveVolatile<TType volatile> final : public TNonCreatable
-		{
-			typedef TType Type;
-		};	// struct RemoveVolatile<TType const>
+			template<typename TType> 
+			struct TRemoveVolatile final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct TRemoveVolatile
+			template<typename TType> 
+			struct TRemoveVolatile<TType volatile> final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct TRemoveVolatile<TType volatile>
+		}	// namespace Internal
+		template<typename TType>
+		using RemoveVolatile = typename Internal::TRemoveVolatile<TType>::Type;
 		//! @}
 
 		/*!
@@ -193,21 +248,26 @@ GD_NAMESPACE_BEGIN
 		 * @tparam TType Type to perform operation on.
 		 */
 		//! @{
-		template<typename TType> 
-		struct RemoveReference final : public TNonCreatable
+		namespace Internal
 		{
-			typedef TType Type;
-		};	// struct RemoveReference
-		template<typename TType> 
-		struct RemoveReference<TType&> final : public TNonCreatable
-		{
-			typedef TType Type;
-		};	// struct RemoveReference
-		template<typename TType> 
-		struct RemoveReference<TType&&> final : public TNonCreatable
-		{
-			typedef TType Type;
-		};	// struct RemoveReference
+			template<typename TType> 
+			struct TRemoveReference final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct RemoveReference
+			template<typename TType> 
+			struct TRemoveReference<TType&> final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct RemoveReference
+			template<typename TType> 
+			struct TRemoveReference<TType&&> final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct RemoveReference
+		}	// namespace Internal
+		template<typename TType>
+		using RemoveReference = typename Internal::TRemoveReference<TType>::Type;
 		//! @}
 
 		/*!
@@ -215,46 +275,50 @@ GD_NAMESPACE_BEGIN
 		 * @tparam TType Type to perform operation on.
 		 */
 		//! @{
-		template<typename TType> 
-		struct RemovePointer final : public TNonCreatable
+		namespace Internal
 		{
-			typedef TType Type;
-		};	// struct RemovePointer
-		template<typename TType> 
-		struct RemovePointer<TType*> final : public TNonCreatable
-		{
-			typedef TType Type;
-		};	// struct RemovePointer
-		template<typename TType> 
-		struct RemovePointer<TType const*> final : public TNonCreatable
-		{
-			typedef TType Type;
-		};	// struct RemovePointer
-		template<typename TType> 
-		struct RemovePointer<TType volatile*> final : public TNonCreatable
-		{
-			typedef TType Type;
-		};	// struct RemovePointer
-		template<typename TType> 
-		struct RemovePointer<TType volatile const*> final : public TNonCreatable
-		{
-			typedef TType Type;
-		};	// struct RemovePointer
+			template<typename TType> 
+			struct TRemovePointer final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct TRemovePointer
+			template<typename TType> 
+			struct TRemovePointer<TType*> final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct TRemovePointer
+			template<typename TType> 
+			struct TRemovePointer<TType const*> final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct TRemovePointer
+			template<typename TType> 
+			struct TRemovePointer<TType volatile*> final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct TRemovePointer
+			template<typename TType> 
+			struct TRemovePointer<TType volatile const*> final : public TNonCreatable
+			{
+				typedef TType Type;
+			};	// struct TRemovePointer
+		}	// namespace Internal
+		template<typename TType>
+		using RemovePointer = typename Internal::TRemovePointer<TType>::Type;
 		//! @}
 
 		/*!
 		 * Removes all one level modifiers.
 		 * @tparam TType Type to perform operation on.
 		 */
-		template<typename TType> 
-		struct RemoveCVR final : public TNonCreatable
-		{
-			typedef typename RemoveReference<
-						typename RemoveVolatile<
-							typename RemoveConst<TType>::Type
-						>::Type
-					>::Type Type;
-		};	// struct RemoveCVR
+		template<typename TType>
+		using Decay = RemoveReference<
+				RemoveVolatile<
+					RemoveConst<
+						TType
+					>
+				>
+			>;
 
 		// ------------------------------------------------------------------------------------------
 		// Is something.
@@ -264,11 +328,14 @@ GD_NAMESPACE_BEGIN
 		 * Removes all one level modifiers.
 		 * @tparam TValue Trait check result value.
 		 */
-		template<bool TValue> 
-		struct TypeTraitsBase : public TNonCreatable
+		namespace Internal
 		{
-			enum { Value = static_cast<int>(TValue) };
-		};	// struct TypeTraitsBase
+			template<bool TValue> 
+			struct TypeTraitsBase : public TNonCreatable
+			{
+				enum { Value = static_cast<int>(TValue) };
+			};	// struct TypeTraitsBase
+		}	// namespace Internal
 
 		/*!
 		 * Checks if specified type is integral.
@@ -276,31 +343,31 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		template<typename TType> 
-		struct IsIntegral final : public TypeTraitsBase<false> 
+		struct IsIntegral final : public Internal::TypeTraitsBase<false>
 		{};
 		template<> 
-		struct IsIntegral<Int8> final : public TypeTraitsBase<true>
+		struct IsIntegral<Int8> final : public Internal::TypeTraitsBase<true>
 		{};
 		template<>
-		struct IsIntegral<UInt8> final : public TypeTraitsBase<true>
+		struct IsIntegral<UInt8> final : public Internal::TypeTraitsBase<true>
 		{};
 		template<> 
-		struct IsIntegral<Int16> final : public TypeTraitsBase<true> 
+		struct IsIntegral<Int16> final : public Internal::TypeTraitsBase<true> 
 		{};
 		template<>
-		struct IsIntegral<UInt16> final : public TypeTraitsBase<true>
+		struct IsIntegral<UInt16> final : public Internal::TypeTraitsBase<true>
 		{};
 		template<> 
-		struct IsIntegral<Int32> final : public TypeTraitsBase<true> 
+		struct IsIntegral<Int32> final : public Internal::TypeTraitsBase<true> 
 		{};
 		template<>
-		struct IsIntegral<UInt32> final : public TypeTraitsBase<true>
+		struct IsIntegral<UInt32> final : public Internal::TypeTraitsBase<true>
 		{};
 		template<> 
-		struct IsIntegral<Int64> final : public TypeTraitsBase<true> 
+		struct IsIntegral<Int64> final : public Internal::TypeTraitsBase<true> 
 		{};
 		template<> 
-		struct IsIntegral<UInt64> final : public TypeTraitsBase<true> 
+		struct IsIntegral<UInt64> final : public Internal::TypeTraitsBase<true> 
 		{};
 		//! @}
 
@@ -310,13 +377,13 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		template<typename TType> 
-		struct IsFloatingPoint final : public TypeTraitsBase<false> 
+		struct IsFloatingPoint final : public Internal::TypeTraitsBase<false>
 		{};
 		template<> 
-		struct IsFloatingPoint<Float32> final : public TypeTraitsBase<true>
+		struct IsFloatingPoint<Float32> final : public Internal::TypeTraitsBase<true>
 		{};
 		template<> 
-		struct IsFloatingPoint<Float64> final : public TypeTraitsBase<true> 
+		struct IsFloatingPoint<Float64> final : public Internal::TypeTraitsBase<true> 
 		{};
 		//! @}
 
@@ -325,7 +392,7 @@ GD_NAMESPACE_BEGIN
 		 * @tparam TType Type to perform checks on.
 		 */
 		template<typename TType>
-		struct IsEnum final : public TypeTraitsBase<__is_enum(TType)>
+		struct IsEnum final : public Internal::TypeTraitsBase<__is_enum(TType)>
 		{};
 
 		/*!
@@ -333,7 +400,7 @@ GD_NAMESPACE_BEGIN
 		 * @tparam TType Type to perform checks on.
 		 */
 		template<typename TType>
-		struct IsClass final : public TypeTraitsBase<__is_class(TType)>
+		struct IsClass final : public Internal::TypeTraitsBase<__is_class(TType)>
 		{};
 
 		/*!
@@ -342,13 +409,13 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		template<typename TType>
-		struct IsCharacter final : public TypeTraitsBase<false> 
+		struct IsCharacter final : public Internal::TypeTraitsBase<false>
 		{};
 		template<> 
-		struct IsCharacter<Char> final : public TypeTraitsBase<true>
+		struct IsCharacter<Char> final : public Internal::TypeTraitsBase<true>
 		{};
 		template<> 
-		struct IsCharacter<WideChar> final : public TypeTraitsBase<true> 
+		struct IsCharacter<WideChar> final : public Internal::TypeTraitsBase<true>
 		{};
 		//! @}
 
@@ -358,13 +425,13 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		template<typename TType>
-		struct IsReference final : public TypeTraitsBase<false>
+		struct IsReference final : public Internal::TypeTraitsBase<false>
 		{};
 		template<typename TType>
-		struct IsReference<TType&> final : public TypeTraitsBase<true>
+		struct IsReference<TType&> final : public Internal::TypeTraitsBase<true>
 		{};
 		template<typename TType>
-		struct IsReference<TType&&> final : public TypeTraitsBase<true>
+		struct IsReference<TType&&> final : public Internal::TypeTraitsBase<true>
 		{};
 		//! @}
 
@@ -374,10 +441,10 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		template<typename TType> 
-		struct IsLValueReference final : public TypeTraitsBase<false> 
+		struct IsLValueReference final : public Internal::TypeTraitsBase<false>
 		{};
 		template<typename TType> 
-		struct IsLValueReference<TType&> final : public TypeTraitsBase<true>
+		struct IsLValueReference<TType&> final : public Internal::TypeTraitsBase<true>
 		{};
 		//! @}
 
@@ -387,10 +454,10 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		template<typename TType> 
-		struct IsRValueReference final : public TypeTraitsBase<false>
+		struct IsRValueReference final : public Internal::TypeTraitsBase<false>
 		{};
 		template<typename TType> 
-		struct IsRValueReference<TType&&> final : public TypeTraitsBase<true>
+		struct IsRValueReference<TType&&> final : public Internal::TypeTraitsBase<true>
 		{};
 		//! @}
 
@@ -400,19 +467,19 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		template<typename TType> 
-		struct IsPointer final : public TypeTraitsBase<false>
+		struct IsPointer final : public Internal::TypeTraitsBase<false>
 		{};
 		template<typename TType> 
-		struct IsPointer<TType*> final : public TypeTraitsBase<true>
+		struct IsPointer<TType*> final : public Internal::TypeTraitsBase<true>
 		{};
 		template<typename TType>
-		struct IsPointer<TType const*> final : public TypeTraitsBase<true>
+		struct IsPointer<TType const*> final : public Internal::TypeTraitsBase<true>
 		{};
 		template<typename TType> 
-		struct IsPointer<TType volatile*> final : public TypeTraitsBase<true> 
+		struct IsPointer<TType volatile*> final : public Internal::TypeTraitsBase<true>
 		{};
 		template<typename TType> 
-		struct IsPointer<TType volatile const*> final : public TypeTraitsBase<true> 
+		struct IsPointer<TType volatile const*> final : public Internal::TypeTraitsBase<true>
 		{};
 		//! @}
 
@@ -422,10 +489,10 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		template<typename TType>
-		struct IsConst final : public TypeTraitsBase<false> 
+		struct IsConst final : public Internal::TypeTraitsBase<false>
 		{};
 		template<typename TType>
-		struct IsConst<TType const> final : public TypeTraitsBase<true>
+		struct IsConst<TType const> final : public Internal::TypeTraitsBase<true>
 		{};
 		//! @}
 
@@ -435,15 +502,15 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		template<typename TType>
-		struct IsVolatile final : public TypeTraitsBase<false> 
+		struct IsVolatile final : public Internal::TypeTraitsBase<false>
 		{};
 		template<typename TType>
-		struct IsVolatile<TType volatile> final : public TypeTraitsBase<true>
+		struct IsVolatile<TType volatile> final : public Internal::TypeTraitsBase<true>
 		{};
 		//! @}
 
 		template<typename TType>
-		struct HasUnsignedValues : public TypeTraitsBase<(static_cast<TType>(-1) > static_cast<TType>(0))>
+		struct HasUnsignedValues : public Internal::TypeTraitsBase<(static_cast<TType>(-1) > static_cast<TType>(0))>
 		{};
 
 		/*!
@@ -451,7 +518,7 @@ GD_NAMESPACE_BEGIN
 		 * @tparam TType Type to perform checks on.
 		 */
 		template<typename TType>
-		struct IsSigned final : public Conditional<IsIntegral<TType>::Value, TypeTraitsBase<!HasUnsignedValues<TType>::Value>, TypeTraitsBase<false>>::Type
+		struct IsSigned final : public Conditional<IsIntegral<TType>::Value, Internal::TypeTraitsBase<!HasUnsignedValues<TType>::Value>, Internal::TypeTraitsBase<false>>
 		{};
 
 		/*!
@@ -459,7 +526,7 @@ GD_NAMESPACE_BEGIN
 		 * @tparam TType Type to perform checks on.
 		 */
 		template<typename TType>
-		struct IsUnsigned final : public Conditional<IsIntegral<TType>::Value, HasUnsignedValues<TType>, TypeTraitsBase<false>>::Type
+		struct IsUnsigned final : public Conditional<IsIntegral<TType>::Value, HasUnsignedValues<TType>, Internal::TypeTraitsBase<false>>
 		{};
 
 		/*!
@@ -467,7 +534,7 @@ GD_NAMESPACE_BEGIN
 		 * @tparam TType Type to perform checks on.
 		 */
 		template<typename TType>
-		struct IsPOD final : public TypeTraitsBase<__is_pod(TType)>
+		struct IsPOD final : public Internal::TypeTraitsBase<__is_pod(TType)>
 		{};
 
 		/*!
@@ -475,7 +542,7 @@ GD_NAMESPACE_BEGIN
 		 * @tparam TType Type to perform checks on.
 		 */
 		template<typename TType>
-		struct IsAbstract final : public TypeTraitsBase<__is_abstract(TType)>
+		struct IsAbstract final : public Internal::TypeTraitsBase<__is_abstract(TType)>
 		{};
 
 		/*!
@@ -486,10 +553,10 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		template<typename TLHS, typename TRHS> 
-		struct IsSame final : TypeTraitsBase<false> 
+		struct IsSame final : Internal::TypeTraitsBase<false>
 		{};
 		template<typename TLHS> 
-		struct IsSame<TLHS, TLHS> final : TypeTraitsBase<true> 
+		struct IsSame<TLHS, TLHS> final : Internal::TypeTraitsBase<true>
 		{};
 		//! @}
 
@@ -503,17 +570,16 @@ GD_NAMESPACE_BEGIN
 		struct IsBase final
 		{
 		private:
-			typedef Byte No[1];
-			typedef Byte Yes[2];
-			typedef typename RemovePointer<TBaseType>::Type BaseTypeUnPtr;
-			typedef typename RemovePointer<TDerivedType>::Type DerivedTypeUnPtr;
-			GDINT static Yes& Test(BaseTypeUnPtr const* const) = delete;
-			GDINT static No	& Test(...) = delete;
-			
-		public:
-			enum { Value = sizeof(Test(static_cast<DerivedTypeUnPtr const*>(nullptr))) == sizeof(Yes) };
-		};	// struct IsBase
+			using TBaseTypeUnPtr = Decay<TBaseType>;
+			using TDerivedTypeUnPtr = Decay<TDerivedType>;
 
+			GDINT static Internal::TTrue& Test(TBaseTypeUnPtr const* const) { abort(); }
+			GDINT static Internal::TFalse& Test(...) { abort(); }
+
+		public:
+			enum { Value = sizeof(Test(static_cast<TDerivedTypeUnPtr const*>(nullptr))) == sizeof(Internal::TTrue) };
+		};	// struct IsBase
+		 
 	}	// namespace TypeTraits
 
 GD_NAMESPACE_END

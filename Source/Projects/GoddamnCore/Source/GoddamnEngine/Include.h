@@ -123,17 +123,23 @@
 // Configuration definitions.
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#define GD_TESTING_ENABLED 1
+
 #include <GoddamnEngine/Core/Base/Version.h>
 #if !GD_RESOURCE_COMPILER
+#	if GD_TESTING_ENABLED
+#		include <GoddamnEngine/Core/Testing/Testing.h>
+#	endif	// if GD_TESTING_ENABLED
 #	include <GoddamnEngine/Core/Base/Architecture.h>
 #	include <GoddamnEngine/Core/Base/Types.h>
 #	include <GoddamnEngine/Core/Base/TypeTraits.h>
-#	include <GoddamnEngine/Core/Base/Allocator.h>
 #	include <GoddamnEngine/Core/Base/Assert.h>
-#	include <GoddamnEngine/Core/Base/CStdlib/CMemory.h>	// And finally, including the GoddamnEngine's wrappers for the C's standard library.
+#	include <GoddamnEngine/Core/Base/CStdlib/CStdlib.h>	// And finally, including the GoddamnEngine's wrappers for the C's standard library.
+#	include <GoddamnEngine/Core/Base/CStdlib/CMemory.h>
 #	include <GoddamnEngine/Core/Base/CStdlib/CChar.h>
 #	include <GoddamnEngine/Core/Base/CStdlib/CString.h>
 #	include <GoddamnEngine/Core/Base/CStdlib/CStdio.h>
+#	include <GoddamnEngine/Core/Base/Allocator.h>
 #endif	// if !GD_RESOURCE_COMPILER
 
 #undef GD_INSIDE_INCLUDE_H

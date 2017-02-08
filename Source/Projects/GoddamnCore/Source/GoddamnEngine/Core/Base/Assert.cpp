@@ -11,7 +11,7 @@
  * Contains error-checking mechanism definitions.
  */
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/System/Interaction/Debug.h>
+#include <GoddamnEngine/Core/Interaction/Debug.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -19,7 +19,7 @@ GD_NAMESPACE_BEGIN
 	 * Provides inner functionality for handling fatal asserts. Should not be invoked directly.
 	 *
 	 * @param data Pointer to assertion description data structure.
-	 * @param args Arguments for formating Message string.
+	 * @param args Arguments for formatting Message string.
 	 */
 	GD_NORETURN GDAPI extern void DebugHandleFatalAssertDataVa(DebugAssertData const* const data, va_list const args)
 	{
@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 	 * Provides inner functionality for handling regular asserts. Should not be invoked directly.
 	 *
 	 * @param data Pointer to assertion description data structure.
-	 * @param args Arguments for formating Message string.
+	 * @param args Arguments for formatting Message string.
 	 */
 	GDAPI extern DebugAssertDialogResult DebugHandleAssertDataVa(DebugAssertData const* const data, va_list const args)
 	{

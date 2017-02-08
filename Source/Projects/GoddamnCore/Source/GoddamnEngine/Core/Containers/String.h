@@ -13,7 +13,7 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Algorithm.h>
+#include <GoddamnEngine/Core/Templates/Algorithm.h>
 #include <GoddamnEngine/Core/Templates/Iterators.h>
 
 GD_NAMESPACE_BEGIN
@@ -21,7 +21,7 @@ GD_NAMESPACE_BEGIN
 	template<typename TChar>
 	struct BaseStringDefaultLength
 	{
-		UInt32 static const Value = sizeof(TChar*) / sizeof(TChar);
+		SizeTp static const Value = sizeof(TChar*) / sizeof(TChar);
 	};	// struct BaseStringDefaultLength
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
@@ -31,16 +31,25 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	//! A base string class used by the engine.
 	//! @tparam TChar character type of this string.
+	//! @tparam TInlineLength Max length of data that could be stored inside string.
 	// **------------------------------------------------------------------------------------------**
-	template<typename TChar, UInt32 TInlineLength = BaseStringDefaultLength<TChar>::Value>
-	class BaseString final : public IIteratable<BaseString<TChar, TInlineLength>>
+	template<typename TChar, SizeTp TInlineLength = BaseStringDefaultLength<TChar>::Value>
+	class BaseString final
 	{
+		static_assert(TInlineLength > 1, "Zero inline length.");
+		static_assert(TInlineLength < 256, "Inline length is greater than 255 characters.");
+
 	public:
 		using ElementType          = TChar;
+		using ConstElementType     = TChar const;
+		using ReferenceType        = TChar&;
+		using ConstReferenceType   = TChar const&;
 		using Iterator             = IndexedContainerIterator<BaseString>;
 		using ConstIterator        = IndexedContainerIterator<BaseString const>;
 		using ReverseIterator      = ReverseContainerIterator<Iterator>;
 		using ReverseConstIterator = ReverseContainerIterator<ConstIterator>;
+
+		SizeTp static constexpr Npos = SizeTpMax;
 
 		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(BaseString);
 
@@ -49,8 +58,8 @@ GD_NAMESPACE_BEGIN
 		using MyCString = BaseCString<TChar>;
 
 	private:
-		UInt32 static const s_MaxInlineLength = TInlineLength;
-		UInt32 m_Length = 0;
+		SizeTp static constexpr s_MaxInlineLength = TInlineLength;
+		SizeTp m_Length = 0;
 		union {
 			TChar  m_InlineMemory[s_MaxInlineLength];
 			TChar* m_HeapMemory;
@@ -66,9 +75,9 @@ GD_NAMESPACE_BEGIN
 		 * Initializes an empty string.
 		 */
 		GDINL BaseString()
+			: m_Length(0)
+			, m_InlineMemory{ GD_LITERAL(TChar, '\0') }
 		{
-			m_Length = 0;
-			m_InlineMemory[0] = GD_LITERAL(TChar, '\0');
 		}
 
 		/*!
@@ -76,86 +85,80 @@ GD_NAMESPACE_BEGIN
 		 * @param character Initial String character.
 		 */
 		GDINL explicit BaseString(Char const character)
+			: m_Length(1)
+			, m_InlineMemory{ character, GD_LITERAL(TChar, '\0') }
 		{
-			m_Length = 1;
-			m_InlineMemory[0] = character;
-			m_InlineMemory[1] = GD_LITERAL(TChar, '\0');
 		}
 
 		/*!
-		 * Fills a String with specified number of characters.
+		 * Fills a string with specified number of characters.
 		 *
 		 * @param theLength Length of the string.
 		 * @param fillWith A character that String would be filled with.
 		 */
-		GDINL explicit BaseString(UInt32 const theLength, TChar const fillWith = GD_LITERAL(TChar, '\0'))
+		GDINL explicit BaseString(SizeTp const theLength, TChar const fillWith = GD_LITERAL(TChar, '\0'))
+			: m_Length(theLength)
 		{
-			m_Length = theLength;
 			if (m_Length >= s_MaxInlineLength)
 			{
-				auto const dataSizeInBytes = (m_Length + 1) * sizeof(TChar);
-				m_HeapMemory = reinterpret_cast<TChar*>(GD_MALLOC(dataSizeInBytes));
-			}
-			if (sizeof(TChar) != 1)
-			{
-				for (auto& character : (*this))
-					character = fillWith;
+				m_HeapMemory = CMemory::TMemset(GD_MALLOC_ARRAY_T(TChar, m_Length + 1), fillWith, m_Length);
+				m_HeapMemory[m_Length] = GD_LITERAL(TChar, '\0');
 			}
 			else
 			{
-				CMemory::Memset(CStr(), fillWith, m_Length);
+				CMemory::TMemset(m_InlineMemory, fillWith, m_Length);
+				m_InlineMemory[m_Length] = GD_LITERAL(TChar, '\0');
 			}
-			*End() = GD_LITERAL(TChar, '\0');
 		}
 
 		/*!
-		 * Initializes a String with some C String with known m_Length.
+		 * Initializes a string with some C String with known length.
 		 *
 		 * @param chars String's initial data.
 		 * @param theLength Size of String initial data.
 		 */
-		GDINL BaseString(TChar const* const chars, UInt32 const theLength)
+		GDINL BaseString(TChar const* const chars, SizeTp const theLength)
+			: m_Length(theLength)
 		{
-			GD_DEBUG_ASSERT(chars != nullptr, "Null pointer data specified");
-			m_Length = theLength;
-			auto const dataSizeInBytes = (m_Length + 1) * sizeof(TChar);
+			GD_DEBUG_VERIFY(chars != nullptr, "Null pointer data specified");
 			if (m_Length >= s_MaxInlineLength)
 			{
-				m_HeapMemory = reinterpret_cast<TChar*>(GD_MALLOC(dataSizeInBytes));
-				CMemory::Memcpy(m_HeapMemory, dataSizeInBytes, chars);
+				m_HeapMemory = CMemory::TMemcpy(GD_MALLOC_ARRAY_T(TChar, m_Length + 1), chars, m_Length);
+				m_HeapMemory[m_Length] = GD_LITERAL(TChar, '\0');
 			}
 			else
 			{
-				CMemory::Memcpy_s(m_InlineMemory, sizeof(m_InlineMemory), chars, dataSizeInBytes);
+				CMemory::TMemcpy(m_InlineMemory, chars, m_Length);
+				m_InlineMemory[m_Length] = GD_LITERAL(TChar, '\0');
 			}
 		}
 
 		/*!
-		 * Initializes a String with some C String with unknown m_Length.
+		 * Initializes a string with some C String.
 		 * @param chars String initial data.
 		 */
 		//! @{   
-		template<UInt32 const TLength>	
+		template<SizeTp const TLength>	
 		GDINL implicit BaseString(TChar const(&chars)[TLength])
 			: BaseString(chars, TLength - 1)
 		{
 		}
 		GDINL implicit BaseString(TChar const* const chars)
-			: BaseString(chars, static_cast<UInt32>(MyCString::Strlen(chars)))
+			: BaseString(chars, static_cast<SizeTp>(MyCString::Strlen(chars)))
 		{
 		}
 		//! @}
 
 		/*!
-		 * Initializes this string with copy of other String.
-		 * @param other The other String to copy.
+		 * Initializes this string with copy of other string.
+		 * @param other The other string to copy.
 		 */
 		//! @{
 		GDINL BaseString(BaseString const& other)
 			: BaseString(other.CStr(), other.GetLength())
 		{
 		}
-		template<UInt32 TOtherInlineLength>
+		template<SizeTp TOtherInlineLength>
 		GDINL implicit BaseString(BaseString<TChar, TOtherInlineLength> const& other)
 			: BaseString(other.CStr(), other.GetLength())
 		{
@@ -163,19 +166,32 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		/*!
-		 * Moves other string into this String.
-		 * @param other The other String to move into this.
+		 * Moves other string into this string.
+		 * @param other The other string to move into this.
 		 */
-		GDINL BaseString(BaseString&& other)
+		//! @{
+		GDINL BaseString(BaseString&& other) noexcept
+			: m_Length(other.m_Length)
 		{
-			*this = Forward<BaseString>(other);
+			CMemory::TMemcpy(m_InlineMemory, other.m_InlineMemory, sizeof other.m_InlineMemory);
+			CMemory::TMemset(other.m_InlineMemory, static_cast<TChar>(0), sizeof other.m_InlineMemory);
+			other.m_Length = 0;
 		}
+		template<SizeTp TOtherInlineLength>
+		GDINL implicit BaseString(typename EnableIf<TOtherInlineLength <= TInlineLength, BaseString<TChar, TOtherInlineLength>>::Value&& other)
+			: m_Length(other.m_Length)
+		{
+			CMemory::TMemcpy(m_InlineMemory, other.m_InlineMemory, sizeof other.m_InlineMemory);
+			CMemory::TMemset(other.m_InlineMemory, static_cast<TChar>(0), sizeof other.m_InlineMemory);
+			other.m_Length = 0;
+		}
+		//! @}
 
 		GDINL ~BaseString()
 		{
 			if (m_Length >= s_MaxInlineLength)
 			{
-				GD_DEALLOC(m_HeapMemory);
+				GD_FREE(m_HeapMemory);
 				m_HeapMemory = nullptr;
 			}
 			else
@@ -236,21 +252,9 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Returns length of this string.
 		 */
-		GDINL UInt32 GetLength() const
+		GDINL SizeTp GetLength() const
 		{
 			return m_Length;
-		}
-
-		/*!
-		 * Returns available size of the string.
-		 */
-		GDINL SizeTp GetAllocatedSize() const
-		{
-			if (m_Length >= s_MaxInlineLength)
-			{
-				return (m_Length + 1) * sizeof(TChar);
-			}
-			return sizeof(m_InlineMemory);
 		}
 
 		/*!
@@ -280,16 +284,21 @@ GD_NAMESPACE_BEGIN
 		{
 			return GetLength() >= s_MaxInlineLength ? m_HeapMemory : m_InlineMemory;
 		}
-
 		//! @}
 
 		/*!
 		 * Returns last character of the string.
 		 */
+		//! @{
 		GDINL TChar GetLast() const
 		{
 			return *(End() - 1);
 		}
+		GDINL TChar& GetLast()
+		{
+			return *(End() - 1);
+		}
+		//! @}
 
 		/*!
 		 * Returns unique signature of the string.
@@ -310,83 +319,56 @@ GD_NAMESPACE_BEGIN
 		// ------------------------------------------------------------------------------------------
 
 		/*!
-		 * Concatenates two strings.
-		 *
-		 * @param other The other string to concatenate with.
-		 * @returns result of the string concatenation.
-		 */
-		//! @{
-		GDINL BaseString Concatenate(BaseString const& other) const
-		{
-			BaseString result(m_Length + other.GetLength());
-			CMemory::Memcpy_s(result.CStr(), result.GetAllocatedSize(), CStr(), m_Length * sizeof(TChar));
-			CMemory::Memcpy_s(result.CStr() + m_Length, result.GetAllocatedSize(), other.CStr(), other.m_Length * sizeof(TChar));
-			return result;
-		}
-		GDINL BaseString Concatenate(TChar const* const other) const
-		{
-			SizeTp const otherLength = MyCString::Strlen(other);
-			BaseString result(m_Length + static_cast<UInt32>(otherLength));
-			CMemory::Memcpy_s(result.CStr(), result.GetAllocatedSize(), CStr(), m_Length * sizeof(TChar));
-			CMemory::Memcpy_s(result.CStr() + m_Length, result.GetAllocatedSize(), other, otherLength * sizeof(TChar));
-			return result;
-		}
-		GDINL BaseString Concatenate(TChar const other) const
-		{
-			BaseString result(m_Length + 1);
-			CMemory::Memcpy_s(result.CStr(), result.GetAllocatedSize(), CStr(), m_Length * sizeof(TChar));
-			*(result.End() - 1) = other;
-			return result;
-		}
-		//! @}
-
-		/*!
 		 * Appends specified string to this string.
-		 * @param character The character to Append.
+		 * @param other The other string to append.
 		 */
 		//! @{
-		//GD_DEPRECATED("Strings are constant objects. For mutable string use 'StringBuilder' class.")
-		GDINL BaseString& Append(BaseString const& other)
+		GDINL BaseString Append(TChar const* const other, SizeTp const theLength) const
 		{
-			BaseString copy(Move(*this));
-			return (*this = Move(copy.Concatenate(other)));
+			BaseString result(m_Length + theLength);
+			CMemory::TMemcpy(result.CStr(), CStr(), m_Length);
+			CMemory::TMemcpy(result.CStr() + m_Length, other, theLength);
+			return result;
 		}
-		//GD_DEPRECATED("Strings are constant objects. For mutable string use 'StringBuilder' class.")
-		GDINL BaseString& Append(TChar const* const other)
+		template<SizeTp TOtherInlineLength>
+		GDINL BaseString Append(BaseString<TChar, TOtherInlineLength> const& other) const
 		{
-			BaseString copy(Move(*this));
-			return (*this = Move(copy.Concatenate(other)));
+			return this->Append(other.CStr(), other.m_Length);
 		}
-		//GD_DEPRECATED("Strings are constant objects. For mutable string use 'StringBuilder' class.")
-		GDINL BaseString& Append(TChar const other)
+		GDINL BaseString Append(TChar const* const other) const
 		{
-			BaseString copy(Move(*this));
-			return (*this = Move(copy.Concatenate(other)));
+			return this->Append(other, static_cast<SizeTp>(MyCString::Strlen(other)));
+		}
+		GDINL BaseString Append(TChar const other) const
+		{
+			return this->Append(&other, 1);
 		}
 		//! @}
 
 		/*!
 		 * Prepends specified string to this string.
-		 * @param character The character to Append.
+		 * @param other The other string to prepend.
 		 */
 		//! @{
-		GD_DEPRECATED("Strings are constant objects. For mutable string use 'StringBuilder' class.")
-		GDINL BaseString& Prepend(BaseString const& other)
+		GDINL BaseString Prepend(TChar const* const other, SizeTp const theLength) const
 		{
-			BaseString copy(other);
-			return (*this = Move(copy.Concatenate(Move(*this))));
+			BaseString result(m_Length + theLength);
+			CMemory::TMemcpy(result.CStr(), other, theLength);
+			CMemory::TMemcpy(result.CStr() + theLength, CStr(), m_Length);
+			return result;
 		}
-		GD_DEPRECATED("Strings are constant objects. For mutable string use 'StringBuilder' class.")
-		GDINL BaseString& Prepend(TChar const* const other)
+		template<SizeTp TOtherInlineLength>
+		GDINL BaseString Prepend(BaseString<TChar, TOtherInlineLength> const& other) const
 		{
-			BaseString copy(other);
-			return (*this = Move(copy.Concatenate(Move(*this))));
+			return this->Prepend(other.CStr(), other.m_Length);
 		}
-		GD_DEPRECATED("Strings are constant objects. For mutable string use 'StringBuilder' class.")
-		GDINL BaseString& Prepend(TChar const other)
+		GDINL BaseString Prepend(TChar const* const other) const
 		{
-			BaseString copy(other);
-			return (*this = Move(copy.Concatenate(Move(*this))));
+			return this->Prepend(other, static_cast<SizeTp>(MyCString::Strlen(other)));
+		}
+		GDINL BaseString Prepend(TChar const other) const
+		{
+			return this->Prepend(&other, 1);
 		}
 		//! @}
 
@@ -395,98 +377,330 @@ GD_NAMESPACE_BEGIN
 		// ------------------------------------------------------------------------------------------
 
 		/*!
-		 * Extracts a substring from this string from specified Index to the specified Index.
+		 * Extracts a substring from this string from specified index to the specified index (including both).
 		 *
 		 * @param from Index of the first character that would be extracted to the substring.
 		 * @param to Index of the last character that would be extracted to the substring.
+		 *
 		 * @returns A part of this string.
 		 */
-		//! @{
-		GDINL BaseString Substring(UInt32 const from, UInt32 const to) const
+		GDINL BaseString Substring(SizeTp const from, SizeTp const to) const
 		{
-			GD_DEBUG_ASSERT(to >= from, "Invalid substring indices.");
-			BaseString result(to - from);
-			CMemory::Memcpy_s(result.CStr(), result.GetAllocatedSize(), &(*this)[from], (to - from) * sizeof(TChar));
+			GD_DEBUG_VERIFY(to >= from, "Invalid substring indices.");
+			GD_DEBUG_VERIFY(to < m_Length, "Invalid substring indices.");
+			GD_DEBUG_VERIFY(from < m_Length, "Invalid substring indices.");
+
+			BaseString result(to - from + 1);
+			CMemory::TMemcpy(result.CStr(), CStr() + from, result.m_Length * sizeof(TChar));
 			return result;
 		}
-		GD_DEPRECATED("Strings are constant objects. For mutable string use 'StringBuilder' class.")
-		GDINL BaseString& SubstringSelf(UInt32 const from, UInt32 const to)
-		{
-			return *this = Forward<BaseString&&>(Substring(from, to));
-		}
-		//! @}
 
 		/*!
-		 * Extracts a substring from this string from specified Index with specified length.
+		 * Extracts a substring from this string from specified index to the end.
+		 *
+		 * @param from Index of the first character that would be extracted to the substring.
+		 * @returns A part of this string.
+		 */
+		GDINL BaseString Substring(SizeTp const from) const
+		{
+			return Substring(from, m_Length - 1);
+		}
+
+		/*!
+		 * Extracts a substring from this string from specified index with specified length.
 		 *
 		 * @param from Index of the first character that would be extracted to the substring.
 		 * @param length The length of the desired substring.
-		 * @returns A part of this string.
-		 */
-		//! @{
-		GDINL BaseString SubstringLen(UInt32 const from, UInt32 const length) const
-		{
-			return Substring(from, from + length);
-		}
-		GD_DEPRECATED("Strings are constant objects. For mutable string use 'StringBuilder' class.")
-		GDINL BaseString& SubstringLenSelf(UInt32 const from, UInt32 const length)
-		{
-			return *this = Forward<BaseString&&>(Substring(from, length));
-		}
-		//! @}
-
-		/*!
-		 * Extracts a substring from this string from specified Index to the end.
 		 *
-		 * @param from Index of the first character that would be extracted to the substring.
 		 * @returns A part of this string.
 		 */
-		//! @{
-		GDINL BaseString Substring(UInt32 const from) const
+		GDINL BaseString SubstringLen(SizeTp const from, SizeTp const length) const
 		{
-			return Substring(from, GetLength());
+			return Substring(from, from + length - 1);
 		}
-		GDINL BaseString& SubstringSelf(UInt32 const from)
+		
+		/*!
+		 * Extracts a substring for this string from chopped start to end.
+		 *
+		 * @param length Amount of bytes to skip from front.
+		 * @returns A part of this string.
+		 */
+		GDINL BaseString ChopFront(SizeTp const length) const
 		{
-			return *this = Forward<BaseString&&>(Substring(from));
+			return Substring(length);
 		}
-		//! @}
 
 		/*!
-		 * Extracts a substring for this string from start to ChopSelfped end.
+		 * Extracts a substring for this string from start to chopped end.
 		 *
 		 * @param length Amount of bytes to skip from end.
 		 * @returns A part of this string.
 		 */
-		//! @{
-		GDINL BaseString Remove(UInt32 const from, UInt32 const length) const
+		GDINL BaseString ChopEnd(SizeTp const length) const
 		{
-			return Substring(0, from).Concatenate(Substring(from + length + 1));
+			return SubstringLen(0, m_Length - length);
 		}
-		GD_DEPRECATED("Strings are constant objects. For mutable string use 'StringBuilder' class.")
-		GDINL BaseString& RemoveFromSelf(UInt32 const from, UInt32 const length)
+
+		/*!
+		 * Removes a substring from this string from specified index to the specified index (excluding both).
+		 *
+		 * @param from Index of the first character that would be removed to the substring.
+		 * @param to Index of the last character that would be removed to the substring.
+		 *
+		 * @returns A part of this string.
+		 */
+		GDINL BaseString Remove(SizeTp const from, SizeTp const to) const
 		{
-			return *this = Forward<BaseString&&>(Remove(from, length));
+			auto result = Substring(0, from - 1);
+			if (to < m_Length - 1)
+			{
+				result += Substring(to + 1);
+			}
+			return result;
+		}
+
+		/*!
+		 * Removes a substring from this string from specified index to the specified index (excluding both).
+		 *
+		 * @param from Index of the first character that would be removed to the substring.
+		 * @returns A part of this string.
+		 */
+		GDINL BaseString Remove(SizeTp const from) const
+		{
+			return Remove(from, m_Length - 1);
+		}
+
+		/*!
+		 * Removes a substring from this string from specified index with specified length.
+		 *
+		 * @param from Index of the first character that would be removed to the substring.
+		 * @param length The length of the desired removed substring.
+		 *
+		 * @returns A part of this string.
+		 */
+		GDINL BaseString RemoveLen(SizeTp const from, SizeTp const length) const
+		{
+			return Substring(0, from - 1) + Substring(from + length);
+		}
+
+		// ------------------------------------------------------------------------------------------
+		// Finds.
+		// ------------------------------------------------------------------------------------------
+
+		/*!
+		 * Searches for first occurrence of the character in the string.
+		 *
+		 * @param character The character we are looking for.
+		 * @returns Index of the first occurrence of the character in the string or @c Npos if nothing was found.
+		 */
+		GDINL SizeTp Find(TChar const character) const
+		{
+			auto const cstring = CStr();
+			auto const location = MyCString::Strchr(cstring, character);
+			return location != nullptr ? static_cast<SizeTp>(location - cstring) : Npos;
+		}
+
+		/*!
+		 * Searches for first occurrence of the specified string in the string.
+		 *
+		 * @param otherCString C string we are looking for.
+		 * @returns Index of the first occurrence of the C string in the string or @c Npos if nothing was found.
+		 */
+		//! @{
+		GDINL SizeTp Find(TChar const* const otherCString) const
+		{
+			auto const cstring = CStr();
+			auto const location = MyCString::Strstr(cstring, otherCString);
+			return location != nullptr ? static_cast<SizeTp>(location - cstring) : Npos;
+		}
+		template<SizeTp TOtherInlineLength>
+		GDINL SizeTp Find(BaseString<TChar, TOtherInlineLength> const& other) const
+		{
+			return this->Find(other.CStr());
 		}
 		//! @}
 
 		/*!
-		 * Extracts a substring for this string from start to ChopSelfped end.
+		 * Searches for last occurrence of the character in the string.
 		 *
-		 * @param length Amount of bytes to skip from end.
-		 * @returns A part of this string.
+		 * @param character The character we are looking for.
+		 * @returns Index of the last occurrence of the character in the string or @c Npos if nothing was found.
+		 */
+		GDINL SizeTp ReverseFind(TChar const character) const
+		{
+			auto const cstring = CStr();
+			auto const location = MyCString::Strrchr(cstring, character);
+			return location != nullptr ? static_cast<SizeTp>(location - cstring) : Npos;
+		}
+
+		/*!
+		 * Searches for last occurrence of the C string in the string.
+		 *
+		 * @param otherCString C string we are looking for.
+		 * @returns Index of the last occurrence of the C string in the string or @c Npos if nothing was found.
 		 */
 		//! @{
-		GDINL BaseString Chop(UInt32 const length) const
+		GDINL SizeTp ReverseFind(TChar const* const otherCString) const
 		{
-			return Substring(0, GetLength() - length);
+			auto const cstring = CStr();
+			auto const location = MyCString::Strrstr(cstring, otherCString);
+			return location != nullptr ? static_cast<SizeTp>(location - cstring) : Npos;
 		}
-		GD_DEPRECATED("Strings are constant objects. For mutable string use 'StringBuilder' class.")
-		GDINL BaseString& ChopSelf(UInt32 const length)
+		template<SizeTp TOtherInlineLength>
+		GDINL SizeTp ReverseFind(BaseString<TChar, TOtherInlineLength> const& other) const
 		{
-			return *this = Forward<BaseString&&>(Chop(length));
+			return this->ReverseFind(other.CStr());
 		}
 		//! @}
+
+		/*!
+		 * Returns true if this string starts with specified expression.
+		 *
+		 * @param other Text we are testing against.
+		 * @return True if this string starts with specified expression.
+		 */
+		//! @{
+		GDINL bool StartsWith(TChar const* const other, SizeTp const theLength) const
+		{
+			return theLength <= m_Length && MyCString::Strncmp(CStr(), other, theLength) == 0;
+		}
+		template<SizeTp TOtherInlineLength>
+		GDINL bool StartsWith(BaseString<TChar, TOtherInlineLength> const& other) const
+		{
+			return this->StartsWith(other.CStr(), other.m_Length);
+		}
+		GDINL bool StartsWith(TChar const* const other) const
+		{
+			return this->StartsWith(other, static_cast<SizeTp>(MyCString::Strlen(other)));
+		}
+		GDINL bool StartsWith(TChar const other) const
+		{
+			return *CStr() == other;
+		}
+		//! @}
+
+		/*!
+		 * Returns true if this string ends with specified expression.
+		 *
+		 * @param other C string we are testing against.
+		 * @return True if this string ends with specified expression.
+		 */
+		//! @{
+		GDINL bool EndsWith(TChar const* const other, SizeTp const theLength) const
+		{
+			return theLength <= m_Length && MyCString::Strncmp(CStr() + m_Length - theLength, other, theLength) == 0;
+		}
+		template<SizeTp TOtherInlineLength>
+		GDINL bool EndsWith(BaseString<TChar, TOtherInlineLength> const& other) const
+		{
+			return this->EndsWith(other.CStr(), other.m_Length);
+		}
+		GDINL bool EndsWith(TChar const* const other) const
+		{
+			return this->EndsWith(other, static_cast<SizeTp>(MyCString::Strlen(other)));
+		}
+		GDINL bool EndsWith(TChar const other) const
+		{
+			return *(End() - 1) == other;
+		}
+		//! @}
+
+		// ------------------------------------------------------------------------------------------
+		// Conversions.
+		// ------------------------------------------------------------------------------------------
+
+		/*!
+		 * Returns lowercased version of this string.
+		 */
+		GDINL BaseString ToUpper() const
+		{
+			auto result(*this);
+			for (auto& ch : result)
+			{
+				ch = MyCChar::ToUpper(ch);
+			}
+			return result;
+		}
+
+		/*!
+		 * Returns uppercased version of this string.
+		 */
+		GDINL BaseString ToLower() const
+		{
+			auto result(*this);
+			for (auto& ch : result)
+			{
+				ch = MyCChar::ToLower(ch);
+			}
+			return result;
+		}
+
+		/*!
+		 * Returns boolean representation of this string.
+		 *
+		 * @param succeeded Would be written true if conversion succeeded.
+		 * @returns Boolean representation of this string.
+		 */
+		GDINL bool ToBool(bool* const succeeded = nullptr) const
+		{
+			if (*this == GD_LITERAL(TChar, "0") || *this == GD_LITERAL(TChar, "false"))
+			{
+				if (succeeded != nullptr)
+				{
+					*succeeded = true;
+				}
+				return false;
+			}
+			if (*this == GD_LITERAL(TChar, "1") || *this == GD_LITERAL(TChar, "true"))
+			{
+				if (succeeded != nullptr)
+				{
+					*succeeded = true;
+				}
+				return true;
+			}
+			if (succeeded != nullptr)
+			{
+				*succeeded = false;
+			}
+			return false;
+		}
+
+		/*!
+		 * Returns integer representation of this string.
+		 *
+		 * @param succeeded Would be written true if conversion succeeded.
+		 * @param radix The radix in which value is represented.
+		 *
+		 * @returns Integer representation of this string.
+		 */
+		GDINL Int64 ToInt64(bool* const succeeded = nullptr, SizeTp const radix = 0) const
+		{
+			TChar const* endPtr = nullptr;
+			auto const value = MyCString::Strtoi64(CStr(), &endPtr, radix);
+			if (succeeded != nullptr)
+			{
+				*succeeded = endPtr == &*End();
+			}
+			return value;
+		}
+
+		/*!
+		 * Returns double representation of this string.
+		 *
+		 * @param succeeded Would be written true if conversion succeeded.
+		 * @returns Double representation of this string.
+		 */
+		GDINL Float64 ToFloat64(bool* const succeeded = nullptr) const
+		{
+			TChar const* endPtr = nullptr;
+			auto const value = MyCString::Strtof64(CStr(), &endPtr);
+			if (succeeded != nullptr)
+			{
+				*succeeded = endPtr == &*End();
+			}
+			return value;
+		}
 
 		// ------------------------------------------------------------------------------------------
 		// Miscellaneous.
@@ -501,7 +715,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL bool MatchesWildcard(TChar const* const wildcard) const 
 		{
-			GD_DEBUG_ASSERT(wildcard != nullptr, "Null pointer wildcard was specified.");
+			GD_DEBUG_VERIFY(wildcard != nullptr, "Null pointer wildcard was specified.");
 
 			// Originally written by Jack Handy - <A href="mailto:jakkhandy@hotmail.com">jakkhandy@hotmail.com</A>.
 			TChar const* cstring = CStr();
@@ -511,7 +725,9 @@ GD_NAMESPACE_BEGIN
 			while ((*cstring != GD_LITERAL(TChar, '\0')) && (*wildcardPtr != GD_LITERAL(TChar, '*')))
 			{
 				if ((*wildcardPtr != *cstring) && (*wildcardPtr != GD_LITERAL(TChar, '?')))
+				{
 					return false;
+				}
 				++wildcardPtr;
 				++cstring;
 			}
@@ -520,7 +736,9 @@ GD_NAMESPACE_BEGIN
 				if (*wildcardPtr == GD_LITERAL(TChar, '*'))
 				{
 					if (!*++wildcardPtr)
+					{
 						return true;
+					}
 					matchPointer = wildcardPtr;
 					charPtr = cstring + 1;
 				}
@@ -536,205 +754,17 @@ GD_NAMESPACE_BEGIN
 				}
 			}
 			while (*wildcardPtr == GD_LITERAL(TChar, '*'))
+			{
 				++wildcardPtr;
+			}
 			return (*wildcardPtr == GD_LITERAL(TChar, '\0'));
 		}
-		GDINL bool MatchesWildcard(BaseString const& Wildcard) const
+		template<SizeTp TOtherInlineLength>
+		GDINL bool MatchesWildcard(BaseString<TChar, TOtherInlineLength> const& Wildcard) const
 		{
 			return MatchesWildcard(Wildcard.CStr());
 		}
 		//! @}
-
-		/*!
-		 */
-		GDINL BaseString UnwrapEscapeSequences() const
-		{
-			return *this;
-		}
-
-
-		/*!
-		 */
-		GDINL BaseString WrapEscapeSequences() const
-		{
-			return *this;
-		}
-
-		/*!
-		 * Searches for first occurrence of the character in the string.
-		 *
-		 * @param character The character we are looking for.
-		 * @returns Index of the first occurrence of the character in the string or @c SizeTpMax if nothing was found.
-		 */
-		GDINL SizeTp Find(TChar const character) const
-		{
-			TChar const* const cstring = CStr();
-			TChar const* const location = MyCString::Strchr(cstring, character);
-			if (location != nullptr)
-				return static_cast<SizeTp>(location - cstring);
-			return SizeTpMax;
-		}
-
-		/*!
-		 * Searches for first occurrence of the C string in the string.
-		 *
-		 * @param otherCString C string we are looking for.
-		 * @returns Index of the first occurrence of the C string in the string or @c SizeTpMax if nothing was found.
-		 */
-		GDINL SizeTp Find(TChar const* const otherCString) const
-		{
-			TChar const* const cstring = CStr();
-			TChar const* const location = MyCString::Strstr(cstring, otherCString);
-			return location == nullptr ? SizeTpMax : static_cast<SizeTp>(location - cstring);
-		}
-
-		/*!
-		 * Searches for last occurrence of the character in the string.
-		 *
-		 * @param character The character we are looking for.
-		 * @returns Index of the last occurrence of the character in the string or @c SizeTpMax if nothing was found.
-		 */
-		GDINL SizeTp ReverseFind(TChar const character) const
-		{
-			TChar const* const cstring = CStr();
-			TChar const* const location = MyCString::Strrchr(cstring, character);
-			return location == nullptr ? SizeTpMax : static_cast<SizeTp>(location - cstring);
-		}
-
-		/*!
-		 * Searches for last occurrence of the C string in the string.
-		 *
-		 * @param otherCString C string we are looking for.
-		 * @returns Index of the last occurrence of the C string in the string or @c SizeTpMax if nothing was found.
-		 */
-		GDINL SizeTp ReverseFind(TChar const* const otherCString) const
-		{
-			TChar const* const cstring = CStr();
-			TChar const* const location = MyCString::Strrstr(cstring, otherCString);
-			return location == nullptr ? SizeTpMax : static_cast<SizeTp>(location - cstring);
-		}
-
-		/*!
-		 * Returns true if this string starts with specified expression.
-		 *
-		 * @param other Text we are testing against.
-		 * @return True if this string starts with specified expression.
-		 */
-		//! @{
-		GDINL bool StartsWith(BaseString const& other) const
-		{
-			return MyCString::Strncmp(CStr(), other.GetLength()) == 0;
-		}
-		GDINL bool StartsWith(TChar const* const other) const
-		{
-			return MyCString::Strncmp(CStr(), MyCString::Strlen(other)) == 0;
-		}
-		GDINL bool StartsWith(TChar const other) const
-		{
-			return *CStr() == other;
-		}
-		//! @}
-
-		/*!
-		 * Returns true if this string ends with specified expression.
-		 *
-		 * @param other C string we are testing against.
-		 * @return True if this string ends with specified expression.
-		 */
-		//! @{
-		GDINL bool EndsWith(TChar const* const other) const
-		{
-			//! @todo Implement this code properly.
-			return Find(other) == (m_Length - MyCString::Strlen(other));
-		}
-		GDINL bool EndsWith(TChar const other) const
-		{
-			return *(End() - 1) == other;
-		}
-		//! @}
-
-		/*!
-		 * Returns boolean representation of this string.
-		 *
-		 * @param succeeded Would be written true if conversion succeeded.
-		 * @param notation The notation in which value is represented.
-		 * @returns Boolean representation of this string.
-		 */
-		GDINL bool ToBool(bool* const succeeded = nullptr) const
-		{
-			if (*this == GD_LITERAL(TChar, "0") || *this == GD_LITERAL(TChar, "false"))
-			{
-				if (succeeded != nullptr)
-					*succeeded = true;
-				return false;
-			}
-			if (*this == GD_LITERAL(TChar, "1") || *this == GD_LITERAL(TChar, "true"))
-			{
-				if (succeeded != nullptr)
-					*succeeded = true;
-				return true;
-			}
-			if (succeeded != nullptr)
-				*succeeded = false;
-			return false;
-		}
-
-		/*!
-		 * Returns integer representation of this string.
-		 *
-		 * @param succeeded Would be written true if conversion succeeded.
-		 * @param notation The notation in which value is represented.
-		 * @returns Integer representation of this string.
-		 */
-		GDINL Int64 ToInt64(bool* const succeeded = nullptr, SizeTp const notation = 0) const
-		{
-			TChar const* endPtr = nullptr;
-			Int64 const value = MyCString::Strtoi64(CStr(), &endPtr, notation);
-			if (succeeded != nullptr)
-				*succeeded = endPtr == &*End();
-			return value;
-		}
-
-		/*!
-		 * Returns double representation of this string.
-		 *
-		 * @param succeeded Would be written true if conversion succeeded.
-		 * @returns Double representation of this string.
-		 */
-		GDINL Float64 ToFloat64(bool* const succeeded = nullptr) const
-		{
-			TChar const* endPtr = nullptr;
-			Float64 const value = MyCString::Strtof64(CStr(), &endPtr);
-			if (succeeded != nullptr)
-				*succeeded = endPtr == &*End();
-			return value;
-		}
-
-		/*!
-		 * Returns lowercased version of this string.
-		 */
-		GDINL BaseString ToUpper() const
-		{
-			BaseString result(*this);
-			for (auto& character : result)
-			{
-				character = static_cast<TChar>(MyCChar::ToUpper(character));
-			}
-			return result;
-		}
-
-		/*!
-		 * Returns uppercased version of this string.
-		 */
-		GDINL BaseString ToLower() const
-		{
-			BaseString result(*this);
-			for (auto& character : result)
-			{
-				character = static_cast<TChar>(MyCChar::ToLower(character));
-			}
-			return result;
-		}
 
 	public:
 
@@ -751,7 +781,7 @@ GD_NAMESPACE_BEGIN
 		GDINL static BaseString FormatVa(TChar const* const format, va_list list)
 		{
 			TChar buffer[15000] = {};
-			MyCString::Vsnprintf(&buffer[0], GD_ARRAY_LENGTH(buffer), format, list);
+			MyCString::Vsnprintf_s(buffer, GD::GetLength(buffer), format, list);
 			return BaseString(buffer);
 		}
 
@@ -761,9 +791,11 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static BaseString Format(TChar const* const format, ...)
 		{
-			va_list List; 
-			va_start(List, format);
-			return BaseString::FormatVa(format, List);
+			va_list list; 
+			va_start(list, format);
+			auto const string = BaseString::FormatVa(format, list);
+			va_end(list);
+			return string;
 		}
 
 		GDINL static BaseString FromFloat64(Float64 const value)
@@ -780,34 +812,39 @@ GD_NAMESPACE_BEGIN
 		// string = string
 		GDINL BaseString& operator= (BaseString const& other)
 		{
-			this->~BaseString();
-			m_Length = other.m_Length;
-			auto const dataSizeInBytes = (m_Length + 1) * sizeof(TChar);
-			if (m_Length >= s_MaxInlineLength)
+			if (this != &other)
 			{
-				m_HeapMemory = reinterpret_cast<TChar*>(GD_MALLOC(dataSizeInBytes));
-				CMemory::Memcpy_s(m_HeapMemory, dataSizeInBytes, other.CStr(), dataSizeInBytes);
-			}
-			else
-			{
-				CMemory::Memcpy_s(&m_InlineMemory[0], sizeof(m_InlineMemory), other.CStr(), dataSizeInBytes);
+				this->~BaseString();
+				new (this) BaseString(other);
 			}
 			return *this;
 		}
-		GDINL BaseString& operator= (BaseString&& other)
+		template<SizeTp TOtherInlineLength>
+		GDINL BaseString& operator= (BaseString<TChar, TOtherInlineLength> const& other)
 		{
-			this->~BaseString();
-			m_Length = other.m_Length;
-			other.m_Length = 0;
-			if (m_Length >= s_MaxInlineLength)
+			if (this != &other)
 			{
-				m_HeapMemory = other.m_HeapMemory;
-				other.m_HeapMemory = nullptr;
+				this->~BaseString();
+				new (this) BaseString(other);
 			}
-			else
+			return *this;
+		}
+		GDINL BaseString& operator= (BaseString&& other) noexcept
+		{
+			if (this != &other)
 			{
-				auto const dataSizeInBytes = (m_Length + 1) * sizeof(TChar);
-				CMemory::Memcpy_s(m_InlineMemory, sizeof(m_InlineMemory), &other.m_InlineMemory[0], dataSizeInBytes);
+				this->~BaseString();
+				new (this) BaseString(Utils::Forward<BaseString>(other));
+			}
+			return *this;
+		}
+		template<SizeTp TOtherInlineLength>
+		GDINL BaseString& operator= (typename EnableIf<TOtherInlineLength <= TInlineLength, BaseString<TChar, TOtherInlineLength>>::Value&& other)
+		{
+			if (this != &other)
+			{
+				this->~BaseString();
+				new (this) BaseString(Utils::Forward<BaseString<TChar, TOtherInlineLength>>(other));
 			}
 			return *this;
 		}
@@ -815,7 +852,7 @@ GD_NAMESPACE_BEGIN
 		// string[]
 		GDINL TChar const& operator[] (SizeTp const index) const
 		{
-			GD_DEBUG_ASSERT(index <= GetLength(), "Invalid String subindex.");
+			GD_DEBUG_VERIFY(index <= GetLength(), "Invalid string subindex.");
 			return *(CStr() + index);
 		}
 		GDINL TChar& operator[] (SizeTp const index)
@@ -824,178 +861,178 @@ GD_NAMESPACE_BEGIN
 		}
 
 		// string == string
-		template<UInt32 TInlineLengthLHS, UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator== (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthLHS, SizeTp TInlineLengthRHS>
+		GDINL friend bool operator== (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
-			return lhs.GetLength() == rhs.GetLength() ? BaseCString<TChar>::Strncmp(lhs.CStr(), rhs.CStr(), lhs.GetLength()) == 0 : false;
+			return lhs.GetLength() == rhs.GetLength() && BaseCString<TChar>::Strncmp(lhs.CStr(), rhs.CStr(), lhs.GetLength()) == 0;
 		}
-
-		template<UInt32 TInlineLengthLHS, UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator!= (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthLHS, SizeTp TInlineLengthRHS>
+		GDINL friend bool operator!= (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
-			return !(lhs == rhs);
+			return lhs.GetLength() != rhs.GetLength() || BaseCString<TChar>::Strncmp(lhs.CStr(), rhs.CStr(), lhs.GetLength()) != 0;
 		}
 
 		// string == char*
-		template<UInt32 TInlineLengthLHS>
-		GDINL friend static bool operator== (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend bool operator== (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
 		{
 			return BaseCString<TChar>::Strncmp(lhs.CStr(), rhs, lhs.GetLength()) == 0;
 		}
-		template<UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator== (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthRHS>
+		GDINL friend bool operator== (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return rhs == lhs;
 		}
 
-		template<UInt32 TInlineLengthLHS>
-		GDINL friend static bool operator!= (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend bool operator!= (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
 		{
 			return !(lhs == rhs);
 		}
-		template<UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator!= (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthRHS>
+		GDINL friend bool operator!= (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return !(lhs == rhs);
 		}
 
 		// string == char
-		template<UInt32 TInlineLengthLHS>
-		GDINL friend static bool operator== (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const rhs)
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend bool operator== (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const rhs)
 		{
 			return lhs.GetLength() == 1 ? *lhs.CStr() == rhs : false;
 		}
-		template<UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator== (TChar const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthRHS>
+		GDINL friend bool operator== (TChar const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return rhs.GetLength() == 1 ? *rhs.CStr() == lhs : false;
 		}
 
-		template<UInt32 TInlineLengthLHS>
-		GDINL friend static bool operator!= (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const rhs)
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend bool operator!= (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const rhs)
 		{
 			return !(lhs == rhs);
 		}
-		template<UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator!= (TChar const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthRHS>
+		GDINL friend bool operator!= (TChar const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return rhs != lhs;
 		}
 
 		// string > string
-		template<UInt32 TInlineLengthLHS, UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator> (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthLHS, SizeTp TInlineLengthRHS>
+		GDINL friend bool operator> (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return MyCString::Strncmp(lhs.CStr(), rhs.CStr(), lhs.GetLength()) > 0;
 		}
-		template<UInt32 TInlineLengthLHS, UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator>= (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthLHS, SizeTp TInlineLengthRHS>
+		GDINL friend bool operator>= (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return MyCString::Strncmp(lhs.CStr(), rhs.CStr(), lhs.GetLength()) >= 0;
 		}
 
 		// string < string
-		template<UInt32 TInlineLengthLHS, UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator< (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthLHS, SizeTp TInlineLengthRHS>
+		GDINL friend bool operator< (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return MyCString::Strncmp(lhs.CStr(), rhs.CStr(), lhs.GetLength()) < 0;
 		}
-		template<UInt32 TInlineLengthLHS, UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator<= (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthLHS, SizeTp TInlineLengthRHS>
+		GDINL friend bool operator<= (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return MyCString::Strncmp(lhs.CStr(), rhs.CStr(), lhs.GetLength()) <= 0;
 		}
 
 		// string > char*
-		template<UInt32 TInlineLengthLHS>
-		GDINL friend static bool operator> (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend bool operator> (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
 		{
 			return MyCString::Strncmp(lhs.CStr(), rhs, lhs.GetLength()) > 0;
 		}
-		template<UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator> (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthRHS>
+		GDINL friend bool operator> (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return MyCString::Strncmp(lhs, rhs.CStr(), rhs.GetLength()) > 0;
 		}
-		template<UInt32 TInlineLengthLHS>
-		GDINL friend static bool operator>= (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend bool operator>= (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
 		{
 			return MyCString::Strncmp(lhs.CStr(), rhs, lhs.GetLength()) >= 0;
 		}
-		template<UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator>= (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthRHS>
+		GDINL friend bool operator>= (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return MyCString::Strncmp(lhs, rhs.CStr(), rhs.GetLength()) >= 0;
 		}
 
 		// string < char*
-		template<UInt32 TInlineLengthLHS>
-		GDINL friend static bool operator< (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend bool operator< (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
 		{
 			return MyCString::Strncmp(lhs.CStr(), rhs, lhs.GetLength()) < 0;
 		}
-		template<UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator< (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthRHS>
+		GDINL friend bool operator< (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return MyCString::Strncmp(lhs, rhs.CStr(), rhs.GetLength()) < 0;
 		}
-		template<UInt32 TInlineLengthLHS>
-		GDINL friend static bool operator<= (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend bool operator<= (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
 		{
 			return MyCString::Strncmp(lhs.CStr(), rhs, lhs.GetLength()) <= 0;
 		}
-		template<UInt32 TInlineLengthRHS>
-		GDINL friend static bool operator<= (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthRHS>
+		GDINL friend bool operator<= (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
 			return MyCString::Strncmp(lhs, rhs.CStr(), rhs.GetLength()) <= 0;
 		}
 
 		// string + string
-		template<UInt32 TInlineLengthLHS, UInt32 TInlineLengthRHS>
-		GDINL friend static BaseString<TChar> operator+ (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		template<SizeTp TInlineLengthLHS, SizeTp TInlineLengthRHS>
+		GDINL friend BaseString<TChar, TInlineLengthLHS> operator+ (BaseString<TChar, TInlineLengthLHS> const& lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
 		{
-			return lhs.Concatenate(rhs);
+			return lhs.Append(rhs);
+		}
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend BaseString<TChar, TInlineLengthLHS>& operator+= (BaseString<TChar, TInlineLengthLHS>& lhs, BaseString<TChar> const& rhs)
+		{
+			return lhs = lhs.Append(rhs);
+		}
+
+		// string + char*
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend BaseString<TChar, TInlineLengthLHS> operator+ (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const* const rhs)
+		{
+			return lhs.Append(rhs);
+		}
+		template<SizeTp TInlineLengthRHS>
+		GDINL friend BaseString<TChar, TInlineLengthRHS> operator+ (TChar const* const lhs, BaseString<TChar, TInlineLengthRHS> const& rhs)
+		{
+			return BaseString<TChar>(lhs).Append(rhs);
+		}
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend BaseString<TChar, TInlineLengthLHS>& operator+= (BaseString<TChar, TInlineLengthLHS>& lhs, TChar const* const rhs)
+		{
+			return lhs = lhs.Append(rhs);
+		}
+
+		// string + char
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend BaseString<TChar, TInlineLengthLHS> operator+ (BaseString<TChar, TInlineLengthLHS> const& lhs, TChar const rhs)
+		{
+			return lhs.Append(rhs);
+		}
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend BaseString<TChar, TInlineLengthLHS> operator+ (TChar const lhs, BaseString<TChar, TInlineLengthLHS> const& rhs)
+		{
+			return BaseString<TChar>(lhs).Append(rhs);
+		}
+		template<SizeTp TInlineLengthLHS>
+		GDINL friend BaseString<TChar, TInlineLengthLHS>& operator+= (BaseString<TChar, TInlineLengthLHS>& lhs, TChar const rhs)
+		{
+			return lhs = lhs.Append(rhs);
 		}
 
 	};	// class BaseString
-
-	template<typename TChar>
-	GDINL static BaseString<TChar> operator+ (BaseString<TChar> const& lhs, TChar const* const rhs)
-	{
-		return lhs.Concatenate(rhs);
-	}
-	template<typename TChar>
-	GDINL static BaseString<TChar> operator+ (TChar const* const lhs, BaseString<TChar> const& rhs)
-	{
-		return BaseString<TChar>(lhs).Concatenate(rhs);
-	}
-
-	template<typename TChar>
-	GDINL static BaseString<TChar> operator+ (BaseString<TChar> const& lhs, TChar const rhs)
-	{
-		return lhs.Concatenate(rhs);
-	}
-	template<typename TChar>
-	GDINL static BaseString<TChar> operator+ (TChar const lhs, BaseString<TChar> const& rhs)
-	{
-		return BaseString<TChar>(lhs).Concatenate(rhs);
-	}
-
-	template<typename TChar>
-	GDINL static BaseString<TChar>& operator+= (BaseString<TChar>& lhs, BaseString<TChar> const& rhs)
-	{
-		return lhs.Append(rhs);
-	}
-	template<typename TChar>
-	GDINL static BaseString<TChar>& operator+= (BaseString<TChar>& lhs, TChar const* const rhs)
-	{
-		return lhs.Append(rhs);
-	}
-	template<typename TChar>
-	GDINL static BaseString<TChar>& operator+= (BaseString<TChar>& lhs, TChar const rhs)
-	{
-		return lhs.Append(rhs);
-	}
 
 	/*!
 	 * A string class used by the engine.
@@ -1010,13 +1047,13 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * A stack string class used by the engine.
 	 */
-	template<UInt32 TInlineLength>
+	template<SizeTp TInlineLength = InlineAllocatorCapacityTiny>
 	using InlineString = BaseString<Char, TInlineLength>;
 
 	/*!
 	 * A stack wide-character string class used by the engine.
 	 */
-	template<UInt32 TInlineLength>
+	template<SizeTp TInlineLength = InlineAllocatorCapacityTiny>
 	using InlineWideString = BaseString<WideChar, TInlineLength>;
 
 GD_NAMESPACE_END

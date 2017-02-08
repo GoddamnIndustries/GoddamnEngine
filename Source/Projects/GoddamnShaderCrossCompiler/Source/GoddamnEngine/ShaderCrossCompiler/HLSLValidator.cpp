@@ -165,7 +165,7 @@ GD_NAMESPACE_BEGIN
 		SizeTp ConstantBufferNewRegister = 0;
 		for (auto const& Definition : ParsedData->InnerDefinitions)
 		{
-			auto const ConstantBuffer = HLSLDynamicCast<HLSLCBuffer const*>(Definition);
+			auto const ConstantBuffer = HLSLDynamicCast<HLSLCBuffer const*>(Definition.Get());
 			if (ConstantBuffer == nullptr)
 				continue;
 

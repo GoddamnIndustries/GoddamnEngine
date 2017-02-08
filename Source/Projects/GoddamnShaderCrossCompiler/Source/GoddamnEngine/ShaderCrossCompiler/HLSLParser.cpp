@@ -18,7 +18,6 @@
 
 #include <GoddamnEngine/Core/Containers/StringBuilder.h>
 #include <GoddamnEngine/Core/Containers/Map.h>
-#include <GoddamnEngine/Core/UniquePtr.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -101,7 +100,7 @@ GD_NAMESPACE_BEGIN
 	} static HLSLSuperGlobalScope;
 #define GD_HLSL_REGISTER_IN_SUPERGLOBAL_SCOPE() \
 	do { \
-		HLSLSuperGlobalScope.InnerDefinitions.Insert(UniquePtr<HLSLDefinition const>(this)); \
+		HLSLSuperGlobalScope.InnerDefinitions.InsertLast(UniquePtr<HLSLDefinition const>(this)); \
 	} while(false)
 	//! @}
 
@@ -220,7 +219,7 @@ GD_NAMESPACE_BEGIN
 		{	
 			// Registering default types.
 			EnterScope(&HLSLSuperGlobalScope);
-			EnterScope(GlobalScope = GD_NEW(HLSLScope));
+			EnterScope(GlobalScope = gd_new HLSLScope());
 		}
 
 		GDINT HLSLScope const* ParseShader();
@@ -243,7 +242,7 @@ GD_NAMESPACE_BEGIN
 
 		// ------------------------------------------------------------------------------------------
 		// Scope management..
-		GDINL void                  EnterScope(HLSLScope* const CurrentScope) { GlobalScopesStack.Insert(CurrentScope); }
+		GDINL void                  EnterScope(HLSLScope* const CurrentScope) { GlobalScopesStack.InsertLast(CurrentScope); }
 		GDINL void                  LeaveScope() { GlobalScopesStack.EraseLast(); }
 
 		// ------------------------------------------------------------------------------------------
@@ -268,7 +267,7 @@ GD_NAMESPACE_BEGIN
 		GDINT HLSLCBuffer    const* ParseCBuffer();
 		GDINT HLSLVariable   const* ParseVariable(HLSLDefinition&& PrependingDefinition, bool const DoExpectSemicolon = true);
 		GDINT HLSLFunction   const* ParseFunction(HLSLDefinition&& PrependingDefinition);
-		GDINT HLSLBinding  const* ParseBinding(HLSLBindingType const ExpectedBindings);
+		GDINT HLSLBinding    const* ParseBinding(HLSLBindingType const ExpectedBindings);
 	}; // class HLSLParserImpl
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -288,7 +287,7 @@ GD_NAMESPACE_BEGIN
 				| GD_HLSL_DEFINITION_VARIABLE
 				| GD_HLSL_DEFINITION_FUNCTION
 				| GD_HLSL_DEFINITION_CONSTANTBUFFER));
-			GlobalScopesStack.GetLast()->InnerDefinitions.Insert(Move(Definition));
+			GlobalScopesStack.GetLast()->InnerDefinitions.InsertLast(Move(Definition));
 		}
 		return GlobalScope;
 	}
@@ -315,7 +314,7 @@ GD_NAMESPACE_BEGIN
 			Definition.Reset(ParseDefinition(ExpectedDefinitions));
 
 			// Placing it into scope..
-			Scope->InnerDefinitions.Insert(Move(Definition));
+			Scope->InnerDefinitions.InsertLast(Move(Definition));
 		}
 	}
 

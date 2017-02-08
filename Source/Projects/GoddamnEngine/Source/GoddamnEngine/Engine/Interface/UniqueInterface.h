@@ -275,8 +275,8 @@ GD_NAMESPACE_BEGIN
 	{
 	public:
 		// See PPipeline.cpp for the implementations.
-		GDAPI IUniqueInterfacePointerBase(IInterface* const UniqueInterface, PPipeline* const UniqueInterfacePipeline);
-		GDAPI IUniqueInterfacePointerBase(IRuntimeUniqueInterface* const UniqueRuntimeInterface, PPipeline* const UniqueInterfacePipeline);
+		GDAPI IUniqueInterfacePointerBase(IInterface* const UniqueInterface, PPipeline* const UniqueInterfacePipeline) {}
+		GDAPI IUniqueInterfacePointerBase(IRuntimeUniqueInterface* const UniqueRuntimeInterface, PPipeline* const UniqueInterfacePipeline) {}
 	};	//struct IUniqueInterfacePointerBase
 #endif	// if !GD_DOCUMENTATION
 

@@ -20,7 +20,8 @@ GD_NAMESPACE_BEGIN
 	class UniquePtrBase : TNonCopyable
 	{
 	protected:
-		GDINL void _Delete(TPointee* const rawPointer)
+		typedef TPointee TTPointee;
+		GDINL static void DeleteSelf(TTPointee* const rawPointer)
 		{
 			gd_delete rawPointer;
 		}
@@ -30,7 +31,8 @@ GD_NAMESPACE_BEGIN
 	class UniquePtrBase<TPointee[]> : TNonCopyable
 	{
 	protected:
-		GDINL void _Delete(TPointee* const rawPointer)
+		typedef TPointee TTPointee;
+		GDINL static void DeleteSelf(TTPointee* const rawPointer)
 		{
 			gd_delete[] rawPointer;
 		}
@@ -42,25 +44,32 @@ GD_NAMESPACE_BEGIN
 	template<typename TPointee>
 	class UniquePtr : UniquePtrBase<TPointee>
 	{
+		using TBase = UniquePtrBase<TPointee>;
+		using TTPointee = typename UniquePtrBase<TPointee>::TTPointee;
+
 	private:
-		TPointee* m_RawPointer = nullptr;
+		TTPointee* m_RawPointer = nullptr;
 
 	public:
+
+		/*!
+		 * Initializes an empty unique pointer.
+		 */
+		GDINL explicit UniquePtr()
+			: m_RawPointer(nullptr)
+		{
+		}
 
 		/*!
 		 * Initializes a unique pointer.
 		 * @param rawPointer Raw pointer to the object.
 		 */
 		//! @{
-		GDINL explicit UniquePtr() 
-			: m_RawPointer(nullptr)
-		{
-		}
 		GDINL explicit UniquePtr(nullptr_t) 
 			: m_RawPointer(nullptr)
 		{
 		}
-		GDINL explicit UniquePtr(TPointee* const rawPointer) 
+		GDINL explicit UniquePtr(TTPointee* const rawPointer)
 			: m_RawPointer(rawPointer)
 		{
 		}
@@ -70,7 +79,7 @@ GD_NAMESPACE_BEGIN
 		 * Moves other unique pointer to this object.
 		 * @param other The other unique pointer to move here.
 		 */
-		GDINL UniquePtr(UniquePtr&& other) 
+		GDINL UniquePtr(UniquePtr&& other) noexcept
 			: m_RawPointer(other.m_RawPointer)
 		{ 
 			other.m_RawPointer = nullptr;
@@ -78,7 +87,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL ~UniquePtr()
 		{ 
-			this->_Delete(m_RawPointer); 
+			TBase::DeleteSelf(m_RawPointer);
 			m_RawPointer = nullptr; 
 		}
 
@@ -87,7 +96,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Returns reference to the stored raw pointer.
 		 */
-		GDINL TPointee* Get() const 
+		GDINL TTPointee* Get() const
 		{ 
 			return m_RawPointer; 
 		}
@@ -95,12 +104,12 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Deletes pointer, stored in this object and assigns it new specified value.
 		 *
-		 * @param pointer New pointer to assign.
+		 * @param newRawPointer New pointer to assign.
 		 * @returns New specified pointer.
 		 */
-		GDINL TPointee* Reset(TPointee* const newRawPointer)
+		GDINL TTPointee* Reset(TTPointee* const newRawPointer)
 		{
-			this->~UniquePtr();
+			TBase::DeleteSelf(m_RawPointer);
 			m_RawPointer = newRawPointer;
 			return m_RawPointer;
 		}
@@ -109,60 +118,56 @@ GD_NAMESPACE_BEGIN
 		 * Releases ownership on this pointer, by returning it`s value and replacing it with nullptr.
 		 * @returns Value of the pointer.
 		 */
-		GDINL TPointee* Release()
+		GDINL TTPointee* Release()
 		{
-			TPointee* const previousPointer = Get();
+			auto const previousPointer = Get();
 			m_RawPointer = nullptr;
 			return previousPointer;
 		}
 
 	public:
-		GDINL UniquePtr& operator= (UniquePtr&& other)
+
+		// unique_ptr = ...
+		GDINL UniquePtr& operator= (UniquePtr&& other) noexcept
 		{
 			if (this != &other) 
 			{
-				this->~UniquePtr();
+				TBase::DeleteSelf(m_RawPointer);
 				m_RawPointer = other.m_RawPointer;
 				other.m_RawPointer = nullptr;
 			}
 			return *this;
 		}
-		GDINL UniquePtr& operator= (TPointee* const other)
+		GDINL UniquePtr& operator= (TTPointee* const other)
 		{
 			if (m_RawPointer != other) 
 			{
-				this->~UniquePtr();
+				TBase::DeleteSelf(m_RawPointer);
 				m_RawPointer = other;
 			}
 			return *this;
 		}
 
-		GDINL bool operator== (TPointee const* const other) const 
+		// unique_ptr == nullptr
+		GDINL bool operator== (nullptr_t) const
 		{ 
-			return Get() == other; 
+			return m_RawPointer == nullptr;
 		}
-		GDINL bool operator== (UniquePtr<TPointee> const& other) const 
+		GDINL bool operator!= (nullptr_t) const
 		{ 
-			return Get() == other.Get(); 
-		}
-		
-		GDINL bool operator!= (TPointee const* const other) const 
-		{ 
-			return !(*this == other); 
-		}
-		GDINL bool operator!= (UniquePtr<TPointee> const& other) const 
-		{ 
-			return !(*this == other); 
+			return m_RawPointer != nullptr;
 		}
 
-		GDINL TPointee& operator* () const
+		// unique_ptr->
+		GDINL TTPointee& operator* () const
 		{
 			return *m_RawPointer;
 		}
-		GDINL TPointee* operator-> () const
+		GDINL TTPointee* operator-> () const
 		{
 			return m_RawPointer;
 		}
+
 	};	// class UniquePtr 
 
 GD_NAMESPACE_END

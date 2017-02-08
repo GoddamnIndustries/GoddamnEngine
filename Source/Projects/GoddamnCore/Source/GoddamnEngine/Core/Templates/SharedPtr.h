@@ -17,12 +17,13 @@
 GD_NAMESPACE_BEGIN
 
 	// **------------------------------------------------------------------------------------------**
-	//! Implements base reference counting.
+	//! Implements base non-thread safe reference counting.
 	// **------------------------------------------------------------------------------------------**
-	struct ReferenceTarget : IVirtuallyDestructible
+	template<typename TCounter = UInt32>
+	struct TReferenceTarget : IVirtuallyDestructible
 	{
 	private:
-		UInt32 m_ReferenceCount = 1;
+		TCounter m_ReferenceCount = 1;
 
 	public:
 
@@ -49,6 +50,34 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 	};	// struct ReferenceTarget
+	using ReferenceTarget = TReferenceTarget<>;
+
+	GD_HAS_MEMBER_FUNCTION(AddRef);
+	GD_HAS_MEMBER_FUNCTION(Release);
+
+	/*!
+	 * Increments reference counter for this object (if it is non-null).
+	 */
+	template<typename TReferenceTargetPtr>
+	GDINL static void SafeAddRef(TReferenceTargetPtr const& refTarget)
+	{
+		if (refTarget != nullptr)
+		{
+			refTarget->AddRef();
+		}
+	}
+
+	/*!
+	 * Decrements reference counter for this object (if it is non-null).
+	 */
+	template<typename TReferenceTargetPtr>
+	GDINL static void SafeRelease(TReferenceTargetPtr const& refTarget)
+	{
+		if (refTarget != nullptr)
+		{
+			refTarget->Release();
+		}
+	}
 
 	// **------------------------------------------------------------------------------------------**
 	//! Implements casting operations for shared pointers.
@@ -56,7 +85,7 @@ GD_NAMESPACE_BEGIN
 	struct SharedPtrCastOperation final : public TNonCreatable
 	{
 		/*!
-		 * Casts to POD objects using union.
+		 * Casts to types using static_cast.
 		 */
 		template<typename TCastTo, typename TCastFrom>
 		GDINL static TCastTo Cast(TCastFrom castFrom)
@@ -71,6 +100,9 @@ GD_NAMESPACE_BEGIN
 	template<typename TPointee, typename TCast = SharedPtrCastOperation>
 	struct SharedPtr final
 	{
+		static_assert(TypeTraits::HasMemberFunction_AddRef<TPointee>::Value, "Target type for shared pointers should be contain 'AddRef' function.");
+		static_assert(TypeTraits::HasMemberFunction_Release<TPointee>::Value, "Target type for shared pointers should be contain 'Release' function.");
+
 	private:
 		TPointee* m_RawPointer;
 
@@ -96,11 +128,13 @@ GD_NAMESPACE_BEGIN
 		GDINL implicit SharedPtr(TPointee* const rawPointer)
 			: m_RawPointer(rawPointer)
 		{
+			GD::SafeAddRef(m_RawPointer);
 		}
 		template<typename TOtherPointee>
 		GDINL implicit SharedPtr(TOtherPointee* const rawPointer)
 			: m_RawPointer(TCast::template Cast<TPointee*>(rawPointer))
 		{
+			GD::SafeAddRef(m_RawPointer);
 		}
 		//! @}
 
@@ -109,31 +143,32 @@ GD_NAMESPACE_BEGIN
 		 * @param otherSharedPtr Other automated pointer.
 		 */
 		//! @{
-		GDINL implicit SharedPtr(SharedPtr<TPointee> const& otherSharedPtr)
+		GDINL implicit SharedPtr(SharedPtr const& otherSharedPtr)
 			: m_RawPointer(otherSharedPtr.Get())
 		{
-			if (m_RawPointer != nullptr)
-			{
-				m_RawPointer->AddRef();
-			}
+			GD::SafeAddRef(m_RawPointer);
 		}
 		template<typename TOtherPointee>
 		GDINL implicit SharedPtr(SharedPtr<TOtherPointee> const& otherSharedPtr)
 			: m_RawPointer(TCast::template Cast<TPointee*>(otherSharedPtr.Get()))
 		{
-			if (m_RawPointer != nullptr)
-			{
-				m_RawPointer->AddRef();
-			}
+			GD::SafeAddRef(m_RawPointer);
 		}
 		//! @}
 
+		/*!
+		 * Moves other shared pointer to this object.
+		 * @param other The other shared pointer to move here.
+		 */
+		GDINL SharedPtr(SharedPtr&& other) noexcept
+			: m_RawPointer(other.m_RawPointer)
+		{ 
+			other.m_RawPointer = nullptr;
+		}
+
 		GDINL ~SharedPtr()
 		{
-			if (m_RawPointer != nullptr)
-			{
-				m_RawPointer->Release();
-			}
+			GD::SafeRelease(m_RawPointer);
 		}
 
 	public:
@@ -147,27 +182,33 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public:
+
+		// shared_ptr = ...
 		GDINL SharedPtr& operator= (TPointee* const rawPointer)
 		{
-			if (m_RawPointer != nullptr)
-			{
-				m_RawPointer->Release();
-			}
-
+			GD::SafeRelease(m_RawPointer);
 			m_RawPointer = rawPointer;
+			GD::SafeAddRef(m_RawPointer);
 
-			if (m_RawPointer != nullptr)
+			return *this;
+		}
+		GDINL SharedPtr& operator= (SharedPtr&& other) noexcept
+		{
+			if (this != &other)
 			{
-				m_RawPointer->AddRef();
+				GD::SafeRelease(m_RawPointer);
+				m_RawPointer = other.m_RawPointer;
+				other.m_RawPointer = nullptr;
 			}
 			return *this;
 		}
-		GDINL SharedPtr<TPointee>& operator= (SharedPtr const& otherSharedPtr)
+		GDINL SharedPtr& operator= (SharedPtr const& otherSharedPtr)
 		{
 			*this = otherSharedPtr.m_RawPointer;
 			return *this;
 		}
 
+		// shared_ptr == nullptr
 		GDINL bool operator== (nullptr_t) const
 		{
 			return m_RawPointer == nullptr;
@@ -177,6 +218,7 @@ GD_NAMESPACE_BEGIN
 			return m_RawPointer != nullptr;
 		}
 
+		// shared_ptr == T*
 		template<typename TOtherPointee>
 		GDINL bool operator== (TOtherPointee* const rawPointer) const
 		{
@@ -188,6 +230,7 @@ GD_NAMESPACE_BEGIN
 			return m_RawPointer != rawPointer;
 		}
 
+		// shared_ptr == shared_ptr
 		template<typename TOtherPointee>
 		GDINL bool operator== (SharedPtr<TOtherPointee> const& otherSharedPtr) const
 		{
@@ -199,6 +242,7 @@ GD_NAMESPACE_BEGIN
 			return m_RawPointer != otherSharedPtr.m_RawPointer;
 		}
 
+		// shared_ptr->
 		GDINL TPointee* operator-> () const
 		{
 			return m_RawPointer;
@@ -208,11 +252,18 @@ GD_NAMESPACE_BEGIN
 			return *m_RawPointer;
 		}
 
+		// (shared_ptr<U>)shared_ptr<T>
 		template<typename TOtherPointee>
 		GDINL explicit operator SharedPtr<TOtherPointee>() const
 		{
+			static_assert(TypeTraits::IsBase<TOtherPointee, TPointee>::Value || TypeTraits::IsBase<TPointee, TOtherPointee>::Value, "Cast types should be related.");
 			return TCast::template Cast<TOtherPointee*>(m_RawPointer);
 		}
+		GDINL operator SharedPtr<TPointee const>() const
+		{
+			return m_RawPointer;
+		}
+
 	};	// struct SharedPtr<TPointee>
 
 GD_NAMESPACE_END

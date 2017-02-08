@@ -16,6 +16,7 @@ terms of Goddamn Industries End User License Agreement.
 
   <!-- UniquePtr<T> class. -->
   <Type Name="Goddamn::UniquePtr&lt;*&gt;">
+    <SmartPointer Usage="Minimal">m_RawPointer</SmartPointer>
     <DisplayString Condition="m_RawPointer == 0">Empty</DisplayString>
     <DisplayString Condition="m_RawPointer != 0">{*m_RawPointer}</DisplayString>
     <Expand>
@@ -25,6 +26,7 @@ terms of Goddamn Industries End User License Agreement.
 
   <!-- SharedPtr<T> class. -->
   <Type Name="Goddamn::SharedPtr&lt;*&gt;">
+    <SmartPointer Usage="Minimal">m_RawPointer</SmartPointer>
     <DisplayString Condition="m_RawPointer == 0">Empty</DisplayString>
     <DisplayString Condition="m_RawPointer != 0">{*m_RawPointer}</DisplayString>
     <Expand>
@@ -119,6 +121,18 @@ terms of Goddamn Industries End User License Agreement.
         <Size>m_Length</Size>
         <ValuePointer>m_Memory</ValuePointer>
       </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="Goddamn::Vector&lt;bool,*&gt;">
+    <DisplayString Condition="m_Length == 0">Empty</DisplayString>
+    <DisplayString Condition="m_Length != 0">{{ Length = {m_Length} }}</DisplayString>
+    <Expand>
+      <Item Condition="m_Length != 0" Name="Length">m_Length</Item>
+      <Item Name="Capacity">m_Capacity</Item>
+      <IndexListItems>
+        <Size>m_Length</Size>
+        <ValueNode>(bool)((m_Memory[$i / s_BitPerWord] &gt;&gt; ($i % s_BitPerWord)) &amp; 1)</ValueNode>
+      </IndexListItems>
     </Expand>
   </Type>
 

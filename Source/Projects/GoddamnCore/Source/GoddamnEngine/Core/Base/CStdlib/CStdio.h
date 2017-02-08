@@ -12,6 +12,9 @@
  * Wrappers, helper functions and definitions for standard IO functions.
  */
 #pragma once
+#if !defined(GD_INSIDE_INCLUDE_H)
+#	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
+#endif	// if !defined(GD_INSIDE_INCLUDE_H)
 
 GD_NAMESPACE_BEGIN
 
@@ -67,7 +70,7 @@ GD_NAMESPACE_BEGIN
 #if GD_PLATFORM_API_MICROSOFT
 			FILE* temporaryFile = nullptr;
 			auto const result = ::tmpfile_s(&temporaryFile);
-			GD_DEBUG_ASSERT(result == 0, "tmpfile_s failed.");
+			GD_DEBUG_VERIFY(result == 0, "tmpfile_s failed.");
 			return temporaryFile;
 #else	// if GD_PLATFORM_API_MICROSOFT
 			return ::tmpfile();
@@ -86,11 +89,11 @@ GD_NAMESPACE_BEGIN
 		/*! 
 		 * @see @c "std::tmpnam" function.
 		 */
-		GDINL static void Tmpnam(Char* const temporaryPath, SizeTp const temporaryPathLength)
+		GDINL static void Tmpnam_s(Char* const temporaryPath, SizeTp const temporaryPathLength)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			auto const result = ::tmpnam_s(temporaryPath, temporaryPathLength);
-			GD_DEBUG_ASSERT(result == 0, "tmpnam_s failed.");
+			GD_DEBUG_VERIFY(result == 0, "tmpnam_s failed.");
 #else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(temporaryPathLength);
 			::tmpnam(temporaryPath);
@@ -106,7 +109,7 @@ GD_NAMESPACE_BEGIN
 #if GD_PLATFORM_API_MICROSOFT
 			FILE* fileHandle = nullptr;
 			auto const result = ::fopen_s(&fileHandle, filename, mode);
-			GD_DEBUG_ASSERT(result == 0, "fopen_s failed.");
+			GD_DEBUG_VERIFY(result == 0, "fopen_s failed.");
 			return fileHandle;
 #else	// if GD_PLATFORM_API_MICROSOFT
 			return ::fopen(filename, mode);
@@ -117,7 +120,7 @@ GD_NAMESPACE_BEGIN
 #if GD_PLATFORM_API_MICROSOFT
 			FILE* fileHandle = nullptr;
 			auto const result = ::_wfopen_s(&fileHandle, filename, mode);
-			GD_DEBUG_ASSERT(result == 0, "fopen_s failed.");
+			GD_DEBUG_VERIFY(result == 0, "fopen_s failed.");
 			return fileHandle;
 #else	// if GD_PLATFORM_API_MICROSOFT
 			return ::wfopen(filename, mode);
@@ -261,11 +264,22 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * Declarations used to ban standard functions. 
 	 */
-	enum StdlibMemoryUnallowedIOFunctions
+	enum LibIOUnallowedFunctions
 	{
-		remove,
-		rename,
-		tmpfile, tmpfile_s,
-	};	// enum StdlibMemoryUnallowedFunctions
+		remove, _wremove, wremove,
+		rename, _wrename, wrename,
+		tmpfile_s, tmpfile,
+		tmpnam_s, tmpnam,
+		fopen_s, fopen, _wfopen_s, wfopen,
+		fclose,
+		fflush,
+		_ftelli64_nolock, ftell,
+		_fseeki64_nolock, fseek,
+		getc, _getw, getw,
+		putc, _putw, putw,
+		fputs, fputws,
+		fread_s, fread,
+		fwrite
+	};	// enum LibIOUnallowedFunctions
 
 GD_NAMESPACE_END

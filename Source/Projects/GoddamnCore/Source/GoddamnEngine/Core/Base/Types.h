@@ -45,7 +45,7 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * Type of 'nullptr' constant.
 	 */
-	typedef decltype(nullptr) NullptrTp;
+	typedef decltype(nullptr) nullptr_t;
 
 	typedef void         *  Handle;
 	typedef void const   * CHandle;
@@ -133,7 +133,7 @@ GD_NAMESPACE_BEGIN
 
 	GD_DEPRECATED("Please, use 'SizeTp' instead of 'size_t'")		
 	typedef ::std::size_t size_t;
-	
+
 	GD_DEPRECATED("Please, use 'PtrDiffTp' instead of 'ptrdiff_t'") 
 	typedef ::std::ptrdiff_t ptrdiff_t;
 
@@ -242,11 +242,25 @@ GD_NAMESPACE_BEGIN
 	};	// struct IVirtuallyDestructible
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	// ******                            Raw pointers wrappers.                                ******
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+
+	template<typename TType>
+	using MaybeNull = TType;
+
+	/*template<typename TType>
+	using NotNull = gsl::not_null<TType>;*/
+
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	// ******                      Array size counting safe macros.                            ******
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	template <typename TType, SizeTp TLength>
-	GDINT Byte (&GetArrayLengthHelper(TType const(&array)[TLength]))[TLength] = delete;
+	GDINT Byte (& GetArrayLengthHelper(TType const (&array)[TLength]))[TLength]
+	{
+		GD_NOT_USED(array);
+		return {};
+	}
 
 	/*!
 	 * Returns size of the specified array.
@@ -256,6 +270,20 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_NOT_USED(array);
 		return TLength;
+	}
+
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	// ******                                 Union cast.                                      ******
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+
+	/*!
+	 * Casts to POD objects using union.
+	 */
+	template<typename TCastTo, typename TCastFrom>
+	GDINL static TCastTo union_cast(TCastFrom const castFrom)
+	{
+		static_assert(sizeof TCastTo == sizeof TCastFrom, "Union cast's parameter should match sizes.");
+		return *reinterpret_cast<TCastTo const*>(&castFrom);
 	}
 
 GD_NAMESPACE_END

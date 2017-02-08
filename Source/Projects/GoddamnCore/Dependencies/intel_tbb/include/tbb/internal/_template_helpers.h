@@ -1,5 +1,5 @@
 /*
-    Copyright 2005-2015 Intel Corporation.  All Rights Reserved.
+    Copyright 2005-2016 Intel Corporation.  All Rights Reserved.
 
     This file is part of Threading Building Blocks. Threading Building Blocks is free software;
     you can redistribute it and/or modify it under the terms of the GNU General Public License
@@ -38,6 +38,8 @@ template<typename T> struct strip<T&>                 { typedef T type; };
 template<typename T> struct strip<const T&>           { typedef T type; };
 template<typename T> struct strip<volatile T&>        { typedef T type; };
 template<typename T> struct strip<const volatile T&>  { typedef T type; };
+//! Specialization for function pointers
+template<typename T> struct strip<T(&)()>             { typedef T(*type)(); };
 #if __TBB_CPP11_RVALUE_REF_PRESENT
 template<typename T> struct strip<T&&>                { typedef T type; };
 template<typename T> struct strip<const T&&>          { typedef T type; };
@@ -53,6 +55,9 @@ template<typename T, size_t N> struct strip<const volatile T(&)[N]> { typedef co
 //! Detects whether two given types are the same
 template<class U, class V> struct is_same_type      { static const bool value = false; };
 template<class W>          struct is_same_type<W,W> { static const bool value = true; };
+
+template<typename T> struct is_ref { static const bool value = false; };
+template<typename U> struct is_ref<U&> { static const bool value = true; };
 
 #if __TBB_CPP11_RVALUE_REF_PRESENT && __TBB_CPP11_VARIADIC_TEMPLATES_PRESENT
 

@@ -11,13 +11,14 @@
  * File contains export interface for the engine graphics subsystem.
  */
 #include <GoddamnEngine/Engine/Interface/Graphics/Graphics.h>
+#include <GoddamnEngine/Engine/Interface/GraphicsOpenGL/GraphicsOpenGL.h>
 //#include <GoddamnEngine/Engine/Pipeline/Pipeline.h>
 
-#if 0
 
 GD_NAMESPACE_BEGIN
 	
-	// ==========================================================================================
+#if 0
+// ==========================================================================================
 	// IGraphics interface.
 	// ==========================================================================================
 
@@ -59,12 +60,11 @@ GD_NAMESPACE_BEGIN
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsComputeShader);
 #endif	// if GD_FALSE
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsPipelineState);
+#endif
 
 	// ------------------------------------------------------------------------------------------
 	//! Global graphics interface pointer.
-	GDAPI IUniqueInterfacePointer<IGraphics> Graphics(/*CreateIGraphicsInstance()*/nullptr, /*PipelineManager->GetAppropriateRenderingPipeline()*/nullptr);
-	GD_SINGLETON_IMPLEMENTATION(IGraphics);
+	GDAPI IUniqueInterfacePointer<IGraphics> Graphics(CreateIGraphicsInstance(), /*PipelineManager->GetAppropriateRenderingPipeline()*/nullptr);
 
 GD_NAMESPACE_END
 
-#endif

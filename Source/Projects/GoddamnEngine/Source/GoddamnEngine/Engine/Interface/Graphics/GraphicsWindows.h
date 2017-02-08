@@ -22,7 +22,7 @@ GD_NAMESPACE_BEGIN
 
 	GDINL static void ThrowIfFailed(HRESULT const _Hr)
 	{
-		GD_ASSERT(SUCCEEDED(_Hr), "WINAPI\\D3D11 function has failed.");
+		GD_VERIFY(SUCCEEDED(_Hr), "WINAPI\\D3D11 function has failed.");
 	}
 
 	// ------------------------------------------------------------------------------------------

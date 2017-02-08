@@ -37,7 +37,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Defines formatting attributes for string conversion.
 		 */
-		enum class Format
+		enum class Style
 		{
 			/*!
 			 * 32 hexadecimal digits.
@@ -46,7 +46,7 @@ GD_NAMESPACE_BEGIN
 			HexDigits = 1,
 
 			/*!
-			 * 32 hexadecimal digits with dashes.
+			 * 32 hexadecimal digits with hyphens.
 			 * Example: "00000000-0000-0000-0000-000000000000".
 			 */
 			HexDigitsWithHyphens,
@@ -92,7 +92,7 @@ GD_NAMESPACE_BEGIN
 		 * Initializes GUID with specified bytes (system endian).
 		 * @param bytes Byte array with data.
 		 */
-		GDINL explicit GUID(Byte const bytes[16])
+		GDINL explicit GUID(Byte const (&bytes)[16])
 			: m_A(*reinterpret_cast<UInt32 const*>(bytes + 0))
 			, m_B(*reinterpret_cast<UInt16 const*>(bytes + 4)), m_C(*reinterpret_cast<UInt16 const*>(bytes + 6))
 			, m_D(bytes[8]), m_E(bytes[9]), m_F(bytes[10]), m_G(bytes[11]), m_H(bytes[12]), m_I(bytes[13]), m_J(bytes[14]), m_K(bytes[15])
@@ -122,7 +122,7 @@ GD_NAMESPACE_BEGIN
 		 * @param c Next 2 bytes of the GUID.
 		 * @param d Next 8 bytes of the GUID.
 		 */
-		GDINL explicit GUID(UInt32 const a, UInt16 const b, UInt16 const c, UInt8 const d[8])
+		GDINL explicit GUID(UInt32 const a, UInt16 const b, UInt16 const c, UInt8 const (&d)[8])
 			: m_A(a)
 			, m_B(b), m_C(c)
 			, m_D(d[0]), m_E(d[1]), m_F(d[2]), m_G(d[3]), m_H(d[4]), m_I(d[5]), m_J(d[6]), m_K(d[7])
@@ -157,7 +157,7 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @returns True if this string matches GUID.
 		 */
-		GDAPI static bool TryParseExact(String const& string, Format const format, GUID& result);
+		GDAPI static bool TryParseExact(String const& string, Style const format, GUID& result);
 
 		/*!
 		 * Tries to parse string to the GUID representation.
@@ -177,7 +177,7 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @returns Parsed GUID or the invalid GUID.
 		 */
-		GDAPI static GUID ParseExact(String const& string, Format const format);
+		GDAPI static GUID ParseExact(String const& string, Style const format);
 
 		/*!
 		 * Parses string to the GUID representation in the exact format.
@@ -210,7 +210,7 @@ GD_NAMESPACE_BEGIN
 		 * Returns string representation of this GUID in string format.
 		 * @param format The format of the GUID string representation.
 		 */
-		GDAPI String ToString(Format const format = Format::HexDigits64BitWithHyphen) const;
+		GDAPI String ToString(Style const format = Style::HexDigits64BitWithHyphen) const;
 
 	public:
 
@@ -241,7 +241,7 @@ GD_NAMESPACE_BEGIN
 	private:
 		GDINL UInt64 const& operator[] (SizeTp const index) const
 		{
-			GD_ASSERT(index < 2, "Index is out of bounds");
+			GD_VERIFY(index < 2, "Index is out of bounds");
 			return m_Parts[index];
 		}
 		GDINL UInt64& operator[] (SizeTp const index)

@@ -329,7 +329,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                             }
                             if (!platformInfo.RequiresExceptions)
                             {
-                                vcxProj.WriteElementString("ExceptionHandling", "false");
+                                //vcxProj.WriteElementString("ExceptionHandling", "false");
                             }
                             vcxProj./**/WriteEndElement(); // </ VC++ COMPILER PROPERTIES
 

@@ -26,13 +26,13 @@ GD_NAMESPACE_BEGIN
 
 	GDINT void IGraphicsWindows::_CheckInitialized() const
 	{
-		GD_DEBUG_ASSERT(m_HwndMain != nullptr
+		GD_DEBUG_VERIFY(m_HwndMain != nullptr
 			, "'IGraphicsWindows::_CheckInitialized' error: it seems that DGX(Windows) was not initialized.");
 	}
 
 	GDINT void IGraphicsWindows::_CheckNotInitialized() const
 	{
-		GD_DEBUG_ASSERT(m_HwndMain == nullptr
+		GD_DEBUG_VERIFY(m_HwndMain == nullptr
 			, "'IGraphicsDX11::_CheckNotInitialized' error: it seems that DGX(Windows) was already initialized.");
 	}
 
@@ -77,7 +77,7 @@ GD_NAMESPACE_BEGIN
 		// Loading module instance..
 #if 0	// Retrieved HInstance cannot be used for the DirectInput and others.
 		hwndHinstance = GetModuleHandle(nullptr);
-		GD_ASSERT(hwndHinstance != nullptr
+		GD_VERIFY(hwndHinstance != nullptr
 			, "'GetModuleHandle' error: failed to retrieve a module instance.");
 #else	// if 0
 #	pragma warning(push)
@@ -96,7 +96,7 @@ GD_NAMESPACE_BEGIN
 		hwndBackgroundClass.hInstance     = m_HwndHinstance;
 		hwndBackgroundClass.hCursor		  = LoadCursor(nullptr, IDC_WAIT);
 		hwndBackgroundClass.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-		GD_ASSERT(RegisterClass(&hwndBackgroundClass) != 0
+		GD_VERIFY(RegisterClass(&hwndBackgroundClass) != 0
 			, "'RegisterClass' (background window) function returned zero value with specified parameters.");
 
 		// Main window that handles all system canvas.
@@ -108,7 +108,7 @@ GD_NAMESPACE_BEGIN
 		hwndMainClass.hCursor			  = LoadCursor(nullptr, IDC_WAIT);
 		hwndMainClass.hbrBackground       = static_cast<HBRUSH>(GetStockObject(LTGRAY_BRUSH));
 		hwndMainClass.hIcon               = LoadIcon(nullptr, IDI_APPLICATION);
-		GD_ASSERT(RegisterClass(&hwndMainClass) != 0
+		GD_VERIFY(RegisterClass(&hwndMainClass) != 0
 			, "'RegisterClass' (main window) function returned zero value with specified parameters.");
 
 		// Loading styles for main window.
@@ -144,14 +144,14 @@ GD_NAMESPACE_BEGIN
 			, 0, 0, 0, 0
 			, nullptr, nullptr, m_HwndHinstance, nullptr
 			);
-		GD_ASSERT(m_HwndBackground != nullptr, "'CreateWindowEx' (background window) function returned invalid Handle.");
+		GD_VERIFY(m_HwndBackground != nullptr, "'CreateWindowEx' (background window) function returned invalid Handle.");
 		m_HwndMain = CreateWindowEx(hwndMainStyleEx
 			, s_HwndMainClassName, "(GoddamnEngine) Main window."
 			, hwndMainStyle
 			, hwndRect.X, hwndRect.Y, hwndRect.Width, hwndRect.Height
 			, m_HwndBackground, nullptr, m_HwndHinstance, nullptr
 			);
-		GD_ASSERT(m_HwndMain != nullptr, "'CreateWindowEx' (main window) function returned invalid Handle.");
+		GD_VERIFY(m_HwndMain != nullptr, "'CreateWindowEx' (main window) function returned invalid Handle.");
 		
 		//ConsoleDevice->Log(GD_DLOG_CAT ": ... initialized.");
 		return IResult::Ok;
@@ -342,7 +342,7 @@ GD_NAMESPACE_BEGIN
 				} break;
 
 			default: 
-				GD_DEBUG_ASSERT_FALSE("'IGraphicsWindows::Canvas_SetMode' error: invalid GFX mode specified.");
+				GD_DEBUG_VERIFY_FALSE("'IGraphicsWindows::Canvas_SetMode' error: invalid GFX mode specified.");
 			}
 			m_GfxCanvasMode = gfxCanvasMode;
 			return IResult::Ok;

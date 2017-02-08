@@ -6,15 +6,21 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
+using System.IO;
 using GoddamnEngine.BuildSystem.Collectors;
 
-/// <summary>
-/// The 'GoddamnCore' project file.
-/// </summary>
+//! <summary>
+//! The 'GoddamnCore' project file.
+//! </summary>
 public sealed class GoddamnCoreProject : Project
 {
     public sealed override ProjectPriority GetPriority()
     {
         return ProjectPriority.CoreLevel;
+    }
+
+    public sealed override string GetSourceFiltersOrigin()
+    {
+        return Path.Combine(base.GetSourceFiltersOrigin(), "Core");
     }
 }   // class GoddamnCoreProject

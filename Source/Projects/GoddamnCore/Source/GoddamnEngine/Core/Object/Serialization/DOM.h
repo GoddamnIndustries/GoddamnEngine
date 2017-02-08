@@ -16,7 +16,7 @@
 #include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Containers/String.h>
 #include <GoddamnEngine/Core/Templates/SharedPtr.h>
-#include <GoddamnEngine/Core/System/IO/Stream.h>
+#include <GoddamnEngine/Core/IO/Stream.h>
 #include <GoddamnEngine/Core/Object/Serialization/SerializationBase.h>
 
 GD_NAMESPACE_BEGIN

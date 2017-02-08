@@ -55,7 +55,7 @@ GD_NAMESPACE_BEGIN
 		 * Moves other string builder into this string builder.
 		 * @param other The other string builder to move into this.
 		 */
-		GDINL BaseStringBuilder(BaseStringBuilder&& other)
+		GDINL BaseStringBuilder(BaseStringBuilder&& other) noexcept
 			: m_Container(Move(other.m_Container))
 		{
 		}
@@ -67,7 +67,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Returns length of this string builder.
 		 */
-		GDINL UInt32 GetLength() const
+		GDINL SizeTp GetLength() const
 		{
 			return m_Container.GetLength() - 1;
 		}
@@ -75,7 +75,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Returns number of characters that can be placed into string builder without reallocation.
 		 */
-		GDINL UInt32 GetCapacity() const
+		GDINL SizeTp GetCapacity() const
 		{
 			return m_Container.GetCapacity();
 		}
@@ -92,7 +92,7 @@ GD_NAMESPACE_BEGIN
 		 * Resizes string builder to make it able to contain specified number of characters.
 		 * @param newLength New required length of the string.
 		 */
-		GDINL void Resize(UInt32 const newLength)
+		GDINL void Resize(SizeTp const newLength)
 		{
 			m_Container.Resize(newLength + 1);
 		}
@@ -101,7 +101,7 @@ GD_NAMESPACE_BEGIN
 		 * Reserves memory for string builder to make it contain specified number of characters without reallocation when calling Append method.
 		 * @param newCapacity New required capacity of the string.
 		 */
-		GDINL void Reserve(UInt32 const newCapacity)
+		GDINL void Reserve(SizeTp const newCapacity)
 		{
 			m_Container.Reserve(newCapacity + 1);
 		}
@@ -144,8 +144,8 @@ GD_NAMESPACE_BEGIN
 			//! @todo Optimize this code. possibly try to format everything inline in the builder.
 			va_list args;
 			va_start(args, format);
-			BaseStringType const Formatted = BaseStringType::FormatVa(format, args);
-			Append(Formatted);
+			BaseStringType const formatted = BaseStringType::FormatVa(format, args);
+			Append(formatted);
 			va_end(args);
 
 			return *this;
@@ -157,11 +157,11 @@ GD_NAMESPACE_BEGIN
 		 * @param cstring String C string to Append.
 		 * @returns this.
 		 */
-		GDINL BaseStringBuilder& Append(TChar const* const cstring, UInt32 const length)
+		GDINL BaseStringBuilder& Append(TChar const* const cstring, SizeTp const length)
 		{
-			UInt32 const startPos = m_Container.GetLength() - 1;
+			auto const startPos = m_Container.GetLength() - 1;
 			m_Container.Resize(m_Container.GetLength() + length);
-			CMemory::Memcpy(m_Container.GetData() + startPos, (length + 1) * sizeof(TChar), cstring);
+			CMemory::Memcpy(m_Container.GetData() + startPos, cstring, (length + 1) * sizeof(TChar));
 			return *this;
 		}
 
@@ -172,14 +172,14 @@ GD_NAMESPACE_BEGIN
 		 * @returns this.
 		 */
 		//! @{
-		template <UInt32 const TLength>	// Length of string constant is determined at compile time..
+		template <SizeTp const TLength>	
 		GDINL BaseStringBuilder& Append(TChar const(&cstring)[TLength])
 		{
 			return Append(cstring, TLength - 1);
 		}
 		GDINL BaseStringBuilder& Append(TChar const* const cstring)
 		{
-			return Append(cstring, static_cast<UInt32>(BaseCString<TChar>::Strlen(cstring)));
+			return Append(cstring, static_cast<SizeTp>(BaseCString<TChar>::Strlen(cstring)));
 		}
 		//! @}
 
@@ -218,7 +218,7 @@ GD_NAMESPACE_BEGIN
 			return m_Container[index];
 		}
 
-		GDINL BaseStringBuilder& operator= (BaseStringBuilder&& other)
+		GDINL BaseStringBuilder& operator= (BaseStringBuilder&& other) noexcept
 		{
 			if (this != &other)
 			{

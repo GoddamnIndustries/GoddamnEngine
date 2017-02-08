@@ -13,7 +13,7 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/System/Misc/Endian.h>
+#include <GoddamnEngine/Core/Misc/Endian.h>
 
 GD_NAMESPACE_BEGIN
 

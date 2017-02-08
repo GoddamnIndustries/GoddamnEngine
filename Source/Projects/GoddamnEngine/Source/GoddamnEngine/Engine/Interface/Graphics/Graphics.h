@@ -17,7 +17,6 @@
 #include <GoddamnEngine/Engine/Interface/Graphics/GraphicsFormat.h>
 
 #include <GoddamnEngine/Core/Math/Geometry.h>
-#include <GoddamnEngine/Core/Templates/Singleton.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
 
 GD_NAMESPACE_BEGIN
@@ -34,12 +33,6 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_DRIVER_EMPTY,
 		IGRAPHICS_DRIVER_UNKNOWN,
 	};	// enum IGraphicsDriver
-
-	enum IGraphicsTopologyType : UInt8
-	{
-		IGRAPHICS_TOPOLOGY_TYPE_TRAINGLELIST,
-		IGRAPHICS_TOPOLOGY_TYPE_UNKNOWN,
-	};	// enum IGraphicsTopologyType
 
 	// ==========================================================================================
 	// IGraphics interface.
@@ -165,23 +158,7 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @returns Non-negative value if the operation succeeded.
 		 */
-		GDAPI virtual IResult GfxImm_CommandListCreate(IGraphicsCommandList** const gfxCommandListPtr, void const* const gfxCommandListCreationInfo) GD_PURE_VIRTUAL;
-
-		/*!
-		 * Clears current render target depth buffer.
-		 * @param gfxCommandList Command list into which this command would be written.
-		 */
-		GDAPI virtual void GfxCmd_RenderTargetClearDepth(IGraphicsCommandList* const gfxCommandList) GD_PURE_VIRTUAL;
-
-		/*!
-		 * Clear current render target with a specified color.
-		 *
-		 * @param gfxCommandList Command list into which this command would be written.
-		 * @param gfxClearColor Color that would be used to fill the render target.
-		 */
-		GDAPI virtual void GfxCmd_RenderTargetClearColor(IGraphicsCommandList* const gfxCommandList, GeomColor const gfxClearColor) GD_PURE_VIRTUAL;
-
-		//! @todo Implement command lists here.
+		GDAPI virtual IResult GfxImm_CommandListCreate(IGraphicsCommandList** const gfxCommandListPtr, void const* const gfxCommandListCreationInfo) { return IResult::NotImplemented; }
 
 	};	// uinterface IGraphicsBase_WithCommandLists
 
@@ -220,7 +197,7 @@ GD_NAMESPACE_BEGIN
 	struct IGraphicsBufferCreationInfo final
 	{
 	public:
-		IGraphicsBufferType  gfxBufferType;		//!< Type of the buffer: vertex, m_Index, uniform or etc buffer.
+		IGraphicsBufferType  gfxBufferType;		//!< Type of the buffer: vertex, øndex, uniform or etc buffer.
 		SizeTp               gfxBufferSize;		//!< Size of the buffer in bytes.
 		IGraphicsBufferFlags gfxBufferFlags;	//!< Flags of the buffer to create.
 	};	// struct BufferCreationInfo
@@ -257,7 +234,6 @@ GD_NAMESPACE_BEGIN
 
 		/*!
 		 * Unmaps the buffer from the CPU memory.
-		 * @param gfxBuffer Buffer that would be unmapped.
 		 */
 		GDAPI virtual void Imm_Unmap() GD_PURE_VIRTUAL;
 
@@ -323,7 +299,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		IGraphicsFormat         SlotFormat;			//!< Format of the slot data.
 		IGraphicsSemanticType   SlotSemantic;		//!< The semantic of the slot.
-		Int32					SlotSemanticIndex;	//!< m_Index of the semantic.	
+		Int32					SlotSemanticIndex;	//!< Index of the semantic.	
 		IGraphicsInputSlotClass SlotClass;			//!< Class of this slot: per vertex or instance, etc.
 		UInt32					SlotDataStepRate;	//!< Number of the instances using same per-instance data.
 	};	// struct IGraphicsVertexArrayLayoutSlot
@@ -341,14 +317,13 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * Structure that contains information that is required to create a GPU vertex array.
 	 */
-	GD_DSTRUCT(CopyFields)
 	struct IGraphicsVertexArrayCreationInfo final
 	{
 	public:
-		IGraphicsVertexArrayLayout const* VertexArrayLayout;		//!< The layout of the current input data.
+		IGraphicsVertexArrayLayout const* VertexArrayLayout;	//!< The layout of the current input data.
 		IGraphicsBuffer const* const*	  ArrayVertexBuffers;	//!< Vertex buffers list of the current input data.
 		IGraphicsBuffer const*	          ArrayIndexBuffer;		//!< Index buffer of the current input data.
-	};	// struct IGraphicsVertexArrayCr eationInfo
+	};	// struct IGraphicsVertexArrayCreationInfo
 
 	/*!
 	 * GPU input data interface.
@@ -381,6 +356,14 @@ GD_NAMESPACE_BEGIN
 		 * @returns Non-negative value if the operation succeeded.
 		 */
 		GDAPI virtual IResult GfxImm_VertexArrayCreate(IGraphicsVertexArray** const gfxVertexArrayPtr, IGraphicsVertexArrayCreationInfo const* const gfxVertexArrayCreationInfo) GD_PURE_VIRTUAL;
+
+		/*!
+		 * Binds specified GPU vertex array into active GPU vertex array.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxVertexArray Pointer to the vertex array.
+		 */
+		GDAPI virtual void GfxCmd_VertexArrayBind(IGraphicsCommandList* const gfxCommandList, IGraphicsVertexArray* const gfxVertexArray) GD_PURE_VIRTUAL;
 
 	};	// uinterface IGraphicsBase_WithVertexArrays
 
@@ -782,7 +765,6 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * GPU shader interface.
 	 */
-	GD_DINTERFACE()
 	uinterface IGraphicsShader : public IGraphicsInterface
 	{
 	public:
@@ -858,8 +840,8 @@ GD_NAMESPACE_BEGIN
 		 * shader and in parameters should be preserved.
 		 * 
 		 * @param gfxCommandList Command list into which this command would be written.
-		 * @param gfxSamplers Pointer to the samplers list.
-		 * @param gfxSamplersCount Number of the resources to bind.
+		 * @param gfxSamplerStates Pointer to the samplers list.
+		 * @param gfxSamplerStatesCount Number of the resources to bind.
 		 */
 		GDAPI virtual void GfxCmd_VertexShaderBindSamplers(IGraphicsCommandList* const gfxCommandList, IGraphicsSamplerState const* const* const gfxSamplerStates
 			, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
@@ -927,8 +909,8 @@ GD_NAMESPACE_BEGIN
 		 * shader and in parameters should be preserved.
 		 * 
 		 * @param gfxCommandList Command list into which this command would be written.
-		 * @param gfxSamplers Pointer to the samplers list.
-		 * @param gfxSamplersCount Number of the resources to bind.
+		 * @param gfxSamplerStates Pointer to the samplers list.
+		 * @param gfxSamplerStatesCount Number of the resources to bind.
 		 */
 		GDAPI virtual void GfxCmd_PixelShaderBindSamplers(IGraphicsCommandList* const gfxCommandList, IGraphicsSamplerState const* const* const gfxSamplerStates
 			, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
@@ -996,8 +978,8 @@ GD_NAMESPACE_BEGIN
 		 * shader and in parameters should be preserved.
 		 * 
 		 * @param gfxCommandList Command list into which this command would be written.
-		 * @param gfxSamplers Pointer to the samplers list.
-		 * @param gfxSamplersCount Number of the resources to bind.
+		 * @param gfxSamplerStates Pointer to the samplers list.
+		 * @param gfxSamplerStatesCount Number of the resources to bind.
 		 */
 		GDAPI virtual void GfxCmd_GeometryShaderBindSamplers(IGraphicsCommandList* const gfxCommandList, IGraphicsSamplerState const* const* const gfxSamplerStates
 			, SizeTp const gfxSamplerStatesCount) GD_PURE_VIRTUAL;
@@ -1233,7 +1215,76 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDAPI virtual IResult GfxImm_PipelineCreate(IGraphicsPipelineState** const gfxPipelinePtr, IGraphicsPipelineStateCreationInfo const* const gfxPipelineCreationInfo) GD_PURE_VIRTUAL;
 
+		/*!
+		 * Binds specified GPU pipeline into active GPU pipeline.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxPipeline Pointer to the pipeline.
+		 */
+		GDAPI virtual void GfxCmd_PipelineBind(IGraphicsCommandList* const gfxCommandList, IGraphicsPipelineState* const gfxPipeline) GD_PURE_VIRTUAL;
+
 	};	// uinterface IGraphicsBase_WithPipelineStates
+
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Render targets.
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/*!
+	 * Defines a list of the supported topologies.
+	 */
+	enum IGraphicsTopologyType : UInt32
+	{
+		IGRAPHICS_SHADER_TOPOLOGY_POINTS,
+		IGRAPHICS_SHADER_TOPOLOGY_LINE_STRIP,
+		IGRAPHICS_SHADER_TOPOLOGY_LINES,
+		IGRAPHICS_SHADER_TOPOLOGY_TRIANGLE_STRIP,
+		IGRAPHICS_SHADER_TOPOLOGY_TRIANGLES,
+		IGRAPHICS_SHADER_TOPOLOGY_UNKNOWN,
+		IGRAPHICS_SHADER_TOPOLOGIES_COUNT,
+	};	// enum IGraphicsShaderType
+
+	/*!
+	 * Adds command lists support to the zero IGraphics interface.
+	 */
+	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBase_WithRenderTargets, IGraphics)
+	{
+
+		/*!
+		 * Clears current render target depth buffer.
+		 * @param gfxCommandList Command list into which this command would be written.
+		 */
+		GDAPI virtual void GfxCmd_RenderTargetClearDepth(IGraphicsCommandList* const gfxCommandList) GD_PURE_VIRTUAL;
+
+		/*!
+		 * Clear current render target with a specified color.
+		 *
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxClearColor Color that would be used to fill the render target.
+		 */
+		GDAPI virtual void GfxCmd_RenderTargetClearColor(IGraphicsCommandList* const gfxCommandList, GeomColor const gfxClearColor) GD_PURE_VIRTUAL;
+
+		/*!
+		 * Renders currently binded vertex array with the binded pipeline state.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxTopology Topology of the binded vertex array.
+		 * @param gfxVerticesCount Amount of the vertices in the vertex array.
+		 */
+		GDAPI virtual void GfxCmd_RenderTargetRender(IGraphicsCommandList* const gfxCommandList, IGraphicsTopologyType const gfxTopology
+			, SizeTp const gfxVerticesCount) GD_PURE_VIRTUAL;
+
+		/*!
+		 * Renders currently binded indexed vertex array with the binded pipeline state.
+		 * 
+		 * @param gfxCommandList Command list into which this command would be written.
+		 * @param gfxTopology Topology of the binded vertex array.
+		 * @param gfxIndicesCount Amount of the indeces in the index array.
+		 * @param gfxIndexType Type of the single index.
+		 */
+		GDAPI virtual void GfxCmd_RenderTargetRenderIndexed(IGraphicsCommandList* const gfxCommandList, IGraphicsTopologyType const gfxTopology
+			, SizeTp const gfxIndicesCount, IGraphicsFormatType gfxIndexType) GD_PURE_VIRTUAL;
+
+	};	// uinterface IGraphicsBase_WithRenderTargets
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Global interface.
@@ -1242,8 +1293,7 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * GPU-accelerated graphics interface.
 	 */
-	GD_DINTERFACE()
-	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphics, IGraphics), public Singleton<IGraphics>
+	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphics, IGraphics)
 	{
 	protected:
 		IGraphicsCanvasMode         m_GfxCanvasMode = IGRAPHICS_OUTPUT_MODE_UNKNOWN;
@@ -1254,7 +1304,6 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Global graphics interface pointer.
-	GD_DSTATIC_VARIABLE()
 	GDAPI extern IUniqueInterfacePointer<IGraphics> Graphics;
 
 GD_NAMESPACE_END
@@ -1262,7 +1311,7 @@ GD_NAMESPACE_END
 GDINL bool FFF() { return true; }
 #define GD_IGRAPHICS_CHECK_ARGS(Operation) FFF() //GD_GLUE(Check_, Operation)
 
-#include <GoddamnEngine/Core/System/Platform.h>
+#include <GoddamnEngine/Core/BasePlatform.h>
 #if GD_PLATFORM_API_LIBSDL1 || GD_PLATFORM_API_LIBSDL2
 #	include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Engine/Interface/Graphics, Graphics)
 #else // if GD_PLATFORM_API_LIBSDL1 || GD_PLATFORM_API_LIBSDL2

@@ -53,13 +53,13 @@ GD_NAMESPACE_BEGIN
 #if GD_PLATFORM_WINDOWS && !GD_RELEASE
 		m_NullNode->m_IsNull = true;
 #endif	// if GD_PLATFORM_WINDOWS && !GD_RELEASE
-}
+	}
 
 	/*!
 	 * Moves other Red-Black Tree here.
 	 * @param other The other tree to move here.
 	 */
-	GDAPI RedBlackTreeBase::RedBlackTreeBase(RedBlackTreeBase&& other)
+	GDAPI RedBlackTreeBase::RedBlackTreeBase(RedBlackTreeBase&& other) noexcept
 	{
 		m_RootNode = other.m_RootNode;
 		m_NullNode = other.m_NullNode;
@@ -115,7 +115,7 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * Returns next node to specified one or null.
 	 *
-	 * @param node Some node.
+	 * @param x Some node.
 	 * @returns Next node to this one or null node if not exists.
 	 */
 	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::GetNextNodeBase(RedBlackTreeBaseNode const* x) const
@@ -153,12 +153,12 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * Returns previous node to specified one or null.
 	 *
-	 * @param node Some node.
+	 * @param x Some node.
 	 * @returns Previous node to this one or null node if not exists.
 	 */
 	GDAPI RedBlackTreeBaseNode const* RedBlackTreeBase::GetPrevNodeBase(RedBlackTreeBaseNode const* x) const
 	{
-		RedBlackTreeBaseNode const* y = nullptr;
+		RedBlackTreeBaseNode const* y;
 		if (m_NullNode == x)
 		{
 			return GetLastNodeBase();
@@ -198,7 +198,6 @@ GD_NAMESPACE_BEGIN
 	GDAPI void RedBlackTreeBase::InternalCreateNodeBase(RedBlackTreeBaseNode*& newNode)
 	{
 		newNode = reinterpret_cast<RedBlackTreeBaseNode*>(GD_MALLOC(sizeof(RedBlackTreeBaseNode) - sizeof(Byte)));
-		// ReSharper disable once CppNonReclaimedResourceAcquisition
 		new (newNode) RedBlackTreeBaseNode();
 		newNode->m_Left   = m_NullNode;
 		newNode->m_Right  = m_NullNode;
@@ -268,7 +267,7 @@ GD_NAMESPACE_BEGIN
 		y->m_Left = x;
 		x->m_Parent = y;
 
-		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in _InternalRotateLeft");
+		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in _InternalRotateLeft");
 	}
 
 	/*!
@@ -313,7 +312,7 @@ GD_NAMESPACE_BEGIN
 		x->m_Right = y;
 		y->m_Parent = x;
 
-		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in _RightRotate");
+		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in _RightRotate");
 	}
 
 	/*!
@@ -330,28 +329,28 @@ GD_NAMESPACE_BEGIN
 				w = x->m_Parent->m_Right;
 				if (w->m_IsRed)
 				{
-					w->m_IsRed = 0;
-					x->m_Parent->m_IsRed = 1;
+					w->m_IsRed = false;
+					x->m_Parent->m_IsRed = true;
 					InternalRotateLeft(x->m_Parent);
 					w = x->m_Parent->m_Right;
 				}
 				if (!w->m_Right->m_IsRed && !w->m_Left->m_IsRed)
 				{
-					w->m_IsRed = 1;
+					w->m_IsRed = true;
 					x = x->m_Parent;
 				}
 				else
 				{
 					if (!w->m_Right->m_IsRed)
 					{
-						w->m_Left->m_IsRed = 0;
-						w->m_IsRed = 1;
+						w->m_Left->m_IsRed = false;
+						w->m_IsRed = true;
 						InternalRotateRight(w);
 						w = x->m_Parent->m_Right;
 					}
 					w->m_IsRed = x->m_Parent->m_IsRed;
-					x->m_Parent->m_IsRed = 0;
-					w->m_Right->m_IsRed = 0;
+					x->m_Parent->m_IsRed = false;
+					w->m_Right->m_IsRed = false;
 					InternalRotateLeft(x->m_Parent);
 					/* this is to exit while loop */
 					x = m_RootNode;
@@ -363,42 +362,42 @@ GD_NAMESPACE_BEGIN
 				w = x->m_Parent->m_Left;
 				if (w->m_IsRed)
 				{
-					w->m_IsRed = 0;
-					x->m_Parent->m_IsRed = 1;
+					w->m_IsRed = false;
+					x->m_Parent->m_IsRed = true;
 					InternalRotateRight(x->m_Parent);
 					w = x->m_Parent->m_Left;
 				}
 				if (!w->m_Right->m_IsRed && !w->m_Left->m_IsRed)
 				{
-					w->m_IsRed = 1;
+					w->m_IsRed = true;
 					x = x->m_Parent;
 				}
 				else
 				{
 					if (!w->m_Left->m_IsRed)
 					{
-						w->m_Right->m_IsRed = 0;
-						w->m_IsRed = 1;
+						w->m_Right->m_IsRed = false;
+						w->m_IsRed = true;
 						InternalRotateLeft(w);
 						w = x->m_Parent->m_Left;
 					}
 					w->m_IsRed = x->m_Parent->m_IsRed;
-					x->m_Parent->m_IsRed = 0;
-					w->m_Left->m_IsRed = 0;
+					x->m_Parent->m_IsRed = false;
+					w->m_Left->m_IsRed = false;
 					InternalRotateRight(x->m_Parent);
 					/* this is to exit while loop */
 					x = m_RootNode;
 				}
 			}
 		}
-		x->m_IsRed = 0;
+		x->m_IsRed = false;
 
 		//!
 		//! @todo:
 		//! While removing the first element of map this assert fails.
 		//!
-		m_NullNode->m_IsRed = 0;
-		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not black in InternalRepair");
+		m_NullNode->m_IsRed = false;
+		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not black in InternalRepair");
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -420,11 +419,11 @@ GD_NAMESPACE_BEGIN
 			return x;
 		}
 
-		auto CompVal = OnCompareElements(x->GetDataUntyped(), element);
-		while (0 != CompVal)
+		auto compareResult = OnCompareElements(x->GetDataUntyped(), element);
+		while (0 != compareResult)
 		{
 			//assignment
-			if (1 == CompVal)
+			if (1 == compareResult)
 			{ 
 				// X->GetDataUntyped() > q
 				x = x->m_Left;
@@ -438,7 +437,7 @@ GD_NAMESPACE_BEGIN
 				// return(0);
 				return x;
 			}
-			CompVal = OnCompareElements(x->GetDataUntyped(), element);
+			compareResult = OnCompareElements(x->GetDataUntyped(), element);
 		}
 		return x;
 	}
@@ -449,8 +448,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI void RedBlackTreeBase::InsertNodeBase(RedBlackTreeBaseNode* z)
 	{
-		GD_DEBUG_ASSERT(z != nullptr, "Null pointer node.");
-		GD_DEBUG_ASSERT(FindNodeBase(z->GetDataUntyped()) == GetNullNodeBase(), "node with specified element already exist in the tree.");
+		GD_DEBUG_VERIFY(z != nullptr, "Null pointer node.");
+		GD_DEBUG_VERIFY(FindNodeBase(z->GetDataUntyped()) == GetNullNodeBase(), "node with specified element already exist in the tree.");
 		m_Length += 1;
 
 		RedBlackTreeBaseNode* y;
@@ -469,7 +468,7 @@ GD_NAMESPACE_BEGIN
 			}
 			else
 			{ 
-				// X,Key <= z.Key
+				// X.Key <= z.Key
 				x = x->m_Right;
 			}
 		}
@@ -484,7 +483,7 @@ GD_NAMESPACE_BEGIN
 			y->m_Right = z;
 		}
 
-		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in TreeInsertHelp");
+		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in TreeInsertHelp");
 
 		x = z;
 		x->m_IsRed = true;
@@ -496,8 +495,8 @@ GD_NAMESPACE_BEGIN
 				y = x->m_Parent->m_Parent->m_Right;
 				if (y->m_IsRed)
 				{
-					x->m_Parent->m_IsRed = false;
 					y->m_IsRed = false;
+					x->m_Parent->m_IsRed = false;
 					x->m_Parent->m_Parent->m_IsRed = true;
 					x = x->m_Parent->m_Parent;
 				}
@@ -519,8 +518,8 @@ GD_NAMESPACE_BEGIN
 				y = x->m_Parent->m_Parent->m_Left;
 				if (y->m_IsRed)
 				{
-					x->m_Parent->m_IsRed = false;
 					y->m_IsRed = false;
+					x->m_Parent->m_IsRed = false;
 					x->m_Parent->m_Parent->m_IsRed = true;
 					x = x->m_Parent->m_Parent;
 				}
@@ -539,8 +538,8 @@ GD_NAMESPACE_BEGIN
 		}
 		m_RootNode->m_Left->m_IsRed = false;
 
-		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in Insert");
-		GD_DEBUG_ASSERT(!m_RootNode->m_IsRed, "m_RootNode not m_IsRed in Insert");
+		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in Insert");
+		GD_DEBUG_VERIFY(!m_RootNode->m_IsRed, "m_RootNode not m_IsRed in Insert");
 	}
 
 	/*!
@@ -573,7 +572,7 @@ GD_NAMESPACE_BEGIN
 		if (y != z)
 		{ 
 			// Y should not be m_NullNode in this case
-			GD_DEBUG_ASSERT(y != m_NullNode, "Y is m_NullNode in RBDelete\n");
+			GD_DEBUG_VERIFY(y != m_NullNode, "Y is m_NullNode in RBDelete\n");
 			
 			// Y is the node to splice out and X is its child
 			if (!y->m_IsRed)
@@ -603,7 +602,7 @@ GD_NAMESPACE_BEGIN
 		{
 			//DestroyKey(Y->GetDataUntyped());
 			//DestroyInfo(Y->info);
-			if (!(y->m_IsRed))
+			if (!y->m_IsRed)
 			{
 				InternalRepair(x);
 			}
@@ -611,7 +610,7 @@ GD_NAMESPACE_BEGIN
 			//free(Y);
 		}
 
-		GD_DEBUG_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not black in RBDelete");
+		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not black in RBDelete");
 		--m_Length;
 	}
 

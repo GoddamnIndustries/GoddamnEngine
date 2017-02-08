@@ -13,9 +13,13 @@
 #include <GoddamnEngine/Core/Object/Serialization/DOMJson.h>
 
 #include <GoddamnEngine/Core/Templates/UniquePtr.h>
-#include <GoddamnEngine/Core/System/IO/Stream.h>
+#include <GoddamnEngine/Core/IO/Stream.h>
 
 GD_NAMESPACE_BEGIN
+
+	// ------------------------------------------------------------------------------------------
+	// Json class.
+	// ------------------------------------------------------------------------------------------
 
 	/*!
 	 * Represents a high-level parsing result.
@@ -105,7 +109,7 @@ GD_NAMESPACE_BEGIN
 			nextToken.TokenBool = nextCharacter == 't';
 			while ((CChar::IsDigit(nextCharacter) || CChar::IsAlphabetic(nextCharacter)) && nextCharacter != -1)
 			{
-				nextToken.TokenData.Append(nextCharacter);
+				nextToken.TokenData += nextCharacter;
 				nextCharacter = stream->Read();
 			}
 			stream->Seek(-1);
@@ -139,7 +143,7 @@ GD_NAMESPACE_BEGIN
 				}
 				else
 				{
-					nextToken.TokenData.Append(nextCharacter);
+					nextToken.TokenData += nextCharacter;
 				}
 				nextCharacter = stream->Read();
 			}
@@ -153,7 +157,7 @@ GD_NAMESPACE_BEGIN
 		{
 			// Punctuation character. "," - for values separation, ":" - fields, "{}" - objects and "[]" - arrays.
 			nextToken.TokenType = JsonTokenType::Punctuation;
-			nextToken.TokenData.Append(nextCharacter);
+			nextToken.TokenData += nextCharacter;
 			nextToken.TokenPunctiation = static_cast<Char>(nextCharacter);
 		}
 		else
@@ -252,9 +256,7 @@ GD_NAMESPACE_BEGIN
 
 			// All other types of tokens could not be treated as values.
 			default: 
-			{
 				return{ nullptr, "Unexpected token in the array declaration, value expected." };
-			}
 		}
 	}
 
@@ -316,7 +318,7 @@ GD_NAMESPACE_BEGIN
 
 	GDINT DOM::Result Json::_TryParseDOM(SharedPtr<class InputStream> const domInputStream)
 	{
-		GD_DEBUG_ASSERT(domInputStream != nullptr, "Null pointer input stream specified.");
+		GD_DEBUG_VERIFY(domInputStream != nullptr, "Null pointer input stream specified.");
 
 		// Expecting beginning of the m_RootNode object.
 		auto nextToken = JsonGetNextToken(domInputStream.Get());
@@ -426,7 +428,7 @@ GD_NAMESPACE_BEGIN
 			} break;
 
 			default: 
-				GD_DEBUG_ASSERT_FALSE("Invalid JSON value type.");
+				GD_DEBUG_VERIFY_FALSE("Invalid JSON value type.");
 		}
 	}
 
@@ -468,7 +470,7 @@ GD_NAMESPACE_BEGIN
 
 	GDAPI void JsonSerializer::Write(JsonObjectPtr const json, class OutputStream* const stream)
 	{
-		GD_DEBUG_ASSERT(stream != nullptr, "Null pointer output stream specified.");
+		GD_DEBUG_VERIFY(stream != nullptr, "Null pointer output stream specified.");
 
 		StringBuilder builder;
 		JsonWriteObject(json, builder);

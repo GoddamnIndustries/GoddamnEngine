@@ -59,15 +59,15 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	//! Basic Red-Black Tree data structure. Contains fundamental tree management algorithms.
 	//! 
-	//! @see http://en.wikipedia.org/wiki/m_IsRed–black_tree
-	//! @see http://web.mit.edu/~emin/www.old/source_code/red_black_tree/m_Index.html
+	//! @see https://en.wikipedia.org/wiki/Redâ€“black_tree
+	//! @see http://web.mit.edu/~emin/www.old/source_code/red_black_tree/index.html
 	// **------------------------------------------------------------------------------------------**
 	class RedBlackTreeBase : public TNonCopyable
 	{
 	private:
 		RedBlackTreeBaseNode* m_NullNode = nullptr;
 		RedBlackTreeBaseNode* m_RootNode = nullptr;
-		UInt32                m_Length = 0;
+		SizeTp                m_Length = 0;
 
 	protected:
 
@@ -84,7 +84,7 @@ GD_NAMESPACE_BEGIN
 		 * Moves other Red-Black Tree here.
 		 * @param other The other tree to move here.
 		 */
-		GDAPI RedBlackTreeBase(RedBlackTreeBase&& other);
+		GDAPI RedBlackTreeBase(RedBlackTreeBase&& other) noexcept;
 
 		/*!
 		 * Deinitializes a Red-Black Tree and destroys all internal data.
@@ -100,7 +100,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Returns number of nodes that exist in the tree.
 		 */
-		GDINL UInt32 GetLength() const
+		GDINL SizeTp GetLength() const
 		{
 			return m_Length;
 		}
@@ -178,7 +178,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		GDAPI RedBlackTreeBaseNode const* GetPrevNodeBase(RedBlackTreeBaseNode const* const node) const;	// ReSharper disable once CppMemberFunctionMayBeConst
-		GDINL RedBlackTreeBaseNode* GetPrevNodeBase(RedBlackTreeBaseNode* const node)
+		GDINL RedBlackTreeBaseNode* GetPrevNodeBase(RedBlackTreeBaseNode* const node)	
 		{
 			return const_cast<RedBlackTreeBaseNode*>(const_cast<RedBlackTreeBase const*>(this)->GetPrevNodeBase(node));
 		}
@@ -233,7 +233,8 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @param lhs First element.
 		 * @param rhs Second element.
-		 * @returns Zero, if specified Elements are equal, positive value if first is greater, negative otherwise.
+		 *
+		 * @returns Zero, if specified elements are equal, positive value if first is greater, negative otherwise.
 		 */
 		GDAPI virtual int OnCompareElements(CHandle const lhs, CHandle const rhs) const GD_PURE_VIRTUAL;
 
@@ -266,7 +267,7 @@ GD_NAMESPACE_BEGIN
 		GDAPI void RemoveNodeBase(RedBlackTreeBaseNode* const node);
 
 	protected:
-		GDINL RedBlackTreeBase& operator=(RedBlackTreeBase&& OtherTree)
+		GDINL RedBlackTreeBase& operator=(RedBlackTreeBase&& OtherTree) noexcept
 		{
 			Clear();
 			Swap(m_RootNode, OtherTree.m_RootNode);
@@ -289,25 +290,20 @@ GD_NAMESPACE_BEGIN
 	{
 		template<typename, typename> 
 		friend class RedBlackTree;
-		friend class Allocator;
 		using ElementType = TElement;
 
 	private:
 
 		/*!
 		 * Initializes the node and the element inside a node. 
-		 * @param Arguments Constructor arguments of the data that would be emplaced inside node.
+		 * @param arguments Constructor arguments of the data that would be emplaced inside node.
 		 */
 		template<typename... TArguments>
 		GDINL explicit RedBlackTreeNode(TArguments&&... arguments)
 		{
-			// ReSharper disable once CppNonReclaimedResourceAcquisition
-			new (GetData()) TElement(Forward<TArguments>(arguments)...);
+			new (GetData()) TElement(Utils::Forward<TArguments>(arguments)...);
 		}
 
-		/*!
-		 * Initializes the node and the element inside a node.
-		 */
 		GDINL ~RedBlackTreeNode()
 		{
 			GetData()->~TElement();
@@ -328,20 +324,21 @@ GD_NAMESPACE_BEGIN
 			return const_cast<TElement*>(const_cast<RedBlackTreeNode const*>(this)->GetData());
 		}
 		//! @}
+
 	};	// struct RedBlackTreeNode
 
 	// **------------------------------------------------------------------------------------------**
 	//! Iterator for Red-Black Tree-based containers.
-	//! @tparam TTreeContainer Type of m_Container.
+	//! @tparam TTreeContainer Type of container.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TTreeContainer>
 	struct RedBlackTreeIterator final
 	{
 	public:
 		using ContainerType            = TTreeContainer;
-		using ElementType              = typename Conditional<TypeTraits::IsConst<ContainerType>::Value, typename ContainerType::ElementType const, typename ContainerType::ElementType>::Type;
-		using RedBlackTreeNodeType     = typename Conditional<TypeTraits::IsConst<ContainerType>::Value, RedBlackTreeNode<ElementType> const, RedBlackTreeNode<ElementType>>::Type;
-		using RedBlackTreeBaseNodeType = typename Conditional<TypeTraits::IsConst<ContainerType>::Value, RedBlackTreeBaseNode          const, RedBlackTreeBaseNode         >::Type;
+		using ElementType              = Conditional<TypeTraits::IsConst<ContainerType>::Value, typename ContainerType::ElementType const, typename ContainerType::ElementType>;
+		using RedBlackTreeNodeType     = Conditional<TypeTraits::IsConst<ContainerType>::Value, RedBlackTreeNode<ElementType> const, RedBlackTreeNode<ElementType>>;
+		using RedBlackTreeBaseNodeType = Conditional<TypeTraits::IsConst<ContainerType>::Value, RedBlackTreeBaseNode          const, RedBlackTreeBaseNode         >;
 
 	private:
 		ContainerType&		  m_Container;
@@ -376,11 +373,12 @@ GD_NAMESPACE_BEGIN
 
 		GDINL RedBlackTreeIterator& operator= (RedBlackTreeIterator const& other)
 		{
-			GD_DEBUG_ASSERT(&m_Container == &other.m_Container, "Iterators have different base containers.");
+			GD_DEBUG_VERIFY(&m_Container == &other.m_Container, "Iterators have different base containers.");
 			m_IterNode = other.m_IterNode;
 			return *this;
 		}
 
+		// iterator++
 		GDINL RedBlackTreeIterator& operator++ ()
 		{
 			m_IterNode = static_cast<RedBlackTreeNodeType*>(m_Container.GetNextNodeBase(m_IterNode));
@@ -389,11 +387,12 @@ GD_NAMESPACE_BEGIN
 		GDINL RedBlackTreeIterator operator++ (int const unused)
 		{
 			GD_NOT_USED(unused);
-			RedBlackTreeIterator copy(*this);
+			auto copy(*this);
 			m_IterNode = static_cast<RedBlackTreeNodeType*>(m_Container.GetNextNodeBase(m_IterNode));
 			return copy;
 		}
 
+		// iterator--
 		GDINL RedBlackTreeIterator& operator-- ()
 		{
 			m_IterNode = static_cast<RedBlackTreeNodeType*>(m_Container.GetPrevNodeBase(m_IterNode));
@@ -402,41 +401,48 @@ GD_NAMESPACE_BEGIN
 		GDINL RedBlackTreeIterator operator-- (int const unused)
 		{
 			GD_NOT_USED(unused);
-			RedBlackTreeIterator copy(*this);
+			auto copy(*this);
 			m_IterNode = static_cast<RedBlackTreeNodeType*>(m_Container.GetPrevNodeBase(m_IterNode));
 			return copy;
 		}
 
+		// iterator + ptrdiff_t
 		GDINL RedBlackTreeIterator& operator+= (PtrDiffTp const offset)
 		{
 			if (offset > 0)
 			{
 				for (PtrDiffTp cnt = 0; cnt < offset; ++cnt)
+				{
 					++(*this);
+				}
 			}
 			else
 			{
 				for (PtrDiffTp cnt = 0; cnt < -offset; ++cnt)
+				{
 					--(*this);
+				}
 			}
 			return *this;
 		}
 		GDINL RedBlackTreeIterator operator+ (PtrDiffTp const offset) const
 		{
-			RedBlackTreeIterator copy(*this);
+			auto copy(*this);
 			return copy += offset;
 		}
 
+		// iterator - ptrdiff_t
 		GDINL RedBlackTreeIterator& operator-= (PtrDiffTp const offset)
 		{
-			return *this += (-offset);
+			return *this += -offset;
 		}
 		GDINL RedBlackTreeIterator operator- (PtrDiffTp const offset) const
 		{
-			RedBlackTreeIterator copy(*this);
+			auto copy(*this);
 			return copy -= offset;
 		}
 
+		// iterator == iterator
 		GDINL bool operator== (RedBlackTreeIterator const& other) const
 		{
 			return (&m_Container == &other.m_Container) && (m_IterNode == other.m_IterNode);
@@ -446,6 +452,7 @@ GD_NAMESPACE_BEGIN
 			return (&m_Container != &other.m_Container) || (m_IterNode != other.m_IterNode);
 		}
 
+		// *iterator
 		GDINL ElementType& operator* () const
 		{
 			return reinterpret_cast<ElementType&>(*m_IterNode->GetData());
@@ -454,10 +461,12 @@ GD_NAMESPACE_BEGIN
 		{
 			return reinterpret_cast<ElementType*>(m_IterNode->GetData());
 		}
+
 	};	// struct RedBlackTreeIterator
 
 	// **------------------------------------------------------------------------------------------**
-	//! Templated Red-Black Tree data structure. All management functions overloaded to reloaded to make it type-safe.
+	//! Templated Red-Black Tree data structure. All management functions overloaded to reloaded to 
+	//! make it type-safe.
 	//! @tparam TElement Type of objected been stored in the nodes of the tree.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TElement, typename TAllocator = DefaultContainerAllocator>
@@ -548,7 +557,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TElement const& GetFirst() const
 		{
-			GD_DEBUG_ASSERT(!IsEmpty(), "Red-black tree is empty.");
+			GD_DEBUG_VERIFY(!IsEmpty(), "Red-black tree is empty.");
 			return *static_cast<RedBlackTreeNodeType const*>(GetFirstNodeBase())->GetData();
 		}
 		GDINL TElement& GetFirst()
@@ -563,7 +572,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TElement const& GetLast() const
 		{
-			GD_DEBUG_ASSERT(!IsEmpty(), "Red-black tree is empty.");
+			GD_DEBUG_VERIFY(!IsEmpty(), "Red-black tree is empty.");
 			return *static_cast<RedBlackTreeNodeType const*>(GetLastNodeBase())->GetData();
 		}
 		GDINL TElement& GetLast()
@@ -583,8 +592,8 @@ GD_NAMESPACE_BEGIN
 		template<typename... TArguments>
 		GDINT static RedBlackTreeNodeType* InternalCreateNode(TArguments&&... Arguments)
 		{
-			RedBlackTreeNodeType* const allocatedNode = static_cast<RedBlackTreeNodeType*>(GD_MALLOC(sizeof(RedBlackTreeNodeType) + sizeof(TElement) - sizeof(Byte)));
-			new (allocatedNode) RedBlackTreeNodeType(Forward<TArguments>(Arguments)...);
+			auto const allocatedNode = static_cast<RedBlackTreeNodeType*>(GD_MALLOC(sizeof(RedBlackTreeNodeType) + sizeof(TElement) - 1));
+			new (allocatedNode) RedBlackTreeNodeType(Utils::Forward<TArguments>(Arguments)...);
 			return allocatedNode;
 		}
 
@@ -595,7 +604,7 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual void OnDestroyNode(RedBlackTreeBaseNode* const node) const override final
 		{
 			static_cast<RedBlackTreeNodeType*>(node)->~RedBlackTreeNodeType();
-			GD_DEALLOC(node);
+			GD_FREE(node);
 		}
 
 		/*!
@@ -603,21 +612,21 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @param lhs First element.
 		 * @param rhs Second element.
-		 * @returns Zero, if specified Elements are equal, positive value if first is greater, negative otherwise.
+		 *
+		 * @returns Zero, if specified elements are equal, positive value if first is greater, negative otherwise.
 		 */
 		GDINL virtual int OnCompareElements(CHandle const lhs, CHandle const rhs) const override final
 		{
-			TElement const& lhsElem = *reinterpret_cast<TElement const*>(lhs);
-			TElement const& rhsElem = *reinterpret_cast<TElement const*>(rhs);
-			if (lhsElem == rhsElem) return 0;
-			if (lhsElem >  rhsElem) return 1;
-			return -1;
+			auto const& lhsElem = *reinterpret_cast<TElement const*>(lhs);
+			auto const& rhsElem = *reinterpret_cast<TElement const*>(rhs);
+			return lhsElem == rhsElem ? 0 : (lhsElem > rhsElem ? 1 : -1);
 		}
 
 		// ------------------------------------------------------------------------------------------
 		// Overloaded operators.
 		// ------------------------------------------------------------------------------------------
 
+	public:
 		GDINL RedBlackTree& operator= (RedBlackTree&& otherTree) = default;
 
 	};	// class RedBlackTreeBase

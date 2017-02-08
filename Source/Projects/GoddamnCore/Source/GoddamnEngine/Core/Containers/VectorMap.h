@@ -54,7 +54,7 @@ GD_NAMESPACE_BEGIN
 
 		/*!
 		 * Moves other map here.
-		 * @param OtherMap Map would be moved into current object.
+		 * @param otherMap Map would be moved into current object.
 		 */
 		GDINL VectorMap(VectorMap&& otherMap) = default;
 
@@ -84,19 +84,17 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Queries for the iterator of the element with specified key.
 		 *
-		 * @param element The element we are looking for.
+		 * @param key The key of the element we are looking for.
 		 * @returns Iterator on the element if it was found and End Iterator otherwise.
 		 */
 		//! @{
 		GDINL ConstIterator FindIterator(TKey const& key) const
 		{
-			return GD::FindFirstIf(this->Begin(), this->End()
-				, [&key](PairType const& pair) { return pair.Key == key; });
+			return Algo::FindFirstIf(this->Begin(), this->End(), [&key](PairType const& pair) { return pair.Key == key; });
 		}
 		GDINL Iterator FindIterator(TKey const& key)
 		{
-			return GD::FindFirstIf(this->Begin(), this->End()
-				, [&key](PairType const& pair) { return pair.Key == key; });
+			return Algo::FindFirstIf(this->Begin(), this->End(), [&key](PairType const& pair) { return pair.Key == key; });
 		}
 		//! @}
 
@@ -138,13 +136,13 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TValue& Insert(TKey&& key, TValue&& value = TValue())
 		{
-			GD_DEBUG_ASSERT(!this->Contains(key), "Element with specified key already exists.");
-			VectorType::InsertLast(Move(PairType(Forward<TKey>(key), Forward<TValue>(value))));
+			GD_DEBUG_VERIFY(!this->Contains(key), "Element with specified key already exists.");
+			VectorType::InsertLast(Utils::Move(PairType(Utils::Forward<TKey>(key), Utils::Forward<TValue>(value))));
 			return this->GetLast().Value;
 		}
 		GDINL TValue& Insert(TKey const& key, TValue const& value)
 		{
-			GD_DEBUG_ASSERT(!this->Contains(key), "Element with specified key already exists.");
+			GD_DEBUG_VERIFY(!this->Contains(key), "Element with specified key already exists.");
 			VectorType::InsertLast(PairType(key, value));
 			return this->GetLast().Value;
 		}
@@ -157,7 +155,7 @@ GD_NAMESPACE_BEGIN
 		GDINL void Erase(TKey const& key)
 		{
 			auto const foundIter = this->FindIterator(key);
-			GD_DEBUG_ASSERT(foundIter != this->End(), "Specified element does not exist.");
+			GD_DEBUG_VERIFY(foundIter != this->End(), "Specified element does not exist.");
 			this->EraseAt(foundIter - this->Begin());
 		}
 
@@ -181,7 +179,7 @@ GD_NAMESPACE_BEGIN
 			auto const queriedIterator = this->FindIterator(key);
 			if (queriedIterator == this->End())
 			{
-				return const_cast<VectorMap*>(this)->Insert(Move(TKey(key)), Move(TValue()));
+				return const_cast<VectorMap*>(this)->Insert(Utils::Move(TKey(key)), Utils::Move(TValue()));
 			}
 			return queriedIterator->Value;
 		}
@@ -191,9 +189,6 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 	};	// class VectorMap
-
-	template<typename TKey, typename TValue>
-	using GCVectorMap = VectorMap<TKey, TValue, GCContainerAllocator<Pair<TKey, TValue>>>;
 
 GD_NAMESPACE_END
 

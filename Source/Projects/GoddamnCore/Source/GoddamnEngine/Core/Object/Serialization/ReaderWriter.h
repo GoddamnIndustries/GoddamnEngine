@@ -16,7 +16,7 @@
 #include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Containers/String.h>
 #include <GoddamnEngine/Core/Templates/SharedPtr.h>
-#include <GoddamnEngine/Core/System/IO/Stream.h>
+#include <GoddamnEngine/Core/IO/Stream.h>
 
 #define gd_s_virtual /*virtual*/
 #define gd_s_override /*override*/
@@ -28,18 +28,21 @@
 
 #define gd_s_pure_virtual_v \
 	{ \
+		GD_NOT_USED(this); \
 		GD_NOT_USED(value); \
 		GD_NOT_SUPPORTED(); \
 	} \
 
 #define gd_s_pure_virtual_n \
 	{ \
+		GD_NOT_USED(this); \
 		GD_NOT_USED(name); \
 		GD_NOT_SUPPORTED(); \
 	} \
 
 #define gd_s_pure_virtual_vn \
 	{ \
+		GD_NOT_USED(this); \
 		GD_NOT_USED(name); \
 		GD_NOT_USED(value); \
 		GD_NOT_SUPPORTED(); \
@@ -72,12 +75,12 @@ GD_NAMESPACE_BEGIN
 		GDINL explicit IGenericReader(SharedPtr<InputStream> const readingStream)
 			: m_ReadingStream(readingStream)
 		{
-			GD_DEBUG_ASSERT(m_ReadingStream != nullptr, "Null pointer reading stream was specified.");
+			GD_DEBUG_VERIFY(m_ReadingStream != nullptr, "Null pointer reading stream was specified.");
 		}
 
 		GDINL ~IGenericReader()
 		{
-			GD_DEBUG_ASSERT(m_ReadingScope.IsEmpty(), "Scoping error.");
+			GD_DEBUG_VERIFY(m_ReadingScope.IsEmpty(), "Scoping error.");
 		}
 
 	public:
@@ -91,7 +94,8 @@ GD_NAMESPACE_BEGIN
 		GDINL gd_s_virtual bool TryReadPropertyName(String const& name)
 		{
 			GD_NOT_USED(name);
-			return m_ReadingScope.IsEmpty() ? false : m_ReadingScope.GetLast() == CurrentlyReadingArray;
+			return !m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReadingArray;
+		//	return m_ReadingScope.IsEmpty() ? false : m_ReadingScope.GetLast() == CurrentlyReadingArray;
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -122,7 +126,7 @@ GD_NAMESPACE_BEGIN
 		 * @param arraySize Output size of array we are going to read. Would be set to 0 on failure.
 		 * @returns True if reading array property was successfully initialized.
 		 */
-		GDINL gd_s_virtual bool TryBeginReadArrayPropertyValue(UInt32& arraySize)
+		GDINL gd_s_virtual bool TryBeginReadArrayPropertyValue(SizeTp& arraySize)
 		{
 			GD_NOT_USED(arraySize);
 			m_ReadingScope.InsertLast(CurrentlyReadingArray);
@@ -134,7 +138,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL gd_s_virtual void EndReadArrayPropertyValue()
 		{
-			GD_DEBUG_ASSERT(!m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReadingArray, "Array scoping error.");
+			GD_DEBUG_VERIFY(!m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReadingArray, "Array scoping error.");
 			m_ReadingScope.EraseLast();
 		}
 
@@ -161,7 +165,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL gd_s_virtual void EndReadStructPropertyValue()
 		{
-			GD_DEBUG_ASSERT(!m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReadingStruct, "Struct scoping error.");
+			GD_DEBUG_VERIFY(!m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReadingStruct, "Struct scoping error.");
 			m_ReadingScope.EraseLast();
 		}
 
@@ -185,18 +189,18 @@ GD_NAMESPACE_BEGIN
 	protected:
 
 		/*!
-		 * Initializes the reader interface.
-		 * @param readingStream Pointer to the stream, from the one we are reading.
+		 * Initializes the writer interface.
+		 * @param writingStream Pointer to the stream, from the one we are writing.
 		 */
 		GDINL explicit IGenericWriter(SharedPtr<OutputStream> const writingStream)
 			: m_WritingStream(writingStream)
 		{
-			GD_DEBUG_ASSERT(m_WritingStream != nullptr, "Null pointer reading stream was specified.");
+			GD_DEBUG_VERIFY(m_WritingStream != nullptr, "Null pointer reading stream was specified.");
 		}
 
 		GDINL ~IGenericWriter()
 		{
-			GD_DEBUG_ASSERT(m_WritingScope.IsEmpty(), "Scoping error.");
+			GD_DEBUG_VERIFY(m_WritingScope.IsEmpty(), "Scoping error.");
 		}
 
 	public:
@@ -211,7 +215,8 @@ GD_NAMESPACE_BEGIN
 		GDINL gd_s_virtual bool WritePropertyName(String const& name)
 		{
 			GD_NOT_USED(name);
-			return m_WritingScope.IsEmpty() ? false : m_WritingScope.GetLast() != CurrentlyWritingArray;
+			return !m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWritingArray;
+		//	return m_WritingScope.IsEmpty() ? false : m_WritingScope.GetLast() != CurrentlyWritingArray;
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -247,7 +252,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL gd_s_virtual void EndWriteArrayPropertyValue()
 		{
-			GD_DEBUG_ASSERT(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWritingArray, "Array scoping error.");
+			GD_DEBUG_VERIFY(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWritingArray, "Array scoping error.");
 			m_WritingScope.EraseLast();
 		}
 
@@ -271,7 +276,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL gd_s_virtual void EndWriteStructPropertyValue()
 		{
-			GD_DEBUG_ASSERT(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWritingStruct, "Struct scoping error.");
+			GD_DEBUG_VERIFY(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWritingStruct, "Struct scoping error.");
 			m_WritingScope.EraseLast();
 		}
 

@@ -18,6 +18,7 @@
 #include <GoddamnEngine/Core/Object/RefPtr.h>
 #include <GoddamnEngine/Core/Object/Struct.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
+#include <GoddamnEngine/Core/Concurrency/Atomics.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -46,6 +47,8 @@ GD_NAMESPACE_BEGIN
 		CFObject = 0,
 		CFSerializableObject = GD_BIT(0),
 		CFNotInheritableFlags = UInt64Max,
+
+		CFBehaviour
 	};	// enum ObjectCastFlags
 	GD_ENUM_DEFINE_FLAG_OPERATORS(ObjectCastFlags);
 
@@ -55,12 +58,11 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	GD_OBJECT_KERNEL class Object : public Struct
 	{
-		friend class Allocator;
 		friend class Package;
 
 	private:
-		GUID   m_GUID;
-		UInt32 m_ReferenceCount;
+		GUID m_GUID;
+		/*Atomic*/UInt32 m_ReferenceCount;
 
 	protected:
 		static ObjectCastFlags const s_CastFlags = CFObject;
@@ -137,11 +139,11 @@ GD_NAMESPACE_BEGIN
 		 * @returns Found or created object.
 		 */
 		//! @{
-		GDAPI static GD_OBJECT_KERNEL RefPtr<Object> FindOr—reateObject(GUID const& guid, ClassPtr const klass = nullptr);
+		GDAPI static GD_OBJECT_KERNEL RefPtr<Object> FindOrCreateObject(GUID const& guid, ClassPtr const klass = nullptr);
 		template<typename TObject>
-		GDINL static GD_OBJECT_HELPER RefPtr<TObject> FindOr—reateObject(GUID const& guid)
+		GDINL static GD_OBJECT_HELPER RefPtr<TObject> FindOrCreateObject(GUID const& guid)
 		{
-			return GD::object_cast<RefPtr<TObject>>(Object::FindOr—reateObject(guid, TObject::GetStaticClass()));
+			return GD::object_cast<TObject>(Object::FindOrCreateObject(guid, TObject::GetStaticClass()));
 		}
 		//! @}
 
@@ -217,7 +219,6 @@ GD_NAMESPACE_BEGIN
 		public: \
 			template<typename TObject> \
 			friend struct ObjectCtorGetter; \
-			friend class Allocator; \
 			static ObjectCastFlags const s_CastFlags = TCastFlags | (CFNotInheritableFlags & TSuperClass::s_CastFlags); \
 			\
 		protected: \
@@ -226,6 +227,7 @@ GD_NAMESPACE_BEGIN
 			\
 		public: \
 			GDINL virtual ClassPtr GetClass() const override { return TThisClass::GetStaticClass(); }\
+			GDINL static RefPtr<TThisClass> Create() { return Object::FindOrCreateObject<TThisClass>(EmptyGUID); } \
 			TEAPI static ClassPtr GetStaticClass(); \
 
 	/*! Implements the class information. Implements RTTI & reflection algorithms. */
@@ -247,7 +249,7 @@ GD_NAMESPACE_BEGIN
 
 	/*! Declares a GoddamnEngine intrinsic class information. */
 	#define GD_DECLARE_OBJECT_INTRINSIC_ENGINE(TThisClass, TSuperClass, ...) GD_OBJECT_KERNEL \
-			GD_DECLARE_OBJECT_INTRINSIC(TThisClass, TSuperClass, CF##TThisClass, "EngineIntrinsic/"#TThisClass, ##__VA_ARGS__) \
+			GD_DECLARE_OBJECT_INTRINSIC(TThisClass, TSuperClass, /*CF##TThisClass*/CFNoCastFlags, "EngineIntrinsic/"#TThisClass, ##__VA_ARGS__) \
 			friend class Component; friend class Resource; \
 
 	/*! Declares a GoddamnEngine intrinsic class information without tagged casts support. */
@@ -261,23 +263,29 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * @brief Performs a dynamic cast for two objects.
 	 */
-	template<typename TObjectSource, typename TObjectDest>
+	template<typename TObjectDest, typename TObjectSource>
 	GDINL static TObjectDest* object_cast(TObjectSource* const sourceObject)
 	{
 		static_assert(TypeTraits::IsBase<Object, TObjectSource>::Value, "Class 'TObjectSource' should be derived from 'Object'.");
 		static_assert(TypeTraits::IsBase<Object, TObjectDest>::Value, "Class 'TObjectDest' should be derived from 'Object'.");
 		static_assert(TypeTraits::IsBase<TObjectSource, TObjectDest>::Value, "Class 'TObjectDest' should be derived from 'TObjectDest'.");
 
+		GD_STUBBED(object_cast);
 		if (sourceObject != nullptr)
 		{
 			return static_cast<TObjectDest*>(sourceObject);
 		}
 		return nullptr;
 	}
-	template<typename TObjectSource, typename TObjectDest>
+	template<typename TObjectDest, typename TObjectSource>
 	GDINL static RefPtr<TObjectDest> object_cast(RefPtr<TObjectSource> const sourceObject)
 	{
-		return object_cast<TObjectDest>(sourceObject.Get());
+		auto const destObject = object_cast<TObjectDest>(sourceObject.Get());
+		if (destObject != nullptr)
+		{
+			destObject->AddRef();
+		}
+		return destObject;
 	}
 
 GD_NAMESPACE_END

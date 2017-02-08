@@ -51,7 +51,7 @@ GD_NAMESPACE_BEGIN
 
 		/*!
 		 * Moves other set here.
-		 * @param OtherSet Set would be moved into current object.
+		 * @param otherSet Set would be moved into current object.
 		 */
 		GDINL VectorSet(VectorSet&& otherSet) = default;
 
@@ -62,7 +62,9 @@ GD_NAMESPACE_BEGIN
 		GDINL VectorSet(InitializerList<TElement> const& initializerList)
 		{
 			for (auto const& element : initializerList)
+			{
 				this->Insert(element);
+			}
 		}
 
 		GDINL ~VectorSet()
@@ -85,11 +87,11 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL ConstIterator FindIterator(TElement const& element) const
 		{
-			return GD::FindFirst(this->Begin(), this->End(), element);
+			return Algo::FindFirst(this->Begin(), this->End(), element);
 		}
 		GDINL Iterator FindIterator(TElement const& element)
 		{
-			return GD::FindFirst(this->Begin(), this->End(), element);
+			return Algo::FindFirst(this->Begin(), this->End(), element);
 		}
 		//! @}
 
@@ -109,13 +111,13 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TElement& Insert(TElement&& element)
 		{
-			GD_DEBUG_ASSERT(!this->Contains(element), "Specified element already exists.");
+			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
 			VectorType::InsertLast(Forward<TElement>(element));
 			return this->GetLast();
 		}
 		GDINL TElement& Insert(TElement const& element)
 		{
-			GD_DEBUG_ASSERT(!this->Contains(element), "Specified element already exists.");
+			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
 			VectorType::InsertLast(element);
 			return this->GetLast();
 		}
@@ -128,7 +130,7 @@ GD_NAMESPACE_BEGIN
 		GDINL void Erase(TElement const& element)
 		{
 			auto const foundIndex = this->FindFirst(element);
-			GD_DEBUG_ASSERT(foundIndex != SizeTpMax, "Specified element does not exist.");
+			GD_DEBUG_VERIFY(foundIndex != SizeTpMax, "Specified element does not exist.");
 			this->EraseAt(foundIndex);
 		}
 

@@ -62,7 +62,7 @@ namespace GoddamnEngine.BuildSystem
     /// </summary>
     public static class BuildSystem
     {
-        private static string s_SdkPath = null;
+        private static string s_SdkPath;
 
         /// <summary>
         /// Returns path to GoddamnSDK installation location.
@@ -80,7 +80,7 @@ namespace GoddamnEngine.BuildSystem
             {
                 throw new BuildSystemException("Invalid GoddamnBuildSystemExecutable location {0}", executableLocation);
             }
-            return Path.GetFullPath(Path.Combine(executableLocation, "..", ".."));
+            return s_SdkPath = Path.GetFullPath(Path.Combine(executableLocation, "..", ".."));
         }
 
         /// <summary>

@@ -12,16 +12,15 @@
  */
 #include <GoddamnEngine/Core/Object/GUID.h>
 #include <GoddamnEngine/Core/Containers/StringBuilder.h>
-#include <GoddamnEngine/Core/System/Misc/Endian.h>
+#include <GoddamnEngine/Core/Misc/Endian.h>
 
-#if GD_PLATFORM_API_MICROSOFT
+#if GD_PLATFORM_API_MICROSOFT 
 #	include <combaseapi.h>
+#else	// if GD_PLATFORM_API_MICROSOFT
+#	include <GoddamnEngine/Core/Math/Random.h>
 #endif	// if GD_PLATFORM_API_MICROSOFT
 
 GD_NAMESPACE_BEGIN
-
-	// Size of GUID should be 16 bytes on all platforms.
-	static_assert(sizeof(GUID) == 16, "Error in size of GUID.");
 
 	/*!
 	 * Generates a new GUID.
@@ -35,12 +34,13 @@ GD_NAMESPACE_BEGIN
 #if GD_PLATFORM_API_MICROSOFT
 
 		::GUID resultCom;
-		CoCreateGuid(&resultCom);
+		GD_VERIFY(SUCCEEDED(CoCreateGuid(&resultCom)), "Failed to create a GUID");
 		result = GUID(resultCom.Data1, resultCom.Data2, resultCom.Data3, resultCom.Data4);
 
 #else	// if GD_PLATFORM_API_MICROSOFT
 
-		GD_NOT_IMPLEMENTED();
+		TrueRandom static guidRandom;
+		result = GUID(guidRandom.GenerateUnsigned64(), guidRandom.GenerateUnsigned64());
 
 #endif	// if GD_PLATFORM_API_MICROSOFT
 
@@ -56,7 +56,7 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns True if this string matches GUID.
 	 */
-	GDAPI bool GUID::TryParseExact(String const& string, Format const format, GUID& result)
+	GDAPI bool GUID::TryParseExact(String const& string, Style const format, GUID& result)
 	{
 		// Stripping all additional characters from the input string..
 		StringBuilder stringNormalized;
@@ -64,7 +64,7 @@ GD_NAMESPACE_BEGIN
 		switch (format)
 		{
 			// "00000000000000000000000000000000".
-			case Format::HexDigits: 
+			case Style::HexDigits: 
 				if (string.GetLength() != 32)
 				{
 					return false;
@@ -73,8 +73,8 @@ GD_NAMESPACE_BEGIN
 				break;
 
 			// "00000000-0000-0000-0000-000000000000".
-			case Format::HexDigitsWithHyphens: 
-				if (string.GetLength() != 32
+			case Style::HexDigitsWithHyphens: 
+				if (string.GetLength() != 36
 					|| string[ 8] != '-'
 					|| string[13] != '-'
 					|| string[18] != '-'
@@ -91,15 +91,15 @@ GD_NAMESPACE_BEGIN
 				break;
 
 			// "{00000000-0000-0000-0000-000000000000}", "(00000000-0000-0000-0000-000000000000)".
-			case Format::HexDigitsWithHyphensInBraces:
-			case Format::HexDigitsWithHyphensInParentheses:
+			case Style::HexDigitsWithHyphensInBraces:
+			case Style::HexDigitsWithHyphensInParentheses:
 				if (string.GetLength() != 38 
-					|| string[ 0] != (format == Format::HexDigitsWithHyphensInBraces ? '{' : '(')
+					|| string[ 0] != (format == Style::HexDigitsWithHyphensInBraces ? '{' : '(')
 					|| string[ 9] != '-'
 					|| string[14] != '-' 
 					|| string[19] != '-' 
 					|| string[24] != '-' 
-					|| string[37] != (format == Format::HexDigitsWithHyphensInBraces ? '}' : ')')
+					|| string[37] != (format == Style::HexDigitsWithHyphensInBraces ? '}' : ')')
 				) 
 				{
 					return false; 
@@ -112,7 +112,7 @@ GD_NAMESPACE_BEGIN
 				break; 
 
 			// "{0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}}".
-			case Format::HexValuesInBraces:
+			case Style::HexValuesInBraces:
 				if (string.GetLength() != 68
 					|| string[ 0] != '{'
 					|| string[ 1] != '0'
@@ -167,19 +167,19 @@ GD_NAMESPACE_BEGIN
 				break;
 
 			// "0000000000000000-0000000000000000".
-			case Format::HexDigits64BitWithHyphen: 
+			case Style::HexDigits64BitWithHyphen: 
 				if (string.GetLength() != 33
 					|| string[16] != '-'
 					)
 				{
 					return false;
 				}
-				stringNormalized.Append(string.SubstringLen(0, 8));
-				stringNormalized.Append(string.SubstringLen(17, 4));
+				stringNormalized.Append(string.SubstringLen(0, 16));
+				stringNormalized.Append(string.SubstringLen(17, 16));
 				break;
 
 			default: 
-				GD_DEBUG_ASSERT_FALSE("Invalid format was specified.");
+				GD_DEBUG_VERIFY_FALSE("Invalid format was specified.");
 		}
 		
 		// Converting normalized sting to the bytes sequence..
@@ -216,13 +216,17 @@ GD_NAMESPACE_BEGIN
 		switch(string.GetLength())
 		{
 			case 32:
-				return TryParseExact(string, Format::HexDigits, result);
+				return TryParseExact(string, Style::HexDigits, result);
+			case 36:
+				return TryParseExact(string, Style::HexDigitsWithHyphens, result);
 			case 38:
-				return string.StartsWith('{') ? TryParseExact(string, Format::HexDigitsWithHyphensInBraces, result) : TryParseExact(string, Format::HexDigitsWithHyphensInParentheses, result);
+				return string.StartsWith('{') ? TryParseExact(string, Style::HexDigitsWithHyphensInBraces, result) : TryParseExact(string, Style::HexDigitsWithHyphensInParentheses, result);
 			case 68:
-				return TryParseExact(string, Format::HexValuesInBraces, result);
+				return TryParseExact(string, Style::HexValuesInBraces, result);
 			case 33:
-				return TryParseExact(string, Format::HexDigits64BitWithHyphen, result);
+				return TryParseExact(string, Style::HexDigits64BitWithHyphen, result);
+			default: 
+				break;
 		}
 		return false;
 	}
@@ -232,11 +236,10 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @param string The string GUID representation.
 	 * @param format The exact format that this string should match.
-	 * @param result Reference to output.
 	 *
 	 * @returns Parsed GUID or the invalid GUID.
 	 */
-	GDAPI GUID GUID::ParseExact(String const& string, Format const format)
+	GDAPI GUID GUID::ParseExact(String const& string, Style const format)
 	{
 		GUID result;
 		if (!TryParseExact(string, format, result))
@@ -266,37 +269,136 @@ GD_NAMESPACE_BEGIN
 	 * Returns string representation of this GUID in string format.
 	 * @param format The format of the GUID string representation.
 	 */
-	GDAPI String GUID::ToString(Format const format /*= Format::HexDigits64BitWithHyphen*/) const
+	GDAPI String GUID::ToString(Style const format /*= Format::HexDigits64BitWithHyphen*/) const
 	{
 		switch (format)
 		{
-			case Format::HexDigits: 
+			case Style::HexDigits: 
 				return String::Format("%08X%04X%04X%02X%02X%02X%02X%02X%02X%02X%02X"
-					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K);
+					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K
+					);
 
-			case Format::HexDigitsWithHyphens: 
+			case Style::HexDigitsWithHyphens: 
 				return String::Format("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X"
-					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K);
+					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K
+					);
 
-			case Format::HexDigitsWithHyphensInBraces: 
+			case Style::HexDigitsWithHyphensInBraces: 
 				return String::Format("{%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}"
-					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K);
+					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K
+					);
 
-			case Format::HexDigitsWithHyphensInParentheses: 
+			case Style::HexDigitsWithHyphensInParentheses: 
 				return String::Format("(%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X)"
-					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K);
+					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K
+					);
 
-			case Format::HexValuesInBraces: 
-				return String::Format("{0x%08X,0x%04X,0x%04X,{0x%02X,0x%02X,0x%02X,0x%02X,0x%02X,0x%02X,0x%02X,0x%02X}"
-					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K);
+			case Style::HexValuesInBraces: 
+				return String::Format("{0x%08X,0x%04X,0x%04X,{0x%02X,0x%02X,0x%02X,0x%02X,0x%02X,0x%02X,0x%02X,0x%02X}}"
+					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K
+					);
 
-			case Format::HexDigits64BitWithHyphen: 
+			case Style::HexDigits64BitWithHyphen: 
 				return String::Format("%08X%04X%04X-%02X%02X%02X%02X%02X%02X%02X%02X"
-					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K);
+					, m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J, m_K
+					);
 
 			default: 
-				GD_DEBUG_ASSERT_FALSE("Invalid format was specified.");
+				GD_DEBUG_VERIFY_FALSE("Invalid format was specified.");
 		}
 	}
+
+#if GD_TESTING_ENABLED
+
+	// Size of GUID should be 16 bytes on all platforms.
+	static_assert(sizeof(GUID) == 16, "Error in size of GUID.");
+
+	gd_testing_unit_test(GUIDOperators)
+	{
+		GUID const a(0x6B265BC9, 0xC29F, 0x4483, { 0x88, 0xD1, 0x2F, 0xBA, 0x88, 0x75, 0x02, 0x75 });
+		GUID const b(0x9ED6EF5C, 0x9FBF, 0x43B3, { 0xB9, 0xFD, 0x70, 0xF8, 0x88, 0xAA, 0x9A, 0x5D });
+		GUID const c(0x6B265BC9, 0xC29F, 0x4483, { 0x88, 0xD1, 0x2F, 0xBA, 0x88, 0x75, 0x02, 0x75 });
+
+		gd_testing_verify(a != b);
+		gd_testing_verify(a == c);
+	};
+
+	gd_testing_unit_test(GUIDCtors)
+	{
+		GD_STUBBED(GUIDCtors);
+		/*gd_testing_verify(GUID() == EmptyGUID);
+
+		GUID const testGuid(0x6B265BC9, 0xC29F, 0x4483, { 0x88, 0xD1, 0x2F, 0xBA, 0x88, 0x75, 0x02, 0x75 });
+		gd_testing_verify(testGuid == GUID(0x6B265BC9, 0xC29F, 0x4483, 0x88, 0xD1, 0x2F, 0xBA, 0x88, 0x75, 0x02, 0x75));
+		gd_testing_verify(testGuid == GUID({ 0x6B, 0x26, 0x5B, 0xC9, 0xC2, 0x9F, 0x44, 0x83, 0x88, 0xD1, 0x2F, 0xBA, 0x88, 0x75, 0x02, 0x75 }));*/
+	};
+
+	gd_testing_unit_test(GUIDNew)
+	{
+		GUID const a = GUID::New();
+		GUID const b = GUID::New();
+		gd_testing_verify(a != b);
+	};
+
+	gd_testing_unit_test(GUIDValidation)
+	{
+		GUID guid(0x6B265BC9, 0xC29F, 0x4483, { 0x88, 0xD1, 0x2F, 0xBA, 0x88, 0x75, 0x02, 0x75 });
+		gd_testing_verify(guid.IsValid());
+
+		guid.Invalidate();
+		gd_testing_verify(!guid.IsValid());
+	};
+
+	gd_testing_unit_test(GUIDParse)
+	{
+		GUID parsedGuid;
+		GUID const guid(0x6B265BC9, 0xC29F, 0x4483, { 0x88, 0xD1, 0x2F, 0xBA, 0x88, 0x75, 0x02, 0x75 });
+
+		String const guidStringHexDigits("6B265BC9C29F448388D12FBA88750275");
+		gd_testing_verify(!GUID::TryParseExact(guidStringHexDigits, GUID::Style::HexDigitsWithHyphensInParentheses, parsedGuid));
+		gd_testing_verify(GUID::TryParseExact(guidStringHexDigits, GUID::Style::HexDigits, parsedGuid));
+		gd_testing_verify(parsedGuid == guid);
+
+		String const guidStringHexDigitsWithHyphens("6B265BC9-C29F-4483-88D1-2FBA88750275");
+		gd_testing_verify(!GUID::TryParseExact(guidStringHexDigitsWithHyphens, GUID::Style::HexDigits64BitWithHyphen, parsedGuid));
+		gd_testing_verify(GUID::TryParseExact(guidStringHexDigitsWithHyphens, GUID::Style::HexDigitsWithHyphens, parsedGuid));
+		gd_testing_verify(parsedGuid == guid);
+
+		String const guidStringHexDigitsWithHyphensInBraces("{6B265BC9-C29F-4483-88D1-2FBA88750275}");
+		gd_testing_verify(!GUID::TryParseExact(guidStringHexDigitsWithHyphensInBraces, GUID::Style::HexDigits, parsedGuid));
+		gd_testing_verify(GUID::TryParseExact(guidStringHexDigitsWithHyphensInBraces, GUID::Style::HexDigitsWithHyphensInBraces, parsedGuid));
+		gd_testing_verify(parsedGuid == guid);
+
+		String const guidStringHexDigitsWithHyphensInParentheses("(6B265BC9-C29F-4483-88D1-2FBA88750275)");
+		gd_testing_verify(!GUID::TryParseExact(guidStringHexDigitsWithHyphensInParentheses, GUID::Style::HexDigitsWithHyphensInBraces, parsedGuid));
+		gd_testing_verify(GUID::TryParseExact(guidStringHexDigitsWithHyphensInParentheses, GUID::Style::HexDigitsWithHyphensInParentheses, parsedGuid));
+		gd_testing_verify(parsedGuid == guid);
+
+		String const guidStringHexValuesInBraces("{0x6B265BC9,0xC29F,0x4483,{0x88,0xD1,0x2F,0xBA,0x88,0x75,0x02,0x75}}");
+		gd_testing_verify(!GUID::TryParseExact(guidStringHexValuesInBraces, GUID::Style::HexDigitsWithHyphens, parsedGuid));
+		gd_testing_verify(GUID::TryParseExact(guidStringHexValuesInBraces, GUID::Style::HexValuesInBraces, parsedGuid));
+		gd_testing_verify(parsedGuid == guid);
+
+		String const guidStringHexDigits64BitWithHyphen("6B265BC9C29F4483-88D12FBA88750275");
+		gd_testing_verify(!GUID::TryParseExact(guidStringHexDigits64BitWithHyphen, GUID::Style::HexValuesInBraces, parsedGuid));
+		gd_testing_verify(GUID::TryParseExact(guidStringHexDigits64BitWithHyphen, GUID::Style::HexDigits64BitWithHyphen, parsedGuid));
+		gd_testing_verify(parsedGuid == guid);
+
+		gd_testing_verify(GUID::Parse(guidStringHexDigits) == guid);
+		gd_testing_verify(GUID::Parse(guidStringHexDigitsWithHyphens) == guid);
+		gd_testing_verify(GUID::Parse(guidStringHexDigitsWithHyphensInBraces) == guid);
+		gd_testing_verify(GUID::Parse(guidStringHexDigitsWithHyphensInParentheses) == guid);
+		gd_testing_verify(GUID::Parse(guidStringHexValuesInBraces) == guid);
+		gd_testing_verify(GUID::Parse(guidStringHexDigits64BitWithHyphen) == guid);
+
+		gd_testing_verify(guid.ToString(GUID::Style::HexDigits) == guidStringHexDigits);
+		gd_testing_verify(guid.ToString(GUID::Style::HexDigitsWithHyphens) == guidStringHexDigitsWithHyphens);
+		gd_testing_verify(guid.ToString(GUID::Style::HexDigitsWithHyphensInBraces) == guidStringHexDigitsWithHyphensInBraces);
+		gd_testing_verify(guid.ToString(GUID::Style::HexDigitsWithHyphensInParentheses) == guidStringHexDigitsWithHyphensInParentheses);
+		gd_testing_verify(guid.ToString(GUID::Style::HexValuesInBraces) == guidStringHexValuesInBraces);
+		gd_testing_verify(guid.ToString(GUID::Style::HexDigits64BitWithHyphen) == guidStringHexDigits64BitWithHyphen);
+	};
+
+#endif	// if GD_TESTING_ENABLED
 
 GD_NAMESPACE_END

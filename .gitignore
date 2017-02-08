@@ -2,9 +2,9 @@
 ## Custom:
 utilities/ThirdPartyExecutables/
 #[Dd]ependencies/
-[Bb]uild/
 Doc/html/
 Lib/
+Bin/
 *.exe
 ###########################################################################
 

@@ -6,84 +6,89 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-//! @file GoddamnEngine/Core/Singleton.h
-//! Singleton pattern interface.
-
+/*!
+ * @file GoddamnEngine/Core/Singleton.h
+ * Singleton pattern interface.
+ */
 #pragma once
 
 #include <GoddamnEngine/Include.h>
 
-// ------------------------------------------------------------------------------------------
-//! Defines some code required for work of the singleton.
-//! @param SingletonType Type of singleton class.
-//! @param singletonInstance Explicit declaration of the singleton pointer.
-#define GD_SINGLETON_IMPLEMENTATION_EXPLICIT_INSTANCE(SingletonType, singletonInstance) \
-	/** Initializes a singleton. */\
+/*!
+ * Defines code required for work of the singleton.
+ *
+ * @param TSingleton Type of singleton class.
+ * @param TSingletonInstance Explicit declaration of the singleton pointer.
+ */
+#define GD_SINGLETON_IMPLEMENTATION_EXPLICIT_INSTANCE(TSingleton, TSingletonInstance) \
 	template<> \
-	GD::Singleton<SingletonType>::Singleton() \
+	GDAPI Singleton<TSingleton>::Singleton() \
 	{ \
-		GD_ASSERT(singletonInstance == nullptr, "'Singleton<SingletonType>' error: singleton instance already exists.");	\
-		const_cast<SingletonType*&>(singletonInstance) = static_cast<SingletonType*>(this); \
+		GD_DEBUG_VERIFY(TSingletonInstance == nullptr, "'Singleton<TSingleton>' error: singleton instance already exists.");	\
+		const_cast<SingletonType*&>(TSingletonInstance) = static_cast<SingletonType*>(TSingleton); \
+	} \
+	template<> \
+	GDAPI Singleton<TSingleton>::Singleton() \
+	{ \
+		const_cast<SingletonType*&>(TSingletonInstance) = nullptr; \
 	} \
 	\
-	/** Returns instance of the singleton. */ \
-	/** @returns instance of the singleton. */ \
 	template<> \
-	GD::SingletonType& Singleton<SingletonType>::GetInstance() \
+	GDAPI TSingleton& Singleton<TSingleton>::GetInstance() \
 	{ \
-		GD_ASSERT(singletonInstance != nullptr, "'Singleton<SingletonType>::GetInstance' error: no singleton instance was created"); \
-		return *singletonInstance; \
+		GD_DEBUG_VERIFY(TSingletonInstance != nullptr, "'Singleton<TSingleton>::GetInstance' error: no singleton instance was created"); \
+		return *TSingletonInstance; \
 	} \
 
-// ------------------------------------------------------------------------------------------
-//! Defines some code required for work of the singleton.
-//! @param SingletonType Type of singleton class.
-//! @param SingletonInstance Explicit declaration of the singleton pointer.
-#define GD_SINGLETON_IMPLEMENTATION(SingletonType) \
-	\
-	/** instance of the singleton. */\
-	GDAPI extern SingletonType* __singleton##SingletonType##instance = nullptr; \
-	\
-	GD_SINGLETON_IMPLEMENTATION_EXPLICIT_INSTANCE(SingletonType, __singleton##SingletonType##instance)
+/*!
+ * Defines code required for work of the singleton.
+ * @param TSingleton Type of singleton class.
+ */
+#define GD_SINGLETON_IMPLEMENTATION(TSingleton) \
+	GDAPI extern TSingleton* g_ ## TSingleton = nullptr; \
+	GD_SINGLETON_IMPLEMENTATION_EXPLICIT_INSTANCE(SingletonType, g_ ## TSingleton)
 
-// ------------------------------------------------------------------------------------------
-//! Overrides singleton instance getter function for specified type.
-//! @param SingletonType Required type to be used.
-//! @param SingletonBaseType Base type to be overridden.
-#define GD_SINGLETON_OVERRIDE(SingletonType, SingletonBaseType) \
+/*!
+ * Overrides singleton instance getter function for specified type.
+ *
+ * @param TSingleton Type of singleton class.
+ * @param TSingletonBaseType Base type to be overridden.
+ */
+#define GD_SINGLETON_OVERRIDE(TSingleton, TSingletonBaseType) \
 public: \
-	/** Returns instance of the singleton. */ \
-	/** @returns instance of the singleton. */ \
-	GDINL static SingletonType& GetInstance() \
+	GDINL static TSingleton& Get() \
 	{ \
-		return object_cast<SingletonType&>(SingletonBaseType::GetInstance()); \
+		return static_cast<TSingleton&>(TSingletonBaseType::Get()); \
 	} \
 private: \
 
 GD_NAMESPACE_BEGIN
 
-	// ------------------------------------------------------------------------------------------
-	//! Singleton class descendants are objects, for which only only one instance required. Than are alternatives to classes
-	//! with static functions and members. Project coding standards do not recommends using static members, so singletons are 
-	//! located in code (somewhere above 'main' function).
-	template<typename SingletonType>
+	// **------------------------------------------------------------------------------------------**
+	//! Singleton pattern class.
+	// **------------------------------------------------------------------------------------------**
+	template<typename TSingleton>
 	class Singleton : public TNonCopyable
 	{	
-	private:
-		static SingletonType* instance;
+		// ReSharper disable CppFunctionIsNotImplemented
 
 	protected:
 
-		// ------------------------------------------------------------------------------------------
-		//! Initializes a singleton.
-		GDAPI  Singleton();
+		/*!
+		 * Initializes a singleton.
+		 */
+		GDAPI Singleton();
+
+		GDAPI ~Singleton();
 
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		//! Returns instance of the singleton.
-		//! @returns instance of the singleton.
-		GDAPI static SingletonType& GetInstance();
+		/*!
+		 * Returns instance of the singleton.
+		 */
+		GDAPI static TSingleton& Get();
+
+		// ReSharper restore CppFunctionIsNotImplemented
 
 	};	// class Singleton
 

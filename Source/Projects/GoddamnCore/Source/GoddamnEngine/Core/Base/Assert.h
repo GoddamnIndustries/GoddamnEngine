@@ -50,38 +50,38 @@ GD_NAMESPACE_BEGIN
 	 */
 	enum DebugAssertDialogResult : UInt8
 	{
-		#define GD_ASSERT_DIALOG_TITLE			  "Assert Failed"
-		#define GD_ASSERT_DIALOG_GROUPBOX_TEXT	  "What the mess is going on?"
-		#define GD_ASSERT_DIALOG_DESCRIPTION_TEXT "Whoa, seems that you have just broken the world's most stable piece of code!\n" \
+		#define GD_VERIFY_DIALOG_TITLE			  "Assert Failed"
+		#define GD_VERIFY_DIALOG_GROUPBOX_TEXT	  "What the mess is going on?"
+		#define GD_VERIFY_DIALOG_DESCRIPTION_TEXT "Whoa, seems that you have just broken the world's most stable piece of code!\n" \
 				"Seriously, some code assertion failed. This may cause unstable work and etc."
 
-		ASSERT_DIALOG_BTN_ABORT,
-		#define GD_ASSERT_DIALOG_BTN_ABORT_TEXT "Abort"
+		VERIFY_DIALOG_BTN_ABORT,
+		#define GD_VERIFY_DIALOG_BTN_ABORT_TEXT "Abort"
 
-		ASSERT_DIALOG_BTN_RETRY,
-		#define GD_ASSERT_DIALOG_BTN_RETRY_TEXT "Retry"
+		VERIFY_DIALOG_BTN_RETRY,
+		#define GD_VERIFY_DIALOG_BTN_RETRY_TEXT "Retry"
 
-		ASSERT_DIALOG_BTN_IGNORE,
-		#define GD_ASSERT_DIALOG_BTN_IGNORE_TEXT "Ignore"	
+		VERIFY_DIALOG_BTN_IGNORE,
+		#define GD_VERIFY_DIALOG_BTN_IGNORE_TEXT "Ignore"	
 
-		ASSERT_DIALOG_BTN_IGNORE_ALL,
-		#define GD_ASSERT_DIALOG_BTN_IGNORE_ALL_TEXT "Ignore All"
+		VERIFY_DIALOG_BTN_IGNORE_ALL,
+		#define GD_VERIFY_DIALOG_BTN_IGNORE_ALL_TEXT "Ignore All"
 
-		ASSERT_DIALOG_BTN_REPORT,
-		#define GD_ASSERT_DIALOG_BTN_REPORT_TEXT "Report an Issue"
+		VERIFY_DIALOG_BTN_REPORT,
+		#define GD_VERIFY_DIALOG_BTN_REPORT_TEXT "Report an Issue"
 
-		ASSERT_DIALOG_BTN_BREAK,
-		#define GD_ASSERT_DIALOG_BTN_BREAK_TEXT "Break"
+		VERIFY_DIALOG_BTN_BREAK,
+		#define GD_VERIFY_DIALOG_BTN_BREAK_TEXT "Break"
 
-		ASSERT_DIALOG_BTN_UNKNOWN,
-		ASSERT_DIALOG_BTNS_COUNT = ASSERT_DIALOG_BTN_UNKNOWN,
+		VERIFY_DIALOG_BTN_UNKNOWN,
+		VERIFY_DIALOG_BTNS_COUNT = VERIFY_DIALOG_BTN_UNKNOWN,
 	};	// enum DebugAssertDialogResult
 
 	/*!
 	 * Provides inner functionality for handling fatal asserts. Should not be invoked directly.
 	 *
 	 * @param data Pointer to assertion description data structure.
-	 * @param args Arguments for formating Message string.
+	 * @param args Arguments for formatting Message string.
 	 */
 	//! @{
 	GD_NORETURN GDAPI extern void DebugHandleFatalAssertDataVa(DebugAssertData const* const data, va_list const args);
@@ -98,7 +98,7 @@ GD_NAMESPACE_BEGIN
 	 * Provides inner functionality for handling regular asserts. Should not be invoked directly.
 	 *
 	 * @param data Pointer to assertion description data structure.
-	 * @param args Arguments for formating Message string.
+	 * @param args Arguments for formatting Message string.
 	 */
 	//! @{
 	GDAPI extern DebugAssertDialogResult DebugHandleAssertDataVa(DebugAssertData const* const data, va_list const args);
@@ -112,13 +112,20 @@ GD_NAMESPACE_BEGIN
 	}
 	//! @}
 
+#if GD_TESTING_ENABLED
+
+	#define GD_ENABLED_FALSE_VERIFY gd_testing_assert_false
+	#define GD_ENABLED_VERIFY gd_testing_assert
+
+#else
+
 	/*!
 	 * @brief Defines a disabled fatal assertion. 
 	 * Does nothing.
 	 *
 	 * @param message Dummy Message.
 	 */
-	#define GD_DISABLED_FALSE_ASSERT(message, ...) \
+	#define GD_DISABLED_FALSE_VERIFY(message, ...) \
 		do { \
 			static_cast<void>(false); \
 			abort(); \
@@ -130,7 +137,7 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @param message A formatable string that describes what is going on.
 	 */
-	#define GD_ENABLED_FALSE_ASSERT(message, ...) \
+	#define GD_ENABLED_FALSE_VERIFY(message, ...) \
 		do { \
 			GD_USING_NAMESPACE; \
 			DebugAssertData static const fatalAssertData(message, __FILE__, __FUNCTION__, __LINE__); \
@@ -144,7 +151,7 @@ GD_NAMESPACE_BEGIN
 	 * @param expression The Expression that would be evaluated.
 	 * @param message A formatable string that describes what is going on.
 	 */
-	#define GD_DISABLED_ASSERT(expression, message, ...) \
+	#define GD_DISABLED_VERIFY(expression, message, ...) \
 		do { \
 			GD_USING_NAMESPACE; \
 			__analysis_assume(expression); \
@@ -160,7 +167,7 @@ GD_NAMESPACE_BEGIN
 	 * @param expression The Expression that would be evaluated.
 	 * @param message A formatable string that describes what is going on.
 	 */
-	#define GD_ENABLED_ASSERT(expression, message, ...) \
+	#define GD_ENABLED_VERIFY(expression, message, ...) \
 		do { \
 			GD_USING_NAMESPACE; \
 			__analysis_assume(expression); \
@@ -168,16 +175,18 @@ GD_NAMESPACE_BEGIN
 			while ((!(expression)) && (!assertData.AssertShouldBeAlwaysIgnored)) \
 			{ \
 				auto const assertState = DebugHandleAssertData(&assertData, ##__VA_ARGS__); \
-				if (assertState == ASSERT_DIALOG_BTN_BREAK) \
+				if (assertState == VERIFY_DIALOG_BTN_BREAK) \
 				{ \
 					__debugbreak(); \
 				} \
-				else if (assertState != ASSERT_DIALOG_BTN_RETRY) \
+				else if (assertState != VERIFY_DIALOG_BTN_RETRY) \
 				{ \
 					break; \
 				} \
 			} \
 		} while (false)
+
+#endif	// if GD_TESTING_
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**	
 	// ******                             Debug Assert macros.                                 ******
@@ -189,7 +198,7 @@ GD_NAMESPACE_BEGIN
 	 * Defines a fatal assertion that is enabled only in debug mode. 
 	 * @param message A formatable string that describes what is going on.
 	 */
-	#define GD_DEBUG_ASSERT_FALSE GD_ENABLED_FALSE_ASSERT
+	#define GD_DEBUG_VERIFY_FALSE GD_ENABLED_FALSE_VERIFY
 	
 	/*!
 	 * Defines a regular assertion that is enabled only in debug mode. 
@@ -197,7 +206,7 @@ GD_NAMESPACE_BEGIN
 	 * @param expression The Expression that would be evaluated.
 	 * @param message A formatable string that describes what is going on.
 	 */
-	#define GD_DEBUG_ASSERT GD_ENABLED_ASSERT
+	#define GD_DEBUG_VERIFY GD_ENABLED_VERIFY
 
 #else	// if GD_DEBUG
 
@@ -205,7 +214,7 @@ GD_NAMESPACE_BEGIN
 	 * Defines a fatal assertion that is enabled only in debug mode. 
 	 * @param message A formatable string that describes what is going on.
 	 */
-	#define GD_DEBUG_ASSERT_FALSE GD_DISABLED_FALSE_ASSERT
+	#define GD_DEBUG_VERIFY_FALSE GD_DISABLED_FALSE_VERIFY
 	
 	/*!
 	 * Defines a regular assertion that is enabled only in debug mode. 
@@ -213,7 +222,7 @@ GD_NAMESPACE_BEGIN
 	 * @param expression The Expression that would be evaluated.
 	 * @param message A formatable string that describes what is going on.
 	 */
-	#define GD_DEBUG_ASSERT GD_DISABLED_ASSERT
+	#define GD_DEBUG_VERIFY GD_DISABLED_VERIFY
 
 #endif	// if GD_DEBUG
 
@@ -221,7 +230,7 @@ GD_NAMESPACE_BEGIN
 	 * Defines a fatal assertion. 
 	 * @param message A formatable string that describes what is going on.
 	 */
-	#define GD_ASSERT_FALSE GD_ENABLED_FALSE_ASSERT
+	#define GD_VERIFY_FALSE GD_ENABLED_FALSE_VERIFY
 	
 	/*!
 	 * Defines a regular assertion.
@@ -229,16 +238,16 @@ GD_NAMESPACE_BEGIN
 	 * @param expression The Expression that would be evaluated.
 	 * @param message A formatable string that describes what is going on.
 	 */
-	#define GD_ASSERT GD_ENABLED_ASSERT
+	#define GD_VERIFY GD_ENABLED_VERIFY
 
 	/*!
 	 * Defines a fatal "Not Implemented" assertion. 
 	 */
-	#define GD_NOT_IMPLEMENTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '%s' not implemented.", __FUNCTION__)
+	#define GD_NOT_IMPLEMENTED() GD_DEBUG_VERIFY_FALSE("A part or whole function '%s' not implemented.", __FUNCTION__)
 
 	/*!
 	 * Defines a fatal "Not Supported" assertion. 
 	 */
-	#define GD_NOT_SUPPORTED() GD_DEBUG_ASSERT_FALSE("A part or whole function '%s' is not supported.", __FUNCTION__)
+	#define GD_NOT_SUPPORTED() GD_DEBUG_VERIFY_FALSE("A part or whole function '%s' is not supported.", __FUNCTION__)
 
 GD_NAMESPACE_END

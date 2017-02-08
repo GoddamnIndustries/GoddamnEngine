@@ -1,0 +1,13 @@
+---
+BasedOnStyle: WebKit
+---
+Language: Cpp
+ColumnLimit: '180'
+BreakBeforeBraces: Allman
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakTemplateDeclarations: true
+NamespaceIndentation: All
+TabWidth: 4
+UseTab: ForIndentation

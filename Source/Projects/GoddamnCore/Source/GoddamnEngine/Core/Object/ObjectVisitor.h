@@ -198,7 +198,7 @@ GD_NAMESPACE_BEGIN
 		 * @param arraySize Size of the array. May be modified.
 		 * @returns False is reflecting this array property should be skipped.
 		 */
-		GDAPI virtual bool BeginVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt32& arraySize) GD_PURE_VIRTUAL;
+		GDAPI virtual bool BeginVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo, SizeTp& arraySize) GD_PURE_VIRTUAL;
 
 		/*!
 		 * @brief Handles array property.
@@ -258,21 +258,20 @@ GD_NAMESPACE_BEGIN
 		 * Handles array property.
 		 *
 		 * @param propertyMetaInfo Meta information, declared with property.
-		 * @param value Array property value.
+		 * @param array Array property value.
 		 */
 		template<typename TElement>
 		GDINL GD_OBJECT_HELPER void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Vector<TElement>& array)
 		{
-			UInt32 arraySize = array.GetLength();
-			if (BeginVisitArrayProperty(propertyMetaInfo, arraySize))
+			auto arraySize = array.GetLength();
+			if (this->BeginVisitArrayProperty(propertyMetaInfo, arraySize))
 			{
 				array.Resize(arraySize);
 				for (auto& arrayElement : array)
 				{
 					this->VisitProperty(propertyMetaInfo, arrayElement);
 				}
-
-				EndVisitArrayProperty(propertyMetaInfo);
+				this->EndVisitArrayProperty(propertyMetaInfo);
 			}
 		}
 
@@ -299,78 +298,79 @@ GD_NAMESPACE_BEGIN
 		template<typename TValue>
 		GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, TValue& value)
 		{
+			GD_NOT_USED(this);
 			GD_NOT_USED(propertyMetaInfo);
 			GD_NOT_USED(value);
 			GD_NOT_IMPLEMENTED();
 		}
 
 	private:
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, ...) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, ...) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, bool& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, bool& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int8& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int8& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt8& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt8& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int16& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int16& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt16& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt16& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int32& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int32& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt32& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt32& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int64& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int64& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt64& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt64& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float32& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float32& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float64& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float64& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, String& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, String& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 		
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Object const*& value) override
+		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Object const*& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
