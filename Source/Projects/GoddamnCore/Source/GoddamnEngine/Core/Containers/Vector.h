@@ -42,7 +42,7 @@ GD_NAMESPACE_BEGIN
 		using ReverseIterator      = ReverseContainerIterator<Iterator>;
 		using ReverseConstIterator = ReverseContainerIterator<ConstIterator>;
 
-		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(Vector);
+		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(Vector)
 
 	private:
 		TElement* m_Memory;
@@ -704,7 +704,7 @@ GD_NAMESPACE_BEGIN
 		using ReverseIterator      = ReverseContainerIterator<Iterator>;
 		using ReverseConstIterator = ReverseContainerIterator<ConstIterator>;
 
-		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(Vector);
+		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(Vector)
 
 	private:
 		auto static constexpr s_BitPerWord = sizeof(Word) * 8;

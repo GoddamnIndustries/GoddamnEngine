@@ -158,13 +158,13 @@ GD_NAMESPACE_BEGIN
 		 * Queries for the Iterator of the element with specified key.
 		 *
 		 * @param key The element we are looking for.
-		 * @returns Iterator on the element if it was found and End Iterator otherwise.
+		 * @returns Pointer to the element if it was found and null pointer otherwise.
 		 */
 		//! @{
 		GDINL TValue const* Find(TKey const& key) const
 		{
-			auto const node = static_cast<RedBlackTreeNodeType const*>(this->FindNodeBase(&key));
-			return (node != this->GetNullNodeBase()) ? &node->GetData()->Value : nullptr;
+			auto const iterator = this->FindIterator(key);
+			return iterator != this->End() ? &iterator->Value : nullptr;
 		}
 		GDINL TValue* Find(TKey const& key)
 		{

@@ -325,7 +325,7 @@ GD_NAMESPACE_BEGIN
 		using ConstIterator        = Iterator;
 		using ReverseConstIterator = ReverseIterator;
 
-		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(ReverseContainerAdapter);
+		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(ReverseContainerAdapter)
 
 	private:
 		TContainer* m_Container;

@@ -51,7 +51,7 @@ GD_NAMESPACE_BEGIN
 
 		SizeTp static constexpr Npos = SizeTpMax;
 
-		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(BaseString);
+		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(BaseString)
 
 	private:
 		using MyCChar   = BaseCChar<TChar>;

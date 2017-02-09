@@ -99,6 +99,24 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		/*!
+		 * Queries for the Iterator of the element with specified key.
+		 *
+		 * @param element The element we are looking for.
+		 * @returns Pointer to the element if it was found and null pointer otherwise.
+		 */
+		//! @{
+		GDINL TElement const* Find(TElement const& element) const
+		{
+			auto const iterator = this->FindIterator(element);
+			return iterator != this->End() ? &*iterator : nullptr;
+		}
+		GDINL TElement* Find(TElement const& element)
+		{
+			return const_cast<TElement*>(const_cast<Set const*>(this)->Find(element));
+		}
+		//! @}
+
+		/*!
 		 * Determines whether the specified element exists in the set.
 		 * @param element The element we are looking for.
 		 */
@@ -118,7 +136,7 @@ GD_NAMESPACE_BEGIN
 			
 			auto const newNode = this->InternalCreateNode(Utils::Forward<TElement>(element));
 			this->InsertNodeBase(newNode);
-			return newNode->GetData();
+			return *newNode->GetData();
 		}
 		GDINL TElement& Insert(TElement const& element)
 		{
@@ -126,7 +144,7 @@ GD_NAMESPACE_BEGIN
 			
 			auto const newNode = this->InternalCreateNode(element);
 			this->InsertNodeBase(newNode);
-			return newNode->GetData();
+			return *newNode->GetData();
 		}
 		//! @}
 

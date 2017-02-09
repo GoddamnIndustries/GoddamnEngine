@@ -166,7 +166,7 @@ GD_NAMESPACE_BEGIN
 		using Iterator           = LinkedListIterator<LinkedListNodeType>;
 		using ConstIterator      = LinkedListIterator<LinkedListNodeType const>;
 
-		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(LinkedList);
+		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(LinkedList)
 
 	private:
 		LinkedListNodeType* m_FirstNode;

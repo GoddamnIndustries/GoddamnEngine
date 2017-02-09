@@ -107,7 +107,7 @@ GD_NAMESPACE_BEGIN
 			*(vector.End() + 1);
 			gd_testing_verify(false);
 		}
-		catch (goddamn_testing::testing_exception const&)
+		catch (goddamn_testing::assertion_exception const&)
 		{
 			gd_testing_verify(true);
 		}
@@ -157,7 +157,7 @@ GD_NAMESPACE_BEGIN
 				vector[0];
 				vector[1];
 			}
-			catch (goddamn_testing::testing_exception const&)
+			catch (goddamn_testing::assertion_exception const&)
 			{
 				gd_testing_verify(false);
 			}
@@ -168,7 +168,7 @@ GD_NAMESPACE_BEGIN
 				vector[2];
 				gd_testing_verify(false);
 			}
-			catch (goddamn_testing::testing_exception const&)
+			catch (goddamn_testing::assertion_exception const&)
 			{
 				gd_testing_verify(true);
 			}
@@ -290,7 +290,7 @@ GD_NAMESPACE_BEGIN
 			*(vector.End() + 1);
 			gd_testing_verify(false);
 		}
-		catch (goddamn_testing::testing_exception const&)
+		catch (goddamn_testing::assertion_exception const&)
 		{
 			gd_testing_verify(true);
 		}
@@ -363,7 +363,7 @@ GD_NAMESPACE_BEGIN
 				vector[1] = 0;
 				gd_testing_verify(vector == VectorBool{ 1, 0 });
 			}
-			catch (goddamn_testing::testing_exception const&)
+			catch (goddamn_testing::assertion_exception const&)
 			{
 				gd_testing_verify(false);
 			}
@@ -374,7 +374,7 @@ GD_NAMESPACE_BEGIN
 				vector[201];
 				gd_testing_verify(false);
 			}
-			catch (goddamn_testing::testing_exception const&)
+			catch (goddamn_testing::assertion_exception const&)
 			{
 				gd_testing_verify(true);
 			}

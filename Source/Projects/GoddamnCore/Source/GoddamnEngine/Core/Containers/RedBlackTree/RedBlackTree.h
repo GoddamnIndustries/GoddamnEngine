@@ -54,6 +54,15 @@ GD_NAMESPACE_BEGIN
 			return const_cast<Handle>(const_cast<RedBlackTreeBaseNode const*>(this)->GetDataUntyped());
 		}
 		//! @}
+
+		/*!
+		 * Returns true if this node is null.
+		 */
+		GDINL bool IsNull() const
+		{
+			return m_IsNull;
+		}
+
 	};	// struct RedBlackTreeBaseNode
 
 	// **------------------------------------------------------------------------------------------**
@@ -455,6 +464,7 @@ GD_NAMESPACE_BEGIN
 		// *iterator
 		GDINL ElementType& operator* () const
 		{
+			GD_DEBUG_VERIFY(!m_IterNode->IsNull(), "Null node pointer.");
 			return reinterpret_cast<ElementType&>(*m_IterNode->GetData());
 		}
 		GDINL ElementType* operator-> () const
@@ -483,7 +493,7 @@ GD_NAMESPACE_BEGIN
 		using ReverseIterator      = ReverseContainerIterator<Iterator>;
 		using ReverseConstIterator = ReverseContainerIterator<ConstIterator>;
 
-		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(RedBlackTree);
+		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(RedBlackTree)
 
 	protected:
 

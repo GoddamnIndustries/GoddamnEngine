@@ -28,7 +28,8 @@ GD_NAMESPACE_BEGIN
 	//! @tparam TElement Container element type.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TElement, typename TAllocator = DefaultContainerAllocator>
-	class VectorSet : public Vector<TElement, TAllocator>, public IIteratable<VectorSet<TElement, TAllocator>>, public TNonCopyable
+	class UnorderedVectorSet : public Vector<TElement, TAllocator>
+		, public IIteratable<UnorderedVectorSet<TElement, TAllocator>>, public TNonCopyable
 	{
 	public:
 		using ElementType          = TElement;
@@ -47,19 +48,19 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Initializes an empty set.
 		 */
-		GDINL VectorSet() = default;
+		GDINL UnorderedVectorSet() = default;
 
 		/*!
 		 * Moves other set here.
 		 * @param otherSet Set would be moved into current object.
 		 */
-		GDINL VectorSet(VectorSet&& otherSet) = default;
+		GDINL UnorderedVectorSet(UnorderedVectorSet&& otherSet) noexcept = default;
 
 		/*!
 		 * Initializes set with default C++11's initializer list. You should not use this constructor manually.
 		 * @param initializerList Initializer list passed by the compiler.
 		 */
-		GDINL VectorSet(InitializerList<TElement> const& initializerList)
+		GDINL UnorderedVectorSet(InitializerList<TElement> const& initializerList)
 		{
 			for (auto const& element : initializerList)
 			{
@@ -67,7 +68,7 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		GDINL ~VectorSet()
+		GDINL ~UnorderedVectorSet()
 		{
 			this->Clear();
 		}
@@ -96,6 +97,24 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		/*!
+		 * Queries for the Iterator of the element with specified key.
+		 *
+		 * @param element The element we are looking for.
+		 * @returns Pointer to the element if it was found and null pointer otherwise.
+		 */
+		//! @{
+		GDINL TElement const* Find(TElement const& element) const
+		{
+			auto const iterator = this->FindIterator(element);
+			return iterator != this->End() ? &*iterator : nullptr;
+		}
+		GDINL TElement* Find(TElement const& element)
+		{
+			return const_cast<TElement*>(const_cast<UnorderedVectorSet const*>(this)->Find(element));
+		}
+		//! @}
+
+		/*!
 		 * Determines whether the specified element exists in the set.
 		 * @param element The element we are looking for.
 		 */
@@ -112,13 +131,13 @@ GD_NAMESPACE_BEGIN
 		GDINL TElement& Insert(TElement&& element)
 		{
 			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
-			VectorType::InsertLast(Forward<TElement>(element));
+			this->VectorType::InsertLast(Utils::Forward<TElement>(element));
 			return this->GetLast();
 		}
 		GDINL TElement& Insert(TElement const& element)
 		{
 			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
-			VectorType::InsertLast(element);
+			this->VectorType::InsertLast(element);
 			return this->GetLast();
 		}
 		//! @}
@@ -138,11 +157,11 @@ GD_NAMESPACE_BEGIN
 		// Overloaded operators.
 		// ------------------------------------------------------------------------------------------
 
-		GDINL VectorSet& operator= (VectorSet&& otherSet) = default;
+		GDINL UnorderedVectorSet& operator= (UnorderedVectorSet&& otherSet) = default;
 
 	};	// class VectorSet 
 
 	template<typename TElement>
-	using GCVectorSet = VectorSet<TElement, GCContainerAllocator<TElement>>;
+	using GCVectorSet = UnorderedVectorSet<TElement, GCContainerAllocator<TElement>>;
 
 GD_NAMESPACE_END
