@@ -8,7 +8,7 @@
 
 /*!
  * @file GoddamnEngine/Core/Containers/Set.h
- * Dynamically sized associative set class.
+ * Dynamically sized set class.
  */
 #pragma once
 
@@ -24,13 +24,14 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	// **------------------------------------------------------------------------------------------**
-	//! Dynamically sized associative set that is implemented with Red-Black Trees.
+	//! Dynamically sized set that is implemented with Red-Black Trees.
 	//! Red-Black Tree is used for elements access and searching.
 	//!
 	//! @tparam TElement Container element type.
+	//! @tparam TAllocator Allocator used by this set.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TElement, typename TAllocator = DefaultContainerAllocator>
-	class Set : public RedBlackTree<TElement>, public IIteratable<Set<TElement, TAllocator>>
+	class Set : public RedBlackTree<TElement, TAllocator>
 	{
 	public:
 		using ElementType          = TElement;

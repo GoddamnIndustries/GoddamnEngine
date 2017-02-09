@@ -8,7 +8,7 @@
 
 /*!
  * @file GoddamnEngine/Core/Containers/Set.cpp
- * Dynamically sized associative set class.
+ * Dynamically sized set class.
  */
 #include <GoddamnEngine/Core/Containers/Set.h>
 #include <GoddamnEngine/Core/Containers/UnorderedSet.h>
@@ -49,14 +49,13 @@ GD_NAMESPACE_BEGIN
 
 	gd_testing_unit_test_foreach(SetIntIteration, TSetType, SetInt, UnorderedSetInt, UnorderedVectorSetInt)
 	{
-		TSetType set{ 0, 1, 2, 3 };
+		TSetType set{ 2, 1, 0, 3 };
 		std::array<bool, 4> stdSet = { false };
 		for (auto iter = set.Begin(); iter != set.End(); iter += 1)	// '+= 1' intentionally.
 		{
 			stdSet[*iter] = true;
 		}
 
-		gd_testing_verify(stdSet.size() == 4);
 		for (auto const& value : stdSet)
 		{
 			gd_testing_verify(value);
@@ -85,25 +84,25 @@ GD_NAMESPACE_BEGIN
 		gd_testing_verify(!set2.IsEmpty());
 	};
 
-	gd_testing_unit_test_foreach(SetIntMoveCtor, TSetType, SetInt, UnorderedSetInt, UnorderedVectorSetInt)
+	gd_testing_unit_test_foreach(SetIntMoveCtor, TSetType, SetInt, UnorderedSetInt/*, UnorderedVectorSetInt*/)
 	{
-		/*TSetType set1{ 2, 3, 4, 5 };
+		TSetType set1{ 2, 3, 4, 5 };
 		TSetType set2(Utils::Move(set1));
 		
 		gd_testing_verify(set1.IsEmpty());
-		gd_testing_verify(!set2.IsEmpty());*/
+		gd_testing_verify(!set2.IsEmpty());
 		GD_STUBBED(UnorderedVectorSetIntMoveCtor);
 	};
 
-	gd_testing_unit_test_foreach(SetIntMoveAssignmentOperator, TSetType, SetInt, UnorderedSetInt, UnorderedVectorSetInt)
+	gd_testing_unit_test_foreach(SetIntMoveAssignmentOperator, TSetType, SetInt, UnorderedSetInt/*, UnorderedVectorSetInt*/)
 	{
-		/*TSetType set1{ 2, 3, 4, 5 };
+		TSetType set1{ 2, 3, 4, 5 };
 		TSetType set2{ 7 };
 
 		set2 = Utils::Move(set1);
 
 		gd_testing_verify(set1.IsEmpty());
-		gd_testing_verify(!set2.IsEmpty());*/
+		gd_testing_verify(!set2.IsEmpty());
 		GD_STUBBED(UnorderedVectorSetIntMoveAssignmentOperator);
 	};
 
@@ -146,15 +145,24 @@ GD_NAMESPACE_BEGIN
 
 	gd_testing_unit_test_foreach(SetIntErase, TSetType, SetInt, UnorderedSetInt, UnorderedVectorSetInt)
 	{
-		TSetType set{ 1, 2, 3 };
-		gd_testing_verify(set.Contains(2));
-		set.Erase(2);
-		gd_testing_verify(!set.Contains(2));
+		TSetType set{ 1, 2, 3, 4, 5, 6, 7 };
+		
+		gd_testing_verify(set.Contains(3));
+		set.Erase(3);
+		gd_testing_verify(!set.Contains(3));
+
+		gd_testing_verify(set.Contains(7));
+		set.Erase(7);
+		gd_testing_verify(!set.Contains(7));
+
+		gd_testing_verify(set.Contains(1));
+		set.Erase(1);
+		gd_testing_verify(!set.Contains(1));
 
 		try
 		{
 			// This should fail.
-			set.Erase(4);
+			set.Erase(19);
 			gd_testing_verify(false);
 		}
 		catch (goddamn_testing::assertion_exception const&)

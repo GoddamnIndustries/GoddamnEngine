@@ -8,7 +8,7 @@
 
 /*!
  * @file GoddamnEngine/Core/Containers/Map.h
- * Dynamically sized associative map class.
+ * Dynamically sized associative container class.
  */
 #pragma once
 
@@ -43,7 +43,7 @@ GD_NAMESPACE_BEGIN
 		}
 		
 		GDINL MapPair(TKey&& key, TValue&& value) 
-			: Key(Forward<TKey>(key)), Value(Forward<TValue>(value))
+			: Key(Utils::Forward<TKey>(key)), Value(Utils::Forward<TValue>(value))
 		{
 		}
 
@@ -78,14 +78,15 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	// **------------------------------------------------------------------------------------------**
-	//! Dynamically sized associative map that is implemented with Red-Black Trees.
+	//! Dynamically sized associative container that is implemented with Red-Black Trees.
 	//! Red-Black Tree is used for elements access and searching.
 	//!
 	//! @tparam TKey Key type, used for searching.
 	//! @tparam TValue Type of elements stored in the map.
+	//! @tparam TAllocator Allocator used by this map.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TKey, typename TValue, typename TAllocator = DefaultContainerAllocator>
-	class Map : public RedBlackTree<MapPair<TKey, TValue>>, public IIteratable<Map<TKey, TValue, TAllocator>>
+	class Map : public RedBlackTree<MapPair<TKey, TValue>, TAllocator>
 	{
 	public:
 		using PairType             = MapPair<TKey, TValue>;
@@ -233,21 +234,28 @@ GD_NAMESPACE_BEGIN
 		 * @param key The key of the element we are looking for.
 		 * @returns Reference on some element, or a newly created instance of the value type, that was automatically added to the map.
 		 */
-		//! @{
-		GDINL TValue const& operator[] (TKey const& key) const
+		GDINL TValue& operator[] (TKey const& key)
 		{
 			auto const queriedIterator = this->FindIterator(key);
 			if (queriedIterator == this->End())
 			{
-				return const_cast<Map*>(this)->Insert(key);
+				return this->Insert(key);
 			}
 			return queriedIterator->Value;
 		}
-		GDINL TValue& operator[] (TKey const& key)
+
+		/*!
+		 * Returns reference on value of the element with specified key.
+		 *
+		 * @param key The key of the element we are looking for.
+		 * @returns Reference on some element.
+		 */
+		GDINL TValue const& operator[] (TKey const& key) const
 		{
-			return const_cast<TValue&>(const_cast<Map const&>(*this)[key]);
+			auto const queriedIterator = this->FindIterator(key);
+			GD_DEBUG_VERIFY(queriedIterator == this->End(), "Element with specified key does not exist.");
+			return queriedIterator->Value;
 		}
-		//! @}
 
 	};	// class VectorMap
 

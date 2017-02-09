@@ -7,8 +7,8 @@
 // ==========================================================================================
 
 /*!
-* @file GoddamnEngine/Core/Containers/Set.h
-* Dynamically sized associative set class.
+* @file GoddamnEngine/Core/Containers/UnorderedVectorMap.h
+* Dynamically sized vector-based associative container class.
 */
 #pragma once
 
@@ -23,19 +23,22 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	// **------------------------------------------------------------------------------------------**
-	//! Dynamically sized associative map that is implemented with dynamic arrays.
+	//! Dynamically sized associative container that is implemented with dynamic arrays.
 	//! Drop-in replacement for the map class.
 	//!
 	//! @tparam TKey Key type, used for searching.
 	//! @tparam TValue Type of elements stored in the map.
+	//! @tparam TAllocator Allocator used by this map.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TKey, typename TValue, typename TAllocator = DefaultContainerAllocator>
-	class VectorMap : public Vector<MapPair<TKey, TValue>>, public IIteratable<Map<TKey, TValue, TAllocator>>, public TNonCopyable
+	class UnorderedVectorMap : private Vector<MapPair<TKey, TValue>, TAllocator>, public TNonCopyable
 	{
 	public:
 		using PairType             = MapPair<TKey, TValue>;
 		using ElementType          = PairType;
+	private:
 		using VectorType           = Vector<PairType, TAllocator>;
+	public:
 		using Iterator             = typename VectorType::Iterator;
 		using ConstIterator        = typename VectorType::ConstIterator;
 		using ReverseIterator      = typename VectorType::ReverseIterator;
@@ -50,19 +53,19 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Initializes an empty map.
 		 */
-		GDINL VectorMap() = default;
+		GDINL UnorderedVectorMap() = default;
 
 		/*!
 		 * Moves other map here.
 		 * @param otherMap Map would be moved into current object.
 		 */
-		GDINL VectorMap(VectorMap&& otherMap) = default;
+		GDINL UnorderedVectorMap(UnorderedVectorMap&& otherMap) = default;
 
 		/*!
 		 * Initializes map with default C++11's initializer list. You should not use this constructor manually.
 		 * @param initializerList Initializer list passed by the compiler.
 		 */
-		GDINL VectorMap(InitializerList<PairType> const& initializerList)
+		GDINL UnorderedVectorMap(InitializerList<PairType> const& initializerList)
 		{
 			for (auto const& element : initializerList)
 			{
@@ -70,7 +73,7 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-		GDINL ~VectorMap()
+		GDINL ~UnorderedVectorMap()
 		{
 			this->Clear();
 		}
@@ -78,8 +81,74 @@ GD_NAMESPACE_BEGIN
 	public:
 
 		// ------------------------------------------------------------------------------------------
+		// Iteration API.
+		// ------------------------------------------------------------------------------------------
+
+		GDINL Iterator Begin()
+		{
+			return this->VectorType::Begin();
+		}
+		GDINL ConstIterator Begin() const
+		{
+			return this->VectorType::Begin();
+		}
+
+		GDINL Iterator End()
+		{
+			return this->VectorType::End();
+		}
+		GDINL ConstIterator End() const
+		{
+			return this->VectorType::End();
+		}
+
+		GDINL ReverseIterator ReverseBegin()
+		{
+			return this->VectorType::ReverseBegin();
+		}
+		GDINL ReverseConstIterator ReverseBegin() const
+		{
+			return this->VectorType::ReverseBegin();
+		}
+
+		GDINL ReverseIterator ReverseEnd()
+		{
+			return this->VectorType::ReverseEnd();
+		}
+		GDINL ReverseConstIterator ReverseEnd() const
+		{
+			return this->VectorType::ReverseEnd();
+		}
+
+	public:
+
+		// ------------------------------------------------------------------------------------------
 		// Map manipulation.
 		// ------------------------------------------------------------------------------------------
+
+		/*!
+		 * Returns number of the pairs in the map.
+		 */
+		GDINL SizeTp GetLength() const
+		{
+			return this->VectorType::GetLength();
+		}
+
+		/*!
+		 * Returns true if this map is empty.
+		 */
+		GDINL bool IsEmpty() const
+		{
+			return this->VectorType::IsEmpty();
+		}
+
+		/*!
+		 * Removes all pairs from the map.
+		 */
+		GDAPI void Clear()
+		{
+			this->VectorType::Clear();
+		}
 
 		/*!
 		 * Queries for the iterator of the element with specified key.
@@ -99,7 +168,7 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		/*!
-		 * Queries for the Iterator of the element with specified key.
+		 * Queries for the iterator of the element with specified key.
 		 *
 		 * @param key The element we are looking for.
 		 * @returns Iterator on the element if it was found and End Iterator otherwise.
@@ -112,7 +181,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL TValue* Find(TKey const& key)
 		{
-			return const_cast<TValue*>(const_cast<VectorMap const*>(this)->Find(key));
+			return const_cast<TValue*>(const_cast<UnorderedVectorMap const*>(this)->Find(key));
 		}
 		//! @}
 
@@ -137,13 +206,15 @@ GD_NAMESPACE_BEGIN
 		GDINL TValue& Insert(TKey&& key, TValue&& value = TValue())
 		{
 			GD_DEBUG_VERIFY(!this->Contains(key), "Element with specified key already exists.");
-			VectorType::InsertLast(Utils::Move(PairType(Utils::Forward<TKey>(key), Utils::Forward<TValue>(value))));
+
+			this->VectorType::InsertLast(Utils::Move(PairType(Utils::Forward<TKey>(key), Utils::Forward<TValue>(value))));
 			return this->GetLast().Value;
 		}
-		GDINL TValue& Insert(TKey const& key, TValue const& value)
+		GDINL TValue& Insert(TKey const& key, TValue const& value = TValue())
 		{
 			GD_DEBUG_VERIFY(!this->Contains(key), "Element with specified key already exists.");
-			VectorType::InsertLast(PairType(key, value));
+
+			this->VectorType::InsertLast(PairType(key, value));
 			return this->GetLast().Value;
 		}
 		//! @}
@@ -165,7 +236,7 @@ GD_NAMESPACE_BEGIN
 		// Overloaded operators.
 		// ------------------------------------------------------------------------------------------
 
-		GDINL VectorMap& operator= (VectorMap&& otherMap) = default;
+		GDINL UnorderedVectorMap& operator= (UnorderedVectorMap&& otherMap) = default;
 
 		/*!
 		 * Returns reference on value of the element with specified key.
@@ -173,21 +244,29 @@ GD_NAMESPACE_BEGIN
 		 * @param key The key of the element we are looking for.
 		 * @returns Reference on some element, or a newly created instance of the value type, that was automatically added to the map.
 		 */
-		//! @{
-		GDINL TValue const& operator[] (TKey const& key) const
+		GDINL TValue& operator[] (TKey const& key)
 		{
 			auto const queriedIterator = this->FindIterator(key);
 			if (queriedIterator == this->End())
 			{
-				return const_cast<VectorMap*>(this)->Insert(Utils::Move(TKey(key)), Utils::Move(TValue()));
+				return this->Insert(key);
 			}
 			return queriedIterator->Value;
 		}
-		GDINL TValue& operator[] (TKey const& key)
+
+		/*!
+		 * Returns reference on value of the element with specified key.
+		 *
+		 * @param key The key of the element we are looking for.
+		 * @returns Reference on some element.
+		 */
+		GDINL TValue const& operator[] (TKey const& key) const
 		{
-			return const_cast<TValue&>(const_cast<VectorMap const&>(*this)[key]);
+			auto const queriedIterator = this->FindIterator(key);
+			GD_DEBUG_VERIFY(queriedIterator == this->End(), "Element with specified key does not exist.");
+			return queriedIterator->Value;
 		}
-		//! @}
+
 	};	// class VectorMap
 
 GD_NAMESPACE_END

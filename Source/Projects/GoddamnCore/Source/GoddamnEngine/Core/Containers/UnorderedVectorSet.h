@@ -7,8 +7,8 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/Containers/Set.h
- * Dynamically sized associative set class.
+ * @file GoddamnEngine/Core/Containers/UnorderedVectorSet.h
+ * Dynamically sized vector-based set class.
  */
 #pragma once
 
@@ -22,22 +22,26 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	// **------------------------------------------------------------------------------------------**
-	//! Dynamically sized associative set that is implemented with dynamic arrays.
-	//! Drop-in replacement for the set class.
+	//! Dynamically sized set that is implemented with dynamic arrays.
+	//! Drop-in replacement for the set class, use in case of small sets.
 	//!
 	//! @tparam TElement Container element type.
+	//! @tparam TAllocator Allocator used by this set.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TElement, typename TAllocator = DefaultContainerAllocator>
-	class UnorderedVectorSet : public Vector<TElement, TAllocator>
-		, public IIteratable<UnorderedVectorSet<TElement, TAllocator>>, public TNonCopyable
+	class UnorderedVectorSet : private Vector<TElement, TAllocator>, public TNonCopyable
 	{
-	public:
-		using ElementType          = TElement;
+	private:
 		using VectorType           = Vector<TElement, TAllocator>;
+	public:
+		using AllocatorType        = TAllocator;
+		using ElementType          = TElement;
 		using Iterator             = typename VectorType::Iterator;
 		using ConstIterator        = typename VectorType::ConstIterator;
 		using ReverseIterator      = typename VectorType::ReverseIterator;
 		using ReverseConstIterator = typename VectorType::ReverseConstIterator;
+
+		GD_CONTAINER_DEFINE_ITERATION_SUPPORT(UnorderedVectorSet)
 
 	public:
 
@@ -76,11 +80,77 @@ GD_NAMESPACE_BEGIN
 	public:
 
 		// ------------------------------------------------------------------------------------------
+		// Iteration API.
+		// ------------------------------------------------------------------------------------------
+
+		GDINL Iterator Begin()
+		{
+			return this->VectorType::Begin();
+		}
+		GDINL ConstIterator Begin() const
+		{
+			return this->VectorType::Begin();
+		}
+
+		GDINL Iterator End()
+		{
+			return this->VectorType::End();
+		}
+		GDINL ConstIterator End() const
+		{
+			return this->VectorType::End();
+		}
+
+		GDINL ReverseIterator ReverseBegin()
+		{
+			return this->VectorType::ReverseBegin();
+		}
+		GDINL ReverseConstIterator ReverseBegin() const
+		{
+			return this->VectorType::ReverseBegin();
+		}
+
+		GDINL ReverseIterator ReverseEnd()
+		{
+			return this->VectorType::ReverseEnd();
+		}
+		GDINL ReverseConstIterator ReverseEnd() const
+		{
+			return this->VectorType::ReverseEnd();
+		}
+
+	public:
+
+		// ------------------------------------------------------------------------------------------
 		// Set manipulation.
 		// ------------------------------------------------------------------------------------------
 
 		/*!
-		 * Queries for the Iterator of the element with specified Key.
+		 * Returns number of the elements in the set.
+		 */
+		GDINL SizeTp GetLength() const
+		{
+			return this->VectorType::GetLength();
+		}
+
+		/*!
+		 * Returns true if this set is empty.
+		 */
+		GDINL bool IsEmpty() const
+		{
+			return this->VectorType::IsEmpty();
+		}
+
+		/*!
+		 * Removes all elements from the set.
+		 */
+		GDAPI void Clear()
+		{
+			this->VectorType::Clear();
+		}
+
+		/*!
+		 * Queries for the iterator of the element with specified Key.
 		 *
 		 * @param element The element we are looking for.
 		 * @returns Iterator on the element if it was found and End Iterator otherwise.
@@ -97,7 +167,7 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		/*!
-		 * Queries for the Iterator of the element with specified key.
+		 * Queries for the iterator of the element with specified key.
 		 *
 		 * @param element The element we are looking for.
 		 * @returns Pointer to the element if it was found and null pointer otherwise.
@@ -131,12 +201,14 @@ GD_NAMESPACE_BEGIN
 		GDINL TElement& Insert(TElement&& element)
 		{
 			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
+
 			this->VectorType::InsertLast(Utils::Forward<TElement>(element));
 			return this->GetLast();
 		}
 		GDINL TElement& Insert(TElement const& element)
 		{
 			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
+
 			this->VectorType::InsertLast(element);
 			return this->GetLast();
 		}
@@ -159,9 +231,6 @@ GD_NAMESPACE_BEGIN
 
 		GDINL UnorderedVectorSet& operator= (UnorderedVectorSet&& otherSet) = default;
 
-	};	// class VectorSet 
-
-	template<typename TElement>
-	using GCVectorSet = UnorderedVectorSet<TElement, GCContainerAllocator<TElement>>;
+	};	// class UnorderedVectorSet 
 
 GD_NAMESPACE_END

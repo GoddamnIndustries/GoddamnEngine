@@ -130,7 +130,7 @@ GD_NAMESPACE_BEGIN
 			// assignment to y is intentional 
 			while (y->m_Left != m_NullNode)
 			{
-				// returns the minimum of the m_Right subtree of x 
+				// returns the minimum of the right subtree of x 
 				y = y->m_Left;
 			}
 			return y;
@@ -140,7 +140,7 @@ GD_NAMESPACE_BEGIN
 			y = x->m_Parent;
 			while (x == y->m_Right)
 			{
-				// sentinel used instead of checking for m_NullNode 
+				// sentinel used instead of checking for null node 
 				x = y;
 				y = y->m_Parent;
 			}
@@ -165,10 +165,10 @@ GD_NAMESPACE_BEGIN
 		}
 		if (m_NullNode != (y = x->m_Left))
 		{		
-			// assignment to Y is intentional
+			// assignment to y is intentional
 			while (y->m_Right != m_NullNode)
 			{	
-				// returns the maximum of the m_Left subtree of x
+				// returns the maximum of the left subtree of x
 				y = y->m_Right;
 			}
 			return y;
@@ -233,13 +233,13 @@ GD_NAMESPACE_BEGIN
 		RedBlackTreeBaseNode* y;
 
 		//  I originally wrote this function to use the sentinel for
-		//  m_NullNode to avoid checking for m_NullNode.  However this introduces a
+		//  null node to avoid checking for null ptr.  However this introduces a
 		//  very subtle bug because sometimes this function modifies
-		//  the m_Parent pointer of m_NullNode.  This can be a problem if a
-		//  function which calls _InternalRotateLeft also uses the m_NullNode sentinel
-		//  and expects the m_NullNode sentinel's m_Parent pointer to be unchanged
+		//  the parent pointer of null node.  This can be a problem if a
+		//  function which calls _InternalRotateLeft also uses the null sentinel
+		//  and expects the null sentinel's parent pointer to be unchanged
 		//  after calling this function.  For example, when RBDeleteFixUP
-		//  calls _InternalRotateLeft it expects the m_Parent pointer of m_NullNode to be
+		//  calls _InternalRotateLeft it expects the parent pointer of null node to be
 		//  unchanged.
 
 		y = x->m_Right;
@@ -255,7 +255,7 @@ GD_NAMESPACE_BEGIN
 		y->m_Parent = x->m_Parent;
 
 		// instead of checking if x->m_Parent is the m_RootNode as in the book, we
-		// count on the m_RootNode sentinel to IMPLicitly take care of this case
+		// count on the m_RootNode sentinel to implicitly take care of this case
 		if (x == x->m_Parent->m_Left)
 		{
 			x->m_Parent->m_Left = y;
@@ -395,8 +395,8 @@ GD_NAMESPACE_BEGIN
 		//!
 		//! @todo:
 		//! While removing the first element of map this assert fails.
-		//!
-		m_NullNode->m_IsRed = false;
+		//! @todo But now everything works, check the whole source.
+		//m_NullNode->m_IsRed = false;
 		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not black in InternalRepair");
 	}
 

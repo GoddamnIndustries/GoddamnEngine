@@ -279,6 +279,7 @@ GD_NAMESPACE_BEGIN
 		GDINL RedBlackTreeBase& operator=(RedBlackTreeBase&& OtherTree) noexcept
 		{
 			Clear();
+			Swap(m_Length, OtherTree.m_Length);
 			Swap(m_RootNode, OtherTree.m_RootNode);
 			Swap(m_NullNode, OtherTree.m_NullNode);
 			return *this;
@@ -480,7 +481,7 @@ GD_NAMESPACE_BEGIN
 	//! @tparam TElement Type of objected been stored in the nodes of the tree.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TElement, typename TAllocator = DefaultContainerAllocator>
-	class RedBlackTree : public RedBlackTreeBase, public IIteratable<RedBlackTree<TElement, TAllocator>>
+	class RedBlackTree : public RedBlackTreeBase, public TAllocator
 	{
 		template<typename>
 		friend struct RedBlackTreeIterator;
@@ -561,6 +562,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 
+#if 0
 		/*!
 		 * Returns reference to the first element of the map.
 		 */
@@ -590,6 +592,7 @@ GD_NAMESPACE_BEGIN
 			return const_cast<TElement&>(const_cast<RedBlackTree const*>(this)->GetLast());
 		}
 		//! @}
+#endif	// if 0
 
 	protected:
 

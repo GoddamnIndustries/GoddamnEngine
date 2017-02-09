@@ -55,27 +55,6 @@ GD_NAMESPACE_BEGIN
 		enum { IsRandomAccess = 1 };
 	};	// struct IteratorTraits
 
-	template<typename TThisIteratable>
-	struct IIteratable
-	{
-		/*GDINL friend auto begin(TThisIteratable& iteratable) 
-		{ 
-			return iteratable.Begin();
-		} 
-		GDINL friend auto begin(TThisIteratable const& iteratable)
-		{ 
-			return iteratable.Begin();
-		} 
-		GDINL friend auto end(TThisIteratable& iteratable)
-		{ 
-			return iteratable.End();
-		} 
-		GDINL friend auto end(TThisIteratable const& iteratable)
-		{ 
-			return iteratable.End();
-		} */
-	};	// struct IIteratable
-
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	// ******                    IndexedContainerIterator<U, T> class.                         ******
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
