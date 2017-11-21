@@ -92,9 +92,9 @@
 			struct TTest; \
 			\
 			template<typename TType> \
-			GDINT static Internal::TTrue& Test(TTest<decltype(&TType::TFunctionName), &TType::TFunctionName>* const) = delete; \
+			GDINT static Internal::TTrue& Test(TTest<decltype(&TType::TFunctionName), &TType::TFunctionName>* const) { GD_NOT_SUPPORTED(); } \
 			template<typename TType> \
-			GDINT static Internal::TFalse& Test(...) = delete; \
+			GDINT static Internal::TFalse& Test(...) { GD_NOT_SUPPORTED(); } \
 			\
 		public: \
 			enum { Value = sizeof(Test<TClass const>(nullptr)) == sizeof(Internal::TTrue) };\
@@ -580,6 +580,15 @@ GD_NAMESPACE_BEGIN
 			enum { Value = sizeof(Test(static_cast<TDerivedTypeUnPtr const*>(nullptr))) == sizeof(Internal::TTrue) };
 		};	// struct IsBase
 		 
+		/*!
+		 * Checks is two types are related.
+		 *
+		 * @tparam TLHS First comparand type.
+		 * @tparam TRHS Second comparand type.
+		 */
+		template<typename TLHS, typename TRHS>
+		struct IsRelated final : Internal::TypeTraitsBase<IsBase<TLHS, TRHS>::Value || IsBase<TRHS, TLHS>::Value> {};
+
 	}	// namespace TypeTraits
 
 GD_NAMESPACE_END

@@ -25,7 +25,7 @@ GD_NAMESPACE_BEGIN
 	{
 	public:
 		GDINL explicit JsonReader(SharedPtr<InputStream> const readingStream)
-			: DOMReader(DOMPtr(gd_new Json()), readingStream)
+			: DOMReader(DomPtr(gd_new Json()), readingStream)
 		{
 		}
 	};	// class JsonReader

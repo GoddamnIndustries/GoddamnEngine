@@ -328,7 +328,6 @@
 #if (defined(_MSC_VER)) && GD_PLATFORM_API_MICROSOFT
 #	define GD_COMPILER_MSVC												GD_TRUE
 #	define GD_COMPILER_MSVC_COMPATIBLE									GD_TRUE
-// ReSharper has built-in value for this macro, and id does not parses the real one.
 #	if (_MSC_VER < 1800)												// 2013 CTP Compiler and above.
 #		error "MSVC compiler version is lower than 1800. Please, use MSVC compiler version 2013 CTP and newer."
 #	endif	// if (_MSC_VER >= 1800)
@@ -632,6 +631,9 @@
 #if (!defined(__builtin_expect))
 #	define __builtin_expect(expression, expected) (!!(expression) == expected)
 #endif	// if (!defined(__builtin_expect))
+#if !GD_COMPILER_MSVC_COMPATIBLE
+#	define __analysis_assume(...)
+#endif	// if !GD_COMPILER_MSVC_COMPATIBLE
 #if (!defined(__COUNTER__))	// __COUNTER__ is required in several places.
 #	error '__COUNTER__' macro is not defined. Check your compiler to support of it.
 #endif	// if (!defined(__COUNTER__))
@@ -782,8 +784,10 @@
 //#	pragma warning(disable : 4456)
 //#	pragma warning(disable : 4458)
 #	pragma warning(disable : 4505)	// unreferenced local function has been RemoveFromSelfd. Actually, this should not be disabled.
+#	pragma warning(disable : 4592)	// symbol will be dynamically initialized (implementation limitation).
 #	pragma warning(disable : 4595)	// warning C4595: 'operator delete': non-member operator new or delete functions may not be declared inline.
 #	pragma warning(disable : 4714)	// function '...' marked as __forceinline not inlined. Actually, this should not be disabled.
+#	pragma warning(disable : 4840)	
 #elif GD_COMPILER_GCC_COMPATIBLE
 #endif	// *** Warnings. ***
 

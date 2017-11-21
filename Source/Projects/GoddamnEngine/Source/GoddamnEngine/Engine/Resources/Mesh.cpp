@@ -15,11 +15,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_IMPLEMENT_OBJECT(GDAPI, Mesh);
-
-	GDAPI Mesh::~Mesh()
-	{
-	}
+	GD_IMPLEMENT_OBJECT_INTRINSIC(Mesh);
 
 	// ------------------------------------------------------------------------------------------
 	// Channels implementations.

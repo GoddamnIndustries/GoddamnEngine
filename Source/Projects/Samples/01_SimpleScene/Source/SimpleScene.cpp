@@ -2,7 +2,6 @@
 
 #include <GoddamnEngine/Core/Containers/Map.h>
 #include <GoddamnEngine/Core/Object/Object.h>
-#include <GoddamnEngine/Core/Object/Class.h>
 #include <GoddamnEngine/Core/Object/Enum.h>
 #include <GoddamnEngine/Core/Object/ObjectVisitor.h>
 #include <GoddamnEngine/Core/Object/Serialization/Serialization.h>
@@ -57,17 +56,11 @@ MyObject::~MyObject()
 
 int main()
 {
-	{
-		TempTinyLinkedList<int> list;
-		list.InsertFirst(1);
-		list.InsertFirst(2);
-		list.InsertFirst(3);
-	}
 
-	MyEnum e;
+	/*MyEnum e;
 	e = MyEnum::ThirdEnumValue;
 	auto const myEnumInfo = EnumClass<MyEnum>::ToString(e);
-
+*/
 	auto i = SharedPtr<InputStream>(gd_new FileInputStream(L"./test.json"));
 	auto l = SharedPtr<OutputStream>(gd_new FileOutputStream(L"out.json"));
 
@@ -134,7 +127,7 @@ int main()
 	layout.LayoutSlotsCount = 2;
 
 	IGraphicsVertexArray* vertexArray = nullptr;
-	IGraphicsVertexArrayCreationInfo vertexArrayCI = {};
+	IGraphicsVertexArrayCreationInfo vertexArrayCI;
 	vertexArrayCI.VertexArrayLayout = &layout;
 	vertexArrayCI.ArrayIndexBuffer = nullptr;
 	vertexArrayCI.ArrayVertexBuffers = vertexBuffers;
@@ -151,7 +144,7 @@ out vec4 out_VertexColor;
 void main()
 {
 	out_VertexColor = in_VertexColor;
-	gl_Position = in_VertexPosition;
+	gl_Position = in_VertexPosition - vec4(0.5, 0.0, 0.0, 0.0);
 }
 	)";
 	Graphics->GfxImm_VertexShaderCreate(&vertexShader, &vertexShaderCI, &layout);
@@ -166,6 +159,7 @@ out vec4 out_FragmentColor;
 void main()
 {
 	out_FragmentColor = in_VertexColor;
+	out_FragmentColor.a = 0.5f;
 }
 	)";
 	Graphics->GfxImm_PixelShaderCreate(&pixelShader, &pixelShaderCI);
@@ -176,7 +170,7 @@ void main()
 	pipelineStateCI.PipelinePixelShader = pixelShader;
 	Graphics->GfxImm_PipelineCreate(&pipelineState, &pipelineStateCI);
 
-	auto const scene = Object::FindOrCreateObject<Scene>(EmptyGUID);
+	auto const scene = Object::CreateOrFindClassRelatedObjectByGUID<Scene>(EmptyGUID);
 	
 	{	/* And runnting the whole shit. */
 		scene->OnInit();
@@ -185,7 +179,7 @@ void main()
 		{
 			Graphics->OnRuntimePreUpdate();
 			Graphics->GfxCmd_RenderTargetClearDepth(nullptr);
-			Graphics->GfxCmd_RenderTargetClearColor(nullptr, { 1, 0, 1, 1 });
+			Graphics->GfxCmd_RenderTargetClearColor(nullptr, { 1, 0, 1, 0.5f });
 			scene->OnPreUpdate();
 
 			Graphics->OnRuntimeUpdate();

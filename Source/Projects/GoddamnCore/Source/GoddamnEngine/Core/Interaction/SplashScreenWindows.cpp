@@ -11,7 +11,7 @@
  * Windows splash screens.
  */
 #include <GoddamnEngine/Core/Interaction/SplashScreen.h>
-#if GD_PLATFORM_WINDOWS 
+#if GD_PLATFORM_WINDOWS && 0
 
 #include <atlbase.h>
 #include <StrSafe.h>
@@ -239,7 +239,7 @@ GD_NAMESPACE_BEGIN
 		BITMAP splashBitmapInfo = {};
 		if (m_SplashBitmap != nullptr)
 		{
-			GetObject(m_SplashBitmap, sizeof splashBitmapInfo, &splashBitmapInfo);
+			GetObjectA(m_SplashBitmap, sizeof splashBitmapInfo, &splashBitmapInfo);
 		}
 		else
 		{
@@ -252,13 +252,13 @@ GD_NAMESPACE_BEGIN
 			GD_VERIFY(splashDefaultFont != nullptr, "'GetStockObject(DEFAULT_GUI_FONT)' function has failed.");
 
 			LOGFONT splashSomeFont = { 0 };
-			GetObject(splashDefaultFont, sizeof splashSomeFont, &splashSomeFont);
-			if (SUCCEEDED(StringCchCopy(splashSomeFont.lfFaceName, LF_FACESIZE, "Consolas")))
+			GetObjectA(splashDefaultFont, sizeof splashSomeFont, &splashSomeFont);
+			if (SUCCEEDED(StringCchCopyA(splashSomeFont.lfFaceName, LF_FACESIZE, "Consolas")))
 			{
 				splashSomeFont.lfQuality = ANTIALIASED_QUALITY;
 				{
 					splashSomeFont.lfHeight = 12;
-					m_SplashSmallTextFont = CreateFontIndirect(&splashSomeFont);
+					m_SplashSmallTextFont = CreateFontIndirectA(&splashSomeFont);
 					if (m_SplashSmallTextFont == nullptr)
 					{
 						m_SplashSmallTextFont = splashDefaultFont;
@@ -266,7 +266,7 @@ GD_NAMESPACE_BEGIN
 				}
 				{
 					splashSomeFont.lfHeight = 16;
-					m_SplashNormalTextFont = CreateFontIndirect(&splashSomeFont);
+					m_SplashNormalTextFont = CreateFontIndirectA(&splashSomeFont);
 					if (m_SplashNormalTextFont == nullptr)
 					{
 						m_SplashNormalTextFont = splashDefaultFont;
@@ -275,7 +275,7 @@ GD_NAMESPACE_BEGIN
 				{
 					splashSomeFont.lfHeight = 18;
 					splashSomeFont.lfWeight = FW_BLACK;
-					m_SplashLargeTextFont = CreateFontIndirect(&splashSomeFont);
+					m_SplashLargeTextFont = CreateFontIndirectA(&splashSomeFont);
 					if (m_SplashLargeTextFont == nullptr)
 					{
 						m_SplashLargeTextFont = splashDefaultFont;
@@ -315,7 +315,7 @@ GD_NAMESPACE_BEGIN
 			auto const splashLeft				= (GetSystemMetrics(SM_CXSCREEN) - splashWindowWidth) / 2;
 			auto const splashTop				= (GetSystemMetrics(SM_CYSCREEN) - splashWindowHeight) / 2;
 
-			m_SplashGuard = CreateWindowEx(0
+			m_SplashGuard = CreateWindowExA(0
 				, "STATIC", "GoddamnEnging Splash Screen Guard"
 				, 0
 				, 0, 0, 0, 0
@@ -324,16 +324,16 @@ GD_NAMESPACE_BEGIN
 				);
 			GD_VERIFY(m_SplashGuard != nullptr, "'CreateWindowEx' function has failed.");
 
-			m_SplashWindow = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_TOPMOST
+			m_SplashWindow = CreateWindowExA(WS_EX_TOOLWINDOW | WS_EX_TOPMOST
 				, g_SplashScreenClassName, "GoddamnEnging Splash Screen"
 				, WS_BORDER | WS_POPUP
 				, splashLeft, splashTop, splashWindowWidth, splashWindowHeight
-				, nullptr, nullptr, GetModuleHandle(nullptr)
+				, nullptr, nullptr, GetModuleHandleA(nullptr)
 				, this
 				);
 			GD_VERIFY(m_SplashWindow != nullptr, "'CreateWindowEx' function has failed.");
 
-			SetWindowText(m_SplashWindow, m_SplashTexts[static_cast<SizeTp>(SplashScreenText::ApplicationName)].CStr());
+			SetWindowTextA(m_SplashWindow, m_SplashTexts[static_cast<SizeTp>(SplashScreenText::ApplicationName)].CStr());
 			::ShowWindow(m_SplashWindow, SW_SHOW);
 		}
 	}
@@ -346,7 +346,7 @@ GD_NAMESPACE_BEGIN
 	GDAPI void SplashScreenWindows::OnUpdate()
 	{
 		MSG splashWindowMessage = { };
-		while (PeekMessage(&splashWindowMessage, m_SplashWindow, 0, 0, PM_REMOVE))
+		while (PeekMessageA(&splashWindowMessage, m_SplashWindow, 0, 0, PM_REMOVE))
 		{
 			if (splashWindowMessage.message == WM_PAINT)
 			{
@@ -355,7 +355,7 @@ GD_NAMESPACE_BEGIN
 				
 				// Rendering image..
 				// ReSharper disable CppZeroConstantCanBeReplacedWithNullptr
-				DrawState(splashDC, DSS_NORMAL, nullptr, reinterpret_cast<LPARAM>(m_SplashBitmap), 0, 0, 0, 0, 0, DST_BITMAP);
+				DrawStateA(splashDC, DSS_NORMAL, nullptr, reinterpret_cast<LPARAM>(m_SplashBitmap), 0, 0, 0, 0, 0, DST_BITMAP);
 				// ReSharper restore CppZeroConstantCanBeReplacedWithNullptr
 
 				{	// Rendering texts..
@@ -395,7 +395,7 @@ GD_NAMESPACE_BEGIN
 				EndPaint(m_SplashWindow, &splashPaintStruct);
 			}
 			TranslateMessage(&splashWindowMessage);
-			DispatchMessage(&splashWindowMessage);
+			DispatchMessageA(&splashWindowMessage);
 		}
 	}
 

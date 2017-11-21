@@ -114,32 +114,32 @@ GD_NAMESPACE_BEGIN
 			FileOutputStream destFileStream(destFilename.CStr());
 			if (sourceFileStream.IsValid() && destFileStream.IsValid())
 			{
-				auto operationResult = true;
+				auto operationSucceeded = true;
 				auto const sourceFileSize = sourceFileStream.GetLength();
 
 				// Copying file from source to the destination using 4KB blocks.
 				SizeTp const bufferBlockSize = 4 * 1024 * 1024;
 				auto const buffer = GD_MALLOC_ARRAY_T(Byte, Min(bufferBlockSize, sourceFileSize));
-				for (SizeTp cnt = 0; cnt < sourceFileSize / bufferBlockSize && operationResult; ++cnt)
+				for (SizeTp cnt = 0; cnt < sourceFileSize / bufferBlockSize && operationSucceeded; ++cnt)
 				{
-					operationResult = sourceFileStream.Read(buffer, bufferBlockSize, 1) == 1;
-					if (operationResult)
-						operationResult = destFileStream.Write(buffer, bufferBlockSize, 1) == 1;
+					operationSucceeded = sourceFileStream.Read(buffer, bufferBlockSize, 1) == 1;
+					if (operationSucceeded)
+						operationSucceeded = destFileStream.Write(buffer, bufferBlockSize, 1) == 1;
 				}
-				if (operationResult)
+				if (operationSucceeded)
 				{
 					// Copying what is left in the source file.
 					auto const leftoverSize = sourceFileSize % bufferBlockSize;
 					if (leftoverSize != 0)
 					{
-						operationResult = sourceFileStream.Read(buffer, leftoverSize, 1) == 1;
-						if (operationResult)
-							operationResult = destFileStream.Write(buffer, leftoverSize, 1) == 1;
+						operationSucceeded = sourceFileStream.Read(buffer, leftoverSize, 1) == 1;
+						if (operationSucceeded)
+							operationSucceeded = destFileStream.Write(buffer, leftoverSize, 1) == 1;
 					}
 				}
 				GD_FREE(buffer);
 
-				if (!operationResult)
+				if (!operationSucceeded)
 				{
 					// If failed, removing destination file as this function was never called. 
 					destFileStream.Close();

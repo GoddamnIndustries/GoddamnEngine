@@ -32,7 +32,7 @@ GD_NAMESPACE_BEGIN
 		glBindVertexArray(m_GLVertexArrayID);
 		for (auto gfxSlotIndex = 0; gfxSlotIndex < gfxVertexArrayCreationInfo->VertexArrayLayout->LayoutSlotsCount; ++gfxSlotIndex)
 		{
-			// Binding all the m_Index buffers..
+			// Binding all the index buffers..
 			// All the binded data here is stored into our vertex array and can be safely binded when we render stuff.
 			auto const  gfxVertexBuffer = static_cast<IGraphicsOpenGLBuffer const*>(gfxVertexArrayCreationInfo->ArrayVertexBuffers[gfxSlotIndex]);
 			auto const& gfxVertexArrayLayoutSlot = gfxVertexArrayCreationInfo->VertexArrayLayout->LayoutSlots[gfxSlotIndex];
@@ -50,7 +50,6 @@ GD_NAMESPACE_BEGIN
 				// If this is a per-vertex slot, any step rate is ignored.
 				glVertexAttribDivisor(gfxSlotIndex, gfxVertexArrayLayoutSlot.SlotDataStepRate);
 			}
-
 		}
 		if (gfxVertexArrayCreationInfo->ArrayIndexBuffer != nullptr)
 		{

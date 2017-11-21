@@ -76,10 +76,20 @@
 #	endif	// if GD_PLATFORM_INCLUDE
 #else	// if !GD_DOCUMENTATION
 
-// ------------------------------------------------------------------------------------------
-//! Generates a path to header with implementation of some platform-dependent code.
-//! @param Directory Path to directory with subdirectories that contain platform-dependent code.
-//! @param Header Name of the header file.
+/*!
+ * Generates a path to header with implementation of some platform API-dependent code.
+ * 
+ * @param Directory Path to directory with subdirectories that contain platform-dependent code.
+ * @param Header Name of the header file.
+ */
+#define GD_PLATFORM_API_INCLUDE(Directory, Header)	<Directory/CurrentPlatform/CurrentPlatform ## Header>
+
+/*!
+ * Generates a path to header with implementation of some platform-dependent code.
+ * 
+ * @param Directory Path to directory with subdirectories that contain platform-dependent code.
+ * @param Header Name of the header file.
+ */
 #define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/CurrentPlatform/CurrentPlatform ## Header>
 
 #endif	// if !GD_DOCUMENTATION

@@ -199,60 +199,53 @@ GD_NAMESPACE_BEGIN
 		{
 			// Number and string constants are valid JSON values.
 			case JsonTokenType::Number: 
-			{
 				return{ gd_new JsonValueNumber(nextToken.TokenNumber) };
-			}
 			case JsonTokenType::String: 
-			{
 				return{ gd_new JsonValueString(nextToken.TokenData) };
-			}
 
 			// Boolean and null literals are also valid.
 			case JsonTokenType::Literal: 
-			{
-				return{ *nextToken.TokenData.CStr() == 'n'
+				return{ nextToken.TokenData[0] == 'n'
 					? static_cast<JsonValue*>(gd_new JsonValueNull())
 					: static_cast<JsonValue*>(gd_new JsonValueBool(nextToken.TokenBool)) };
-			}
 
 			// Punctuation token may mean only JSON object or array.
 			case JsonTokenType::Punctuation: 
-			{
-				if (nextToken.TokenPunctiation == '{')
 				{
-					// Trying to read next object from stream and treat is a JSON value.
-					auto const jsonObject = JsonParseObject(stream);
-					return{ jsonObject.ErrorDesc.IsEmpty() ? gd_new JsonValueObject (jsonObject.Result) : nullptr, jsonObject.ErrorDesc };
-				}
-				if (nextToken.TokenPunctiation == '[')
-				{
-					// Trying to read the array from stream.
-					UniquePtr<JsonValueArray> jsonArray(gd_new JsonValueArray());
-					for (;;)
+					if (nextToken.TokenPunctiation == '{')
 					{
-						nextToken = JsonGetNextToken(stream);
-						if (nextToken.TokenType == JsonTokenType::Punctuation && nextToken.TokenPunctiation == ']')
+						// Trying to read next object from stream and treat is a JSON value.
+						auto const jsonObject = JsonParseObject(stream);
+						return{ jsonObject.ErrorDesc.IsEmpty() ? gd_new JsonValueObject (jsonObject.Result) : nullptr, jsonObject.ErrorDesc };
+					}
+					if (nextToken.TokenPunctiation == '[')
+					{
+						// Trying to read the array from stream.
+						UniquePtr<JsonValueArray> jsonArray(gd_new JsonValueArray());
+						for (;;)
 						{
-							return{ jsonArray.Release() };
-						}
+							nextToken = JsonGetNextToken(stream);
+							if (nextToken.TokenType == JsonTokenType::Punctuation && nextToken.TokenPunctiation == ']')
+							{
+								return{ jsonArray.Release() };
+							}
 
-						// Reading next element of the array..
-						auto const jsonValue = JsonParseValue(stream, nextToken);
-						if (!jsonValue.ErrorDesc.IsEmpty()) return jsonValue;
-						jsonArray->ValueArray.InsertLast(jsonValue.Result);
+							// Reading next element of the array..
+							auto const jsonValue = JsonParseValue(stream, nextToken);
+							if (!jsonValue.ErrorDesc.IsEmpty()) return jsonValue;
+							jsonArray->ValueArray.InsertLast(jsonValue.Result);
 
-						// And expecting "," as value separator or "]" as array closing.
-						nextToken = JsonGetNextToken(stream);
-						if (nextToken.TokenType == JsonTokenType::Punctuation)
-						{
-							if (nextToken.TokenPunctiation == ']') return{ SharedPtr<JsonValue>(jsonArray.Release()) };
-							if (nextToken.TokenPunctiation == ',') continue;
+							// And expecting "," as value separator or "]" as array closing.
+							nextToken = JsonGetNextToken(stream);
+							if (nextToken.TokenType == JsonTokenType::Punctuation)
+							{
+								if (nextToken.TokenPunctiation == ']') return{ SharedPtr<JsonValue>(jsonArray.Release()) };
+								if (nextToken.TokenPunctiation == ',') continue;
+							}
+							return{ nullptr, "Unexpected token in the array declaration, ',' or ']' expected." };
 						}
-						return{ nullptr, "Unexpected token in the array declaration, ',' or ']' expected." };
 					}
 				}
-				fallthrough;
-			}
 
 			// All other types of tokens could not be treated as values.
 			default: 
@@ -316,7 +309,7 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	GDINT DOM::Result Json::_TryParseDOM(SharedPtr<class InputStream> const domInputStream)
+	GDINT IDom::Result Json::_TryParseDOM(SharedPtr<class InputStream> const domInputStream)
 	{
 		GD_DEBUG_VERIFY(domInputStream != nullptr, "Null pointer input stream specified.");
 
@@ -329,7 +322,7 @@ GD_NAMESPACE_BEGIN
 
 		// Parsing the root object.
 		auto const jsonObject = JsonParseObject(domInputStream.Get());
-		return{ static_cast<DOMObjectPtr>(jsonObject.Result), jsonObject.ErrorDesc };
+		return{ static_cast<DomObjectPtr>(jsonObject.Result), jsonObject.ErrorDesc };
 	}
 
 	// ------------------------------------------------------------------------------------------

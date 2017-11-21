@@ -33,7 +33,7 @@ GD_NAMESPACE_BEGIN
 	GD_ENTITY_KERNEL class Transform final : public Component
 	{
 	private:
-		GD_DECLARE_OBJECT_INTRINSIC_ENGINE(Transform, Component);
+		GD_DECLARE_OBJECT_INTRINSIC(Transform, Component);
 
 		GD_PROPERTY(private, RefPtr<Transform>, m_Parent);
 		GD_PROPERTY(private, Vector<RefPtr<Transform>>, m_Child);

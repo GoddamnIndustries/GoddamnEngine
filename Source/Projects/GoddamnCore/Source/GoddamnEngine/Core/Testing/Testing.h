@@ -14,6 +14,7 @@
 #pragma once
 
 #define gdt_api __declspec(dllexport)
+#define gdt_analysis_assume(...) __analysis_assume(__VA_ARGS__)
 
 // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 // ******                                 Testing core.                                    ******
@@ -25,7 +26,7 @@
  */
 #define gd_testing_assert(expression, message, ...) \
 	do { \
-		__analysis_assume(expression); \
+		gdt_analysis_assume(expression); \
 		if (!(expression)) { \
 			throw ::goddamn_testing::assertion_exception(message, __FILE__, __FUNCTION__, __LINE__, #expression); \
 		} \

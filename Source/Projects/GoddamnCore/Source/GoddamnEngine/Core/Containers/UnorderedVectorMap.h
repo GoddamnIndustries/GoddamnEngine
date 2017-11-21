@@ -176,7 +176,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TValue const* Find(TKey const& key) const
 		{
-			auto const iter = FindIterator(key);
+			auto const iter = this->FindIterator(key);
 			return (iter != this->End()) ? &iter->Value : nullptr;
 		}
 		GDINL TValue* Find(TKey const& key)

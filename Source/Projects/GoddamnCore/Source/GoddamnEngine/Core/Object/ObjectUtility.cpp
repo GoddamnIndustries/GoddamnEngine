@@ -6,14 +6,14 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-/*! 
- * @file GoddamnEngine/Engine/Resources/Resource.cpp
- * File contains base class for resources subsystem.
- */
-#include <GoddamnEngine/Engine/Resources/Resource.h>
+/*!
+* @file GoddamnEngine/Core/Object/ObjectClass.cpp
+* File contains classes with RTTI & Reflection information for objects.
+*/
+#include <GoddamnEngine/Core/Object/ObjectUtility.h>
 
 GD_NAMESPACE_BEGIN
 
-	GD_IMPLEMENT_OBJECT_INTRINSIC(Resource);
+
 
 GD_NAMESPACE_END

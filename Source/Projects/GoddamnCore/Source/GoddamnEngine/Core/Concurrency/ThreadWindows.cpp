@@ -31,9 +31,9 @@ GD_NAMESPACE_BEGIN
 		// Setting name of the thread. 
 		// https://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx
 		// https://msdn.microsoft.com/en-us/library/xwtb73ad.aspx
-		[=]()
+		[&]()
 		{
-			DWORD const MS_VC_EXCEPTION = 0x406D1388;
+			DWORD static const MS_VC_EXCEPTION = 0x406D1388;
 
 			__pragma(pack(push, 8))
 			typedef struct tagTHREADNAME_INFO
@@ -80,14 +80,14 @@ GD_NAMESPACE_BEGIN
 		, m_ThreadID(0), m_ThreadHandle(nullptr), m_ThreadStartEvent(nullptr), m_ThreadName(threadName)
 	{
 		// Creating the event that indicates that thread is setup and ready for work.
-		m_ThreadStartEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		m_ThreadStartEvent = CreateEventA(nullptr, FALSE, FALSE, nullptr);
 		GD_VERIFY(m_ThreadStartEvent != INVALID_HANDLE_VALUE && m_ThreadStartEvent != nullptr, "'CreateEvent' function has failed.");
 
 		// Creating the thread itself and setting up the parameters.
 		m_ThreadHandle = reinterpret_cast<HANDLE>(
 			_beginthreadex(nullptr, 5 * 1024 * 1024
-			, reinterpret_cast<_beginthreadex_proc_type>(&ThreadWindowsProc)
-			, this, STACK_SIZE_PARAM_IS_A_RESERVATION, nullptr)
+				, reinterpret_cast<_beginthreadex_proc_type>(&ThreadWindowsProc)
+				, this, STACK_SIZE_PARAM_IS_A_RESERVATION, nullptr)
 			);
 		GD_VERIFY(m_ThreadHandle != nullptr, "'_beginthreadex' function has failed.");
 

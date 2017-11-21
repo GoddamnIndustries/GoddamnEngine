@@ -7,13 +7,18 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Engine/Resources/Resource.cpp
- * File contains base class for resources subsystem.
+ * @file GoddamnEngine/Core/Object/ObjectUtility.h
+ * File contains utilities for entitites subsystem.
  */
-#include <GoddamnEngine/Engine/Resources/Resource.h>
+#pragma once
+
+#include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Object/Base.h>
+
+#include <GoddamnEngine/Core/Misc/GUID.h>
+#include <GoddamnEngine/Core/Containers/Map.h>
+#include <GoddamnEngine/Core/Concurrency/CriticalSection.h>
 
 GD_NAMESPACE_BEGIN
-
-	GD_IMPLEMENT_OBJECT_INTRINSIC(Resource);
 
 GD_NAMESPACE_END

@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 	GD_ENTITY_KERNEL class Scene : public Behaviour
 	{
 	private:
-		GD_DECLARE_OBJECT_INTRINSIC_ENGINE(Scene, Behaviour);
+		GD_DECLARE_OBJECT_INTRINSIC(Scene, Behaviour);
 		
 		GD_PROPERTY(private, Vector<RefPtr<Entity>>, m_Entities);
 

@@ -49,6 +49,7 @@ if "%DirectoryTestPassed%" == "" (
 )
 
 rem Checking whether Visual Studio 2015 / 2013 (with November CTP) is installed..
+if not "%VS140ComnTools%"
 if not "%VS140ComnTools%" == "" ( 
 	rem Visual Studio 2015 has a full C++11 support.
 	set "VSCompilerYear=2015"
@@ -87,7 +88,7 @@ if %ErrorLevel% == 0 (
 
 rem Building the GoddamnBuildSystem..
 call "%VSCompilerTools%\..\..\VC\bin\x86_amd64\vcvarsx86_amd64.bat" 1>nul
-msbuild /nologo /verbosity:quiet ".\source\Projects\GoddamnBuildSystem\GoddamnBuildSystem.csproj" /property:Configuration=Release /property:Platform=AnyCPU
+call msbuild /nologo /verbosity:quiet ".\source\Projects\GoddamnBuildSystem\GoddamnBuildSystem.csproj" /property:Configuration=Release /property:Platform=AnyCPU
 if not %ErrorLevel% == 0 (
 	echo Failed to compile GoddamnBuildSystem.
 	goto ExitOnFailure

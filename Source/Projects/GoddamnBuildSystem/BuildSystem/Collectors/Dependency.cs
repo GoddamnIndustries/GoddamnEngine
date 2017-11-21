@@ -86,7 +86,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
                 }
                 else if (TargetInfo.IsPosixPlatform(platform))
                 {
-                    if ((libraryFileExtension == ".a") || (libraryFileExtension == ".so"))
+                    if (libraryFileExtension == ".a" || libraryFileExtension == ".so")
                     {
                         if (MatchesPlatformConfiguration(libraryFile, platform, configuration))
                         {
@@ -166,8 +166,8 @@ namespace GoddamnEngine.BuildSystem.Collectors
             }
             else
             {
-                if ((GetProject().CachedBuildTypes[platform, configuration] == ProjectBuildType.DynamicLibrary)
-                    || (GetProject().CachedBuildTypes[platform, configuration] == ProjectBuildType.StaticLibrary))
+                if (GetProject().CachedBuildTypes[platform, configuration] == ProjectBuildType.DynamicLibrary
+                    || GetProject().CachedBuildTypes[platform, configuration] == ProjectBuildType.StaticLibrary)
                 {
                     yield return GetProject().CachedOutputPaths[platform, configuration];
                 }

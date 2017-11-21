@@ -14,12 +14,8 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_IMPLEMENT_OBJECT(GDAPI, Transform);
+	GD_IMPLEMENT_OBJECT_INTRINSIC(Transform);
 	
-	GDAPI Transform::~Transform()
-	{
-	}
-
 	// ------------------------------------------------------------------------------------------
 	// Local transformations.
 	// ------------------------------------------------------------------------------------------
@@ -34,8 +30,8 @@ GD_NAMESPACE_BEGIN
 
 	gd_testing_unit_test(Transforms)
 	{
-		auto const parentTransform = Object::FindOrCreateObject<Transform>(EmptyGUID);
-		auto const childTransform = Object::FindOrCreateObject<Transform>(EmptyGUID);
+		auto const parentTransform = Object::CreateOrFindClassRelatedObjectByGUID<Transform>(EmptyGUID);
+		auto const childTransform = Object::CreateOrFindClassRelatedObjectByGUID<Transform>(EmptyGUID);
 
 		parentTransform->SetEulerAngles(Vector4(0.0f, 90.0f, 0.0f, 1.0f));
 		//parentTransform->SetLocalScale(Vector3Fast(12.0f, 2.0f, 3.0f));

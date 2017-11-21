@@ -59,7 +59,7 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	GD_RESOURCE_KERNEL class Mesh final : public Resource
 	{
-		GD_DECLARE_OBJECT_INTRINSIC_ENGINE(Mesh, Resource);
+		GD_DECLARE_OBJECT_INTRINSIC(Mesh, Resource);
 
 		enum class ChannelType
 		{

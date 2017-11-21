@@ -142,7 +142,7 @@ GD_NAMESPACE_BEGIN
 		gd_testing_verify(*map.Find(1) == 10.0f);
 		gd_testing_verify(*map.Find(2) == 20.0f);
 		gd_testing_verify(*map.Find(3) == 30.0f);
-		gd_testing_verify(map.Find(4) == nullptr);
+		gd_testing_verify( map.Find(4) == nullptr);
 	};
 
 	gd_testing_unit_test_foreach(MapIntContains, TMapType, MapIntFloat, UnorderedMapIntFloat, UnorderedVectorMapIntFloat)

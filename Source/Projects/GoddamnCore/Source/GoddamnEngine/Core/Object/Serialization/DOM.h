@@ -21,26 +21,28 @@
 
 GD_NAMESPACE_BEGIN
 
-	class DOM;
-	class DOMValue;
-	class DOMObject;
+	class IDom;
+	class IDomValue;
+	class IDomObject;
 
-	typedef SharedPtr<DOM> DOMPtr;
-	typedef SharedPtr<DOMValue> DOMValuePtr;
-	typedef SharedPtr<DOMObject> DOMObjectPtr;
-	typedef Vector<DOMValuePtr> DOMValueVector;
+	using DomTypeInfo = SerializationTypeInfo;
+
+	using DomPtr = SharedPtr<IDom>;
+	using DomValuePtr = SharedPtr<IDomValue>;
+	using DomObjectPtr = SharedPtr<IDomObject>;
+	using DomValueVector = Vector<DomValuePtr>;
 
 	// **------------------------------------------------------------------------------------------**
 	//! Interface for DOM abstract value - FOR INTERNAL USAGE ONLY!
 	// **------------------------------------------------------------------------------------------**
-	class DOMValue : public ReferenceTarget
+	class IDomValue : public ReferenceTarget
 	{
 	public:
 
 		/*!
 		 * Returns type of current property.
 		 */
-		GDINT virtual SerializationTypeInfo _GetTypeInfo() const GD_PURE_VIRTUAL;
+		GDINT virtual DomTypeInfo _GetTypeInfo() const GD_PURE_VIRTUAL;
 
 		// ------------------------------------------------------------------------------------------
 		// Getter operations - should be implemented.
@@ -70,16 +72,16 @@ GD_NAMESPACE_BEGIN
 
 		GDINT virtual bool _TryGetValue(String& value) GD_PURE_VIRTUAL;
 
-		GDINT virtual bool _TryGetValue(DOMValueVector& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool _TryGetValue(DomValueVector& value) GD_PURE_VIRTUAL;
 
-		GDINT virtual bool _TryGetValue(DOMObjectPtr& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool _TryGetValue(DomObjectPtr& value) GD_PURE_VIRTUAL;
 		
-	};	// class DOMValue
+	};	// class IDomValue
 
 	// **------------------------------------------------------------------------------------------**
 	//! Interface for DOM abstract object - FOR INTERNAL USAGE ONLY!
 	// **------------------------------------------------------------------------------------------**
-	class DOMObject : public ReferenceTarget
+	class IDomObject : public ReferenceTarget
 	{
 	public:
 
@@ -89,19 +91,19 @@ GD_NAMESPACE_BEGIN
 		 * @param name The name of the property.
 		 * @returns Pointer to the found value or null pointer.
 		 */
-		GDINT virtual DOMValuePtr _GetProperty(String const& name) GD_PURE_VIRTUAL;
+		GDINT virtual DomValuePtr _GetProperty(String const& name) GD_PURE_VIRTUAL;
 		
-	};	// class DOMObject
+	};	// class IDomObject
 
 	// **------------------------------------------------------------------------------------------**
 	//! Interface for DOM abstract document - FOR INTERNAL USAGE ONLY!
 	// **------------------------------------------------------------------------------------------**
-	class DOM : public ReferenceTarget
+	class IDom : public ReferenceTarget
 	{
 	public:
 		struct Result
 		{
-			DOMObjectPtr RootObject;
+			DomObjectPtr RootObject;
 			String ErrorDesc;
 		};	// struct Result
 
@@ -113,6 +115,6 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual Result _TryParseDOM(SharedPtr<InputStream> const domInputStream) GD_PURE_VIRTUAL;
 		
-	};	// class DOM
+	};	// class IDom
 
 GD_NAMESPACE_END

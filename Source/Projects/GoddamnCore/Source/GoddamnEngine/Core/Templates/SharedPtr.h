@@ -100,8 +100,15 @@ GD_NAMESPACE_BEGIN
 	template<typename TPointee, typename TCast = SharedPtrCastOperation>
 	struct SharedPtr final
 	{
+		template<typename, typename>
+		friend struct SharedPtr;
+
 		static_assert(TypeTraits::HasMemberFunction_AddRef<TPointee>::Value, "Target type for shared pointers should be contain 'AddRef' function.");
 		static_assert(TypeTraits::HasMemberFunction_Release<TPointee>::Value, "Target type for shared pointers should be contain 'Release' function.");
+
+	public:
+		using PointeeType = TPointee;
+		using CastType = TCast;
 
 	private:
 		TPointee* m_RawPointer;
@@ -128,13 +135,11 @@ GD_NAMESPACE_BEGIN
 		GDINL implicit SharedPtr(TPointee* const rawPointer)
 			: m_RawPointer(rawPointer)
 		{
-			GD::SafeAddRef(m_RawPointer);
 		}
 		template<typename TOtherPointee>
 		GDINL implicit SharedPtr(TOtherPointee* const rawPointer)
 			: m_RawPointer(TCast::template Cast<TPointee*>(rawPointer))
 		{
-			GD::SafeAddRef(m_RawPointer);
 		}
 		//! @}
 
@@ -149,7 +154,7 @@ GD_NAMESPACE_BEGIN
 			GD::SafeAddRef(m_RawPointer);
 		}
 		template<typename TOtherPointee>
-		GDINL implicit SharedPtr(SharedPtr<TOtherPointee> const& otherSharedPtr)
+		GDINL implicit SharedPtr(SharedPtr<TOtherPointee, TCast> const& otherSharedPtr)
 			: m_RawPointer(TCast::template Cast<TPointee*>(otherSharedPtr.Get()))
 		{
 			GD::SafeAddRef(m_RawPointer);
@@ -232,12 +237,12 @@ GD_NAMESPACE_BEGIN
 
 		// shared_ptr == shared_ptr
 		template<typename TOtherPointee>
-		GDINL bool operator== (SharedPtr<TOtherPointee> const& otherSharedPtr) const
+		GDINL bool operator== (SharedPtr<TOtherPointee, TCast> const& otherSharedPtr) const
 		{
 			return m_RawPointer == otherSharedPtr.m_RawPointer;
 		}
 		template<typename TOtherPointee>
-		GDINL bool operator!= (SharedPtr<TOtherPointee> const& otherSharedPtr) const
+		GDINL bool operator!= (SharedPtr<TOtherPointee, TCast> const& otherSharedPtr) const
 		{
 			return m_RawPointer != otherSharedPtr.m_RawPointer;
 		}
@@ -254,12 +259,12 @@ GD_NAMESPACE_BEGIN
 
 		// (shared_ptr<U>)shared_ptr<T>
 		template<typename TOtherPointee>
-		GDINL explicit operator SharedPtr<TOtherPointee>() const
+		GDINL explicit operator SharedPtr<TOtherPointee, TCast>() const
 		{
 			static_assert(TypeTraits::IsBase<TOtherPointee, TPointee>::Value || TypeTraits::IsBase<TPointee, TOtherPointee>::Value, "Cast types should be related.");
 			return TCast::template Cast<TOtherPointee*>(m_RawPointer);
 		}
-		GDINL operator SharedPtr<TPointee const>() const
+		GDINL operator SharedPtr<TPointee const, TCast>() const
 		{
 			return m_RawPointer;
 		}

@@ -396,7 +396,7 @@ GD_NAMESPACE_BEGIN
 		//! @todo:
 		//! While removing the first element of map this assert fails.
 		//! @todo But now everything works, check the whole source.
-		//m_NullNode->m_IsRed = false;
+		m_NullNode->m_IsRed = false;
 		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not black in InternalRepair");
 	}
 

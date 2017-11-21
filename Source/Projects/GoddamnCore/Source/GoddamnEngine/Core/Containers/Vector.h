@@ -109,7 +109,7 @@ GD_NAMESPACE_BEGIN
 			: Vector(otherVector.Begin(), otherVector.End())
 		{}
 		template<typename TOtherAllocator>
-		GDINL implicit Vector(Vector<TOtherAllocator> const& otherVector)
+		GDINL implicit Vector(Vector<TElement, TOtherAllocator> const& otherVector)
 			: Vector(otherVector.Begin(), otherVector.End())
 		{}
 		//! @}
@@ -483,7 +483,7 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 		template<typename TOtherAllocator>
-		GDINL Vector& operator= (Vector<TOtherAllocator> const& otherVector)
+		GDINL Vector& operator= (Vector<TElement, TOtherAllocator> const& otherVector)
 		{
 			if (&otherVector != this)
 			{
@@ -571,7 +571,7 @@ GD_NAMESPACE_BEGIN
 			lhs.ReserveToLength(lhs.m_Length + rhs.m_Length);
 			for (auto iterator = rhs.Begin(); iterator != rhs.End(); ++iterator)
 			{
-				lhs.InsertLast(Move(*iterator));
+				lhs.InsertLast(Utils::Move(*iterator));
 			}
 			rhs.Clear();
 			return lhs;
@@ -784,7 +784,7 @@ GD_NAMESPACE_BEGIN
 			m_Memory = CMemory::TMemcpy(GD_MALLOC_ARRAY_T(Word, wordCapacity), otherVector.m_Memory, wordCapacity);
 		}
 		template<typename TOtherAllocator>
-		GDINL implicit Vector(Vector<TOtherAllocator> const& otherVector)
+		GDINL implicit Vector(Vector<bool, TOtherAllocator> const& otherVector)
 			: m_Length(otherVector.m_Length), m_Capacity(otherVector.m_Capacity)
 		{
 			auto const wordCapacity = ToWord(m_Capacity);
@@ -1256,5 +1256,12 @@ GD_NAMESPACE_BEGIN
 	using TempTinyStack = TempStack<TElement, InlineAllocatorCapacityTiny>;
 	template<typename TElement>
 	using TempHugeStack = TempStack<TElement, InlineAllocatorCapacityHuge>;
+
+	/*!
+	 * Chunk vector implementation.
+	 * @todo Impelemnt me
+	 */
+	template<typename TElement>
+	using ChunkedVector = Vector<TElement>;
 
 GD_NAMESPACE_END

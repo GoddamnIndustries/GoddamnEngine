@@ -26,17 +26,17 @@ GD_NAMESPACE_BEGIN
 	private:
 		struct DOMValueArrayScope
 		{
-			DOMValueVector Array;
+			DomValueVector Array;
 			UInt32 mutable CurrentIndex;
 		};	// struct DOMValueArrayScope
-		typedef DOMObjectPtr DOMObjectPtrScope;
+		typedef DomObjectPtr DOMObjectPtrScope;
 
-		DOMValuePtr m_SelectedValue;
+		DomValuePtr m_SelectedValue;
 		Stack<DOMObjectPtrScope> m_ObjectsScope;
 		Stack<DOMValueArrayScope> m_ArraysScope;
 
 	protected:
-		GDINL explicit DOMReader(DOMPtr const dom, SharedPtr<InputStream> const readingStream)
+		GDINL explicit DOMReader(DomPtr const dom, SharedPtr<InputStream> const readingStream)
 			: IGenericReader(readingStream)
 		{
 			auto result = dom->_TryParseDOM(readingStream);
@@ -84,7 +84,7 @@ GD_NAMESPACE_BEGIN
 		{
 			if (!IGenericReader::TryBeginReadArrayPropertyValue(arraySize))
 			{
-				DOMValueVector value;
+				DomValueVector value;
 				if (!TryReadPropertyValue(value))
 				{
 					IGenericReader::EndReadArrayPropertyValue();
@@ -113,7 +113,7 @@ GD_NAMESPACE_BEGIN
 				// If we are trying to parse root object.
 				if (!m_ObjectsScope.IsEmpty())
 				{
-					DOMObjectPtr value;
+					DomObjectPtr value;
 					if (!TryReadPropertyValue(value))
 					{
 						IGenericReader::EndReadArrayPropertyValue();

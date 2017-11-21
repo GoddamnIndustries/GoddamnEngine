@@ -14,7 +14,6 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Object/Object.h>
-#include <GoddamnEngine/Core/Object/Class.h>
 #include <GoddamnEngine/Core/IO/Stream.h>
 
 GD_NAMESPACE_BEGIN
@@ -27,7 +26,7 @@ GD_NAMESPACE_BEGIN
 	GD_OBJECT_KERNEL class SerializableObject : public Object
 	{
 	private:
-		GD_DECLARE_OBJECT_INTRINSIC_CORE(SerializableObject, Object);
+		GD_DECLARE_OBJECT_INTRINSIC(SerializableObject, Object)
 
 		/*! 
 		 * @brief Specifies, whether this object is dynamic.

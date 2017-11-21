@@ -14,19 +14,9 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_IMPLEMENT_OBJECT(GDAPI, Behaviour);
-	GD_IMPLEMENT_OBJECT(GDAPI, Entity);
-	GD_IMPLEMENT_OBJECT(GDAPI, Component);
-
-	GDAPI Behaviour::~Behaviour()
-	{
-	}
-	GDAPI Entity::~Entity()
-	{
-	}
-	GDAPI Component::~Component()
-	{
-	}
+	GD_IMPLEMENT_OBJECT_INTRINSIC(Behaviour);
+GD_IMPLEMENT_OBJECT_INTRINSIC(Entity);
+	GD_IMPLEMENT_OBJECT_INTRINSIC(Component);
 
 	/*!
 	 * Finds a component of a specified class and returns it.
@@ -34,7 +24,7 @@ GD_NAMESPACE_BEGIN
 	 * @param klass Desired component class.
 	 * @returns Inner component of a specified class, nullptr if nothing was found.
 	 */
-	GDAPI RefPtr<Component> Entity::GetComponent(ClassPtr const klass) const
+	GDAPI RefPtr<Component> Entity::GetComponent(ObjectClassPtr const klass) const
 	{
 		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
 		auto const componentIter = Algo::FindFirstIf(m_Components, [&klass](auto const& component)
@@ -50,11 +40,11 @@ GD_NAMESPACE_BEGIN
 	 * @param klass Desired component class.
 	 * @returns Newly created component of a specified class.
 	 */
-	GDAPI RefPtr<Component> Entity::AddComponent(ClassPtr const klass)
+	GDAPI RefPtr<Component> Entity::AddComponent(ObjectClassPtr const klass)
 	{
 		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
 		
-		auto const component = object_cast<Component>(FindOrCreateObject(EmptyGUID, klass));
+		auto const component = object_cast<RefPtr<Component>>(CreateOrFindClassRelatedObjectByGUID(EmptyGUID, klass));
 		m_Components.InsertLast(component);
 		return component;
 	}

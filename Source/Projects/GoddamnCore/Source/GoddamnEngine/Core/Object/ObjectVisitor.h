@@ -21,14 +21,6 @@
 GD_NAMESPACE_BEGIN
 
 	// **------------------------------------------------------------------------------------------**
-	//! Defines reflection information for the structure.
-	// **------------------------------------------------------------------------------------------**
-	GD_OBJECT_KERNEL struct StructMetaInfo final : public TNonCopyable
-	{
-		GDINL StructMetaInfo(...) {}
-	};	// GD_OBJECT_KERNEL struct StructMetaInfo
-
-	// **------------------------------------------------------------------------------------------**
 	//! Declares flags for object properties.
 	// **------------------------------------------------------------------------------------------**
 	//! @{
@@ -46,8 +38,8 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	GD_OBJECT_KERNEL struct PropertyMetaInfo final : public TNonCopyable
 	{
-		String PropertyName;
-		PropertyFlags PropertyFlags;
+		String const PropertyName;
+		PropertyFlags const PropertyFlags;
 
 	public:
 		GDINL explicit PropertyMetaInfo(CStr propertyName, GD::PropertyFlags const propertyFlags = PFDefault, ...)

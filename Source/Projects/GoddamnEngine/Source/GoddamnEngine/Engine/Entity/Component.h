@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 	GD_ENTITY_KERNEL class Component : public Behaviour
 	{
 	private:
-		GD_DECLARE_OBJECT_INTRINSIC_ENGINE(Component, Behaviour);
+		GD_DECLARE_OBJECT_INTRINSIC(Component, Behaviour);
 		
 	//	GD_PROPERTY(private, RefPtr<Entity>, m_Entity);
 

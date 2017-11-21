@@ -27,7 +27,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         private const string c_SlnCsProjProjectGuid  = @"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
         private const string c_SlnFilterProjectGuid  = @"{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 
-        private const string c_ToolsVersion          = "14.0";
+        private const string c_ToolsVersion          = "15.0";
         private const string c_ToolsFiltersVersion   = "4.0";
 
         private static string CreateMsBuildGuid()
@@ -207,7 +207,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 foreach (var platform in TargetInfo.EnumerateAllPlatforms())
                 {
                     var platformString = ConvertPlatformToMsBuildPlatform(platform);
-                    var platformToolset = "v140";
+                    var platformToolset = "v141";
 
                     foreach (var configuration in TargetInfo.EnumerateAllConfigurations())
                     {
@@ -393,8 +393,8 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
 
                     // Checking if this source can have a filter: it is located in project directory and it not in it's root.
                     // We also add "Source" to each filter to separate configuration and source files.  
-                    if (projectSourceFileDirectory != null && (projectSourceFileDirectory.StartsWith(project.CachedSourcesFilterOrigin, StringComparison.InvariantCultureIgnoreCase)
-                                                           && (projectSourceFileDirectory.Length > (project.CachedSourcesFilterOrigin.Length + 1))))
+                    if (projectSourceFileDirectory != null && projectSourceFileDirectory.StartsWith(project.CachedSourcesFilterOrigin, StringComparison.InvariantCultureIgnoreCase) 
+                                                           && projectSourceFileDirectory.Length > project.CachedSourcesFilterOrigin.Length + 1)
                     {
                         projectSourceFilter = "Source\\" + projectSourceFileDirectory.Substring(project.CachedSourcesFilterOrigin.Length + 1);
                         var projectSourceFilterIter = projectSourceFilter;

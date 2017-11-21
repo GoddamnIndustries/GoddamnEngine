@@ -134,15 +134,18 @@ GD_NAMESPACE_BEGIN
 		//! @todo Somehow export the offset value out of this block.
 		GLuint static const gfxMaxUniformBuffersPerType = 14;
 		GLuint static const gfxUniformBufferBindingPointOffset = gfxMaxUniformBuffersPerType * gfxShaderType;
-		for (GLuint glUniformBlockIndex = 0; glUniformBlockIndex < gfxUniformBuffersCount; ++glUniformBlockIndex)
+		if (glUniformBuffers != nullptr)
 		{
-			if (glUniformBuffers != nullptr)
+			for (GLuint glUniformBlockIndex = 0; glUniformBlockIndex < gfxUniformBuffersCount; ++glUniformBlockIndex)
 			{
 				// Binding current buffer...
 				auto const glUniformBuffer = glUniformBuffers[glUniformBlockIndex];
 				glBindBufferBase(GL_UNIFORM_BUFFER, gfxUniformBufferBindingPointOffset + glUniformBlockIndex, glUniformBuffer->m_GLBufferID);
 			}
-			else
+		}
+		else
+		{
+			for (GLuint glUniformBlockIndex = 0; glUniformBlockIndex < gfxUniformBuffersCount; ++glUniformBlockIndex)
 			{
 				// Unbinding current uniform buffer..
 				glBindBufferBase(GL_UNIFORM_BUFFER, gfxUniformBufferBindingPointOffset + glUniformBlockIndex, 0);

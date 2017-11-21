@@ -25,7 +25,7 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	GD_RESOURCE_KERNEL class Resource : public Object
 	{
-		GD_DECLARE_OBJECT_INTRINSIC_ENGINE(Resource, Object);
+		GD_DECLARE_OBJECT_INTRINSIC(Resource, Object);
 
 
 	};	// class Resource

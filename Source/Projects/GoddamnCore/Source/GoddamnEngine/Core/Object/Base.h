@@ -8,7 +8,7 @@
 
 /*! 
  * @file GoddamnEngine/Core/Object/Base.h
- * File contains base declaration for entities system.
+ * File contains forward declaration for entities system.
  */
 #pragma once
 
@@ -20,40 +20,24 @@ GD_NAMESPACE_BEGIN
 	#define GD_OBJECT_HELPER	//!< Use this macro to mark declarations inside Object system, that use kernel API and relate to the Object system.
 	#define GD_OBJECT_GENERATED	//!< Use this macro to mark declarations inside Object system, that would be generated.
 
-	struct ObjectVisitor;
-	struct ObjectClassVisitor;
 	struct Struct;
-	struct StructMetaInfo;
+	class  Object;
+	class  ObjectClass;
+	struct ObjectVisitor;
+	struct ObjectRegistry;
 	struct PropertyMetaInfo;
-	class  Object;
-	struct ObjectCtorInfo;
-	class  Class;
-	class  Object;
-	class  Package;
-
-	/*!
-	 * Represents constructor procedure pointer for objects.
-	 * @param objectCtorInfo Construction information for the object.
-	 */
-	typedef GD_OBJECT_KERNEL Object*(*ObjectCtorProc)(ObjectCtorInfo const& objectCtorInfo);
-
-	template<typename TObject>
-	GD_OBJECT_HELPER struct ObjectCtorGetter final : public TNonCreatable
-	{
-	public:
-		template<typename TObjectCtorProc = typename DisableIf<TypeTraits::IsAbstract<TObject>::Value, ObjectCtorProc>::Type>
-		GDINL static TObjectCtorProc Get()
-		{
-			return [](ObjectCtorInfo const& objectCtorInfo) -> Object* { return gd_new TObject(objectCtorInfo); };
-		}
-	};	// struct ObjectCtorGetter
 
 	/*!
 	 * Represents pointer to class information.
 	 */
-	typedef GD_OBJECT_HELPER /*NotNull<*/ Class const* /*>*/ ClassPtr;
+	GD_OBJECT_HELPER using ObjectClassPtr = ObjectClass*;
 
-	template<typename TObjectSource, typename TObjectDest>
-	GDINL GD_OBJECT_KERNEL static TObjectDest* object_cast(TObjectSource* const sourceObject);
+	/*!
+	 * Represents constructor procedure pointer for objects.
+	 */
+	GD_OBJECT_KERNEL using ObjectCtorProc = Object*(*)();
+
+	template<typename TObjectDest, typename TObjectSource>
+	GDINL GD_OBJECT_KERNEL static TObjectDest object_cast(TObjectSource const sourceObject);
 
 GD_NAMESPACE_END

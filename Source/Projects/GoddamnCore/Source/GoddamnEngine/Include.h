@@ -129,6 +129,7 @@
 #if !GD_RESOURCE_COMPILER
 #	if GD_TESTING_ENABLED
 #		include <GoddamnEngine/Core/Testing/Testing.h>
+#		include <GoddamnEngine/Core/Testing/Testing2.h>
 #	endif	// if GD_TESTING_ENABLED
 #	include <GoddamnEngine/Core/Base/Architecture.h>
 #	include <GoddamnEngine/Core/Base/Types.h>

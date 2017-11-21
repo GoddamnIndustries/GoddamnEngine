@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	class Behaviour : public SerializableObject
 	{
-		GD_DECLARE_OBJECT_INTRINSIC_ENGINE(Behaviour, SerializableObject);
+		GD_DECLARE_OBJECT_INTRINSIC(Behaviour, SerializableObject);
 
 	public:
 

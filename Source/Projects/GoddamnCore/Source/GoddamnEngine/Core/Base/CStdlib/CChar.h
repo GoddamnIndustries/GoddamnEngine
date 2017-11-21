@@ -34,12 +34,12 @@ GD_NAMESPACE_BEGIN
 	{
 		GDINL static constexpr Char Select(Char const ANSI, WideChar const Wide)
 		{
-		//	GD_NOT_USED(Wide);
+			GD_NOT_USED(Wide);
 			return ANSI;
 		}
 		GDINL static constexpr Char const* Select(Char const* const ANSI, WideChar const* const Wide)
 		{
-			//GD_NOT_USED(Wide);
+			GD_NOT_USED(Wide);
 			return ANSI;
 		}
 	};	// struct Literal<Char>
@@ -49,12 +49,12 @@ GD_NAMESPACE_BEGIN
 	{
 		GDINL static constexpr WideChar Select(Char const ANSI, WideChar const Wide)
 		{
-			//GD_NOT_USED(ANSI);
+			GD_NOT_USED(ANSI);
 			return Wide;
 		}
 		GDINL static constexpr WideChar const* Select(Char const* const ANSI, WideChar const* const Wide)
 		{
-			//GD_NOT_USED(ANSI);
+			GD_NOT_USED(ANSI);
 			return Wide;
 		}
 	};	// struct Literal<WideChar>

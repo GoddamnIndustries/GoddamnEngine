@@ -171,7 +171,7 @@ GD_NAMESPACE_BEGIN
 		auto static const engineConfigDirectory = Paths::Normalize(
 			Paths::Combine(
 				Paths::GetEngineRootDirectory(),
-				L"SavedData/"
+					L"SavedData/"
 				)
 			);
 		return engineConfigDirectory;
@@ -203,7 +203,7 @@ GD_NAMESPACE_BEGIN
 		auto static const applicationBinariesDirectory = Paths::Normalize(
 			Paths::Combine(
 				Paths::GetApplicationRootDirectory(),
-				L"Bin/"
+					L"Bin/"
 				)
 			);
 		return applicationBinariesDirectory;
@@ -217,7 +217,7 @@ GD_NAMESPACE_BEGIN
 		auto static const applicationContentDirectory = Paths::Normalize(
 			Paths::Combine(
 				Paths::GetApplicationRootDirectory(),
-				L"Content/"
+					L"Content/"
 				)
 			);
 		return applicationContentDirectory;
@@ -231,7 +231,7 @@ GD_NAMESPACE_BEGIN
 		auto static const applicationConfigDirectory = Paths::Normalize(
 			Paths::Combine(
 				Paths::GetApplicationRootDirectory(),
-				L"Config/"
+					L"Config/"
 				)
 			);
 		return applicationConfigDirectory;
@@ -245,7 +245,7 @@ GD_NAMESPACE_BEGIN
 		auto static const applicationSavedDataDirectory = Paths::Normalize(
 			Paths::Combine(
 				Paths::GetApplicationRootDirectory(),
-				L"SavedData/"
+					L"SavedData/"
 				)
 			);
 		return applicationSavedDataDirectory;

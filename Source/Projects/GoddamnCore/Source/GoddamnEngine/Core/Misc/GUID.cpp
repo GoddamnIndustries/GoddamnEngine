@@ -10,9 +10,9 @@
  * @file GoddamnEngine/Core/Object/GUID.cpp
  * File contains global unique IDs for objects.
  */
-#include <GoddamnEngine/Core/Object/GUID.h>
-#include <GoddamnEngine/Core/Containers/StringBuilder.h>
+#include <GoddamnEngine/Core/Misc/GUID.h>
 #include <GoddamnEngine/Core/Misc/Endian.h>
+#include <GoddamnEngine/Core/Containers/StringBuilder.h>
 
 #if GD_PLATFORM_API_MICROSOFT 
 #	include <combaseapi.h>

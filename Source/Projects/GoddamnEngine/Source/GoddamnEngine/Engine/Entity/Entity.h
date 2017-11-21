@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 	GD_ENTITY_KERNEL class Entity : public Behaviour
 	{
 	private:
-		GD_DECLARE_OBJECT_INTRINSIC_ENGINE(Entity, Behaviour);
+		GD_DECLARE_OBJECT_INTRINSIC(Entity, Behaviour);
 		
 		GD_PROPERTY(private, Vector<RefPtr<Component>>, m_Components);
 		//RefPtr<Transform> m_Transform;
@@ -44,7 +44,7 @@ GD_NAMESPACE_BEGIN
 		 * @param klass Desired component class.
 		 * @returns Inner component of a specified class, nullptr if nothing was found.
 		 */
-		GDAPI RefPtr<Component> GetComponent(ClassPtr const klass) const;
+		GDAPI RefPtr<Component> GetComponent(ObjectClassPtr const klass) const;
 		template<typename TComponent>
 		GDINL RefPtr<TComponent> GetComponent() const
 		{
@@ -57,7 +57,7 @@ GD_NAMESPACE_BEGIN
 		 * @param klass Desired component class.
 		 * @returns Newly created component of a specified class.
 		 */
-		GDAPI RefPtr<Component> AddComponent(ClassPtr const klass);
+		GDAPI RefPtr<Component> AddComponent(ObjectClassPtr const klass);
 		template<typename TComponent>
 		GDINL RefPtr<TComponent> AddComponent() const
 		{

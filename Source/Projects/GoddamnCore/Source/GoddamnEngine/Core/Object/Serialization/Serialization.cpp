@@ -12,17 +12,12 @@
  */
 #include <GoddamnEngine/Core/Object/Serialization/Serialization.h>
 #include <GoddamnEngine/Core/Object/Serialization/ReaderWriterJson.h>
-#include <GoddamnEngine/Core/Object/Class.h>
 #include <GoddamnEngine/Core/Interaction/Debug.h>
 #include <GoddamnEngine/Core/IO/Stream.h>
 
 GD_NAMESPACE_BEGIN
 
-	GD_IMPLEMENT_OBJECT(GDAPI, SerializableObject);
-
-	GDAPI SerializableObject::~SerializableObject()
-	{
-	}
+	GD_IMPLEMENT_OBJECT_INTRINSIC(SerializableObject);
 
 	// ------------------------------------------------------------------------------------------
 	// Serialization subsystem.

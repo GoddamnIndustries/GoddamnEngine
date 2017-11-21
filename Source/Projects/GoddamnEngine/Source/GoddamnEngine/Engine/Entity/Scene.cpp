@@ -14,11 +14,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	GD_IMPLEMENT_OBJECT(GDAPI, Scene);
-
-	GDAPI Scene::~Scene()
-	{
-	}
+	GD_IMPLEMENT_OBJECT_INTRINSIC(Scene);
 
 	/*!
 	 * Adds an entity onto the scene.
@@ -26,7 +22,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI RefPtr<Entity> Scene::AddEntity()
 	{
-		auto const entity = FindOrCreateObject<Entity>(EmptyGUID);
+		auto const entity = CreateOrFindClassRelatedObjectByGUID<Entity>(EmptyGUID);
 		m_Entities.InsertLast(entity);
 		return entity;
 	}

@@ -7,25 +7,22 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Object/Struct.h
+ * @file GoddamnEngine/Core/Object/StructInstanceInstance.h
  * File contains base declaration for structures in the entities system.
  */
 #pragma once
 
-// ReSharper disable CppUnusedIncludeDirective
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Object/ObjectVisitor.h>
-// ReSharper restore CppUnusedIncludeDirective
 
 GD_NAMESPACE_BEGIN
 
 	// **------------------------------------------------------------------------------------------**
-	//! Base class for all reflectable structures.
+	//! Zero-overhead base class for all reflectable structures.
 	// **------------------------------------------------------------------------------------------**
 	GD_OBJECT_KERNEL struct Struct
 	{
-		// ReSharper disable CppMemberFunctionMayBeConst
-		// ReSharper disable CppMemberFunctionMayBeStatic
+	public:
 
 		/*!
 		 * Visits all properties of this structure.
@@ -36,23 +33,10 @@ GD_NAMESPACE_BEGIN
 		GDINL GD_OBJECT_GENERATED void Reflect(ObjectVisitor& objectVisitor)
 		{
 			GD_NOT_USED(objectVisitor);
-		}
-		
-		/*!
-		 * Visits meta information of this structure.
-		 * 
-		 * @param objectClassVisitor Visitor to process this structure.
-		 * @see IObjectClassVisitor interface.
-		 */
-		GDINL GD_OBJECT_GENERATED static void ReflectStatic(ObjectClassVisitor& objectClassVisitor)
-		{
-			GD_NOT_USED(objectClassVisitor);
+			GD_NOT_USED(this);
 		}
 
-		// ReSharper restore CppMemberFunctionMayBeStatic
-		// ReSharper restore CppMemberFunctionMayBeConst
-
-	};	// struct_ Struct
+	};	// struct Struct
 	
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	// ******                Very scary macros for generating boilerplate code.                ******
@@ -61,11 +45,6 @@ GD_NAMESPACE_BEGIN
 	/*! Declares very a base struct information. Implements reflection algorithms.  */
 	#define GD_DECLARE_STRUCT_BASE(TThisClass, TSuperClass, ...) GD_OBJECT_KERNEL \
 		public: using This = TThisClass; using Super = TSuperClass; \
-		public:	static GD_OBJECT_GENERATED void ReflectStatic(ObjectClassVisitor& objectClassVisitor) \
-		{ \
-			static StructMetaInfo const structMetaInfo(#TThisClass, ##__VA_ARGS__); \
-			/*objectClassVisitor.VisitClass(structMetaInfo);*/ \
-		} \
 
 	/*! Declares a very base property information.  */
 	#define GD_PROPERTY_NO_DECL_BASE(TPropertyName) GD_OBJECT_KERNEL
@@ -87,7 +66,7 @@ GD_NAMESPACE_BEGIN
 		#define GD_DECLARE_STRUCT(TThisClass, TSuperClass, ...) GD_OBJECT_KERNEL \
 				GD_DECLARE_STRUCT_BASE(TThisClass, TSuperClass, ##__VA_ARGS__) \
 				private: template<unsigned TFieldIndex> void ReflectPrivate(ObjectVisitor&) { } \
-				public: GD_OBJECT_GENERATED /*virtual?*/ void Reflect(ObjectVisitor& objectVisitor) /*override?*/ \
+				public: GD_OBJECT_GENERATED /*virtual*/ void Reflect(ObjectVisitor& objectVisitor) /*override*/ \
 				{ \
 					TSuperClass::Reflect(objectVisitor); \
 					ReflectPrivate<__COUNTER__ + 1>(objectVisitor); \
@@ -134,7 +113,7 @@ GD_NAMESPACE_BEGIN
 		#define GD_DECLARE_STRUCT(TThisClass, TSuperClass, ...) GD_OBJECT_KERNEL \
 				GD_DECLARE_STRUCT_BASE(TThisClass, TSuperClass, ##__VA_ARGS__) \
 				private: template<typename TObjectVisitor, unsigned TFieldIndex> struct ReflectPrivate { static void Invoke(TObjectVisitor&, This* const) { } };\
-				public: GD_OBJECT_GENERATED /*virtual?*/ void Reflect(ObjectVisitor& objectVisitor) /*override?*/ \
+				public: GD_OBJECT_GENERATED /*virtual*/ void Reflect(ObjectVisitor& objectVisitor) /*override*/ \
 				{ \
 					TSuperClass::Reflect(objectVisitor); \
 					ReflectPrivate<__COUNTER__ + 1>(objectVisitor); \

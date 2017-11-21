@@ -18,17 +18,15 @@
 GD_NAMESPACE_BEGIN
 	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Shader Resources common.
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Sampler state objects.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Creates a GPU sampler state with specified parameters.
-	//! @param gfxSamplerStatePtr Pointer for output.
-	//! @param gfxSamplerStateCreationInfo Pointer to the sampler state creation information.
+	/*!
+	 * Creates a GPU sampler state with specified parameters.
+	 *
+	 * @param gfxSamplerStatePtr Pointer for output.
+	 * @param gfxSamplerStateCreationInfo Pointer to the sampler state creation information.
+	 */
 	GDAPI IGraphicsOpenGLSamplerState::IGraphicsOpenGLSamplerState(IGraphicsSamplerStateCreationInfo const* const gfxSamplerStateCreationInfo)
 		: IGraphicsSamplerState(gfxSamplerStateCreationInfo), m_GLSamplerStateID(0)
 	{
@@ -67,18 +65,22 @@ GD_NAMESPACE_BEGIN
 			? gfxSamplerStateCreationInfo->SamplerLODMaxClamp : FLT_MAX);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Deletes the specified GPU sampler state.
+	/*!
+	 * Deletes the specified GPU sampler state.
+	 */
 	GDAPI IGraphicsOpenGLSamplerState::~IGraphicsOpenGLSamplerState()
 	{
 		glDeleteSamplers(1, &m_GLSamplerStateID);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Creates a GPU sampler state with specified parameters.
-	//! @param gfxSamplerStatePtr Pointer for output.
-	//! @param gfxSamplerStateCreationInfo Pointer to the sampler state creation information.
-	//! @returns Non-negative value if the operation succeeded.
+	/*!
+	 * Creates a GPU sampler state with specified parameters.
+	 *
+	 * @param gfxSamplerStatePtr Pointer for output.
+	 * @param gfxSamplerStateCreationInfo Pointer to the sampler state creation information.
+	 *
+	 * @returns Non-negative value if the operation succeeded.
+	 */
 	GDAPI IResult IGraphicsOpenGLWithSamplerStates::GfxImm_SamplerStateCreate(IGraphicsSamplerState** const gfxSamplerStatePtr
 		, IGraphicsSamplerStateCreationInfo const* const gfxSamplerStateCreationInfo)
 	{
@@ -95,15 +97,17 @@ GD_NAMESPACE_BEGIN
 	// Shader Resources common.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Initializes an empty shader resource view.
+	/*!
+	 * Initializes an empty shader resource view.
+	 */
 	GDAPI IGraphicsOpenGLShaderResourceView::IGraphicsOpenGLShaderResourceView(IGraphicsResourceType const gfxResourceType)
 		: m_GLShaderResourceID(0), m_GLShaderResourceType(IGraphicsOpenGLResourceTypesTable[gfxResourceType])
 	{
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Deletes the shader resource view.
+	/*!
+	 * Deletes the shader resource view.
+	 */
 	GDAPI IGraphicsOpenGLShaderResourceView::~IGraphicsOpenGLShaderResourceView()
 	{
 	}
@@ -112,10 +116,15 @@ GD_NAMESPACE_BEGIN
 	// 2D Textures.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	// ------------------------------------------------------------------------------------------
-	//! Creates a GPU 2D texture with specified parameters.
-	//! @param gfxTexture2DCreationInfo Pointer to the 2D texture creation information.
-	//! @param gfxTexture2DInitialData Initial data for our texture.
+	/*!
+	 * Creates a GPU 2D texture with specified parameters.
+	 *
+	 * @param gfxTexture2DPtr Pointer for output.
+	 * @param gfxTexture2DCreationInfo Pointer to the 2D texture creation information.
+	 * @param gfxTexture2DInitialData Initial data for our texture.
+	 *
+	 * @returns Non-negative value if the operation succeeded.
+	 */
 	GDAPI IGraphicsOpenGLTexture2D::IGraphicsOpenGLTexture2D(IGraphicsTexture2DCreationInfo const* const gfxTexture2DCreationInfo
 		, IGraphicsTexture2DData const* const gfxTexture2DInitialData)
 		: IGraphicsTexture2D(gfxTexture2DCreationInfo), m_GLTexture2DID(0), m_GLShaderResourceView(nullptr)
@@ -127,8 +136,9 @@ GD_NAMESPACE_BEGIN
 		m_GLShaderResourceView->m_GLShaderResourceID = m_GLTexture2DID;
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Deletes current GPU 2D texture.
+	/*! 
+	 * Deletes current GPU 2D texture.
+	 */
 	GDAPI IGraphicsOpenGLTexture2D::~IGraphicsOpenGLTexture2D()
 	{
 		glDeleteTextures(1, &m_GLTexture2DID);
@@ -247,10 +257,13 @@ GD_NAMESPACE_BEGIN
 
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsOpenGLTextureCube);
 
-	// ------------------------------------------------------------------------------------------
-	//! Creates a GPU Cube texture with specified parameters.
-	//! @param gfxTextureCubeCreationInfo Pointer to the Cube texture creation information.
-	//! @param gfxTextureCubeInitialData Initial data for our texture.
+	/*!
+	 * Creates a GPU Cube texture with specified parameters.
+	 *
+	 * @param gfxTextureCubePtr Pointer for output.
+	 * @param gfxTextureCubeCreationInfo Pointer to the Cube texture creation information.
+	 * @param gfxTextureInitialCubeData Initial data for our texture.
+	 */
 	GDAPI IGraphicsOpenGLTextureCube::IGraphicsOpenGLTextureCube(IGraphicsTextureCubeCreationInfo const* const gfxTextureCubeCreationInfo
 		, IGraphicsTextureCubeData const* const gfxTextureCubeInitialData)
 		: IGraphicsTextureCube(gfxTextureCubeCreationInfo), m_GLTextureCubeID(0), m_GLShaderResourceView(nullptr)
@@ -260,30 +273,34 @@ GD_NAMESPACE_BEGIN
 		glGenTextures(1, &m_GLTextureCubeID);
 		Imm_UpdateData(gfxTextureCubeInitialData);
 		
-		m_GLShaderResourceView = GD_NEW(IGraphicsOpenGLShaderResourceView, IGRAPHICS_RESOURCE_TYPE_TEXTURE_CUBE);
+		m_GLShaderResourceView = gd_new IGraphicsOpenGLShaderResourceView(IGRAPHICS_RESOURCE_TYPE_TEXTURE_CUBE);
 		m_GLShaderResourceView->m_GLShaderResourceID = m_GLTextureCubeID;
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Deletes current GPU Cube texture.
+	/*!
+	 * Deletes current GPU Cube texture.
+	 */
 	GDAPI IGraphicsOpenGLTextureCube::~IGraphicsOpenGLTextureCube()
 	{
 		glDeleteTextures(1, &m_GLTextureCubeID);
 		m_GLShaderResourceView->Release();
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Queries the shader resource for current resource.
-	//! @returns Pointer to the shader resource view. Should be released manually.
+	/*!
+	 * Queries the shader resource for current resource.
+	 * @returns Pointer to the shader resource view. Should be released manually.
+	 */
 	GDAPI IGraphicsShaderResourceView const* IGraphicsOpenGLTextureCube::CPU_GetShaderResourceView() const
 	{
 		return m_GLShaderResourceView;
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Updates data stored inside texture.
-	//! @param gfxTextureCubeData New data that would be uploaded to GPU.
-	//! @returns Non-negative value if the operation succeeded.
+	/*!
+	 * Updates data stored inside texture.
+	 *
+	 * @param gfxTextureCubeData New data that would be uploaded to GPU.
+	 * @returns Non-negative value if the operation succeeded.
+	 */
 	GDAPI IResult IGraphicsOpenGLTextureCube::Imm_UpdateData(IGraphicsTextureCubeData const* /*const*/ gfxTextureCubeData)
 	{
 		if (gfxTextureCubeData == nullptr)
@@ -362,11 +379,15 @@ GD_NAMESPACE_BEGIN
 		return IResult::Ok;
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Creates a GPU Cube texture with specified parameters.
-	//! @param gfxTextureCubePtr Pointer for output.
-	//! @param gfxTextureCubeInitialData Initial data for our texture.
-	//! @returns Non-negative value if the operation succeeded.
+	/*!
+	 * Creates a GPU Cube texture with specified parameters.
+	 *
+	 * @param gfxTextureCubePtr Pointer for output.
+	 * @param gfxTextureCubeCreationInfo Pointer to the Cube texture creation information.
+	 * @param gfxTextureInitialCubeData Initial data for our texture.
+	 *
+	 * @returns Non-negative value if the operation succeeded.
+	 */
 	GDAPI IResult IGraphicsBaseOpenGL_WithTexturesCube::GfxImm_TextureCubeCreate(IGraphicsTextureCube** const gfxTextureCubePtr
 		, IGraphicsTextureCubeCreationInfo const* const gfxTextureCubeCreationInfo
 		, IGraphicsTextureCubeData const* const gfxTextureCubeInitialData)
