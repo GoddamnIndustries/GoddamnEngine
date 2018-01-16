@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="GoddamnGraphicsOpenGL"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\Projects\;CMake Files\Projects\GoddamnCore\;CMake Files\Projects\GoddamnEngine\;CMake Files\Projects\GoddamnGraphics\;CMake Files\Projects\GoddamnGraphics\GoddamnGraphicsOpenGL\;CMake Files\Projects\Samples\;CMake Files\Projects\Samples\01_SimpleScene\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="GoddamnGraphicsOpenGL">
+				<Option output="H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/libGoddamnGraphicsOpenGL.dll" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="H:/GoddamnEngine/source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source"/>
+					<Add directory="H:/GoddamnEngine/source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Dependencies/glew/include"/>
+					<Add directory="H:/GoddamnEngine/source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Dependencies/glslang/include"/>
+					<Add directory="H:/GoddamnEngine/Source/Projects/GoddamnCore/Source"/>
+					<Add directory="H:/GoddamnEngine/Source/Projects/GoddamnEngine/Source"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/mingw32"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/backward"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/../../../../include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include-fixed"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/../../../../mingw32/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/include-fixed"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 GoddamnGraphicsOpenGL"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="GoddamnGraphicsOpenGL/fast">
+				<Option output="H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/libGoddamnGraphicsOpenGL.dll" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="H:/GoddamnEngine/source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source"/>
+					<Add directory="H:/GoddamnEngine/source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Dependencies/glew/include"/>
+					<Add directory="H:/GoddamnEngine/source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Dependencies/glslang/include"/>
+					<Add directory="H:/GoddamnEngine/Source/Projects/GoddamnCore/Source"/>
+					<Add directory="H:/GoddamnEngine/Source/Projects/GoddamnEngine/Source"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/mingw32"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/backward"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/../../../../include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include-fixed"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/../../../../mingw32/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/include-fixed"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 GoddamnGraphicsOpenGL/fast"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGL.cpp">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGL.h">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLBuffer.cpp">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLCommandList.cpp">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLFormat.h">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLPipelineState.cpp">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLRenderTarget.cpp">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLSampler.cpp">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLShaders.cpp">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLTextures.cpp">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLVertexArray.cpp">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLWindows.cpp">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/Source/GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLWindows.h">
+			<Option target="GoddamnGraphicsOpenGL"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnCore/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\GoddamnCore\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnCore/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\GoddamnCore\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnEngine/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\GoddamnEngine\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\GoddamnGraphics\GoddamnGraphicsOpenGL\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\GoddamnGraphics\GoddamnGraphicsOpenGL\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/Samples/01_SimpleScene/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\Samples\01_SimpleScene\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/Samples/01_SimpleScene/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\Samples\01_SimpleScene\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

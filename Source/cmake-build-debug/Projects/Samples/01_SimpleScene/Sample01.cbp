@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Sample01"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\Projects\;CMake Files\Projects\GoddamnCore\;CMake Files\Projects\GoddamnEngine\;CMake Files\Projects\GoddamnGraphics\;CMake Files\Projects\GoddamnGraphics\GoddamnGraphicsOpenGL\;CMake Files\Projects\Samples\;CMake Files\Projects\Samples\01_SimpleScene\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Sample01">
+				<Option output="H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Sample01.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="H:/GoddamnEngine/source/Projects/Samples/01_SimpleScene/Source"/>
+					<Add directory="H:/GoddamnEngine/Source/Projects/GoddamnCore/Source"/>
+					<Add directory="H:/GoddamnEngine/Source/Projects/GoddamnEngine/Source"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/mingw32"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/backward"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/../../../../include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include-fixed"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/../../../../mingw32/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/include-fixed"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 Sample01"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Sample01/fast">
+				<Option output="H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Sample01.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="H:/GoddamnEngine/source/Projects/Samples/01_SimpleScene/Source"/>
+					<Add directory="H:/GoddamnEngine/Source/Projects/GoddamnCore/Source"/>
+					<Add directory="H:/GoddamnEngine/Source/Projects/GoddamnEngine/Source"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/mingw32"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/backward"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/../../../../include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/include-fixed"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/6.3.0/../../../../mingw32/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../include"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/include-fixed"/>
+					<Add directory="d:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 Sample01/fast"/>
+					<CompileFile command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/MinGW/bin/mingw32-make.exe -f &quot;H:/GoddamnEngine/Source/cmake-build-debug/Projects/Samples/01_SimpleScene/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/Samples/01_SimpleScene/Source/SimpleScene.cpp">
+			<Option target="Sample01"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/Samples/01_SimpleScene/Source/demon_image.h">
+			<Option target="Sample01"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/Samples/01_SimpleScene/Source/dirent.h">
+			<Option target="Sample01"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnCore/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\GoddamnCore\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnCore/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\GoddamnCore\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnEngine/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\GoddamnEngine\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\GoddamnGraphics\GoddamnGraphicsOpenGL\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\GoddamnGraphics\GoddamnGraphicsOpenGL\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/Samples/01_SimpleScene/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\Samples\01_SimpleScene\"/>
+		</Unit>
+		<Unit filename="H:/GoddamnEngine/Source/Projects/Samples/01_SimpleScene/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Projects\Samples\01_SimpleScene\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

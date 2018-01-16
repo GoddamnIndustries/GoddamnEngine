@@ -10,18 +10,16 @@
 
 /*!
  * @file GoddamnEngine/GraphicsOpenGL/GraphicsOpenGL.cpp
- * File contains Implementation for OpenGL 4.3 Implementation of the graphics interface.
+ * File contains implementation for OpenGL(ES) graphics interface.
  */
 #include <GoddamnEngine/GraphicsOpenGL/GraphicsOpenGL.h>
-//#include <GoddamnEngine/Core/OutputDevice/OutputDevice.h>
-#define GD_DLOG_CAT "GFX device (OpenGL)"
+#include <GoddamnEngine/Core/Interaction/Debug.h>
 
 GD_NAMESPACE_BEGIN
 
-	GD_IMPLEMENT_CLASS_INFORMATION(IGraphicsOpenGL);
 	GDEXP extern IGraphics* CreateIGraphicsInstance()
 	{
-		return GD_NEW(IGraphicsOpenGL);
+		return gd_new IGraphicsOpenGL();
 	}
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,12 +31,11 @@ GD_NAMESPACE_BEGIN
 	//! @returns Non-negative value if the operation succeeded.
 	GDAPI IResult IGraphicsOpenGL::OnRuntimeInitialize()
 	{
-	//	_CheckNotInitialized();
-	//	ConsoleDevice->Log(GD_DLOG_CAT ": going to initialize graphics devices...");
-
-		IResult const _BaseResult = IGraphicsOpenGLPlatform::OnRuntimeInitialize();
-		if (IFailed(_BaseResult))
-			return _BaseResult;
+		IResult const result = IGraphicsOpenGLPlatform::OnRuntimeInitialize();
+		if (IFailed(result))
+		{
+			return result;
+		}
 
 		// Loading OpenGL core profile methods.
 		glewExperimental = GL_TRUE;
@@ -91,17 +88,19 @@ GD_NAMESPACE_BEGIN
 				switch (Severity)
 				{
 				default: 
-				case GL_DEBUG_SEVERITY_LOW_ARB:	// Possibly, this is not an error: e.g. a log from NVidia driver.
-					/*ConsoleDevice->LogFormat(GD_DLOG_CAT ": ... debug callback:\n\t%s %s #%x in %s:\n\t%s"
+				case GL_DEBUG_SEVERITY_LOW_ARB:	
+					// Possibly, this is not an error: e.g. a log from NVidia driver.
+					Debug::LogFormat("... debug callback:\n\t%s %s #%x in %s:\n\t%s"
 						, glDebugSeverity, glDebugErrorType, ID, glDebugErrorSource, Message
-						);*/
+						);
 					break;
 
 				case GL_DEBUG_SEVERITY_HIGH_ARB:
-				case GL_DEBUG_SEVERITY_MEDIUM_ARB:	// This is some kind of warning or error.
-					/*ConsoleDevice->LogErrorFormat(GD_DLOG_CAT ": ... debug callback:\n\t%s %s #%x in %s:\n\t%s"
+				case GL_DEBUG_SEVERITY_MEDIUM_ARB:	
+					// This is some kind of warning or error.
+					Debug::LogErrorFormat("... debug callback:\n\t%s %s #%x in %s:\n\t%s"
 						, glDebugSeverity, glDebugErrorType, ID, glDebugErrorSource, Message
-						);*/
+						);
 					GD_VERIFY_FALSE("Some issue inside OpenGL code.");
 				//	break;
 				}
@@ -109,8 +108,8 @@ GD_NAMESPACE_BEGIN
 		}
 		else
 		{
-			/*ConsoleDevice->LogError(GD_DLOG_CAT ": ... no 'ARB_debug_output' extension was found. No log or error checking for OpenGL code "
-				"would be provided.");*/
+			Debug::LogErrorFormat("... no 'ARB_debug_output' extension was found. No log or error checking for OpenGL code "
+				"would be provided.");
 		}
 #endif	// if GD_DEBUG
 

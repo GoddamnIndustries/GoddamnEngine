@@ -7,7 +7,8 @@
 // ==========================================================================================
 
 using System.IO;
-using GoddamnEngine.BuildSystem;
+using GoddamnEngine.BuildSystem.Target;
+using GoddamnEngine.BuildSystem.Collectors;
 
 public sealed class GoddamnGraphicsOpenGLProject : Project
 {
@@ -18,7 +19,7 @@ public sealed class GoddamnGraphicsOpenGLProject : Project
 
     public override ProjectBuildType GetBuildType(TargetPlatform platform, TargetConfiguration configuration)
     {
-        return ProjectBuildType.StaticLibrary;
+        return ProjectBuildType.DynamicLibrary;
     }
 
     public sealed override ProjectPriority GetPriority()
@@ -26,8 +27,4 @@ public sealed class GoddamnGraphicsOpenGLProject : Project
         return ProjectPriority.PluginLevel;
     }
 
-    public sealed override string GetSourceFiltersOrigin()
-    {
-        return Path.Combine(base.GetSourceFiltersOrigin(), "Core", "System", "Graphics");
-    }
 }   // class GoddamnCoreProject

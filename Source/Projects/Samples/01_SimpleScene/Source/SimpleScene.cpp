@@ -84,11 +84,38 @@ int main()
 }
 #endif	// if 0
 
+unsigned char pixels[] = {
+#include "demon_image.h"
+};
+
 int main()
 {
+
+
+#if 0
+	auto gl = LoadLibrary(TEXT("GoddamnGraphicsOpenGL.Debug.dll"));
+	auto glc = ((IGraphics*(*)())GetProcAddress(gl, TEXT("?CreateIGraphicsInstance@Goddamn@@YAPEAUIGraphics@1@XZ")));
+	Graphics = glc();
+
 	Graphics->OnRuntimePreInitialize();
 	Graphics->OnRuntimeInitialize();
 	Graphics->OnRuntimePostInitialize();
+
+	IGraphicsSampler* sampler;
+	IGraphicsSamplerCreateInfo samplerCI = {};
+	Graphics->GfxImm_SamplerCreate(&sampler, &samplerCI);
+
+	IGraphicsTexture2D* texture;
+	IGraphicsTexture2DCreateInfo textureCI = {};
+	textureCI.TextureWidth = 128;
+	textureCI.TextureHeight = 128;
+	textureCI.TexturePixelFormat = IGRAPHICS_FORMAT_R8G8B8_UNORM;
+	IGraphicsTexture2DData textureData;
+
+	textureData.TextureData = &pixels;
+	Graphics->GfxImm_Texture2DCreate(&texture, &textureCI, &textureData);
+
+	auto textureRes = texture->CPU_GetShaderResourceView();
 
 	Vector3 const positions[3] = {
 		Vector3(0.0f, 0.0f, 0.0f), Vector3(0.5f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f)
@@ -97,46 +124,44 @@ int main()
 		Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f)
 	};
 
-	IGraphicsBuffer* vertexBuffers[2] = {};
-	IGraphicsVertexArrayLayoutSlot layoutSlots[2] = {};
+	IGraphicsVertexArrayLayout layout = {};
+	layout.LayoutSlotsCount = 2;
 
-	IGraphicsBuffer*& positionBuffer = vertexBuffers[0];
-	IGraphicsBufferCreationInfo positionBufferCI = {};
-	positionBufferCI.gfxBufferType = IGRAPHICS_BUFFER_TYPE_VERTEX;
-	positionBufferCI.gfxBufferSize = sizeof(positions);
+	IGraphicsBuffer* positionBuffer;
+	IGraphicsBufferCreateInfo positionBufferCI = {};
+	positionBufferCI.BufferType = IGRAPHICS_BUFFER_TYPE_VERTEX;
+	positionBufferCI.BufferSize = sizeof(positions);
 	Graphics->GfxImm_BufferCreate(&positionBuffer, &positionBufferCI, &positions);
-	IGraphicsVertexArrayLayoutSlot& positionSlot = layoutSlots[0];
+	IGraphicsVertexArrayLayoutSlot& positionSlot = layout.LayoutSlots[0];
 	positionSlot.SlotFormat = IGRAPHICS_FORMAT_R32G32B32_FLOAT;
 	positionSlot.SlotSemantic = IGRAPHICS_SEMANTIC_POSITION;
 	positionSlot.SlotSemanticIndex = 0;
 	positionSlot.SlotClass = IGRAPHICS_INPUT_SLOT_CLASS_PER_VERTEX;
 
-	IGraphicsBuffer*& colorBuffer = vertexBuffers[1];
-	IGraphicsBufferCreationInfo colorBufferCI = {};
-	colorBufferCI.gfxBufferType = IGRAPHICS_BUFFER_TYPE_VERTEX;
-	colorBufferCI.gfxBufferSize = sizeof(colors);
+	IGraphicsBuffer* colorBuffer;
+	IGraphicsBufferCreateInfo colorBufferCI = {};
+	colorBufferCI.BufferType = IGRAPHICS_BUFFER_TYPE_VERTEX;
+	colorBufferCI.BufferSize = sizeof(colors);
 	Graphics->GfxImm_BufferCreate(&colorBuffer, &colorBufferCI, &colors);
-	IGraphicsVertexArrayLayoutSlot& colorSlot = layoutSlots[1];
+	IGraphicsVertexArrayLayoutSlot& colorSlot = layout.LayoutSlots[1];
 	colorSlot.SlotFormat = IGRAPHICS_FORMAT_R32G32B32_FLOAT;
 	colorSlot.SlotSemantic = IGRAPHICS_SEMANTIC_COLOR;
 	colorSlot.SlotSemanticIndex = 0;
 	colorSlot.SlotClass = IGRAPHICS_INPUT_SLOT_CLASS_PER_VERTEX;
 
-	IGraphicsVertexArrayLayout layout = {};
-	layout.LayoutSlots = layoutSlots;
-	layout.LayoutSlotsCount = 2;
-
 	IGraphicsVertexArray* vertexArray = nullptr;
-	IGraphicsVertexArrayCreationInfo vertexArrayCI;
-	vertexArrayCI.VertexArrayLayout = &layout;
+	IGraphicsVertexArrayCreateInfo vertexArrayCI = {};
+	vertexArrayCI.ArrayLayout = layout;
 	vertexArrayCI.ArrayIndexBuffer = nullptr;
-	vertexArrayCI.ArrayVertexBuffers = vertexBuffers;
+	vertexArrayCI.ArrayVertexBuffers[0] = positionBuffer;
+	vertexArrayCI.ArrayVertexBuffers[1] = colorBuffer;
 	Graphics->GfxImm_VertexArrayCreate(&vertexArray, &vertexArrayCI);
 
 	IGraphicsVertexShader* vertexShader;
-	IGraphicsShaderCreationInfo vertexShaderCI = {};
+	IGraphicsShaderCreateInfo vertexShaderCI = {};
 	vertexShaderCI.ShaderType = IGRAPHICS_SHADER_TYPE_VERTEX;
-	vertexShaderCI.ShaderByteCode = R"(
+	vertexShaderCI.ShaderFlags = IGRAPHICS_SHADER_FLAGS_FORCE_COMPILE_FROM_SOURCE;
+	vertexShaderCI.ShaderSource = R"(
 layout(location = 0) in vec4 in_VertexPosition;
 layout(location = 1) in vec4 in_VertexColor;
 out vec4 out_VertexColor;
@@ -150,22 +175,25 @@ void main()
 	Graphics->GfxImm_VertexShaderCreate(&vertexShader, &vertexShaderCI, &layout);
 
 	IGraphicsPixelShader* pixelShader;
-	IGraphicsShaderCreationInfo pixelShaderCI = {};
+	IGraphicsShaderCreateInfo pixelShaderCI = {};
 	pixelShaderCI.ShaderType = IGRAPHICS_SHADER_TYPE_PIXEL;
-	pixelShaderCI.ShaderByteCode = R"(
+	pixelShaderCI.ShaderFlags = IGRAPHICS_SHADER_FLAGS_FORCE_COMPILE_FROM_SOURCE;
+	pixelShaderCI.ShaderSource = R"(
 in vec4 in_VertexColor;
 out vec4 out_FragmentColor;
 
+layout(binding=8+0) uniform sampler2D gSampler;
+
 void main()
 {
-	out_FragmentColor = in_VertexColor;
+	out_FragmentColor = in_VertexColor * texture(gSampler, abs(in_VertexColor.xy));
 	out_FragmentColor.a = 0.5f;
 }
 	)";
 	Graphics->GfxImm_PixelShaderCreate(&pixelShader, &pixelShaderCI);
 
 	IGraphicsPipelineState* pipelineState = nullptr;
-	IGraphicsPipelineStateCreationInfo pipelineStateCI = {};
+	IGraphicsPipelineStateCreateInfo pipelineStateCI = {};
 	pipelineStateCI.PipelineVertexShader = vertexShader;
 	pipelineStateCI.PipelinePixelShader = pixelShader;
 	Graphics->GfxImm_PipelineCreate(&pipelineState, &pipelineStateCI);
@@ -186,6 +214,9 @@ void main()
 			scene->OnUpdate();
 			scene->OnRender();
 
+			Graphics->GfxCmd_PixelShaderBindUniformBuffers(nullptr, nullptr, 0);
+			Graphics->GfxCmd_PixelShaderBindResources(nullptr, &textureRes, 1);
+			Graphics->GfxCmd_PixelShaderBindSamplers(nullptr, &sampler, 1);
 			Graphics->GfxCmd_VertexArrayBind(nullptr, vertexArray);
 			Graphics->GfxCmd_PipelineBind(nullptr, pipelineState);
 			Graphics->GfxCmd_RenderTargetRender(nullptr, IGRAPHICS_SHADER_TOPOLOGY_TRIANGLES, 3);
@@ -195,4 +226,5 @@ void main()
 
 		}
 	}
+#endif
 }

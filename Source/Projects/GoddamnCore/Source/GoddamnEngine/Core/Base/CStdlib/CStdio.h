@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -89,7 +89,7 @@ GD_NAMESPACE_BEGIN
 		/*! 
 		 * @see @c "std::tmpnam" function.
 		 */
-		GDINL static void Tmpnam_s(Char* const temporaryPath, SizeTp const temporaryPathLength)
+		GDINL static void TmpnamSafe(Char* const temporaryPath, SizeTp const temporaryPathLength)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			auto const result = ::tmpnam_s(temporaryPath, temporaryPathLength);
@@ -109,7 +109,7 @@ GD_NAMESPACE_BEGIN
 #if GD_PLATFORM_API_MICROSOFT
 			FILE* fileHandle = nullptr;
 			auto const result = ::fopen_s(&fileHandle, filename, mode);
-			GD_DEBUG_VERIFY(result == 0, "fopen_s failed.");
+			GD_VERIFY(result == 0, "fopen_s failed.");
 			return fileHandle;
 #else	// if GD_PLATFORM_API_MICROSOFT
 			return ::fopen(filename, mode);
@@ -120,7 +120,7 @@ GD_NAMESPACE_BEGIN
 #if GD_PLATFORM_API_MICROSOFT
 			FILE* fileHandle = nullptr;
 			auto const result = ::_wfopen_s(&fileHandle, filename, mode);
-			GD_DEBUG_VERIFY(result == 0, "fopen_s failed.");
+			GD_VERIFY(result == 0, "fopen_s failed.");
 			return fileHandle;
 #else	// if GD_PLATFORM_API_MICROSOFT
 			return ::wfopen(filename, mode);
@@ -216,7 +216,7 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		/*! 
-		 * @see @c "std::putc" function.
+		 * @see @c "std::puts" function.
 		 */
 		//! @{
 		GDINL static int Puts(CStr const string, FILE* const file)
@@ -233,7 +233,7 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::fread" function.
 		 */
 		//! @{
-		GDINL static SizeTp Fread_s(Handle const bufferPtr, SizeTp const bufferSize, SizeTp const size
+		GDINL static SizeTp FreadSafe(Handle const bufferPtr, SizeTp const bufferSize, SizeTp const size  // NOLINT
 			, SizeTp const count, FILE* const file)
 		{
 #if GD_PLATFORM_API_MICROSOFT
@@ -243,9 +243,9 @@ GD_NAMESPACE_BEGIN
 			return ::fread(bufferPtr, size, count, file);
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		GDINL static SizeTp Fread(Handle const bufferPtr, SizeTp const size, SizeTp const count, FILE* const file)
+		GDINL static SizeTp Fread(Handle const bufferPtr, SizeTp const size, SizeTp const count, FILE* const file)  // NOLINT
 		{
-			return Fread_s(bufferPtr, size * count, size, count, file);
+			return FreadSafe(bufferPtr, size * count, size, count, file);
 		}
 		//! @}
 
@@ -264,8 +264,9 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * Declarations used to ban standard functions. 
 	 */
-	enum LibIOUnallowedFunctions
+	enum LibIoUnallowedFunctions
 	{
+		// ReSharper disable CppInconsistentNaming
 		remove, _wremove, wremove,
 		rename, _wrename, wrename,
 		tmpfile_s, tmpfile,
@@ -280,6 +281,7 @@ GD_NAMESPACE_BEGIN
 		fputs, fputws,
 		fread_s, fread,
 		fwrite
+		// ReSharper restore CppInconsistentNaming
 	};	// enum LibIOUnallowedFunctions
 
 GD_NAMESPACE_END

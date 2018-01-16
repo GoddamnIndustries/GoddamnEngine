@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -49,7 +49,7 @@ GD_NAMESPACE_BEGIN
 
 	GDINL static UInt32 FindLastChar(WideString const& filename, WideChar const query)
 	{
-		auto const ptr = WideCString::Strrchr(filename.CStr(), query);
+		auto const ptr = CString::Strrchr(filename.CStr(), query);
 		return ptr != nullptr ? *ptr : UInt32Max;
 	}
 	GDINL static UInt32 FindLastChar(WideString const& filename, WideChar const query1, WideChar const query2)

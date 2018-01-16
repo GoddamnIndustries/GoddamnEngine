@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -16,10 +16,13 @@ GD_NAMESPACE_BEGIN
 
 #if GD_TESTING_ENABLED
 
-	gd_testing_unit_test(StringCtorsBase)
+	gd_testing_unit_test_foreach(StringCtorsBase, T, Char, WideChar)
 	{
-		String const string("ab");
-		gd_testing_verify(string.CStr()[0] == 'a' && string.CStr()[1] == 'b' && string.CStr()[2] == '\0');
+		BaseString<T> const string(GD_TEXT(T, "ab"));
+		gd_testing_verify(string.CStr()[0] == GD_TEXT(T, 'a')
+			&& string.CStr()[1] == GD_TEXT(T, 'b')
+			&& string.CStr()[2] == GD_TEXT(T, '\0')
+			);
 	};
 
 	gd_testing_unit_test(StringEqualsNotEqualsOperators)
@@ -113,7 +116,7 @@ GD_NAMESPACE_BEGIN
 		try
 		{
 			// This should fail.
-			*(string.End() + 1);
+			(void)*(string.End() + 1);
 			gd_testing_verify(false);
 		}
 		catch (goddamn_testing::testing_exception const&)
@@ -263,53 +266,53 @@ GD_NAMESPACE_BEGIN
 		}
 	};
 
-	gd_testing_unit_test(StringFinds)
+	gd_testing_unit_test_foreach(StringFinds, T, Char, WideChar)
 	{
 		{
-			// ----------------->0123456789
-			String const string("____45_345");
+			// ----------------------------------->0123456789
+			BaseString<T> const string(GD_TEXT(T, "____45_345_"));
 			{
-				SizeTp const foundChar = string.Find('4');
+				SizeTp const foundChar = string.Find(GD_TEXT(T, '4'));
 				gd_testing_verify(foundChar == 4);
 
-				SizeTp const notFoundChar = string.Find('%');
+				SizeTp const notFoundChar = string.Find(GD_TEXT(T, '%'));
 				gd_testing_verify(notFoundChar == String::Npos);
 
-				SizeTp const foundCStr = string.Find("45");
+				SizeTp const foundCStr = string.Find(GD_TEXT(T, "45"));
 				gd_testing_verify(foundCStr == 4);
 
-				SizeTp const notFoundCStr = string.Find("43");
+				SizeTp const notFoundCStr = string.Find(GD_TEXT(T, "43"));
 				gd_testing_verify(notFoundCStr == String::Npos);
 			}
 
 			{
-				SizeTp const foundReverseChar = string.ReverseFind('4');
+				SizeTp const foundReverseChar = string.ReverseFind(GD_TEXT(T, '4'));
 				gd_testing_verify(foundReverseChar == 8);
 
-				SizeTp const notFoundReverseChar = string.ReverseFind('%');
+				SizeTp const notFoundReverseChar = string.ReverseFind(GD_TEXT(T, '%'));
 				gd_testing_verify(notFoundReverseChar == String::Npos);
 
-				SizeTp const foundReverseCStr = string.ReverseFind("45");
+				SizeTp const foundReverseCStr = string.ReverseFind(GD_TEXT(T, "45"));
 				gd_testing_verify(foundReverseCStr == 8);
 
-				SizeTp const notFoundReverseCStr = string.ReverseFind("43");
+				SizeTp const notFoundReverseCStr = string.ReverseFind(GD_TEXT(T, "43"));
 				gd_testing_verify(notFoundReverseCStr == String::Npos);
 			}
 		}
 
 		{
-			String const string("hello, world!");
+			BaseString<T> const string(GD_TEXT(T, "hello, world!"));
 			gd_testing_verify(string.StartsWith(string));
-			gd_testing_verify(string.StartsWith("hello"));
-			gd_testing_verify(string.StartsWith('h'));
-			gd_testing_verify(!string.StartsWith("world"));
-			gd_testing_verify(!string.StartsWith('w'));
+			gd_testing_verify(string.StartsWith(GD_TEXT(T, "hello")));
+			gd_testing_verify(string.StartsWith(GD_TEXT(T, 'h')));
+			gd_testing_verify(!string.StartsWith(GD_TEXT(T, "world")));
+			gd_testing_verify(!string.StartsWith(GD_TEXT(T, 'w')));
 
 			gd_testing_verify(string.EndsWith(string));
-			gd_testing_verify(string.EndsWith("world!"));
-			gd_testing_verify(string.EndsWith('!'));
-			gd_testing_verify(!string.EndsWith("hello"));
-			gd_testing_verify(!string.EndsWith('h'));
+			gd_testing_verify(string.EndsWith(GD_TEXT(T, "world!")));
+			gd_testing_verify(string.EndsWith(GD_TEXT(T, '!')));
+			gd_testing_verify(!string.EndsWith(GD_TEXT(T, "hello")));
+			gd_testing_verify(!string.EndsWith(GD_TEXT(T, 'h')));
 		}
 	};
 
@@ -356,9 +359,9 @@ GD_NAMESPACE_BEGIN
 			Int64 const integerStringUFOMinus1234Conv = integerStringUFOMinus1234.ToInt64(&result);
 			gd_testing_verify(integerStringUFOMinus1234Conv == 0 && !result);
 
-			String const hexIntegerStringMinus1234("-1234F");
+			/*String const hexIntegerStringMinus1234("-1234F");
 			Int64 const hexIntegerStringMinus1234Conv = hexIntegerStringMinus1234.ToInt64(&result, 16);
-			gd_testing_verify(hexIntegerStringMinus1234Conv == -0x1234F && result);
+			gd_testing_verify(hexIntegerStringMinus1234Conv == -0x1234F && result);*/
 		}
 
 		{

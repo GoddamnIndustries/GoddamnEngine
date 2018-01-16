@@ -13,7 +13,7 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/System/Graphics/GraphicsFormat.h>
+#include <GoddamnEngine/Engine/Interface/Graphics/GraphicsFormat.h>
 
 #if GD_IGRAPHICS_DIRECT3D1X_IMPL || GD_IGRAPHICS_DIRECT3D12_IMPL || GD_IGRAPHICS2D_DIRECT2D_IMPL
 #	include <dxgiformat.h>
@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 
 #if GD_IGRAPHICS_DIRECT3D1X_IMPL || GD_IGRAPHICS_DIRECT3D12_IMPL || GD_IGRAPHICS2D_DIRECT2D_IMPL
 	DXGI_FORMAT static const IGraphicsDirect3D1xFormatsTableDXGI[IGRAPHICS_FORMATS_COUNT] = {
-	// ..Generic formats..
+		// ..Generic formats..
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		/* IGRAPHICS_FORMAT_R32G32B32A32_FLOAT */ DXGI_FORMAT_R32G32B32A32_FLOAT,
 		/* IGRAPHICS_FORMAT_R32G32B32A32_UINT  */ DXGI_FORMAT_R32G32B32A32_UINT,

@@ -1,6 +1,6 @@
 //! ==========================================================================================
 //! Sample01.gdproj.cs - Sample #01 project file.
-//! Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+//! Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 //! ==========================================================================================
 
 using System.IO;

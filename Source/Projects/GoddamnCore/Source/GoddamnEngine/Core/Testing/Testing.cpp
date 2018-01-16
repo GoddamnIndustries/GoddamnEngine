@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -15,14 +15,14 @@
 namespace goddamn_testing
 {
 
-	gdt_api assertion_exception::assertion_exception(char const* const message, char const* const file
-		, char const* const function, unsigned line, char const* const expression)
+	gdt_api assertion_exception::assertion_exception(char const* const file, char const* const function
+		, unsigned line, char const* const expression, char const* const message, ...)
 	{
 		(void)message, file, function, line, expression;
 	}
 
-	gdt_api fatal_assertion_exception::fatal_assertion_exception(char const* const message, char const* const file
-		, char const* const function, unsigned line)
+	gdt_api fatal_assertion_exception::fatal_assertion_exception(char const* const file, char const* const function
+		, unsigned line, char const* const message, ...)
 	{
 		(void)message, file, function, line;
 	}

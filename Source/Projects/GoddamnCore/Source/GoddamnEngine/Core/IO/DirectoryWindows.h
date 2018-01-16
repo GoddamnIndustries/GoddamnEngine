@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -75,11 +75,11 @@ GD_NAMESPACE_BEGIN
 		GDAPI void Rewind()
 		{
 			Close();
-			if (WideCString::Strlen(m_DirPath) <= MAX_PATH - 3)
+			if (CString::Strlen(m_DirPath) <= MAX_PATH - 3)
 			{
 				WCHAR directoryPathWin[MAX_PATH] = {};
-				WideCString::Strcpy_s(directoryPathWin, GetLength(directoryPathWin), m_DirPath);
-				WideCString::Strcat_s(directoryPathWin, GetLength(directoryPathWin), L"\\*");
+				CString::StrcpySafe(directoryPathWin, GetLength(directoryPathWin), m_DirPath);
+				CString::StrcatSafe(directoryPathWin, GetLength(directoryPathWin), L"\\*");
 				m_DirHandle = FindFirstFileW(directoryPathWin, &m_DirData);
 				m_DirFirstRead = false;
 			}

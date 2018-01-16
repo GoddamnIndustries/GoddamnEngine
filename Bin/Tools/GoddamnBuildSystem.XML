@@ -426,11 +426,13 @@
             </summary>
         </member>
         <member name="T:GoddamnEngine.BuildSystem.Collectors.ProjectCache">
+            <inheritdoc />
             <summary>
             Represents a collection of cached data that was collected by project object.
             </summary>
         </member>
         <member name="M:GoddamnEngine.BuildSystem.Collectors.ProjectCache.#ctor(GoddamnEngine.BuildSystem.Collectors.Project)">
+            <inheritdoc />
             <summary>
             Generates cache for specified project.
             </summary>
@@ -494,6 +496,33 @@
             Represents a factory of dependencies.
             </summary>
         </member>
+        <member name="T:GoddamnEngine.BuildSystem.ProjectGenerator.CMakeProjectGenerator">
+            <summary>
+            Generator of the project/solution files for CMake.
+            </summary>
+            <inheritdoc />
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.ProjectGenerator.CMakeProjectGenerator.IsPlatformNativelySupported(GoddamnEngine.BuildSystem.Target.TargetPlatform)">
+            <summary>
+            Checks if specified platform is natively supported by VS.
+            </summary>
+            <param name="platform">One of the target platforms.</param>
+            <returns>True if platform is natively supported by VS, false otherwise.</returns>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.ProjectGenerator.CMakeProjectGenerator.GenerateProjectFiles(GoddamnEngine.BuildSystem.Collectors.ProjectCache)">
+            <summary>
+            Generates project files for Visual Studio: '.vcxproj' and '.vcxproj.filter'.
+            </summary>
+            <param name="project">Parsed project object.</param>
+            <returns>Path to Visual Studio's '.vcxproj file'.</returns>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.ProjectGenerator.CMakeProjectGenerator.GenerateSolutionFiles(GoddamnEngine.BuildSystem.Collectors.SolutionCache)">
+            <summary>
+            Generates solution files for Visual Studio.
+            </summary>
+            <param name="solution">Parsed solution object.</param>
+            <returns>Path to Visual Studio's .'sln' file.</returns>
+        </member>
         <member name="T:GoddamnEngine.BuildSystem.ProjectGenerator.ProjectGenerator">
             <summary>
             Represents a project generation algorithm interface.
@@ -532,11 +561,13 @@
             <returns>A new IDE project files generator instance</returns>
         </member>
         <member name="T:GoddamnEngine.BuildSystem.ProjectGenerator.ProjectGeneratorException">
+            <inheritdoc />
             <summary>
             Represents an exception, thrown by ProjectGenerator code.
             </summary>
         </member>
         <member name="M:GoddamnEngine.BuildSystem.ProjectGenerator.ProjectGeneratorException.#ctor(System.String,System.Object[])">
+            <inheritdoc />
             <summary>
             Constructs the build system exception with a string.
             </summary>
@@ -544,11 +575,13 @@
             <param name="arguments">Formatting arguments.</param>
         </member>
         <member name="T:GoddamnEngine.BuildSystem.ProjectGenerator.ProjectGeneratorModule">
+            <inheritdoc />
             <summary>
             Project file generation module.
             </summary>
         </member>
         <member name="M:GoddamnEngine.BuildSystem.ProjectGenerator.ProjectGeneratorModule.Execute(System.String[])">
+            <inheritdoc />
             <summary>
             Generates project files.
             </summary>
@@ -557,8 +590,9 @@
         </member>
         <member name="T:GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudioProjectGenerator">
             <summary>
-            Generator of the project/solution files for Visual Studio 2015.
+            Generator of the project/solution files for Visual Studio 2017.
             </summary>
+            <inheritdoc />
         </member>
         <member name="M:GoddamnEngine.BuildSystem.ProjectGenerator.VisualStudioProjectGenerator.IsPlatformNativelySupported(GoddamnEngine.BuildSystem.Target.TargetPlatform)">
             <summary>

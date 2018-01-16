@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -27,7 +27,7 @@ GD_NAMESPACE_BEGIN
 	//! @tparam TElement Container element type.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TElement>
-	class LinkedListNode
+	class LinkedListNode final
 	{
 		template<typename, typename>
 		friend class LinkedList;
@@ -40,6 +40,8 @@ GD_NAMESPACE_BEGIN
 
 		/*!
 		 * Initializes a single node of a single-linked container.
+		 * 
+		 * @param next Pointer to the next linked node.
 		 * @param arguments Constructor arguments of the data that would be emplaced inside node.
 		 */
 		template<typename... TArguments>
@@ -84,7 +86,7 @@ GD_NAMESPACE_BEGIN
 	//! @tparam	TLinkedListNode Single linked list node type.
 	// **------------------------------------------------------------------------------------------**
 	template <typename TLinkedListNode>
-	struct LinkedListIterator
+	struct LinkedListIterator final
 	{
 	private:
 		TLinkedListNode* m_IterNode;
@@ -154,10 +156,10 @@ GD_NAMESPACE_BEGIN
 
 	// **------------------------------------------------------------------------------------------**
 	//! Single-linked template list class.
-	//! @tparam ElementType List element type.
+	//! @tparam TElement List element type.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TElement, typename TAllocator = HeapAllocator>
-	class LinkedList final : public TNonCopyable, public TAllocator
+	class LinkedList final : public TNonCopyable, public TAllocator  // NOLINT
 	{
 	public:
 		using Element            = TElement;
@@ -317,36 +319,38 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		//! @brief Inserts the node after the specified node.
-		//! @param Node Node that would be inserted.
-		//! @param After Node after that new one would be inserted. By default, it is before first node.
-		GDINL void InsertNodeAfter(LinkedListNodeType* const Node, LinkedListNodeType* const After = nullptr)
+		/*!
+		 * Inserts the node after the specified node.
+		 * @param node Node that would be inserted.
+		 * @param after Node after that new one would be inserted. By default, it is before first node.
+		 */
+		GDINL void InsertNodeAfter(LinkedListNodeType* const node, LinkedListNodeType* const after = nullptr)
 		{
-			GD_DEBUG_VERIFY(Node != nullptr, "Null pointer node specified.");
-			if (After == nullptr)
+			GD_DEBUG_VERIFY(node != nullptr, "Null pointer node specified.");
+			if (after == nullptr)
 			{
-				this->InsertNodeFirst(Node);
+				this->InsertNodeFirst(node);
 			}
 			else
 			{
-				Node->m_Next = After->m_Next;
-				After->m_Next = Node;
-
+				node->m_Next = after->m_Next;
+				after->m_Next = node;
 				this->m_Length += 1;
 			}
 		}
 
-		//! @brief Inserts the element after the specified node.
-		//! @param Element Element that would be inserted.
-		//! @param After Node after that new one would be inserted. By default, it is last node.
-		//! @{
-		GDINL void InsertAfter(TElement&& Element = TElement(), LinkedListNodeType* const After = nullptr)
+		/*!
+		 * Inserts the element after the specified node.
+		 * @param element Element that would be inserted.
+		 * @param after Node after that new one would be inserted. By default, it is before first node.
+		 */
+		GDINL void InsertAfter(TElement&& element = TElement(), LinkedListNodeType* const after = nullptr)
 		{
-			this->InsertNodeAfter(new LinkedListNodeType(Forward<TElement>(Element), After));
+			this->InsertNodeAfter(new LinkedListNodeType(Forward<TElement>(element), after));
 		}
-		GDINL void InsertAfter(TElement const& Element, LinkedListNodeType* const After = nullptr)
+		GDINL void InsertAfter(TElement const& element, LinkedListNodeType* const after = nullptr)
 		{
-			this->InsertNodeAfter(new LinkedListNodeType(Element, After));
+			this->InsertNodeAfter(new LinkedListNodeType(element, after));
 		}
 		//! @}
 

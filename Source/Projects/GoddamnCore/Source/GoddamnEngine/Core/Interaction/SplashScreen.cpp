@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 		m_SplashScreenPath = Paths::Combine(Paths::GetEngineContentDirectory(), L"SplashScreen.bmp");
 		m_SplashTexts[static_cast<SizeTp>(SplashScreenText::ApplicationName)] = String::Format("Goddamn Engine Runtime %d.%d.%d", GD_ENGINE_VERSION_MAJOR, GD_ENGINE_VERSION_MINOR, GD_ENGINE_VERSION_PATCH);
 		m_SplashTexts[static_cast<SizeTp>(SplashScreenText::StartupProgress)] = "Initializing...";
-		m_SplashTexts[static_cast<SizeTp>(SplashScreenText::CopyrightInfo)] = "Copyright (C) Goddamn Industries 2016. All Rights Reserved.";
+		m_SplashTexts[static_cast<SizeTp>(SplashScreenText::CopyrightInfo)] = "Copyright (C) Goddamn Industries 2018. All Rights Reserved.";
 
 		glEnable(GL_TEXTURE_2D);
 

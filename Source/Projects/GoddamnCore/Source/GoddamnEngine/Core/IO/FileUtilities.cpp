@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -182,7 +182,7 @@ GD_NAMESPACE_BEGIN
 			// Could not find any other cross-platform ways for generating a directory.
 			GD_STUBBED(_wsystem);
 			WideChar mkdirCommand[2048] = L"mkdir ";
-			WideCString::Strcat_s(mkdirCommand, GetLength(mkdirCommand), Paths::Platformize(directoryName).CStr());
+			CString::StrcatSafe(mkdirCommand, GetLength(mkdirCommand), Paths::Platformize(directoryName).CStr());
 			return _wsystem(mkdirCommand) == 0;
 		}
 		return true;
@@ -201,7 +201,7 @@ GD_NAMESPACE_BEGIN
 			// Could not find any other cross-platform ways for removing a directory.
 			GD_STUBBED(_wsystem);
 			WideChar rmdirCommand[2048] = L"rmdir ";
-			WideCString::Strcat_s(rmdirCommand, GetLength(rmdirCommand), Paths::Platformize(directoryName).CStr());
+			CString::StrcatSafe(rmdirCommand, GetLength(rmdirCommand), Paths::Platformize(directoryName).CStr());
 			if (_wsystem(rmdirCommand) != 0)
 			{
 				PlatformMisc::Sleep(0);

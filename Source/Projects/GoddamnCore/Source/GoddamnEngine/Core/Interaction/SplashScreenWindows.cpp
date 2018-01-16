@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -11,7 +11,7 @@
  * Windows splash screens.
  */
 #include <GoddamnEngine/Core/Interaction/SplashScreen.h>
-#if GD_PLATFORM_WINDOWS && 0
+#if GD_PLATFORM_WINDOWS
 
 #include <atlbase.h>
 #include <StrSafe.h>

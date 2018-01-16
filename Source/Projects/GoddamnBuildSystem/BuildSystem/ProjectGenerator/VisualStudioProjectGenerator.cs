@@ -1,5 +1,5 @@
 ﻿// ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -18,8 +18,9 @@ using GoddamnEngine.BuildSystem.Target;
 namespace GoddamnEngine.BuildSystem.ProjectGenerator
 {
     /// <summary>
-    /// Generator of the project/solution files for Visual Studio 2015.
+    /// Generator of the project/solution files for Visual Studio 2017.
     /// </summary>
+    /// <inheritdoc />
     internal class VisualStudioProjectGenerator : ProjectGenerator
     {
         private const string c_MsBuild2003Namespace  = @"http://schemas.microsoft.com/developer/msbuild/2003";
@@ -41,6 +42,8 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             {
                 case ProjectSourceFileType.SourceCode:
                     return "ClCompile";
+                case ProjectSourceFileType.SourceCodeAssembler:
+                    return "MASM";
                 case ProjectSourceFileType.HeaderFile:
                     return "ClInclude";
                 case ProjectSourceFileType.InlineImplementation:
@@ -189,6 +192,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         vcxProj.WriteStartElement("PropertyGroup");
                         vcxProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", configurationName, platformString);
                         vcxProj./**/WriteAttributeString("Label", "Globals");
+                        vcxProj./**/WriteElementString("WindowsTargetPlatformVersion", "10.0.16299.0");
                         if (TargetInfo.IsMicrosoftPlatform(platform))
                         {
                             //vcxProj./**/WriteElementString("AppContainerApplication", "true");
@@ -234,6 +238,12 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 vcxProj.WriteEndElement();
                 vcxProj.WriteStartElement("Import");
                 vcxProj./**/WriteAttributeString("Project", @"$(VCTargetsPath)\Microsoft.Cpp.props");
+                vcxProj.WriteEndElement();
+                vcxProj.WriteStartElement("ImportGroup");
+                vcxProj./**/WriteAttributeString("Label", "ExtensionSettings");
+                vcxProj./**/WriteStartElement("Import");
+                vcxProj./**//**/WriteAttributeString("Project", @"$(VCTargetsPath)\BuildCustomizations\masm.props");
+                vcxProj./**/WriteEndElement();
                 vcxProj.WriteEndElement();
                 vcxProj.WriteStartElement("PropertyGroup");
                 vcxProj./**/WriteAttributeString("Label", "UserMacros");
@@ -369,6 +379,12 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
 
                 vcxProj.WriteStartElement("Import");
                 vcxProj./**/WriteAttributeString("Project", @"$(VCTargetsPath)\Microsoft.Cpp.targets");
+                vcxProj.WriteEndElement();
+                vcxProj.WriteStartElement("ImportGroup");
+                vcxProj./**/WriteAttributeString("Label", "ExtensionSettings");
+                vcxProj./**/WriteStartElement("Import");
+                vcxProj./**//**/WriteAttributeString("Project", @"$(VCTargetsPath)\BuildCustomizations\masm.targets");
+                vcxProj./**/WriteEndElement();
                 vcxProj.WriteEndElement();
 
                 vcxProj./**/WriteEndElement();

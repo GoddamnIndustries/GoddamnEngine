@@ -17,12 +17,11 @@
 
 #if GD_IGRAPHICS_OPENGL_IMPL
 #	include <GL/glew.h>
-#endif
+#endif	// if GD_IGRAPHICS_OPENGL_IMPL
 
 GD_NAMESPACE_BEGIN
 
-#if GD_IGRAPHICS_OPENGL_IMPL
-	GLenum static const IGraphicsOpenGLFormatTypesTable[IGRAPHICS_FORMAT_TYPES_COUNT] = {
+	GLenum static const g_OpenGLFormatTypesTable[IGRAPHICS_FORMAT_TYPES_COUNT] = {
 		/* IGRAPHICS_FORMAT_TYPE_INT8          */ GL_BYTE,
 		/* IGRAPHICS_FORMAT_TYPE_UINT8         */ GL_UNSIGNED_BYTE,
 		/* IGRAPHICS_FORMAT_TYPE_INT16         */ GL_SHORT,
@@ -39,10 +38,8 @@ GD_NAMESPACE_BEGIN
 		/* IGRAPHICS_FORMAT_TYPE_FLOAT64       */ GL_DOUBLE,
 		/* IGRAPHICS_FORMAT_TYPE_UNKNOWN       */ 0,
 	};
-#endif	// if GD_IGRAPHICS_OPENGL_IMPL
 
-#if GD_IGRAPHICS_OPENGL_IMPL
-	GLenum static const IGraphicsOpenGLFormatLayoutsTable[IGRAPHICS_FORMAT_LAYOUTS_COUNT] = {
+	GLenum static const g_OpenGLFormatLayoutsTable[IGRAPHICS_FORMAT_LAYOUTS_COUNT] = {
 		/* IGRAPHICS_FORMAT_LAYOUT_DEPTH       */ GL_DEPTH,
 		/* IGRAPHICS_FORMAT_LAYOUT_R           */ GL_RED,
 		/* IGRAPHICS_FORMAT_LAYOUT_RG          */ GL_RG,
@@ -50,10 +47,8 @@ GD_NAMESPACE_BEGIN
 		/* IGRAPHICS_FORMAT_LAYOUT_RGBA        */ GL_RGBA,
 		/* IGRAPHICS_FORMAT_LAYOUT_UNKNOWN     */ 0,
 	};
-#endif	// if GD_IGRAPHICS_OPENGL_IMPL
 
-#if GD_IGRAPHICS_OPENGL_IMPL
-	GLenum static const IGraphicsOpenGLIntegerFormatLayoutsTable[IGRAPHICS_FORMAT_LAYOUTS_COUNT] = {
+	GLenum static const g_OpenGLIntegerFormatLayoutsTable[IGRAPHICS_FORMAT_LAYOUTS_COUNT] = {
 		/* IGRAPHICS_FORMAT_LAYOUT_DEPTH       */ GL_DEPTH,	// Same for integer textures..
 		/* IGRAPHICS_FORMAT_LAYOUT_R           */ GL_RED_INTEGER,
 		/* IGRAPHICS_FORMAT_LAYOUT_RG          */ GL_RG_INTEGER,
@@ -61,10 +56,8 @@ GD_NAMESPACE_BEGIN
 		/* IGRAPHICS_FORMAT_LAYOUT_RGBA        */ GL_RGBA_INTEGER,
 		/* IGRAPHICS_FORMAT_LAYOUT_UNKNOWN     */ 0,
 	};
-#endif	// if GD_IGRAPHICS_OPENGL_IMPL
 
-#if GD_IGRAPHICS_OPENGL_IMPL
-	GLenum static const IGraphicsOpenGLFormatsTable[IGRAPHICS_FORMATS_COUNT] = {
+	GLenum static const g_OpenGLFormatsTable[IGRAPHICS_FORMATS_COUNT] = {
 		// ..Generic formats..
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		/* IGRAPHICS_FORMAT_R32G32B32A32_FLOAT */ GL_RGBA32F,
@@ -136,35 +129,29 @@ GD_NAMESPACE_BEGIN
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		/* IGRAPHICS_FORMAT_UNKNOWN            */ 0, 
 	};
-#endif	// if GD_IGRAPHICS_OPENGL_IMPL
 
-#if GD_IGRAPHICS_OPENGL_IMPL
-	// ------------------------------------------------------------------------------------------
-	//! Returns the OpenGL format that this format value represents.
-	//! @param gfxFormat the format value to process.
-	//! @returns The OpenGL format that this format value represents.
+	/*!
+	 * Returns the OpenGL format that this format value represents.
+	 * @param gfxFormat the format value to process.
+	 */
 	GDINL static GLenum IGraphicsOpenGLFormatConvert(IGraphicsFormat const gfxFormat)
 	{
-		return IGraphicsOpenGLFormatsTable[IGraphicsFormatGetIndex(gfxFormat)];
+		return g_OpenGLFormatsTable[IGraphicsFormatGetIndex(gfxFormat)];
 	}
-#endif	// if GD_IGRAPHICS_OPENGL_IMPL
 
-#if GD_IGRAPHICS_OPENGL_IMPL
-	// ------------------------------------------------------------------------------------------
-	//! Returns the OpenGL type that this format value represents.
-	//! @param gfxFormat the format value to process.
-	//! @returns The OpenGL type that this format value represents.
+	/*!
+	 * Returns the OpenGL type that this format value represents.
+	 * @param gfxFormat the format value to process.
+	 */
 	GDINL static GLenum IGraphicsOpenGLFormatGetType(IGraphicsFormat const gfxFormat)
 	{
-		return IGraphicsOpenGLFormatTypesTable[IGraphicsFormatGetType(gfxFormat)];
+		return g_OpenGLFormatTypesTable[IGraphicsFormatGetType(gfxFormat)];
 	}
-#endif	// if GD_IGRAPHICS_OPENGL_IMPL
 
-#if GD_IGRAPHICS_OPENGL_IMPL
-	// ------------------------------------------------------------------------------------------
-	//! Returns the OpenGL layout that this format value represents.
-	//! @param gfxFormat the format value to process.
-	//! @returns The OpenGL layout that this format value represents.
+	/*!
+	 * Returns the OpenGL layout that this format value represents.
+	 * @param gfxFormat the format value to process.
+	 */
 	GDINL static GLenum IGraphicsOpenGLFormatGetLayout(IGraphicsFormat const gfxFormat)
 	{
 		// According to the link above we cannot just simply translate our layout via a table -
@@ -172,9 +159,7 @@ GD_NAMESPACE_BEGIN
 		// https://www.opengl.org/wiki/Pixel_Transfer#Pixel_format
 		auto const gfxFormatLayout = IGraphicsFormatGetLayout(gfxFormat);
 		return IGraphicsFormatGetType(gfxFormat) <= IGRAPHICS_FORMAT_TYPE_UINT32
-			? IGraphicsOpenGLIntegerFormatLayoutsTable[gfxFormatLayout]
-			: IGraphicsOpenGLFormatLayoutsTable[gfxFormatLayout];
+			? g_OpenGLIntegerFormatLayoutsTable[gfxFormatLayout] : g_OpenGLFormatLayoutsTable[gfxFormatLayout];
 	}
-#endif	// if GD_IGRAPHICS_OPENGL_IMPL
 
 GD_NAMESPACE_END

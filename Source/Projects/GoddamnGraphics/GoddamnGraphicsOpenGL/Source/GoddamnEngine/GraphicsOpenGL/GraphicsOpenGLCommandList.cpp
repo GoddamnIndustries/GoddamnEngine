@@ -10,7 +10,7 @@
 
 /*!
  * @file GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLCommandLists.cpp
- * File contains Implementation for OpenGL 4.3 Implementation of the graphics interface: command lists.
+ * File contains implementation for OpenGL(ES) graphics interface: command lists.
  */ 
 #include <GoddamnEngine/GraphicsOpenGL/GraphicsOpenGL.h>
 
@@ -20,7 +20,25 @@ GD_NAMESPACE_BEGIN
 	// Command lists.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsOpenGLCommandList);
+	/*!
+	 * Creates a GPU command list with specified parameters.
+	 *
+	 * @param gfxCommandListPtr Pointer for output.
+	 * @param gfxCommandListCreateInfo Pointer to the command list creation information.
+	 *
+	 * @returns Non-negative value if the operation succeeded.
+	 */
+	GDAPI IResult IGraphicsOpenGLWithCommandLists::GfxImm_CommandListCreate(IGraphicsCommandList** const gfxCommandListPtr
+		, IGraphicsCommandListCreateInfo const* const gfxCommandListCreateInfo)
+	{
+#if GD_DEBUG
+		GD_ARG_VERIFY(gfxCommandListPtr != nullptr);
+		GD_ARG_VERIFY(gfxCommandListCreateInfo != nullptr);
+#endif	// if GD_DEBUG
+
+		*gfxCommandListPtr = nullptr;
+		return IResult::NotSupported;
+	}
 
 GD_NAMESPACE_END
 

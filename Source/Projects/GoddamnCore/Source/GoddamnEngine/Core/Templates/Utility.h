@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -16,9 +16,9 @@
 
 GD_NAMESPACE_BEGIN
 	
-	// ------------------------------------------------------------------------------------------
-	// R-Value references casting utilities.
-	// ------------------------------------------------------------------------------------------
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	// ******                      R-Value references casting utilities.                       ******
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	namespace Utils
 	{
@@ -52,17 +52,17 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-	}	// namespace R
+	}	// namespace Utils
 
-	// ------------------------------------------------------------------------------------------
-	// Swapping utilities.
-	// ------------------------------------------------------------------------------------------
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	// ******                               Swapping utilities.                                ******
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	/*!
 	 * Swaps values of two iterators.
 	 *
-	 * @param lhs First Iterator to swap.
-	 * @param rhs Second Iterator to swap.
+	 * @param lhsIter First Iterator to swap.
+	 * @param rhsIter Second Iterator to swap.
 	 */
 	template<typename TIterator>
 	GDINL static void IteratorSwap(TIterator const lhsIter, TIterator const rhsIter)
@@ -92,13 +92,13 @@ GD_NAMESPACE_BEGIN
 			rhs = Utils::Move(temp);
 		}
 	}
-	template<typename TSingatureArray, SizeTp SignatureArraySize>
-	GDINL static void Swap(TSingatureArray(&lhs)[SignatureArraySize], TSingatureArray(&rhs)[SignatureArraySize])
+	template<typename TSingatureArray, SizeTp TSignatureArraySize>
+	GDINL static void Swap(TSingatureArray(&lhs)[TSignatureArraySize], TSingatureArray(&rhs)[TSignatureArraySize])
 	{
 		if (&lhs != &rhs)
 		{
 			auto const startSource = lhs;
-			auto const endSource = lhs + SignatureArraySize;
+			auto const endSource = lhs + TSignatureArraySize;
 			for (auto iterator = startSource; iterator != endSource; ++iterator)
 			{
 				GD::IteratorSwap(iterator, rhs + (iterator - startSource));
@@ -107,9 +107,9 @@ GD_NAMESPACE_BEGIN
 	}
 	//! @}
 
-	// ------------------------------------------------------------------------------------------
-	// Other utilities.
-	// ------------------------------------------------------------------------------------------
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	// ******                                Other utilities.                                  ******
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	/*!
 	 *  Returns RValue reference on type without creating any instance.
@@ -117,9 +117,9 @@ GD_NAMESPACE_BEGIN
 	template<typename TSingature>
 	GDINT TSingature&& DeclValue() = delete;
 	
-	// ------------------------------------------------------------------------------------------
-	// Pair structure utilities.
-	// ------------------------------------------------------------------------------------------
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	// ******                               Pair<F, S> struct.                                 ******
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	
 	//** ------------------------------------------------------------------------------------------**
 	//! Stores key-value pair of objects. 
@@ -145,13 +145,16 @@ GD_NAMESPACE_BEGIN
 		
 		/*!
 		 * Initializes pair with specified values.
+		 * 
+		 * @param first The first of the pair being created.
+		 * @param second The second of the pair being created.
 		 */
 		//! @{
-		GDINL Pair(TFirst&& First, TSecond&& Second) 
-			: First(Forward<TFirst>(First)), Second(Forward<TSecond>(Second)) 
+		GDINL Pair(TFirst&& first, TSecond&& second) 
+			: First(Forward<TFirst>(first)), Second(Forward<TSecond>(second)) 
 		{}
-		GDINL Pair(TFirst const& First, TSecond const& Second) 
-			: First(First), Second(Second) 
+		GDINL Pair(TFirst const& first, TSecond const& second) 
+			: First(first), Second(second) 
 		{}
 		//! @}
 

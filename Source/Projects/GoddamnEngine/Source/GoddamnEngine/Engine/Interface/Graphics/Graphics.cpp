@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -11,7 +11,6 @@
  * File contains export interface for the engine graphics subsystem.
  */
 #include <GoddamnEngine/Engine/Interface/Graphics/Graphics.h>
-#include <GoddamnEngine/Engine/Interface/GraphicsOpenGL/GraphicsOpenGL.h>
 //#include <GoddamnEngine/Engine/Pipeline/Pipeline.h>
 
 
@@ -41,7 +40,7 @@ GD_NAMESPACE_BEGIN
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsCommandList);
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsBuffer);
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsVertexArray);
-	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsSamplerState);
+	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsSampler);
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsShaderResourceView);
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsTexture2D);
 	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsTextureCube);
@@ -64,7 +63,7 @@ GD_NAMESPACE_BEGIN
 
 	// ------------------------------------------------------------------------------------------
 	//! Global graphics interface pointer.
-	GDAPI IUniqueInterfacePointer<IGraphics> Graphics(CreateIGraphicsInstance(), /*PipelineManager->GetAppropriateRenderingPipeline()*/nullptr);
+	GDAPI IGraphics* Graphics = nullptr;
 
 GD_NAMESPACE_END
 

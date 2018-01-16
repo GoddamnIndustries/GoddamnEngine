@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -16,16 +16,20 @@
 #	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
 #endif	// if !defined(GD_INSIDE_INCLUDE_H)
 
+#if GD_PLATFORM_API_MICROSOFT
+extern "C" {
+	extern char const* __stdcall goddamn_strrstr(char const*, char const*);
+	extern wchar_t const* __stdcall goddamn_wcsrstr(wchar_t const*, wchar_t const*);	
+}
+#endif	// if GD_PLATFORM_API_MICROSOFT
+
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! Provides functions for C string. Contains wrapped "str*" methods and methods from 'string.h', 
 	//! 'stdlib.h' and 'stdio.h'.
-	//!
-	//! @tparam TChar Specified character type.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	template<typename TChar>
-	class BaseCString final : public TNonCreatable
+	class CString final : public TNonCreatable
 	{
 	public:
 		// ... string.h & wchar.h's functions ...
@@ -34,9 +38,7 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strcpy" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, TTChar*>::Type Strcpy_s(
-			TChar* const dest, SizeTp const destLength, TChar const* const source)
+		GDINL static CStr StrcpySafe(Char* const dest, SizeTp const destLength, CStr const source)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			auto const result = ::strcpy_s(dest, destLength, source);
@@ -47,9 +49,7 @@ GD_NAMESPACE_BEGIN
 			return ::strcpy(dest, source);
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, TTChar*>::Type Strcpy_s(
-			TChar* const dest, SizeTp const destLength, TChar const* const source)
+		GDINL static WideCStr StrcpySafe(WideChar* const dest, SizeTp const destLength, WideCStr const source)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			auto const result = ::wcscpy_s(dest, destLength, source);
@@ -66,9 +66,7 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strncpy" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, TTChar*>::Type Strncpy_s(
-			TChar* const dest, SizeTp const destLength, TChar const* const source, SizeTp const maxCount)
+		GDINL static CStr StrncpySafe(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			auto const result = ::strncpy_s(dest, destLength, source, maxCount);
@@ -79,9 +77,7 @@ GD_NAMESPACE_BEGIN
 			return ::strncpy(dest, source, maxCount);
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, TTChar*>::Type Strncpy_s(
-			TChar* const dest, SizeTp const destLength, TChar const* const source, SizeTp const maxCount)
+		GDINL static WideCStr StrncpySafe(WideChar* const dest, SizeTp const destLength, WideCStr const source, SizeTp const maxCount)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			auto const result = ::wcsncpy_s(dest, destLength, source, maxCount);
@@ -98,9 +94,7 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strcat" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, TTChar*>::Type Strcat_s(
-			TChar* const dest, SizeTp const destLength, TChar const* const source)
+		GDINL static CStr StrcatSafe(Char* const dest, SizeTp const destLength, CStr const source)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			auto const result = ::strcat_s(dest, destLength, source);
@@ -111,9 +105,7 @@ GD_NAMESPACE_BEGIN
 			return ::strcat(dest, source);
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, TTChar*>::Type Strcat_s(
-			TChar* const dest, SizeTp const destLength, TChar const* const source)
+		GDINL static WideCStr StrcatSafe(WideChar* const dest, SizeTp const destLength, WideCStr const source)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			auto const result = ::wcscat_s(dest, destLength, source);
@@ -130,9 +122,7 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strncat" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, TTChar*>::Type Strncat_s(
-			TChar* const dest, SizeTp const destLength, TChar const* const source, SizeTp const maxCount)
+		GDINL static CStr StrncatSafe(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			auto const result = ::strncat_s(dest, destLength, source, maxCount);
@@ -143,9 +133,7 @@ GD_NAMESPACE_BEGIN
 			return ::strncat(dest, source, maxCount);
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, TTChar*>::Type Strncat_s(
-			TChar* const dest, SizeTp const destLength, TChar const* const source, SizeTp const maxCount)
+		GDINL static WideCStr StrncatSafe(WideChar* const dest, SizeTp const destLength, WideCStr const source, SizeTp const maxCount)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			auto const result = ::wcsncat_s(dest, destLength, source, maxCount);
@@ -162,15 +150,11 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strcmp" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, int>::Type Strcmp(
-			TChar const* const lhs, TChar const* const rhs)
+		GDINL static Int32 Strcmp(CStr const lhs, CStr const rhs)
 		{
 			return ::strcmp(lhs, rhs);
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, int>::Type Strcmp(
-			TChar const* const lhs, TChar const* const rhs)
+		GDINL static Int32 Strcmp(WideCStr const lhs, WideCStr const rhs)
 		{
 			return ::wcscmp(lhs, rhs);
 		}
@@ -180,15 +164,11 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strncmp" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, int>::Type Strncmp(
-			TChar const* const lhs, TChar const* const rhs, SizeTp const maxCount)
+		GDINL static Int32 Strncmp(CStr const lhs, CStr const rhs, SizeTp const maxCount)
 		{
 			return ::strncmp(lhs, rhs, maxCount);
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, int>::Type Strncmp(
-			TChar const* const lhs, TChar const* const rhs, SizeTp const maxCount)
+		GDINL static Int32 Strncmp(WideCStr const lhs, WideCStr const rhs, SizeTp const maxCount)
 		{
 			return ::wcsncmp(lhs, rhs, maxCount);
 		}
@@ -198,15 +178,11 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strlen" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, SizeTp>::Type Strlen(
-			TChar const* const cstr)
+		GDINL static SizeTp Strlen(CStr const cstr)
 		{
 			return ::strlen(cstr);
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, SizeTp>::Type Strlen(
-			TChar const* const cstr)
+		GDINL static SizeTp Strlen(WideCStr const cstr)
 		{
 			return ::wcslen(cstr);
 		}
@@ -216,21 +192,13 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strchr" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, TChar const*>::Type Strchr(
-			TChar const* const cstr, TChar const Chr)
+		GDINL static CStr Strchr(CStr const cstr, Char const chr)
 		{
-			return ::strchr(cstr, static_cast<int>(Chr));
+			return ::strchr(cstr, static_cast<int>(chr));
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, TChar const*>::Type Strchr(
-			TChar const* const cstr, TChar const Chr)
+		GDINL static WideChar const* Strchr(WideChar const* const cstr, WideChar const chr)
 		{
-			return ::wcschr(cstr, static_cast<wchar_t>(Chr));
-		}
-		GDINL static TChar* Strchr(TChar* const cstr, TChar const Chr)
-		{
-			return const_cast<TChar*>(Strchr(const_cast<TChar const*>(cstr), Chr));
+			return ::wcschr(cstr, static_cast<wchar_t>(chr));
 		}
 		//! @}
 
@@ -238,21 +206,13 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strrchr" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, TChar const*>::Type Strrchr(
-			TChar const* const cstr, TChar const Chr)
+		GDINL static CStr Strrchr(CStr const cstr, Char const chr)
 		{
-			return ::strrchr(cstr, static_cast<int>(Chr));
+			return ::strrchr(cstr, static_cast<int>(chr));
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, TChar const*>::Type Strrchr(
-			TChar const* const cstr, TChar const Chr)
+		GDINL static WideChar const* Strrchr(WideChar const* const cstr, WideChar const chr)
 		{
-			return ::wcsrchr(cstr, static_cast<wchar_t>(Chr));
-		}
-		GDINL static TChar* Strrchr(TChar* const cstr, TChar const Chr)
-		{
-			return const_cast<TChar*>(Strrchr(const_cast<TChar const*>(cstr), Chr));
+			return ::wcsrchr(cstr, static_cast<wchar_t>(chr));
 		}
 		//! @}
 
@@ -260,59 +220,31 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strstr" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, TChar const*>::Type Strstr(
-			TChar const* const cstr, TChar const* const subStr)
+		GDINL static CStr Strstr(CStr const cstr, CStr const subCStr)
 		{
-			return ::strstr(cstr, subStr);
+			return ::strstr(cstr, subCStr);
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, TChar const*>::Type Strstr(
-			TChar const* const cstr, TChar const* const subStr)
+		GDINL static WideChar const* Strstr(WideChar const* const cstr, WideChar const* const subCStr)
 		{
-			return ::wcsstr(cstr, subStr);
-		}
-		GDINL static TChar* Strstr(TChar* const cstr, TChar const Chr)
-		{
-			return const_cast<TChar*>(Strstr(const_cast<TChar const*>(cstr), Chr));
+			return ::wcsstr(cstr, subCStr);
 		}
 		//! @}
 
 		/*!
 		 * Returns pointer to last occurrence of a specified C sub-string in the C string.
+		 * @see @c "std::strrstr" (does it exist?) function.
 		 *
 		 * @param cstr C string.
-		 * @param subStr C sub-string to search for.
-		 *
-		 * @returns Pointer to last occurrence of a specified C sub-string in the string.
-		 *
-		 * @see @c "std::strrstr" (does it exist?) function.
+		 * @param subÑStr C sub-string to search for.
 		 */
 		//! @{
-		GDINL static TChar const* Strrstr(TChar const* const cstr, TChar const* const subStr)
+		GDINL static CStr Strrstr(CStr const cstr, CStr const subCStr)
 		{
-			//! @todo Maybe does exist a better way to do this?
-			SizeTp const strLen = Strlen(cstr);
-			SizeTp const subStrLength = Strlen(subStr);
-			if (strLen >= subStrLength) 
-			{
-				typedef TChar const* IteratorType;
-				IteratorType const startIterator = cstr + strLen - subStrLength;
-				IteratorType const endIterator = cstr - 1;
-				for (IteratorType iterator = startIterator; iterator != endIterator; --iterator) 
-				{
-					TChar const* const Location = Strstr(iterator, subStr);
-					if (Location != nullptr)
-					{
-						return Location;
-					}
-				}
-			}
-			return nullptr;
+			return ::goddamn_strrstr(cstr, subCStr);
 		}
-		GDINL static TChar* Strrstr(TChar* const cstr, TChar const Chr)
+		GDINL static WideChar const* Strrstr(WideChar const* const cstr, WideChar const* const subCStr)
 		{
-			return const_cast<TChar*>(Strrstr(const_cast<TChar const*>(cstr), Chr));
+			return ::goddamn_wcsrstr(cstr, subCStr);
 		}
 		//! @}
 
@@ -322,16 +254,12 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::wcstombs/::mbstowcs" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, SizeTp>::Type Strtombs_s(
-			Char* const dest, SizeTp const destLength, TChar const* const source, SizeTp const maxCount)
+		GDINL static SizeTp StrtombsSafe(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
-			Strncpy_s(dest, destLength, source, maxCount);
+			StrncpySafe(dest, destLength, source, maxCount);
 			return maxCount;
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, SizeTp>::Type Strtombs_s(
-			Char* const dest, SizeTp const destLength, TChar const* const source, SizeTp const maxCount)
+		GDINL static SizeTp StrtombsSafe(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			SizeTp output = 0;
@@ -349,9 +277,7 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::wcstombs/::mbstowcs" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, SizeTp>::Type Strtowcs_s(
-			Char* const dest, SizeTp const destLength, TChar const* const source, SizeTp const maxCount)
+		GDINL static SizeTp StrtowcsSafe(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			SizeTp output = 0;
@@ -363,11 +289,9 @@ GD_NAMESPACE_BEGIN
 			return ::mbstowcs(dest, source, maxCount);
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, SizeTp>::Type Strtowcs_s(
-			Char* const dest, SizeTp const destLength, TChar const* const source, SizeTp const maxCount)
+		GDINL static SizeTp StrtowcsSafe(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
-			Strncpy_s(dest, destLength, source, maxCount);
+			StrncpySafe(dest, destLength, source, maxCount);
 			return maxCount;
 		}
 		//! @}
@@ -376,26 +300,22 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strtoull" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, UInt64>::Type Strtoui64(
-			TChar const* const cstr, TChar const** const endPtr = nullptr, SizeTp const radix = 0)
+		GDINL static UInt64 Strtoui64(CStr const cstr, Char** const endPtr = nullptr, SizeTp const base = 0)
 		{
 #if GD_PLATFORM_API_MICROSOFT
-			return ::_strtoui64(cstr, endPtr, static_cast<int>(radix));
+			return ::_strtoui64(cstr, endPtr, static_cast<int>(base));
 #else	// if GD_PLATFORM_API_MICROSOFT
 			static_assert(sizeof(UInt64) <= sizeof(unsigned long long), "'unsigned long long' is not large enough to store 'UInt64' type.");
-			return static_cast<UInt64>(::strtoull(cstr, endPtr, static_cast<int>(radix)));
+			return static_cast<UInt64>(::strtoull(cstr, endPtr, static_cast<int>(base)));
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, UInt64>::Type Strtoui64(
-			TChar const* const cstr, TChar const** const endPtr = nullptr, SizeTp const radix = 0)
+		GDINL static UInt64 Strtoui64(WideChar const* const cstr, WideChar** const endPtr = nullptr, SizeTp const base = 0)
 		{
 #if GD_PLATFORM_API_MICROSOFT
-			return ::_wcstoui64(cstr, endPtr, static_cast<int>(radix));
+			return ::_wcstoui64(cstr, endPtr, static_cast<int>(base));
 #else	// if GD_PLATFORM_API_MICROSOFT
 			static_assert(sizeof(UInt64) <= sizeof(unsigned long long), "'unsigned long long' is not large enough to store 'UInt64' type.");
-			return static_cast<UInt64>(::wcstoull(cstr, endPtr, static_cast<int>(radix)));
+			return static_cast<UInt64>(::wcstoull(cstr, endPtr, static_cast<int>(base)));
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 		//! @}
@@ -404,26 +324,22 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strtoll" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, Int64>::Type Strtoi64(
-			TChar const* const cstr, TChar const** const endPtr = nullptr, SizeTp const radix = 0)
+		GDINL static Int64 Strtoi64(CStr const cstr, CStr* const endPtr = nullptr, SizeTp const base = 0)
 		{
 #if GD_PLATFORM_API_MICROSOFT
-			return ::_strtoi64(cstr, const_cast<char**>(endPtr), static_cast<int>(radix));
+			return ::_strtoi64(cstr, const_cast<char**>(endPtr), static_cast<int>(base));
 #else	// if GD_PLATFORM_API_MICROSOFT
 			static_assert(sizeof(Int64) <= sizeof(long long), "'long long' is not large enough to store 'Int64' type.");
-			return static_cast<Int64>(::strtoll(cstr, const_cast<char**>(endPtr), static_cast<int>(radix)));
+			return static_cast<Int64>(::strtoll(cstr, const_cast<char**>(endPtr), static_cast<int>(base)));
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, Int64>::Type Strtoi64(
-			TChar const* const cstr, TChar const** const endPtr = nullptr, SizeTp const radix = 0)
+		GDINL static Int64 Strtoi64(WideChar const* const cstr, WideChar const** const endPtr = nullptr, SizeTp const base = 0)
 		{
 #if GD_PLATFORM_API_MICROSOFT
-			return ::_wcstoi64(cstr, const_cast<wchar_t**>(endPtr), static_cast<int>(radix));
+			return ::_wcstoi64(cstr, const_cast<wchar_t**>(endPtr), static_cast<int>(base));
 #else	// if GD_PLATFORM_API_MICROSOFT
 			static_assert(sizeof(Int64) <= sizeof(long long), "'long long' is not large enough to store 'Int64' type.");
-			return static_cast<Int64>(::wcstoll(cstr, const_cast<wchar_t**>(endPtr), static_cast<int>(radix)));
+			return static_cast<Int64>(::wcstoll(cstr, const_cast<wchar_t**>(endPtr), static_cast<int>(base)));
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 		//! @}
@@ -432,15 +348,11 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strtod" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, Float64>::Type Strtof64(
-			TChar const* const cstr, TChar const** const endPtr = nullptr)
+		GDINL static Float64 Strtof64(CStr const cstr, CStr* const endPtr = nullptr)
 		{
 			return ::strtod(cstr, const_cast<char**>(endPtr));
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, Float64>::Type Strtof64(
-			TChar const* const cstr, TChar const** const endPtr = nullptr)
+		GDINL static Float64 Strtof64(WideChar const* const cstr, WideChar const** const endPtr = nullptr)
 		{
 			return ::wcstod(cstr, const_cast<wchar_t**>(endPtr));
 		}
@@ -452,24 +364,24 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::vsnprintf" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, int>::Type Vsnprintf_s(
-			TChar* const dest, SizeTp const destLength, TChar const* const format, va_list arguments)
+		GDINL static Int32 VsnprintfSafe(Char* const dest, SizeTp const destLength, CStr const format, va_list arguments)
 		{
 #if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(push))
 			__pragma(warning(suppress : 4996))
-			return ::_vsnprintf_s(dest, destLength, _TRUNCATE, format, arguments);
+			return ::_vsnprintf_s(dest, destLength, _TRUNCATE, format, arguments);	// NOLINT
+			__pragma(warning(pop))
 #else	// if GD_PLATFORM_API_MICROSOFT
 			return ::vsnprintf(dest, destLength, format, arguments);
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, int>::Type Vsnprintf_s(
-			TChar* const dest, SizeTp const destLength, TChar const* const format, va_list arguments)
+		GDINL static Int32 VsnprintfSafe(WideChar* const dest, SizeTp const destLength, WideCStr const format, va_list arguments)
 		{
 #if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(push))
 			__pragma(warning(suppress : 4996))
-			return ::_vsnwprintf_s(dest, destLength, _TRUNCATE, format, arguments);
+			return ::_vsnwprintf_s(dest, destLength, _TRUNCATE, format, arguments);	// NOLINT
+			__pragma(warning(pop))
 #else	// if GD_PLATFORM_API_MICROSOFT
 			return ::vswprintf(dest, destLength, format, arguments);
 #endif	// if GD_PLATFORM_API_MICROSOFT
@@ -479,11 +391,12 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * @see @c "std::snprintf" function.
 		 */
-		GDINL static int Snprintf_s(TChar* const dest, SizeTp const destLength, TChar const* const format, ...)
+		template<typename TChar>
+		GDINL static int SnprintfSafe(TChar* const dest, SizeTp const destLength, TChar const* const format, ...)
 		{
 			va_list arguments;
 			va_start(arguments, format);
-			int const result = Vsnprintf_s(dest, destLength, format, arguments);
+			int const result = VsnprintfSafe(dest, destLength, format, arguments);
 			va_end(arguments);
 			return result;
 		}
@@ -492,9 +405,7 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::vsscanf" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, int>::Type Vsscanf_s(
-			TChar const* const source, TChar const* const format, va_list arguments)
+		GDINL static Int32 VsscanfSafe(CStr const source, CStr const format, va_list const arguments)	// NOLINT
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			return ::vsscanf_s(source, format, arguments);
@@ -502,9 +413,7 @@ GD_NAMESPACE_BEGIN
 			return ::vsscanf(source, format, arguments);
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, int>::Type Vsscanf_s(
-			TChar const* const source, TChar const* const format, va_list arguments)
+		GDINL static Int32 VsscanfSafe(WideCStr const source, WideCStr const format, va_list const arguments)	// NOLINT
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			return ::vswscanf_s(source, format, arguments);
@@ -517,11 +426,12 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * @see @c "std::sscanf" function.
 		 */
+		template<typename TChar>
 		GDINL static int Sscanf(TChar const* const source, TChar const* const format, ...)
 		{
 			va_list arguments;
 			va_start(arguments, format);
-			int const result = Vsscanf_s(source, format, arguments);
+			int const result = VsscanfSafe(source, format, arguments);
 			va_end(arguments);
 			return result;
 		}
@@ -532,6 +442,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	enum LibStringUnallowedFunctions
 	{
+		// ReSharper disable CppInconsistentNaming
 		strcpy_s, strcpy, wcscpy_s, wcscpy,
 		strncpy_s, strncpy, wcsncpy_s, wcsncpy,
 		strcat_s, strcat, wcscat_s, wcscat,
@@ -551,9 +462,7 @@ GD_NAMESPACE_BEGIN
 		_snprintf_s, snprintf, _snwprintf_s, snwprintf,
 		vsscanf_s, vsscanf, vswscanf_s, vswscanf,
 		sscanf_s, sscanf, wscanf_s, wscanf,
+		// ReSharper restore CppInconsistentNaming
 	};	// enum LibCharUnallowedFunctions
-
-	typedef BaseCString<Char> CString;
-	typedef BaseCString<WideChar> WideCString;
 
 GD_NAMESPACE_END

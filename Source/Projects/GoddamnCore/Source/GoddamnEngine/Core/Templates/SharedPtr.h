@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -15,6 +15,10 @@
 #include <GoddamnEngine/Include.h>
 
 GD_NAMESPACE_BEGIN
+
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	// ******                                SharedPtr<T> class.                               ******
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	// **------------------------------------------------------------------------------------------**
 	//! Implements base non-thread safe reference counting.
@@ -80,9 +84,9 @@ GD_NAMESPACE_BEGIN
 	}
 
 	// **------------------------------------------------------------------------------------------**
-	//! Implements casting operations for shared pointers.
+	//! Implements casting operations for shared pointers using @c static_cast.
 	// **------------------------------------------------------------------------------------------**
-	struct SharedPtrCastOperation final : public TNonCreatable
+	struct SharedPtrStaticCastOperation final : public TNonCreatable
 	{
 		/*!
 		 * Casts to types using static_cast.
@@ -92,12 +96,12 @@ GD_NAMESPACE_BEGIN
 		{
 			return static_cast<TCastTo>(castFrom);
 		}
-	};	// struct SharedPtrCastOperation
+	};	// struct SharedPtrStaticCastOperation
 
 	// **------------------------------------------------------------------------------------------**
 	//! Helper class that implements a reference-counting pattern for objects.
 	// **------------------------------------------------------------------------------------------**
-	template<typename TPointee, typename TCast = SharedPtrCastOperation>
+	template<typename TPointee, typename TCast = SharedPtrStaticCastOperation>
 	struct SharedPtr final
 	{
 		template<typename, typename>
@@ -128,9 +132,10 @@ GD_NAMESPACE_BEGIN
 		 * @param rawPointer Raw pointer.
 		 */
 		//! @{
-		GDINL implicit SharedPtr(nullptr_t)
+		GDINL implicit SharedPtr(nullptr_t rawPointer)
 			: m_RawPointer(nullptr)
 		{
+			GD_NOT_USED(rawPointer);
 		}
 		GDINL implicit SharedPtr(TPointee* const rawPointer)
 			: m_RawPointer(rawPointer)
@@ -264,11 +269,21 @@ GD_NAMESPACE_BEGIN
 			static_assert(TypeTraits::IsBase<TOtherPointee, TPointee>::Value || TypeTraits::IsBase<TPointee, TOtherPointee>::Value, "Cast types should be related.");
 			return TCast::template Cast<TOtherPointee*>(m_RawPointer);
 		}
-		GDINL operator SharedPtr<TPointee const, TCast>() const
+		GDINL implicit operator SharedPtr<TPointee const, TCast>() const
 		{
 			return m_RawPointer;
 		}
 
 	};	// struct SharedPtr<TPointee>
+
+	/*!
+	 * Creates a shared pointer.
+	 * @param pointee Raw pointer.
+	 */
+	template<typename TPointee>
+	GDINL static SharedPtr<TPointee> MakeShared(TPointee* const pointee)
+	{
+		return SharedPtr<TPointee>(pointee);
+	}
 
 GD_NAMESPACE_END

@@ -1,5 +1,5 @@
 ﻿// ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Goddamn Industries")]
 [assembly: AssemblyProduct("GoddamnBuildSystem")]
-[assembly: AssemblyCopyright("Copyright (C) 2016")]
+[assembly: AssemblyCopyright("Copyright (C) 2018")]
 [assembly: AssemblyTrademark("GoddamnEngine")]
 [assembly: ComVisible(false)]
 [assembly: Guid("c969391c-9f42-4d25-bc11-4051f17f0118")]

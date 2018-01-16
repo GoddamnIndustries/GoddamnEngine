@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -14,7 +14,9 @@
 #define GD_INSIDE_WINDOW_H
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/BasePlatform.h>
+
+#include <GoddamnEngine/Core/PlatformSpecificInclude.h>
+#include <GoddamnEngine/Core/Object/Object.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -45,12 +47,12 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! Generic window class. 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class WindowGeneric : public IVirtuallyDestructible
+	class WindowGeneric : public Object
 	{
-	protected:
-		WindowMode m_WindowMode;
-		UInt32 m_WindowWidth;
-		UInt32 m_WindowHeight;
+		GD_DECLARE_OBJECT_INTRINSIC(WindowGeneric, Object)
+		GD_PROPERTY(protected, WindowMode, m_WindowMode);
+		GD_PROPERTY(protected, UInt32, m_WindowWidth);
+		GD_PROPERTY(protected, UInt32, m_WindowHeight);
 
 	protected:
 
@@ -90,7 +92,11 @@ GD_NAMESPACE_BEGIN
 		 * @param windowMode The new window mode that would be set.
 		 * @param doForceReapply Do forcedly reapply mode, even if device is running is the same mode.
 		 */
-		GDAPI virtual void SetWindowMode(WindowMode const windowMode, bool const doForceReapply = false) GD_PURE_VIRTUAL;
+		GDAPI virtual void SetWindowMode(WindowMode const windowMode, bool const doForceReapply = false) GD_PURE_VIRTUAL
+		{
+			m_WindowMode = windowMode;
+			GD_NOT_USED(doForceReapply);
+		}
 
 		/*!
 		 * Retrieves the dimensions in which this window is running.
@@ -111,7 +117,12 @@ GD_NAMESPACE_BEGIN
 		 * @param windowHeight New window height.
 		 * @param doForceReapply Do forcedly reapply dimensions, even if device is running is the same mode.
 		 */
-		GDAPI virtual void SetWindowDimensions(UInt32 const windowWidth, UInt32 const windowHeight, bool const doForceReapply = false) GD_PURE_VIRTUAL;
+		GDAPI virtual void SetWindowDimensions(UInt32 const windowWidth, UInt32 const windowHeight, bool const doForceReapply = false) GD_PURE_VIRTUAL
+		{
+			m_WindowWidth = windowWidth;
+			m_WindowHeight = windowHeight;
+			GD_NOT_USED(doForceReapply);
+		}
 
 		/*!
 		 * Callback being called to update the window.

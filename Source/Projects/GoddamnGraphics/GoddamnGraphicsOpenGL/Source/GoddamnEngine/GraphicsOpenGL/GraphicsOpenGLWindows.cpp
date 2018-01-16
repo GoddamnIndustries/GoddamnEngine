@@ -11,7 +11,7 @@
  * File contains Implementations for Windows-specific code of the OpenGL 4.3 Implementation 
  * of the graphics interface.
  */
-#include <GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLWindows.h>
+#include <GoddamnEngine/GraphicsOpenGL/GraphicsOpenGL.h>
 #if GD_PLATFORM_WINDOWS
 
 //#include <GoddamnEngine/Core/OutputDevice/OutputDevice.h>
@@ -136,8 +136,8 @@ GD_NAMESPACE_BEGIN
 	GDAPI void IGraphicsOpenGLWindows::OnRuntimePostUpdate()
 	{
 		//! @todo Uncomment this.
-		/*IGraphicsPlatform::OnRuntimePostUpdate();
-		SwapBuffers(HGLRCDeviceContext);*/
+		IGraphicsPlatform::OnRuntimePostUpdate();
+		SwapBuffers(HGLRCDeviceContext);
 	}
 
 GD_NAMESPACE_END

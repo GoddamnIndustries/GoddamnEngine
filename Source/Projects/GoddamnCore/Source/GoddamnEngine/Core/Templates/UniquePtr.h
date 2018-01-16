@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -15,6 +15,10 @@
 #include <GoddamnEngine/Include.h>
 
 GD_NAMESPACE_BEGIN
+
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	// ******                                UniquePtr<T> class.                               ******
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	template<typename TPointee>
 	class UniquePtrBase : TNonCopyable
@@ -48,7 +52,7 @@ GD_NAMESPACE_BEGIN
 		using TTPointee = typename UniquePtrBase<TPointee>::TTPointee;
 
 	private:
-		TTPointee* m_RawPointer = nullptr;
+		TTPointee* m_RawPointer;
 
 	public:
 
@@ -65,9 +69,10 @@ GD_NAMESPACE_BEGIN
 		 * @param rawPointer Raw pointer to the object.
 		 */
 		//! @{
-		GDINL explicit UniquePtr(nullptr_t) 
+		GDINL explicit UniquePtr(nullptr_t rawPointer)
 			: m_RawPointer(nullptr)
 		{
+			GD_NOT_USED(rawPointer);
 		}
 		GDINL explicit UniquePtr(TTPointee* const rawPointer)
 			: m_RawPointer(rawPointer)
@@ -169,5 +174,15 @@ GD_NAMESPACE_BEGIN
 		}
 
 	};	// class UniquePtr 
+
+	/*!
+	 * Creates a unique pointer.
+	 * @param pointee Raw pointer.
+	 */
+	template<typename TPointee>
+	GDINL static UniquePtr<TPointee> MakeUnique(TPointee* const pointee)
+	{
+		return UniquePtr<TPointee>(pointee);
+	}
 
 GD_NAMESPACE_END

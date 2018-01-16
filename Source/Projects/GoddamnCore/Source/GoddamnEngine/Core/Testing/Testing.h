@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -16,6 +16,8 @@
 #define gdt_api __declspec(dllexport)
 #define gdt_analysis_assume(...) __analysis_assume(__VA_ARGS__)
 
+#include <exception>
+
 // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 // ******                                 Testing core.                                    ******
 // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
@@ -24,11 +26,11 @@
  * Defines an assert, that should replace application's default asserts.
  * It is used to test the correct behavior for incorrect input data that application should fail on. 
  */
-#define gd_testing_assert(expression, message, ...) \
+#define gd_testing_assert(expression, ...) \
 	do { \
 		gdt_analysis_assume(expression); \
 		if (!(expression)) { \
-			throw ::goddamn_testing::assertion_exception(message, __FILE__, __FUNCTION__, __LINE__, #expression); \
+			throw ::goddamn_testing::assertion_exception(__FILE__, __FUNCTION__, __LINE__, #expression, __VA_ARGS__); \
 		} \
 	} while (false); 
 
@@ -36,9 +38,9 @@
  * Defines an assert, that should replace application's default fatal asserts.
  * It is used to test the correct behavior for incorrect input data that application should fail on. 
  */
-#define gd_testing_assert_false(message, ...) \
+#define gd_testing_assert_false(...) \
 	do { \
-		throw ::goddamn_testing::fatal_assertion_exception(message, __FILE__, __FUNCTION__, __LINE__); \
+		throw ::goddamn_testing::fatal_assertion_exception(__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__); \
 	} while (false); 
 
 /*!
@@ -70,7 +72,7 @@ namespace goddamn_testing
 	/*!
 	 * Base testing exception class.
 	 */
-	struct testing_exception
+	struct testing_exception : public std::exception
 	{
 	public:
 		gdt_api testing_exception(...) {}
@@ -83,8 +85,8 @@ namespace goddamn_testing
 	struct assertion_exception : testing_exception
 	{
 	public:
-		gdt_api assertion_exception(char const* const message, char const* const file
-			, char const* const function, unsigned line, char const* const expression);
+		gdt_api assertion_exception(char const* const file, char const* const function
+			, unsigned line, char const* const expression, char const* const message = nullptr, ...);
 	};	// struct assertion_exception
 
 	/*!
@@ -94,8 +96,8 @@ namespace goddamn_testing
 	struct fatal_assertion_exception : testing_exception
 	{
 	public:
-		gdt_api fatal_assertion_exception(char const* const message, char const* const file
-			, char const* const function, unsigned line);
+		gdt_api fatal_assertion_exception(char const* const file, char const* const function
+			, unsigned line, char const* const message = nullptr, ...);
 	};	// struct fatal_assertion_exception
 
 	/*!

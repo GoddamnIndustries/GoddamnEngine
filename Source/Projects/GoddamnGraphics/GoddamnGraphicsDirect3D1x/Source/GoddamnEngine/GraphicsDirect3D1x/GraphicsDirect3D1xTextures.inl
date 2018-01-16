@@ -12,8 +12,8 @@
  * @file GoddamnEngine/Core/System/Graphics/GraphicsDirect3D1x/GraphicsDirect3D1xTextures.cpp
  * File contains Implementation for Direct3D1x 4.3 Implementation of the graphics interface: sampler states and textures.
  */
-#include <GoddamnEngine/Core/System/Graphics/GraphicsDirect3D1x/GraphicsDirect3D1x.h>
-#include <GoddamnEngine/Core/System/Graphics/GraphicsDirect3D1x/GraphicsDirect3D1xFormatDXGI.h>
+#include <GoddamnEngine/GraphicsDirect3D1x/GraphicsDirect3D1x.h>
+#include <GoddamnEngine/GraphicsDirect3D1x/GraphicsDirect3D1xFormatDXGI.h>
 #if GD_PLATFORM_API_MICROSOFT
 
 GD_NAMESPACE_BEGIN

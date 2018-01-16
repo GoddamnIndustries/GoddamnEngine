@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -243,8 +243,9 @@ GD_NAMESPACE_BEGIN
 						ChangeDisplaySettings(nullptr, 0);
 
 						// Selecting the nearest monitor to the one, on which our main window is rendered be default.
-						auto windowCurrentMonitor = MonitorFromWindow(m_WindowMainHandle, MONITOR_DEFAULTTONEAREST);
-						MONITORINFO windowCurrentMonitorInfo = { sizeof windowCurrentMonitorInfo, 0 };
+						auto const windowCurrentMonitor = MonitorFromWindow(m_WindowMainHandle, MONITOR_DEFAULTTONEAREST);
+						MONITORINFO windowCurrentMonitorInfo = { };
+						windowCurrentMonitorInfo.cbSize = sizeof windowCurrentMonitorInfo;
 						GetMonitorInfo(windowCurrentMonitor, &windowCurrentMonitorInfo);
 						auto const windowCurrentMonitorWidth = windowCurrentMonitorInfo.rcMonitor.right - windowCurrentMonitorInfo.rcMonitor.left;
 						auto const windowCurrentMonitorHeight = windowCurrentMonitorInfo.rcMonitor.bottom - windowCurrentMonitorInfo.rcMonitor.top;

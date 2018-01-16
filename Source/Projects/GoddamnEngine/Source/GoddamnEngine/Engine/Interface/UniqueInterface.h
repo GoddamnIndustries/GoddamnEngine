@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -45,7 +45,7 @@
 //! Defines a base type for the unique interface partial declaration.
 //! @param IInterfaceType Type of the interface to declare.
 //! @param IBaseInterfaceType Base type for this interface.
-#define GD_UNIQUE_INTERFACE_DEFINE_PARTIAL_BASE(IInterfaceType, IBaseInterfaceType) \
+#define GD_DEFINE_PARTIAL_CALSS_FIRST(IInterfaceType, IBaseInterfaceType) \
 	uinterface __ ## IInterfaceType ## Zero : public IBaseInterfaceType {}; \
 	enum __ ## IInterfaceType ## ZeroCounterType { __ ## IInterfaceType ## CounterBase = __COUNTER__ };\
 	template<int __ ## IInterfaceType ## ChainID> struct __ ## IInterfaceType ## ByChainID { typedef __ ## IInterfaceType ## Zero Type; };
@@ -54,7 +54,7 @@
 //! Defines a partial interface declaration.
 //! @param IInterfaceType Type of the partial interface to declare.
 //! @param IPartialBaseInterfaceType Base for the partial interface type.
-#define GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IInterfaceType, IPartialBaseInterfaceType) \
+#define GD_DEFINE_PARTIAL_CLASS(IInterfaceType, IPartialBaseInterfaceType, ...) \
 	uinterface IInterfaceType; \
 	enum __ ## IInterfaceType ## CounterType { __ ## IInterfaceType ## ChainID = __COUNTER__ - __ ## IPartialBaseInterfaceType ## CounterBase - 1 };\
 	template<> struct __ ## IPartialBaseInterfaceType ## ByChainID<__ ## IInterfaceType ## ChainID> { typedef IInterfaceType Type; }; \
@@ -80,12 +80,18 @@ GD_NAMESPACE_BEGIN
 		NothingWasDone,
 		NothingWasDone2,
 		Error = Int32Min,
+		NotSupported,
 		NotImplemented,
 		InvalidArguments,
 		InterfaceAlreadyInitialized,
 		InterfaceWasNotInitialized,
 		NativeFunctionFailed,
 	};	// enum class IResult
+
+	GDINL static void ThrowIfFailed(IResult const _Hr)
+	{
+		GD_VERIFY(_Hr == IResult::Ok, "WINAPI\\D3D11 function has failed.");
+	}
 
 	// ------------------------------------------------------------------------------------------
 	//! Tests, whether the result value represents successful one.

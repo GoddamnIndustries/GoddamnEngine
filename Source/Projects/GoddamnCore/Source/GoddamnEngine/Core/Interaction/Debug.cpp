@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -22,10 +22,10 @@ GD_NAMESPACE_BEGIN
 // ******                            'OutputDevice' class.                                 ******	
 // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
-/*!
- * Stores pointer to all output devices.
- */
-	GDINT static Vector<UniquePtr<DebugOutputDevice>> g_OutputDevices;// = { /*UniquePtr<DebugOutputDevice>(gd_new(ConsoleOutputDevice))*/ };
+	/*!
+	 * Stores pointer to all output devices.
+	 */
+	GDINT static Vector<UniquePtr<DebugOutputDevice>> g_OutputDevices;// = {/* UniquePtr<DebugOutputDevice>(gd_new ConsoleOutputDevice)*/ };
 
 	/*!
 	 * Initializes a new output device with parameters.

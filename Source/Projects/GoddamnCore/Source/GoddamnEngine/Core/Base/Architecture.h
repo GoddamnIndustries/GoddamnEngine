@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -31,7 +31,6 @@
 #	define _USE_MATH_DEFINES    										GD_TRUE
 #	define WIN32_LEAN_AND_MEAN											GD_TRUE
 #	define VC_EXTRALEAN													GD_TRUE
-//#	define _CRT_SECURE_NO_WARNINGS										GD_TRUE
 #	if 0																// These enables heap debugging.
 #	define _CRTDBG_MAP_ALLOC											GD_TRUE
 #	define _CRTDBG_MAP_ALLOC_NEW										GD_TRUE

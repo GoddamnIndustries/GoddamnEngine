@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -47,7 +47,7 @@ GD_NAMESPACE_BEGIN
 	// ******                               Iterator traits.                                   ******
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
-	template<typename IteratorType>
+	template<typename TIteratorType>
 	struct IteratorTraits final
 	{
 		enum { IsForward = 1 };
@@ -77,7 +77,7 @@ GD_NAMESPACE_BEGIN
 
 	private:
 		TContainer&	m_Container;
-		SizeTp		m_Index = 0;
+		SizeTp		m_Index;
 
 	public:
 
@@ -377,8 +377,8 @@ GD_NAMESPACE_BEGIN
 	{
 		return container.Begin();
 	}
-	template<typename TArrayElement, SizeTp ArrayLength>
-	GDINL static TArrayElement* Begin(TArrayElement(&array)[ArrayLength])
+	template<typename TArrayElement, SizeTp TArrayLength>
+	GDINL static TArrayElement* Begin(TArrayElement(&array)[TArrayLength])
 	{
 		return array;
 	}

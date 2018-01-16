@@ -1,0 +1,11 @@
+C:\Users\Oleg\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\173.4127.32\bin\cmake\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" H:\GoddamnEngine\Source
+CMake Error at CMakeLists.txt:3 (add_subdirectory):
+  The source directory
+
+    H:/GoddamnEngine/Source/Projects/GoddamnBuildSystem
+
+  does not contain a CMakeLists.txt file.
+
+
+-- Configuring incomplete, errors occurred!
+See also "H:/GoddamnEngine/Source/cmake-build-debug/CMakeFiles/CMakeOutput.log".

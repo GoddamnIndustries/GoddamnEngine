@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -48,7 +48,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL BaseStringBuilder()
 		{
-			m_Container.InsertLast(GD_LITERAL(TChar, '\0'));
+			m_Container.InsertLast(GD_TEXT(TChar, '\0'));
 		}
 
 		/*!
@@ -98,7 +98,8 @@ GD_NAMESPACE_BEGIN
 		}
 
 		/*!
-		 * Reserves memory for string builder to make it contain specified number of characters without reallocation when calling Append method.
+		 * Reserves memory for string builder to make it contain specified number of characters without reallocation when 
+		 * calling Append method.
 		 * @param newCapacity New required capacity of the string.
 		 */
 		GDINL void Reserve(SizeTp const newCapacity)
@@ -121,22 +122,63 @@ GD_NAMESPACE_BEGIN
 		//! @}
 
 		/*!
-		 * Appends a character to this string builder.
-		 *
-		 * @param character The character to Append.
-		 * @returns this.
+		 * Converts this builder to normal string builder.
+		 * @returns C-string equivalent of this string builder.
 		 */
-		GDINL BaseStringBuilder& Append(TChar const character)
+		GDINL BaseStringType ToString() const
 		{
-			m_Container.GetLast() = character;
-			m_Container.InsertLast(GD_LITERAL(TChar, '\0'));
+			return BaseStringType(CStr(), GetLength());
+		}
+
+		// ------------------------------------------------------------------------------------------
+		// Concatenations.
+		// ------------------------------------------------------------------------------------------
+
+		/*!
+		 * Appends specified string to this string builder.
+		 * 
+		 * @param text Text to append.
+		 * @param textLength Length of text to append.
+		 */
+		GDINL BaseStringBuilder& Append(TChar const* const text, SizeTp const textLength)
+		{
+			auto const startPos = m_Container.GetLength() - 1;
+			m_Container.Resize(m_Container.GetLength() + textLength);
+			CMemory::Memcpy(m_Container.GetData() + startPos, text, (textLength + 1) * sizeof(TChar));
 			return *this;
 		}
 
 		/*!
-		 * Appends format-able string to this string builder.
+		 * Appends specified text to this string builder.
+		 * @param text Text to append.
+		 */
+		//! @{
+		GDINL BaseStringBuilder& Append(TChar const text)
+		{
+			m_Container.GetLast() = text;
+			m_Container.InsertLast(GD_TEXT(TChar, '\0'));
+			return *this;
+		}
+		template <SizeTp const TLength>	
+		GDINL BaseStringBuilder& Append(TChar const(&text)[TLength])
+		{
+			return Append(text, TLength - 1);
+		}
+		GDINL BaseStringBuilder& Append(TChar const* const text)
+		{
+			return Append(text, CString::Strlen(text));
+		}
+		GDINL BaseStringBuilder& Append(BaseStringType const& text)
+		{
+			return Append(text.CStr(), text.GetLength());
+		}
+		//! @}
+
+		/*!
+		 * Appends formatable string to this string builder.
 		 *
 		 * @param format Standard printf-like format.
+		 * @param ... Format Arguments.
 		 * @returns this.
 		 */
 		GDINL BaseStringBuilder& AppendFormat(TChar const* const format, ...)
@@ -151,64 +193,13 @@ GD_NAMESPACE_BEGIN
 			return *this;
 		}
 
-		/*!
-		 * Appends a C string with specified m_Length to this string builder.
-		 *
-		 * @param cstring String C string to Append.
-		 * @returns this.
-		 */
-		GDINL BaseStringBuilder& Append(TChar const* const cstring, SizeTp const length)
-		{
-			auto const startPos = m_Container.GetLength() - 1;
-			m_Container.Resize(m_Container.GetLength() + length);
-			CMemory::Memcpy(m_Container.GetData() + startPos, cstring, (length + 1) * sizeof(TChar));
-			return *this;
-		}
-
-		/*!
-		 * Appends a C string to this string builder.
-		 *
-		 * @param cstring String C string to Append.
-		 * @returns this.
-		 */
-		//! @{
-		template <SizeTp const TLength>	
-		GDINL BaseStringBuilder& Append(TChar const(&cstring)[TLength])
-		{
-			return Append(cstring, TLength - 1);
-		}
-		GDINL BaseStringBuilder& Append(TChar const* const cstring)
-		{
-			return Append(cstring, static_cast<SizeTp>(BaseCString<TChar>::Strlen(cstring)));
-		}
-		//! @}
-
-		/*!
-		 * Appends a Goddamn string to this string builder.
-		 *
-		 * @param string Goddamn string to Append.
-		 * @returns this.
-		 */
-		GDINL BaseStringBuilder& Append(BaseStringType const& string)
-		{
-			return Append(string.CStr(), string.GetLength());
-		}
-
-		/*!
-		 * Converts this builder to normal string builder.
-		 * @returns C-string equivalent of this string builder.
-		 */
-		GDINL BaseStringType ToString() const
-		{
-			return BaseStringType(CStr(), GetLength());
-		}
-
 	public:
 
 		// ------------------------------------------------------------------------------------------
 		// Overloaded operators.
 		// ------------------------------------------------------------------------------------------
 
+		// string[]
 		GDINL CharType const& operator[] (SizeTp const index) const
 		{
 			return m_Container[index];
@@ -218,6 +209,7 @@ GD_NAMESPACE_BEGIN
 			return m_Container[index];
 		}
 
+		// string builder = string builder
 		GDINL BaseStringBuilder& operator= (BaseStringBuilder&& other) noexcept
 		{
 			if (this != &other)
@@ -226,6 +218,7 @@ GD_NAMESPACE_BEGIN
 			}
 			return *this;
 		}
+
 	};	// class BaseStringBuilder
 
 	using StringBuilder = BaseStringBuilder<Char>;

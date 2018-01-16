@@ -10,11 +10,10 @@
 
 /*!
  * @file GoddamnEngine/GraphicsOpenGL/GraphicsOpenGLShaders.cpp
- * File contains Implementation for OpenGL 4.3 Implementation of the graphics interface: pipeline states.
+ * File contains implementation for OpenGL(ES) graphics interface: pipeline states.
  */ 
 #include <GoddamnEngine/GraphicsOpenGL/GraphicsOpenGL.h>
-//#include <GoddamnEngine/Core/OutputDevice/OutputDevice.h>
-#include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Interaction/Debug.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -22,49 +21,35 @@ GD_NAMESPACE_BEGIN
 	// Pipeline state object.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	GD_IMPLEMENT_CLASS_INFORMATION_NOT_CONSTRUCTIBLE(IGraphicsOpenGLPipelineState);
-
-	// ------------------------------------------------------------------------------------------
-	//! Creates a new GPU pipeline with specified parameters.
-	//! @param gfxPipelineCreationInfo Creation information for the pipeline.
-	GDAPI IGraphicsOpenGLPipelineState::IGraphicsOpenGLPipelineState(IGraphicsPipelineStateCreationInfo const* const gfxPipelineStateCreationInfo)
-		: IGraphicsPipelineState(gfxPipelineStateCreationInfo), m_GLProgramPipelineID(0)
+	/*!
+	 * Creates a new GPU pipeline with specified parameters.
+	 * @param gfxPipelineCreateInfo Creation information for the pipeline.
+	 */
+	GDAPI IGraphicsOpenGLPipelineState::IGraphicsOpenGLPipelineState(IGraphicsPipelineStateCreateInfo const* const gfxPipelineStateCreateInfo)
+		: IGraphicsPipelineState(gfxPipelineStateCreateInfo)
+		, m_GLProgramPipelineID(0)
 	{
 		glUseProgram(0);
 		glGenProgramPipelines(1, &m_GLProgramPipelineID);
 		glBindProgramPipeline(m_GLProgramPipelineID);
-		if (gfxPipelineStateCreationInfo->PipelineVertexShader != nullptr)
+		if (PipelineVertexShader != nullptr)
 		{
 			// Binding our vertex shader (if it exist).
-			auto const gfxVertexShader = static_cast<IGraphicsOpenGLVertexShader const*>(gfxPipelineStateCreationInfo->PipelineVertexShader);
+			auto const gfxVertexShader = static_cast<IGraphicsOpenGLVertexShader const*>(PipelineVertexShader);
 			glUseProgramStages(m_GLProgramPipelineID, GL_VERTEX_SHADER_BIT, gfxVertexShader->m_GLShaderProgramID);
 		}
-		if (gfxPipelineStateCreationInfo->PipelinePixelShader != nullptr)
+		if (PipelinePixelShader != nullptr)
 		{
 			// Binding our pixel ('Fragment' in OpenGL terms) shader (if it exist).
-			auto const gfxFragmentShader = static_cast<IGraphicsOpenGLPixelShader const*>(gfxPipelineStateCreationInfo->PipelinePixelShader);
+			auto const gfxFragmentShader = static_cast<IGraphicsOpenGLPixelShader const*>(PipelinePixelShader);
 			glUseProgramStages(m_GLProgramPipelineID, GL_FRAGMENT_SHADER_BIT, gfxFragmentShader->m_GLShaderProgramID);
 		}
-		if (gfxPipelineStateCreationInfo->PipelineGeometryShader != nullptr)
+		if (PipelineGeometryShader != nullptr)
 		{
 			// Binding our geometry shader (if it exist).
-			auto const gfxGeometryShader = static_cast<IGraphicsOpenGLGeometryShader const*>(gfxPipelineStateCreationInfo->PipelineGeometryShader);
+			auto const gfxGeometryShader = static_cast<IGraphicsOpenGLGeometryShader const*>(PipelineGeometryShader);
 			glUseProgramStages(m_GLProgramPipelineID, GL_GEOMETRY_SHADER_BIT, gfxGeometryShader->m_GLShaderProgramID);
 		}
-#if GD_FALSE
-		if (gfxPipelineStateCreationInfo->PipelineHullShader != nullptr)
-		{
-			// Binding our hull ('Tessellation Control' in OpenGL terms) shader (if it exist).
-			auto const gfxTesselationControlShader = static_cast<IGraphicsOpenGLHullShader const*>(gfxPipelineStateCreationInfo->PipelineHullShader);
-			glUseProgramStages(GLProgramPipelineID, GL_TESS_CONTROL_SHADER_BIT, gfxTesselationControlShader->GLShaderProgramID);
-		}
-		if (gfxPipelineStateCreationInfo->PipelineDomainShader != nullptr)
-		{
-			// Binding our domain ('Tessellation Evaluation' in OpenGL terms) shader (if it exist).
-			auto const gfxTesselationEvaluationShader = static_cast<IGraphicsOpenGLDomainShader const*>(gfxPipelineStateCreationInfo->PipelineDomainShader);
-			glUseProgramStages(GLProgramPipelineID, GL_TESS_EVALUATION_SHADER_BIT, gfxTesselationEvaluationShader->GLShaderProgramID);
-		}
-#endif	// if GD_FALSE
 
 #if !GD_RELEASE
 		// Validating program pipeline..
@@ -73,11 +58,12 @@ GD_NAMESPACE_BEGIN
 		GLint glPipelineLogLength = 0;
 		glValidateProgramPipeline(m_GLProgramPipelineID);
 		glGetProgramPipelineiv(m_GLProgramPipelineID, GL_INFO_LOG_LENGTH, &glPipelineLogLength);
-		if (glPipelineLogLength > 1)
+		if (glPipelineLogLength > 0)
 		{
 			BaseString<GLchar> glPipelineValidationLog(static_cast<SizeTp>(glPipelineLogLength));
 			glGetProgramInfoLog(m_GLProgramPipelineID, static_cast<GLsizei>(glPipelineLogLength), nullptr, glPipelineValidationLog.CStr());
-		//	ConsoleDevice->LogFormat("Validation of the program pipeline object proceeded with the following log: \n%s", glPipelineValidationLog.CStr());
+			Debug::LogErrorFormat("Validation of the program pipeline object proceeded with the following log: \n%s"
+				, glPipelineValidationLog.CStr());
 
 			glBindProgramPipeline(0);
 			glDeleteProgramPipelines(1, &m_GLProgramPipelineID);
@@ -86,32 +72,58 @@ GD_NAMESPACE_BEGIN
 #endif	// if !GD_RELEASE
 
 		// Cleaning up..
-	//	glBindProgramPipeline(0);
+		glBindProgramPipeline(0);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Deletes the current GPU pipeline.
+	/*!
+	 * Deletes the specified GPU pipeline.
+	 */
 	GDAPI IGraphicsOpenGLPipelineState::~IGraphicsOpenGLPipelineState()
 	{
 		glBindProgramPipeline(0);
 		glDeleteProgramPipelines(1, &m_GLProgramPipelineID);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Creates a new GPU pipeline with specified parameters.
-	//! @param gfxPipelinePtr Pointer for output.
-	//! @param gfxPipelineCreationInfo Creation information for the pipeline.
-	//! @returns Non-negative value if the operation succeeded.
+	/*!
+	 * Creates a new GPU pipeline with specified parameters.
+	 *
+	 * @param gfxPipelinePtr Pointer for output.
+	 * @param gfxPipelineCreateInfo Creation information for the pipeline.
+	 *
+	 * @returns Non-negative value if the operation succeeded.
+	 */
 	GDAPI IResult IGraphicsOpenGLWithPipelineStates::GfxImm_PipelineCreate(IGraphicsPipelineState** const gfxPipelinePtr
-		, IGraphicsPipelineStateCreationInfo const* const gfxPipelineCreationInfo)
+		, IGraphicsPipelineStateCreateInfo const* const gfxPipelineCreateInfo)
 	{
 #if GD_DEBUG
-		if (!GD_IGRAPHICS_CHECK_ARGS(GfxImm_PipelineCreate(gfxPipelinePtr, gfxPipelineCreationInfo)))
-			return IResult::InvalidArguments;
+		GD_ARG_VERIFY(gfxPipelinePtr != nullptr);
+		GD_ARG_VERIFY(gfxPipelineCreateInfo != nullptr);
 #endif	// if GD_DEBUG
 
-		*gfxPipelinePtr = GD_NEW(IGraphicsOpenGLPipelineState, gfxPipelineCreationInfo);
+		*gfxPipelinePtr = gd_new IGraphicsOpenGLPipelineState(gfxPipelineCreateInfo);
 		return IResult::Ok;
+	}
+
+	/*!
+	 * Binds specified GPU pipeline into active GPU pipeline.
+	 * 
+	 * @param gfxCommandList Command list into which this command would be written.
+	 * @param gfxPipeline Pointer to the pipeline.
+	 */
+	GDAPI void IGraphicsOpenGLWithPipelineStates::GfxCmd_PipelineBind(IGraphicsCommandList* const gfxCommandList
+		, IGraphicsPipelineState* const gfxPipeline)
+	{
+		auto const glPipelineState = static_cast<IGraphicsOpenGLPipelineState*>(gfxPipeline);
+		if (glPipelineState != nullptr)
+		{
+			// Binding the pipeline..
+			glBindProgramPipeline(glPipelineState->m_GLProgramPipelineID);
+		}
+		else
+		{
+			// Unbinding everything..
+			glBindProgramPipeline(0);
+		}
 	}
 
 GD_NAMESPACE_END

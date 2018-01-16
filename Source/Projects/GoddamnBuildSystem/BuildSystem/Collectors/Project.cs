@@ -1,5 +1,5 @@
 ﻿// ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -22,8 +22,8 @@ namespace GoddamnEngine.BuildSystem.Collectors
     public enum ProjectPriority : byte
     {
         GameLevel,
-        // ReSharper disable once UnusedMember.Global
         PluginLevel,
+        PluginCommonLevel,
         EngineLevel,
         CoreLevel,
         BuildToolLevel
@@ -35,6 +35,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
     public enum ProjectSourceFileType : byte
     {
         SourceCode,
+        SourceCodeAssembler,
         HeaderFile,
         InlineImplementation,
         ResourceScript,
@@ -57,7 +58,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
     public enum ProjectLanguge : byte
     {
         Cs,
-        Cpp
+        Cpp,
     }   // public enum ProjectLanguge
 
     /// <summary>
@@ -304,6 +305,10 @@ namespace GoddamnEngine.BuildSystem.Collectors
                     case ".cxx":
                         yield return new ProjectSourceFile(sourceFile, GetProgrammingLanguage() == ProjectLanguge.Cpp ? ProjectSourceFileType.SourceCode : ProjectSourceFileType.SupportFile);
                         break;
+                    case ".s":
+                    case ".asm":
+                        yield return new ProjectSourceFile(sourceFile, GetProgrammingLanguage() == ProjectLanguge.Cpp ? ProjectSourceFileType.SourceCodeAssembler : ProjectSourceFileType.SupportFile);
+                        break;
 
                     case ".inl":
                         yield return new ProjectSourceFile(sourceFile, ProjectSourceFileType.InlineImplementation);
@@ -510,6 +515,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
 
     }   // class BuildToolProject
 
+    /// <inheritdoc />
     /// <summary>
     /// Represents a collection of cached data that was collected by project object.
     /// </summary>
@@ -528,6 +534,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
         public readonly DependencyCache[] CachedDependencies;
         public readonly CollectorContainer<ProjectMacro[]> CachedMacros;
 
+        /// <inheritdoc />
         /// <summary>
         /// Generates cache for specified project.
         /// </summary>
@@ -573,14 +580,20 @@ namespace GoddamnEngine.BuildSystem.Collectors
             var includePathesBuilder = new StringBuilder();
 
             // Adding header paths from this projects.
-            Array.ForEach(CachedHeaderDirectories, headerDirectory => includePathesBuilder.Append(headerDirectory).Append(separator));
+            foreach (var headerDirectory in CachedHeaderDirectories)
+            {
+                includePathesBuilder.Append(headerDirectory).Append(separator);
+            }
 
             // Adding header paths from dependencies.
-            Array.ForEach(CachedDependencies, dependency =>
-                Array.ForEach(dependency.CachedHeaderDirectories, dependencyIncludePath =>
-                    includePathesBuilder.Append(dependencyIncludePath).Append(separator)
-                )
-            );
+            foreach (var dependency in CachedDependencies)
+            {
+                foreach (var dependencyIncludePath in dependency.CachedHeaderDirectories)
+                {
+                    includePathesBuilder.Append(dependencyIncludePath).Append(separator);
+
+                }
+            }
 
             return includePathesBuilder.ToString();
         }
@@ -600,10 +613,10 @@ namespace GoddamnEngine.BuildSystem.Collectors
             }
 
             var macrosBuilder = new StringBuilder();
-            Array.ForEach(CachedMacros[platform, configuration], macro =>
-                macrosBuilder.Append(macro.ToString()).Append(separator)
-            );
-
+            foreach (var macro in CachedMacros[platform, configuration])
+            {
+                macrosBuilder.Append(macro).Append(separator);
+            }
             return macrosBuilder.ToString();
         }
 
@@ -623,12 +636,13 @@ namespace GoddamnEngine.BuildSystem.Collectors
 
             // Adding libraries from dependencies.
             var linkedLibraries = new StringBuilder();
-            Array.ForEach(CachedDependencies, projectDependency =>
-                Array.ForEach(projectDependency.CachedLinkedLibraries[platform, configuration], projectDependencyLibraryPath =>
-                    linkedLibraries.Append(projectDependencyLibraryPath).Append(separator)
-                )
-            );
-
+            foreach (var projectDependency in CachedDependencies)
+            {
+                foreach (var projectDependencyLibraryPath in projectDependency.CachedLinkedLibraries[platform, configuration])
+                {
+                    linkedLibraries.Append(projectDependencyLibraryPath).Append(separator);
+                }
+            }
             return linkedLibraries.ToString();
         }
     }   // class ProjectCache

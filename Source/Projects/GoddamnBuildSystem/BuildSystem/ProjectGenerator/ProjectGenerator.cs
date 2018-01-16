@@ -1,5 +1,5 @@
 ﻿// ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -69,20 +69,26 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// <returns>A new IDE project files generator instance</returns>
         public static ProjectGenerator Create()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            switch (Environment.OSVersion.Platform)
             {
-                return new VisualStudioProjectGenerator();
+                case PlatformID.Win32NT:
+                 //   return new VisualStudioProjectGenerator();
+                case PlatformID.Unix:
+                case PlatformID.MacOSX:
+                    return new CMakeProjectGenerator();
             }
             throw new BuildSystemException("Unable to determine IDE for this platform");
         }
     }   // class TargetProjectGeneratorFactory
 
+    /// <inheritdoc />
     /// <summary>
     /// Represents an exception, thrown by ProjectGenerator code.
     /// </summary>
     [Serializable]
     public sealed class ProjectGeneratorException : BuildSystemException
     {
+        /// <inheritdoc />
         /// <summary>
         /// Constructs the build system exception with a string.
         /// </summary>
@@ -94,12 +100,14 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         }
     }   // class ProjectGeneratorException
 
+    /// <inheritdoc />
     /// <summary>
     /// Project file generation module.
     /// </summary>
     [BuildSystemModule("--generate-project")]
     public sealed class ProjectGeneratorModule : BuildSystemModule
     {
+        /// <inheritdoc />
         /// <summary>
         /// Generates project files.
         /// </summary>

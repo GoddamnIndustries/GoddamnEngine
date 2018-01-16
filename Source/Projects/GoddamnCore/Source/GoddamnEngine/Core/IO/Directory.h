@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -14,7 +14,7 @@
 #define GD_INSIDE_DIRECTORY_H
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/BasePlatform.h>
+#include <GoddamnEngine/Core/PlatformSpecificInclude.h>
 
 GD_NAMESPACE_BEGIN
 

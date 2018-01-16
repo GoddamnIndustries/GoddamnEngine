@@ -13,11 +13,11 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/System/Graphics/Graphics.h>
+#include <GoddamnEngine/Engine/Interface/Graphics/Graphics.h>
 #if GD_PLATFORM_API_MICROSOFT
 
 #if !defined(GD_IGRAPHICS_DIRECT3D1X_IMPL)
-#	define GD_IGRAPHICS_DIRECT3D1X_IMPL GD_FALSE
+#	define GD_IGRAPHICS_DIRECT3D1X_IMPL GD_TRUE
 #endif	// if !defined(GD_IGRAPHICS_DIRECT3D1X_IMPL)
 
 #if GD_IGRAPHICS_DIRECT3D1X_IMPL
@@ -47,7 +47,6 @@
 #define GD_IGRAPHICS_DIRECT3D1X_CONSTANT(Constant) GD_GLUE(GD_GLUE(GD_GLUE(D3D, GD_IGRAPHICS_DIRECT3D1X_VERSION), _), Constant)
 #define ID3D1x(Interface) GD_IGRAPHICS_DIRECT3D1X_INTERFACE(Interface)
 #define D3D1x_(Interface) GD_IGRAPHICS_DIRECT3D1X_CONSTANT(Interface)
-#include <GL/glew.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -59,7 +58,6 @@ GD_NAMESPACE_BEGIN
 
 	uinterface IGraphicsDirect3D1xCommandList final : public IGraphicsCommandList
 	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsDirect3D1xCommandList, IGraphicsCommandList);
 	private:
 		friend uinterface IGraphicsDirect3D1x;
 		GDAPI explicit IGraphicsDirect3D1xCommandList(...) {}
@@ -77,34 +75,23 @@ GD_NAMESPACE_BEGIN
 	// Buffers.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#if GD_IGRAPHICS_DIRECT3D1X_IMPL
-	D3D1x_(BIND_FLAG) static const IGraphicsDirect3D1xBufferTypesTable[IGRAPHICS_BUFFER_TYPES_COUNT] = {
-		/* IGRAPHICS_BUFFER_TYPE_VERTEX   */ D3D1x_(BIND_VERTEX_BUFFER),
-		/* IGRAPHICS_BUFFER_TYPE_INDEX    */ D3D1x_(BIND_INDEX_BUFFER),
-		/* IGRAPHICS_BUFFER_TYPE_UNIFORM  */ D3D1x_(BIND_CONSTANT_BUFFER),
-		/* IGRAPHICS_BUFFER_TYPE_UNKNOWN  */ D3D1x_(BIND_FLAG)(0),
-	};
-#endif	// if GD_IGRAPHICS_DIRECT3D1X_IMPL
-
 	uinterface IGraphicsDirect3D1xBuffer final : public IGraphicsBuffer
 	{
 		GD_DEFINE_CLASS_INFORMATION(IGraphicsDirect3D1xBuffer, IGraphicsBuffer);
 	public:
-		CComPtr<interface ID3D1x(Buffer)> D3DBuffer;
+		CComPtr<interface ID3D1x(Buffer)> m_D3DBuffer;
 #if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11			
 		union {
-			static_assert(&static_cast<D3D11_MAPPED_SUBRESOURCE*>(nullptr)->pData == nullptr
-				, "The 'pData' field of the mapped subresource has been moved.");
-			D3D11_MAPPED_SUBRESOURCE      D3DBufferMappedSubresource;
-			Handle						  D3DBufferMappedMemory;
+			D3D11_MAPPED_SUBRESOURCE      m_D3DBufferMappedSubresource;
+			Handle						  m_D3DBufferMappedMemory;
 		};	// anonymous union
 #else	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
-		Handle						      D3DBufferMappedMemory;
+		Handle						      m_D3DBufferMappedMemory;
 #endif	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
 	private:
-		friend class Allocator;
 		friend uinterface IGraphicsDirect3D1xWithBuffers;
-		GDAPI explicit IGraphicsDirect3D1xBuffer(IGraphicsBufferCreationInfo const* const gfxBufferCreationInfo, CHandle const gfxBufferInitialData);
+		GDAPI explicit IGraphicsDirect3D1xBuffer(IGraphicsBufferCreationInfo const* const gfxBufferCreationInfo
+			, CHandle const gfxBufferInitialData);
 		GDAPI virtual ~IGraphicsDirect3D1xBuffer();
 	public:
 		GDAPI virtual IResult Imm_MapForWriting(Handle* const gfxMappedWOMemory) override final;
@@ -128,7 +115,6 @@ GD_NAMESPACE_BEGIN
 	public:
 		GLuint GLVertexArrayID;
 	private:
-		friend class Allocator;
 		friend uinterface IGraphicsDirect3D1xWithVertexArrays;
 		GDAPI explicit IGraphicsDirect3D1xVertexArray(IGraphicsVertexArrayCreationInfo const* const gfxVertexArrayCreationInfo);
 		GDAPI virtual ~IGraphicsDirect3D1xVertexArray();
@@ -160,7 +146,7 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_DEFINE_CLASS_INFORMATION(IGraphicsDirect3D1xSamplerState, IGraphicsSamplerState);
 	public:
-		CComPtr<interface ID3D1x(SamplerState)> D3DSamplerState;
+		CComPtr<interface ID3D1x(SamplerState)> m_D3DSamplerState;
 	private:
 		friend class Allocator;
 		friend uinterface IGraphicsDirect3D1xWithSamplerStates;
@@ -180,15 +166,6 @@ GD_NAMESPACE_BEGIN
 	// Shader Resources common.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#if GD_IGRAPHICS_DIRECT3D1X_IMPL
-	GLenum static const IGraphicsDirect3D1xResourceTypesTable[IGRAPHICS_RESOURCE_TYPES_COUNT] = {
-		/* IGRAPHICS_RESOURCE_TYPE_TEXTURE_2D   */ GL_TEXTURE_2D,
-		/* IGRAPHICS_RESOURCE_TYPE_TEXTURE_3D   */ GL_TEXTURE_3D,
-		/* IGRAPHICS_RESOURCE_TYPE_TEXTURE_CUBE */ GL_TEXTURE_CUBE_MAP,
-		/* IGRAPHICS_RESOURCE_TYPE_UNKNOWN      */ 0,
-	};
-#endif	// if GD_IGRAPHICS_DIRECT3D1X_IMPL
-
 	// ------------------------------------------------------------------------------------------
 	//! A GPU shader resource view interface.
 	GD_DINTERFACE()
@@ -196,7 +173,7 @@ GD_NAMESPACE_BEGIN
 	{
 		GD_DEFINE_CLASS_INFORMATION(IGraphicsDirect3D1xShaderResourceView, IGraphicsShaderResourceView);
 	public:
-		CComPtr<interface ID3D1x(ShaderResourceView)> D3DShaderResourceView;
+		CComPtr<interface ID3D1x(ShaderResourceView)> m_D3DShaderResourceView;
 	private:
 		friend class Allocator;
 		friend uinterface IGraphicsDirect3D1xWithSamplerStates;
@@ -210,22 +187,12 @@ GD_NAMESPACE_BEGIN
 	// 2D Textures.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#if GD_IGRAPHICS_DIRECT3D1X_IMPL
-	GLenum static const IGraphicsDirect3D1xTextureCompressionModesTable[IGRAPHICS_TEXTURE_2D_COMPRESSIONS_COUNT] = {
-		/* IGRAPHICS_TEXTURE_2D_COMPRESSION_RAW     */ 0,
-		/* IGRAPHICS_TEXTURE_2D_COMPRESSION_DXT1    */ GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
-		/* IGRAPHICS_TEXTURE_2D_COMPRESSION_DXT3    */ GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
-		/* IGRAPHICS_TEXTURE_2D_COMPRESSION_DXT5    */ GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
-		/* IGRAPHICS_TEXTURE_2D_COMPRESSION_UNKNOWN */ 0,
-	};
-#endif	// if GD_IGRAPHICS_DIRECT3D1X_IMPL
-
 	uinterface IGraphicsDirect3D1xTexture2D final : public IGraphicsTexture2D
 	{
 		GD_DEFINE_CLASS_INFORMATION(IGraphicsDirect3D1xTexture2D, IGraphicsTexture2D);
 	public:
 		CComPtr<interface ID3D1x(Texture2D)>            D3DTexture2D;
-		DIRefPtr<IGraphicsDirect3D1xShaderResourceView> D3DShaderResourceView;
+		DIRefPtr<IGraphicsDirect3D1xShaderResourceView> m_D3DShaderResourceView;
 	private:
 		friend class Allocator;
 		friend uinterface IGraphicsBaseDirect3D1x_WithTextures2D;
@@ -252,7 +219,7 @@ GD_NAMESPACE_BEGIN
 		GD_DEFINE_CLASS_INFORMATION(IGraphicsDirect3D1xTextureCube, IGraphicsTextureCube);
 	public:
 		CComPtr<interface ID3D1x(TextureCube)>          D3DTextureCube;
-		DIRefPtr<IGraphicsDirect3D1xShaderResourceView> D3DShaderResourceView;
+		DIRefPtr<IGraphicsDirect3D1xShaderResourceView> m_D3DShaderResourceView;
 	private:
 		friend class Allocator;
 		friend uinterface IGraphicsBaseDirect3D1x_WithTexturesCube;
@@ -271,51 +238,8 @@ GD_NAMESPACE_BEGIN
 	};	// uinterface IGraphicsBaseDirect3D1x_WithTexturesCube
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// 3D Textures.
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#if GD_FALSE
-
-	uinterface IGraphicsDirect3D1xTexture3D final : public IGraphicsTexture3D
-	{
-		GD_DEFINE_CLASS_INFORMATION(IGraphicsDirect3D1xTexture3D, IGraphicsTexture3D);
-	public:
-		CComPtr<interface ID3D1x(Texture3D)>            D3DTexture3D;
-		DIRefPtr<IGraphicsDirect3D1xShaderResourceView> D3DShaderResourceView;
-	private:
-		friend class Allocator;
-		friend uinterface IGraphicsBaseDirect3D1x_WithTextures3D;
-		GDAPI explicit IGraphicsDirect3D1xTexture3D(IGraphicsTexture3DCreationInfo const* const gfxTexture3DCreationInfo);
-		GDAPI virtual ~IGraphicsDirect3D1xTexture3D();
-	public:
-		GDAPI virtual IGraphicsShaderResourceView const* CPU_GetShaderResourceView() const override final;
-		GDAPI virtual IResult Imm_UpdateData(IGraphicsTexture3DData const* const gfxTexture3DData) override final;
-	};	// uinterface IGraphicsDirect3D1xTexture3D
-	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBaseDirect3D1x_WithTextures3D, IGraphicsDirect3D1x)
-	{
-	public:
-		GDAPI virtual IResult GfxImm_Texture3DCreate(IGraphicsTexture3D** const gfxTexture3DPtr
-			, IGraphicsTexture3DCreationInfo const* const gfxTexture3DCreationInfo
-			, IGraphicsTexture3DData const* const gfxTexture3DData) override final { return IResult::Error; }
-	};	// uinterface IGraphicsBaseDirect3D1x_WithTextures3D
-
-#endif	// if GD_FALSE
-
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Base shaders.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#if GD_IGRAPHICS_DIRECT3D1X_IMPL
-	GLenum static const IGraphicsDirect3D1xShaderProfilesTable[IGRAPHICS_SHADER_TYPES_COUNT] = {
-		/* IGRAPHICS_SHADER_TYPE_VERTEX   */ GL_VERTEX_SHADER,
-		/* IGRAPHICS_SHADER_TYPE_PIXEL    */ GL_FRAGMENT_SHADER,
-		/* IGRAPHICS_SHADER_TYPE_GEOMETRY */ GL_GEOMETRY_SHADER,
-		/* IGRAPHICS_SHADER_TYPE_HULL     */ GL_TESS_CONTROL_SHADER,
-		/* IGRAPHICS_SHADER_TYPE_DOMAIN   */ GL_TESS_EVALUATION_SHADER,
-		/* IGRAPHICS_SHADER_TYPE_COMPUTE  */ GL_COMPUTE_SHADER,
-		/* IGRAPHICS_SHADER_TYPE_UNKNOWN  */ 0,
-	};
-#endif	// if GD_IGRAPHICS_DIRECT3D1X_IMPL
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Vertex shaders.
@@ -327,10 +251,9 @@ GD_NAMESPACE_BEGIN
 	public:
 		CComPtr<interface ID3D1x(VertexShader)> D3DVertexShader;
 	private:
-		friend class Allocator;
 		friend uinterface IGraphicsBaseDirect3D1x_WithBaseShaders;
 		GDAPI explicit IGraphicsDirect3D1xVertexShader(IGraphicsShaderCreationInfo const* const gfxShaderCreationInfo);
-		GDAPI virtual ~IGraphicsDirect3D1xVertexShader();
+		GDAPI virtual ~IGraphicsDirect3D1xVertexShader() {}
 	public:
 		// No public interface functions here..
 	};	// uinterface IGraphicsDirect3D1xVertexShader
@@ -539,20 +462,20 @@ GD_NAMESPACE_BEGIN
 		GD_DEFINE_CLASS_INFORMATION(IGraphicsDirect3D1x, IGraphics);
 
 	public:
-		CComPtr<interface IDXGIFactory>				D3DDXGIFactory;
+		CComPtr<interface IDXGIFactory>				m_D3DDXGIFactory;
 #if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11			// Direct3D 10 has no separation for Device and DeviceContext interfaces.
-		CComPtr<interface ID3D1x(Device)>			D3DDevice;
-		CComPtr<interface ID3D1x(DeviceContext)>	D3DDeviceContext;
+		CComPtr<interface ID3D1x(Device)>			m_D3DDevice;
+		CComPtr<interface ID3D1x(DeviceContext)>	m_D3DDeviceContext;
 #else	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
-		CComPtr<interface ID3D10Device>				D3DDevice;
-		ID3D10Device*								D3DDeviceContext;	
+		CComPtr<interface ID3D10Device>				m_D3DDevice;
+		ID3D10Device*								m_D3DDeviceContext;	
 #endif	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
 
 	};	// uinterface IGraphicsOpenGL
 
 		//! Reference to the global Direct2D interface.
 #if GD_IGRAPHICS_DIRECT3D1X_IMPL
-#	define GD_IGRAPHICS_DIRECT3D1X static_cast<GD::IGraphicsDirect3D1x*>(GD::Graphics.GetPointer())
+#	define GD_IGRAPHICS_DIRECT3D1X static_cast<GD::IGraphicsDirect3D1x*>(GD::Graphics)
 #endif	// if GD_IGRAPHICS_DIRECT3D1X_IMPL
 
 GD_NAMESPACE_END

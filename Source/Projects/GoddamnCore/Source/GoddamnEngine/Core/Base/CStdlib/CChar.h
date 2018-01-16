@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -20,9 +20,9 @@
  * Selects wide or ANSI character literal based on specified type.
  *
  * @param TChar Type of characters.
- * @param StringLiteral Literal.
+ * @param literal Literal.
  */
-#define GD_LITERAL(TChar, literal) (GD::Literal<TChar>::Select(literal, L##literal))
+#define GD_TEXT(TChar, literal) (GD::Literal<TChar>::Select(literal, L##literal))
 
 GD_NAMESPACE_BEGIN
 
@@ -32,92 +32,49 @@ GD_NAMESPACE_BEGIN
 	template<>
 	struct Literal<Char> final
 	{
-		GDINL static constexpr Char Select(Char const ANSI, WideChar const Wide)
+		GDINL static constexpr Char Select(Char const ansi, WideChar const wide)
 		{
-			GD_NOT_USED(Wide);
-			return ANSI;
+			GD_NOT_USED(wide);
+			return ansi;
 		}
-		GDINL static constexpr Char const* Select(Char const* const ANSI, WideChar const* const Wide)
+		GDINL static constexpr Char const* Select(Char const* const ansi, WideChar const* const wide)
 		{
-			GD_NOT_USED(Wide);
-			return ANSI;
+			GD_NOT_USED(wide);
+			return ansi;
 		}
 	};	// struct Literal<Char>
 
 	template<>
 	struct Literal<WideChar> final
 	{
-		GDINL static constexpr WideChar Select(Char const ANSI, WideChar const Wide)
+		GDINL static constexpr WideChar Select(Char const ansi, WideChar const wide)
 		{
-			GD_NOT_USED(ANSI);
-			return Wide;
+			GD_NOT_USED(ansi);
+			return wide;
 		}
-		GDINL static constexpr WideChar const* Select(Char const* const ANSI, WideChar const* const Wide)
+		GDINL static constexpr WideChar const* Select(Char const* const ansi, WideChar const* const wide)
 		{
-			GD_NOT_USED(ANSI);
-			return Wide;
+			GD_NOT_USED(ansi);
+			return wide;
 		}
 	};	// struct Literal<WideChar>
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! Provides helper functions for processing characters. Contains methods from "cctype" and "cwctype".
-	//! @tparam TChar Specified character type.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	template<typename TChar>
-	class BaseCChar final : public TNonCreatable
+	class CChar final : public TNonCreatable
 	{
 	public:
-
-		/*! 
-		 * Returns true if this character is valid digit in specified radix.
-		 *
-		 * @param character Specified character.
-		 * @param radix The radix in which value is represented.
-		 *
-		 * @returns True if this character is valid digit in specified radix.
-		 */
-		GDINL static bool IsDigit(TChar const character, SizeTp const radix)
-		{
-			// This code is useless for debug check of functions.
-			switch (radix)
-			{
-				case 10: 
-					return IsDigit(character);
-				case 16: 
-					return IsHexDigit(character);
-				default: 
-					GD_VERIFY((radix >= 2) && (radix <= static_cast<SizeTp>(('9' - '0') + ('Z' - 'A') + 2)), "This radix is invalid or not supported");
-					if (radix > 10)
-					{
-						if ((character >= GD_LITERAL(TChar, '0')) && (character <= GD_LITERAL(TChar, '9')))
-						{
-							return true;
-						}
-						if (character >= GD_LITERAL(TChar, 'A') && (character <= (GD_LITERAL(TChar, 'A') + radix - 10)))
-						{
-							return true;
-						}
-						if (character >= GD_LITERAL(TChar, 'a') && (character <= (GD_LITERAL(TChar, 'z') + radix - 10)))
-						{
-							return true;
-						}
-						return false;
-					}
-					return (character >= GD_LITERAL(TChar, '0')) && (character <= (GD_LITERAL(TChar, '0') + radix));
-			}
-		}
 
 		/*!
 		 * @see @c "::isdigit" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, bool>::Type IsDigit(TChar const character)
+		GDINL static bool IsDigit(Char const character)
 		{
 			return ::isdigit(static_cast<int>(character)) != 0;
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, bool>::Type IsDigit(TChar const character)
+		GDINL static bool IsDigit(WideChar const character)
 		{
 			return ::iswdigit(static_cast<::wint_t>(character)) != 0;
 		}
@@ -127,13 +84,11 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "::isxdigit" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, bool>::Type IsHexDigit(TChar const character)
+		GDINL static bool IsHexDigit(Char const character)
 		{
 			return ::isxdigit(static_cast<int>(character)) != 0;
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, bool>::Type IsHexDigit(TChar const character)
+		GDINL static bool IsHexDigit(WideChar const character)
 		{
 			return ::iswxdigit(static_cast<::wint_t>(character)) != 0;
 		}
@@ -143,15 +98,13 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "::isalpha" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, bool>::Type IsAlphabetic(TChar const character)
+		GDINL static bool IsAlphabetic(Char const character)
 		{
-			return ::isalpha(static_cast<int>(character)) != 0 || character == GD_LITERAL(TChar, '_') || character == GD_LITERAL(TChar, '$');
+			return ::isalpha(static_cast<int>(character)) != 0 || character == '_' || character == '$';
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, bool>::Type IsAlphabetic(TChar const character)
+		GDINL static bool IsAlphabetic(WideChar const character)
 		{
-			return ::iswalpha(static_cast<int>(character)) != 0 || character == GD_LITERAL(TChar, '_') || character == GD_LITERAL(TChar, '$');
+			return ::iswalpha(static_cast<int>(character)) != 0 || character == L'_' || character == L'$';
 		}
 		//! @}
 
@@ -159,15 +112,13 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "::ispunct" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, bool>::Type IsPunctuation(TChar const character)
+		GDINL static bool IsPunctuation(Char const character)
 		{
-			return ::ispunct(static_cast<int>(character)) != 0 && character != GD_LITERAL(TChar, '_') && character != GD_LITERAL(TChar, '$');
+			return ::ispunct(static_cast<int>(character)) != 0 && character != '_' && character != '$';
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, bool>::Type IsPunctuation(TChar const character)
+		GDINL static bool IsPunctuation(WideChar const character)
 		{
-			return ::iswpunct(static_cast<::wint_t>(character)) != 0 && character != GD_LITERAL(TChar, '_') && character != GD_LITERAL(TChar, '$');
+			return ::iswpunct(static_cast<::wint_t>(character)) != 0 && character != L'_' && character != L'$';
 		}
 		//! @}
 
@@ -175,13 +126,11 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "::isspace" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, bool>::Type IsSpace(TChar const character)
+		GDINL static bool IsSpace(Char const character)
 		{
 			return ::isspace(static_cast<int>(character)) != 0;
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, bool>::Type IsSpace(TChar const character)
+		GDINL static bool IsSpace(WideChar const character)
 		{
 			return ::iswspace(static_cast<wint_t>(character)) != 0;
 		}
@@ -193,33 +142,32 @@ GD_NAMESPACE_BEGIN
 		 * @param character Specified character.
 		 * @returns Integer representation of this character data.
 		 */
+		template<typename TChar>
 		GDINL static UInt8 ToDigit(TChar const character)
 		{
 			GD_DEBUG_VERIFY(IsHexDigit(character), "Specified character is not a digit.");
-			if ((character >= GD_LITERAL(TChar, '0')) && (character <= GD_LITERAL(TChar, '9')))
+			if ((character >= GD_TEXT(TChar, '0')) && (character <= GD_TEXT(TChar, '9')))
 			{
-				return character - GD_LITERAL(TChar, '0');
+				return character - GD_TEXT(TChar, '0');
 			}
-			if ((character >= GD_LITERAL(TChar, 'A')) && (character <= GD_LITERAL(TChar, 'Z')))
+			if ((character >= GD_TEXT(TChar, 'A')) && (character <= GD_TEXT(TChar, 'Z')))
 			{
-				return (character - GD_LITERAL(TChar, 'A')) + 10;
+				return (character - GD_TEXT(TChar, 'A')) + 10;
 			}
-			return (character - GD_LITERAL(TChar, 'a')) + 10;
+			return (character - GD_TEXT(TChar, 'a')) + 10;
 		}
 
 		/*!
 		 * @see @c "::toupper" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, TChar>::Type ToUpper(TChar const character)
+		GDINL static Char ToUpper(Char const character)
 		{
-			return static_cast<TChar>(::toupper(static_cast<int>(character)));
+			return static_cast<Char>(::toupper(static_cast<int>(character)));
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, TChar>::Type ToUpper(TChar const character)
+		GDINL static WideChar ToUpper(WideChar const character)
 		{
-			return static_cast<TChar>(::towupper(static_cast<::wint_t>(character)));
+			return static_cast<WideChar>(::towupper(static_cast<::wint_t>(character)));
 		}
 		//! @}
 
@@ -227,27 +175,23 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "::tolower" function.
 		 */
 		//! @{
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, Char>::Value, TChar>::Type ToLower(TChar const character)
+		GDINL static Char ToLower(Char const character)
 		{
-			return static_cast<TChar>(::tolower(static_cast<int>(character)));
+			return static_cast<Char>(::tolower(static_cast<int>(character)));
 		}
-		template<typename TTChar = TChar>
-		GDINL static typename EnableIf<TypeTraits::IsSame<TTChar, WideChar>::Value, TChar>::Type ToLower(TChar const character)
+		GDINL static WideChar ToLower(WideChar const character)
 		{
-			return static_cast<TChar>(::towlower(static_cast<::wint_t>(character)));
+			return static_cast<WideChar>(::towlower(static_cast<::wint_t>(character)));
 		}
 		//! @}
-	};	// struct BaseCChar<T>
-
-	typedef BaseCChar<Char> CChar;
-	typedef BaseCChar<WideChar> WideCChar;
+	};	// struct CChar<T>
 
 	/*!
 	 * Declarations used to ban standard functions. 
 	 */
 	enum LibCharUnallowedFunctions
 	{
+		// ReSharper disable CppInconsistentNaming
 		isdigit, iswdigit,
 		isxdigit, iswxdigit,
 		isalpha, iswalpha,
@@ -255,6 +199,7 @@ GD_NAMESPACE_BEGIN
 		isspace, iswspace,
 		toupper, towupper,
 		tolower, towlower,
+		// ReSharper restore CppInconsistentNaming
 	};	// enum LibCharUnallowedFunctions
 
 GD_NAMESPACE_END

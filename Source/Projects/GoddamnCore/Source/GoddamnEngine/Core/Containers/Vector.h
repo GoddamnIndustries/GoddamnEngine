@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2016. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -56,27 +56,34 @@ GD_NAMESPACE_BEGIN
 		// ------------------------------------------------------------------------------------------
 
 		/*!
-		 * Initializes vector with specified number of allocated and initialized elements.
-		 *
-		 * @param initialLength Number of elements been initialized.
-		 * @param initialCapacity Initial capacity of vector. 
+		 * Initializes an empty vector.
 		 */
-		//! @{
 		GDINL explicit Vector()
 			: m_Memory(nullptr), m_Length(0), m_Capacity(0)
 		{}
+
+		/*!
+		 * Initializes vector with specified number of initialized elements.
+		 * @param initialLength Number of elements been initialized.
+		 */
 		GDINL explicit Vector(SizeTp const initialLength)
 			: m_Memory(nullptr), m_Length(0), m_Capacity(0)
 		{
 			Resize(initialLength);
 		}
+
+		/*!
+		 * Initializes vector with specified number of allocated and initialized elements.
+		 *
+		 * @param initialLength Number of elements been initialized.
+		 * @param initialCapacity Initial capacity of vector. 
+		 */
 		GDINL explicit Vector(SizeTp const initialLength, SizeTp const initialCapacity)
 			: m_Memory(nullptr), m_Length(0), m_Capacity(0)
 		{
 			Reserve(initialCapacity);
 			Resize(initialLength);
 		}
-		//! @}
 
 		/*!
 		 * Initializes vector with copy of values of specified iterators. 
@@ -647,7 +654,7 @@ GD_NAMESPACE_BEGIN
 
 		};	// class ConstReferenceType
 
-		class ReferenceType final
+		class ReferenceType final  // NOLINT
 		{
 		private:
 			Word& m_WordRef;
@@ -687,11 +694,13 @@ GD_NAMESPACE_BEGIN
 			}
 			GDINL ReferenceType& operator= (ReferenceType const& ref)
 			{
-				return *this = static_cast<bool>(ref);
+				*this = static_cast<bool>(ref);
+				return *this;
 			}
 			GDINL ReferenceType& operator= (ConstReferenceType const& cref)
 			{
-				return *this = static_cast<bool>(cref);
+				*this = static_cast<bool>(cref);
+				return *this;
 			}
 			
 		};	// class ReferenceType
@@ -725,27 +734,34 @@ GD_NAMESPACE_BEGIN
 		// ------------------------------------------------------------------------------------------
 
 		/*!
-		 * Initializes vector with specified number of allocated and initialized bits.
-		 *
-		 * @param initialLength Number of bits been initialized.
-		 * @param initialCapacity Initial capacity of vector. 
+		 * Initializes an empty vector.
 		 */
-		//! @{
 		GDINL explicit Vector()
 			: m_Memory(nullptr), m_Length(0), m_Capacity(0)
 		{}
+
+		/*!
+		 * Initializes vector with specified number of initialized bits.
+		 * @param initialLength Number of bits been initialized.
+		 */
 		GDINL explicit Vector(SizeTp const initialLength)
 			: m_Memory(nullptr), m_Length(0), m_Capacity(0)
 		{
 			Resize(initialLength);
 		}
+
+		/*!
+		 * Initializes vector with specified number of allocated and initialized bits.
+		 *
+		 * @param initialLength Number of bits been initialized.
+		 * @param initialCapacity Initial capacity of vector. 
+		 */
 		GDINL explicit Vector(SizeTp const initialLength, SizeTp const initialCapacity)
 			: m_Memory(nullptr), m_Length(0), m_Capacity(0)
 		{
 			Reserve(initialCapacity);
 			Resize(initialLength);
 		}
-		//! @}
 
 		/*!
 		 * Initializes vector with copy of values of specified iterators. 
@@ -802,6 +818,11 @@ GD_NAMESPACE_BEGIN
 			otherVector.m_Memory = nullptr;
 			otherVector.m_Length = 0;
 			otherVector.m_Capacity = 0;
+		}
+
+		GDINL ~Vector()
+		{
+			Clear();
 		}
 
 	public:
@@ -1036,7 +1057,7 @@ GD_NAMESPACE_BEGIN
 		 * @param newElement New bit that would be inserted into the end of container.
 		 * @returns Index at which new bit was inserted.
 		 */
-		GDINL SizeTp InsertLast(bool newElement = bool())
+		GDINL SizeTp InsertLast(bool const newElement = bool())
 		{
 			Resize(m_Length + 1);
 			GetLast() = newElement;
@@ -1247,6 +1268,7 @@ GD_NAMESPACE_BEGIN
 
 	/*!
 	 * Dynamic stack implementation.
+	 * @todo Impelemnt me
 	 */
 	template<typename TElement>
 	using Stack = Vector<TElement>;

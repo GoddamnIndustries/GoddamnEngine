@@ -1,5 +1,5 @@
 // ==========================================================================================
-// Copyright (C) Goddamn Industries 2015. All Rights Reserved.
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
 // 
 // This software or any its part is distributed under terms of Goddamn Industries End User
 // License Agreement. By downloading or using this software or any its part you agree with 
@@ -16,8 +16,9 @@
 
 GD_NAMESPACE_BEGIN
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines a type of the components inside the format value.
+	/*!
+	 * Defines a type of the components inside the format value.
+	 */
 	enum IGraphicsFormatType : UInt8
 	{
 		IGRAPHICS_FORMAT_TYPE_INT8,
@@ -38,10 +39,11 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_FORMAT_TYPES_COUNT,
 	};	// enum IGraphicsFormatType
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines the layout of the components inside the format value.
-	//! The integer value of the enumeration value also was managed to represent the amount of the 
-	//! components inside the layout.
+	/*!
+	 * Defines the layout of the components inside the format value.
+	 * The integer value of the enumeration value also was managed to represent the amount of the
+	 * components inside the layout.
+	 */
 	enum IGraphicsFormatLayout : UInt8
 	{
 		IGRAPHICS_FORMAT_LAYOUT_DEPTH,
@@ -53,10 +55,11 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_FORMAT_LAYOUTS_COUNT,
 	};	// enum IGraphicsFormatLayout
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines a format with specified types.
-	//! @param Layout Layout of the format elements.
-	//! @param Type Type of the format elements.
+	/*!
+	 * Defines a format with specified types.
+	 * @param Layout Layout of the format elements.
+	 * @param Type Type of the format elements.
+	 */
 	//! @{
 #define GD_IGRAPHICS_FORMAT(Layout, Type) ((__COUNTER__ - IGraphicsFormatCounterBase) & 0xFF) | ((Layout & 0xFF) << 8) | ((Type & 0xFF) << 16)
 #if !GD_DOCUMENTATION
@@ -64,9 +67,10 @@ GD_NAMESPACE_BEGIN
 #endif	// if !GD_DOCUMENTATION
 	//! @}
 
-	// ------------------------------------------------------------------------------------------
-	//! Defines a list of formats that IGraphics subsystem supports.
-	//! Value of this enumeration are not contagious - use special macros to convert the enum value into m_Index.
+	/*!
+	 * Defines a list of formats that IGraphics subsystem supports.
+	 * Value of this enumeration are not contagious - use special macros to convert the enum value into index.
+	 */
 	enum IGraphicsFormat : UInt32
 	{
 		// ..Generic formats..
@@ -148,37 +152,37 @@ GD_NAMESPACE_BEGIN
 		IGRAPHICS_FORMATS_COUNT             = GD_IGRAPHICS_FORMAT(0                       , 0),
 	};	// enum IGraphicsFormat
 
-	// ------------------------------------------------------------------------------------------
-	//! Returns the numeric id of this format value in contagious array.
-	//! @param gfxFormat the format value to process.
-	//! @returns The numeric id of this format value in contagious array.
+	/*!
+	 * Returns the numeric id of this format value in contagious array.
+	 * @param gfxFormat the format value to process.
+	 */
 	GDINL static SizeTp IGraphicsFormatGetIndex(IGraphicsFormat const gfxFormat)
 	{
 		return static_cast<SizeTp>(static_cast<UInt32>(gfxFormat) & 0xFF);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Returns the layout that this format value represents.
-	//! @param gfxFormat the format value to process.
-	//! @returns The layout that this format value represents.
+	/*!
+	 * Returns the layout that this format value represents.
+	 * @param gfxFormat the format value to process.
+	 */
 	GDINL static IGraphicsFormatLayout IGraphicsFormatGetLayout(IGraphicsFormat const gfxFormat)
 	{
 		return static_cast<IGraphicsFormatLayout>(static_cast<UInt32>(gfxFormat) >> 8 & 0xFF);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Returns the type that this format value represents.
-	//! @param gfxFormat the format value to process.
-	//! @returns The type that this format value represents.
+	/*!
+	 * Returns the type that this format value represents.
+	 * @param gfxFormat the format value to process.
+	 */
 	GDINL static IGraphicsFormatType IGraphicsFormatGetType(IGraphicsFormat const gfxFormat)
 	{
 		return static_cast<IGraphicsFormatType>(static_cast<UInt32>(gfxFormat) >> 16 & 0xFF);
 	}
 
-	// ------------------------------------------------------------------------------------------
-	//! Returns size of variable to the corresponding format in bytes.
-	//! @param gfxFormat the format value to process.
-	//! @returns Size of variable to the corresponding format in bytes.
+	/*!
+	 * Returns size of variable to the corresponding format in bytes.
+	 * @param gfxFormat the format value to process.
+	 */
 	GDINL static SizeTp IGraphicsFormatSizeof(IGraphicsFormat const gfxFormat)
 	{
 		SizeTp static const IGraphicsFormatTypeSizesTable[IGRAPHICS_FORMAT_TYPES_COUNT] = {
