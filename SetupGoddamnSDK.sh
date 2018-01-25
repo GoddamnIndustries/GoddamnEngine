@@ -44,10 +44,10 @@ function InstallGoddamnSDK {
 	fi
 
 	# Checking whether all external data (that does not come from GIT) is installed..
-	#if [[ ! -d "./source/GoddamnEngine/Engine/Dependencies/mcpp" ]]; then
-		#printf "Missing files that should be extracted from the extra archive that comes with SDK.\n"
-		#ExitOnFailure
-	#fi
+	if [[ ! -d "./Source/Projects/GoddamnCore/Dependencies/jemalloc" ]]; then
+		printf "Missing files that should be extracted from the extra archive that comes with SDK.\n"
+		ExitOnFailure
+	fi
 	
 	# Checking whether Mono is installed..
 	mono --help > /dev/null
@@ -59,11 +59,11 @@ function InstallGoddamnSDK {
 	# Checking whether MSBuild or XBuild is installed..
 	msbuild /help > /dev/null
 	if [[ $? == 0 ]]; then
-		XMSBUILD=msbuild
+		MsBuildOrXBuild=msbuild
 	else
 		xbuild /help > /dev/null
 		if [[ $? == 0 ]]; then
-			XMSBUILD=xbuild
+			MsBuildOrXBuild=xbuild
 		else
 			printf "No MSBuild nor XBuild were not located on this machine. Is it installed?\n"
 			ExitOnFailure
@@ -71,14 +71,14 @@ function InstallGoddamnSDK {
 	fi
 	
 	# Building the GoddamnBuildSystem..
-	$XMSBUILD /nologo /verbosity:quiet "./Source/Projects/GoddamnBuildSystem/GoddamnBuildSystem.csproj" /property:Configuration=Release /property:Platform=AnyCPU > /dev/null
+	$MsBuildOrXBuild /nologo /verbosity:quiet "./Source/Projects/GoddamnBuildSystem/GoddamnBuildSystem.csproj" /property:Configuration=Release /property:Platform=AnyCPU > /dev/null
 	if [[ $? != 0 ]]; then
 		printf "Failed to compile GoddamnBuildSystem.\n"
 		ExitOnFailure
 	fi
 	
 	# Generating solution files..
-	mono "./bin/Tools/GoddamnBuildSystem.exe" $@ > /dev/null
+	mono "./Bin/Tools/GoddamnBuildSystem.exe" $@ > /dev/null
 	if [[ $? != 0 ]]; then
 		printf "GoddamnBuildSystem failed.\n"
 		ExitOnFailure
@@ -106,7 +106,7 @@ function RemoveGoddamnSDK {
 
 # Parsing command-line arguments..
 if [[ $1 == "---help" ]]; then 
-	printf "Installation/Removal script for the Goddamn SDK [Linux/OS X Edition].\n"
+	printf "Installation/Removal script for the Goddamn SDK [macOS/Linux Edition].\n"
 	printf "Usage: SetupGoddamnSDK.sh [property] [other properties...]\n"
 	printf "Property:\n"
 	printf " ---help   - Prints this help.\n"

@@ -1,11 +1,11 @@
 @echo off
-rem // ==========================================================================================
-rem // Copyright (C) Goddamn Industries 2016. All Rights Reserved.
-rem // 
-rem // This software or any its part is distributed under terms of Goddamn Industries End User
-rem // License Agreement. By downloading or using this software or any its part you agree with 
-rem // terms of Goddamn Industries End User License Agreement.
-rem // ==========================================================================================
+rem ==========================================================================================
+rem Copyright (C) Goddamn Industries 2018. All Rights Reserved.
+rem 
+rem This software or any its part is distributed under terms of Goddamn Industries End User
+rem License Agreement. By downloading or using this software or any its part you agree with 
+rem terms of Goddamn Industries End User License Agreement.
+rem ==========================================================================================
 
 rem Parsing command-line arguments..
 if "%1" == "---help" (
@@ -42,7 +42,7 @@ if "%DirectoryTestPassed%" == "" (
 )
 
 rem Checking whether all external data (that does not come from GIT) is installed..
-if exist "Source\Projects\GoddamnEngine\Dependencies\mcpp" set "ExternalDataInstallationTestPassed=True"
+if exist "Source\Projects\GoddamnCore\Dependencies\jemalloc" set "ExternalDataInstallationTestPassed=True"
 if "%DirectoryTestPassed%" == "" (
 	echo Missing files that should be extracted from the extra archive that comes with SDK.
 	goto ExitOnFailure
