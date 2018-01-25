@@ -5,3 +5,4 @@
 /Users/oleg/Documents/GitHub/GoddamnEngine/Source/Projects/GoddamnBuildSystem/obj/Release/GoddamnBuildSystem.csproj.CoreCompileInputs.cache
 /Users/oleg/Documents/GitHub/GoddamnEngine/Source/Projects/GoddamnBuildSystem/obj/Release/GoddamnBuildSystem.exe
 /Users/oleg/Documents/GitHub/GoddamnEngine/Source/Projects/GoddamnBuildSystem/obj/Release/GoddamnBuildSystem.pdb
+/Users/oleg/Documents/GitHub/GoddamnEngine/Source/Projects/GoddamnBuildSystem/obj/Release/GoddamnBuildSystem.csprojResolveAssemblyReference.cache

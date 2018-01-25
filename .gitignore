@@ -105,7 +105,7 @@ Lib
 !/Source/Projects/**/Dependencies
 !/Utilities/Extra/ThirdPartyExecutables/*
 
-# Visual Studio (Code)
+# Visual Studio (Code/For Mac)
 .vs
 .vscode
 obj
