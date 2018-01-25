@@ -1,7 +1,0 @@
-/Users/oleg/Documents/GitHub/GoddamnEngine/bin/Tools/GoddamnBuildSystem.exe.config
-/Users/oleg/Documents/GitHub/GoddamnEngine/bin/Tools/GoddamnBuildSystem.XML
-/Users/oleg/Documents/GitHub/GoddamnEngine/bin/Tools/GoddamnBuildSystem.exe
-/Users/oleg/Documents/GitHub/GoddamnEngine/bin/Tools/GoddamnBuildSystem.pdb
-/Users/oleg/Documents/GitHub/GoddamnEngine/Source/Projects/GoddamnBuildSystem/obj/Debug/GoddamnBuildSystem.csproj.CoreCompileInputs.cache
-/Users/oleg/Documents/GitHub/GoddamnEngine/Source/Projects/GoddamnBuildSystem/obj/Debug/GoddamnBuildSystem.exe
-/Users/oleg/Documents/GitHub/GoddamnEngine/Source/Projects/GoddamnBuildSystem/obj/Debug/GoddamnBuildSystem.pdb
