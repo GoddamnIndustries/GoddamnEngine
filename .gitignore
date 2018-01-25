@@ -4,30 +4,6 @@
 !.git*
 
 ##################################################################
-# Project files.
-##################################################################
-
-# macOS
-.DS_Store
-
-# GoddamnBuildSystem
-/Source/Build
-/Source/Projects/*/Build
-!/Source/Projects/**/Dependencies
-!/Utilities/Extra/ThirdPartyExecutables/*
-
-# Visual Studio (Code)
-.vs
-.vscode
-
-# CLion/CMake
-.idea
-/Source/Projects/CMakeFiles
-/Source/Projects/cmake-build-debug
-/Source/Projects/CMakeLists.txt
-/Source/Projects/CMakeCache.txt
-
-##################################################################
 # Source files.
 ##################################################################
 
@@ -72,23 +48,6 @@
 !*.xaml
 
 ##################################################################
-# Dependencies files and build result.
-##################################################################
-
-# Build results.
-/Bin
-/Lib
-
-# Dependencies
-!*.a
-!*.lib
-!*.so
-!*.dll
-!*.dylib
-!*.exe
-!*.app
-
-##################################################################
 # Configuration files and content.
 ##################################################################
 
@@ -115,3 +74,45 @@
 !*.ai
 !*.ods
 !*.pdf
+
+##################################################################
+# Dependencies files and build result.
+##################################################################
+
+# Dependencies
+!*.a
+!*.lib
+!*.so
+!*.dll
+!*.dylib
+!*.exe
+!*.app
+
+# Build results.
+Bin
+Lib
+
+##################################################################
+# Project files.
+##################################################################
+
+# macOS
+.DS_Store
+
+# GoddamnBuildSystem
+/Source/Build
+/Source/Projects/**/Build
+!/Source/Projects/**/Dependencies
+!/Utilities/Extra/ThirdPartyExecutables/*
+
+# Visual Studio (Code)
+.vs
+.vscode
+obj
+
+# CLion/CMake
+.idea
+/Source/CMakeFiles
+/Source/cmake-build-debug
+/Source/CMakeLists.txt
+/Source/CMakeCache.txt

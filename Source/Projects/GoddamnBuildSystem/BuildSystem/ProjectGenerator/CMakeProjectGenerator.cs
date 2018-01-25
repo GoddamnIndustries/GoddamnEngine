@@ -28,7 +28,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         {
             switch (platform)
             {
-                case TargetPlatform.Windows:
+                case TargetPlatform.MacOS:
                     return true;
             }
             return false;
@@ -41,10 +41,11 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// <returns>Path to Visual Studio's '.vcxproj file'.</returns>
         public sealed override string GenerateProjectFiles(ProjectCache project)
         {
+            var cmakeListsPath = Path.Combine(base.GenerateProjectFiles(project), "CMakeLists.txt");
+
             // ==========================================================================================
             // Generating CMakeLists.txt files.
             // ==========================================================================================
-            var cmakeListsPath = Path.Combine(project.CachedLocation, "CMakeLists.txt");
             using (var cmakeLists = new StreamWriter(cmakeListsPath))
             {
                 cmakeLists.WriteLine("cmake_minimum_required (VERSION 3.0)");
@@ -89,7 +90,8 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 foreach (var solutionProject in solution.CachedProjects)
                 {
                     if (solutionProject.IsBuildTool) continue;
-                    cmakeLists.WriteLine("add_subdirectory({0})", solutionProject.CachedLocation.Replace('\\', '/'));
+                    cmakeLists.WriteLine("add_subdirectory({0})", 
+                                         Path.Combine(solutionProject.CachedLocation, "Build").Replace('\\', '/'));
                 }
 
             }
