@@ -23,7 +23,8 @@ namespace GoddamnEngine.BuildSystem
         /// </summary>
         /// <param name="format">The format string.</param>
         /// <param name="arguments">Formatting arguments.</param>
-        public BuildSystemException(string format, params object[] arguments) : base(string.Format(format, arguments))
+        public BuildSystemException(string format, params object[] arguments) 
+            : base(string.Format(format, arguments))
         {
         }
     }   // class ProjectException

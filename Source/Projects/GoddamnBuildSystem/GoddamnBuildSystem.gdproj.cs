@@ -6,11 +6,16 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
+using System;
 using GoddamnEngine.BuildSystem.Collectors;
 
 /// <summary>
 /// Represents a 'GoddamnBuildSystem' project file.
 /// </summary>
-public sealed class GoddamnBuildSystem : BuildToolProject
+public class GoddamnBuildSystem : BuildToolProject
 {
+    public GoddamnBuildSystem()
+    {
+        Console.WriteLine("Hui");
+    }
 }   // class GoddamnBuildSystem

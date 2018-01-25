@@ -73,8 +73,8 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// <returns>True if this file is excluded on some platform.</returns>
         public delegate bool IsExcludedDelegate(TargetPlatform platform);
 
-        private static readonly IsExcludedDelegate s_NotExcludedDelegate = platform => false;
-        private readonly IsExcludedDelegate m_IsExcluded;
+        static readonly IsExcludedDelegate s_NotExcludedDelegate = platform => false;
+        readonly IsExcludedDelegate m_IsExcluded;
         public readonly string FileName;
         public readonly ProjectSourceFileType FileType;
 
@@ -200,6 +200,21 @@ namespace GoddamnEngine.BuildSystem.Collectors
                         break;
                     case ProjectBuildType.StaticLibrary:
                         outputExtension = ".lib";
+                        break;
+                }
+            }
+            else if (TargetInfo.IsApplePlatform(platform))
+            {
+                switch (GetBuildType(platform, configuration))
+                {
+                    case ProjectBuildType.Application:
+                        outputExtension = ".app";
+                        break;
+                    case ProjectBuildType.DynamicLibrary:
+                        outputExtension = ".dylib";
+                        break;
+                    case ProjectBuildType.StaticLibrary:
+                        outputExtension = ".a";
                         break;
                 }
             }
@@ -650,8 +665,17 @@ namespace GoddamnEngine.BuildSystem.Collectors
     /// <summary>
     /// Represents a factory of projects.
     /// </summary>
-    public class ProjectFactory : CollectorFactory<Project, ProjectCache>
+    public static class ProjectFactory
     {
+        /// <summary>
+        /// Constructs new project instance and it's cached data.
+        /// </summary>
+        /// <param name="projectSourcePath">Path so source file of the project.</param>
+        /// <returns>Created instance of cached project data.</returns>
+        public static ProjectCache Create(string projectSourcePath)
+        {
+            return CollectorFactory<Project, ProjectCache>.Create(projectSourcePath);
+        }
     }   // class ProjectFactory
 
 }   // namespace GoddamnEngine.BuildSystem

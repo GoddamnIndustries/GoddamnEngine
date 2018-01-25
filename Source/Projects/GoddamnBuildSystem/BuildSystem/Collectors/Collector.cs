@@ -7,23 +7,50 @@
 // ==========================================================================================
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Dynamic;
 using System.IO;
-using GoddamnEngine.BuildSystem.Support;
+using System.Dynamic;
+using System.Diagnostics;
+using System.Collections.Generic;
+
 using GoddamnEngine.BuildSystem.Target;
+using GoddamnEngine.BuildSystem.Support;
 
 namespace GoddamnEngine.BuildSystem.Collectors
 {
     /// <summary>
-    /// Represents an abstract data collector.
+    /// Abstract data collector interface.
     /// </summary>
-    public class Collector
+    public interface ICollector
+    {
+        /// <summary>
+        /// Returns path to source file of this collector.
+        /// </summary>
+        string GetSource();
+
+        /// <summary>
+        /// Returns path directory of this collector.
+        /// </summary>
+        string GetLocation();
+
+        /// <summary>
+        /// Returns name of this collector.
+        /// </summary>
+        string GetName();
+
+        /// <summary>
+        /// Returns false is this object should be skipped.
+        /// </summary>
+        bool GetIsSupported();
+    }   // public interface ICollector
+
+    /// <summary>
+    /// Abstract data collector.
+    /// </summary>
+    public class Collector : ICollector
     {
         internal string Source;
-        private string m_Location;
-        private string m_Name;
+        string m_Location;
+        string m_Name;
 
         /// <summary>
         /// Returns path to source file of this collector.
@@ -104,14 +131,12 @@ namespace GoddamnEngine.BuildSystem.Collectors
     /// <typeparam name="T">Type of data stored in the container.</typeparam>
     public sealed class CollectorContainer<T>
     {
-        private readonly Dictionary<ushort, T> m_Container;
+        readonly Dictionary<ushort, T> m_Container;
 
-        private static ushort CompressPlatformConfiguration(TargetPlatform platform, TargetConfiguration configuration)
+        static ushort CompressPlatformConfiguration(TargetPlatform platform, TargetConfiguration configuration)
         {
-            // ReSharper disable PossibleNullReferenceException
             ushort platformValue = (byte)Convert.ChangeType(platform, platform.GetTypeCode());
             ushort configurationValue = (byte)Convert.ChangeType(configuration, platform.GetTypeCode());
-            // ReSharper restore PossibleNullReferenceException
 
             return (ushort)(platformValue | (configurationValue << 8));
         }
@@ -180,17 +205,21 @@ namespace GoddamnEngine.BuildSystem.Collectors
     /// Collects data and generates cache.
     /// </summary>
     /// <typeparam name="TCollector">Type of collector.</typeparam>
-    /// <typeparam name="TCache">Type of cache of collector.</typeparam>
-    public class CollectorFactory<TCollector, TCache> where TCollector : Collector where TCache : CollectorCache
+    /// <typeparam name="TCollectorCache">Type of cache of collector.</typeparam>
+    public static class CollectorFactory<TCollector, TCollectorCache> 
+        where TCollector : Collector 
+        where TCollectorCache : CollectorCache
     {
-        private static readonly Dictionary<string, TCache> s_CachedCache = new Dictionary<string, TCache>();
+#pragma warning disable RECS0108
+        static readonly Dictionary<string, TCollectorCache> s_CachedCache = new Dictionary<string, TCollectorCache>();
+#pragma warning restore RECS0108
 
         /// <summary>
         /// Constructs new collector instance and cached it data.
         /// </summary>
         /// <param name="collectorSourcePath">Path so source file of the collector.</param>
         /// <returns>Created instance of cached collector data.</returns>
-        public static TCache Create(string collectorSourcePath)
+        public static TCollectorCache Create(string collectorSourcePath)
         {
             var safeCollectorSourcePath = collectorSourcePath ?? typeof(TCollector).Name;
             if (!s_CachedCache.ContainsKey(safeCollectorSourcePath))
@@ -198,24 +227,23 @@ namespace GoddamnEngine.BuildSystem.Collectors
                 TCollector collector = null;
                 if (collectorSourcePath != null)
                 {
-                    foreach (var internalType in CSharpCompiler.CompileSourceFile(collectorSourcePath).GetTypes())
+                    var assembly = CSharpCompiler.CompileSourceFile(collectorSourcePath);
+                    var assemblyExportedTypes = assembly.GetExportedTypes();
+                    foreach (var assemblyExportedType in assemblyExportedTypes)
                     {
-                        if (internalType.IsSubclassOf(typeof (TCollector)))
+                        if (assemblyExportedType.IsSubclassOf(typeof (TCollector)))
                         {
-                            collector = (TCollector) Activator.CreateInstance(internalType);
+                            collector = (TCollector) Activator.CreateInstance(assemblyExportedType);
                             break;
                         }
                     }
                 }
 
-                if (collector == null)
-                {
-                    collector = Activator.CreateInstance<TCollector>();
-                }
+                collector = collector ?? Activator.CreateInstance<TCollector>();
                 collector.Source = collectorSourcePath;
-                var cache = (TCache)Activator.CreateInstance(typeof(TCache), collector);
-                s_CachedCache.Add(safeCollectorSourcePath, cache);
 
+                var cache = (TCollectorCache)Activator.CreateInstance(typeof(TCollectorCache), collector);
+                s_CachedCache.Add(safeCollectorSourcePath, cache);
                 return cache;
             }
             return s_CachedCache[safeCollectorSourcePath];

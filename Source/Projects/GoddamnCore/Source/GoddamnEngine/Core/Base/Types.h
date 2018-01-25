@@ -16,6 +16,8 @@
 #	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
 #endif	// if !defined(GD_INSIDE_INCLUDE_H)
 
+#include <limits.h>
+
 /*!
  * Computes length of the array.
  * Should be used only in the code that requires compile-time results.
@@ -69,7 +71,7 @@ GD_NAMESPACE_BEGIN
 	typedef wchar_t const*	WideCStr;
 	WideChar static	const	WideCharMin = WCHAR_MIN;
 	WideChar static	const	WideCharMax = WCHAR_MAX;
-	static_assert(sizeof(WideChar) == 2, "Invalid 'WideChar' size.");	// This would not compile in GCC/Clang. But who cares?
+	//static_assert(sizeof(WideChar) == 2, "Invalid 'WideChar' size.");	// This would not compile in GCC/Clang. But who cares?
 
 	typedef ::int8_t	 Int8;		
 	Int8 static const	 Int8Min		= INT8_MAX;
@@ -282,7 +284,7 @@ GD_NAMESPACE_BEGIN
 	template<typename TCastTo, typename TCastFrom>
 	GDINL static TCastTo union_cast(TCastFrom const castFrom)
 	{
-		static_assert(sizeof TCastTo == sizeof TCastFrom, "Union cast's parameter should match sizes.");
+		static_assert(sizeof(TCastTo) == sizeof(TCastFrom), "Union cast's parameter should match sizes.");
 		return *reinterpret_cast<TCastTo const*>(&castFrom);
 	}
 

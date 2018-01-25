@@ -1,3 +1,0 @@
-C:\Users\Oleg\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\173.4127.32\bin\cmake\bin\cmake.exe -E remove -f CMakeFiles\GoddamnCore.dir/objects.a
-D:\MinGW\bin\ar.exe cr CMakeFiles\GoddamnCore.dir/objects.a @CMakeFiles\GoddamnCore.dir\objects1.rsp
-D:\MinGW\bin\g++.exe  -g  -shared -o libGoddamnCore.dll -Wl,--out-implib,libGoddamnCore.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles\GoddamnCore.dir/objects.a -Wl,--no-whole-archive @CMakeFiles\GoddamnCore.dir\linklibs.rsp

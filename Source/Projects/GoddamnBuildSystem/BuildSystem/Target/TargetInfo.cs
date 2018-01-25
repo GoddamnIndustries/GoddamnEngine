@@ -22,7 +22,7 @@ namespace GoddamnEngine.BuildSystem.Target
         /// <returns>All supported and implemented target platforms.</returns>
         public static IEnumerable<TargetPlatform> EnumerateAllPlatforms()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            //if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 yield return TargetPlatform.Windows;
                 //yield return TargetPlatform.XboxOne;
@@ -82,13 +82,23 @@ namespace GoddamnEngine.BuildSystem.Target
         }
 
         /// <summary>
+        /// Returns true if target platform`s native API is Cocoa.
+        /// </summary>
+        /// <param name="platform">One of the target platforms.</param>
+        /// <returns>True if target platform`s native API is Cocoa.</returns>
+        public static bool IsApplePlatform(TargetPlatform platform)
+        {
+            return platform == TargetPlatform.MacOS;
+        }
+
+        /// <summary>
         /// Returns true if target platform is POSIX compatible.
         /// </summary>
         /// <param name="platform">One of the target platforms.</param>
         /// <returns>True if target platform is POSIX compatible.</returns>
         public static bool IsPosixPlatform(TargetPlatform platform)
         {
-            return platform == TargetPlatform.PlayStation4;
+            return platform == TargetPlatform.MacOS || platform == TargetPlatform.Windows;
         }
 
     }   // class TargetInfo

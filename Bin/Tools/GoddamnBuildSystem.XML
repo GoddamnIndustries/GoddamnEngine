@@ -49,9 +49,34 @@
             </summary>
             <param name="arguments">Command line arguments.</param>
         </member>
+        <member name="T:GoddamnEngine.BuildSystem.Collectors.ICollector">
+            <summary>
+            Abstract data collector interface.
+            </summary>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.Collectors.ICollector.GetSource">
+            <summary>
+            Returns path to source file of this collector.
+            </summary>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.Collectors.ICollector.GetLocation">
+            <summary>
+            Returns path directory of this collector.
+            </summary>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.Collectors.ICollector.GetName">
+            <summary>
+            Returns name of this collector.
+            </summary>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.Collectors.ICollector.GetIsSupported">
+            <summary>
+            Returns false is this object should be skipped.
+            </summary>
+        </member>
         <member name="T:GoddamnEngine.BuildSystem.Collectors.Collector">
             <summary>
-            Represents an abstract data collector.
+            Abstract data collector.
             </summary>
         </member>
         <member name="M:GoddamnEngine.BuildSystem.Collectors.Collector.GetSource">
@@ -118,7 +143,7 @@
             Collects data and generates cache.
             </summary>
             <typeparam name="TCollector">Type of collector.</typeparam>
-            <typeparam name="TCache">Type of cache of collector.</typeparam>
+            <typeparam name="TCollectorCache">Type of cache of collector.</typeparam>
         </member>
         <member name="M:GoddamnEngine.BuildSystem.Collectors.CollectorFactory`2.Create(System.String)">
             <summary>
@@ -127,9 +152,36 @@
             <param name="collectorSourcePath">Path so source file of the collector.</param>
             <returns>Created instance of cached collector data.</returns>
         </member>
+        <member name="T:GoddamnEngine.BuildSystem.Collectors.IDependency">
+            <summary>
+            Project dependency interface.
+            </summary>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.Collectors.IDependency.EnumerateHeaderDirectories">
+            <summary>
+            Collects list of directories that contain header files.
+            </summary>
+            <returns>Iterator for list of header files.</returns>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.Collectors.IDependency.EnumerateCopyFiles(GoddamnEngine.BuildSystem.Target.TargetPlatform,GoddamnEngine.BuildSystem.Target.TargetConfiguration)">
+            <summary>
+            Collects list of files that should be copied to project build output directory.
+            </summary>
+            <param name="platform">One of the target platforms.</param>
+            <param name="configuration">One of the target configurations.</param>
+            <returns>Iterator for list of files that should be copied to project build output directory.</returns>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.Collectors.IDependency.EnumerateLinkedLibraries(GoddamnEngine.BuildSystem.Target.TargetPlatform,GoddamnEngine.BuildSystem.Target.TargetConfiguration)">
+            <summary>
+            Collects list of libraries that should be linked with project build file.
+            </summary>
+            <param name="platform">One of the target platforms.</param>
+            <param name="configuration">One of the target configurations.</param>
+            <returns>Iterator for list of libraries that should be linked with project build file.</returns>
+        </member>
         <member name="T:GoddamnEngine.BuildSystem.Collectors.Dependency">
             <summary>
-            Represents a single project's dependency.
+            Project dependency.
             </summary>
         </member>
         <member name="M:GoddamnEngine.BuildSystem.Collectors.Dependency.EnumerateHeaderDirectories">
@@ -201,6 +253,13 @@
             <summary>
             Represents a factory of dependencies.
             </summary>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.Collectors.DependencyFactory.Create(System.String)">
+            <summary>
+            Constructs new dependency instance and it's cached data.
+            </summary>
+            <param name="dependencySourcePath">Path so source file of the dependency.</param>
+            <returns>Created instance of cached dependency data.</returns>
         </member>
         <member name="M:GoddamnEngine.BuildSystem.Collectors.DependencyFactory.GetGoddamnCoreDependency">
             <summary>
@@ -468,6 +527,13 @@
             Represents a factory of projects.
             </summary>
         </member>
+        <member name="M:GoddamnEngine.BuildSystem.Collectors.ProjectFactory.Create(System.String)">
+            <summary>
+            Constructs new project instance and it's cached data.
+            </summary>
+            <param name="projectSourcePath">Path so source file of the project.</param>
+            <returns>Created instance of cached project data.</returns>
+        </member>
         <member name="T:GoddamnEngine.BuildSystem.Collectors.Solution">
             <summary>
             Represents a solution (set of projects).
@@ -495,6 +561,13 @@
             <summary>
             Represents a factory of dependencies.
             </summary>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.Collectors.SolutionFactory.Create(System.String)">
+            <summary>
+            Constructs new solution instance and it's cached data.
+            </summary>
+            <param name="solutionSourcePath">Path to the source file of the solution.</param>
+            <returns>Created instance of cached solution data.</returns>
         </member>
         <member name="T:GoddamnEngine.BuildSystem.ProjectGenerator.CMakeProjectGenerator">
             <summary>
@@ -795,6 +868,13 @@
             </summary>
             <param name="platform">One of the target platforms.</param>
             <returns>True if target platform`s native API is WinAPI.</returns>
+        </member>
+        <member name="M:GoddamnEngine.BuildSystem.Target.TargetInfo.IsApplePlatform(GoddamnEngine.BuildSystem.Target.TargetPlatform)">
+            <summary>
+            Returns true if target platform`s native API is Cocoa.
+            </summary>
+            <param name="platform">One of the target platforms.</param>
+            <returns>True if target platform`s native API is Cocoa.</returns>
         </member>
         <member name="M:GoddamnEngine.BuildSystem.Target.TargetInfo.IsPosixPlatform(GoddamnEngine.BuildSystem.Target.TargetPlatform)">
             <summary>

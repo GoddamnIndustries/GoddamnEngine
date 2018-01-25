@@ -1,6 +1,0 @@
-cmake_minimum_required (VERSION 2.8)
-project(GoddamnEngine)
-add_subdirectory(H:/GoddamnEngine/source/Projects/GoddamnCore)
-add_subdirectory(H:/GoddamnEngine/source/Projects/GoddamnEngine)
-add_subdirectory(H:/GoddamnEngine/source/Projects/GoddamnGraphics/GoddamnGraphicsOpenGL)
-add_subdirectory(H:/GoddamnEngine/source/Projects/Samples/01_SimpleScene)

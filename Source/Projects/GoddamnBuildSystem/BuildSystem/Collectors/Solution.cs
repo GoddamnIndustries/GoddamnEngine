@@ -24,8 +24,15 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// <returns>Iterator for list of projects in solution.</returns>
         public virtual IEnumerable<ProjectCache> EnumerateProjects()
         {
-            return Directory.EnumerateFiles(Path.Combine(GetLocation(), "Projects"), "*.gdproj.cs", SearchOption.AllDirectories)
-                .Select(ProjectFactory.Create).Where(project => project.IsSupported);
+            foreach (var solutionSourcePath in Directory.EnumerateFiles(
+                Path.Combine(GetLocation(), "Projects"), "*.gdproj.cs", SearchOption.AllDirectories))
+            {
+                var solutionCache = ProjectFactory.Create(solutionSourcePath);
+                if (solutionCache.IsSupported)
+                {
+                    yield return solutionCache;
+                }
+            }
         }
 
     }   // class Solution
@@ -54,8 +61,17 @@ namespace GoddamnEngine.BuildSystem.Collectors
     /// <summary>
     /// Represents a factory of dependencies.
     /// </summary>
-    public class SolutionFactory : CollectorFactory<Solution, SolutionCache>
+    public static class SolutionFactory
     {
+        /// <summary>
+        /// Constructs new solution instance and it's cached data.
+        /// </summary>
+        /// <param name="solutionSourcePath">Path to the source file of the solution.</param>
+        /// <returns>Created instance of cached solution data.</returns>
+        public static SolutionCache Create(string solutionSourcePath)
+        {
+            return CollectorFactory<Solution, SolutionCache>.Create(solutionSourcePath);
+        }
     }   // class SolutionFactory
 
-}   // namespace GoddamnEngine.BuildSystem
+}   // namespace GoddamnEngine.BuildSystem.Collectors

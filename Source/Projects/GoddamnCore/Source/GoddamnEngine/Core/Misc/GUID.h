@@ -219,7 +219,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL friend bool operator== (GUID const& a, GUID const& b)
 		{
-			return (a[0] ^ b[0] | a[1] ^ b[1]) == 0;
+			return ((a[0] ^ b[0]) | (a[1] ^ b[1])) == 0;
 		}
 
 		/*!
@@ -227,7 +227,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL friend bool operator!= (GUID const& a, GUID const& b)
 		{
-			return (a[0] ^ b[0] | a[1] ^ b[1]) != 0;
+			return ((a[0] ^ b[0]) | (a[1] ^ b[1])) != 0;
 		}
 
 		/*!

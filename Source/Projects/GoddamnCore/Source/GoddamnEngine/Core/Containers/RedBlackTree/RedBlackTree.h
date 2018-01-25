@@ -34,9 +34,7 @@ GD_NAMESPACE_BEGIN
 		RedBlackTreeBaseNode* m_Right  = nullptr;
 		RedBlackTreeBaseNode* m_Parent = nullptr;
 		bool				  m_IsRed  = false;
-#if GD_PLATFORM_WINDOWS && !GD_RELEASE
 		bool                  m_IsNull = false;
-#endif	// if GD_PLATFORM_WINDOWS && !GD_RELEASE
 		Byte				  m_DataUntyped[1];
 
 	public:

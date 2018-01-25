@@ -151,7 +151,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		//! @{
 		GDINL Pair(TFirst&& first, TSecond&& second) 
-			: First(Forward<TFirst>(first)), Second(Forward<TSecond>(second)) 
+			: First(Utils::Forward<TFirst>(first)), Second(Utils::Forward<TSecond>(second))
 		{}
 		GDINL Pair(TFirst const& first, TSecond const& second) 
 			: First(first), Second(second) 
@@ -196,7 +196,7 @@ GD_NAMESPACE_BEGIN
 	template<typename TFirst, typename TSecond>
 	GDINL static Pair<TFirst, TSecond> MakePair(TFirst&& first, TSecond&& second)
 	{
-		return Pair<TFirst, TSecond>(Forward<TFirst>(first), Forward<TSecond>(second));
+		return Pair<TFirst, TSecond>(Utils::Forward<TFirst>(first), Utils::Forward<TSecond>(second));
 	}
 	template<typename TFirst, typename TSecond>
 	GDINL static Pair<TFirst, TSecond> MakePair(TFirst const& first, TSecond const& second)

@@ -47,9 +47,10 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             var cmakeListsPath = Path.Combine(project.CachedLocation, "CMakeLists.txt");
             using (var cmakeLists = new StreamWriter(cmakeListsPath))
             {
-                cmakeLists.WriteLine("cmake_minimum_required (VERSION 2.8)");
+                cmakeLists.WriteLine("cmake_minimum_required (VERSION 3.0)");
                 cmakeLists.WriteLine("project({0})", project.CachedName);
                 cmakeLists.WriteLine("include_directories({0})", project.GenerateIncludePaths("\n\t").Replace('\\', '/'));
+                cmakeLists.WriteLine("set(CMAKE_CXX_FLAGS -std=c++14)");
                 switch (project.CachedBuildTypes[TargetPlatform.Windows, TargetConfiguration.Debug])
                 {
                     case ProjectBuildType.Application:

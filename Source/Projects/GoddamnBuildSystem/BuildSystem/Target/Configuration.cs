@@ -26,7 +26,7 @@ namespace GoddamnEngine.BuildSystem.Target
     /// </summary>
     public class TargetConfigurationInfo
     {
-        private static Dictionary<TargetConfiguration, TargetConfigurationInfo> s_CachedInformation;
+        static Dictionary<TargetConfiguration, TargetConfigurationInfo> s_CachedInformation;
 
         public string HumanReadableName { get; protected set; }
         public bool IsDebug { get; protected set; }

@@ -9,6 +9,7 @@
 using System.CodeDom.Compiler;
 using System.Reflection;
 using System.Text;
+using System.IO;
 using Microsoft.CSharp;
 
 namespace GoddamnEngine.BuildSystem.Support
@@ -18,8 +19,7 @@ namespace GoddamnEngine.BuildSystem.Support
     /// </summary>
     internal static class CSharpCompiler
     {
-        private static readonly object s_TemporaryAssemblyMutex = new object();
-        private static CompilerParameters s_Parameters;
+        static readonly object s_TemporaryAssemblyMutex = new object();
 
         /// <summary>
         /// Compiles C# source file into Assembly object.
@@ -30,34 +30,30 @@ namespace GoddamnEngine.BuildSystem.Support
         {
             lock (s_TemporaryAssemblyMutex)
             {
-                if (s_Parameters == null)
+                var compilationParameters = new CompilerParameters()
                 {
-                    s_Parameters = new CompilerParameters(new[] { 
-                        "System.dll",                            // Only symbols from System.dll are available in configuration files.
-                        Assembly.GetExecutingAssembly().Location // Adding current assembly.
-                    })
-                    {
-                        TreatWarningsAsErrors = true,
-                        GenerateInMemory = true,
-                        GenerateExecutable = false,
-                        WarningLevel = 4
-                    };
-                }
+                    GenerateInMemory = false,
+                    GenerateExecutable = false,
+                    WarningLevel = 4,
+                };
+                compilationParameters.ReferencedAssemblies.Add("System.dll");
+                compilationParameters.ReferencedAssemblies.Add(Assembly.GetExecutingAssembly().Location);
 
-                var compilingResults = new CSharpCodeProvider().CompileAssemblyFromFile(s_Parameters, pathToSource);
-                if (compilingResults.Errors.HasErrors || compilingResults.Errors.HasWarnings)
+                var compilationResults = new CSharpCodeProvider().CompileAssemblyFromFile(compilationParameters, pathToSource);
+                if (compilationResults.Errors.HasErrors)
                 {
-                    // Seams we have compiling errors/warnings (assume compiling using /wx options) here..
                     var compilingErrorsAndWarnings = new StringBuilder();
-                    foreach (var compilingErrorOrWarning in compilingResults.Errors)
+                    foreach (var compilingErrorOrWarning in compilationResults.Errors)
                     {
                         compilingErrorsAndWarnings.AppendLine(compilingErrorOrWarning.ToString());
                     }
 
-                    throw new BuildSystemException(compilingErrorsAndWarnings.ToString());
+                    var compilingErrorsAndWarningsString = compilingErrorsAndWarnings.ToString();
+                    throw new BuildSystemException(compilingErrorsAndWarningsString);
                 }
 
-                return compilingResults.CompiledAssembly;
+                var compiledAssembly = compilationResults.CompiledAssembly;
+                return compiledAssembly;
             }
         }
 

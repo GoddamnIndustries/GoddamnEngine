@@ -16,12 +16,12 @@
 #	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
 #endif	// if !defined(GD_INSIDE_INCLUDE_H)
 
-#if GD_PLATFORM_API_MICROSOFT
+//#if GD_PLATFORM_API_MICROSOFT
 extern "C" {
-	extern char const* __stdcall goddamn_strrstr(char const*, char const*);
-	extern wchar_t const* __stdcall goddamn_wcsrstr(wchar_t const*, wchar_t const*);	
+	extern char const* goddamn_strrstr(char const*, char const*);
+	extern wchar_t const* goddamn_wcsrstr(wchar_t const*, wchar_t const*);
 }
-#endif	// if GD_PLATFORM_API_MICROSOFT
+//#endif	// if GD_PLATFORM_API_MICROSOFT
 
 GD_NAMESPACE_BEGIN
 
@@ -235,7 +235,7 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strrstr" (does it exist?) function.
 		 *
 		 * @param cstr C string.
-		 * @param subÑStr C sub-string to search for.
+		 * @param subï¿½Str C sub-string to search for.
 		 */
 		//! @{
 		GDINL static CStr Strrstr(CStr const cstr, CStr const subCStr)
@@ -405,7 +405,7 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::vsscanf" function.
 		 */
 		//! @{
-		GDINL static Int32 VsscanfSafe(CStr const source, CStr const format, va_list const arguments)	// NOLINT
+		GDINL static Int32 VsscanfSafe(CStr const source, CStr const format, va_list arguments)	// NOLINT
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			return ::vsscanf_s(source, format, arguments);
@@ -413,7 +413,7 @@ GD_NAMESPACE_BEGIN
 			return ::vsscanf(source, format, arguments);
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		GDINL static Int32 VsscanfSafe(WideCStr const source, WideCStr const format, va_list const arguments)	// NOLINT
+		GDINL static Int32 VsscanfSafe(WideCStr const source, WideCStr const format, va_list arguments)	// NOLINT
 		{
 #if GD_PLATFORM_API_MICROSOFT
 			return ::vswscanf_s(source, format, arguments);

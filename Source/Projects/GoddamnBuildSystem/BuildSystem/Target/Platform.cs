@@ -20,7 +20,7 @@ namespace GoddamnEngine.BuildSystem.Target
     {
         Unknown,
         Windows,
-        MacOs,
+        MacOS,
         XboxOne,
         PlayStation4,
     }   // enum TargetPlatforms

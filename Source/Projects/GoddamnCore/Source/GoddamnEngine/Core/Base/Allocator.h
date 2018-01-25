@@ -220,11 +220,11 @@ inline void* operator new[](size_t const size, gd_operator_new_delete_t
 }
 
 // delete T && delete[] T
-inline void operator delete(void* ptr)
+extern void operator delete(void* ptr) noexcept
 {
 	GD::Allocator::DeallocateMemory(ptr);
 }
-inline void operator delete[](void* ptr)
+extern void operator delete[](void* ptr) noexcept
 {
 	GD::Allocator::DeallocateMemory(ptr);
 }

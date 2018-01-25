@@ -597,7 +597,7 @@ GD_NAMESPACE_BEGIN
 		// vector += Element
 		GDINL friend Vector& operator+= (Vector& lhs, TElement&& rhs)
 		{
-			lhs.InsertLast(Forward<TElement>(rhs));
+			lhs.InsertLast(Utils::Forward<TElement>(rhs));
 			return lhs;
 		}
 		GDINL friend Vector& operator+= (Vector& lhs, TElement const& rhs)
@@ -610,7 +610,7 @@ GD_NAMESPACE_BEGIN
 		template<typename TOtherAllocator>
 		GDINL friend Vector operator+ (Vector const& lhs, Vector<TElement, TOtherAllocator>&& rhs)
 		{
-			return Vector(lhs) += Forward<Vector<TElement, TOtherAllocator>>(rhs);
+			return Vector(lhs) += Utils::Forward<Vector<TElement, TOtherAllocator>>(rhs);
 		}
 		template<typename TOtherAllocator>
 		GDINL friend Vector operator+ (Vector const& lhs, Vector<TElement, TOtherAllocator> const& rhs)

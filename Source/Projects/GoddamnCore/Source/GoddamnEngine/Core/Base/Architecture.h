@@ -713,7 +713,7 @@
 // ------------------------------------------------------------------------------------------
 //! Defines a method that stays internal for the Assembly.
 #define GDINT \
-	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((visibility("protected")))) \
+	GD_COMPILER_GCC_COMPATIBLE_CODE(__attribute__((visibility("default")))) \
 	GD_COMPILER_MSVC_COMPATIBLE_CODE(__declspec()) 
 
 // ------------------------------------------------------------------------------------------

@@ -38,7 +38,7 @@ GD_NAMESPACE_BEGIN
 
 	public:
 		GDINL DebugAssertData(CStr const unformattedMessage, CStr const assertFileName, CStr const assertFunctionName, UInt32 const assertLineNumber, CStr const assertExpression = nullptr)
-			: AssertUnformattedMessage(unformattedMessage), AssertMessageFormat(nullptr)
+			: AssertUnformattedMessage(unformattedMessage), AssertMessageFormat{}
 			, AssertFileName(assertFileName), AssertFunctionName(assertFunctionName), AssertLineNumber(assertLineNumber)
 			, AssertExpression(assertExpression), AssertShouldBeAlwaysIgnored(false)
 		{

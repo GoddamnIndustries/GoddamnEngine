@@ -13,8 +13,13 @@
  */
 #pragma once
 
+#if defined(_WIN32)
 #define gdt_api __declspec(dllexport)
 #define gdt_analysis_assume(...) __analysis_assume(__VA_ARGS__)
+#else
+#define gdt_api
+#define gdt_analysis_assume(...)
+#endif
 
 #include <exception>
 
@@ -30,7 +35,7 @@
 	do { \
 		gdt_analysis_assume(expression); \
 		if (!(expression)) { \
-			throw ::goddamn_testing::assertion_exception(__FILE__, __FUNCTION__, __LINE__, #expression, __VA_ARGS__); \
+			throw ::goddamn_testing::assertion_exception(__FILE__, __FUNCTION__, __LINE__, #expression, ##__VA_ARGS__); \
 		} \
 	} while (false); 
 
@@ -40,7 +45,7 @@
  */
 #define gd_testing_assert_false(...) \
 	do { \
-		throw ::goddamn_testing::fatal_assertion_exception(__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__); \
+		throw ::goddamn_testing::fatal_assertion_exception(__FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
 	} while (false); 
 
 /*!

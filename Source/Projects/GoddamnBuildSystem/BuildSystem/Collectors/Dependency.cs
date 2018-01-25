@@ -16,9 +16,37 @@ using GoddamnEngine.BuildSystem.Target;
 namespace GoddamnEngine.BuildSystem.Collectors
 {
     /// <summary>
-    /// Represents a single project's dependency.
+    /// Project dependency interface.
     /// </summary>
-    public class Dependency : Collector
+    public interface IDependency : ICollector
+    {
+        /// <summary>
+        /// Collects list of directories that contain header files.
+        /// </summary>
+        /// <returns>Iterator for list of header files.</returns>
+        IEnumerable<string> EnumerateHeaderDirectories();
+
+        /// <summary>
+        /// Collects list of files that should be copied to project build output directory.
+        /// </summary>
+        /// <param name="platform">One of the target platforms.</param>
+        /// <param name="configuration">One of the target configurations.</param>
+        /// <returns>Iterator for list of files that should be copied to project build output directory.</returns>
+        IEnumerable<string> EnumerateCopyFiles(TargetPlatform platform, TargetConfiguration configuration);
+
+        /// <summary>
+        /// Collects list of libraries that should be linked with project build file.
+        /// </summary>
+        /// <param name="platform">One of the target platforms.</param>
+        /// <param name="configuration">One of the target configurations.</param>
+        /// <returns>Iterator for list of libraries that should be linked with project build file.</returns>
+        IEnumerable<string> EnumerateLinkedLibraries(TargetPlatform platform, TargetConfiguration configuration);
+    }   // public interface IDependency
+
+    /// <summary>
+    /// Project dependency.
+    /// </summary>
+    public class Dependency : Collector, IDependency
     {
         /// <summary>
         /// Collects list of directories that contain header files.
@@ -57,7 +85,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
                         {
                             yield return copyFile;
                         }
-                    }
+                    } 
                 }
             }
         }
@@ -107,7 +135,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
     /// </summary>
     public class ProjectDependency : Dependency
     {
-        private ProjectCache m_Project;
+        ProjectCache m_Project;
 
         /// <summary>
         /// Returns project caches that is used in this dependency.
@@ -205,10 +233,20 @@ namespace GoddamnEngine.BuildSystem.Collectors
     /// <summary>
     /// Represents a factory of dependencies.
     /// </summary>
-    public sealed class DependencyFactory : CollectorFactory<Dependency, DependencyCache>
+    public static class DependencyFactory
     {
-        private static DependencyCache s_GoddamnCoreDependency;
-        private static DependencyCache s_GoddamnEngineDependency;
+        static DependencyCache s_GoddamnCoreDependency;
+        static DependencyCache s_GoddamnEngineDependency;
+
+        /// <summary>
+        /// Constructs new dependency instance and it's cached data.
+        /// </summary>
+        /// <param name="dependencySourcePath">Path so source file of the dependency.</param>
+        /// <returns>Created instance of cached dependency data.</returns>
+        public static DependencyCache Create(string dependencySourcePath)
+        {
+            return CollectorFactory<Dependency, DependencyCache>.Create(dependencySourcePath);
+        }
 
         /// <summary>
         /// Returns cached dependency for GoddamnCore project.
@@ -218,7 +256,8 @@ namespace GoddamnEngine.BuildSystem.Collectors
         {
             if (s_GoddamnCoreDependency == null)
             {
-                var goddamnCoreDependencyPath = Path.Combine(BuildSystem.GetSdkLocation(), "Source", "Projects", "GoddamnCore", "GoddamnCore.gddep.cs");
+                var goddamnCoreDependencyPath = Path.Combine(BuildSystem.GetSdkLocation(), 
+                                                             "Source", "Projects", "GoddamnCore", "GoddamnCore.gddep.cs");
                 if (File.Exists(goddamnCoreDependencyPath))
                 {
                     s_GoddamnCoreDependency = Create(goddamnCoreDependencyPath);
