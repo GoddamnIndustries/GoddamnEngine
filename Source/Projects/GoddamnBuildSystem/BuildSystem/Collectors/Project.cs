@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -36,6 +37,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
     {
         SourceCode,
         SourceCodeAssembler,
+        SourceCodeObjective,
         HeaderFile,
         InlineImplementation,
         ResourceScript,
@@ -77,6 +79,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
         readonly IsExcludedDelegate m_IsExcluded;
         public readonly string FileName;
         public readonly ProjectSourceFileType FileType;
+        public readonly dynamic FileMisc = new ExpandoObject();
 
         /// <summary>
         /// Initializes new source file.
@@ -323,6 +326,10 @@ namespace GoddamnEngine.BuildSystem.Collectors
                     case ".s":
                     case ".asm":
                         yield return new ProjectSourceFile(sourceFile, GetProgrammingLanguage() == ProjectLanguge.Cpp ? ProjectSourceFileType.SourceCodeAssembler : ProjectSourceFileType.SupportFile);
+                        break;
+                    case ".m":
+                    case ".mm":
+                        yield return new ProjectSourceFile(sourceFile, GetProgrammingLanguage() == ProjectLanguge.Cpp ? ProjectSourceFileType.SourceCodeObjective : ProjectSourceFileType.SupportFile);
                         break;
 
                     case ".inl":

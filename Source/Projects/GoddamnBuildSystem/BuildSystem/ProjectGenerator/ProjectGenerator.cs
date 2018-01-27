@@ -74,8 +74,9 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 case PlatformID.Win32NT:
                     return new VisualStudioProjectGenerator();
                 case PlatformID.Unix:
+                    //return new CMakeProjectGenerator();
                 case PlatformID.MacOSX:
-                    return new CMakeProjectGenerator();
+                    return new XCodeProjectGenerator();
             }
             throw new BuildSystemException("Unable to determine IDE for this platform");
         }

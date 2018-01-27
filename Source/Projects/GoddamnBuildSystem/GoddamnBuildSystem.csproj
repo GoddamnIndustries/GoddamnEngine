@@ -93,6 +93,7 @@
     <Compile Include="BuildSystem\Target\TargetInfo.cs" />
     <Compile Include="BuildSystem\Target\Toolchain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BuildSystem\ProjectGenerator\XCodeProjectGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\App.config" />

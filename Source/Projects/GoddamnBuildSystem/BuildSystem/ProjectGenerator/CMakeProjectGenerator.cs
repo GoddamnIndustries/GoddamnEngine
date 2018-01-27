@@ -35,10 +35,10 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         }
 
         /// <summary>
-        /// Generates project files for Visual Studio: '.vcxproj' and '.vcxproj.filter'.
+        /// Generates project files for CMake: 'CMakeLists.txt'.
         /// </summary>
         /// <param name="project">Parsed project object.</param>
-        /// <returns>Path to Visual Studio's '.vcxproj file'.</returns>
+        /// <returns>Path to CMake's 'CMakeLists.txt' file.</returns>
         public sealed override string GenerateProjectFiles(ProjectCache project)
         {
             var cmakeListsPath = Path.Combine(base.GenerateProjectFiles(project), "CMakeLists.txt");
@@ -76,10 +76,10 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         }
 
         /// <summary>
-        /// Generates solution files for Visual Studio.
+        /// Generates solution files for CMake.
         /// </summary>
         /// <param name="solution">Parsed solution object.</param>
-        /// <returns>Path to Visual Studio's .'sln' file.</returns>
+        /// <returns>Path to CMake's 'CMakeLists.txt' file.</returns>
         public sealed override string GenerateSolutionFiles(SolutionCache solution)
         {
             var cmakeListsPath = Path.Combine(solution.CachedLocation, "CMakeLists.txt");

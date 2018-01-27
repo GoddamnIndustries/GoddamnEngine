@@ -235,7 +235,7 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strrstr" (does it exist?) function.
 		 *
 		 * @param cstr C string.
-		 * @param sub�Str C sub-string to search for.
+		 * @param subCStr C sub-string to search for.
 		 */
 		//! @{
 		GDINL static CStr Strrstr(CStr const cstr, CStr const subCStr)
