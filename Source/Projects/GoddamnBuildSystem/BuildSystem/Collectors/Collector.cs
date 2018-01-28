@@ -177,7 +177,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
     public class CollectorCache
     {
         public readonly Collector Collector;
-        public readonly dynamic AdditionalCache;
+        public readonly dynamic Misc;
         public readonly bool IsSupported;
         public readonly string CachedSource;
         public readonly string CachedName;
@@ -193,7 +193,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
             IsSupported = collector.GetIsSupported();
             if (IsSupported)
             {
-                AdditionalCache = new ExpandoObject();
+                Misc = new ExpandoObject();
                 CachedSource = collector.GetSource();
                 CachedName = collector.GetName();
                 CachedLocation = collector.GetLocation();

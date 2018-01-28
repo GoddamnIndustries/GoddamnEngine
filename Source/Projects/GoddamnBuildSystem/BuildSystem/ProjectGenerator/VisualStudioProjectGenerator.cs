@@ -101,7 +101,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// Generates project files for Visual Studio: '.vcxproj' and '.vcxproj.filter'.
         /// </summary>
         /// <param name="project">Parsed project object.</param>
-        /// <returns>Path to Visual Studio's '.vcxproj file'.</returns>
+        /// <returns>Path to Visual Studio '.vcxproj file'.</returns>
         public sealed override string GenerateProjectFiles(ProjectCache project)
         {
             var vcxProjPath = Path.Combine(base.GenerateProjectFiles(project), project.CachedName) + ".vcxproj";
@@ -110,11 +110,11 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             {
                 // For build tools the best was is to load a GUID from project files: this causes exceptions 
                 // in Visual Studio when reloading of solution, and all opened tabs would be terminated.
-                project.AdditionalCache.GUID = QueryGuidFromProject(vcxProjPath);
+                project.Misc.GUID = QueryGuidFromProject(vcxProjPath);
             }
             catch (Exception)
             {
-                project.AdditionalCache.GUID = CreateMsBuildGuid();
+                project.Misc.GUID = CreateMsBuildGuid();
             }
 
             // ==========================================================================================
@@ -179,7 +179,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 // Overriding global project properties.
                 // ------------------------------------------------------------------------------------------
                 vcxProj.WriteStartElement("PropertyGroup");
-                vcxProj./**/WriteElementString("ProjectGuid", project.AdditionalCache.GUID);
+                vcxProj./**/WriteElementString("ProjectGuid", project.Misc.GUID);
                 vcxProj./**/WriteElementString("RootNamespace", project.CachedName);
                 vcxProj./**/WriteElementString("MinimumVisualStudioVersion", "14.0");
                 vcxProj.WriteEndElement();
@@ -457,7 +457,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// Generates solution files for Visual Studio.
         /// </summary>
         /// <param name="solution">Parsed solution object.</param>
-        /// <returns>Path to Visual Studio's .'sln' file.</returns>
+        /// <returns>Path to Visual Studio '.sln' file.</returns>
         public sealed override string GenerateSolutionFiles(SolutionCache solution)
         {
             // ==========================================================================================
@@ -483,14 +483,14 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         // in Visual Studio when reloading of solution, and all opened tabs would be terminated..
                         try
                         {
-                            solutionProject.AdditionalCache.GUID = QueryGuidFromProject(solutionProject.GeneratorOutputPath);
+                            solutionProject.Misc.GUID = QueryGuidFromProject(solutionProject.GeneratorOutputPath);
                         }
                         catch (Exception exception)
                         {
                             Console.Error.WriteLine("Unable to load a GUID of C# project \"{0}\". Check this out.", solution.GeneratedSolutionPath);
                             Console.Error.WriteLine(exception.ToString());
 
-                            solutionProject.AdditionalCache.GUID = CreateMsBuildGuid();
+                            solutionProject.Misc.GUID = CreateMsBuildGuid();
                         }
                     }
 
@@ -501,16 +501,16 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         if (!solutionFiltersGuidCache.ContainsKey(solutionProjectFilterHash))
                         {
                             // Generating and caching filter GUIDS.
-                            solutionProject.AdditionalCache.FilterGUID = CreateMsBuildGuid();
-                            solutionFiltersGuidCache.Add(solutionProjectFilterHash, solutionProject.AdditionalCache.FilterGUID);
+                            solutionProject.Misc.FilterGUID = CreateMsBuildGuid();
+                            solutionFiltersGuidCache.Add(solutionProjectFilterHash, solutionProject.Misc.FilterGUID);
 
                             // E.g. 'Project({Filter-GUID}) = "Name", "Name", "Filter-GUID"'
-                            sln.WriteLine("Project(\"{0}\") = \"{1}\", \"{1}\", \"{2}\"", c_SlnFilterProjectGuid, solutionProject.CachedFilter, solutionProject.AdditionalCache.FilterGUID);
+                            sln.WriteLine("Project(\"{0}\") = \"{1}\", \"{1}\", \"{2}\"", c_SlnFilterProjectGuid, solutionProject.CachedFilter, solutionProject.Misc.FilterGUID);
                             sln.WriteLine("EndProject");
                         }
                         else
                         {
-                            solutionProject.AdditionalCache.FilterGUID = solutionFiltersGuidCache[solutionProjectFilterHash];
+                            solutionProject.Misc.FilterGUID = solutionFiltersGuidCache[solutionProjectFilterHash];
                         }
                     }
                 }
@@ -524,7 +524,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                     sln.WriteLine("Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"",
                         /* 0 */ solutionProject.IsBuildTool ? c_SlnCsProjProjectGuid : c_SlnVcxProjProjectGuid,
                         /*1,2*/ solutionProject.CachedName, solutionProject.GeneratorOutputPath,
-                        /* 3 */ solutionProject.AdditionalCache.GUID);
+                        /* 3 */ solutionProject.Misc.GUID);
                     // Defining projects this one depends on.
                     sln.WriteLine("\tProjectSection(ProjectDependencies) = postProject");
                     var project = solutionProject;
@@ -533,7 +533,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         if (solutionDependentProject.CachedPriority > project.CachedPriority)
                         {
                             // Writing projects with higher priority as ones we depend from.
-                            sln.WriteLine("\t\t{0} = {0}", solutionDependentProject.AdditionalCache.GUID);
+                            sln.WriteLine("\t\t{0} = {0}", solutionDependentProject.Misc.GUID);
                         }
                     }
                     sln.WriteLine("\tEndProjectSection");
@@ -567,8 +567,8 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         {
                             var configurationInfo = TargetConfigurationInfo.Get(configuration);
                             var platfromConfig = solutionProject.IsBuildTool 
-                                ? $"\t\t{solutionProject.AdditionalCache.GUID}.{configurationInfo.HumanReadableName}|{platformInfo.HumanReadableName}.* = {(configurationInfo.IsDebug ? "Debug" : "Release")}|Any CPU" 
-                                : $"\t\t{solutionProject.AdditionalCache.GUID}.{configurationInfo.HumanReadableName}|{platformInfo.HumanReadableName}.* = {configuration}{platform}|{ConvertPlatformToMsBuildPlatform(platform)}";
+                                ? $"\t\t{solutionProject.Misc.GUID}.{configurationInfo.HumanReadableName}|{platformInfo.HumanReadableName}.* = {(configurationInfo.IsDebug ? "Debug" : "Release")}|Any CPU" 
+                                : $"\t\t{solutionProject.Misc.GUID}.{configurationInfo.HumanReadableName}|{platformInfo.HumanReadableName}.* = {configuration}{platform}|{ConvertPlatformToMsBuildPlatform(platform)}";
 
                             sln.WriteLine(platfromConfig.Replace("*", "ActiveCfg"));
                             sln.WriteLine(platfromConfig.Replace("*", "Build.0"));
@@ -589,7 +589,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 {
                     if (!string.IsNullOrEmpty(solutionProject.CachedFilter))
                     {
-                        sln.WriteLine("\t\t{0} = {1}", solutionProject.AdditionalCache.GUID, solutionProject.AdditionalCache.FilterGUID);
+                        sln.WriteLine("\t\t{0} = {1}", solutionProject.Misc.GUID, solutionProject.Misc.FilterGUID);
                     }
                 }
                 sln.WriteLine("\tEndGlobalSection");

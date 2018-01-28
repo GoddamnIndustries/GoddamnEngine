@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 using GoddamnEngine.BuildSystem.Collectors;
 using GoddamnEngine.BuildSystem.Target;
 using GoddamnEngine.BuildSystem.Support;
@@ -98,7 +99,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// Generates project files for XCode: '.xcodeproj'.
         /// </summary>
         /// <param name="project">Parsed project object.</param>
-        /// <returns>Path to XCode's '.xcodeproj' file.</returns>
+        /// <returns>Path to XCode '.xcodeproj' file.</returns>
         /// <inheritdoc />
         public sealed override string GenerateProjectFiles(ProjectCache project)
         {
@@ -362,6 +363,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                     xcodeConfigurationNativeTargetUUIDList.Append($"{xcodeConfigurationNativeTargetUUID}, ");
 
                     // TODO: Configure this shit correctly!
+                    // TODO: Configure output type.
                     xcodeProj.WriteLine($@"
                         {xcodeConfigurationNativeTargetUUID} /*{configuration}*/ = {{
                             isa = XCBuildConfiguration;
@@ -464,6 +466,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 // ------------------------------------------------------------------------------------------
 
                 var xcodeNativeTargetUUID = new PbxUUID();
+                project.Misc.NativeTargetUUID = xcodeNativeTargetUUID;
                 xcodeProj.WriteLine("/* Begin PBXNativeTarget section */");
                 xcodeProj.WriteLine($@"
                     {xcodeNativeTargetUUID} /*{project.CachedName}*/ = {{
@@ -490,6 +493,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 // ------------------------------------------------------------------------------------------
 
                 var xcodeProjectUUID = new PbxUUID();
+                project.Misc.ProjectUUID = xcodeProjectUUID;
                 xcodeProj.WriteLine("/* Begin PBXProject section */");
                 xcodeProj.WriteLine($@"
                     {xcodeProjectUUID} /*{project.CachedName}*/ = {{ 
@@ -522,7 +526,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 xcodeProj.WriteLine("/* End PBXProject section */\n");
 
                 // ==========================================================================================
-                // Begin .XCODEPROJ.PBXPROJ
+                // End .XCODEPROJ.PBXPROJ
                 // ==========================================================================================
 
                 xcodeProj.WriteLine($@"
@@ -533,6 +537,122 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             }
 
             return xcodeProjPath;
+        }
+
+        /// <summary>
+        /// Generates workspace files for XCode.
+        /// </summary>
+        /// <param name="solution">Parsed solution object.</param>
+        /// <returns>Path to XCode's '.xcworkspace' file.</returns>
+        /// <inheritdoc />
+        public sealed override string GenerateSolutionFiles(SolutionCache solution)
+        {
+            var xcodeWorkspacePath = Path.Combine(base.GenerateSolutionFiles(solution), solution.CachedName) + ".xcworkspace";
+            Directory.CreateDirectory(xcodeWorkspacePath);
+
+            // ------------------------------------------------------------------------------------------
+            // Contents section.
+            // ------------------------------------------------------------------------------------------
+
+            var xcodeWorkspaceContentsPath = Path.Combine(xcodeWorkspacePath, "contents.xcworkspacedata");
+            using (var xcodeWorkspaceContents = new StreamWriter(xcodeWorkspaceContentsPath))
+            {
+                xcodeWorkspaceContents.WriteLine($@"
+                    <?xml version=""1.0"" encoding=""UTF-8""?>
+                    <Workspace>");
+                foreach (var solutionProject in solution.CachedProjects)
+                {
+                    if (solutionProject.IsBuildTool)
+                        continue;
+                    xcodeWorkspaceContents.WriteLine($@"
+                        <FileRef 
+                            location=""group:{solutionProject.GeneratorOutputPath}"">
+                        </FileRef>");
+                }
+                xcodeWorkspaceContents.WriteLine(@"
+                    </Workspace>");
+            }
+
+            // ------------------------------------------------------------------------------------------
+            // Schemes section.
+            // ------------------------------------------------------------------------------------------
+
+            var xcodeWorkspaceSchemeDirectory = Path.Combine(xcodeWorkspacePath, "xcshareddata", "xcschemes");
+            var xcodeWorkspaceSchemePath = Path.Combine(xcodeWorkspaceSchemeDirectory, "All.xcscheme");
+            Directory.CreateDirectory(xcodeWorkspaceSchemeDirectory);
+
+            using (var xcodeWorkspaceScheme = new StreamWriter(xcodeWorkspaceSchemePath))
+            {
+                xcodeWorkspaceScheme.WriteLine($@"
+                    <?xml version=""1.0"" encoding=""UTF-8""?>
+                    <Scheme 
+                        LastUpgradeVersion = ""0920"" 
+                        version = ""1.3"">");
+
+                xcodeWorkspaceScheme.WriteLine(@"
+                    <BuildAction 
+                        parallelizeBuildables=""NO"" 
+                        buildImplicitDependencies = ""YES"">
+                        <BuildActionEntries>");
+                foreach (var solutionProject in solution.CachedProjects)
+                {
+                    if (solutionProject.IsBuildTool)
+                        continue;
+                    xcodeWorkspaceScheme.WriteLine($@"
+                        <BuildActionEntry
+                            buildForTesting = ""YES""
+                            buildForRunning = ""YES""
+                            buildForProfiling = ""YES""
+                            buildForArchiving = ""YES""
+                            buildForAnalyzing = ""YES"">
+                            <BuildableReference
+                               BuildableIdentifier = ""primary""
+                               BlueprintIdentifier = ""{solutionProject.Misc.NativeTargetUUID}""
+                               BuildableName = ""{solutionProject.CachedName}""
+                               BlueprintName = ""{solutionProject.CachedName}""
+                               ReferencedContainer = ""container:{solutionProject.GeneratorOutputPath}"">
+                            </BuildableReference>
+                         </BuildActionEntry>");
+                }
+                xcodeWorkspaceScheme.WriteLine(@"
+                        </BuildActionEntries>
+                    </BuildAction>");
+
+                xcodeWorkspaceScheme.WriteLine(@"
+                        <AnalyzeAction
+                            buildConfiguration = ""Debug"">
+                        </AnalyzeAction>
+                        <ArchiveAction
+                            buildConfiguration = ""Release""
+                            revealArchiveInOrganizer = ""YES"">
+                        </ArchiveAction>
+                    </Scheme>");
+            }
+
+            // ------------------------------------------------------------------------------------------
+            // Schemes management section.
+            // ------------------------------------------------------------------------------------------
+
+            var xcodeWorkspaceSchemeManagementPath = Path.Combine(xcodeWorkspaceSchemeDirectory, "xcschememanagement.plist");
+            using (var xcodeWorkspaceSchemeManagement = new StreamWriter(xcodeWorkspaceSchemeManagementPath))
+            {
+                xcodeWorkspaceSchemeManagement.WriteLine($@"<?xml version=""1.0"" encoding=""UTF-8""?>
+                    <!DOCTYPE plist PUBLIC ""-//Apple//DTD PLIST 1.0//EN"" ""http://www.apple.com/DTDs/PropertyList-1.0.dtd"">
+                    <plist version=""1.0"">
+                        <dict>
+                            <key>SchemeUserState</key>
+                            <dict>
+                                <key>All.xcscheme</key>
+                                <dict>
+                                    <key>orderHint</key>
+                                    <integer>0</integer>
+                                </dict>
+                            </dict>
+                        </dict>
+                    </plist>");
+            }
+
+            return xcodeWorkspacePath;
         }
 
     }   // public class XCodeProjectGenerator
