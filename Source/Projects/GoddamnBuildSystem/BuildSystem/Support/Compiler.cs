@@ -9,7 +9,6 @@
 using System.CodeDom.Compiler;
 using System.Reflection;
 using System.Text;
-using System.IO;
 using Microsoft.CSharp;
 
 namespace GoddamnEngine.BuildSystem.Support

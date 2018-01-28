@@ -38,7 +38,7 @@ namespace GoddamnEngine.BuildSystem.Target
         public static IEnumerable<TargetConfiguration> EnumerateAllConfigurations()
         {
             yield return TargetConfiguration.Debug;
-            yield return TargetConfiguration.Development;
+            //yield return TargetConfiguration.Development;
             yield return TargetConfiguration.Release;
         }
 

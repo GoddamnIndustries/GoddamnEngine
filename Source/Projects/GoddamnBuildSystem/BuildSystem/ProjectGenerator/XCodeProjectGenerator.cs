@@ -9,9 +9,10 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Text;
 using GoddamnEngine.BuildSystem.Collectors;
 using GoddamnEngine.BuildSystem.Target;
+using GoddamnEngine.BuildSystem.Utilities;
 
 namespace GoddamnEngine.BuildSystem.ProjectGenerator
 {
@@ -21,12 +22,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
     /// <inheritdoc />
     public class XCodeProjectGenerator : ProjectGenerator
     {
-        private static Random s_Random = new Random();
-        private static string CreateXCodeUuid()
-        {
-            return String.Format("{0:X}{1:X}{2:X}", s_Random.Next(), s_Random.Next(), s_Random.Next());
-        }
-
+        
         /// <summary>
         /// Checks if specified platform is natively supported by VS.
         /// </summary>
@@ -42,8 +38,60 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             return false;
         }
 
-        private StreamWriter m_XCodeProj;
-        private ProjectCache m_Project;
+        // ==========================================================================================
+        // Generating XCODEPROJ/PBXPROJ files.
+        // ==========================================================================================
+
+        private sealed class PbxUUID
+        {
+            private static readonly Random s_Random = new Random();
+            public readonly int A = s_Random.Next(), B = s_Random.Next();
+            public readonly int C = s_Random.Next();
+            public override string ToString() 
+            {
+                return $"{A:X}{B:X}{C:X}";
+            } 
+        }   // class PbxUUID
+
+        private sealed class PbxGroup
+        {
+            public readonly PbxUUID UUID = new PbxUUID();
+            public readonly Dictionary<string, PbxGroup> ChildGroups = new Dictionary<string, PbxGroup>();
+            public readonly List<PbxUUID> ChildFileRefs = new List<PbxUUID>();
+            public void Add(string[] fileRefGroup, PbxUUID fileRefUUID)
+            {
+                if (fileRefGroup.Length != 0)
+                {
+                    if (!ChildGroups.TryGetValue(fileRefGroup[0], out PbxGroup childGroup))
+                    {
+                        childGroup = new PbxGroup();
+                        ChildGroups.Add(fileRefGroup[0], childGroup);
+                    }
+                    childGroup.Add(fileRefGroup.SubArray(1), fileRefUUID);
+                }
+                else
+                {
+                    Add(fileRefUUID);
+                }
+            }
+            public void Add(PbxUUID fileRefUUID)
+            {
+                ChildFileRefs.Add(fileRefUUID);
+            }
+            public void Traverse(Action<string, PbxGroup> traverseFunc)
+            {
+                traverseFunc(null, this);
+                TraverseInternal(traverseFunc);
+            }
+            private void TraverseInternal(Action<string, PbxGroup> traverseFunc)
+            {
+                foreach (var childGroupPair in ChildGroups)
+                {
+                    childGroupPair.Value.TraverseInternal(traverseFunc);
+                    traverseFunc(childGroupPair.Key, childGroupPair.Value);
+                }
+            }
+        }   // class PbxGroup
 
         /// <summary>
         /// Generates project files for XCode: '.xcodeproj'.
@@ -56,497 +104,423 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             var xcodePbxProjPath = Path.Combine(xcodeProjPath, "project.pbxproj");
             Directory.CreateDirectory(xcodeProjPath);
 
-            m_Project = project;
-
-            // ==========================================================================================
-            // Generating XCODEPROJ/PBXPROJ files.
-            // ==========================================================================================
-            using (m_XCodeProj = new StreamWriter(xcodePbxProjPath))
+            using (var xcodeProj = new StreamWriter(xcodePbxProjPath))
             {
-                m_XCodeProj.WriteLine("// !$*UTF8*$! ");
-                m_XCodeProj.WriteLine("{");
-                m_XCodeProj.WriteLine("\tarchiveVersion = 1;");
-                m_XCodeProj.WriteLine("\tclasses = {");
-                m_XCodeProj.WriteLine("\t};");
-                m_XCodeProj.WriteLine("\tobjectVersion = 48;");
-                m_XCodeProj.WriteLine("\tobjects = {\n");
+                xcodeProj.WriteLine($@"// !$*UTF8*$!
+                    {{
+                        archiveVersion = 1;
+                        classes = {{
+                        }};
+                        objectVersion = 48;
+                        objects = {{");
+                
+                // ------------------------------------------------------------------------------------------
+                // Referenced files section.
+                // ------------------------------------------------------------------------------------------
 
-                GenerateProjectFiles_Section_Files_Referenced();
-                GenerateProjectFiles_Section_Files_Build();
-                GenerateProjectFiles_Section_Files_Group();
+                xcodeProj.WriteLine("/* Begin PBXFileReference section */");
 
-                GenerateProjectFiles_Section_BuildPhase_Sources();
-                GenerateProjectFiles_Section_BuildPhase_Frameworks();
-                GenerateProjectFiles_Section_BuildPhase_CopyFiles();
+                // Writing down product references..
+                var xcodeProductRefUUID = new PbxUUID();
+                xcodeProj.WriteLine($@"
+                    {xcodeProductRefUUID} /*{project.CachedName}*/ = {{
+                        isa = PBXFileReference;
+                        explicitFileType = ""compiled.mach-o.executable"";
+                        includeInIndex = 0;
+                        path = {project.CachedName};
+                        sourceTree = BUILT_PRODUCTS_DIR;
+                    }};");
 
-                GenerateProjectFiles_Section_Configurations_NativeTarget();
-                GenerateProjectFiles_Section_Configurations_Project();
+                // Writing down referenced files..
+                foreach (var projectSource in project.CachedSourceFiles)
+                {
+                    string xcodeFileRefLastKnownType = null;
+                    switch (projectSource.FileType)
+                    {
+                        case ProjectSourceFileType.SourceCode:
+                            xcodeFileRefLastKnownType = "sourcecode.cpp.cpp";
+                            break;
+                        case ProjectSourceFileType.SourceCodeObjective:
+                            xcodeFileRefLastKnownType = "sourcecode.cpp.objcpp";
+                            break;
+                        case ProjectSourceFileType.SourceCodeAssembler:
+                            xcodeFileRefLastKnownType = "sourcecode.asm";
+                            break;
+                        case ProjectSourceFileType.HeaderFile:
+                        case ProjectSourceFileType.InlineImplementation:
+                            xcodeFileRefLastKnownType = "sourcecode.cpp.h";
+                            break;
+                        case ProjectSourceFileType.ResourceScript:
+                            xcodeFileRefLastKnownType = "file.txt";
+                            break;
+                        default:
+                            throw new NotSupportedException();
+                    }
 
-                GenerateProjectFiles_Section_Project_NativeTarget();
-                GenerateProjectFiles_Section_Project();
+                    projectSource.FileMisc.RefUUID = new PbxUUID();
+                    xcodeProj.WriteLine($@"
+                        {projectSource.FileMisc.RefUUID} /*{projectSource.FileName}*/ = {{
+                            isa = PBXFileReference;
+                            lastKnownFileType = {xcodeFileRefLastKnownType};
+                            path = {projectSource.FileName};
+                            name = {Path.GetFileName(projectSource.FileName)};
+                            sourceTree = ""<group>"";
+                        }};");
+                }
+                xcodeProj.WriteLine("/* End PBXFileReference section */\n");
 
-                m_XCodeProj.WriteLine("\t}; ");
-                m_XCodeProj.WriteLine("\trootObject = {0};", m_XCodeProject);
-                m_XCodeProj.WriteLine("}");
+                // ------------------------------------------------------------------------------------------
+                // Build Files section.
+                // ------------------------------------------------------------------------------------------
+
+                xcodeProj.WriteLine("/* Begin PBXBuildFile section */");
+                foreach (var projectSource in project.CachedSourceFiles)
+                {
+                    // Writing down only files that need to be compiled..
+                    switch (projectSource.FileType)
+                    {
+                        case ProjectSourceFileType.SourceCode:
+                        case ProjectSourceFileType.SourceCodeObjective:
+                        case ProjectSourceFileType.SourceCodeAssembler:
+                            break;
+                        default:
+                            continue;
+                    }
+
+                    projectSource.FileMisc.BuildUUID = new PbxUUID();
+                    xcodeProj.WriteLine($@"
+                        {projectSource.FileMisc.BuildUUID} /*{projectSource.FileName}*/ = {{
+                            isa = PBXBuildFile;
+                            fileRef = {projectSource.FileMisc.RefUUID};
+                        }};");
+                }
+                xcodeProj.WriteLine("/* End PBXBuildFile section */\n");
+
+                // ------------------------------------------------------------------------------------------
+                // Group section.
+                // ------------------------------------------------------------------------------------------
+
+                xcodeProj.WriteLine("/* Begin PBXGroup section */");
+
+                // Generating groups for sources.
+                var xcodeGroupSource = new PbxGroup();
+                foreach (var projectSource in project.CachedSourceFiles)
+                {
+                    var projectSourceDirectory = Path.GetDirectoryName(projectSource.FileName);
+                    if (projectSourceDirectory != null && projectSourceDirectory.StartsWith(project.CachedSourcesFilterOrigin, StringComparison.Ordinal)
+                                                       && projectSourceDirectory.Length > project.CachedSourcesFilterOrigin.Length + 1)
+                    {
+                        // Source would be added to some inner group.
+                        var projectSourceGroupPath = projectSourceDirectory.Substring(project.CachedSourcesFilterOrigin.Length + 1);
+                        var projectSourceGroupPathSplitted = projectSourceGroupPath.Trim().Split('/');
+                        xcodeGroupSource.Add(projectSourceGroupPathSplitted, projectSource.FileMisc.RefUUID);
+                    }
+                    else
+                    {
+                        // Source would be added to root group.
+                        xcodeGroupSource.Add(projectSource.FileMisc.RefUUID);
+                    }
+                }
+
+                // Writing inner groups..
+                xcodeGroupSource.Traverse((string xcodeProjGroupName, PbxGroup xcodeProjGroup) =>
+                {
+                    var xcodeProjGroupChildrenUUIDList = new StringBuilder();
+                    foreach (var xcodeProjGroupChildPair in xcodeProjGroup.ChildGroups)
+                    {
+                        xcodeProjGroupChildrenUUIDList.Append($"{xcodeProjGroupChildPair.Value.UUID}, ");
+                    }
+                    foreach (var xcodeProjGroupChildPair in xcodeProjGroup.ChildFileRefs)
+                    {
+                        xcodeProjGroupChildrenUUIDList.Append($"{xcodeProjGroupChildPair}, ");
+                    }
+
+                    xcodeProj.WriteLine($@"
+                        {xcodeProjGroup.UUID} = {{
+                            isa = PBXGroup;
+                            children = (
+                                {xcodeProjGroupChildrenUUIDList}
+                            );
+                            path = ""{xcodeProjGroupName ?? "Source"}"";
+                            sourceTree = ""<group>"";
+                        }};");
+                });
+
+                // Writing products group..
+                var xcodeGroupProductsUUID = new PbxUUID();
+                xcodeProj.WriteLine($@"
+                    {xcodeGroupProductsUUID} /*Products*/ = {{
+                        isa = PBXGroup;
+                        children = (
+                            {xcodeProductRefUUID} /*{project.CachedName}*/,
+                        );
+                        name = Products;
+                        sourceTree = ""<group>"";
+                    }};");
+
+                // Writing root group..
+                var xcodeGroupRootUUID = new PbxUUID();
+                xcodeProj.WriteLine($@"
+                    {xcodeGroupRootUUID} = {{
+                        isa = PBXGroup;
+                        children = (
+                            {xcodeGroupSource.UUID} /*Source*/,
+                            {xcodeGroupProductsUUID} /*Products*/,
+                        );
+                        sourceTree = ""<group>"";
+                        usesTabs = 0;
+                    }};");
+                xcodeProj.WriteLine("/* End PBXGroup section */\n");
+
+                // ------------------------------------------------------------------------------------------
+                // Source build phase section.
+                // ------------------------------------------------------------------------------------------
+
+                var xcodeBuildPhaseSourcesUUIDList = new StringBuilder();
+                foreach (var projectSource in project.CachedSourceFiles)
+                {
+                    // Writing down only files that need to be compiled..
+                    switch (projectSource.FileType)
+                    {
+                        case ProjectSourceFileType.SourceCode:
+                        case ProjectSourceFileType.SourceCodeObjective:
+                        case ProjectSourceFileType.SourceCodeAssembler:
+                            break;
+                        default:
+                            continue;
+                    }
+                    xcodeBuildPhaseSourcesUUIDList.Append($"{projectSource.FileMisc.BuildUUID},");
+                }
+
+                var xcodeBuildPhaseSourcesUUID = new PbxUUID();
+                xcodeProj.WriteLine("/* Begin PBXSourcesBuildPhase section */");
+                xcodeProj.WriteLine($@"
+                    {xcodeBuildPhaseSourcesUUID} /*Sources*/ = {{
+                        isa = PBXSourcesBuildPhase;
+                        buildActionMask = 2147483647;
+                        files = (
+                            {xcodeBuildPhaseSourcesUUIDList}
+                        );
+                        runOnlyForDeploymentPostprocessing = 0;
+                    }};");
+                xcodeProj.WriteLine("/* End PBXSourcesBuildPhase section */\n");
+
+                // ------------------------------------------------------------------------------------------
+                // Framework build phase section.
+                // ------------------------------------------------------------------------------------------
+
+                var xcodeBuildPhaseFrameworksUUID = new PbxUUID();
+                xcodeProj.WriteLine("/* Begin PBXFrameworksBuildPhase section */");
+                xcodeProj.WriteLine($@"
+                    {xcodeBuildPhaseFrameworksUUID} /*Frameworks*/ = {{
+                        isa = PBXFrameworksBuildPhase;
+                        buildActionMask = 2147483647;
+                        files = (
+                        );
+                        runOnlyForDeploymentPostprocessing = 0;
+                    }};");
+                xcodeProj.WriteLine("/* End PBXFrameworksBuildPhase section */\n");
+
+                // ------------------------------------------------------------------------------------------
+                // Copy files build phase section.
+                // ------------------------------------------------------------------------------------------
+
+                var xcodeBuildPhaseCopyFilesUUID = new PbxUUID();
+                xcodeProj.WriteLine("/* Begin PBXCopyFilesBuildPhase section */");
+                xcodeProj.WriteLine($@"
+                    {xcodeBuildPhaseCopyFilesUUID} /*Copy Files*/ = {{
+                        isa = PBXCopyFilesBuildPhase;
+                        buildActionMask = 2147483647;
+                        dstPath = /usr/share/man/man1/;
+                        dstSubfolderSpec = 0;
+                        files = (
+                        );
+                        runOnlyForDeploymentPostprocessing = 1;
+                    }};");
+                xcodeProj.WriteLine("/* End PBXCopyFilesBuildPhase section */\n");
+
+                // ------------------------------------------------------------------------------------------
+                // Target configuration section.
+                // ------------------------------------------------------------------------------------------
+
+                xcodeProj.WriteLine("/* Begin XCBuildConfiguration section */");
+
+                var xcodeConfigurationNativeTargetUUIDList = new StringBuilder();
+                var xcodeConfigurationProjectUUIDList = new StringBuilder();
+
+                foreach (var configuration in TargetInfo.EnumerateAllConfigurations())
+                {
+                    var xcodeConfigurationNativeTargetUUID = new PbxUUID();
+                    xcodeConfigurationNativeTargetUUIDList.Append($"{xcodeConfigurationNativeTargetUUID}, ");
+
+                    // TODO: Configure this shit correctly!
+                    xcodeProj.WriteLine($@"
+                        {xcodeConfigurationNativeTargetUUID} /*{configuration}*/ = {{
+                            isa = XCBuildConfiguration;
+                            name = {configuration};
+                            buildSettings = {{
+                                CODE_SIGN_STYLE = Automatic;
+                                HEADER_SEARCH_PATHS = (
+                                    {project.GenerateIncludePaths(", ")}
+                                );
+                                PRODUCT_NAME = ""$(TARGET_NAME)"";
+                            }};
+                        }};");
+                
+                    var xcodeConfigurationProjectUUID = new PbxUUID();
+                    xcodeConfigurationProjectUUIDList.Append($"{xcodeConfigurationProjectUUID}, ");
+
+                    // TODO: Configure this shit correctly!
+                    xcodeProj.WriteLine($@"
+                        {xcodeConfigurationProjectUUID} /*{configuration}*/ = {{
+                            isa = XCBuildConfiguration;
+                            name = {configuration};
+                            buildSettings = {{
+                                ALWAYS_SEARCH_USER_PATHS = NO;
+                                CLANG_ANALYZER_NONNULL = YES;
+                                CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+                                CLANG_CXX_LANGUAGE_STANDARD = ""gnu++14"";
+                                CLANG_CXX_LIBRARY = ""libc++"";
+                                CLANG_ENABLE_MODULES = YES;
+                                CLANG_ENABLE_OBJC_ARC = YES;
+                                CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+                                CLANG_WARN_BOOL_CONVERSION = YES;
+                                CLANG_WARN_COMMA = YES;
+                                CLANG_WARN_CONSTANT_CONVERSION = YES;
+                                CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+                                CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+                                CLANG_WARN_EMPTY_BODY = YES;
+                                CLANG_WARN_ENUM_CONVERSION = YES;
+                                CLANG_WARN_INFINITE_RECURSION = YES;
+                                CLANG_WARN_INT_CONVERSION = YES;
+                                CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+                                CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+                                CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+                                CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+                                CLANG_WARN_STRICT_PROTOTYPES = YES;
+                                CLANG_WARN_SUSPICIOUS_MOVE = YES;
+                                CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+                                CLANG_WARN_UNREACHABLE_CODE = YES;
+                                CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+                                CODE_SIGN_IDENTITY = ""-"";
+                                COPY_PHASE_STRIP = NO;
+                                DEBUG_INFORMATION_FORMAT = ""dwarf-with-dsym"";
+                                ENABLE_NS_ASSERTIONS = NO;
+                                ENABLE_STRICT_OBJC_MSGSEND = YES;
+                                GCC_C_LANGUAGE_STANDARD = gnu11;
+                                GCC_NO_COMMON_BLOCKS = YES;
+                                GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+                                GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+                                GCC_WARN_UNDECLARED_SELECTOR = YES;
+                                GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+                                GCC_WARN_UNUSED_FUNCTION = YES;
+                                GCC_WARN_UNUSED_VARIABLE = YES;
+                                MACOSX_DEPLOYMENT_TARGET = 10.13;
+                                MTL_ENABLE_DEBUG_INFO = NO;
+                                SDKROOT = macosx;
+                            }};
+                        }};");
+                }
+                xcodeProj.WriteLine("/* End XCBuildConfiguration section */\n");
+
+                // ------------------------------------------------------------------------------------------
+                // Configuration List section.
+                // ------------------------------------------------------------------------------------------
+                
+                var xcodeConfigurationListNativeTarget = new PbxUUID();
+                var xcodeConfigurationListProjectUUID = new PbxUUID();
+                
+                xcodeProj.WriteLine("/* Begin XCConfigurationList section */");
+                xcodeProj.WriteLine($@"
+                    {xcodeConfigurationListNativeTarget} /*PBXNativeTarget*/ = {{
+                        isa = XCConfigurationList;
+                        buildConfigurations = (
+                            {xcodeConfigurationNativeTargetUUIDList}
+                        );
+                        defaultConfigurationIsVisible = 0;
+                        defaultConfigurationName = {TargetConfiguration.Release};
+                    }};");
+                xcodeProj.WriteLine($@"
+                    {xcodeConfigurationListProjectUUID} /*PBXProject*/ = {{
+                        isa = XCConfigurationList;
+                        buildConfigurations = (
+                            {xcodeConfigurationProjectUUIDList}
+                        );
+                        defaultConfigurationIsVisible = 0;
+                        defaultConfigurationName = {TargetConfiguration.Release};
+                    }};");
+                xcodeProj.WriteLine("/* End XCConfigurationList section */\n");
+
+                // ------------------------------------------------------------------------------------------
+                // Native Target section.
+                // ------------------------------------------------------------------------------------------
+
+                var xcodeNativeTargetUUID = new PbxUUID();
+                xcodeProj.WriteLine("/* Begin PBXNativeTarget section */");
+                xcodeProj.WriteLine($@"
+                    {xcodeNativeTargetUUID} /*{project.CachedName}*/ = {{
+                        isa = PBXNativeTarget;
+                        buildConfigurationList = {xcodeConfigurationListNativeTarget};
+                        buildPhases = (
+                            {xcodeBuildPhaseSourcesUUID}, /*Sources*/
+                            {xcodeBuildPhaseFrameworksUUID}, /* Frameworks */
+                            {xcodeBuildPhaseCopyFilesUUID}, /* Copy Files */
+                        );
+                        buildRules = (
+                        );
+                        dependencies = (
+                        );
+                        name = {project.CachedName};
+                        productName = ""{project.CachedName}"";
+                        productReference = {xcodeProductRefUUID};
+                        productType = ""com.apple.product-type.tool"";
+                    }};");
+                xcodeProj.WriteLine("/* End PBXNativeTarget section */\n");
+        
+                // ------------------------------------------------------------------------------------------
+                // Project section.
+                // ------------------------------------------------------------------------------------------
+
+                var xcodeProjectUUID = new PbxUUID();
+                xcodeProj.WriteLine("/* Begin PBXProject section */");
+                xcodeProj.WriteLine($@"
+                    {xcodeProjectUUID} /*{project.CachedName}*/ = {{ 
+                        isa = PBXProject; 
+                        attributes = {{
+                            LastUpgradeCheck = 0920;
+                            ORGANIZATIONNAME = {Environment.UserName};
+                            TargetAttributes = {{
+                                7CC50132201C539100AA2808 = {{
+                                    CreatedOnToolsVersion = 9.2;
+                                    ProvisioningStyle = Automatic;
+                                }};
+                            }};
+                        }};
+                        buildConfigurationList = {xcodeConfigurationListProjectUUID};
+                        compatibilityVersion = ""Xcode 8.0"";
+                        developmentRegion = en;
+                        hasScannedForEncodings = 0;
+                        knownRegions = (
+                            en,
+                        );
+                        mainGroup = {xcodeGroupRootUUID};
+                        productRefGroup = {xcodeGroupProductsUUID};
+                        projectDirPath = """";
+                        projectRoot = """";
+                        targets = (
+                            {xcodeNativeTargetUUID} /*PBXNativeTarget*/
+                        );
+                    }};");
+                xcodeProj.WriteLine("/* End PBXProject section */\n");
+
+                xcodeProj.WriteLine($@"
+                    }};
+                    rootObject = {xcodeProjectUUID};
+                }}");
+
             }
 
             return xcodeProjPath;
-        }
-
-        // ==========================================================================================
-        // Files sections.
-        // ==========================================================================================
-
-        // ------------------------------------------------------------------------------------------
-        // Referenced files section.
-        // ------------------------------------------------------------------------------------------
-
-        private string m_XCodeProductReference = "";
-        private void GenerateProjectFiles_Section_Files_Referenced()
-        {
-            m_XCodeProj.WriteLine("/* Begin PBXBuildFile section */");
-
-            // Writing down product references..
-            m_XCodeProductReference = CreateXCodeUuid();
-            m_XCodeProj.WriteLine("\t\t{0} = /*{1}*/ {{ isa = PBXFileReference; ", m_XCodeProductReference, m_Project.CachedName);
-            m_XCodeProj.WriteLine("\t\t\texplicitFileType = \"compiled.mach-o.executable\";");
-            m_XCodeProj.WriteLine("\t\t\tincludeInIndex = 0;");
-            m_XCodeProj.WriteLine("\t\t\tpath = {0};", m_Project.CachedName);
-            m_XCodeProj.WriteLine("\t\t\tsourceTree = BUILT_PRODUCTS_DIR;");
-            m_XCodeProj.WriteLine("\t\t};");
-
-            // Writing down referenced files..
-            foreach (var projectSource in m_Project.CachedSourceFiles)
-            {
-                projectSource.FileMisc.RefUuid = CreateXCodeUuid();
-                m_XCodeProj.WriteLine("\t\t{0} = /*{1}*/ {{ isa = PBXFileReference; ", projectSource.FileMisc.RefUuid, projectSource.FileName);
-                switch (projectSource.FileType)
-                {
-                    case ProjectSourceFileType.SourceCode:
-                        m_XCodeProj.WriteLine("\t\t\tlastKnownFileType = sourcecode.cpp.cpp;");
-                        break;
-                    case ProjectSourceFileType.SourceCodeObjective:
-                        m_XCodeProj.WriteLine("\t\t\tlastKnownFileType = sourcecode.cpp.objcpp;");
-                        break;
-                    case ProjectSourceFileType.SourceCodeAssembler:
-                        m_XCodeProj.WriteLine("\t\t\tlastKnownFileType = sourcecode.asm;");
-                        break;
-                    case ProjectSourceFileType.HeaderFile:
-                    case ProjectSourceFileType.InlineImplementation:
-                        m_XCodeProj.WriteLine("\t\t\tlastKnownFileType = sourcecode.cpp.h;");
-                        break;
-                    case ProjectSourceFileType.ResourceScript:
-                        m_XCodeProj.WriteLine("\t\t\tlastKnownFileType = file.txt;");
-                        break;
-                    default:
-                        throw new NotSupportedException();
-                }
-                m_XCodeProj.WriteLine("\t\t\tpath = {0};", projectSource.FileName);
-                //m_XCodeProj.WriteLine("\t\t\tsourceTree = \"<group>\";");
-                m_XCodeProj.WriteLine("\t\t};");
-            }
-            m_XCodeProj.WriteLine("/* End PBXBuildFile section */\n");
-        }
-
-        // ------------------------------------------------------------------------------------------
-        // Build Files section.
-        // ------------------------------------------------------------------------------------------
-
-        private void GenerateProjectFiles_Section_Files_Build()
-        {
-            m_XCodeProj.WriteLine("/* Begin PBXBuildFile section */");
-            foreach (var projectSource in m_Project.CachedSourceFiles)
-            {
-                // Writing down only files that need to be compiled..
-                switch (projectSource.FileType)
-                {
-                    case ProjectSourceFileType.SourceCode:
-                    case ProjectSourceFileType.SourceCodeObjective:
-                    case ProjectSourceFileType.SourceCodeAssembler:
-                        projectSource.FileMisc.BuildUuid = CreateXCodeUuid();
-                        m_XCodeProj.WriteLine("\t\t{0} = /*{1}*/ {{isa = PBXBuildFile; ", projectSource.FileMisc.BuildUuid, projectSource.FileName);
-                        m_XCodeProj.WriteLine("\t\t\tfileRef = {0}; ", projectSource.FileMisc.RefUuid);
-                        m_XCodeProj.WriteLine("\t\t};");
-                        break;
-                }
-            }
-            m_XCodeProj.WriteLine("/* End PBXBuildFile section */\n");
-        }
-
-        // ------------------------------------------------------------------------------------------
-        // Group section.
-        // ------------------------------------------------------------------------------------------
-
-        private sealed class PBXGroup
-        {
-            public readonly string Name;
-            public readonly string Uuid = CreateXCodeUuid();
-            public readonly Dictionary<string, PBXGroup> InnerGroups = new Dictionary<string, PBXGroup>();
-            public readonly Dictionary<string, string> InnerFileRefs = new Dictionary<string, string>();
-            public PBXGroup(string name = null) { Name = name; }
-        }   // class PBXGroup
-
-        private string m_XCodeGroupRoot;
-        private string m_XCodeGroupProducts;
-        private void GenerateProjectFiles_Section_Files_Group()
-        {
-            var xcodeProjSourceRootGroup = new PBXGroup("Source");
-            m_XCodeProj.WriteLine("/* Begin PBXGroup section */");
-
-            // Generating groups for sources.
-            foreach (var projectSource in m_Project.CachedSourceFiles)
-            {
-                GenerateProjectFiles_Section_Files_Group_InsertIntoGroup(xcodeProjSourceRootGroup, projectSource, m_Project.CachedSourcesFilterOrigin);
-            }
-            GenerateProjectFiles_Section_Files_Group_Recursive(xcodeProjSourceRootGroup);
-
-            // Writing products group..
-            m_XCodeGroupProducts = CreateXCodeUuid();
-            m_XCodeProj.WriteLine("\t\t{0} = {{ isa = PBXGroup; ", m_XCodeGroupProducts);
-            m_XCodeProj.WriteLine("\t\t\tchildren = (");
-            m_XCodeProj.WriteLine("\t\t\t\t{0} /*{1}*/,", m_XCodeProductReference, m_Project.CachedName);
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t\tname = Products;");
-            m_XCodeProj.WriteLine("\t\t\tsourceTree = \"<group>\";");
-            m_XCodeProj.WriteLine("\t\t};");
-
-            // Writing root group..
-            m_XCodeGroupRoot = CreateXCodeUuid();
-            m_XCodeProj.WriteLine("\t\t{0} = {{ isa = PBXGroup; ", m_XCodeGroupRoot);
-            m_XCodeProj.WriteLine("\t\t\tchildren = (");
-            m_XCodeProj.WriteLine("\t\t\t\t{0} /*Source*/,", xcodeProjSourceRootGroup.Uuid);
-            m_XCodeProj.WriteLine("\t\t\t\t{0} /*Products*/,", m_XCodeGroupProducts);
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t\tsourceTree = \"<group>\";");
-            m_XCodeProj.WriteLine("\t\t\tusesTabs = 0;");
-            m_XCodeProj.WriteLine("\t\t};");
-
-            m_XCodeProj.WriteLine("/* End PBXGroup section */\n");
-        }
-
-        private void GenerateProjectFiles_Section_Files_Group_Recursive(PBXGroup projectGroup)
-        {
-            m_XCodeProj.WriteLine("\t\t{0} = {{ isa = PBXGroup; ", projectGroup.Uuid);
-            m_XCodeProj.WriteLine("\t\t\tchildren = (");
-            foreach (var projectInnerGroup in projectGroup.InnerGroups)
-            {
-                m_XCodeProj.WriteLine("\t\t\t\t{0} /*{1}*/,", projectInnerGroup.Value.Uuid, projectInnerGroup.Value.Name);
-            }
-            foreach (var projectSource in projectGroup.InnerFileRefs)
-            {
-                m_XCodeProj.WriteLine("\t\t\t\t{0} /*{1}*/,", projectSource.Value, projectSource.Key);
-            }
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t\tpath = \"{0}\";", projectGroup.Name);
-            m_XCodeProj.WriteLine("\t\t\tsourceTree = \"<group>\";");
-            m_XCodeProj.WriteLine("\t\t};");
-
-            foreach (var projectInnerGroup in projectGroup.InnerGroups)
-            {
-                // Inner groups..
-                GenerateProjectFiles_Section_Files_Group_Recursive(projectInnerGroup.Value);
-            }
-        }
-
-        private static void GenerateProjectFiles_Section_Files_Group_InsertIntoGroup(PBXGroup projectGroup, ProjectSourceFile projectSource, string projectGroupOrigin)
-        {
-            // Checking if this source can have a relative group: it should start with a group origin.
-            var projectSourceFileDirectory = Path.GetDirectoryName(projectSource.FileName);
-            if (projectSourceFileDirectory != null && projectSourceFileDirectory.StartsWith(projectGroupOrigin, StringComparison.InvariantCultureIgnoreCase)
-                                                   && projectSourceFileDirectory.Length > projectGroupOrigin.Length + 1)
-            {
-                // Source would be added to some inner group.
-                var projectGroupName = projectSourceFileDirectory.Substring(projectGroupOrigin.Length + 1);
-                var projectGroupNameSeparatorIndex = projectGroupName.IndexOf('/');
-                var projectGroupRootName = projectGroupNameSeparatorIndex != -1 ? projectGroupName.Substring(0, projectGroupNameSeparatorIndex) : projectGroupName;
-
-                PBXGroup projectInnerGroup;
-                if (!projectGroup.InnerGroups.ContainsKey(projectGroupRootName))
-                {
-                    projectInnerGroup = new PBXGroup(projectGroupRootName);
-                    projectGroup.InnerGroups.Add(projectGroupRootName, projectInnerGroup);
-                }
-                else
-                {
-                    projectInnerGroup = projectGroup.InnerGroups[projectGroupRootName];
-                }
-
-                GenerateProjectFiles_Section_Files_Group_InsertIntoGroup(projectInnerGroup, projectSource, Path.Combine(projectGroupOrigin, projectGroupRootName));
-            }
-            else
-            {
-                // Source would be added to this group.
-                projectGroup.InnerFileRefs.Add(projectSource.FileName, projectSource.FileMisc.RefUuid);
-            }
-        }
-
-        // ==========================================================================================
-        // Build phases sections.
-        // ==========================================================================================
-
-        // ------------------------------------------------------------------------------------------
-        // Source build phase section.
-        // ------------------------------------------------------------------------------------------
-
-        private string m_XCodeBuildPhaseSources;
-        private void GenerateProjectFiles_Section_BuildPhase_Sources()
-        {
-            m_XCodeBuildPhaseSources = CreateXCodeUuid();
-            m_XCodeProj.WriteLine("/* Begin PBXSourcesBuildPhase section */");
-            m_XCodeProj.WriteLine("\t\t{0} /*CopyFiles*/ = {{ isa = PBXSourcesBuildPhase; ", m_XCodeBuildPhaseSources);
-            m_XCodeProj.WriteLine("\t\t\tbuildActionMask = 2147483647;");
-            m_XCodeProj.WriteLine("\t\t\tfiles = (");
-            foreach (var projectSource in m_Project.CachedSourceFiles)
-            {
-                // Writing down only files that need to be compiled..
-                switch (projectSource.FileType)
-                {
-                    case ProjectSourceFileType.SourceCode:
-                    case ProjectSourceFileType.SourceCodeObjective:
-                    case ProjectSourceFileType.SourceCodeAssembler:
-                        m_XCodeProj.WriteLine("\t\t\t\t{0} /*{1}*/,", projectSource.FileMisc.BuildUuid, projectSource.FileName);
-                        break;
-                }
-            }
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t\trunOnlyForDeploymentPostprocessing = 0;");
-            m_XCodeProj.WriteLine("\t\t};");
-            m_XCodeProj.WriteLine("/* End PBXSourcesBuildPhase section */\n");
-        }
-
-        // ------------------------------------------------------------------------------------------
-        // Framework build phase section.
-        // ------------------------------------------------------------------------------------------
-
-        private string m_XCodeBuildPhaseFramework;
-        private void GenerateProjectFiles_Section_BuildPhase_Frameworks()
-        {
-            m_XCodeBuildPhaseFramework = CreateXCodeUuid();
-            m_XCodeProj.WriteLine("/* Begin PBXFrameworksBuildPhase section */");
-            m_XCodeProj.WriteLine("\t\t{0} /*CopyFiles*/ = {{ isa = PBXFrameworksBuildPhase; ", m_XCodeBuildPhaseFramework);
-            m_XCodeProj.WriteLine("\t\t\tbuildActionMask = 2147483647;");
-            m_XCodeProj.WriteLine("\t\t\tfiles = (");
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t};");
-            m_XCodeProj.WriteLine("/* End PBXFrameworksBuildPhase section */\n");
-        }
-
-        // ------------------------------------------------------------------------------------------
-        // Copy files build phase section.
-        // ------------------------------------------------------------------------------------------
-
-        private string m_XCodeBuildPhaseCopyFiles;
-        private void GenerateProjectFiles_Section_BuildPhase_CopyFiles()
-        {
-            m_XCodeBuildPhaseCopyFiles = CreateXCodeUuid();
-            m_XCodeProj.WriteLine("/* Begin PBXCopyFilesBuildPhase section */");
-            m_XCodeProj.WriteLine("\t\t{0} /*CopyFiles*/ = {{ isa = PBXCopyFilesBuildPhase; ", m_XCodeBuildPhaseCopyFiles);
-            m_XCodeProj.WriteLine("\t\t\tbuildActionMask = 2147483647;");
-            m_XCodeProj.WriteLine("\t\t\tdstPath = /usr/share/man/man1/;");
-            m_XCodeProj.WriteLine("\t\t\tdstSubfolderSpec = 0;");
-            m_XCodeProj.WriteLine("\t\t\tfiles = (");
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t\trunOnlyForDeploymentPostprocessing = 1;");
-            m_XCodeProj.WriteLine("\t\t};");
-            m_XCodeProj.WriteLine("/* End PBXCopyFilesBuildPhase section */\n");
-        }
-
-        // ==========================================================================================
-        // Configuration sections.
-        // ==========================================================================================
-
-        // ------------------------------------------------------------------------------------------
-        // Native Target configuration section.
-        // ------------------------------------------------------------------------------------------
-
-        private string m_XCodeConfigurationListNativeTarget;
-        private void GenerateProjectFiles_Section_Configurations_NativeTarget()
-        {
-            var xcodeNativeTargetBuildConfigurations = new List<string>();
-
-            m_XCodeProj.WriteLine("/* Begin XCBuildConfiguration section */");
-            foreach (var configuration in TargetInfo.EnumerateAllConfigurations())
-            {
-                var xcodeNativeTargetBuildConfiguration = CreateXCodeUuid();
-                xcodeNativeTargetBuildConfigurations.Add(xcodeNativeTargetBuildConfiguration);
-
-                m_XCodeProj.WriteLine("\t\t{0} /*{1}*/ = {{ isa = XCBuildConfiguration; ", xcodeNativeTargetBuildConfiguration, configuration.ToString());
-                m_XCodeProj.WriteLine("\t\t\tname = {0};", configuration.ToString());
-                m_XCodeProj.WriteLine("\t\t\tbuildSettings = {");
-                m_XCodeProj.WriteLine("\t\t\t\tCODE_SIGN_STYLE = Automatic;");
-                m_XCodeProj.WriteLine("\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";");
-                m_XCodeProj.WriteLine("\t\t\t};");
-                m_XCodeProj.WriteLine("\t\t};");
-            }
-            m_XCodeProj.WriteLine("/* End XCBuildConfiguration section */\n");
-
-            m_XCodeConfigurationListNativeTarget = CreateXCodeUuid();
-            m_XCodeProj.WriteLine("/* Begin XCConfigurationList section */");
-            m_XCodeProj.WriteLine("\t\t{0} /*PBXNativeTarget*/ = {{ isa = XCConfigurationList; ", m_XCodeConfigurationListNativeTarget);
-            m_XCodeProj.WriteLine("\t\t\tbuildConfigurations = (");
-            foreach (var xcodeNativeTargetBuildConfiguration in xcodeNativeTargetBuildConfigurations)
-            {
-                m_XCodeProj.WriteLine("\t\t\t\t{0},", xcodeNativeTargetBuildConfiguration);
-            }
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t\tdefaultConfigurationIsVisible = 0;");
-            m_XCodeProj.WriteLine("\t\t\tdefaultConfigurationName = {0};", TargetConfiguration.Release.ToString());
-            m_XCodeProj.WriteLine("\t\t};");
-        }
-
-        // ------------------------------------------------------------------------------------------
-        // Project configuration section.
-        // ------------------------------------------------------------------------------------------
-
-        private string m_XCodeConfigurationListProject;
-        private void GenerateProjectFiles_Section_Configurations_Project()
-        {
-            var xcodeProjectBuildConfigurations = new List<string>();
-
-            m_XCodeProj.WriteLine("/* Begin XCBuildConfiguration section */");
-            foreach (var configuration in TargetInfo.EnumerateAllConfigurations())
-            {
-                var xcodeProjectBuildConfiguration = CreateXCodeUuid();
-                xcodeProjectBuildConfigurations.Add(xcodeProjectBuildConfiguration);
-
-                m_XCodeProj.WriteLine("\t\t{0} /*{1}*/ = {{ isa = XCBuildConfiguration; ", xcodeProjectBuildConfiguration, configuration.ToString());
-                m_XCodeProj.WriteLine("\t\t\tname = {0};", configuration.ToString());
-                m_XCodeProj.WriteLine("\t\t\tbuildSettings = {");  // TODO: Configure this shit correctly!
-                m_XCodeProj.WriteLine(@"ALWAYS_SEARCH_USER_PATHS = NO;
-                CLANG_ANALYZER_NONNULL = YES;
-                CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-                CLANG_CXX_LANGUAGE_STANDARD = ""gnu++14"";
-                CLANG_CXX_LIBRARY = ""libc++"";
-                CLANG_ENABLE_MODULES = YES;
-                CLANG_ENABLE_OBJC_ARC = YES;
-                CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-                CLANG_WARN_BOOL_CONVERSION = YES;
-                CLANG_WARN_COMMA = YES;
-                CLANG_WARN_CONSTANT_CONVERSION = YES;
-                CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-                CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-                CLANG_WARN_EMPTY_BODY = YES;
-                CLANG_WARN_ENUM_CONVERSION = YES;
-                CLANG_WARN_INFINITE_RECURSION = YES;
-                CLANG_WARN_INT_CONVERSION = YES;
-                CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-                CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-                CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-                CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-                CLANG_WARN_STRICT_PROTOTYPES = YES;
-                CLANG_WARN_SUSPICIOUS_MOVE = YES;
-                CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-                CLANG_WARN_UNREACHABLE_CODE = YES;
-                CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-                CODE_SIGN_IDENTITY = ""-"";
-                COPY_PHASE_STRIP = NO;
-                DEBUG_INFORMATION_FORMAT = ""dwarf-with-dsym"";
-                ENABLE_NS_ASSERTIONS = NO;
-                ENABLE_STRICT_OBJC_MSGSEND = YES;
-                GCC_C_LANGUAGE_STANDARD = gnu11;
-                GCC_NO_COMMON_BLOCKS = YES;
-                GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-                GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-                GCC_WARN_UNDECLARED_SELECTOR = YES;
-                GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-                GCC_WARN_UNUSED_FUNCTION = YES;
-                GCC_WARN_UNUSED_VARIABLE = YES;
-                MACOSX_DEPLOYMENT_TARGET = 10.13;
-                MTL_ENABLE_DEBUG_INFO = NO;
-                SDKROOT = macosx;");
-                m_XCodeProj.WriteLine("\t\t\t};");
-                m_XCodeProj.WriteLine("\t\t};");
-            }
-            m_XCodeProj.WriteLine("/* End XCBuildConfiguration section */\n");
-
-            m_XCodeConfigurationListProject = CreateXCodeUuid();
-            m_XCodeProj.WriteLine("/* Begin XCConfigurationList section */");
-            m_XCodeProj.WriteLine("\t\t{0} /*PBXProject*/ = {{ isa = XCConfigurationList; ", m_XCodeConfigurationListProject);
-            m_XCodeProj.WriteLine("\t\t\tbuildConfigurations = (");
-            foreach (var xcodeProjectBuildConfiguration in xcodeProjectBuildConfigurations)
-            {
-                m_XCodeProj.WriteLine("\t\t\t\t{0},", xcodeProjectBuildConfiguration);
-            }
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t\tdefaultConfigurationIsVisible = 0;");
-            m_XCodeProj.WriteLine("\t\t\tdefaultConfigurationName = {0};", TargetConfiguration.Release.ToString());
-            m_XCodeProj.WriteLine("\t\t};");
-            m_XCodeProj.WriteLine("/* End XCConfigurationList section */\n");
-        }
-
-        // ==========================================================================================
-        // Projects sections.
-        // ==========================================================================================
-
-        // ------------------------------------------------------------------------------------------
-        // Native Target section.
-        // ------------------------------------------------------------------------------------------
-
-        private string m_XCodeNativeTarget;
-        private void GenerateProjectFiles_Section_Project_NativeTarget()
-        {
-            m_XCodeNativeTarget = CreateXCodeUuid();
-            m_XCodeProj.WriteLine("/* Begin PBXNativeTarget section */");
-            m_XCodeProj.WriteLine("\t\t{0} /*{1}*/ = {{ isa = PBXNativeTarget; ", m_XCodeNativeTarget, m_Project.CachedName);
-            m_XCodeProj.WriteLine("\t\t\tbuildConfigurationList = {0};", m_XCodeConfigurationListNativeTarget);
-            m_XCodeProj.WriteLine("\t\t\tbuildPhases = (");
-            m_XCodeProj.WriteLine("\t\t\t\t{0} /* Sources */,", m_XCodeBuildPhaseSources);
-            m_XCodeProj.WriteLine("\t\t\t\t{0} /* Frameworks */,", m_XCodeBuildPhaseFramework);
-            m_XCodeProj.WriteLine("\t\t\t\t{0} /* Copy Files */,", m_XCodeBuildPhaseCopyFiles);
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t\tbuildRules = (");
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t\tdependencies = (");
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t\tname = {0};", m_Project.CachedName);
-            m_XCodeProj.WriteLine("\t\t\tproductName = \"{0}\";", m_Project.CachedName);
-            m_XCodeProj.WriteLine("\t\t\tproductReference = {0};", m_XCodeProductReference);
-            m_XCodeProj.WriteLine("\t\t\tproductType = \"com.apple.product-type.tool\";");
-            m_XCodeProj.WriteLine("\t\t};");
-            m_XCodeProj.WriteLine("/* End PBXNativeTarget section */\n");
-        }
-
-        // ------------------------------------------------------------------------------------------
-        // Project section.
-        // ------------------------------------------------------------------------------------------
-
-        private string m_XCodeProject;
-        private void GenerateProjectFiles_Section_Project()
-        {
-            m_XCodeProject = CreateXCodeUuid();
-            m_XCodeProj.WriteLine("/* Begin PBXProject section */");
-            m_XCodeProj.WriteLine("\t\t{0} /*{1}*/ = {{ isa = PBXProject; ", m_XCodeProject, m_Project.CachedName);
-            m_XCodeProj.WriteLine(@"
-                attributes = {
-                    LastUpgradeCheck = 0920;
-                    ORGANIZATIONNAME = Goddamn;
-                    TargetAttributes = {
-                        7CC50132201C539100AA2808 = {
-                            CreatedOnToolsVersion = 9.2;
-                            ProvisioningStyle = Automatic;
-                        };
-                    };
-                };
-            ");
-            m_XCodeProj.WriteLine("\t\t\tbuildConfigurationList = {0};", m_XCodeConfigurationListProject);
-            m_XCodeProj.WriteLine(@"
-                compatibilityVersion = ""Xcode 8.0"";
-                developmentRegion = en;
-                hasScannedForEncodings = 0;
-                knownRegions = (
-                    en,
-
-                );
-            ");
-            m_XCodeProj.WriteLine("\t\t\tmainGroup = {0};", m_XCodeGroupRoot);
-            m_XCodeProj.WriteLine("\t\t\tproductRefGroup = {0};", m_XCodeGroupProducts);
-            m_XCodeProj.WriteLine("\t\t\tprojectDirPath = \"\";");
-            m_XCodeProj.WriteLine("\t\t\tprojectRoot = \"\";");
-            m_XCodeProj.WriteLine("\t\t\ttargets = (");
-            m_XCodeProj.WriteLine("\t\t\t\t{0} /* Test */,", m_XCodeNativeTarget);
-            m_XCodeProj.WriteLine("\t\t\t);");
-            m_XCodeProj.WriteLine("\t\t};");
-            m_XCodeProj.WriteLine("/* End PBXProject section */\n");
         }
 
     }   // public class XCodeProjectGenerator
