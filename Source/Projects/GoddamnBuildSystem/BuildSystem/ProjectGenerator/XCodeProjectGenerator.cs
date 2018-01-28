@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Text;
 using GoddamnEngine.BuildSystem.Collectors;
 using GoddamnEngine.BuildSystem.Target;
-using GoddamnEngine.BuildSystem.Utilities;
+using GoddamnEngine.BuildSystem.Support;
 
 namespace GoddamnEngine.BuildSystem.ProjectGenerator
 {
