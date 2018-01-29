@@ -570,7 +570,7 @@
 #			error "Unable to determine MSVC build configuration."
 #		endif	// *** MSVC Debug specifications. ***
 #	elif GD_COMPILER_GCC_COMPATIBLE
-#		if (defined(__OPTIMIZE__))
+#		if (defined(__OPTIMIZE__)) && 0
 #			define GD_RELEASE											GD_TRUE
 #		else	// if (defined(__OPTIMIZE__))
 #			define GD_DEBUG												GD_TRUE
@@ -660,6 +660,10 @@
 // ------------------------------------------------------------------------------------------
 // Definition declaration specifications.
 // ------------------------------------------------------------------------------------------
+
+#define GD_MSVC_PRAGMA(...) \
+    GD_COMPILER_GCC_COMPATIBLE_CODE() \
+    GD_COMPILER_MSVC_COMPATIBLE_CODE(__pragma(__VA_ARGS__))
 
 // ------------------------------------------------------------------------------------------
 //! Definition would be aligned in MSVC-compatible notation (if is supported).
