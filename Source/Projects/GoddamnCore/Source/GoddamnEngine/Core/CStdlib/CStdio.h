@@ -13,6 +13,7 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Containers/StringConv.h>
 
 #include <cstdio>
 #include <cwchar>
@@ -40,7 +41,7 @@ GD_NAMESPACE_BEGIN
 #if GD_PLATFORM_API_MICROSOFT
 			return ::_wremove(filename);
 #else	// if GD_PLATFORM_API_MICROSOFT
-			return ::wremove(filename);
+			return ::remove(GD_TEXT_UTF8(filename));
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 		//! @}
@@ -58,7 +59,7 @@ GD_NAMESPACE_BEGIN
 #if GD_PLATFORM_API_MICROSOFT
 			return ::_wrename(oldFilename, newFilename);
 #else	// if GD_PLATFORM_API_MICROSOFT
-			return ::wrename(oldFilename, newFilename);
+			return ::rename(GD_TEXT_UTF8(oldFilename), GD_TEXT_UTF8(newFilename));
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 		//! @}
@@ -124,7 +125,7 @@ GD_NAMESPACE_BEGIN
 			GD_VERIFY(result == 0, "fopen_s failed.");
 			return fileHandle;
 #else	// if GD_PLATFORM_API_MICROSOFT
-			return ::wfopen(filename, mode);
+			return ::fopen(GD_TEXT_UTF8(filename), GD_TEXT_UTF8(mode));
 #endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 		//! @}

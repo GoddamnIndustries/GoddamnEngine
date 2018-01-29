@@ -14,6 +14,8 @@
 
 #include <GoddamnEngine/Include.h>
 
+#include <cmath>
+
 GD_NAMESPACE_BEGIN
 
 	struct Math

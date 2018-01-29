@@ -144,5 +144,18 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/CStdlib, CMemory)
+#if GD_PLATFORM_API_MICROSOFT
+#   include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/CStdlib, CMemory)
+#else   // if GD_PLATFORM_API_MICROSOFT
+
+GD_NAMESPACE_BEGIN
+
+    // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+    //! Provides cross-platform functions for C memory.
+    // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+    using CMemory = CMemoryGeneric;
+
+GD_NAMESPACE_END
+
+#endif  // if GD_PLATFORM_API_MICROSOFT
 #undef GD_INSIDE_CMEMORY_H

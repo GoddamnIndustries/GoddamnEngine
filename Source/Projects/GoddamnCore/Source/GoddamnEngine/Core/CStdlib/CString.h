@@ -19,6 +19,7 @@
 #include <cstring>
 #include <cstdarg>
 #include <cstdio>
+#include <cwchar>
 
 GD_NAMESPACE_BEGIN
 
@@ -41,18 +42,18 @@ GD_NAMESPACE_BEGIN
 		GDINL static CStr Strcpy(Char* const dest, SizeTp const destLength, CStr const source)
 		{
 			GD_NOT_USED(destLength);
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::strcpy(dest, source);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		GDINL static WideCStr Strcpy(WideChar* const dest, SizeTp const destLength, WideCStr const source)
 		{
 			GD_NOT_USED(destLength);
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::wcscpy(dest, source);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		//! @}
 
@@ -63,18 +64,18 @@ GD_NAMESPACE_BEGIN
 		GDINL static CStr Strncpy(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
 			GD_NOT_USED(destLength);
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::strncpy(dest, source, maxCount);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		GDINL static WideCStr Strncpy(WideChar* const dest, SizeTp const destLength, WideCStr const source, SizeTp const maxCount)
 		{
 			GD_NOT_USED(destLength);
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::wcsncpy(dest, source, maxCount);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		//! @}
 
@@ -89,18 +90,18 @@ GD_NAMESPACE_BEGIN
 		GDINL static CStr Strcat(Char* const dest, SizeTp const destLength, CStr const source)
 		{
 			GD_NOT_USED(destLength);
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::strcat(dest, source);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		GDINL static WideCStr Strcat(WideChar* const dest, SizeTp const destLength, WideCStr const source)
 		{
 			GD_NOT_USED(destLength);
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::wcscat(dest, source);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		//! @}
 
@@ -111,18 +112,18 @@ GD_NAMESPACE_BEGIN
 		GDINL static CStr Strncat(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
 			GD_NOT_USED(destLength);
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::strncat(dest, source, maxCount);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		GDINL static WideCStr Strncat(WideChar* const dest, SizeTp const destLength, WideCStr const source, SizeTp const maxCount)
 		{
 			GD_NOT_USED(destLength);
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::wcsncat(dest, source, maxCount);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		//! @}
 
@@ -263,10 +264,10 @@ GD_NAMESPACE_BEGIN
 		GDINL static SizeTp Wcstombs(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
 		{
 			GD_NOT_USED(destLength);
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::wcstombs(dest, source, maxCount);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		GDINL static SizeTp WcsToUTF8(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
 		{
@@ -282,10 +283,10 @@ GD_NAMESPACE_BEGIN
 		GDINL static SizeTp Strtowcs(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
 			GD_NOT_USED(destLength);
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::mbstowcs(dest, source, maxCount);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		GDINL static SizeTp UTF8ToWcs(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
@@ -354,17 +355,17 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL static Int32 Vsnprintf(Char* const dest, SizeTp const destLength, CStr const format, va_list arguments)
 		{
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::vsnprintf(dest, destLength, format, arguments);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		GDINL static Int32 Vsnprintf(WideChar* const dest, SizeTp const destLength, WideCStr const format, va_list arguments)
 		{
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::vswprintf(dest, destLength, format, arguments);
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		//! @}
 

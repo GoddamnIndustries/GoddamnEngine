@@ -26,9 +26,12 @@
  */
 #define GD_ARRAY_LENGTH(array) static_cast<GD::SizeTp>(sizeof(GD::GetArrayLengthHelper((array))))		
 
+#include <cstdio>
+
 /*!
  * Notifies about stubbed code section.
  */
+#if GD_PLATFORM_API_MICROSOFT
 #define GD_STUBBED(...) \
 	do { \
 		static auto alreadySeenThisStubbedSection = false; \
@@ -38,6 +41,17 @@
 			fprintf_s(stderr, "STUBBED: %s at %s:%d (%s)\n", #__VA_ARGS__, __FILE__, __LINE__, __FUNCTION__); \
 		} \
 	} while (false)
+#else
+#define GD_STUBBED(...) \
+    do { \
+        static auto alreadySeenThisStubbedSection = false; \
+        if (!alreadySeenThisStubbedSection) \
+        { \
+            alreadySeenThisStubbedSection = true; \
+            fprintf(stderr, "STUBBED: %s at %s:%d (%s)\n", #__VA_ARGS__, __FILE__, __LINE__, __FUNCTION__); \
+        } \
+    } while (false)
+#endif
 
 GD_NAMESPACE_BEGIN
 

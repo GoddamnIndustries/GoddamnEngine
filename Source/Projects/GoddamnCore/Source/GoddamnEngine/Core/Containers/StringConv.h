@@ -16,12 +16,13 @@
 #include <GoddamnEngine/Core/Containers/String.h>
 #include <GoddamnEngine/Core/Templates/UniquePtr.h>
 
+#define GD_TEXT_UTF8(text) (GD::StringConv::EncodeUTF8(text).Get())
+
 GD_NAMESPACE_BEGIN
 
 	class StringConv : public TNonCreatable
 	{
 	public:
-
 		GDINL static UniquePtr<Char[]> EncodeUTF8(WideCStr const text, SizeTp const textLength)
 		{
 			GD_DEBUG_VERIFY(text != nullptr);

@@ -188,18 +188,18 @@ GD_NAMESPACE_BEGIN
 		GDINL static Int32 Vsnprintf(Char* const dest, SizeTp const destLength, CStr const format, va_list arguments)
 		{
 			// size_t inside _TRUNCATE macro.
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::_vsnprintf_s(dest, destLength, _TRUNCATE, format, arguments);	// NOLINT
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		GDINL static Int32 Vsnprintf(WideChar* const dest, SizeTp const destLength, WideCStr const format, va_list arguments)
 		{
 			// size_t inside _TRUNCATE macro.
-			__pragma(warning(push))
-			__pragma(warning(suppress : 4996))
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::_vsnwprintf_s(dest, destLength, _TRUNCATE, format, arguments);	// NOLINT
-			__pragma(warning(pop))
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		//! @}
 

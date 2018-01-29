@@ -24,7 +24,7 @@
 #		define GD_PLATFORM_API_INCLUDE(Directory, Header)	<Directory/Header ## Microsoft.h>
 #	endif	// GD_PLATFORM_API_MICROSOFT && !defined(GD_PLATFORM_API_INCLUDE)
 #	if GD_PLATFORM_API_COCOA && !defined(GD_PLATFORM_API_INCLUDE)
-#		define GD_PLATFORM_API_INCLUDE(Directory, Header)	<Directory/Header ## Cocoa.h>
+#		define GD_PLATFORM_API_INCLUDE(Directory, Header)	GD_GLUE(<Directory/Header, Apple.h>)
 #	endif	// GD_PLATFORM_API_COCOA && !defined(GD_PLATFORM_API_INCLUDE)
 #	if GD_PLATFORM_API_POSIX && !defined(GD_PLATFORM_API_INCLUDE)
 #		define GD_PLATFORM_API_INCLUDE(Directory, Header)	<Directory/Header ## Posix.h>
@@ -51,7 +51,7 @@
 #		define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/Header ## WindowsUAP.h>
 #	endif	// if GD_PLATFORM_WINDOWS_RT
 #	if GD_PLATFORM_OS_X
-#		define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/Header ## OSX.h>
+#		define GD_PLATFORM_INCLUDE(Directory, Header)	GD_GLUE(<Directory/Header, MacOS.h>)
 #	endif	// if GD_PLATFORM_OS_X
 #	if GD_PLATFORM_IOS
 #		define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/Header ## iOS.h>

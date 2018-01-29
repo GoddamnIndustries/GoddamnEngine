@@ -74,6 +74,46 @@ GD_NAMESPACE_BEGIN
 		GDINL bool operator()(TValue const& lhs, TValue const& rhs) const { return lhs >= rhs; }
 	};	// struct TGreaterEqual final
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Min & max algorithms.
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    // ------------------------------------------------------------------------------------------
+    //! Returns a minimal object of the two specified.
+    //! @param lhs First comparand.
+    //! @param lhs rhs comparand.
+    //! @returns Minimal of two comparands.
+    //! @{
+    template<typename TComparand>
+    GDINL TComparand const& Min(TComparand const& lhs, TComparand const& rhs)
+    {
+        return (lhs < rhs) ? lhs : rhs;
+    }
+    template<typename TComparand>
+    GDINL TComparand& Min(TComparand& lhs, TComparand& rhs)
+    {
+        return (lhs < rhs) ? lhs : rhs;
+    }
+    //! @}
+
+    // ------------------------------------------------------------------------------------------
+    //! Returns a maximum object of the two specified.
+    //! @param lhs First comparand.
+    //! @param rhs Second comparand.
+    //! @returns Maximum of two comparands.
+    //! @{
+    template<typename TComparand>
+    GDINL TComparand& Max(TComparand& lhs, TComparand& rhs)
+    {
+        return (lhs > rhs) ? lhs : rhs;
+    }
+    template<typename TComparand>
+    GDINL TComparand const& Max(TComparand const& lhs, TComparand const& rhs)
+    {
+        return (lhs > rhs) ? lhs : rhs;
+    }
+    //! @}
+
 	namespace Algo
 	{
 
@@ -566,7 +606,7 @@ GD_NAMESPACE_BEGIN
 
 		// ------------------------------------------------------------------------------------------
 		//! Performs fast stable sorting of the m_Container. Stable sorting is slower than unstable one.
-		//! @param m_Container The m_Container to be sorted.
+		//! @param container The m_Container to be sorted.
 		template<typename TContainer>
 		GDINL static void StableSort(TContainer& container)
 		{
@@ -612,46 +652,6 @@ GD_NAMESPACE_BEGIN
 		}
 
 	}	// namespace Algo
-
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Min & max algorithms.
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	// ------------------------------------------------------------------------------------------
-	//! Returns a minimal object of the two specified.
-	//! @param lhs First comparand.
-	//! @param lhs rhs comparand.
-	//! @returns Minimal of two comparands.
-	//! @{
-	template<typename TComparand>
-	GDINL TComparand const& Min(TComparand const& lhs, TComparand const& rhs)
-	{
-		return (lhs < rhs) ? lhs : rhs;
-	}
-	template<typename TComparand>
-	GDINL TComparand& Min(TComparand& lhs, TComparand& rhs)
-	{
-		return (lhs < rhs) ? lhs : rhs;
-	}
-	//! @}
-
-	// ------------------------------------------------------------------------------------------
-	//! Returns a maximum object of the two specified.
-	//! @param lhs First comparand.
-	//! @param rhs Second comparand.
-	//! @returns Maximum of two comparands.
-	//! @{
-	template<typename TComparand>
-	GDINL TComparand& Max(TComparand& lhs, TComparand& rhs)
-	{
-		return (lhs > rhs) ? lhs : rhs;
-	}
-	template<typename TComparand>
-	GDINL TComparand const& Max(TComparand const& lhs, TComparand const& rhs)
-	{
-		return (lhs > rhs) ? lhs : rhs;
-	}
-	//! @}
 
 	typedef Int32 HashValue;
 

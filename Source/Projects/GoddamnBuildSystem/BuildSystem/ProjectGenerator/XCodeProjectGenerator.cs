@@ -413,11 +413,17 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                                 CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
                                 CODE_SIGN_IDENTITY = ""-"";
                                 COPY_PHASE_STRIP = NO;
-                                DEBUG_INFORMATION_FORMAT = ""dwarf-with-dsym"";
-                                ENABLE_NS_ASSERTIONS = NO;
+                                DEBUG_INFORMATION_FORMAT = dwarf;
                                 ENABLE_STRICT_OBJC_MSGSEND = YES;
+                                ENABLE_TESTABILITY = YES;
                                 GCC_C_LANGUAGE_STANDARD = gnu11;
+                                GCC_DYNAMIC_NO_PIC = NO;
                                 GCC_NO_COMMON_BLOCKS = YES;
+                                GCC_OPTIMIZATION_LEVEL = 0;
+                                GCC_PREPROCESSOR_DEFINITIONS = (
+                                    ""DEBUG=1"",
+                                    ""$(inherited)"",
+                                );
                                 GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
                                 GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
                                 GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -425,7 +431,8 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                                 GCC_WARN_UNUSED_FUNCTION = YES;
                                 GCC_WARN_UNUSED_VARIABLE = YES;
                                 MACOSX_DEPLOYMENT_TARGET = 10.13;
-                                MTL_ENABLE_DEBUG_INFO = NO;
+                                MTL_ENABLE_DEBUG_INFO = YES;
+                                ONLY_ACTIVE_ARCH = YES;
                                 SDKROOT = macosx;
                             }};
                         }};");
