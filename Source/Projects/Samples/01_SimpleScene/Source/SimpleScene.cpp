@@ -14,6 +14,8 @@
 #include "GoddamnEngine/Core/Math/Vector.h"
 #include "../../../GoddamnGraphics/GoddamnGraphicsOpenGL/Dependencies/glew/include/GL/glew.h"
 
+#include <GoddamnEngine/Core/Containers/StringConv.h>
+
 using namespace GD_NAMESPACE;
 #pragma comment(lib, "opengl32.lib")
 
@@ -90,7 +92,8 @@ unsigned char pixels[] = {
 
 int main()
 {
-
+	auto const text = StringConv::EncodeUTF8(L"Говно жопа");
+	return 0;
 
 #if 0
 	auto gl = LoadLibrary(TEXT("GoddamnGraphicsOpenGL.Debug.dll"));
