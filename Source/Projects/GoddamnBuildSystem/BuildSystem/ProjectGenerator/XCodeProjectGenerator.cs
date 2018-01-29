@@ -10,7 +10,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using GoddamnEngine.BuildSystem.Collectors;
 using GoddamnEngine.BuildSystem.Target;
 using GoddamnEngine.BuildSystem.Support;
@@ -220,7 +219,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                     {
                         // Source would be added to some child group.
                         var projectSourceGroupPath = projectSourceDirectory.Substring(project.CachedSourcesFilterOrigin.Length + 1);
-                        var projectSourceGroupPathSplitted = projectSourceGroupPath.Trim().Split('/');
+                        var projectSourceGroupPathSplitted = projectSourceGroupPath.Trim().Split(Path.DirectorySeparatorChar);
                         xcodeGroupSource.Add(projectSourceGroupPathSplitted, projectSource.FileMisc.RefUUID);
                     }
                     else
@@ -465,8 +464,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 // Native Target section.
                 // ------------------------------------------------------------------------------------------
 
-                var xcodeNativeTargetUUID = new PbxUUID();
-                project.Misc.NativeTargetUUID = xcodeNativeTargetUUID;
+                var xcodeNativeTargetUUID = project.Misc.NativeTargetUUID = new PbxUUID();
                 xcodeProj.WriteLine("/* Begin PBXNativeTarget section */");
                 xcodeProj.WriteLine($@"
                     {xcodeNativeTargetUUID} /*{project.CachedName}*/ = {{
@@ -492,8 +490,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 // Project section.
                 // ------------------------------------------------------------------------------------------
 
-                var xcodeProjectUUID = new PbxUUID();
-                project.Misc.ProjectUUID = xcodeProjectUUID;
+                var xcodeProjectUUID = project.Misc.ProjectUUID = new PbxUUID();
                 xcodeProj.WriteLine("/* Begin PBXProject section */");
                 xcodeProj.WriteLine($@"
                     {xcodeProjectUUID} /*{project.CachedName}*/ = {{ 

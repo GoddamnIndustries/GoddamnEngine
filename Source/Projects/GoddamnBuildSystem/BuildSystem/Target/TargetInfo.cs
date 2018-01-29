@@ -22,12 +22,15 @@ namespace GoddamnEngine.BuildSystem.Target
         /// <returns>All supported and implemented target platforms.</returns>
         public static IEnumerable<TargetPlatform> EnumerateAllPlatforms()
         {
-            //if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                yield return TargetPlatform.MacOS;
                 yield return TargetPlatform.Windows;
                 //yield return TargetPlatform.XboxOne;
                 //yield return TargetPlatform.PlayStation4;   // Not sure here..
+            }
+            else
+            {
+                yield return TargetPlatform.MacOS;
             }
         }
 
