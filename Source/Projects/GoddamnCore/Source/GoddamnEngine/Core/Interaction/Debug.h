@@ -16,6 +16,7 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/PlatformSpecificInclude.h>
 #include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/CStdlib/CStdio.h>
 
 GD_NAMESPACE_BEGIN
 	

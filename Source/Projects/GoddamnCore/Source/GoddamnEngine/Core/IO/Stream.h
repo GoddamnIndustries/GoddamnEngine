@@ -13,6 +13,7 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/CStdlib/CStdio.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Containers/String.h>
 #include <GoddamnEngine/Core/Templates/SharedPtr.h>

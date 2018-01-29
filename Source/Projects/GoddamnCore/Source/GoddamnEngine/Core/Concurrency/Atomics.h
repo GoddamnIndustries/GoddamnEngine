@@ -14,6 +14,7 @@
 #define GD_INSIDE_ATOMICS_H
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Templates/TypeTraits.h>
 #include <GoddamnEngine/Core/PlatformSpecificInclude.h>
 
 GD_NAMESPACE_BEGIN

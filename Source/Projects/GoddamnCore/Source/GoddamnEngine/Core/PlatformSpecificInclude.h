@@ -32,7 +32,7 @@
 #	if GD_PLATFORM_API_LIBSDL2 && !defined(GD_PLATFORM_API_INCLUDE)
 #		define GD_PLATFORM_API_INCLUDE(Directory, Header)	<Directory/Header ## SDL2.h>
 #	endif	// GD_PLATFORM_API_LIBSDL2 && !defined(GD_PLATFORM_API_INCLUDE)
-#	if GD_PLATFORM_API_LIBSDL1 && !defined(GD_PLATFORM_INCLUDE_API)
+#	if GD_PLATFORM_API_LIBSDL1 && !defined(GD_PLATFORM_API_INCLUDE)
 #		define GD_PLATFORM_API_INCLUDE(Directory, Header)	<Directory/Header ## SDL1.h>
 #	endif	// GD_PLATFORM_API_LIBSDL1 && !defined(GD_PLATFORM_API_INCLUDE)
 #	ifndef GD_PLATFORM_API_INCLUDE

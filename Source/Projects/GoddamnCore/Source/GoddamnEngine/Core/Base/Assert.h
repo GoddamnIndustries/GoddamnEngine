@@ -16,6 +16,8 @@
 #	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
 #endif	// if !defined(GD_INSIDE_INCLUDE_H)
 
+#include <cstdarg>
+
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**	

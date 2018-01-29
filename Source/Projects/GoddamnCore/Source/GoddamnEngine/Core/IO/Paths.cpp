@@ -37,12 +37,11 @@ GD_NAMESPACE_BEGIN
 		{
 			combinedPath.Append('/');
 		}
-		combinedPath.Append(secondPath[0] == '/' || secondPath[0] == '\\' ? secondPath.CStr() + 1 : secondPath.CStr());
+		combinedPath.Append(secondPath[0] == L'/' || secondPath[0] == L'\\' ? secondPath.CStr() + 1 : secondPath.CStr());
 		return combinedPath.ToString();
 	}
 	GDAPI WideString PathsGeneric::Combine(WideString const& firstPath, WideString const& secondPath, WideString const& thirdPath)
 	{
-		// ReSharper disable once CppRedundantQualifier
 		return Paths::Combine(Paths::Combine(firstPath, secondPath), thirdPath);
 	}
 	//! @}

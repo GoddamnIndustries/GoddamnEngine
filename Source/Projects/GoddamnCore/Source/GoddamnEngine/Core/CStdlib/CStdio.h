@@ -7,14 +7,15 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/Base/CStdlib/CStdio.h
- * @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
+ * @file GoddamnEngine/Core/CStdlib/CStdio.h
  * Wrappers, helper functions and definitions for standard IO functions.
  */
 #pragma once
-#if !defined(GD_INSIDE_INCLUDE_H)
-#	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
-#endif	// if !defined(GD_INSIDE_INCLUDE_H)
+
+#include <GoddamnEngine/Include.h>
+
+#include <cstdio>
+#include <cwchar>
 
 GD_NAMESPACE_BEGIN
 

@@ -7,14 +7,15 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/Base/CStdlib/CChar.h
- * @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
+ * @file GoddamnEngine/Core/CStdlib/CChar.h
  * Wrappers, helper functions and definitions for standard char functions.
  */
 #pragma once
-#if !defined(GD_INSIDE_INCLUDE_H)
-#	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
-#endif	// if !defined(GD_INSIDE_INCLUDE_H)
+
+#include <GoddamnEngine/Include.h>
+
+#include <cctype>
+#include <cwctype>
 
 /*!
  * Selects wide or ANSI character literal based on specified type.
@@ -22,13 +23,12 @@
  * @param TChar Type of characters.
  * @param literal Literal.
  */
-#define GD_TEXT(TChar, literal) (GD::Literal<TChar>::Select(literal, L##literal))
+#define GD_TEXT(TChar, literal) (GD::Literal<TChar>::Select(literal, GD_WIDEN(literal)))
 
 GD_NAMESPACE_BEGIN
 
 	template<typename>
 	struct Literal;
-	
 	template<>
 	struct Literal<Char> final
 	{
@@ -37,13 +37,12 @@ GD_NAMESPACE_BEGIN
 			GD_NOT_USED(wide);
 			return ansi;
 		}
-		GDINL static constexpr Char const* Select(Char const* const ansi, WideChar const* const wide)
+		GDINL static constexpr Char const* Select(CStr const ansi, WideCStr const wide)
 		{
 			GD_NOT_USED(wide);
 			return ansi;
 		}
 	};	// struct Literal<Char>
-
 	template<>
 	struct Literal<WideChar> final
 	{
@@ -52,7 +51,7 @@ GD_NAMESPACE_BEGIN
 			GD_NOT_USED(ansi);
 			return wide;
 		}
-		GDINL static constexpr WideChar const* Select(Char const* const ansi, WideChar const* const wide)
+		GDINL static constexpr WideChar const* Select(CStr const ansi, WideCStr const wide)
 		{
 			GD_NOT_USED(ansi);
 			return wide;
@@ -65,6 +64,10 @@ GD_NAMESPACE_BEGIN
 	class CChar final : public TNonCreatable
 	{
 	public:
+
+		// ------------------------------------------------------------------------------------------
+		// Test functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*!
 		 * @see @c "::isdigit" function.
@@ -135,6 +138,10 @@ GD_NAMESPACE_BEGIN
 			return ::iswspace(static_cast<wint_t>(character)) != 0;
 		}
 		//! @}
+
+		// ------------------------------------------------------------------------------------------
+		// Conversion functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*!
 		 * Converts this character in specified radix to decimal one.

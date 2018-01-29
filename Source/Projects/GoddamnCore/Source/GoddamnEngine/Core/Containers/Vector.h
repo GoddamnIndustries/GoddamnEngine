@@ -13,6 +13,7 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/CStdlib/CMemory.h>
 #include <GoddamnEngine/Core/Templates/Algorithm.h>
 #include <GoddamnEngine/Core/Templates/Iterators.h>
 #include <GoddamnEngine/Core/Containers/InitializerList.h>

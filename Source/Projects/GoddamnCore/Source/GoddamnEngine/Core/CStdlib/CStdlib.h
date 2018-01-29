@@ -7,7 +7,7 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/Base/CStdlib/CStdlib.h
+ * @file GoddamnEngine/Core/CStdlib/CStdlib.h
  * @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
  * Wrappers, helper functions and definitions for standard library functions.
  */

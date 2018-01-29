@@ -182,7 +182,7 @@ GD_NAMESPACE_BEGIN
 			// Could not find any other cross-platform ways for generating a directory.
 			GD_STUBBED(_wsystem);
 			WideChar mkdirCommand[2048] = L"mkdir ";
-			CString::StrcatSafe(mkdirCommand, GetLength(mkdirCommand), Paths::Platformize(directoryName).CStr());
+			CString::Strcat(mkdirCommand, GetLength(mkdirCommand), Paths::Platformize(directoryName).CStr());
 			return _wsystem(mkdirCommand) == 0;
 		}
 		return true;
@@ -201,7 +201,7 @@ GD_NAMESPACE_BEGIN
 			// Could not find any other cross-platform ways for removing a directory.
 			GD_STUBBED(_wsystem);
 			WideChar rmdirCommand[2048] = L"rmdir ";
-			CString::StrcatSafe(rmdirCommand, GetLength(rmdirCommand), Paths::Platformize(directoryName).CStr());
+			CString::Strcat(rmdirCommand, GetLength(rmdirCommand), Paths::Platformize(directoryName).CStr());
 			if (_wsystem(rmdirCommand) != 0)
 			{
 				PlatformMisc::Sleep(0);

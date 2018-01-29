@@ -13,6 +13,9 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/CStdlib/CChar.h>
+#include <GoddamnEngine/Core/CStdlib/CString.h>
+#include <GoddamnEngine/Core/CStdlib/CMemory.h>
 #include <GoddamnEngine/Core/Templates/Algorithm.h>
 #include <GoddamnEngine/Core/Templates/Iterators.h>
 
@@ -633,7 +636,7 @@ GD_NAMESPACE_BEGIN
 		GDINL static BaseString FormatVa(TChar const* const format, va_list list)
 		{
 			TChar buffer[15000] = {};
-			CString::VsnprintfSafe(buffer, GD::GetLength(buffer), format, list);
+			CString::Vsnprintf(buffer, GD::GetLength(buffer), format, list);
 			return BaseString(buffer);
 		}
 

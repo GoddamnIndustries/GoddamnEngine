@@ -16,7 +16,9 @@
 #	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
 #endif	// if !defined(GD_INSIDE_INCLUDE_H)
 
-#include <limits.h>
+#include <cstdint>
+#include <climits>
+#include <cfloat>
 
 /*!
  * Computes length of the array.
@@ -244,16 +246,6 @@ GD_NAMESPACE_BEGIN
 	};	// struct IVirtuallyDestructible
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	// ******                            Raw pointers wrappers.                                ******
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-
-	template<typename TType>
-	using MaybeNull = TType;
-
-	/*template<typename TType>
-	using NotNull = gsl::not_null<TType>;*/
-
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	// ******                      Array size counting safe macros.                            ******
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
@@ -267,12 +259,14 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * Returns size of the specified array.
 	 */
-	template <typename TType, SizeTp TLength>
-	GDINL constexpr SizeTp GetLength(TType const(&array)[TLength])
+	//! @{
+	template <typename TSize = SizeTp, typename TType, TSize TLength>
+	GDINL constexpr TSize GetLength(TType const(&array)[TLength])
 	{
 		GD_NOT_USED(array);
 		return TLength;
 	}
+	//! @}
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	// ******                                 Union cast.                                      ******
@@ -284,7 +278,7 @@ GD_NAMESPACE_BEGIN
 	template<typename TCastTo, typename TCastFrom>
 	GDINL static TCastTo union_cast(TCastFrom const castFrom)
 	{
-		static_assert(sizeof(TCastTo) == sizeof(TCastFrom), "Union cast's parameter should match sizes.");
+		static_assert(sizeof(TCastTo) == sizeof(TCastFrom), "Union cast parameters should match sizes.");
 		return *reinterpret_cast<TCastTo const*>(&castFrom);
 	}
 

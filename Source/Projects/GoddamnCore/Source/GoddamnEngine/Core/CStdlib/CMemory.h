@@ -7,11 +7,18 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/Base/CStdlib/CChar.h
- * @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
+ * @file GoddamnEngine/Core/CStdlib/CChar.h
  * Wrappers, helper functions and definitions for standard memory functions.
  */
 #pragma once
+#define GD_INSIDE_CMEMORY_H
+
+#include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Templates/TypeTraits.h>
+#include <GoddamnEngine/Core/PlatformSpecificInclude.h>
+
+#include <cstring>
+#include <cwchar>
 
 GD_NAMESPACE_BEGIN
 
@@ -19,10 +26,13 @@ GD_NAMESPACE_BEGIN
 	//! Provides functions for C memory. Contains wrapped "mem*" methods and methods from "string.h",
 	//! "stdlib.h" and etc.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class CMemory final : public TNonCreatable
+	class CMemoryGeneric : public TNonCreatable
 	{
 	public:
+
+		// ------------------------------------------------------------------------------------------
 		// ... string.h's functions ...
+		// ------------------------------------------------------------------------------------------
 
 		/*! 
 		 * @see @c "std::memcmp" function.
@@ -77,23 +87,15 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::memcpy" function.
 		 */
 		//! @{
-	private:
-		GDINL static Handle Memcpy_s(Handle const dest, SizeTp const destLength, CHandle const source, SizeTp const maxCount)
+		GDINL static Handle MemcpySafe(Handle const dest, SizeTp const destLength, CHandle const source, SizeTp const maxCount)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::memcpy_s(dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "memcpy_s failed.");
-			return dest;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
 			return ::memcpy(dest, source, maxCount);
-#endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-	public:
 		GDINL static Handle Memcpy(Handle const dest, CHandle const source, SizeTp const maxCount)
 		{
 			// as an exception, we force using unsafe 'memcpy'.
-			return Memcpy_s(dest, maxCount, source, maxCount);
+			return MemcpySafe(dest, maxCount, source, maxCount);
 		}
 		template<typename TPointee>
 		GDINL static TPointee* TMemcpy(TPointee* const dest, TPointee const* const source, SizeTp const maxCount)
@@ -107,23 +109,15 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::memmove" function.
 		 */
 		//! @{
-	private:
-		GDINL static Handle Memmove_s(Handle const dest, SizeTp const destLength, CHandle const source, SizeTp const maxCount)
+		GDINL static Handle MemmoveSafe(Handle const dest, SizeTp const destLength, CHandle const source, SizeTp const maxCount)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::memmove_s(dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "memcpy_s failed.");
-			return dest;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
 			return ::memmove(dest, source, maxCount);
-#endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-	public:
 		GDINL static Handle Memmove(Handle const dest, CHandle const source, SizeTp const maxCount)
 		{
 			// as an exception, we force using unsafe 'memmove'.
-			return Memmove_s(dest, maxCount, source, maxCount);
+			return MemmoveSafe(dest, maxCount, source, maxCount);
 		}
 		template<typename TPointee>
 		GDINL static TPointee* Memmove(TPointee* const dest, TPointee const* const source, SizeTp const maxCount)
@@ -133,17 +127,22 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-	};	// class CMemory
+	};	// class CMemoryGeneric
 
 	/*!
 	 * Declarations used to ban standard functions. 
 	 */
 	enum LibMemoryUnallowedFunctions
 	{
+		// ReSharper disable CppInconsistentNaming
 		memcmp,
 		memset,
 		memcpy, memcpy_s,
 		memmove, memmove_s,
+		// ReSharper restore CppInconsistentNaming
 	};	// enum LibMemoryUnallowedFunctions
 
 GD_NAMESPACE_END
+
+#include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/CStdlib, CMemory)
+#undef GD_INSIDE_CMEMORY_H

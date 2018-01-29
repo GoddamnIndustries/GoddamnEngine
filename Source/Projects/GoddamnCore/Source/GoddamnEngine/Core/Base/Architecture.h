@@ -789,25 +789,3 @@
 #	pragma warning(disable : 4840)	
 #elif GD_COMPILER_GCC_COMPATIBLE
 #endif	// *** Warnings. ***
-
-// ------------------------------------------------------------------------------------------
-// System includes.
-// ------------------------------------------------------------------------------------------
-#if !GD_RESOURCE_COMPILER
-#	include <cinttypes>
-#	include <cwctype>
-#	include <cassert>
-#	include <clocale>
-#	include <cstring>
-#	include <cstdint>
-#	include <cstddef>
-#	include <cstdlib>
-#	include <cstdarg>
-#	include <cstdio>
-#	include <cctype>
-#	include <cwchar>
-#	include <cfloat>
-#	include <math.h>
-#	include <time.h>
-#	include <new>
-#endif	// if !GD_RESOURCE_COMPILER

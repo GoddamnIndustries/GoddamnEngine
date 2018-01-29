@@ -12,6 +12,8 @@
  */
 #pragma once
 
+#include <GoddamnEngine/Core/CStdlib/CStdio.h>
+
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**

@@ -7,11 +7,12 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/Base/TypeTraits.h
- * @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
+ * @file GoddamnEngine/Core/Templates/TypeTraits.h
  * Compile-time types information and modifiers management.
  */
 #pragma once
+
+#include <GoddamnEngine/Include.h>
 
 /*!
  * Defines bitwise operation for the enums.
@@ -509,6 +510,10 @@ GD_NAMESPACE_BEGIN
 		{};
 		//! @}
 
+		/*!
+		 * Checks if type is has unsigned values.
+		 * @tparam TType Type to perform checks on.
+		 */
 		template<typename TType>
 		struct HasUnsignedValues : public Internal::TypeTraitsBase<(static_cast<TType>(-1) > static_cast<TType>(0))>
 		{};

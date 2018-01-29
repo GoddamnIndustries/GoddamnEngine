@@ -78,8 +78,8 @@ GD_NAMESPACE_BEGIN
 			if (CString::Strlen(m_DirPath) <= MAX_PATH - 3)
 			{
 				WCHAR directoryPathWin[MAX_PATH] = {};
-				CString::StrcpySafe(directoryPathWin, GetLength(directoryPathWin), m_DirPath);
-				CString::StrcatSafe(directoryPathWin, GetLength(directoryPathWin), L"\\*");
+				CString::Strcpy(directoryPathWin, GetLength(directoryPathWin), m_DirPath);
+				CString::Strcat(directoryPathWin, GetLength(directoryPathWin), L"\\*");
 				m_DirHandle = FindFirstFileW(directoryPathWin, &m_DirData);
 				m_DirFirstRead = false;
 			}

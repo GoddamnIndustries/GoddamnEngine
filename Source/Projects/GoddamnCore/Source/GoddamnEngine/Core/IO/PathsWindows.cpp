@@ -69,7 +69,7 @@ HINSTANCE g_GoddamnCoreHinstance = reinterpret_cast<HINSTANCE>(&__ImageBase);
 	GDAPI WideString PathsWindows::GetFullPath(WideString const& filename)
 	{
 		WCHAR filenameFullPath[MAX_PATH] = {};
-		GD_VERIFY(GetFullPathNameW(filename.CStr(), GD_ARRAY_LENGTH(filenameFullPath), filenameFullPath, nullptr) != 0
+		GD_VERIFY(GetFullPathNameW(filename.CStr(), GetLength<DWORD>(filenameFullPath), filenameFullPath, nullptr) != 0
 			, "'GetFullPathName' function has failed.");
 
 		return filenameFullPath;
@@ -108,7 +108,7 @@ HINSTANCE g_GoddamnCoreHinstance = reinterpret_cast<HINSTANCE>(&__ImageBase);
 		if (engineRootDirectory.IsEmpty())
 		{
 			WCHAR engineCoreLibraryPath[MAX_PATH] = {};
-			GD_VERIFY(GetModuleFileNameW(g_GoddamnCoreHinstance, engineCoreLibraryPath, GD_ARRAY_LENGTH(engineCoreLibraryPath) - 1) != 0
+			GD_VERIFY(GetModuleFileNameW(g_GoddamnCoreHinstance, engineCoreLibraryPath, GetLength<DWORD>(engineCoreLibraryPath) - 1) != 0
 				, "'GetModuleFileName' function has failed.");
 
 			engineRootDirectory = Paths::Normalize(

@@ -7,21 +7,18 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/Base/CStdlib/CString.h
- * @note This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
+ * @file GoddamnEngine/Core/CStdlib/CString.h
  * Traits, helper functions and definitions for standard string/memory functions.
  */
 #pragma once
-#if !defined(GD_INSIDE_INCLUDE_H)
-#	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
-#endif	// if !defined(GD_INSIDE_INCLUDE_H)
+#define GD_INSIDE_CSTRING_H
 
-//#if GD_PLATFORM_API_MICROSOFT
-extern "C" {
-	extern char const* goddamn_strrstr(char const*, char const*);
-	extern wchar_t const* goddamn_wcsrstr(wchar_t const*, wchar_t const*);
-}
-//#endif	// if GD_PLATFORM_API_MICROSOFT
+#include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/PlatformSpecificInclude.h>
+
+#include <cstring>
+#include <cstdarg>
+#include <cstdio>
 
 GD_NAMESPACE_BEGIN
 
@@ -29,36 +26,33 @@ GD_NAMESPACE_BEGIN
 	//! Provides functions for C string. Contains wrapped "str*" methods and methods from 'string.h', 
 	//! 'stdlib.h' and 'stdio.h'.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class CString final : public TNonCreatable
+	class CStringGeneric : public TNonCreatable
 	{
 	public:
-		// ... string.h & wchar.h's functions ...
+
+		// ------------------------------------------------------------------------------------------
+		// String copy functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*!
 		 * @see @c "std::strcpy" function.
 		 */
 		//! @{
-		GDINL static CStr StrcpySafe(Char* const dest, SizeTp const destLength, CStr const source)
+		GDINL static CStr Strcpy(Char* const dest, SizeTp const destLength, CStr const source)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::strcpy_s(dest, destLength, source);
-			GD_DEBUG_VERIFY(result == 0, "strcpy_s failed.");
-			return dest;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
+			__pragma(warning(push))
+			__pragma(warning(suppress : 4996))
 			return ::strcpy(dest, source);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
-		GDINL static WideCStr StrcpySafe(WideChar* const dest, SizeTp const destLength, WideCStr const source)
+		GDINL static WideCStr Strcpy(WideChar* const dest, SizeTp const destLength, WideCStr const source)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::wcscpy_s(dest, destLength, source);
-			GD_DEBUG_VERIFY(result == 0, "wcscpy_s failed.");
-			return dest;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
+			__pragma(warning(push))
+			__pragma(warning(suppress : 4996))
 			return ::wcscpy(dest, source);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
 		//! @}
 
@@ -66,55 +60,47 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strncpy" function.
 		 */
 		//! @{
-		GDINL static CStr StrncpySafe(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
+		GDINL static CStr Strncpy(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::strncpy_s(dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "strncpy_s failed.");
-			return dest;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
+			__pragma(warning(push))
+			__pragma(warning(suppress : 4996))
 			return ::strncpy(dest, source, maxCount);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
-		GDINL static WideCStr StrncpySafe(WideChar* const dest, SizeTp const destLength, WideCStr const source, SizeTp const maxCount)
+		GDINL static WideCStr Strncpy(WideChar* const dest, SizeTp const destLength, WideCStr const source, SizeTp const maxCount)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::wcsncpy_s(dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "wcsncpy_s failed.");
-			return dest;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
+			__pragma(warning(push))
+			__pragma(warning(suppress : 4996))
 			return ::wcsncpy(dest, source, maxCount);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
 		//! @}
+
+		// ------------------------------------------------------------------------------------------
+		// String concatenation functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*!
 		 * @see @c "std::strcat" function.
 		 */
 		//! @{
-		GDINL static CStr StrcatSafe(Char* const dest, SizeTp const destLength, CStr const source)
+		GDINL static CStr Strcat(Char* const dest, SizeTp const destLength, CStr const source)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::strcat_s(dest, destLength, source);
-			GD_DEBUG_VERIFY(result == 0, "strcat_s failed.");
-			return dest;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
+			__pragma(warning(push))
+			__pragma(warning(suppress : 4996))
 			return ::strcat(dest, source);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
-		GDINL static WideCStr StrcatSafe(WideChar* const dest, SizeTp const destLength, WideCStr const source)
+		GDINL static WideCStr Strcat(WideChar* const dest, SizeTp const destLength, WideCStr const source)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::wcscat_s(dest, destLength, source);
-			GD_DEBUG_VERIFY(result == 0, "wcscat_s failed.");
-			return dest;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
+			__pragma(warning(push))
+			__pragma(warning(suppress : 4996))
 			return ::wcscat(dest, source);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
 		//! @}
 
@@ -122,29 +108,27 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::strncat" function.
 		 */
 		//! @{
-		GDINL static CStr StrncatSafe(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
+		GDINL static CStr Strncat(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::strncat_s(dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "strncat_s failed.");
-			return dest;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
+			__pragma(warning(push))
+			__pragma(warning(suppress : 4996))
 			return ::strncat(dest, source, maxCount);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
-		GDINL static WideCStr StrncatSafe(WideChar* const dest, SizeTp const destLength, WideCStr const source, SizeTp const maxCount)
+		GDINL static WideCStr Strncat(WideChar* const dest, SizeTp const destLength, WideCStr const source, SizeTp const maxCount)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::wcsncat_s(dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "wcsncat_s failed.");
-			return dest;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
+			__pragma(warning(push))
+			__pragma(warning(suppress : 4996))
 			return ::wcsncat(dest, source, maxCount);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
 		//! @}
+
+		// ------------------------------------------------------------------------------------------
+		// String comparison functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*!
 		 * @see @c "std::strcmp" function.
@@ -174,6 +158,10 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
+		// ------------------------------------------------------------------------------------------
+		// String length functions.
+		// ------------------------------------------------------------------------------------------
+
 		/*!
 		 * @see @c "std::strlen" function.
 		 */
@@ -187,6 +175,10 @@ GD_NAMESPACE_BEGIN
 			return ::wcslen(cstr);
 		}
 		//! @}
+
+		// ------------------------------------------------------------------------------------------
+		// String search functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*!
 		 * @see @c "std::strchr" function.
@@ -237,62 +229,68 @@ GD_NAMESPACE_BEGIN
 		 * @param cstr C string.
 		 * @param subCStr C sub-string to search for.
 		 */
-		//! @{
-		GDINL static CStr Strrstr(CStr const cstr, CStr const subCStr)
+		template<typename TChar>
+		GDINL static TChar const* Strrstr(TChar const* const cstr, TChar const* const subCStr)
 		{
-			return ::goddamn_strrstr(cstr, subCStr);
-		}
-		GDINL static WideChar const* Strrstr(WideChar const* const cstr, WideChar const* const subCStr)
-		{
-			return ::goddamn_wcsrstr(cstr, subCStr);
-		}
-		//! @}
+			if (*subCStr == '\0')
+			{
+				return cstr;
+			}
 
-		// ... stdlib.h's functions ...
+			auto cstrMut = cstr;
+			TChar const* result = nullptr;
+			while (true)
+			{
+				auto const found = Strstr(cstrMut, subCStr);
+				if (found == nullptr)
+				{
+					break;
+				}
+				result = found;
+				cstrMut = found + 1;
+			}
+			return result;
+		}
+
+		// ------------------------------------------------------------------------------------------
+		// String conversion functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*!
-		 * @see @c "std::wcstombs/::mbstowcs" function.
+		 * @see @c "std::wcstombs" function.
 		 */
 		//! @{
-		GDINL static SizeTp StrtombsSafe(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
+		GDINL static SizeTp Wcstombs(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
 		{
-			StrncpySafe(dest, destLength, source, maxCount);
-			return maxCount;
-		}
-		GDINL static SizeTp StrtombsSafe(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
-		{
-#if GD_PLATFORM_API_MICROSOFT
-			SizeTp output = 0;
-			auto const result = ::wcstombs_s(&output, dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "wcstombs_s failed.");
-			return output;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
+			__pragma(warning(push))
+			__pragma(warning(suppress : 4996))
 			return ::wcstombs(dest, source, maxCount);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
+		}
+		GDINL static SizeTp WcsToUTF8(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
+		{
+			GD_NOT_USED_L(dest, destLength, source, maxCount);
+			GD_NOT_SUPPORTED();
 		}
 		//! @}
 
 		/*!
-		 * @see @c "std::wcstombs/::mbstowcs" function.
+		 * @see @c "::mbstowcs" function.
 		 */
 		//! @{
-		GDINL static SizeTp StrtowcsSafe(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
+		GDINL static SizeTp Strtowcs(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			SizeTp output = 0;
-			auto const result = ::mbstowcs_s(&output, dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "mbstowcs_s failed.");
-			return output;
-#else	// if GD_PLATFORM_API_MICROSOFT
 			GD_NOT_USED(destLength);
+			__pragma(warning(push))
+			__pragma(warning(suppress : 4996))
 			return ::mbstowcs(dest, source, maxCount);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
-		GDINL static SizeTp StrtowcsSafe(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
+		GDINL static SizeTp UTF8ToWcs(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
-			StrncpySafe(dest, destLength, source, maxCount);
-			return maxCount;
+			GD_NOT_USED_L(dest, destLength, source, maxCount);
+			GD_NOT_SUPPORTED();
 		}
 		//! @}
 
@@ -302,21 +300,15 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL static UInt64 Strtoui64(CStr const cstr, Char** const endPtr = nullptr, SizeTp const base = 0)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::_strtoui64(cstr, endPtr, static_cast<int>(base));
-#else	// if GD_PLATFORM_API_MICROSOFT
+			// ReSharper disable once CppIdenticalOperandsInBinaryExpression
 			static_assert(sizeof(UInt64) <= sizeof(unsigned long long), "'unsigned long long' is not large enough to store 'UInt64' type.");
 			return static_cast<UInt64>(::strtoull(cstr, endPtr, static_cast<int>(base)));
-#endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 		GDINL static UInt64 Strtoui64(WideChar const* const cstr, WideChar** const endPtr = nullptr, SizeTp const base = 0)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::_wcstoui64(cstr, endPtr, static_cast<int>(base));
-#else	// if GD_PLATFORM_API_MICROSOFT
+			// ReSharper disable once CppIdenticalOperandsInBinaryExpression
 			static_assert(sizeof(UInt64) <= sizeof(unsigned long long), "'unsigned long long' is not large enough to store 'UInt64' type.");
 			return static_cast<UInt64>(::wcstoull(cstr, endPtr, static_cast<int>(base)));
-#endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 		//! @}
 
@@ -326,21 +318,15 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL static Int64 Strtoi64(CStr const cstr, CStr* const endPtr = nullptr, SizeTp const base = 0)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::_strtoi64(cstr, const_cast<char**>(endPtr), static_cast<int>(base));
-#else	// if GD_PLATFORM_API_MICROSOFT
+			// ReSharper disable once CppIdenticalOperandsInBinaryExpression
 			static_assert(sizeof(Int64) <= sizeof(long long), "'long long' is not large enough to store 'Int64' type.");
 			return static_cast<Int64>(::strtoll(cstr, const_cast<char**>(endPtr), static_cast<int>(base)));
-#endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 		GDINL static Int64 Strtoi64(WideChar const* const cstr, WideChar const** const endPtr = nullptr, SizeTp const base = 0)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::_wcstoi64(cstr, const_cast<wchar_t**>(endPtr), static_cast<int>(base));
-#else	// if GD_PLATFORM_API_MICROSOFT
+			// ReSharper disable once CppIdenticalOperandsInBinaryExpression
 			static_assert(sizeof(Int64) <= sizeof(long long), "'long long' is not large enough to store 'Int64' type.");
 			return static_cast<Int64>(::wcstoll(cstr, const_cast<wchar_t**>(endPtr), static_cast<int>(base)));
-#endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 		//! @}
 
@@ -358,33 +344,27 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		// ... stdio.h functions ...
+		// ------------------------------------------------------------------------------------------
+		// String formatting functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*!
 		 * @see @c "std::vsnprintf" function.
 		 */
 		//! @{
-		GDINL static Int32 VsnprintfSafe(Char* const dest, SizeTp const destLength, CStr const format, va_list arguments)
+		GDINL static Int32 Vsnprintf(Char* const dest, SizeTp const destLength, CStr const format, va_list arguments)
 		{
-#if GD_PLATFORM_API_MICROSOFT
 			__pragma(warning(push))
 			__pragma(warning(suppress : 4996))
-			return ::_vsnprintf_s(dest, destLength, _TRUNCATE, format, arguments);	// NOLINT
-			__pragma(warning(pop))
-#else	// if GD_PLATFORM_API_MICROSOFT
 			return ::vsnprintf(dest, destLength, format, arguments);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
-		GDINL static Int32 VsnprintfSafe(WideChar* const dest, SizeTp const destLength, WideCStr const format, va_list arguments)
+		GDINL static Int32 Vsnprintf(WideChar* const dest, SizeTp const destLength, WideCStr const format, va_list arguments)
 		{
-#if GD_PLATFORM_API_MICROSOFT
 			__pragma(warning(push))
 			__pragma(warning(suppress : 4996))
-			return ::_vsnwprintf_s(dest, destLength, _TRUNCATE, format, arguments);	// NOLINT
-			__pragma(warning(pop))
-#else	// if GD_PLATFORM_API_MICROSOFT
 			return ::vswprintf(dest, destLength, format, arguments);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			__pragma(warning(pop))
 		}
 		//! @}
 
@@ -392,11 +372,11 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::snprintf" function.
 		 */
 		template<typename TChar>
-		GDINL static int SnprintfSafe(TChar* const dest, SizeTp const destLength, TChar const* const format, ...)
+		GDINL static int Snprintf(TChar* const dest, SizeTp const destLength, TChar const* const format, ...)
 		{
 			va_list arguments;
 			va_start(arguments, format);
-			int const result = VsnprintfSafe(dest, destLength, format, arguments);
+			int const result = Vsnprintf(dest, destLength, format, arguments);
 			va_end(arguments);
 			return result;
 		}
@@ -405,21 +385,13 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::vsscanf" function.
 		 */
 		//! @{
-		GDINL static Int32 VsscanfSafe(CStr const source, CStr const format, va_list arguments)	// NOLINT
+		GDINL static Int32 Vsscanf(CStr const source, CStr const format, va_list arguments)	// NOLINT
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::vsscanf_s(source, format, arguments);
-#else	// if GD_PLATFORM_API_MICROSOFT
 			return ::vsscanf(source, format, arguments);
-#endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-		GDINL static Int32 VsscanfSafe(WideCStr const source, WideCStr const format, va_list arguments)	// NOLINT
+		GDINL static Int32 Vsscanf(WideCStr const source, WideCStr const format, va_list arguments)	// NOLINT
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::vswscanf_s(source, format, arguments);
-#else	// if GD_PLATFORM_API_MICROSOFT
 			return ::vswscanf(source, format, arguments);
-#endif	// if GD_PLATFORM_API_MICROSOFT
 		}
 		//! @}
 
@@ -431,11 +403,11 @@ GD_NAMESPACE_BEGIN
 		{
 			va_list arguments;
 			va_start(arguments, format);
-			int const result = VsscanfSafe(source, format, arguments);
+			int const result = Vsscanf(source, format, arguments);
 			va_end(arguments);
 			return result;
 		}
-	};	// class BaseCString
+	};	// class CStringGeneric
 
 	/*!
 	 * Declarations used to ban standard functions. 
@@ -465,4 +437,10 @@ GD_NAMESPACE_BEGIN
 		// ReSharper restore CppInconsistentNaming
 	};	// enum LibCharUnallowedFunctions
 
+GD_NAMESPACE_END
+
+#include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/CStdlib, CString)
+#undef GD_INSIDE_CSTRING_H
+
+GD_NAMESPACE_BEGIN
 GD_NAMESPACE_END

@@ -13,6 +13,7 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Templates/TypeTraits.h>
 
 GD_NAMESPACE_BEGIN
 

@@ -12,6 +12,8 @@
  */
 #include <GoddamnEngine/Core/Math/Random.h>
 
+#include <ctime>
+
 GD_NAMESPACE_BEGIN
 
 	/*!

@@ -18,8 +18,6 @@
 
 GD_NAMESPACE_BEGIN
 
-	// ReSharper disable CppRedundantQualifier
-
 	// ------------------------------------------------------------------------------------------
 	// File utilities.
 	// ------------------------------------------------------------------------------------------
@@ -45,7 +43,7 @@ GD_NAMESPACE_BEGIN
 		{
 			if ((fileAttributeData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
 			{
-				LARGE_INTEGER fileSize = {};
+				LARGE_INTEGER fileSize;
 				fileSize.HighPart = fileAttributeData.nFileSizeHigh;
 				fileSize.LowPart = fileAttributeData.nFileSizeLow;
 				return static_cast<UInt64>(fileSize.QuadPart);
@@ -63,7 +61,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI bool FileUtilitiesWindows::FileCreateEmpty(WideString const& filename)
 	{
-		auto const emptyOrExistingFile = CreateFileW(Paths::Platformize(filename).CStr(), GENERIC_WRITE, 0, nullptr
+		auto const filenameSystem = Paths::Platformize(filename);
+		auto const emptyOrExistingFile = CreateFileW(filenameSystem.CStr(), GENERIC_WRITE, 0, nullptr
 			, CREATE_NEW | OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 		if (emptyOrExistingFile != INVALID_HANDLE_VALUE)
 		{
@@ -144,7 +143,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI bool FileUtilitiesWindows::DirectoryExists(WideString const& directoryName)
 	{
-		auto const directoryAttributes = GetFileAttributesW(Paths::Platformize(directoryName).CStr());
+		auto const directoryNameSystem = Paths::Platformize(directoryName);
+		auto const directoryAttributes = GetFileAttributesW(directoryNameSystem.CStr());
 		return directoryAttributes != INVALID_FILE_ATTRIBUTES && (directoryAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 	}
 
@@ -157,7 +157,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI bool FileUtilitiesWindows::DirectoryCreateEmpty(WideString const& directoryName)
 	{
-		return CreateDirectoryW(Paths::Platformize(directoryName).CStr(), nullptr) == TRUE || GetLastError() == ERROR_ALREADY_EXISTS;
+		auto const directoryNameSystem = Paths::Platformize(directoryName);
+		return CreateDirectoryW(directoryNameSystem.CStr(), nullptr) == TRUE || GetLastError() == ERROR_ALREADY_EXISTS;
 	}
 
 	/*!
@@ -176,8 +177,6 @@ GD_NAMESPACE_BEGIN
 		}
 		return false;
 	}
-
-	// ReSharper restore CppRedundantQualifier
 
 GD_NAMESPACE_END
 
