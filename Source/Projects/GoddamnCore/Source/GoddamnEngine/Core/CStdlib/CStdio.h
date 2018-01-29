@@ -11,6 +11,7 @@
  * Wrappers, helper functions and definitions for standard IO functions.
  */
 #pragma once
+#define GD_INSIDE_CSTDIO_H
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Containers/StringConv.h>
@@ -23,10 +24,13 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! Provides functions for C IO. Contains wrapped "*print*", "*scan*" and from "stdio.h".
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class CStdio final : public TNonCreatable
+	class CStdioGeneric : public TNonCreatable
 	{
 	public:
-		// ... stdio.h's functions ...
+
+		// ------------------------------------------------------------------------------------------
+		// Filesystem functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*! 
 		 * @see @c "std::remove" function.
@@ -38,11 +42,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL static int Remove(WideCStr const filename)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::_wremove(filename);
-#else	// if GD_PLATFORM_API_MICROSOFT
-			return ::remove(GD_TEXT_UTF8(filename));
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			return ::remove(GD_ENCODE_UTF8(filename));
 		}
 		//! @}
 
@@ -56,51 +56,26 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL static int Rename(WideCStr const oldFilename, WideCStr const newFilename)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::_wrename(oldFilename, newFilename);
-#else	// if GD_PLATFORM_API_MICROSOFT
-			return ::rename(GD_TEXT_UTF8(oldFilename), GD_TEXT_UTF8(newFilename));
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			return ::rename(GD_ENCODE_UTF8(oldFilename), GD_ENCODE_UTF8(newFilename));
 		}
 		//! @}
 
-		/*! 
-		 * @see @c "std::tmpfile" function.
-		 */
-		GDINL static FILE* Tmpfile()
-		{
-#if GD_PLATFORM_API_MICROSOFT
-			FILE* temporaryFile = nullptr;
-			auto const result = ::tmpfile_s(&temporaryFile);
-			GD_DEBUG_VERIFY(result == 0, "tmpfile_s failed.");
-			return temporaryFile;
-#else	// if GD_PLATFORM_API_MICROSOFT
-			return ::tmpfile();
-#endif	// if GD_PLATFORM_API_MICROSOFT
-		}
+		// ------------------------------------------------------------------------------------------
+		// File IO functions.
+		// ------------------------------------------------------------------------------------------
 
-		/*! 
-		 * @see @c "L_tmpnam" constant.
+		/*!
+		 * Enumeration for the last parameter for the @ref Fseek function.
 		 */
-#if GD_PLATFORM_API_MICROSOFT
-		SizeTp static const TmpnamBufferLength = static_cast<SizeTp>(L_tmpnam_s);
-#else	// if GD_PLATFORM_API_MICROSOFT
-		SizeTp static const TmpnamBufferLength = static_cast<SizeTp>(L_tmpnam);
-#endif	// if GD_PLATFORM_API_MICROSOFT
-
-		/*! 
-		 * @see @c "std::tmpnam" function.
-		 */
-		GDINL static void TmpnamSafe(Char* const temporaryPath, SizeTp const temporaryPathLength)
+		enum class FseekOrigin : decltype(SEEK_SET)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			auto const result = ::tmpnam_s(temporaryPath, temporaryPathLength);
-			GD_DEBUG_VERIFY(result == 0, "tmpnam_s failed.");
-#else	// if GD_PLATFORM_API_MICROSOFT
-			GD_NOT_USED(temporaryPathLength);
-			::tmpnam(temporaryPath);
-#endif	// if GD_PLATFORM_API_MICROSOFT
-		}
+			SeekSet = SEEK_SET,	//!< @see @c "SEEK_SET" constant.
+			SeekCur = SEEK_CUR,	//!< @see @c "SEEK_CUR" constant.
+			SeekEnd = SEEK_END,	//!< @see @c "SEEK_END" constant.
+			Beginning = SeekSet,
+			Current   = SeekCur,
+			End       = SeekEnd,
+		};	// enum FseekOrigin
 
 		/*! 
 		 * @see @c "std::fopen" function.
@@ -108,25 +83,17 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL static FILE* Fopen(CStr const filename, CStr const mode)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			FILE* fileHandle = nullptr;
-			auto const result = ::fopen_s(&fileHandle, filename, mode);
-			GD_VERIFY(result == 0, "fopen_s failed.");
-			return fileHandle;
-#else	// if GD_PLATFORM_API_MICROSOFT
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::fopen(filename, mode);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		GDINL static FILE* Fopen(WideCStr const filename, WideCStr const mode)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			FILE* fileHandle = nullptr;
-			auto const result = ::_wfopen_s(&fileHandle, filename, mode);
-			GD_VERIFY(result == 0, "fopen_s failed.");
-			return fileHandle;
-#else	// if GD_PLATFORM_API_MICROSOFT
-			return ::fopen(GD_TEXT_UTF8(filename), GD_TEXT_UTF8(mode));
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
+			return ::fopen(GD_ENCODE_UTF8(filename), GD_ENCODE_UTF8(mode));
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		//! @}
 
@@ -151,34 +118,39 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static Int64 Ftell(FILE* const file)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::_ftelli64_nolock(file);
-#else	// if GD_PLATFORM_API_MICROSOFT
 			return static_cast<Int64>(::ftell(file));
-#endif	// if GD_PLATFORM_API_MICROSOFT
 		}
-
-		//! Enumeration for the last parameter for the @ref Fseek function.
-		enum class FseekOrigin : decltype(SEEK_SET)
-		{
-			SeekSet = SEEK_SET,	//!< @see @c "SEEK_SET" constant.
-			SeekCur = SEEK_CUR,	//!< @see @c "SEEK_CUR" constant.
-			SeekEnd = SEEK_END,	//!< @see @c "SEEK_END" constant.
-			Beginning = SeekSet,
-			Current   = SeekCur,
-			End       = SeekEnd,
-		};	// enum FseekOrigin
 
 		/*! 
 		 * @see @c "std::fseek" function.
 		 */
 		GDINL static int Fseek(FILE* const file, Int64 const offset, FseekOrigin const origin)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::_fseeki64_nolock(file, offset, static_cast<int>(origin));
-#else	// if GD_PLATFORM_API_MICROSOFT
 			return ::fseek(file, static_cast<long>(offset), static_cast<int>(origin));
-#endif	// if GD_PLATFORM_API_MICROSOFT
+		}
+
+		/*! 
+		 * @see @c "std::fread" function.
+		 */
+		//! @{
+		GDINL static SizeTp Fread(Handle const bufferPtr, SizeTp const bufferSize, SizeTp const size  // NOLINT
+			, SizeTp const count, FILE* const file)
+		{
+			GD_NOT_USED(bufferSize);
+			return ::fread(bufferPtr, size, count, file);
+		}
+		GDINL static SizeTp Fread(Handle const bufferPtr, SizeTp const size, SizeTp const count, FILE* const file)  // NOLINT
+		{
+			return Fread(bufferPtr, size * count, size, count, file);
+		}
+		//! @}
+
+		/*! 
+		 * @see @c "std::fwrite" function.
+		 */
+		GDINL static SizeTp Fwrite(CHandle const bufferPtr, SizeTp const size, SizeTp const count, FILE* const file)
+		{
+			return ::fwrite(bufferPtr, size, count, file);
 		}
 
 		/*! 
@@ -191,11 +163,10 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL static int Getw(FILE* const file)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::_getw(file);
-#else	// if GD_PLATFORM_API_MICROSOFT
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::getw(file);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		//! @}
 
@@ -209,11 +180,10 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL static int Putc(WideChar const character, FILE* const file)
 		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::_putw(character, file);
-#else	// if GD_PLATFORM_API_MICROSOFT
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
 			return ::putw(character, file);
-#endif	// if GD_PLATFORM_API_MICROSOFT
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 		//! @}
 
@@ -231,37 +201,42 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
-		/*! 
-		 * @see @c "std::fread" function.
-		 */
-		//! @{
-		GDINL static SizeTp FreadSafe(Handle const bufferPtr, SizeTp const bufferSize, SizeTp const size  // NOLINT
-			, SizeTp const count, FILE* const file)
-		{
-#if GD_PLATFORM_API_MICROSOFT
-			return ::fread_s(bufferPtr, bufferSize, size, count, file);
-#else	// if GD_PLATFORM_API_MICROSOFT
-			GD_NOT_USED(bufferSize);
-			return ::fread(bufferPtr, size, count, file);
-#endif	// if GD_PLATFORM_API_MICROSOFT
-		}
-		GDINL static SizeTp Fread(Handle const bufferPtr, SizeTp const size, SizeTp const count, FILE* const file)  // NOLINT
-		{
-			return FreadSafe(bufferPtr, size * count, size, count, file);
-		}
-		//! @}
+		// ------------------------------------------------------------------------------------------
+		// Temporary File IO functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*! 
-		 * @see @c "std::fwrite" function.
+		 * @see @c "L_tmpnam" constant.
 		 */
-		GDINL static SizeTp Fwrite(CHandle const bufferPtr, SizeTp const size, SizeTp const count, FILE* const file)
+		SizeTp static const TmpnamBufferLength = static_cast<SizeTp>(L_tmpnam);
+
+		/*! 
+		 * @see @c "std::tmpfile" function.
+		 */
+		GDINL static FILE* Tmpfile()
 		{
-			return ::fwrite(bufferPtr, size, count, file);
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
+			return ::tmpfile();
+			GD_MSVC_PRAGMA(warning(pop))
 		}
 
-	};	// class CStdio final
+		/*! 
+		 * @see @c "std::tmpnam" function.
+		 */
+		GDINL static void TmpnamSafe(Char* const temporaryPath, SizeTp const temporaryPathLength)
+		{
+			GD_NOT_USED(temporaryPathLength);
+			GD_MSVC_PRAGMA(warning(push))
+			GD_MSVC_PRAGMA(warning(suppress : 4996))
+			::tmpnam(temporaryPath);
+			GD_MSVC_PRAGMA(warning(pop))
+		}
 
-	using SeekOrigin = CStdio::FseekOrigin;
+
+	};	// class CStdioGeneric
+
+	using SeekOrigin = CStdioGeneric::FseekOrigin;
 
 	/*!
 	 * Declarations used to ban standard functions. 
@@ -287,3 +262,6 @@ GD_NAMESPACE_BEGIN
 	};	// enum LibIOUnallowedFunctions
 
 GD_NAMESPACE_END
+
+#include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/CStdlib, CStdio)
+#undef GD_INSIDE_CSTDIO_H

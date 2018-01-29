@@ -15,9 +15,6 @@
 #	error This file should be never directly included, please consider using <GoddamnEngine/Core/Concurrency/CriticalSection.h> instead.
 #endif	// if !defined(GD_INSIDE_CRITICALSECTION_H)
 
-#include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Concurrency/CriticalSection.h>
-
 #include <Windows.h>
 
 GD_NAMESPACE_BEGIN

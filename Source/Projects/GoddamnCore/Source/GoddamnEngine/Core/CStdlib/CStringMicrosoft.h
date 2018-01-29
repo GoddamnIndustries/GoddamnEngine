@@ -16,6 +16,7 @@
 #	error This file should be never directly included, please consider using <GoddamnEngine/Core/CStdlib/CString.h> instead.
 #endif	// if !defined(GD_INSIDE_CSTRING_H)
 
+#include <GoddamnEngine/Core/Templates/Algorithm.h>
 #include <Windows.h>
 
 GD_NAMESPACE_BEGIN
@@ -124,9 +125,16 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL static SizeTp WcsToUTF8(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
 		{
-			GD_NOT_USED(maxCount);
-			return static_cast<SizeTp>(WideCharToMultiByte(CP_UTF8, 0
-				, source, static_cast<int>(maxCount), dest, static_cast<int>(destLength), nullptr, nullptr));
+			GD_DEBUG_VERIFY(source != nullptr);
+			if (dest != nullptr)
+			{
+				dest[destLength] = '\0';
+			}
+			auto const numConvertedSymbols = static_cast<SizeTp>(WideCharToMultiByte(CP_UTF8, 0
+				, source, static_cast<int>(Strlen(source))
+				, dest, static_cast<int>(Min(destLength, maxCount)), nullptr, nullptr));
+			GD_VERIFY(numConvertedSymbols > 0 || *source == '\0', "'WideCharToMultiByte' function has failed.");
+			return numConvertedSymbols;
 		}
 		//! @}
 
@@ -143,9 +151,16 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL static SizeTp UTF8ToWcs(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
-			GD_NOT_USED(maxCount);
-			return static_cast<SizeTp>(MultiByteToWideChar(CP_UTF8, 0
-				, source, static_cast<int>(maxCount) + 1, dest, static_cast<int>(destLength) + 1));
+			GD_DEBUG_VERIFY(source != nullptr);
+			if (dest != nullptr)
+			{
+				dest[destLength] = L'\0';
+			}
+			auto const numConvertedSymbols = static_cast<SizeTp>(MultiByteToWideChar(CP_UTF8, 0
+				, source, static_cast<int>(Strlen(source))
+				, dest, static_cast<int>(Min(destLength, maxCount))));
+			GD_VERIFY(numConvertedSymbols > 0 || *source == L'\0', "'MultiByteToWideChar' function has failed.");
+			return numConvertedSymbols;
 		}
 		//! @}
 

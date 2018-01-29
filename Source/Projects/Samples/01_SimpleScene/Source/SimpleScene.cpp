@@ -92,7 +92,8 @@ unsigned char pixels[] = {
 
 int main()
 {
-	auto const text = StringConv::EncodeUTF8(L"Говно жопа");
+	auto const textE = StringConv::EncodeUTF8(L"Говно жопа");
+	auto const textD = StringConv::DecodeUTF8(textE.Get());
 	return 0;
 
 #if 0
