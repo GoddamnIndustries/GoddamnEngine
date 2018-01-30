@@ -7,8 +7,7 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/CStdlib/CStringMicrosoft.h
- * @note This file should be never directly included, please consider using <GoddamnEngine/Core/CStdlib/CString.h> instead.
+ * @file
  * Traits, helper functions and definitions for standard string/memory functions (Microsoft-specific).
  */
 #pragma once
@@ -22,7 +21,7 @@
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Provides Microsoft-specific functions for C string.
+	//! @copydoc CStringGeneric
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class CStringMicrosoft final : public CStringGeneric
 	{
@@ -115,7 +114,6 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * @see @c "std::wcstombs/::mbstowcs" function.
 		 */
-		//! @{
 		GDINL static SizeTp Wcstombs(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
 		{
 			SizeTp output = 0;
@@ -123,25 +121,10 @@ GD_NAMESPACE_BEGIN
 			GD_DEBUG_VERIFY(result == 0, "wcstombs_s failed.");
 			return output;
 		}
-		GDINL static SizeTp WcsToUTF8(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
-		{
-			GD_DEBUG_VERIFY(source != nullptr);
-			if (dest != nullptr)
-			{
-				dest[destLength] = '\0';
-			}
-			auto const numConvertedSymbols = static_cast<SizeTp>(WideCharToMultiByte(CP_UTF8, 0
-				, source, static_cast<int>(Strlen(source))
-				, dest, static_cast<int>(Min(destLength, maxCount)), nullptr, nullptr));
-			GD_VERIFY(numConvertedSymbols > 0 || *source == '\0', "'WideCharToMultiByte' function has failed.");
-			return numConvertedSymbols;
-		}
-		//! @}
 
 		/*!
 		 * @see @c "::mbstowcs" function.
 		 */
-		//! @{
 		GDINL static SizeTp Strtowcs(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
 			SizeTp output = 0;
@@ -149,20 +132,6 @@ GD_NAMESPACE_BEGIN
 			GD_DEBUG_VERIFY(result == 0, "mbstowcs_s failed.");
 			return output;
 		}
-		GDINL static SizeTp UTF8ToWcs(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
-		{
-			GD_DEBUG_VERIFY(source != nullptr);
-			if (dest != nullptr)
-			{
-				dest[destLength] = L'\0';
-			}
-			auto const numConvertedSymbols = static_cast<SizeTp>(MultiByteToWideChar(CP_UTF8, 0
-				, source, static_cast<int>(Strlen(source))
-				, dest, static_cast<int>(Min(destLength, maxCount))));
-			GD_VERIFY(numConvertedSymbols > 0 || *source == L'\0', "'MultiByteToWideChar' function has failed.");
-			return numConvertedSymbols;
-		}
-		//! @}
 
 		/*!
 		 * @see @c "std::strtoull" function.
@@ -235,7 +204,7 @@ GD_NAMESPACE_BEGIN
 	};	// class CStringMicrosoft
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Provides cross-platform functions for C string.
+	//! @copydoc CStringMicrosoft
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	using CString = CStringMicrosoft;
 
