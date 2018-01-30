@@ -122,18 +122,6 @@ GD_NAMESPACE_BEGIN
 #else
 
 	/*!
-	 * @brief Defines a disabled fatal assertion. 
-	 * Does nothing.
-	 *
-	 * @param message Dummy Message.
-	 */
-	#define GD_DISABLED_FALSE_VERIFY(message, ...) \
-		do { \
-			static_cast<void>(false); \
-			abort(); \
-		} while (false)
-
-	/*!
 	 * @brief Defines an enabled fatal assertion. 
 	 * Reports a failure via Message box (if is available on target platform) and asks if user wants to send it to tracker.
 	 *
@@ -144,20 +132,6 @@ GD_NAMESPACE_BEGIN
 			GD_USING_NAMESPACE; \
 			DebugAssertData static const fatalAssertData(message, __FILE__, __FUNCTION__, __LINE__); \
 			DebugHandleFatalAssertData(&fatalAssertData, ##__VA_ARGS__);  \
-		} while (false)
-
-	/*!
-	 * @brief Defines a disabled assertion.
-	 * Does nothing, just validates expression at compile-time.
-	 *
-	 * @param expression The Expression that would be evaluated.
-	 * @param message A formatable string that describes what is going on.
-	 */
-	#define GD_DISABLED_VERIFY(expression, message, ...) \
-		do { \
-			GD_USING_NAMESPACE; \
-			__analysis_assume(expression); \
-			static_cast<void>(sizeof(expression)); \
 		} while (false)
 
 	/*!
@@ -189,6 +163,32 @@ GD_NAMESPACE_BEGIN
 		} while (false)
 
 #endif	// if GD_TESTING_
+
+	/*!
+	 * @brief Defines a disabled fatal assertion. 
+	 * Does nothing.
+	 *
+	 * @param message Dummy Message.
+	 */
+	#define GD_DISABLED_FALSE_VERIFY(...) \
+		do { \
+			static_cast<void>(false); \
+			abort(); \
+		} while (false)
+
+	/*!
+	 * @brief Defines a disabled assertion.
+	 * Does nothing, just validates expression at compile-time.
+	 *
+	 * @param expression The Expression that would be evaluated.
+	 * @param message A formatable string that describes what is going on.
+	 */
+	#define GD_DISABLED_VERIFY(expression, ...) \
+		do { \
+			GD_USING_NAMESPACE; \
+			__analysis_assume(expression); \
+			static_cast<void>(sizeof(expression)); \
+		} while (false)
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**	
 	// ******                             Debug Assert macros.                                 ******
