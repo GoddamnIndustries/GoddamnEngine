@@ -77,8 +77,8 @@
  * @param Parameter Name of the unused variable.
  */
 //! @{
-#define GD_NOT_USED(Parameter)			static_cast<void>(Parameter)
-#define GD_NOT_USED_L(...)				static_cast<void>(__VA_ARGS__)
+#define GD_NOT_USED(Parameter)			static_cast<void>(Parameter)	/*NOLINT*/
+#define GD_NOT_USED_L(...)				static_cast<void>(__VA_ARGS__)	/*NOLINT*/
 //! @}
 
 /*!
