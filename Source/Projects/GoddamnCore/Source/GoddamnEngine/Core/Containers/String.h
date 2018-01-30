@@ -110,12 +110,12 @@ GD_NAMESPACE_BEGIN
 		{
 			if (m_Length >= s_MaxInlineLength)
 			{
-				m_HeapMemory = CMemory::TMemset(GD_MALLOC_ARRAY_T(TChar, m_Length + 1), fillWith, m_Length);
+				m_HeapMemory = CMemory::CMemset(GD_MALLOC_ARRAY_T(TChar, m_Length + 1), fillWith, m_Length);
 				m_HeapMemory[m_Length] = GD_TEXT(TChar, '\0');
 			}
 			else
 			{
-				CMemory::TMemset(m_InlineMemory, fillWith, m_Length);
+				CMemory::CMemset(m_InlineMemory, fillWith, m_Length);
 				m_InlineMemory[m_Length] = GD_TEXT(TChar, '\0');
 			}
 		}
@@ -132,12 +132,12 @@ GD_NAMESPACE_BEGIN
 			GD_DEBUG_VERIFY(text != nullptr, "Null pointer data specified");
 			if (m_Length >= s_MaxInlineLength)
 			{
-				m_HeapMemory = CMemory::TMemcpy(GD_MALLOC_ARRAY_T(TChar, m_Length + 1), text, m_Length);
+				m_HeapMemory = CMemory::CMemcpy(GD_MALLOC_ARRAY_T(TChar, m_Length + 1), text, m_Length);
 				m_HeapMemory[m_Length] = GD_TEXT(TChar, '\0');
 			}
 			else
 			{
-				CMemory::TMemcpy(m_InlineMemory, text, m_Length);
+				CMemory::CMemcpy(m_InlineMemory, text, m_Length);
 				m_InlineMemory[m_Length] = GD_TEXT(TChar, '\0');
 			}
 		}
@@ -182,16 +182,16 @@ GD_NAMESPACE_BEGIN
 		GDINL BaseString(BaseString&& text) noexcept
 			: m_Length(text.m_Length)
 		{
-			CMemory::TMemcpy(m_InlineMemory, text.m_InlineMemory, sizeof text.m_InlineMemory);
-			CMemory::TMemset(text.m_InlineMemory, static_cast<TChar>(0), sizeof text.m_InlineMemory);
+			CMemory::CMemcpy(m_InlineMemory, text.m_InlineMemory, GD::GetLength(text.m_InlineMemory));
+			CMemory::CMemset(text.m_InlineMemory, TChar(0), GD::GetLength(text.m_InlineMemory));
 			text.m_Length = 0;
 		}
 		template<SizeTp TOtherInlineLength>
 		GDINL implicit BaseString(typename EnableIf<TOtherInlineLength <= TInlineLength, BaseString<TChar, TOtherInlineLength>>::Value&& text)
 			: m_Length(text.m_Length)
 		{
-			CMemory::TMemcpy(m_InlineMemory, text.m_InlineMemory, sizeof text.m_InlineMemory);
-			CMemory::TMemset(text.m_InlineMemory, static_cast<TChar>(0), sizeof text.m_InlineMemory);
+			CMemory::CMemcpy(m_InlineMemory, text.m_InlineMemory, GD::GetLength(text.m_InlineMemory));
+			CMemory::CMemset(text.m_InlineMemory, TChar(0), GD::GetLength(text.m_InlineMemory));
 			text.m_Length = 0;
 		}
 		//! @}
@@ -335,8 +335,8 @@ GD_NAMESPACE_BEGIN
 		GDINL BaseString Append(TChar const* const text, SizeTp const textLength) const
 		{
 			BaseString result(m_Length + textLength);
-			CMemory::TMemcpy(result.CStr(), CStr(), m_Length);
-			CMemory::TMemcpy(result.CStr() + m_Length, text, textLength);
+			CMemory::CMemcpy(result.CStr(), CStr(), m_Length);
+			CMemory::CMemcpy(result.CStr() + m_Length, text, textLength);
 			return result;
 		}
 
@@ -369,8 +369,8 @@ GD_NAMESPACE_BEGIN
 		GDINL BaseString Prepend(TChar const* const text, SizeTp const textLength) const
 		{
 			BaseString result(m_Length + textLength);
-			CMemory::TMemcpy(result.CStr(), text, textLength);
-			CMemory::TMemcpy(result.CStr() + textLength, CStr(), m_Length);
+			CMemory::CMemcpy(result.CStr(), text, textLength);
+			CMemory::CMemcpy(result.CStr() + textLength, CStr(), m_Length);
 			return result;
 		}
 
@@ -413,7 +413,7 @@ GD_NAMESPACE_BEGIN
 			GD_DEBUG_VERIFY(from < m_Length, "Invalid substring indices.");
 
 			BaseString result(to - from + 1);
-			CMemory::TMemcpy(result.CStr(), CStr() + from, result.m_Length * sizeof(TChar));
+			CMemory::CMemcpy(result.CStr(), CStr() + from, result.m_Length);
 			return result;
 		}
 

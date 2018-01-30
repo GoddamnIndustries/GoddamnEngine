@@ -7,7 +7,7 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/CStdlib/CStdioMicrosoft.h
+ * @file
  * Wrappers, helper functions and definitions for standard IO functions (Microsoft-specific).
  */
 #pragma once
@@ -15,15 +15,13 @@
 #	error This file should be never directly included, please consider using <GoddamnEngine/Core/CStdlib/CStdio.h> instead.
 #endif	// if !defined(GD_INSIDE_CSTDIO_H)
 
-#include <GoddamnEngine/Core/Containers/StringConv.h>
-
 #include <cstdio>
 #include <cwchar>
 
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Provides Microsoft-specific functions for C IO.
+	//! @copydoc CStdioGeneric
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class CStdioMicrosoft final : public CStdioGeneric
 	{
@@ -158,7 +156,7 @@ GD_NAMESPACE_BEGIN
 	};	// class CStdioMicrosoft
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Provides cross-platform functions for C IO.
+	//! @copydoc CStdioMicrosoft
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	using CStdio = CStdioMicrosoft;
 

@@ -7,7 +7,7 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/CStdlib/CChar.h
+ * @file
  * Wrappers, helper functions and definitions for standard char functions.
  */
 #pragma once
@@ -18,12 +18,12 @@
 #include <cwctype>
 
 /*!
- * Selects wide or ANSI character literal based on specified type.
+ * Selects wide or ANSI character text based on specified type.
  *
  * @param TChar Type of characters.
- * @param literal Literal.
+ * @param text Literal.
  */
-#define GD_TEXT(TChar, literal) (GD::Literal<TChar>::Select(literal, GD_WIDEN(literal)))
+#define GD_TEXT(TChar, text) (GD::Literal<TChar>::Select(text, GD_WIDEN(text)))
 
 GD_NAMESPACE_BEGIN
 
@@ -59,7 +59,7 @@ GD_NAMESPACE_BEGIN
 	};	// struct Literal<WideChar>
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Provides helper functions for processing characters. Contains methods from "cctype" and "cwctype".
+	//! Provides helper functions for processing characters.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class CChar final : public TNonCreatable
 	{
@@ -191,12 +191,10 @@ GD_NAMESPACE_BEGIN
 			return static_cast<WideChar>(::towlower(static_cast<::wint_t>(character)));
 		}
 		//! @}
+
 	};	// struct CChar<T>
 
-	/*!
-	 * Declarations used to ban standard functions. 
-	 */
-	enum LibCharUnallowedFunctions
+	enum
 	{
 		// ReSharper disable CppInconsistentNaming
 		isdigit, iswdigit,
@@ -207,6 +205,6 @@ GD_NAMESPACE_BEGIN
 		toupper, towupper,
 		tolower, towlower,
 		// ReSharper restore CppInconsistentNaming
-	};	// enum LibCharUnallowedFunctions
+	};	// enum 
 
 GD_NAMESPACE_END

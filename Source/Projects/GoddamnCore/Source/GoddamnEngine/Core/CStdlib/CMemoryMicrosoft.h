@@ -7,8 +7,7 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/CStdlib/CMemoryMicrosoft.h
- * @note This file should be never directly included, please consider using <GoddamnEngine/Core/CStdlib/CMemory.h> instead.
+ * @file 
  * Wrappers, helper functions and definitions for standard memory functions (Microsoft-specific).
  */
 #pragma once
@@ -19,37 +18,31 @@
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Provides functions for C memory. Contains wrapped "mem*" methods and methods from "string.h",
-	//! "stdlib.h" and etc.
+	//! @copydoc CMemoryGeneric
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class CMemoryMicrosoft final : public CMemoryGeneric
 	{
 	public:
 
-		// ------------------------------------------------------------------------------------------
-		// ... string.h's functions ...
-		// ------------------------------------------------------------------------------------------
-
 		/*!
 		 * @see @c "std::memcpy" function.
 		 */
 		//! @{
-		GDINL static Handle MemcpySafe(Handle const dest, SizeTp const destLength, CHandle const source, SizeTp const maxCount)
+		GDINL static Handle Memcpy(Handle const dest, CHandle const source, SizeTp const sourceLength)
 		{
-			auto const result = ::memcpy_s(dest, destLength, source, maxCount);
+			auto const result = ::memcpy_s(dest, sourceLength, source, sourceLength);
 			GD_DEBUG_VERIFY(result == 0, "memcpy_s failed.");
 			return dest;
 		}
-		GDINL static Handle Memcpy(Handle const dest, CHandle const source, SizeTp const maxCount)
+		GDINL static Char* CMemcpy(Char* const dest, CStr const source, SizeTp const sourceLength)
 		{
-			// as an exception, we force using unsafe 'memcpy'.
-			return MemcpySafe(dest, maxCount, source, maxCount);
+			return static_cast<Char*>(Memcpy(dest, source, sourceLength));
 		}
-		template<typename TPointee>
-		GDINL static TPointee* TMemcpy(TPointee* const dest, TPointee const* const source, SizeTp const maxCount)
+		GDINL static WideChar* CMemcpy(WideChar* const dest, WideCStr const source, SizeTp const sourceLength)
 		{
-			// as an exception, we force using unsafe 'memcpy'.
-			return static_cast<TPointee*>(Memcpy(dest, source, maxCount * sizeof(TPointee)));
+			auto const result = ::wmemcpy_s(dest, sourceLength, source, sourceLength);
+			GD_DEBUG_VERIFY(result == 0, "wmemcpy_s failed.");
+			return dest;
 		}
 		//! @}
 
@@ -57,29 +50,28 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::memmove" function.
 		 */
 		//! @{
-		GDINL static Handle MemmoveSafe(Handle const dest, SizeTp const destLength, CHandle const source, SizeTp const maxCount)
+		GDINL static Handle Memmove(Handle const dest, CHandle const source, SizeTp const sourceLength)
 		{
-			auto const result = ::memmove_s(dest, destLength, source, maxCount);
+			auto const result = ::memmove_s(dest, sourceLength, source, sourceLength);
 			GD_DEBUG_VERIFY(result == 0, "memcpy_s failed.");
 			return dest;
 		}
-		GDINL static Handle Memmove(Handle const dest, CHandle const source, SizeTp const maxCount)
+		GDINL static Char* CMemmove(Char* const dest, CStr const source, SizeTp const sourceLength)
 		{
-			// as an exception, we force using unsafe 'memmove'.
-			return MemmoveSafe(dest, maxCount, source, maxCount);
+			return static_cast<Char*>(Memmove(dest, source, sourceLength));
 		}
-		template<typename TPointee>
-		GDINL static TPointee* Memmove(TPointee* const dest, TPointee const* const source, SizeTp const maxCount)
+		GDINL static WideChar* CMemmove(WideChar* const dest, WideCStr const source, SizeTp const sourceLength)
 		{
-			// as an exception, we force using unsafe 'memmove'.
-			return static_cast<TPointee*>(Memmove(dest, source, maxCount * sizeof(TPointee)));
+			auto const result = ::wmemmove_s(dest, sourceLength, source, sourceLength);
+			GD_DEBUG_VERIFY(result == 0, "wmemmov_s failed.");
+			return dest;
 		}
 		//! @}
 
 	};	// class CMemoryMicrosoft
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Provides cross-platform functions for C memory.
+	//! @copydoc CMemoryMicrosoft
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	using CMemory = CMemoryMicrosoft;
 

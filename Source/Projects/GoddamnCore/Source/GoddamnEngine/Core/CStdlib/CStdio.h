@@ -7,14 +7,14 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/CStdlib/CStdio.h
+ * @file
  * Wrappers, helper functions and definitions for standard IO functions.
  */
 #pragma once
 #define GD_INSIDE_CSTDIO_H
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Containers/StringConv.h>
+#include <GoddamnEngine/Core/Misc/StringConv.h>
 
 #include <cstdio>
 #include <cwchar>
@@ -22,7 +22,7 @@
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Provides functions for C IO. Contains wrapped "*print*", "*scan*" and from "stdio.h".
+	//! Provides functions for C IO.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class CStdioGeneric : public TNonCreatable
 	{
@@ -132,18 +132,12 @@ GD_NAMESPACE_BEGIN
 		/*! 
 		 * @see @c "std::fread" function.
 		 */
-		//! @{
 		GDINL static SizeTp Fread(Handle const bufferPtr, SizeTp const bufferSize, SizeTp const size  // NOLINT
 			, SizeTp const count, FILE* const file)
 		{
 			GD_NOT_USED(bufferSize);
 			return ::fread(bufferPtr, size, count, file);
 		}
-		GDINL static SizeTp Fread(Handle const bufferPtr, SizeTp const size, SizeTp const count, FILE* const file)  // NOLINT
-		{
-			return Fread(bufferPtr, size * count, size, count, file);
-		}
-		//! @}
 
 		/*! 
 		 * @see @c "std::fwrite" function.
@@ -233,15 +227,10 @@ GD_NAMESPACE_BEGIN
 			GD_MSVC_PRAGMA(warning(pop))
 		}
 
-
 	};	// class CStdioGeneric
 
 	using SeekOrigin = CStdioGeneric::FseekOrigin;
-
-	/*!
-	 * Declarations used to ban standard functions. 
-	 */
-	enum LibIoUnallowedFunctions
+	enum 
 	{
 		// ReSharper disable CppInconsistentNaming
 		remove, _wremove, wremove,
@@ -259,7 +248,7 @@ GD_NAMESPACE_BEGIN
 		fread_s, fread,
 		fwrite
 		// ReSharper restore CppInconsistentNaming
-	};	// enum LibIOUnallowedFunctions
+	};	// enum
 
 GD_NAMESPACE_END
 

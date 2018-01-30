@@ -798,14 +798,14 @@ GD_NAMESPACE_BEGIN
 			: m_Length(otherVector.m_Length), m_Capacity(otherVector.m_Capacity)
 		{
 			auto const wordCapacity = ToWord(m_Capacity);
-			m_Memory = CMemory::TMemcpy(GD_MALLOC_ARRAY_T(Word, wordCapacity), otherVector.m_Memory, wordCapacity);
+			m_Memory = static_cast<UInt64*>(CMemory::Memcpy(GD_MALLOC_ARRAY_T(Word, wordCapacity), otherVector.m_Memory, wordCapacity * sizeof(*otherVector.m_Memory)));
 		}
 		template<typename TOtherAllocator>
 		GDINL implicit Vector(Vector<bool, TOtherAllocator> const& otherVector)
 			: m_Length(otherVector.m_Length), m_Capacity(otherVector.m_Capacity)
 		{
 			auto const wordCapacity = ToWord(m_Capacity);
-			m_Memory = CMemory::TMemcpy(GD_MALLOC_ARRAY_T(Word, wordCapacity), otherVector.m_Memory, wordCapacity);
+			m_Memory = static_cast<UInt64*>(CMemory::Memcpy(GD_MALLOC_ARRAY_T(Word, wordCapacity), otherVector.m_Memory, wordCapacity * sizeof(*otherVector.m_Memory)));
 		}
 		//! @}
 
@@ -929,7 +929,7 @@ GD_NAMESPACE_BEGIN
 					auto const totalWordsToClean = ToWord(m_Length - newLength);
 					if (totalWordsToClean > 1)
 					{	// Cleaning up all the rest words that succeed the last word.
-						CMemory::TMemset(m_Memory + lastWordIndex + 1, Byte(0), totalWordsToClean - 1);
+						CMemory::Memset(m_Memory + lastWordIndex + 1, Byte(0), (totalWordsToClean - 1) * sizeof(*m_Memory));
 					}
 				}
 				else
@@ -957,12 +957,12 @@ GD_NAMESPACE_BEGIN
 					auto const newMemory = GD_MALLOC_ARRAY_T(Word, newWordCapacity);
 					if (newWordCapacity > wordCapacity)
 					{	// Pre-cleaning up all new memory and copying bits from old one.
-						CMemory::TMemcpy(newMemory, m_Memory, wordCapacity);
-						CMemory::TMemset(newMemory + wordCapacity, Byte(0), newWordCapacity - wordCapacity);
+						CMemory::Memcpy(newMemory, m_Memory, wordCapacity * sizeof(*m_Memory));
+						CMemory::Memset(newMemory + wordCapacity, Byte(0), (newWordCapacity - wordCapacity) * sizeof(*m_Memory));
 					}
 					else
 					{	// Just copying bits from old one.
-						CMemory::TMemcpy(newMemory, m_Memory, newWordCapacity);
+						CMemory::Memcpy(newMemory, m_Memory, newWordCapacity * sizeof(*m_Memory));
 					}
 					GD_FREE(m_Memory);
 					m_Memory = newMemory;
@@ -1122,7 +1122,7 @@ GD_NAMESPACE_BEGIN
 				if (m_Capacity >= otherVector.m_Length)
 				{
 					this->Resize(otherVector.m_Length);
-					CMemory::TMemcpy(m_Memory, otherVector.m_Memory, ToWord(otherVector.m_Length));
+					CMemory::Memcpy(m_Memory, otherVector.m_Memory, ToWord(otherVector.m_Length) * sizeof(*otherVector.m_Memory));
 				}
 				else
 				{
@@ -1140,7 +1140,7 @@ GD_NAMESPACE_BEGIN
 				if (m_Capacity >= otherVector.m_Length)
 				{
 					this->Resize(otherVector.m_Length);
-					CMemory::TMemcpy(m_Memory, otherVector.m_Memory, ToWord(otherVector.m_Length));
+					CMemory::Memcpy(m_Memory, otherVector.m_Memory, ToWord(otherVector.m_Length) * sizeof(*otherVector.m_Memory));
 				}
 				else
 				{
@@ -1181,19 +1181,19 @@ GD_NAMESPACE_BEGIN
 		template<typename TOtherAllocator>
 		GDINL friend bool operator== (Vector const& lhs, Vector<bool, TOtherAllocator> const& rhs)
 		{
-			return lhs.m_Length == rhs.m_Length && CMemory::TMemcmp(lhs.m_Memory, rhs.m_Memory, ToWord(lhs.m_Length)) == 0;
+			return lhs.m_Length == rhs.m_Length && CMemory::Memcmp(lhs.m_Memory, rhs.m_Memory, ToWord(lhs.m_Length) * sizeof(*lhs.m_Memory)) == 0;
 		}
 		template<typename TOtherAllocator>
 		GDINL friend bool operator!= (Vector const& lhs, Vector<bool, TOtherAllocator> const& rhs)
 		{
-			return lhs.m_Length != rhs.m_Length || CMemory::TMemcmp(lhs.m_Memory, rhs.m_Memory, ToWord(lhs.m_Length)) != 0;
+			return lhs.m_Length != rhs.m_Length || CMemory::Memcmp(lhs.m_Memory, rhs.m_Memory, ToWord(lhs.m_Length) * sizeof(*lhs.m_Memory)) != 0;
 		}
 
 		// vector > vector
 		template<typename TOtherAllocator>
 		GDINL friend bool operator< (Vector const& lhs, Vector<bool, TOtherAllocator> const& rhs)
 		{
-			return CMemory::TMemcmp(lhs.m_Memory, rhs.m_Memory, ToWord(Min(lhs.m_Length, rhs.m_Length))) < 0;
+			return CMemory::Memcmp(lhs.m_Memory, rhs.m_Memory, ToWord(Min(lhs.m_Length, rhs.m_Length)) * sizeof(*lhs.m_Memory)) < 0;
 		}
 		template<typename TOtherAllocator>
 		GDINL friend bool operator> (Vector const& lhs, Vector<bool, TOtherAllocator> const& rhs)

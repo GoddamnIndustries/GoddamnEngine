@@ -7,7 +7,7 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/CStdlib/CString.h
+ * @file
  * Traits, helper functions and definitions for standard string/memory functions.
  */
 #pragma once
@@ -24,8 +24,7 @@
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Provides functions for C string. Contains wrapped "str*" methods and methods from 'string.h', 
-	//! 'stdlib.h' and 'stdio.h'.
+	//! Provides functions for C string.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class CStringGeneric : public TNonCreatable
 	{
@@ -225,7 +224,6 @@ GD_NAMESPACE_BEGIN
 
 		/*!
 		 * Returns pointer to last occurrence of a specified C sub-string in the C string.
-		 * @see @c "std::strrstr" (does it exist?) function.
 		 *
 		 * @param cstr C string.
 		 * @param subCStr C sub-string to search for.
@@ -260,7 +258,6 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * @see @c "std::wcstombs" function.
 		 */
-		//! @{
 		GDINL static SizeTp Wcstombs(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
 		{
 			GD_NOT_USED(destLength);
@@ -269,17 +266,10 @@ GD_NAMESPACE_BEGIN
 			return ::wcstombs(dest, source, maxCount);
 			GD_MSVC_PRAGMA(warning(pop))
 		}
-		GDINL static SizeTp WcsToUTF8(Char* const dest, SizeTp const destLength, WideChar const* const source, SizeTp const maxCount)
-		{
-			GD_NOT_USED_L(dest, destLength, source, maxCount);
-			GD_NOT_SUPPORTED();
-		}
-		//! @}
 
 		/*!
 		 * @see @c "::mbstowcs" function.
 		 */
-		//! @{
 		GDINL static SizeTp Strtowcs(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
 			GD_NOT_USED(destLength);
@@ -288,12 +278,6 @@ GD_NAMESPACE_BEGIN
 			return ::mbstowcs(dest, source, maxCount);
 			GD_MSVC_PRAGMA(warning(pop))
 		}
-		GDINL static SizeTp UTF8ToWcs(WideChar* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
-		{
-			GD_NOT_USED_L(dest, destLength, source, maxCount);
-			GD_NOT_SUPPORTED();
-		}
-		//! @}
 
 		/*!
 		 * @see @c "std::strtoull" function.

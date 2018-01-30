@@ -11,10 +11,9 @@
  * Constantly sized string class.
  */
 #include <GoddamnEngine/Core/Containers/String.h>
+#if GD_TESTING_ENABLED
 
 GD_NAMESPACE_BEGIN
-
-#if GD_TESTING_ENABLED
 
 	gd_testing_unit_test_foreach(StringCtorsBase, T, Char, WideChar)
 	{
@@ -389,6 +388,6 @@ GD_NAMESPACE_BEGIN
 		gd_testing_verify(fortmattedString == "%--3-A-0.5-wasted");
 	};
 
-#endif	// if GD_TESTING_ENABLED
 
 GD_NAMESPACE_END
+#endif	// if GD_TESTING_ENABLED

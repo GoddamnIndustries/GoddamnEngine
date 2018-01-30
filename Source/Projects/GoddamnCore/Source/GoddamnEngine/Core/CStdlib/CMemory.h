@@ -7,14 +7,13 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/CStdlib/CChar.h
+ * @file
  * Wrappers, helper functions and definitions for standard memory functions.
  */
 #pragma once
 #define GD_INSIDE_CMEMORY_H
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Templates/TypeTraits.h>
 #include <GoddamnEngine/Core/PlatformSpecificInclude.h>
 
 #include <cstring>
@@ -23,31 +22,27 @@
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Provides functions for C memory. Contains wrapped "mem*" methods and methods from "string.h",
-	//! "stdlib.h" and etc.
+	//! Provides functions for C memory. 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class CMemoryGeneric : public TNonCreatable
 	{
 	public:
 
 		// ------------------------------------------------------------------------------------------
-		// ... string.h's functions ...
+		// Memory comparison functions.
 		// ------------------------------------------------------------------------------------------
 
 		/*! 
 		 * @see @c "std::memcmp" function.
 		 */
-		//! @{
-		GDINL static int Memcmp(CHandle const lhs, CHandle const rhs, SizeTp const maxCount)
+		GDINL static int Memcmp(CHandle const lhs, CHandle const rhs, SizeTp const rhsLength)
 		{
-			return ::memcmp(lhs, rhs, maxCount);
+			return ::memcmp(lhs, rhs, rhsLength);
 		}
-		template<typename TPointee = void>
-		GDINL static int TMemcmp(TPointee const* const lhs, TPointee const* const rhs, SizeTp const maxCount)
-		{
-			return Memcmp(lhs, rhs, maxCount * sizeof(TPointee));
-		}
-		//! @}
+
+		// ------------------------------------------------------------------------------------------
+		// Memory manipulation functions.
+		// ------------------------------------------------------------------------------------------
 
 		/*!
 		 * @see @c "std::memset" function.
@@ -57,29 +52,13 @@ GD_NAMESPACE_BEGIN
 		{
 			return ::memset(dest, static_cast<int>(value), maxCount);
 		}
-		GDINL static WideChar* Memset(WideChar* const dest, WideChar const value, SizeTp const maxCount)
+		GDINL static Char* CMemset(Char* const dest, Char const value, SizeTp const maxCount)
 		{
-			return ::wmemset(dest, static_cast<int>(value), maxCount);
+			return static_cast<Char*>(Memset(dest, value, maxCount * sizeof(Char)));
 		}
-		template<typename TPointee = void>
-		GDINL static TPointee* TMemset(TPointee* const dest, Byte const value, SizeTp const maxCount)
+		GDINL static WideChar* CMemset(WideChar* const dest, WideChar const value, SizeTp const maxCount)
 		{
-			return static_cast<TPointee*>(Memset(dest, value, maxCount * sizeof(TPointee)));
-		}
-		template<typename TPointee>
-		GDINL static TPointee* TMemset(TPointee* const dest, WideChar const value, SizeTp const maxCount)
-		{
-			return static_cast<TPointee*>(Memset(dest, value, maxCount * sizeof(TPointee)));
-		}
-		template<typename TValue>
-		GDINL static typename DisableIf<TypeTraits::IsSame<TValue, Byte>::Value || TypeTraits::IsSame<TValue, WideChar>::Value, TValue>::Type*
-			TMemset(TValue* const dest, TValue const value, SizeTp const maxCount)
-		{
-			for (auto iter = dest; iter != dest + maxCount; ++iter)
-			{
-				*iter = value;
-			}
-			return dest;
+			return ::wmemset(dest, value, maxCount);
 		}
 		//! @}
 
@@ -87,21 +66,17 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::memcpy" function.
 		 */
 		//! @{
-		GDINL static Handle MemcpySafe(Handle const dest, SizeTp const destLength, CHandle const source, SizeTp const maxCount)
+		GDINL static Handle Memcpy(Handle const dest, CHandle const source, SizeTp const sourceLength)
 		{
-			GD_NOT_USED(destLength);
-			return ::memcpy(dest, source, maxCount);
+			return ::memcpy(dest, source, sourceLength);
 		}
-		GDINL static Handle Memcpy(Handle const dest, CHandle const source, SizeTp const maxCount)
+		GDINL static Char* CMemcpy(Char* const dest, CStr const source, SizeTp const sourceLength)
 		{
-			// as an exception, we force using unsafe 'memcpy'.
-			return MemcpySafe(dest, maxCount, source, maxCount);
+			return static_cast<Char*>(Memcpy(dest, source, sourceLength));
 		}
-		template<typename TPointee>
-		GDINL static TPointee* TMemcpy(TPointee* const dest, TPointee const* const source, SizeTp const maxCount)
+		GDINL static WideChar* CMemcpy(WideChar* const dest, WideCStr const source, SizeTp const sourceLength)
 		{
-			// as an exception, we force using unsafe 'memcpy'.
-			return static_cast<TPointee*>(Memcpy(dest, source, maxCount * sizeof(TPointee)));
+			return ::wmemcpy(dest, source, sourceLength);
 		}
 		//! @}
 
@@ -109,30 +84,23 @@ GD_NAMESPACE_BEGIN
 		 * @see @c "std::memmove" function.
 		 */
 		//! @{
-		GDINL static Handle MemmoveSafe(Handle const dest, SizeTp const destLength, CHandle const source, SizeTp const maxCount)
+		GDINL static Handle Memmove(Char* const dest, CHandle const source, SizeTp const sourceLength)
 		{
-			GD_NOT_USED(destLength);
-			return ::memmove(dest, source, maxCount);
+			return ::memmove(dest, source, sourceLength);
 		}
-		GDINL static Handle Memmove(Handle const dest, CHandle const source, SizeTp const maxCount)
+		GDINL static Char* CMemmove(Char* const dest, CStr const source, SizeTp const sourceLength)
 		{
-			// as an exception, we force using unsafe 'memmove'.
-			return MemmoveSafe(dest, maxCount, source, maxCount);
+			return static_cast<Char*>(Memmove(dest, source, sourceLength));
 		}
-		template<typename TPointee>
-		GDINL static TPointee* Memmove(TPointee* const dest, TPointee const* const source, SizeTp const maxCount)
+		GDINL static WideChar* CMemmove(WideChar* const dest, WideCStr const source, SizeTp const sourceLength)
 		{
-			// as an exception, we force using unsafe 'memmove'.
-			return static_cast<TPointee*>(Memmove(dest, source, maxCount * sizeof(TPointee)));
+			return ::wmemmove(dest, source, sourceLength);
 		}
 		//! @}
 
 	};	// class CMemoryGeneric
 
-	/*!
-	 * Declarations used to ban standard functions. 
-	 */
-	enum LibMemoryUnallowedFunctions
+	enum
 	{
 		// ReSharper disable CppInconsistentNaming
 		memcmp,
@@ -140,7 +108,7 @@ GD_NAMESPACE_BEGIN
 		memcpy, memcpy_s,
 		memmove, memmove_s,
 		// ReSharper restore CppInconsistentNaming
-	};	// enum LibMemoryUnallowedFunctions
+	};	// enum
 
 GD_NAMESPACE_END
 
