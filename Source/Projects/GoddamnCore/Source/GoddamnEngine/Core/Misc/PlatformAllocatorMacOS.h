@@ -7,8 +7,8 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/Misc/AllocatorMacOS.h
- * File contains Windows allocator interface.
+ * @file
+ * MacOS allocator.
  */
 #pragma once
 #if !defined(GD_INSIDE_ALLOCATOR_H)

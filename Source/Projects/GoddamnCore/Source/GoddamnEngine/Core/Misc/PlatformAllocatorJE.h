@@ -7,19 +7,22 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Misc/AllocatorTBB.h
- * File contains allocator interface that uses Intel Threading Building Blocks.
+ * @file
+ * Jason Evans' allocator.
  */
 #pragma once
+#if !defined(GD_INSIDE_ALLOCATOR_H)
+#	error This file should be never directly included, please consider using <GoddamnEngine/Core/Misc/Allocator.h> instead.
+#endif	// if !defined(GD_INSIDE_ALLOCATOR_H)
 
-#include <tbb/scalable_allocator.h>
+#include <jemalloc/jemalloc.h>
 
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Intel Threading Building Blocks allocator interface.
+	//! Jason Evans' allocator interface.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class PlatformAllocatorTBB : public PlatformAllocatorGeneric
+	class PlatformAllocatorJE : public PlatformAllocatorGeneric
 	{
 	public:
 		
@@ -50,10 +53,9 @@ GD_NAMESPACE_BEGIN
 			)
 		{
 #if GD_DEBUG
-			GD_NOT_USED(allocationFilename);
-			GD_NOT_USED(allocationLineNumber);
+			GD_NOT_USED_L(allocationFilename, allocationLineNumber);
 #endif	// if GD_DEBUG
-			return scalable_malloc(allocationSize);
+			return je_malloc(allocationSize);
 		}
 
 		/*!
@@ -62,7 +64,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static void DeallocateUnaligned(Handle const memory)
 		{
-			scalable_free(memory);
+			je_free(memory);
 		}
 
 		/*!
@@ -76,10 +78,9 @@ GD_NAMESPACE_BEGIN
 			)
 		{
 #if GD_DEBUG
-			GD_NOT_USED(allocationFilename);
-			GD_NOT_USED(allocationLineNumber);
+			GD_NOT_USED_L(allocationFilename, allocationLineNumber);
 #endif	// if GD_DEBUG
-			return scalable_aligned_malloc(allocationSize, alignment);
+			return je_aligned_alloc(allocationSize, alignment);
 		}
 
 		/*!
@@ -88,7 +89,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static void DeallocateAligned(Handle const memory)
 		{
-			scalable_aligned_free(memory);
+			je_free(memory);
 		}
 
 		/*!
@@ -96,9 +97,9 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDAPI static SizeTp GetAllocationSize(Handle const memory)
 		{
-			return scalable_msize(memory);
+			return je_malloc_usable_size(memory);
 		}
 
-	};	// class PlatformAllocatorTBB
+	};	// class PlatformAllocatorJE
 
 GD_NAMESPACE_END

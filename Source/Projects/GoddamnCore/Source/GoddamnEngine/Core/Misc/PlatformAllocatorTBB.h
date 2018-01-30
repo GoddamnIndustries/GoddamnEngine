@@ -7,47 +7,25 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Misc/AllocatorWindows.h
- * File contains Windows allocator interface.
+ * @file
+ * Intel Threading Building Blocks allocator.
  */
 #pragma once
 #if !defined(GD_INSIDE_ALLOCATOR_H)
 #	error This file should be never directly included, please consider using <GoddamnEngine/Core/Misc/Allocator.h> instead.
 #endif	// if !defined(GD_INSIDE_ALLOCATOR_H)
 
-#if GD_DEBUG
-#	include <crtdbg.h>
-#else	// if GD_DEBUG
-#	include <GoddamnEngine/Core/Misc/AllocatorTBB.h>
-#endif	// if GD_DEBUG
+#include <tbb/scalable_allocator.h>
 
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Windows allocator interface.
+	//! Intel Threading Building Blocks allocator interface.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-#if GD_DEBUG
-	class PlatformAllocatorWindows : public PlatformAllocatorGeneric
+	class PlatformAllocatorTBB : public PlatformAllocatorGeneric
 	{
 	public:
 		
-		/*!
-		 * Initializes current allocator.
-		 */
-		GDINL static void OnInitializeAllocator()
-		{
-			_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG | _CRTDBG_MODE_FILE);
-			_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
-		}
-
-		/*!
-		 * Deinitializes current allocator.
-		 */
-		GDINL static void OnDeinitializeAllocator()
-		{
-			_CrtMemDumpAllObjectsSince(nullptr);
-		}
-
 		/*!
 		 * Returns true if this allocator is thread-safe.
 		 */
@@ -68,9 +46,16 @@ GD_NAMESPACE_BEGIN
 		 * Allocates unaligned block of memory with specified size.
 		 * @returns Pointer on the allocated memory.
 		 */
-		GDINL static Handle AllocateUnaligned(SizeTp const allocationSize, CStr const allocationFilename, Int32 const allocationLineNumber)
+		GDINL static Handle AllocateUnaligned(SizeTp const allocationSize
+#if GD_DEBUG
+			, CStr const allocationFilename, Int32 const allocationLineNumber
+#endif	// if GD_DEBUG
+			)
 		{
-			return _malloc_dbg(allocationSize, _NORMAL_BLOCK, allocationFilename, allocationLineNumber);
+#if GD_DEBUG
+			GD_NOT_USED_L(allocationFilename, allocationLineNumber);
+#endif	// if GD_DEBUG
+			return scalable_malloc(allocationSize);
 		}
 
 		/*!
@@ -79,16 +64,23 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static void DeallocateUnaligned(Handle const memory)
 		{
-			_free_dbg(memory, _NORMAL_BLOCK);
+			scalable_free(memory);
 		}
 
 		/*!
 		 * Allocates block of memory with specified size that is aligned by specified value and returns pointer to it.
 		 * @returns Pointer on the allocated memory.
 		 */
-		GDINL static Handle AllocateAligned(SizeTp const allocationSize, SizeTp const alignment, CStr const allocationFilename, Int32 const allocationLineNumber)
+		GDINL static Handle AllocateAligned(SizeTp const allocationSize, SizeTp const alignment
+#if GD_DEBUG
+			, CStr const allocationFilename, Int32 const allocationLineNumber
+#endif	// if GD_DEBUG
+			)
 		{
-			return _aligned_malloc_dbg(allocationSize, alignment, allocationFilename, allocationLineNumber);
+#if GD_DEBUG
+			GD_NOT_USED_L(allocationFilename, allocationLineNumber);
+#endif	// if GD_DEBUG
+			return scalable_aligned_malloc(allocationSize, alignment);
 		}
 
 		/*!
@@ -97,17 +89,17 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static void DeallocateAligned(Handle const memory)
 		{
-			_aligned_free_dbg(memory);
+			scalable_aligned_free(memory);
 		}
 
-	};	// class PlatformAllocatorWindows
-#else	// if GD_DEBUG
-	using PlatformAllocatorWindows = PlatformAllocatorTBB;
-#endif	// if GD_DEBUG
+		/*!
+		 * Returns the length of the allocated block.
+		 */
+		GDAPI static SizeTp GetAllocationSize(Handle const memory)
+		{
+			return scalable_msize(memory);
+		}
 
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Cross-platform allocator interface.
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	using PlatformAllocator = PlatformAllocatorWindows;
+	};	// class PlatformAllocatorTBB
 
 GD_NAMESPACE_END

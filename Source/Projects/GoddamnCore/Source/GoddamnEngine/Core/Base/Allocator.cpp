@@ -11,7 +11,7 @@
  * Contains memory allocator interface.
  */
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Misc/Allocator.h>
+#include <GoddamnEngine/Core/Misc/PlatformAllocator.h>
 #include <GoddamnEngine/Core/Concurrency/LiteMutex.h>
 
 GD_NAMESPACE_BEGIN

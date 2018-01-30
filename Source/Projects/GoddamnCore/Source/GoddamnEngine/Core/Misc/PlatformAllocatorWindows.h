@@ -7,22 +7,47 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Misc/AllocatorTBB.h
- * File contains allocator interface that uses Jason Evans' allocator.
+ * @file
+ * Windows allocator.
  */
 #pragma once
+#if !defined(GD_INSIDE_ALLOCATOR_H)
+#	error This file should be never directly included, please consider using <GoddamnEngine/Core/Misc/Allocator.h> instead.
+#endif	// if !defined(GD_INSIDE_ALLOCATOR_H)
 
-#include <jemalloc/jemalloc.h>
+#if GD_DEBUG
+#	include <crtdbg.h>
+#else	// if GD_DEBUG
+#	include <GoddamnEngine/Core/Misc/PlatformAllocatorTBB.h>
+#endif	// if GD_DEBUG
 
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Jason Evans' allocator interface.
+	//! Windows allocator interface.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class PlatformAllocatorJE : public PlatformAllocatorGeneric
+#if GD_DEBUG
+	class PlatformAllocatorWindows : public PlatformAllocatorGeneric
 	{
 	public:
 		
+		/*!
+		 * Initializes current allocator.
+		 */
+		GDINL static void OnInitializeAllocator()
+		{
+			_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG | _CRTDBG_MODE_FILE);
+			_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
+		}
+
+		/*!
+		 * Deinitializes current allocator.
+		 */
+		GDINL static void OnDeinitializeAllocator()
+		{
+			_CrtMemDumpAllObjectsSince(nullptr);
+		}
+
 		/*!
 		 * Returns true if this allocator is thread-safe.
 		 */
@@ -43,17 +68,9 @@ GD_NAMESPACE_BEGIN
 		 * Allocates unaligned block of memory with specified size.
 		 * @returns Pointer on the allocated memory.
 		 */
-		GDINL static Handle AllocateUnaligned(SizeTp const allocationSize
-#if GD_DEBUG
-			, CStr const allocationFilename, Int32 const allocationLineNumber
-#endif	// if GD_DEBUG
-			)
+		GDINL static Handle AllocateUnaligned(SizeTp const allocationSize, CStr const allocationFilename, Int32 const allocationLineNumber)
 		{
-#if GD_DEBUG
-			GD_NOT_USED(allocationFilename);
-			GD_NOT_USED(allocationLineNumber);
-#endif	// if GD_DEBUG
-			return je_malloc(allocationSize);
+			return _malloc_dbg(allocationSize, _NORMAL_BLOCK, allocationFilename, allocationLineNumber);
 		}
 
 		/*!
@@ -62,24 +79,16 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static void DeallocateUnaligned(Handle const memory)
 		{
-			je_free(memory);
+			_free_dbg(memory, _NORMAL_BLOCK);
 		}
 
 		/*!
 		 * Allocates block of memory with specified size that is aligned by specified value and returns pointer to it.
 		 * @returns Pointer on the allocated memory.
 		 */
-		GDINL static Handle AllocateAligned(SizeTp const allocationSize, SizeTp const alignment
-#if GD_DEBUG
-			, CStr const allocationFilename, Int32 const allocationLineNumber
-#endif	// if GD_DEBUG
-			)
+		GDINL static Handle AllocateAligned(SizeTp const allocationSize, SizeTp const alignment, CStr const allocationFilename, Int32 const allocationLineNumber)
 		{
-#if GD_DEBUG
-			GD_NOT_USED(allocationFilename);
-			GD_NOT_USED(allocationLineNumber);
-#endif	// if GD_DEBUG
-			return je_aligned_alloc(allocationSize, alignment);
+			return _aligned_malloc_dbg(allocationSize, alignment, allocationFilename, allocationLineNumber);
 		}
 
 		/*!
@@ -88,17 +97,17 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static void DeallocateAligned(Handle const memory)
 		{
-			je_free(memory);
+			_aligned_free_dbg(memory);
 		}
 
-		/*!
-		 * Returns the length of the allocated block.
-		 */
-		GDAPI static SizeTp GetAllocationSize(Handle const memory)
-		{
-			return je_malloc_usable_size(memory);
-		}
+	};	// class PlatformAllocatorWindows
+#else	// if GD_DEBUG
+	using PlatformAllocatorWindows = PlatformAllocatorTBB;
+#endif	// if GD_DEBUG
 
-	};	// class PlatformAllocatorJE
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	//! Cross-platform allocator interface.
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	using PlatformAllocator = PlatformAllocatorWindows;
 
 GD_NAMESPACE_END

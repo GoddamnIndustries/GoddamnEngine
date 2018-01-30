@@ -7,8 +7,8 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Misc/Allocator.h
- * File contains generic allocator interface.
+ * @file
+ * Platform allocator.
  */
 #pragma once
 #define GD_INSIDE_ALLOCATOR_H
@@ -124,5 +124,5 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#include GD_PLATFORM_INCLUDE(GoddamnEngine/Core/Misc, Allocator)
+#include GD_PLATFORM_INCLUDE(GoddamnEngine/Core/Misc, PlatformAllocator)
 #undef GD_INSIDE_DIRECTORY_H
