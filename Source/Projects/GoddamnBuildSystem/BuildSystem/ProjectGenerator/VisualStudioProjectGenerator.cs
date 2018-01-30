@@ -44,6 +44,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                     return "ClCompile";
                 case ProjectSourceFileType.SourceCodeAssembler:
                     return "MASM";
+                case ProjectSourceFileType.SourceCodeObjective:
                 case ProjectSourceFileType.HeaderFile:
                     return "ClInclude";
                 case ProjectSourceFileType.InlineImplementation:
