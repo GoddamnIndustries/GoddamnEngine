@@ -252,5 +252,18 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/CStdlib, CStdio)
+#if GD_PLATFORM_API_MICROSOFT
+#   include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/CStdlib, CStdio)
+#else   // if GD_PLATFORM_API_MICROSOFT
+
+GD_NAMESPACE_BEGIN
+
+    // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+    //! @copydoc CStdioGeneric
+    // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+    using CStdio = CStdioGeneric;
+
+GD_NAMESPACE_END
+
+#endif  // if GD_PLATFORM_API_MICROSOFT
 #undef GD_INSIDE_CSTDIO_H
