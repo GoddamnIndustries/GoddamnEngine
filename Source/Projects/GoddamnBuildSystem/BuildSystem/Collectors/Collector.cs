@@ -40,7 +40,9 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// <summary>
         /// Returns false is this object should be skipped.
         /// </summary>
-        bool GetIsSupported();
+        /// <param name="platform">One of the target platforms.</param>
+        /// <param name="configuration">One of the target configurations.</param>
+        bool GetIsSupported(TargetPlatform platform, TargetConfiguration configuration);
     }   // public interface ICollector
 
     /// <summary>
@@ -88,7 +90,9 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// <summary>
         /// Returns false is this object should be skipped.
         /// </summary>
-        public virtual bool GetIsSupported()
+        /// <param name="platform">One of the target platforms.</param>
+        /// <param name="configuration">One of the target configurations.</param>
+        public virtual bool GetIsSupported(TargetPlatform platform, TargetConfiguration configuration)
         {
             return true;
         }
@@ -190,7 +194,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
         protected CollectorCache(Collector collector)
         {
             Collector = collector;
-            IsSupported = collector.GetIsSupported();
+            IsSupported = true;//collector.GetIsSupported();
             if (IsSupported)
             {
                 Misc = new ExpandoObject();
