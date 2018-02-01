@@ -1,0 +1,587 @@
+// ==========================================================================================
+// Copyright (C) Goddamn Industries 2018. All Rights Reserved.
+// 
+// This software or any its part is distributed under terms of Goddamn Industries End User
+// License Agreement. By downloading or using this software or any its part you agree with 
+// terms of Goddamn Industries End User License Agreement.
+// ==========================================================================================
+
+/*! 
+ * @file
+ * Interface to the serialization readers and writers.
+ */
+#pragma once
+
+#include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/IO/Stream.h>
+#include <GoddamnEngine/Core/Containers/Vector.h>
+#include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Templates/SharedPtr.h>
+
+GD_NAMESPACE_BEGIN
+
+	// **------------------------------------------------------------------------------------------**
+	//! Generic serialization reader.
+	// **------------------------------------------------------------------------------------------**
+	class ISerializationReader : public IVirtuallyDestructible
+	{
+	protected:
+		enum class CurrentlyReading
+		{
+			Array,
+			Struct,
+        };	// enum class CurrentlyReading
+		Stack<CurrentlyReading> m_ReadingScope;
+		InputStream& m_ReadingStream;
+
+	protected:
+
+		/*!
+		 * Initializes the reader interface.
+		 * @param readingStream Pointer to the stream, from the one we are reading.
+		 */
+		GDINL explicit ISerializationReader(InputStream& readingStream)
+			: m_ReadingStream(readingStream)
+		{
+		}
+
+		GDAPI virtual ~ISerializationReader()
+		{
+			GD_DEBUG_VERIFY(m_ReadingScope.IsEmpty(), "Scoping error.");
+		}
+
+	public:
+
+		/*!
+		 * Reads name of the property.
+		 *
+		 * @param name String property name.
+		 * @returns True if property with such name was found.
+		 */
+		GDAPI virtual bool TryReadPropertyName(String const& name)
+		{
+			GD_NOT_USED(name);
+            return !m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReading::Array;
+		}
+
+		// ------------------------------------------------------------------------------------------
+		// Primitive properties reading.
+		// ------------------------------------------------------------------------------------------
+        
+        /*!
+         * Reads boolean property.
+         *
+         * @param value Boolean property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(bool& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads signed 8-bit integer property.
+         *
+         * @param value Integer property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(Int8& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads unsigned 8-bit integer property.
+         *
+         * @param value Integer property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(UInt8& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads signed 16-bit integer property.
+         *
+         * @param value Integer property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(Int16& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads unsigned 16-bit integer property.
+         *
+         * @param value Integer property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(UInt16& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads signed 32-bit integer property.
+         *
+         * @param value Integer property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(Int32& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads unsigned 32-bit integer property.
+         *
+         * @param value Integer property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(UInt32& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads signed 64-bit integer property.
+         *
+         * @param value Integer property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(Int64& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads unsigned 64-bit integer property.
+         *
+         * @param value Integer property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(UInt64& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads 32-bit floating-point property.
+         *
+         * @param value Float property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(Float32& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads 64-bit floating-point property.
+         *
+         * @param value Float property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(Float64& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Reads string property.
+         *
+         * @param value String property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(String& value) GD_PURE_VIRTUAL;
+        
+		// ------------------------------------------------------------------------------------------
+		// Array properties reading.
+		// ------------------------------------------------------------------------------------------
+
+		/*!
+		 * @brief Reads array property.
+		 * This function should be called to initialize array reading.
+		 * Array elements should be read by 'TryReadPropertyValue*' calls.
+		 * After reading the whole array, 'EndReadArrayPropertyValue' should be called.
+		 *
+		 * While reading elements of array, any 'TryReadPropertyName' call are ignored and return true.
+		 *
+		 * @param arraySize Output size of array we are going to read. Would be set to 0 on failure.
+		 * @returns True if reading array property was successfully initialized.
+		 */
+		GDAPI virtual bool TryBeginReadArrayPropertyValue(SizeTp& arraySize)
+		{
+			GD_NOT_USED(arraySize);
+            m_ReadingScope.InsertLast(CurrentlyReading::Array);
+			return false;
+		}
+
+		/*!
+		 * Notifies end of the array property.
+		 */
+		GDAPI virtual void EndReadArrayPropertyValue()
+		{
+            GD_DEBUG_VERIFY(!m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReading::Array, "Array scoping error.");
+			m_ReadingScope.EraseLast();
+		}
+
+		// ------------------------------------------------------------------------------------------
+		// Structure properties reading.
+		// ------------------------------------------------------------------------------------------
+
+		/*!
+		 * @brief Reads structure property.
+		 * This function should be called to initialize structure reading. 
+		 * Structure properties should be written by 'TryReadPropertyValue*' calls.
+		 * After reading the whole structure, 'EndReadStructPropertyValue' is called.
+		 *
+		 * @returns True if reading struct property was successfully initialized.
+		 */
+		GDAPI virtual bool TryBeginReadStructPropertyValue()
+		{
+            m_ReadingScope.InsertLast(CurrentlyReading::Struct);
+			return false;
+		}
+
+		/*!
+		 * Notifies end of the structure property.
+		 */
+		GDAPI virtual void EndReadStructPropertyValue()
+		{
+            GD_DEBUG_VERIFY(!m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReading::Struct, "Struct scoping error.");
+			m_ReadingScope.EraseLast();
+		}
+
+	};	// class ISerializationReader
+
+    // **------------------------------------------------------------------------------------------**
+    //! Wrappers for the generic serialization reader.
+    // **------------------------------------------------------------------------------------------**
+    template<typename TImplementation, typename TSerializationReaderBase = ISerializationReader>
+    class TSerializationReader : public TSerializationReaderBase
+    {
+    protected:
+        
+        /*!
+         * Initializes the reader interface.
+         * @param readingStream Pointer to the stream, from the one we are reading.
+         */
+        GDINL explicit TSerializationReader(InputStream& readingStream)
+            : TSerializationReaderBase(readingStream)
+        {
+        }
+        
+    protected:
+        
+        /*!
+         * Reads template property.
+         *
+         * @param value Template property value.
+         * @returns True if property value was successfully read.
+         */
+        template<typename TValue>
+        GDINL bool TryReadPropertyValueImpl(TValue& value)
+        {
+            GD_NOT_USED_L(this, value);
+            GD_NOT_IMPLEMENTED();
+        }
+        
+    public:
+        GDAPI virtual bool TryReadPropertyValue(bool& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Int8& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(UInt8& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Int16& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(UInt16& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Int32& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(UInt32& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Int64& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(UInt64& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Float32& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Float64& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(String& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+                
+    };  // class TSerializationReader
+
+	// **------------------------------------------------------------------------------------------**
+	//! Generic serialization writer.
+	// **------------------------------------------------------------------------------------------**
+	class ISerializationWriter : public IVirtuallyDestructible
+	{
+	protected:
+		enum CurrentlyWriting
+		{
+			Array,
+			Struct,
+		};	// enum CurrentlyWriting
+		Stack<CurrentlyWriting> m_WritingScope;
+		OutputStream& m_WritingStream;
+
+	protected:
+
+		/*!
+		 * Initializes the writer interface.
+		 * @param writingStream Pointer to the stream to the one we are writing.
+		 */
+		GDINL explicit ISerializationWriter(OutputStream& writingStream)
+			: m_WritingStream(writingStream)
+		{
+		}
+
+		GDINL virtual ~ISerializationWriter()
+		{
+			GD_DEBUG_VERIFY(m_WritingScope.IsEmpty(), "Scoping error.");
+		}
+
+	public:
+
+		/*!
+		 * Writes name of the property.
+		 *
+		 * @param name String property name.
+		 * @returns True false if property name should not be written (serializing arrays).
+		 */
+		GDAPI virtual bool WritePropertyName(String const& name)
+		{
+			GD_NOT_USED(name);
+            return !m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Struct;
+		}
+
+		// ------------------------------------------------------------------------------------------
+		// Primitive properties writing.
+		// ------------------------------------------------------------------------------------------
+        
+        /*!
+         * Writes boolean property.
+         * @param value Boolean property value.
+         */
+        GDAPI virtual void WritePropertyValue(bool const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes signed 8-bit integer property.
+         * @param value Integer property value.
+         */
+        GDAPI virtual void WritePropertyValue(Int8 const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes unsigned 8-bit integer property.
+         * @param value Integer property value.
+         */
+        GDAPI virtual void WritePropertyValue(UInt8 const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes signed 16-bit integer property.
+         * @param value Integer property value.
+         */
+        GDAPI virtual void WritePropertyValue(Int16 const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes unsigned 16-bit integer property.
+         * @param value Integer property value.
+         */
+        GDAPI virtual void WritePropertyValue(UInt16 const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes signed 32-bit integer property.
+         * @param value Integer property value.
+         */
+        GDAPI virtual void WritePropertyValue(Int32 const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes unsigned 32-bit integer property.
+         * @param value Integer property value.
+         */
+        GDAPI virtual void WritePropertyValue(UInt32 const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes signed 64-bit integer property.
+         * @param value Integer property value.
+         */
+        GDAPI virtual void WritePropertyValue(Int64 const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes unsigned 64-bit integer property.
+         * @param value Integer property value.
+         */
+        GDAPI virtual void WritePropertyValue(UInt64 const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes 32-bit floating-point property.
+         * @param value Float property value.
+         */
+        GDAPI virtual void WritePropertyValue(Float32 const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes 64-bit floating-point property.
+         * @param value Float property value.
+         */
+        GDAPI virtual void WritePropertyValue(Float64 const value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes string property.
+         * @param value String property value.
+         */
+        GDAPI virtual void WritePropertyValue(String const& value) GD_PURE_VIRTUAL;
+        
+		// ------------------------------------------------------------------------------------------
+		// Array properties writing.
+		// ------------------------------------------------------------------------------------------
+
+		/*!
+		 * @brief Writes array property.
+		 * This function should be called to initialize array writing.
+		 * Array elements should be written by 'WritePropertyValue*' calls.
+		 * After writing the whole array, 'EndWriteArrayPropertyValue' should be called.
+		 *
+		 * While writing elements of array, any 'WritePropertyName' call are ignored.
+		 */
+		GDINL virtual void BeginWriteArrayPropertyValue()
+		{
+            m_WritingScope.InsertLast(CurrentlyWriting::Array);
+		}
+
+		/*!
+		 * Notifies end of the array property.
+		 */
+		GDAPI virtual void EndWriteArrayPropertyValue()
+		{
+            GD_DEBUG_VERIFY(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Array, "Array scoping error.");
+			m_WritingScope.EraseLast();
+		}
+
+		// ------------------------------------------------------------------------------------------
+		// Structure properties writing.
+		// ------------------------------------------------------------------------------------------
+
+		/*!
+		 * @brief Writes structure property.
+		 * This function should be called to initialize structure writing. 
+		 * Structure properties should be written by 'WritePropertyValue*' calls.
+		 * After writing the whole structure, 'EndWriteStructPropertyValue' is called.
+		 */
+		GDAPI virtual void BeginWriteStructPropertyValue()
+		{
+            m_WritingScope.InsertLast(CurrentlyWriting::Struct);
+		}
+
+		/*!
+		 * Notifies end of the structure property.
+		 */
+		GDAPI virtual void EndWriteStructPropertyValue()
+		{
+            GD_DEBUG_VERIFY(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Struct, "Struct scoping error.");
+			m_WritingScope.EraseLast();
+		}
+
+	};	// class ISerializationWriter
+
+    // **------------------------------------------------------------------------------------------**
+    //! Wrappers for the generic serialization writer.
+    // **------------------------------------------------------------------------------------------**
+    template<typename TImplementation, typename TSerializationWriterBase = ISerializationWriter>
+    class TSerializationWriter : public TSerializationWriterBase
+    {
+    protected:
+        
+        /*!
+         * Initializes the writer interface.
+         * @param writingStream Pointer to the stream to the one we are writing.
+         */
+        GDINL explicit TSerializationWriter(OutputStream& writingStream)
+            : TSerializationWriterBase(writingStream)
+        {
+        }
+        
+    protected:
+        
+        /*!
+         * Writes template property.
+         * @param value Template property value.
+         */
+        template<typename TValue>
+        GDINL void WritePropertyValueImpl(TValue const& value)
+        {
+            GD_NOT_USED_L(this, value);
+            GD_NOT_IMPLEMENTED();
+        }
+        
+    public:
+        GDAPI virtual void WritePropertyValue(bool const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(Int8 const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(UInt8 const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(Int16 const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(UInt16 const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(Int32 const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(UInt32 const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(Int64 const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(UInt64 const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(Float32 const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(Float64 const value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+        
+        GDAPI virtual void WritePropertyValue(String const& value) override
+        {
+            static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
+        }
+                
+    };  // class TSerializationWriter
+
+GD_NAMESPACE_END

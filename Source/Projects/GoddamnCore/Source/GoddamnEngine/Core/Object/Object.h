@@ -18,7 +18,7 @@
 #include <GoddamnEngine/Core/Object/Struct.h>
 #include <GoddamnEngine/Core/Object/ObjectUtility.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
-#include <GoddamnEngine/Core/Concurrency/Atomics.h>
+//#include <GoddamnEngine/Core/Concurrency/Atomics.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -114,7 +114,7 @@ GD_NAMESPACE_BEGIN
 	{
 	private:
 		GUID m_GUID;
-		AtomicUInt32 m_ReferenceCount;
+		UInt32 m_ReferenceCount;
 
 	protected:
 		GDAPI GD_OBJECT_KERNEL explicit Object();
@@ -130,20 +130,18 @@ GD_NAMESPACE_BEGIN
 		 * @brief Increments reference counter for this object.
 		 * This method should be called for each copy of the pointer to the object.
 		 *
-		 * @returns New value of the reference counter.
 		 * @see RefPtr<T> class for automated reference counting.
 		 */
-		GDAPI GD_OBJECT_KERNEL UInt32 AddRef();
+		GDAPI GD_OBJECT_KERNEL void AddRef();
 
 		/*!
 		 * @brief Decrements reference counter for this object.
 		 * When reference counter reaches zero, object is recycled.
 		 * This method should be called for each copy of the pointer to the object.
-		 * 
-		 * @returns New value of the reference counter.
+		 *
 		 * @see RefPtr<T> class for automated reference counting. 
 		 */
-		GDAPI GD_OBJECT_KERNEL UInt32 Release();
+		GDAPI GD_OBJECT_KERNEL void Release();
 		
 		/*!
 		 * Return global unique ID of the object.
@@ -190,7 +188,7 @@ GD_NAMESPACE_BEGIN
 		template<typename TObject>
 		GDINL static GD_OBJECT_HELPER RefPtr<TObject> CreateOrFindClassRelatedObjectByGUID(GUID const& guid)
 		{
-			return static_cast<RefPtr<TObject>>(Object::CreateOrFindClassRelatedObjectByGUID(guid, TObject::GetStaticClass()));
+			return union_cast<RefPtr<TObject>>(Object::CreateOrFindClassRelatedObjectByGUID(guid, TObject::GetStaticClass()));
 		}
 		//! @}
 

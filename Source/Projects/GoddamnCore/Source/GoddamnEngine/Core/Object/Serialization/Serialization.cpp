@@ -11,67 +11,94 @@
  * File contains serialization mechanisms.
  */
 #include <GoddamnEngine/Core/Object/Serialization/Serialization.h>
-#include <GoddamnEngine/Core/Object/Serialization/ReaderWriterJson.h>
-#include <GoddamnEngine/Core/Interaction/Debug.h>
+#include <GoddamnEngine/Core/Object/Serialization/SerializationReaderWriterJson.h>
+
 #include <GoddamnEngine/Core/IO/Stream.h>
+#include <GoddamnEngine/Core/Misc/StringConv.h>
+#include <GoddamnEngine/Core/Interaction/Debug.h>
 
 GD_NAMESPACE_BEGIN
 
 	GD_IMPLEMENT_OBJECT_INTRINSIC(SerializableObject);
 
-	// ------------------------------------------------------------------------------------------
-	// Serialization subsystem.
-	// ------------------------------------------------------------------------------------------
+    /*!
+     * Object reference as it is represented in the serialized data.
+     */
+    GD_OBJECT_KERNEL struct ObjectReference final : public Struct
+    {
+        GD_DECLARE_STRUCT(ObjectReference, Struct)
+        GD_PROPERTY(public, String, ObjectGuid);
+        GD_PROPERTY(public, String, ObjectClass);
+        
+    public:
+        GDINL ObjectReference() {}
+        GDINL ObjectReference(RefPtr<Object> const& object)
+            : ObjectGuid(object->GetGUID().ToString()), ObjectClass(object->GetClass()->ClassName)
+        {
+        }
+    };  // struct ObjectReference
 
-	// A bridge between worlds of ObjectVisitor and ISerializationWriter.
-	template<typename TSerializationWriter>
-	GD_OBJECT_HELPER struct ObjectSerializer final : public TObjectVisitor<ObjectSerializer<TSerializationWriter>>
+    // **------------------------------------------------------------------------------------------**
+    //! Serialization implementation based on reflection system.
+    // **------------------------------------------------------------------------------------------**
+	GD_OBJECT_KERNEL struct ObjectSerializationVisitor final : public TObjectVisitor<ObjectSerializationVisitor>
 	{
 	private:
-		TSerializationWriter& m_SerializationWriter;
+		ISerializationWriter& m_SerializationWriter;
 
 	public:
-		GDINL explicit ObjectSerializer(TSerializationWriter& serializationWriter)
+		GDINL explicit ObjectSerializationVisitor(ISerializationWriter& serializationWriter)
 			: m_SerializationWriter(serializationWriter)
 		{
 		}
 
-	private:
-		// Serializing generic properties..
-		template<typename TValue>
-		GDINL void VisitPrimitivePropertyImplBase(PropertyMetaInfo const* const propertyMetaInfo, TValue& value) 
-		{
-			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
-			{
-				m_SerializationWriter.WritePropertyName(propertyMetaInfo->PropertyName);
-				m_SerializationWriter.WritePropertyValue(value);
-			}
-		}
-
-	public:
-		// Deserializing unknown properties..
-		GDINL static void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, ...)
-		{
-			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
-			{
-				Debug::LogErrorFormat("Failed to serialize property '%s' with unknown type.", propertyMetaInfo->PropertyName);
-			}
-		}
-
-		// Serializing primitive properties..
+        // ------------------------------------------------------------------------------------------
+        // Unknown properties visitors.
+        // ------------------------------------------------------------------------------------------
+        
+        GDINL virtual void VisitUnknownProperty(PropertyMetaInfo const* const propertyMetaInfo, Handle const valueHandle) override final
+        {
+            // Serializing unknown properties..
+            GD_NOT_USED_L(this, valueHandle);
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                Debug::LogErrorFormat("Failed to serialize property '%s' with unknown type.", propertyMetaInfo->PropertyName.CStr());
+            }
+        }
+        
+        // ------------------------------------------------------------------------------------------
+        // Primitives properties visitors.
+        // ------------------------------------------------------------------------------------------
+        
 		template<typename TValue>
 		GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, TValue& value) 
 		{
-			this->VisitPrimitivePropertyImplBase(propertyMetaInfo, value);
+            // Serializing primitive generic properties..
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                m_SerializationWriter.WritePropertyName(propertyMetaInfo->PropertyName);
+                m_SerializationWriter.WritePropertyValue(const_cast<TValue const&>(value));
+            }
 		}
-		
-		// Serializing primitive object properties..
-		GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, Object const*& value) 
-		{
-			//this->VisitPrimitivePropertyImplBase(propertyMetaInfo, value->GetGUID());
-			GD_NOT_IMPLEMENTED();
-		}
-
+        GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, WideString& value)
+        {
+            // Serializing wide string properties..
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                String valueUTF8(GD_ENCODE_UTF8(value));
+                VisitProperty(propertyMetaInfo, valueUTF8);
+            }
+        }
+        GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<Object>& value)
+        {
+            // Serializing object properties..
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                ObjectReference valueReference(value);
+                VisitProperty(propertyMetaInfo, valueReference);
+            }
+        }
+                
 		// ------------------------------------------------------------------------------------------
 		// Array properties visitors.
 		// ------------------------------------------------------------------------------------------
@@ -117,7 +144,145 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-	};	// struct ObjectSerializer
+	};	// struct ObjectSerializationVisitor
+
+    // **------------------------------------------------------------------------------------------**
+    //! Deserialization implementation based on reflection system.
+    // **------------------------------------------------------------------------------------------**
+    GD_OBJECT_KERNEL struct ObjectDeserializationVisitor final : public TObjectVisitor<ObjectDeserializationVisitor>
+    {
+    private:
+        ISerializationReader& m_SerializationReader;
+        
+    public:
+        GDINT explicit ObjectDeserializationVisitor(ISerializationReader& serializationReader)
+        : m_SerializationReader(serializationReader)
+        {
+        }
+        
+        // ------------------------------------------------------------------------------------------
+        // Unknown properties visitors.
+        // ------------------------------------------------------------------------------------------
+        
+        GDINL virtual void VisitUnknownProperty(PropertyMetaInfo const* const propertyMetaInfo, Handle const valueHandle) override final
+        {
+            // Deserializing unknown properties..
+            GD_NOT_USED_L(this, valueHandle);
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                Debug::LogErrorFormat("Failed to serialize property '%s' with unknown type.", propertyMetaInfo->PropertyName.CStr());
+            }
+        }
+        
+        // ------------------------------------------------------------------------------------------
+        // Primitives properties visitors.
+        // ------------------------------------------------------------------------------------------
+        
+        template<typename TValue>
+        GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, TValue& value)
+        {
+            // Deserializing primitive properties..
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                if (!m_SerializationReader.TryReadPropertyName(propertyMetaInfo->PropertyName))
+                {
+                    Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
+                }
+                else
+                {
+                    if (!m_SerializationReader.TryReadPropertyValue(value))
+                    {
+                        Debug::LogWarningFormat("Unable to read value of the serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    }
+                }
+            }
+        }
+        GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, WideString& value)
+        {
+            // Deserializing wide string properties..
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                String valueUTF8;
+                VisitProperty(propertyMetaInfo, valueUTF8);
+                value = GD_DECODE_UTF8(valueUTF8);
+            }
+        }
+        GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<Object>& value)
+        {
+            // Deserializing object properties..
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                ObjectReference valueReference;
+                VisitProperty(propertyMetaInfo, valueReference);
+                GD_NOT_IMPLEMENTED();
+            }
+        }
+        
+        // ------------------------------------------------------------------------------------------
+        // Array properties visitors.
+        // ------------------------------------------------------------------------------------------
+        
+        GDINT virtual bool BeginVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo, SizeTp& arraySize) override final
+        {
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                if (!m_SerializationReader.TryReadPropertyName(propertyMetaInfo->PropertyName))
+                {
+                    Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    return false;
+                }
+                if (!m_SerializationReader.TryBeginReadArrayPropertyValue(arraySize))
+                {
+                    Debug::LogWarningFormat("Unable to read value of the serialized data for array property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        GDINT virtual void EndVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo) override final
+        {
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                m_SerializationReader.EndReadArrayPropertyValue();
+            }
+        }
+        
+        // ------------------------------------------------------------------------------------------
+        // Structure properties visitors.
+        // ------------------------------------------------------------------------------------------
+        
+        GDINT virtual bool BeginVisitStructProperty(PropertyMetaInfo const* const propertyMetaInfo) override final
+        {
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                if (!m_SerializationReader.TryReadPropertyName(propertyMetaInfo->PropertyName))
+                {
+                    Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    return false;
+                }
+                if (!m_SerializationReader.TryBeginReadStructPropertyValue())
+                {
+                    Debug::LogWarningFormat("Unable to read value of the serialized data for array property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        GDINT virtual void EndVisitStructProperty(PropertyMetaInfo const* const propertyMetaInfo) override
+        {
+            if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
+            {
+                m_SerializationReader.EndReadStructPropertyValue();
+            }
+        }
+        
+    };    // struct ObjectDeserializationVisitor
+
+    // ------------------------------------------------------------------------------------------
+    // Serialization subsystem.
+    // ------------------------------------------------------------------------------------------
 
 	/*!
 	 * @brief Synchronously writes serializable properties of this object.
@@ -132,11 +297,14 @@ GD_NAMESPACE_BEGIN
 	 * @returns True if serialization succeeded.
 	 * @see PropertyFlags enum.
 	 */
-	GDAPI GD_OBJECT_KERNEL bool SerializableObject::SerializeSync(SharedPtr<OutputStream> const outputStream)
+	GDAPI GD_OBJECT_KERNEL bool SerializableObject::SerializeSync(OutputStream& outputStream)
 	{
-		JsonWriter serializationWriter(outputStream);
-		ObjectSerializer<JsonWriter> serializer(serializationWriter);
-		Reflect(serializer);
+		SerializationWriterJson serializationWriter(outputStream);
+		ObjectSerializationVisitor serializationWriterVisitor(serializationWriter);
+        
+        OnPreSerialize(true);
+		Reflect(serializationWriterVisitor);
+        OnPostSerialize();
 		return true;
 	}
 
@@ -144,137 +312,14 @@ GD_NAMESPACE_BEGIN
 	// Deserialization subsystem.
 	// ------------------------------------------------------------------------------------------
 
-	// A bridge between worlds of ObjectVisitor and IGenericReader.
-	template<typename TSerializationReader>
-	GD_OBJECT_HELPER struct ObjectDeserializer final : public TObjectVisitor<ObjectDeserializer<TSerializationReader>>
+	GDAPI GD_OBJECT_KERNEL bool SerializableObject::DeserializeSync(InputStream& inputStream)
 	{
-	private:
-		TSerializationReader& m_SerializationReader;
-
-	public:
-		GDINT explicit ObjectDeserializer(TSerializationReader& serializationReader)
-			: m_SerializationReader(serializationReader)
-		{
-		}
-
-	private:
-		// Deserializing generic properties..
-		template<typename TValue>
-		GDINL void VisitPrimitivePropertyImplBase(PropertyMetaInfo const* const propertyMetaInfo, TValue& value)
-		{
-			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
-			{
-				if (!m_SerializationReader.TryReadPropertyName(propertyMetaInfo->PropertyName))
-				{
-					Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
-				}
-				else
-				{
-					if (!m_SerializationReader.TryReadPropertyValue(value))
-					{
-						Debug::LogWarningFormat("Unable to read value of the serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
-					}
-				}
-			}
-		}
-
-	public:
-		// Deserializing unknown properties..
-		GDINL static void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, ...)
-		{
-			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
-			{
-				Debug::LogErrorFormat("Failed to deserialize property '%s' with unknown type.", propertyMetaInfo->PropertyName);
-			}
-		}
-
-		// Deserializing primitive properties..
-		template<typename TValue>
-		GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, TValue& value)
-		{
-			this->VisitPrimitivePropertyImplBase(propertyMetaInfo, value);
-		}
-
-		// Deserializing primitive object properties..
-		GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, Object const*& value)
-		{
-			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
-			{
-				GD_NOT_IMPLEMENTED();
-				/*GUID guid;
-				VisitPrimitivePropertyImpl(propertyMetaInfo, guid);
-				value = Object::FindObject(guid, nullptr);*/
-			}
-		}
-
-		// ------------------------------------------------------------------------------------------
-		// Array properties visitors.
-		// ------------------------------------------------------------------------------------------
-
-		GDINT virtual bool BeginVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo, SizeTp& arraySize) override final
-		{
-			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
-			{
-				if (!m_SerializationReader.TryReadPropertyName(propertyMetaInfo->PropertyName))
-				{
-					Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
-					return false;
-				}
-				if (!m_SerializationReader.TryBeginReadArrayPropertyValue(arraySize))
-				{
-					Debug::LogWarningFormat("Unable to read value of the serialized data for array property '%s'", propertyMetaInfo->PropertyName.CStr());
-					return false;
-				}
-			}
-			return true;
-		}
-
-		GDINT virtual void EndVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo) override final
-		{
-			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
-			{
-				m_SerializationReader.EndReadArrayPropertyValue();
-			}
-		}
-
-		// ------------------------------------------------------------------------------------------
-		// Structure properties visitors.
-		// ------------------------------------------------------------------------------------------
-
-		GDINT virtual bool BeginVisitStructProperty(PropertyMetaInfo const* const propertyMetaInfo) override final
-		{
-			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
-			{
-				if (!m_SerializationReader.TryReadPropertyName(propertyMetaInfo->PropertyName))
-				{
-					Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
-					return false;
-				}
-				if (!m_SerializationReader.TryBeginReadStructPropertyValue())
-				{
-					Debug::LogWarningFormat("Unable to read value of the serialized data for array property '%s'", propertyMetaInfo->PropertyName.CStr());
-					return false;
-				}
-				return true;
-			}
-			return false;
-		}
-
-		GDINT virtual void EndVisitStructProperty(PropertyMetaInfo const* const propertyMetaInfo) override
-		{
-			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
-			{
-				m_SerializationReader.EndReadStructPropertyValue();
-			}
-		}
-
-	};	// struct ObjectDeserializer
-
-	GDAPI GD_OBJECT_KERNEL bool SerializableObject::DeserializeSync(SharedPtr<InputStream> const inputStream)
-	{
-		JsonReader serializationReader(inputStream);
-		ObjectDeserializer<JsonReader> deserializer(serializationReader);
+		SerializationReaderJson serializationReader(inputStream);
+		ObjectDeserializationVisitor deserializer(serializationReader);
+        
+        OnPreDeserialize();
 		Reflect(deserializer);
+        OnPostDeserialize();
 		return true;
 	}
 
