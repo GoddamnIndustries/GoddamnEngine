@@ -44,7 +44,7 @@ GD_NAMESPACE_BEGIN
         GD_DECLARE_OBJECT(TestPerson, SerializableObject)
         GD_PROPERTY(public, WideString, FirstName, PFNotSerializable);
         GD_PROPERTY(public, WideString, LastName);
-        GD_PROPERTY(public, RefPtr<TestAddress>, Address);
+        GD_PROPERTY(public, RefPtr<TestAddress>, Address, PFChildObject);
         GD_PROPERTY(public, Vector<TestPhoneNumber>, PhoneNumbers);
     };  // class TestPerson
     GD_IMPLEMENT_OBJECT(TestPerson)
@@ -92,8 +92,6 @@ GD_NAMESPACE_BEGIN
         
         MemoryInputStream inputStream(r, CString::Strlen(r));
         person->DeserializeSync(inputStream);
-        
-        int i;
     };
 
 GD_NAMESPACE_END

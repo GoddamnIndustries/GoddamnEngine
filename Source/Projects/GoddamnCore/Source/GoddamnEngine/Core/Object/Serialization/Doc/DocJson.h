@@ -541,9 +541,7 @@ GD_NAMESPACE_BEGIN
 	class JsonValueNull final : public JsonValue
 	{
 	public:
-		GDINL JsonValueNull()
-        {
-        }
+		GDINL JsonValueNull() = default;
 
 	public:
 		GDINT virtual JsonTypeInfo GetTypeInfo() const override final
@@ -722,7 +720,12 @@ GD_NAMESPACE_BEGIN
 	{
 	public:
 		String ValueString;
-		GDINL explicit JsonValueString(String const& valueString) : ValueString(valueString) {}
+
+	public:
+		GDINL explicit JsonValueString(String const& valueString)   // NOLINT
+			: ValueString(valueString)
+		{
+		}
 
 	public:
 		GDINT JsonTypeInfo GetTypeInfo() const override final
@@ -791,8 +794,7 @@ GD_NAMESPACE_BEGIN
             : ValueArray(0, valueArrayCapacity)
         {
         }
-        
-		GDINL explicit JsonValueArray(JsonValueVector const& valueArray)
+		GDINL explicit JsonValueArray(JsonValueVector const& valueArray)  // NOLINT
             : ValueArray(valueArray)
         {
         }
@@ -834,7 +836,7 @@ GD_NAMESPACE_BEGIN
 		JsonObjectPtr ValueObject;
         
     public:
-		GDINL explicit JsonValueObject(JsonObjectPtr const valueObject)
+		GDINL explicit JsonValueObject(JsonObjectPtr const& valueObject)	// NOLINT
             : ValueObject(valueObject)
         {
         }

@@ -7,8 +7,8 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Object/Serialization.cpp
- * File contains serialization mechanisms.
+ * @file
+ * Serialization implementation.
  */
 #include <GoddamnEngine/Core/Object/Serialization/Serialization.h>
 #include <GoddamnEngine/Core/Object/Serialization/SerializationReaderWriterJson.h>
@@ -27,15 +27,37 @@ GD_NAMESPACE_BEGIN
     GD_OBJECT_KERNEL struct ObjectReference final : public Struct
     {
         GD_DECLARE_STRUCT(ObjectReference, Struct)
-        GD_PROPERTY(public, String, ObjectGuid);
-        GD_PROPERTY(public, String, ObjectClass);
+        GD_PROPERTY(public, String, __ObjectGuid__);
+        GD_PROPERTY(public, String, __ObjectClass__);
         
     public:
-        GDINL ObjectReference() {}
-        GDINL ObjectReference(RefPtr<Object> const& object)
-            : ObjectGuid(object->GetGUID().ToString()), ObjectClass(object->GetClass()->ClassName)
+		GDINL ObjectReference() = default;
+        GDINL explicit ObjectReference(RefPtr<Object> const& object)
+            : __ObjectGuid__(object->GetGUID().ToString()), __ObjectClass__(object->GetClass()->ClassName)
         {
         }
+
+		/*!
+		 * Resolves the reference.
+		 * 
+		 * @param object Resolving output.
+		 * @return True if reference was successfully resolved.
+		 */
+		GDINL bool TryResolve(RefPtr<Object>& object) const
+        {
+			GUID objectGuid;
+			if (!GUID::TryParse(__ObjectGuid__, objectGuid))
+			{
+				auto const objectClass = ObjectClass::FindClass(__ObjectClass__);
+				if (objectClass != nullptr)
+				{
+					object = Object::CreateOrFindClassRelatedObjectByGUID(objectGuid, objectClass);
+					return true;
+				}
+			}
+			return false;
+        }
+
     };  // struct ObjectReference
 
     // **------------------------------------------------------------------------------------------**
@@ -45,11 +67,20 @@ GD_NAMESPACE_BEGIN
 	{
 	private:
 		ISerializationWriter& m_SerializationWriter;
+		Vector<RefPtr<SerializableObject>> m_DeferredChildObjects;
 
 	public:
 		GDINL explicit ObjectSerializationVisitor(ISerializationWriter& serializationWriter)
 			: m_SerializationWriter(serializationWriter)
 		{
+		}
+
+		GDINL virtual ~ObjectSerializationVisitor()
+		{
+			for (auto const& deferredChildObject : m_DeferredChildObjects)
+			{
+				deferredChildObject->SerializeSync(m_SerializationWriter);
+			}
 		}
 
         // ------------------------------------------------------------------------------------------
@@ -76,39 +107,48 @@ GD_NAMESPACE_BEGIN
             // Serializing primitive generic properties..
             if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
             {
-                m_SerializationWriter.WritePropertyName(propertyMetaInfo->PropertyName);
+                m_SerializationWriter.WritePropertyNameOrSelectNextArrayElement(propertyMetaInfo->PropertyName);
                 m_SerializationWriter.WritePropertyValue(const_cast<TValue const&>(value));
             }
 		}
+
         GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, WideString& value)
         {
             // Serializing wide string properties..
             if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
             {
-                String valueUTF8(GD_ENCODE_UTF8(value));
-                VisitProperty(propertyMetaInfo, valueUTF8);
+				String const valueUTF8(GD_ENCODE_UTF8(value));
+				m_SerializationWriter.WritePropertyNameOrSelectNextArrayElement(propertyMetaInfo->PropertyName);
+				m_SerializationWriter.WritePropertyValue(valueUTF8);
             }
         }
+
         GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<Object>& value)
         {
             // Serializing object properties..
             if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
             {
+				if ((propertyMetaInfo->PropertyFlags & PFChildObject) != 0)
+				{
+					auto const serializableObject = object_cast<RefPtr<SerializableObject>>(value);
+					m_DeferredChildObjects.InsertLast(serializableObject);
+				}
+
                 ObjectReference valueReference(value);
                 VisitProperty(propertyMetaInfo, valueReference);
             }
         }
-                
+        
 		// ------------------------------------------------------------------------------------------
 		// Array properties visitors.
 		// ------------------------------------------------------------------------------------------
 
 		GDINT bool BeginVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo, SizeTp& arraySize) override final
 		{
-			GD_NOT_USED(arraySize);
+			GD_NOT_USED_L(arraySize);
 			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
 			{
-				m_SerializationWriter.WritePropertyName(propertyMetaInfo->PropertyName);
+				m_SerializationWriter.WritePropertyNameOrSelectNextArrayElement(propertyMetaInfo->PropertyName);
 				m_SerializationWriter.BeginWriteArrayPropertyValue();
 			}
 			return true;
@@ -130,7 +170,7 @@ GD_NAMESPACE_BEGIN
 		{
 			if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
 			{
-				m_SerializationWriter.WritePropertyName(propertyMetaInfo->PropertyName);
+				m_SerializationWriter.WritePropertyNameOrSelectNextArrayElement(propertyMetaInfo->PropertyName);
 				m_SerializationWriter.BeginWriteStructPropertyValue();
 			}
 			return true;
@@ -155,8 +195,8 @@ GD_NAMESPACE_BEGIN
         ISerializationReader& m_SerializationReader;
         
     public:
-        GDINT explicit ObjectDeserializationVisitor(ISerializationReader& serializationReader)
-        : m_SerializationReader(serializationReader)
+		GDINL explicit ObjectDeserializationVisitor(ISerializationReader& serializationReader)
+			: m_SerializationReader(serializationReader)
         {
         }
         
@@ -184,19 +224,18 @@ GD_NAMESPACE_BEGIN
             // Deserializing primitive properties..
             if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
             {
-                if (!m_SerializationReader.TryReadPropertyName(propertyMetaInfo->PropertyName))
+                if (!m_SerializationReader.TryReadPropertyNameOrSelectNextArrayElement(propertyMetaInfo->PropertyName))
                 {
                     Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
+					return;
                 }
-                else
+                if (!m_SerializationReader.TryReadPropertyValue(value))
                 {
-                    if (!m_SerializationReader.TryReadPropertyValue(value))
-                    {
-                        Debug::LogWarningFormat("Unable to read value of the serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
-                    }
+                    Debug::LogWarningFormat("Unable to read value of the serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
                 }
             }
         }
+
         GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, WideString& value)
         {
             // Deserializing wide string properties..
@@ -207,6 +246,7 @@ GD_NAMESPACE_BEGIN
                 value = GD_DECODE_UTF8(valueUTF8);
             }
         }
+
         GDINL void VisitPrimitivePropertyImpl(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<Object>& value)
         {
             // Deserializing object properties..
@@ -214,7 +254,10 @@ GD_NAMESPACE_BEGIN
             {
                 ObjectReference valueReference;
                 VisitProperty(propertyMetaInfo, valueReference);
-                GD_NOT_IMPLEMENTED();
+                if (!valueReference.TryResolve(value))
+                {
+					Debug::LogWarningFormat("Unable to parse serialized data for property property '%s'", propertyMetaInfo->PropertyName.CStr());
+                }
             }
         }
         
@@ -226,7 +269,7 @@ GD_NAMESPACE_BEGIN
         {
             if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
             {
-                if (!m_SerializationReader.TryReadPropertyName(propertyMetaInfo->PropertyName))
+                if (!m_SerializationReader.TryReadPropertyNameOrSelectNextArrayElement(propertyMetaInfo->PropertyName))
                 {
                     Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
                     return false;
@@ -256,7 +299,7 @@ GD_NAMESPACE_BEGIN
         {
             if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
             {
-                if (!m_SerializationReader.TryReadPropertyName(propertyMetaInfo->PropertyName))
+                if (!m_SerializationReader.TryReadPropertyNameOrSelectNextArrayElement(propertyMetaInfo->PropertyName))
                 {
                     Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
                     return false;
@@ -284,6 +327,25 @@ GD_NAMESPACE_BEGIN
     // Serialization subsystem.
     // ------------------------------------------------------------------------------------------
 
+	GDAPI GD_OBJECT_KERNEL bool SerializableObject::SerializeSync(ISerializationWriter& serializationWriter)
+	{
+		ObjectSerializationVisitor serializationWriterVisitor(serializationWriter);
+		if (OnPreSerialize(true))
+		{
+			serializationWriter.WritePropertyNameOrSelectNextArrayElement("__GoddamnSerializableObjects__");
+			serializationWriter.BeginWriteStructPropertyValue();
+			serializationWriter.WritePropertyNameOrSelectNextArrayElement("__GoddamnObjectGuid__");
+			serializationWriter.WritePropertyValue(GetGUID().ToString());
+			serializationWriter.WritePropertyNameOrSelectNextArrayElement("__GoddamnObjectClass__");
+			serializationWriter.WritePropertyValue(GetClass()->ClassName);
+			Reflect(serializationWriterVisitor);
+			serializationWriter.EndWriteStructPropertyValue();
+
+			OnPostSerialize();
+		}
+		return true;
+	}
+
 	/*!
 	 * @brief Synchronously writes serializable properties of this object.
 	 *
@@ -300,11 +362,13 @@ GD_NAMESPACE_BEGIN
 	GDAPI GD_OBJECT_KERNEL bool SerializableObject::SerializeSync(OutputStream& outputStream)
 	{
 		SerializationWriterJson serializationWriter(outputStream);
-		ObjectSerializationVisitor serializationWriterVisitor(serializationWriter);
-        
-        OnPreSerialize(true);
-		Reflect(serializationWriterVisitor);
-        OnPostSerialize();
+		serializationWriter.WritePropertyNameOrSelectNextArrayElement("__GoddamnSerializableObjects__");
+		serializationWriter.BeginWriteArrayPropertyValue();
+
+		SerializeSync(serializationWriter);
+
+		serializationWriter.EndWriteArrayPropertyValue();
+
 		return true;
 	}
 

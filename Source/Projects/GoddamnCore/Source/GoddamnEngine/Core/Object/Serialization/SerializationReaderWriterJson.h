@@ -77,7 +77,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public:
-		GDINL virtual bool WritePropertyName(String const& name) override final
+		GDINL virtual bool WritePropertyNameOrSelectNextArrayElement(String const& name) override final
 		{
 			if (m_FirstPropertyWritten)
 			{
@@ -89,7 +89,7 @@ GD_NAMESPACE_BEGIN
 				m_FirstPropertyWritten = true;
 			}
 			WriteTabs();
-			if (SerializationWriterJsonBase::WritePropertyName(name))
+			if (SerializationWriterJsonBase::WritePropertyNameOrSelectNextArrayElement(name))
 			{
 				m_WritingStream.Write("\"");
 				m_WritingStream.Write(name);
@@ -135,6 +135,7 @@ GD_NAMESPACE_BEGIN
 		// Array properties readers.
 		// ------------------------------------------------------------------------------------------
 
+	public:
 		GDINL virtual void BeginWriteArrayPropertyValue() override final
 		{
 			SerializationWriterJsonBase::BeginWriteArrayPropertyValue();

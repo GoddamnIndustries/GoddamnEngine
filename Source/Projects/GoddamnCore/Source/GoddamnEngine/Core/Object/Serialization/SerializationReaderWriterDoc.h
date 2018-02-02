@@ -28,7 +28,7 @@ GD_NAMESPACE_BEGIN
 		struct DocValueArrayScope
 		{
 			DocValueVector Array;
-			UInt32 mutable CurrentIndex;
+			UInt32 mutable CurrentIndex = 0;
 		};	// struct DocValueArrayScope
         struct DocObjectPtrScope
         {
@@ -47,17 +47,17 @@ GD_NAMESPACE_BEGIN
          * @param doc Serialized data document.
          * @param docReadingStream Pointer to the stream, from the one we are reading.
          */
-		GDINL explicit SerializationReaderDoc(DocPtr const doc, InputStream& docReadingStream)
+		GDINL explicit SerializationReaderDoc(DocPtr const& doc, InputStream& docReadingStream)
 			: SerializationReaderDocBase(docReadingStream)
 		{
-			auto result = doc->_TryParseDocument(docReadingStream);
+			auto const result = doc->_TryParseDocument(docReadingStream);
             m_ObjectsScope.InsertLast({ result.RootObject });
 		}
 
 	public:
-		GDAPI virtual bool TryReadPropertyName(String const& name) override
+		GDAPI virtual bool TryReadPropertyNameOrSelectNextArrayElement(String const& name) override
 		{
-			if (!SerializationReaderDocBase::TryReadPropertyName(name))
+			if (!SerializationReaderDocBase::TryReadPropertyNameOrSelectNextArrayElement(name))
 			{
 				// Selecting top object's property by name.
 				GD_DEBUG_VERIFY(!m_ObjectsScope.IsEmpty(), "Object scoping error.");

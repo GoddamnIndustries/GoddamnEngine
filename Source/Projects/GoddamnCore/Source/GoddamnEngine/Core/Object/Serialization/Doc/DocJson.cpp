@@ -65,6 +65,7 @@ GD_NAMESPACE_BEGIN
     /*!
      * Reads next character from the input stream.
      *
+	 * @param stream Input stream with possible JSON data.
      * @param nextCharacter Next character.
      * @param nextCharacterInt Integer representation of the next character.
      */
@@ -102,7 +103,7 @@ GD_NAMESPACE_BEGIN
 			while ((CChar::IsDigit(nextCharacter) || CChar::IsAlphabetic(nextCharacter)
 				 || CString::Strchr("+-.", nextCharacter) != nullptr) && nextCharacter != -1)
 			{
-				nextToken.TokenData.Append(nextCharacter);
+				nextToken.TokenData += nextCharacter;
 				JsonGetNextChar(stream, nextCharacter, nextCharacterInt);
 			}
 			stream.Seek(-1);
@@ -329,7 +330,7 @@ GD_NAMESPACE_BEGIN
 	GDINT IDoc::Result Json::_TryParseDocument(InputStream& docInputStream)
 	{
 		// Expecting beginning of the m_RootNode object.
-		auto nextToken = JsonGetNextToken(docInputStream);
+		auto const nextToken = JsonGetNextToken(docInputStream);
 		if (nextToken.TokenType != JsonTokenType::Punctuation || nextToken.TokenPunctiation != '{')
 		{
 			return{ nullptr, "Unexpected token in the root object declaration, '{' expected." };

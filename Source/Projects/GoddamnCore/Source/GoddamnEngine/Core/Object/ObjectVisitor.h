@@ -28,7 +28,8 @@ GD_NAMESPACE_BEGIN
 	{
 		PFNone = 0,			//!< Zero property flags.
 		PFNotSerializable,	//!< Property is not serializable.
-		PFDefault,
+		PFChildObject,		//!< @todo
+		PFDefault = PFNone,
 	};	// enum PropertyFlags
 	GD_ENUM_DEFINE_FLAG_OPERATORS(PropertyFlags);
 	//! @}
@@ -42,7 +43,7 @@ GD_NAMESPACE_BEGIN
 		PropertyFlags const PropertyFlags;
 
 	public:
-		GDINL explicit PropertyMetaInfo(CStr propertyName, GD::PropertyFlags const propertyFlags = PFDefault, ...)
+		GDINL explicit PropertyMetaInfo(CStr const propertyName, GD::PropertyFlags const propertyFlags = PFDefault, ...)
 			: PropertyName(propertyName), PropertyFlags(propertyFlags)
 		{
 		}
@@ -365,7 +366,7 @@ GD_NAMESPACE_BEGIN
 	};	// struct ObjectVisitor
 
 	// **------------------------------------------------------------------------------------------**
-	//! Implements template wrappers from the 'ObjectVisitor' primitive visiting interface.
+	//! Template wrappers from the 'ObjectVisitor' primitive visiting interface.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TImplementation, typename TObjectVisitorBase = ObjectVisitor>
 	GD_OBJECT_HELPER struct TObjectVisitor : public TObjectVisitorBase

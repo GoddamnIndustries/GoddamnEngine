@@ -16,7 +16,6 @@
 #include <GoddamnEngine/Core/IO/Stream.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Containers/String.h>
-#include <GoddamnEngine/Core/Templates/SharedPtr.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -53,12 +52,12 @@ GD_NAMESPACE_BEGIN
 	public:
 
 		/*!
-		 * Reads name of the property.
+		 * Reads name of the property or selects next array element.
 		 *
 		 * @param name String property name.
 		 * @returns True if property with such name was found.
 		 */
-		GDAPI virtual bool TryReadPropertyName(String const& name)
+		GDAPI virtual bool TryReadPropertyNameOrSelectNextArrayElement(String const& name)
 		{
 			GD_NOT_USED(name);
             return !m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReading::Array;
@@ -325,7 +324,7 @@ GD_NAMESPACE_BEGIN
 	class ISerializationWriter : public IVirtuallyDestructible
 	{
 	protected:
-		enum CurrentlyWriting
+		enum class CurrentlyWriting
 		{
 			Array,
 			Struct,
@@ -352,12 +351,12 @@ GD_NAMESPACE_BEGIN
 	public:
 
 		/*!
-		 * Writes name of the property.
+		 * Writes name of the property or selects next array element.
 		 *
 		 * @param name String property name.
 		 * @returns True false if property name should not be written (serializing arrays).
 		 */
-		GDAPI virtual bool WritePropertyName(String const& name)
+		GDAPI virtual bool WritePropertyNameOrSelectNextArrayElement(String const& name)
 		{
 			GD_NOT_USED(name);
             return !m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Struct;

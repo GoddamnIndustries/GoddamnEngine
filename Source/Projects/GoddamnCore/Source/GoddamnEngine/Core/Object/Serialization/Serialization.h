@@ -14,6 +14,7 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Object/Object.h>
+#include <GoddamnEngine/Core/Object/Serialization/SerializationReaderWriter.h>
 #include <GoddamnEngine/Core/IO/Stream.h>
 
 GD_NAMESPACE_BEGIN
@@ -72,6 +73,7 @@ GD_NAMESPACE_BEGIN
 		 * @returns True if serialization succeeded.
 		 * @see PropertyFlags enum.
 		 */
+		GDAPI GD_OBJECT_KERNEL virtual bool SerializeSync(ISerializationWriter& serializationWriter) final;
 		GDAPI GD_OBJECT_KERNEL virtual bool SerializeSync(OutputStream& outputStream) final;
         
 		// ------------------------------------------------------------------------------------------
