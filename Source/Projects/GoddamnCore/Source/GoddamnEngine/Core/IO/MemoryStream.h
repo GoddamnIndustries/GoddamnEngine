@@ -7,8 +7,8 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/IO/Stream.h
- * File contains in-memory stream interfaces.
+ * @file
+ * In-memory stream interfaces.
  */
 #pragma once
 
