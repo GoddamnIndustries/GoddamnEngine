@@ -52,7 +52,7 @@ namespace GoddamnEngine.BuildSystem.Target
         /// <returns>True if target platform is desktop.</returns>
         public static bool IsDesktopPlatform(TargetPlatform platform)
         {
-            return platform == TargetPlatform.Windows;
+            return platform == TargetPlatform.Windows || platform == TargetPlatform.MacOS;
         }
 
         /// <summary>

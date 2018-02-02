@@ -93,8 +93,8 @@ Bin
 Lib
 
 # Documentation.
-Doc
-!Doc/*.md
+/Doc
+!/Doc/*.md
 
 ##################################################################
 # Project files.

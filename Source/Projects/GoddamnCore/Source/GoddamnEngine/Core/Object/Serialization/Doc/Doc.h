@@ -7,47 +7,76 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Object/Serialization/DOM.h
- * File contains base interface to the Document-Object-Model.
+ * @file
+ * Document content interface.
  */
 #pragma once
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/IO/Stream.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Containers/String.h>
 #include <GoddamnEngine/Core/Templates/SharedPtr.h>
-#include <GoddamnEngine/Core/IO/Stream.h>
-#include <GoddamnEngine/Core/Object/Serialization/SerializationBase.h>
 
 GD_NAMESPACE_BEGIN
 
-	class IDom;
-	class IDomValue;
-	class IDomObject;
+    class IDoc;
+    class IDocValue;
+    class IDocObject;
 
-	using DomTypeInfo = SerializationTypeInfo;
+    using DocPtr = SharedPtr<IDoc>;
+	using DocValuePtr = SharedPtr<IDocValue>;
+	using DocObjectPtr = SharedPtr<IDocObject>;
+	using DocValueVector = Vector<DocValuePtr>;
 
-	using DomPtr = SharedPtr<IDom>;
-	using DomValuePtr = SharedPtr<IDomValue>;
-	using DomObjectPtr = SharedPtr<IDomObject>;
-	using DomValueVector = Vector<DomValuePtr>;
+    /*!
+     * Document value type.
+     */
+    enum class DocValueTypeInfo
+    {
+        Unknown,
+        Null,
+        Bool    = 'b',
+        Int8    = 'c',
+        UInt8   = 'C',
+        Int16   = 's',
+        UInt16  = 'S',
+        Int32   = 'i',
+        UInt32  = 'I',
+        Int64   = 'l',
+        UInt64  = 'L',
+        Float32 = 'f',
+        Float64 = 'd',
+        String  = 'Z',
+        GUID    = 'G',
+        Array   = 'A',
+        Struct  = 'O',
+        Object  = Struct,
+    };  // enum class DocTypeInfo
 
 	// **------------------------------------------------------------------------------------------**
-	//! Interface for DOM abstract value - FOR INTERNAL USAGE ONLY!
+	//! Abstract doucment value.
 	// **------------------------------------------------------------------------------------------**
-	class IDomValue : public ReferenceTarget
+	class IDocValue : public ReferenceTarget
 	{
 	public:
 
 		/*!
 		 * Returns type of current property.
 		 */
-		GDINT virtual DomTypeInfo _GetTypeInfo() const GD_PURE_VIRTUAL;
+		GDINT virtual DocValueTypeInfo _GetTypeInfo() const GD_PURE_VIRTUAL;
 
 		// ------------------------------------------------------------------------------------------
 		// Getter operations - should be implemented.
 		// ------------------------------------------------------------------------------------------
 
+        /*!
+         * Reads property.
+         *
+         * @param value Property value.
+         * @returns True if property value was successfully read.
+         */
+        //! @{
 		GDINT virtual bool _TryGetValue(bool& value) GD_PURE_VIRTUAL;
 
 		GDINT virtual bool _TryGetValue(Int8& value) GD_PURE_VIRTUAL;
@@ -71,50 +100,51 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual bool _TryGetValue(Float64& value) GD_PURE_VIRTUAL;
 
 		GDINT virtual bool _TryGetValue(String& value) GD_PURE_VIRTUAL;
+        
+		GDINT virtual bool _TryGetValue(DocValueVector& value) GD_PURE_VIRTUAL;
 
-		GDINT virtual bool _TryGetValue(DomValueVector& value) GD_PURE_VIRTUAL;
-
-		GDINT virtual bool _TryGetValue(DomObjectPtr& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool _TryGetValue(DocObjectPtr& value) GD_PURE_VIRTUAL;
+        //! @}
 		
-	};	// class IDomValue
+	};	// class IDocValue
 
 	// **------------------------------------------------------------------------------------------**
-	//! Interface for DOM abstract object - FOR INTERNAL USAGE ONLY!
+	//! Abstract document object.
 	// **------------------------------------------------------------------------------------------**
-	class IDomObject : public ReferenceTarget
+	class IDocObject : public ReferenceTarget
 	{
 	public:
 
 		/*!
-		 * Finds DOM value property by name.
+		 * Finds value property by name.
 		 *
 		 * @param name The name of the property.
 		 * @returns Pointer to the found value or null pointer.
 		 */
-		GDINT virtual DomValuePtr _GetProperty(String const& name) GD_PURE_VIRTUAL;
+		GDINT virtual DocValuePtr _GetProperty(String const& name) GD_PURE_VIRTUAL;
 		
-	};	// class IDomObject
+	};	// class IDocObject
 
 	// **------------------------------------------------------------------------------------------**
-	//! Interface for DOM abstract document - FOR INTERNAL USAGE ONLY!
+	//! Abstract document.
 	// **------------------------------------------------------------------------------------------**
-	class IDom : public ReferenceTarget
+	class IDoc : public ReferenceTarget
 	{
 	public:
 		struct Result
 		{
-			DomObjectPtr RootObject;
+			DocObjectPtr RootObject;
 			String ErrorDesc;
 		};	// struct Result
 
 		/*!
-		 * Tries to parse a DOM document.
+		 * Tries to parse a document.
 		 *
-		 * @param domInputStream Input stream that represents DOM data.
-		 * @returns Struct that represents DOM parsing result.
+		 * @param docInputStream Input stream that represents document data.
+		 * @returns Struct that represents document parsing result.
 		 */
-		GDINT virtual Result _TryParseDOM(SharedPtr<InputStream> const domInputStream) GD_PURE_VIRTUAL;
+		GDINT virtual Result _TryParseDocument(InputStream& docInputStream) GD_PURE_VIRTUAL;
 		
-	};	// class IDom
+	};	// class IDoc
 
 GD_NAMESPACE_END

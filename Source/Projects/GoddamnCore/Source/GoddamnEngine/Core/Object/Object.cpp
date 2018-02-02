@@ -62,9 +62,9 @@ GD_NAMESPACE_BEGIN
 	 * @returns New value of the reference counter.
 	 * @see RefPtr<T> class for automated reference counting.
 	 */
-	GDAPI GD_OBJECT_KERNEL UInt32 Object::AddRef()
+	GDAPI GD_OBJECT_KERNEL void Object::AddRef()
 	{
-		return ++m_ReferenceCount;
+		++m_ReferenceCount;
 	}
 
 	/*!
@@ -75,7 +75,7 @@ GD_NAMESPACE_BEGIN
 	 * @returns New value of the reference counter.
 	 * @see RefPtr<T> class for automated reference counting.
 	 */
-	GDAPI GD_OBJECT_KERNEL UInt32 Object::Release()
+	GDAPI GD_OBJECT_KERNEL void Object::Release()
 	{
 		if (--m_ReferenceCount == 0)
 		{
@@ -83,9 +83,7 @@ GD_NAMESPACE_BEGIN
 			GetClass()->m_Instances.Erase(m_GUID);
 
 			gd_delete this;
-			return 0;
 		}
-		return m_ReferenceCount;
 	}
 	
 	/*!
@@ -106,7 +104,9 @@ GD_NAMESPACE_BEGIN
 		auto const classObjectPtr = klass->m_Instances.Find(guid);
 		if (classObjectPtr != nullptr)
 		{
-			return *classObjectPtr;
+            auto const classObject = *classObjectPtr;
+            classObject->AddRef();
+			return classObject;
 		}
 
 		// Next, trying to find this object among instances of the derived classes.

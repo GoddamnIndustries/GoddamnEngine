@@ -182,26 +182,29 @@ namespace GoddamnEngine.BuildSystem.Collectors
         }
 
         /// <summary>
-        /// Returns path to the compilation result.
+        /// Returns directory of the compilation result.
         /// </summary>
         /// <param name="platform">One of the target platforms.</param>
         /// <param name="configuration">One of the target configurations.</param>
-        public virtual string GetOutputPath(TargetPlatform platform, TargetConfiguration configuration)
+        public virtual string GetOutputFileName(TargetPlatform platform, TargetConfiguration configuration)
         {
             Debug.Assert(platform != TargetPlatform.Unknown);
-            var outputDirectory = Path.Combine(BuildSystem.GetSdkLocation(), "bin", GetName());
-            string outputExtension = null;
+
+            string outputExtension = null, outputPrefix = null;
             if (TargetInfo.IsMicrosoftPlatform(platform))
             {
                 switch (GetBuildType(platform, configuration))
                 {
                     case ProjectBuildType.Application:
+                        outputPrefix = "";
                         outputExtension = ".exe";
                         break;
                     case ProjectBuildType.DynamicLibrary:
+                        outputPrefix = "";
                         outputExtension = ".dll";
                         break;
                     case ProjectBuildType.StaticLibrary:
+                        outputPrefix = "";
                         outputExtension = ".lib";
                         break;
                 }
@@ -211,12 +214,15 @@ namespace GoddamnEngine.BuildSystem.Collectors
                 switch (GetBuildType(platform, configuration))
                 {
                     case ProjectBuildType.Application:
+                        outputPrefix = "";
                         outputExtension = ".app";
                         break;
                     case ProjectBuildType.DynamicLibrary:
+                        outputPrefix = "";
                         outputExtension = ".dylib";
                         break;
                     case ProjectBuildType.StaticLibrary:
+                        outputPrefix = "lib";
                         outputExtension = ".a";
                         break;
                 }
@@ -226,12 +232,15 @@ namespace GoddamnEngine.BuildSystem.Collectors
                 switch (GetBuildType(platform, configuration))
                 {
                     case ProjectBuildType.Application:
+                        outputPrefix = "";
                         outputExtension = "";
                         break;
                     case ProjectBuildType.DynamicLibrary:
+                        outputPrefix = "lib";
                         outputExtension = ".so";
                         break;
                     case ProjectBuildType.StaticLibrary:
+                        outputPrefix = "lib";
                         outputExtension = ".a";
                         break;
                 }
@@ -241,9 +250,23 @@ namespace GoddamnEngine.BuildSystem.Collectors
                 throw new NotImplementedException();
             }
 
-            return configuration != TargetConfiguration.Release
-                ? outputDirectory + "." + configuration + outputExtension
-                : outputDirectory + outputExtension;
+            return outputPrefix + GetName() + outputExtension;
+        }
+
+        /// <summary>
+        /// Returns directory of the compilation result.
+        /// </summary>
+        /// <param name="platform">One of the target platforms.</param>
+        /// <param name="configuration">One of the target configurations.</param>
+        public virtual string GetOutputDir(TargetPlatform platform, TargetConfiguration configuration)
+        {
+            Debug.Assert(platform != TargetPlatform.Unknown);
+            var outputDirectory = Path.Combine(BuildSystem.GetSdkLocation(), "bin");
+            if (configuration == TargetConfiguration.Release)
+            {
+                return outputDirectory;
+            }
+            return Path.Combine(outputDirectory, configuration.ToString());
         }
 
         /// <summary>
@@ -482,7 +505,15 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// <summary>
         /// Method is not supported for a build tool.
         /// </summary>
-        public sealed override string GetOutputPath(TargetPlatform platform, TargetConfiguration configuration)
+        public sealed override string GetOutputFileName(TargetPlatform platform, TargetConfiguration configuration)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Method is not supported for a build tool.
+        /// </summary>
+        public sealed override string GetOutputDir(TargetPlatform platform, TargetConfiguration configuration)
         {
             throw new NotSupportedException();
         }
@@ -572,7 +603,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
                 if (!IsBuildTool)
                 {
                     CachedBuildTypes = new CollectorContainer<ProjectBuildType>(project.GetBuildType);
-                    CachedOutputPaths = new CollectorContainer<string>(project.GetOutputPath);
+                    CachedOutputPaths = new CollectorContainer<string>((p, c) => Path.Combine(project.GetOutputDir(p, c), project.GetOutputFileName(p, c)));
                     CachedImportLibraryOutputPaths = new CollectorContainer<string>(project.GetImportLibraryOutputPath);
                     CachedSourcesFilterOrigin = project.GetSourceFiltersOrigin();
                     CachedSourceFiles = project.EnumerateSourceFiles().ToArray();
@@ -648,12 +679,17 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// <param name="platform">One of the target platforms.</param>
         /// <param name="configuration">One of the target configurations.</param>
         /// <param name="separator">Separator string between linked libraries paths. ';' By default.</param>
+        /// <param name="filter">Linked library path filter.</param>
         /// <returns>A strigified list of linked libraries paths.</returns>
-        public string GenerateLinkedLibrariesPaths(TargetPlatform platform, TargetConfiguration configuration, string separator = null)
+        public string GenerateLinkedLibrariesPaths(TargetPlatform platform, TargetConfiguration configuration, string separator = null, Func<string, string> filter = null)
         {
             if (separator == null)
             {
                 separator = Path.PathSeparator.ToString();
+            }
+            if (filter == null)
+            {
+                filter = s => s;
             }
 
             // Adding libraries from dependencies.
@@ -662,11 +698,12 @@ namespace GoddamnEngine.BuildSystem.Collectors
             {
                 foreach (var projectDependencyLibraryPath in projectDependency.CachedLinkedLibraries[platform, configuration])
                 {
-                    linkedLibraries.Append(projectDependencyLibraryPath).Append(separator);
+                    linkedLibraries.Append(filter(projectDependencyLibraryPath.FilePath)).Append(separator);
                 }
             }
             return linkedLibraries.ToString();
         }
+
     }   // class ProjectCache
 
     /// <summary>

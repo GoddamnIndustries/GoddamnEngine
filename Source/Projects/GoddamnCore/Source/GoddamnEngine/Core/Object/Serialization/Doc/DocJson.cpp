@@ -7,10 +7,10 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Object/Serialization/DOMJson.cpp
+ * @file
  * JavaScript Object Notation data parsing and writing.
  */
-#include <GoddamnEngine/Core/Object/Serialization/DOMJson.h>
+#include <GoddamnEngine/Core/Object/Serialization/Doc/DocJson.h>
 
 #include <GoddamnEngine/Core/Templates/UniquePtr.h>
 #include <GoddamnEngine/Core/IO/Stream.h>
@@ -59,8 +59,21 @@ GD_NAMESPACE_BEGIN
 			bool      TokenBool;
 			Float64   TokenNumber;
 			Char      TokenPunctiation;
-		};	// anonymous union. 
+		};	// anonymous union
 	};	// struct JsonToken
+
+    /*!
+     * Reads next character from the input stream.
+     *
+	 * @param stream Input stream with possible JSON data.
+     * @param nextCharacter Next character.
+     * @param nextCharacterInt Integer representation of the next character.
+     */
+    GDINT static void JsonGetNextChar(InputStream& stream, Char& nextCharacter, Int16& nextCharacterInt)
+    {
+        nextCharacterInt = stream.Read();
+        nextCharacter = static_cast<Char>(nextCharacterInt);
+    }
 
 	/*!
 	 * Parses next token from the input stream.
@@ -68,19 +81,19 @@ GD_NAMESPACE_BEGIN
 	 * @param stream Input stream with possible JSON data.
 	 * @returns Next token parsed from the input stream.
 	 */
-	GDINT static JsonToken JsonGetNextToken(InputStream* const stream)
+	GDINT static JsonToken JsonGetNextToken(InputStream& stream)
 	{
-		__pragma(warning(push));
-		__pragma(warning(disable : 4244)); // Implicit converting Int16 to Char.
-
-#if 0
 		// Skipping all the space characters inside the stream.
-		Int16 nextCharacter;
+        Char nextCharacter;
+		Int16 nextCharacterInt;
 		do
 		{
-			nextCharacter = stream->Read();
-		} while (CChar::IsSpace(static_cast<Char>(nextCharacter)) && nextCharacter != -1);
-		if (nextCharacter == -1) return{ JsonTokenType::EndOfStream };
+            JsonGetNextChar(stream, nextCharacter, nextCharacterInt);
+		} while (CChar::IsSpace(nextCharacter) && nextCharacterInt != -1);
+        if (nextCharacter == -1)
+        {
+            return{ JsonTokenType::EndOfStream };
+        }
 
 		JsonToken nextToken = {};
 		if(CChar::IsDigit(nextCharacter) || CString::Strchr("+-.", nextCharacter) != nullptr)
@@ -88,12 +101,12 @@ GD_NAMESPACE_BEGIN
 			// Numeric constant. Is should be written like a "cast-able" to double constant in C++.
 			nextToken.TokenType = JsonTokenType::Number;
 			while ((CChar::IsDigit(nextCharacter) || CChar::IsAlphabetic(nextCharacter)
-				|| CString::Strchr("+-.", nextCharacter) != nullptr) && nextCharacter != -1)
+				 || CString::Strchr("+-.", nextCharacter) != nullptr) && nextCharacter != -1)
 			{
-				nextToken.TokenData.Append(nextCharacter);
-				nextCharacter = stream->Read();
+				nextToken.TokenData += nextCharacter;
+				JsonGetNextChar(stream, nextCharacter, nextCharacterInt);
 			}
-			stream->Seek(-1);
+			stream.Seek(-1);
 
 			// Testing whether all the token content is a valid number.
 			CStr numberString = nextToken.TokenData.CStr();
@@ -111,9 +124,9 @@ GD_NAMESPACE_BEGIN
 			while ((CChar::IsDigit(nextCharacter) || CChar::IsAlphabetic(nextCharacter)) && nextCharacter != -1)
 			{
 				nextToken.TokenData += nextCharacter;
-				nextCharacter = stream->Read();
+				JsonGetNextChar(stream, nextCharacter, nextCharacterInt);
 			}
-			stream->Seek(-1);
+			stream.Seek(-1);
 
 			// All literals except "null", "true" and "false" are treated as errors.
 			if (nextToken.TokenData != "null" && nextToken.TokenData != "true" && nextToken.TokenData != "false")
@@ -125,14 +138,14 @@ GD_NAMESPACE_BEGIN
 		{
 			// String constant. It should be a character sequence with the limited support of the escape sequences.
 			nextToken.TokenType = JsonTokenType::String;
-			nextCharacter = stream->Read();
+			JsonGetNextChar(stream, nextCharacter, nextCharacterInt);
 			while ((CChar::IsDigit(nextCharacter) || CChar::IsAlphabetic(nextCharacter) || CChar::IsPunctuation(nextCharacter) || CChar::IsSpace(nextCharacter))
 				&& nextCharacter != '\"' && nextCharacter != '\n' && nextCharacter != '\r' && nextCharacter != -1)
 			{
-				if (!nextToken.TokenData.IsEmpty() && *nextToken.TokenData.ReverseBegin() == '\\')
+				if (!nextToken.TokenData.IsEmpty() && nextToken.TokenData.GetLast() == '\\')
 				{
 					// Escape sequence. Replacing last character (\) with the special one.
-					auto& prevCharacter = *nextToken.TokenData.ReverseBegin();
+					auto& prevCharacter = nextToken.TokenData.GetLast();
 					switch (nextCharacter)
 					{
 						case 'a': prevCharacter = '\a'; break; case 'b': prevCharacter = '\b'; break; case 'f': prevCharacter = '\f'; break; case 'n': prevCharacter = '\n'; break;
@@ -146,13 +159,19 @@ GD_NAMESPACE_BEGIN
 				{
 					nextToken.TokenData += nextCharacter;
 				}
-				nextCharacter = stream->Read();
+				JsonGetNextChar(stream, nextCharacter, nextCharacterInt);
 			}
 			// No need to unget last character - it is '"' and should be skipped.
 
 			// No line breaks are allowed inside string constants, as soon as unfinished string constants.
-			if (nextCharacter == '\n' || nextCharacter == '\r') return{ JsonTokenType::Error, "Unexpected line break while parsing string constant." };
-			if (nextCharacter == -1)                            return{ JsonTokenType::Error, "Unexpected end of stream while parsing string constant." };
+            if (nextCharacter == '\n' || nextCharacter == '\r')
+            {
+                return{ JsonTokenType::Error, "Unexpected line break while parsing string constant." };
+            }
+			if (nextCharacter == -1)
+            {
+                return{ JsonTokenType::Error, "Unexpected end of stream while parsing string constant." };
+            }
 		}
 		else if (CString::Strchr(",:[]{}", static_cast<Char>(nextCharacter)) != nullptr)
 		{
@@ -168,21 +187,17 @@ GD_NAMESPACE_BEGIN
 		}
 
 		return nextToken;
-
-		__pragma(warning(pop));
-#endif
-		GD_NOT_IMPLEMENTED();
 	}
 
-	GDINT static JsonResult<JsonObject> JsonParseObject(InputStream* const stream, JsonToken& nextToken);
-	GDINL static JsonResult<JsonObject> JsonParseObject(InputStream* const stream)
+	GDINT static JsonResult<JsonObject> JsonParseObject(InputStream& stream, JsonToken& nextToken);
+	GDINL static JsonResult<JsonObject> JsonParseObject(InputStream& stream)
 	{
 		auto firstToken = JsonGetNextToken(stream);
 		return JsonParseObject(stream, firstToken);
 	}
 
-	GDINT static JsonResult<JsonValue> JsonParseValue(InputStream* const stream, JsonToken& nextToken);
-	GDINL static JsonResult<JsonValue> JsonParseValue(InputStream* const stream)
+	GDINT static JsonResult<JsonValue> JsonParseValue(InputStream& stream, JsonToken& nextToken);
+	GDINL static JsonResult<JsonValue> JsonParseValue(InputStream& stream)
 	{
 		auto firstToken = JsonGetNextToken(stream);
 		return JsonParseValue(stream, firstToken);
@@ -196,7 +211,7 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns Pointer to the JSON value or error description.
 	 */
-	GDINT static JsonResult<JsonValue> JsonParseValue(InputStream* const stream, JsonToken& nextToken)
+	GDINT static JsonResult<JsonValue> JsonParseValue(InputStream& stream, JsonToken& nextToken)
 	{
 		switch (nextToken.TokenType)
 		{
@@ -219,7 +234,7 @@ GD_NAMESPACE_BEGIN
 					{
 						// Trying to read next object from stream and treat is a JSON value.
 						auto const jsonObject = JsonParseObject(stream);
-						return{ jsonObject.ErrorDesc.IsEmpty() ? gd_new JsonValueObject (jsonObject.Result) : nullptr, jsonObject.ErrorDesc };
+						return{ jsonObject.ErrorDesc.IsEmpty() ? (gd_new JsonValueObject(jsonObject.Result)) : nullptr, jsonObject.ErrorDesc };
 					}
 					if (nextToken.TokenPunctiation == '[')
 					{
@@ -264,7 +279,7 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns Pointer to the JSON object or error description.
 	 */
-	GDINT static JsonResult<JsonObject> JsonParseObject(InputStream* const stream, JsonToken& nextToken)
+	GDINT static JsonResult<JsonObject> JsonParseObject(InputStream& stream, JsonToken& nextToken)
 	{
 		UniquePtr<JsonObject> jsonObject(gd_new JsonObject());
 
@@ -312,20 +327,18 @@ GD_NAMESPACE_BEGIN
 		}
 	}
 
-	GDINT IDom::Result Json::_TryParseDOM(SharedPtr<class InputStream> const domInputStream)
+	GDINT IDoc::Result Json::_TryParseDocument(InputStream& docInputStream)
 	{
-		GD_DEBUG_VERIFY(domInputStream != nullptr, "Null pointer input stream specified.");
-
 		// Expecting beginning of the m_RootNode object.
-		auto nextToken = JsonGetNextToken(domInputStream.Get());
+		auto const nextToken = JsonGetNextToken(docInputStream);
 		if (nextToken.TokenType != JsonTokenType::Punctuation || nextToken.TokenPunctiation != '{')
 		{
 			return{ nullptr, "Unexpected token in the root object declaration, '{' expected." };
 		}
 
 		// Parsing the root object.
-		auto const jsonObject = JsonParseObject(domInputStream.Get());
-		return{ static_cast<DomObjectPtr>(jsonObject.Result), jsonObject.ErrorDesc };
+		auto const jsonObject = JsonParseObject(docInputStream);
+		return{ static_cast<DocObjectPtr>(jsonObject.Result), jsonObject.ErrorDesc };
 	}
 
 	// ------------------------------------------------------------------------------------------
