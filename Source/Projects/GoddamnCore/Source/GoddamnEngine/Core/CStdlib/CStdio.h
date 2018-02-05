@@ -42,7 +42,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL static int Remove(WideCStr const filename)
 		{
-			return ::remove(GD_ENCODE_UTF8(filename));
+			return ::remove(StringConv::EncodeUTF8(filename).CStr());
 		}
 		//! @}
 
@@ -56,7 +56,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL static int Rename(WideCStr const oldFilename, WideCStr const newFilename)
 		{
-			return ::rename(GD_ENCODE_UTF8(oldFilename), GD_ENCODE_UTF8(newFilename));
+			return ::rename(StringConv::EncodeUTF8(oldFilename).CStr(), StringConv::EncodeUTF8(newFilename).CStr());
 		}
 		//! @}
 
@@ -92,7 +92,7 @@ GD_NAMESPACE_BEGIN
 		{
 			GD_MSVC_PRAGMA(warning(push))
 			GD_MSVC_PRAGMA(warning(suppress : 4996))
-			return ::fopen(GD_ENCODE_UTF8(filename), GD_ENCODE_UTF8(mode));
+			return ::fopen(StringConv::EncodeUTF8(filename).CStr(), StringConv::EncodeUTF8(mode).CStr());
 			GD_MSVC_PRAGMA(warning(pop))
 		}
 		//! @}

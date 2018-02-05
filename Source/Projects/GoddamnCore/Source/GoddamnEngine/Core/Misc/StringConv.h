@@ -112,13 +112,13 @@ GD_NAMESPACE_BEGIN
 		 * @param text Text to encode.
 		 * @param textLength Length of the specified text.
 		 */
-		GDINL static UniquePtr<Char[]> EncodeUTF8(WideCStr const text, SizeTp const textLength)
+		GDINL static String EncodeUTF8(WideCStr const text, SizeTp const textLength)
 		{
 			GD_DEBUG_VERIFY(text != nullptr);
 			auto const textEncodedLength = CalculateEncodedLength(text, textLength);
 			auto const textEncoded = gd_new Char[textEncodedLength + 1];
 			StringConvBase::EncodeUTF8(textEncoded, textEncodedLength, text, textLength);
-			return UniquePtr<Char[]>(textEncoded);
+			return textEncoded;
 		}
 
 		/*!
@@ -126,11 +126,11 @@ GD_NAMESPACE_BEGIN
 		 * @param text Text to encode.
 		 */
 		//! @{
-		GDINL static UniquePtr<Char[]> EncodeUTF8(WideString const& text)
+		GDINL static String EncodeUTF8(WideString const& text)
 		{
 			return EncodeUTF8(text.CStr(), text.GetLength());
 		}
-		GDINL static UniquePtr<Char[]> EncodeUTF8(WideCStr const text)
+		GDINL static String EncodeUTF8(WideCStr const text)
 		{
 			return EncodeUTF8(text, CString::Strlen(text));
 		}
@@ -146,13 +146,13 @@ GD_NAMESPACE_BEGIN
 		 * @param text Text to decode.
 		 * @param textLength Length of the specified text.
 		 */
-		GDINL static UniquePtr<WideChar[]> DecodeUTF8(CStr const text, SizeTp const textLength)
+		GDINL static WideString DecodeUTF8(CStr const text, SizeTp const textLength)
 		{
 			GD_DEBUG_VERIFY(text != nullptr);
 			auto const textDecodedLength = CalculateDecodedLength(text, textLength);
 			auto const textDecoded = gd_new WideChar[textDecodedLength + 1];
 			StringConvBase::DecodeUTF8(textDecoded, textDecodedLength, text, textLength);
-			return UniquePtr<WideChar[]>(textDecoded);
+			return textDecoded;
 		}
 
 		/*!
@@ -160,11 +160,11 @@ GD_NAMESPACE_BEGIN
 		 * @param text Text to decode.
 		 */
 		//! @{
-		GDINL static UniquePtr<WideChar[]> DecodeUTF8(String const& text)
+		GDINL static WideString DecodeUTF8(String const& text)
 		{
 			return DecodeUTF8(text.CStr(), text.GetLength());
 		}
-		GDINL static UniquePtr<WideChar[]> DecodeUTF8(CStr const text)
+		GDINL static WideString DecodeUTF8(CStr const text)
 		{
 			return DecodeUTF8(text, CString::Strlen(text));
 		}
@@ -173,21 +173,3 @@ GD_NAMESPACE_BEGIN
 	};	// class StringConv
 
 GD_NAMESPACE_END
-
-/*!
- * Encodes the specified wide-character text in UTF-8.
- * Note that value of the macro is not persistent, consider using it
- * in temporary context, like a parameter of a function call.
- * 
- * @param text Text to encode.
- */
-#define GD_ENCODE_UTF8(text) (GD::StringConv::EncodeUTF8(text).Get())
-
-/*!
- * Decodes the specified wide-character text in UTF-8.
- * Note that value of the macro is not persistent, consider using it
- * in temporary context, like a parameter of a function call.
- * 
- * @param text Text to decode.
- */
-#define GD_DECODE_UTF8(text) (GD::StringConv::DecodeUTF8(text).Get())
