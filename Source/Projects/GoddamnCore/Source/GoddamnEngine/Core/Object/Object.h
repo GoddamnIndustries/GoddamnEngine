@@ -98,7 +98,7 @@ GD_NAMESPACE_BEGIN
 		 * @param className Name of the class we are looking for.
  		 * @returns Pointer to found class or nullptr if no suck class was found.
 		 */
-		GDAPI GD_OBJECT_KERNEL static ObjectClassPtr FindClass(String const& className) { return nullptr; }
+		GDAPI GD_OBJECT_KERNEL static ObjectClassPtr FindClass(String const& className);
 
 	};	// struct ObjectClass
 
@@ -258,10 +258,10 @@ GD_NAMESPACE_BEGIN
 		static_assert(TypeTraits::IsRelated<TObjectSource, TObjectDest>::Value, "Class 'TObjectDest' should be related to 'TObjectDest'.");
 		GDINL static TObjectDest* Cast(TObjectSource* const sourceObject)
 		{
-			if (TypeTraits::IsBase<TObjectDest, TObjectSource>::Value || sourceObject->template IsRelatedToClass<TObjectDest>())
+			if (sourceObject != nullptr && (TypeTraits::IsBase<TObjectDest, TObjectSource>::Value || sourceObject->template IsRelatedToClass<TObjectDest>()))
 			{
 				auto const destObject = static_cast<TObjectDest*>(sourceObject); 
-				destObject->AddRef();
+				SafeAddRef(destObject);
 				return destObject;
 			}
 			return nullptr;

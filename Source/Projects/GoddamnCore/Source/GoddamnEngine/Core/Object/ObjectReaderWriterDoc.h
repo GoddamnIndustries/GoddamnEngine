@@ -13,18 +13,18 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Object/ObjectReaderWriter.h>
 #include <GoddamnEngine/Core/Object/Serialization/Doc/Doc.h>
-#include <GoddamnEngine/Core/Object/Serialization/SerializationReaderWriter.h>
 
 GD_NAMESPACE_BEGIN
 
 	// **------------------------------------------------------------------------------------------**
 	//! Interface for the document-based serialization reader.
 	// **------------------------------------------------------------------------------------------**
-	class SerializationReaderDoc : public TSerializationReader<SerializationReaderDoc>
+	class ObjectReaderDoc : public TObjectReader<ObjectReaderDoc>
 	{
 	private:
-        using SerializationReaderDocBase = TSerializationReader<SerializationReaderDoc>;
+        using SerializationReaderDocBase = TObjectReader<ObjectReaderDoc>;
 		struct DocValueArrayScope
 		{
 			DocValueVector Array;
@@ -47,35 +47,61 @@ GD_NAMESPACE_BEGIN
          * @param doc Serialized data document.
          * @param docReadingStream Pointer to the stream, from the one we are reading.
          */
-		GDINL explicit SerializationReaderDoc(DocPtr const& doc, InputStream& docReadingStream)
+		GDINL explicit ObjectReaderDoc(DocPtr const& doc, InputStream& docReadingStream)
 			: SerializationReaderDocBase(docReadingStream)
 		{
 			auto const result = doc->_TryParseDocument(docReadingStream);
-            m_ObjectsScope.InsertLast({ result.RootObject });
+			switch (result.RootValue->_GetTypeInfo())
+			{
+				case DocValueTypeInfo::Object:
+					{
+						DocObjectPtr docObject;
+						result.RootValue->_TryGetValue(docObject);
+						m_ObjectsScope.InsertLast({ docObject });
+						m_ReadingScope.InsertLast(CurrentlyReading::Struct);
+				}
+					break;
+				case DocValueTypeInfo::Array:
+					{
+						DocValueVector docArray;
+						result.RootValue->_TryGetValue(docArray);
+						m_ArraysScope.InsertLast({ docArray, 0 });
+						m_ReadingScope.InsertLast(CurrentlyReading::Array);
+				}
+					break;
+				default:
+					GD_NOT_SUPPORTED();
+			}
 		}
 
+		// ------------------------------------------------------------------------------------------
+		// Properties reading.
+		// ------------------------------------------------------------------------------------------
+
 	public:
-		GDAPI virtual bool TryReadPropertyNameOrSelectNextArrayElement(String const& name) override
+		GDAPI virtual bool TryReadPropertyName(String const& name) override
 		{
-			if (!SerializationReaderDocBase::TryReadPropertyNameOrSelectNextArrayElement(name))
+			// Selecting top object's property by name.
+			GD_DEBUG_VERIFY(!m_ObjectsScope.IsEmpty(), "Object scoping error.");
+
+			auto const topDocObject = m_ObjectsScope.GetLast().Object;
+			m_SelectedValue = topDocObject->_GetProperty(name);
+			return m_SelectedValue != nullptr;
+		}
+
+		GDAPI virtual bool TrySelectNextArrayElement() override
+		{
+			if (SerializationReaderDocBase::TrySelectNextArrayElement())
 			{
-				// Selecting top object's property by name.
-				GD_DEBUG_VERIFY(!m_ObjectsScope.IsEmpty(), "Object scoping error.");
-				
-				auto const topDocObject = m_ObjectsScope.GetLast().Object;
-				m_SelectedValue = topDocObject->_GetProperty(name);
-				return m_SelectedValue != nullptr;
+				// Selecting next element of the array.
+				GD_DEBUG_VERIFY(!m_ArraysScope.IsEmpty(), "Array scoping error.");
+
+				auto const& topDocArray = m_ArraysScope.GetLast();
+				GD_DEBUG_VERIFY(topDocArray.CurrentIndex < topDocArray.Array.GetLength(), "Reading array element runs out of bounds.");
+				m_SelectedValue = topDocArray.Array[topDocArray.CurrentIndex++];
+				return true;
 			}
-            else
-            {
-                // Selecting next element of the array.
-                GD_DEBUG_VERIFY(!m_ArraysScope.IsEmpty(), "Array scoping error.");
-                
-                auto const& topDocArray = m_ArraysScope.GetLast();
-                GD_DEBUG_VERIFY(topDocArray.CurrentIndex < topDocArray.Array.GetLength(), "Reading array element runs out of bounds.");
-                m_SelectedValue = topDocArray.Array[topDocArray.CurrentIndex++];
-                return true;
-            }
+			return false;
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -98,7 +124,8 @@ GD_NAMESPACE_BEGIN
 			if (!SerializationReaderDocBase::TryBeginReadArrayPropertyValue(arraySize))
 			{
 				DocValueVector value;
-				if (!TryReadPropertyValueImpl(value))
+				GD_DEBUG_VERIFY(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
+				if (!m_SelectedValue->_TryGetValue(value))
 				{
 					SerializationReaderDocBase::EndReadArrayPropertyValue();
 					return false;
@@ -123,17 +150,14 @@ GD_NAMESPACE_BEGIN
 		{
 			if (!SerializationReaderDocBase::TryBeginReadStructPropertyValue())
 			{
-				// If we are trying to parse root object.
-				if (!m_ObjectsScope.IsEmpty())
+				DocObjectPtr value;
+				GD_DEBUG_VERIFY(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
+				if (!m_SelectedValue->_TryGetValue(value))
 				{
-					DocObjectPtr value;
-					if (!TryReadPropertyValueImpl(value))
-					{
-						SerializationReaderDocBase::EndReadArrayPropertyValue();
-						return false;
-					}
-                    m_ObjectsScope.InsertLast({ value });
+					SerializationReaderDocBase::EndReadArrayPropertyValue();
+					return false;
 				}
+                m_ObjectsScope.InsertLast({ value });
 			}
 			return true;
 		}
@@ -144,12 +168,12 @@ GD_NAMESPACE_BEGIN
 			m_ObjectsScope.EraseLast();
 		}
 
-	};	// class SerializationReaderDoc
+	};	// class ObjectReaderDoc
 
     // **------------------------------------------------------------------------------------------**
     //! Interface for the document-based serialization reader.
     // **------------------------------------------------------------------------------------------**
-    class SerializationWriterDoc : public TSerializationWriter<SerializationWriterDoc>
+    class ObjectWriterDoc : public TObjectWriter<ObjectWriterDoc>
     {
     protected:
         
@@ -157,11 +181,11 @@ GD_NAMESPACE_BEGIN
          * Initializes the document-based writer interface.
          * @param docWritingStream Pointer to the stream to the one we are writing.
          */
-        GDINL explicit SerializationWriterDoc(OutputStream& docWritingStream)
-            : TSerializationWriter<SerializationWriterDoc>(docWritingStream)
+        GDINL explicit ObjectWriterDoc(OutputStream& docWritingStream)
+            : TObjectWriter<ObjectWriterDoc>(docWritingStream)
         {
         }
         
-    };  // class SerializationWriterDoc
+    };  // class ObjectWriterDoc
 
 GD_NAMESPACE_END

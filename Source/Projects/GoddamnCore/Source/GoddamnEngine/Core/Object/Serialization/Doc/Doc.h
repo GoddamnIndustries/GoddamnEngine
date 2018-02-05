@@ -133,7 +133,7 @@ GD_NAMESPACE_BEGIN
 	public:
 		struct Result
 		{
-			DocObjectPtr RootObject;
+			DocValuePtr RootValue;
 			String ErrorDesc;
 		};	// struct Result
 

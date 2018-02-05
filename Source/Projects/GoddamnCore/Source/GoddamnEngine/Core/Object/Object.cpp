@@ -14,6 +14,12 @@
 
 GD_NAMESPACE_BEGIN
 	
+	static Map<String, ObjectClassPtr>& g_ObjectClasses()
+	{
+		static Map<String, ObjectClassPtr> o;
+		return o;
+	}
+
 	/*!
 	 * Initializes a new class. 
 	 * @warning Never call this constructor manually.
@@ -21,10 +27,23 @@ GD_NAMESPACE_BEGIN
 	GDAPI GD_OBJECT_KERNEL ObjectClass::ObjectClass(CStr const className, ObjectClassPtr const classSuper, ObjectCtorProc const classConstructor)
 		: ClassName(className), ClassSuper(classSuper), m_InstanceCtor(classConstructor)
 	{
+		g_ObjectClasses().Insert(className, this);
 		if (classSuper != nullptr)
 		{
 			const_cast<ObjectClass*>(classSuper)->m_ClassDerived.InsertLast(this);
 		}
+	}
+
+	/*!
+	 * Searches for class by it's name.
+	 *
+	 * @param className Name of the class we are looking for.
+ 	 * @returns Pointer to found class or nullptr if no suck class was found.
+	 */
+	GDAPI GD_OBJECT_KERNEL ObjectClassPtr ObjectClass::FindClass(String const& className)
+	{
+		auto const classPtrPtr = g_ObjectClasses().Find(className);
+		return classPtrPtr != nullptr ? *classPtrPtr : nullptr;
 	}
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**

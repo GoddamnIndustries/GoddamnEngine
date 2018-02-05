@@ -4,14 +4,9 @@
 #include <GoddamnEngine/Core/Object/Object.h>
 #include <GoddamnEngine/Core/Object/Enum.h>
 #include <GoddamnEngine/Core/Object/ObjectVisitor.h>
-#include <GoddamnEngine/Core/Object/Serialization/Serialization.h>
 #include <GoddamnEngine/Core/IO/FileStream.h>
 #include <GoddamnEngine/Core/Containers/List.h>
 
-#include <GoddamnEngine/Engine/Entity/Scene.h>
-#include <GoddamnEngine/Engine/Interface/Graphics/Graphics.h>
-#include <GoddamnEngine/Engine/Resources/Mesh.h>
-#include "GoddamnEngine/Core/Math/Vector.h"
 #include "../../../GoddamnGraphics/GoddamnGraphicsOpenGL/Dependencies/glew/include/GL/glew.h"
 
 #include <GoddamnEngine/Core/Misc/StringConv.h>

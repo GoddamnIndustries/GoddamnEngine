@@ -10,7 +10,7 @@
  * @file
  * Serialization system unit tests.
  */
-#include <GoddamnEngine/Core/Object/Serialization/Serialization.h>
+#include <GoddamnEngine/Core/Object/ObjectReaderWriterJson.h>
 #if GD_TESTING_ENABLED
 
 #include <GoddamnEngine/Core/IO/MemoryStream.h>
@@ -30,28 +30,58 @@ GD_NAMESPACE_BEGIN
         }
     };  // struct TestPhoneNumber
 
-    class TestAddress final : public SerializableObject
+    class TestAddress final : public Object
     {
-        GD_DECLARE_OBJECT(TestAddress, SerializableObject)
+        GD_DECLARE_OBJECT(TestAddress, Object)
         GD_PROPERTY(public, WideString, StreetAddress);
         GD_PROPERTY(public, WideString, City);
         GD_PROPERTY(public, Int16, PostalCode);
     };  // class TestAddress
     GD_IMPLEMENT_OBJECT(TestAddress)
 
-    class TestPerson final : public SerializableObject
+    class TestPerson final : public Object
     {
-        GD_DECLARE_OBJECT(TestPerson, SerializableObject)
+        GD_DECLARE_OBJECT(TestPerson, Object)
         GD_PROPERTY(public, WideString, FirstName, PFNotSerializable);
         GD_PROPERTY(public, WideString, LastName);
-        GD_PROPERTY(public, RefPtr<TestAddress>, Address, PFChildObject);
+        GD_PROPERTY(public, RefPtr<TestAddress>, Address, PFChildren);
         GD_PROPERTY(public, Vector<TestPhoneNumber>, PhoneNumbers);
     };  // class TestPerson
     GD_IMPLEMENT_OBJECT(TestPerson)
 
     gd_testing_unit_test(SerializableObjectSerialize)
     {
-        auto const address = TestAddress::CreateObject();
+		auto const r = R"(
+    		[
+				{
+						"GODDAMN_OBJECT_CLASS" : "TestPerson",
+						"GODDAMN_OBJECT_GUID" : "8157833EDF004545-8DB762891FF11602",
+						"LastName" : "Smith",
+						"Address" : {
+								"__ObjectClass__" : "TestAddress",
+								"__ObjectGuid__" : "F1772840B0434D61-B38E58AB04D593C9"
+						},
+						"PhoneNumbers" : [
+								{
+										"Code" : 631.000000,
+										"Number" : 5964570.000000
+								},
+								{
+										"Code" : 917.000000,
+										"Number" : 7444138.000000
+								}
+						]
+				},
+				{
+						"GODDAMN_OBJECT_CLASS" : "TestAddress",
+						"GODDAMN_OBJECT_GUID" : "F1772840B0434D61-B38E58AB04D593C9",
+						"StreetAddress" : "779 Abia Martin Drive",
+						"City" : "New York",
+						"PostalCode" : 10011.000000
+				}
+			])";
+
+        /*auto const address = TestAddress::CreateObject();
         address->StreetAddress = L"779 Abia Martin Drive";
         address->City = L"New York";
         address->PostalCode = 10011;
@@ -64,35 +94,32 @@ GD_NAMESPACE_BEGIN
         person->PhoneNumbers.InsertLast(TestPhoneNumber(917, 7444138));
         
         MemoryOutputStream outputStream;
-        person->SerializeSync(outputStream);
+		{
+			ObjectWriterJson objectWriter(outputStream);
+			objectWriter.WriteObject(person);
+		}
+		outputStream.Write('\0');
         
         auto const str = (char*)outputStream.GetData().GetData();
         printf(str);
         
-        auto const r = R"(
-        {
-            "m_IsDynamic" : false,
-            "LastName" : "Smith",
-            "Address" : {
-                "ObjectGuid" : "8329EE39AAA76193-6E7B829729583F75",
-                "ObjectClass" : "TestAddress"
-            },
-            "PhoneNumbers" : [
-                              {
-                              "Code" : 631.000000,
-                              "Number" : 5964570.000000
-                              },
-                              {
-                              "Code" : 917.000000,
-                              "Number" : 7444138.000000
-                              }
-                              ]
-        }
-        )";
-        
+		person->LastName = L"Hui";*/
+
         MemoryInputStream inputStream(r, CString::Strlen(r));
-        person->DeserializeSync(inputStream);
-    };
+		ObjectReaderJson objectReader(inputStream);
+
+		auto person = objectReader.ReadObject<TestPerson>();
+		MemoryOutputStream outputStream;
+		{
+			ObjectWriterJson objectWriter(outputStream);
+			objectWriter.WriteObject(person);
+			outputStream.Write('\0');
+		}
+
+		auto const str = (char*)outputStream.GetData().GetData();
+		printf(str);
+		printf(str);
+	};
 
 GD_NAMESPACE_END
 

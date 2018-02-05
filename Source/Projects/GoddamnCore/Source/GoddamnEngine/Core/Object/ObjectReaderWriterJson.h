@@ -7,21 +7,21 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Object/Serialization/ReaderWriterJSON.h
+ * @file
  * File contains interface to the JSON serialization readers and writers.
  */
 #pragma once
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Object/ObjectReaderWriterDoc.h>
 #include <GoddamnEngine/Core/Object/Serialization/Doc/DocJson.h>
-#include <GoddamnEngine/Core/Object/Serialization/SerializationReaderWriterDoc.h>
 
 GD_NAMESPACE_BEGIN
 
 	// **------------------------------------------------------------------------------------------**
 	//! JSON serialization reader.
 	// **------------------------------------------------------------------------------------------**
-	class SerializationReaderJson final : public SerializationReaderDoc
+	class ObjectReaderJson final : public ObjectReaderDoc
 	{
 	public:
         
@@ -29,20 +29,20 @@ GD_NAMESPACE_BEGIN
          * Initializes the JSON-based reader interface.
          * @param jsonReadingStream Pointer to the stream, from the one we are reading.
          */
-		GDINL explicit SerializationReaderJson(InputStream& jsonReadingStream)
-			: SerializationReaderDoc(DocPtr(gd_new Json()), jsonReadingStream)
+		GDINL explicit ObjectReaderJson(InputStream& jsonReadingStream)
+			: ObjectReaderDoc(DocPtr(gd_new Json()), jsonReadingStream)
 		{
 		}
         
-	};	// class SerializationReaderJson
+	};	// class ObjectReaderJson
 
 	// **------------------------------------------------------------------------------------------**
 	//! JSON serialization writer.
 	// **------------------------------------------------------------------------------------------**
-	class SerializationWriterJson final : public TSerializationWriter<SerializationWriterJson, SerializationWriterDoc>
+	class ObjectWriterJson final : public TObjectWriter<ObjectWriterJson, ObjectWriterDoc>
 	{
 	private:
-        using SerializationWriterJsonBase = TSerializationWriter<SerializationWriterJson, SerializationWriterDoc>;
+        using SerializationWriterJsonBase = TObjectWriter<ObjectWriterJson, ObjectWriterDoc>;
 		bool m_FirstPropertyWritten;
 
 	public:
@@ -51,15 +51,15 @@ GD_NAMESPACE_BEGIN
          * Initializes the JSON-based writer interface.
          * @param jsonWritingStream Pointer to the stream to the one we are writing.
          */
-		GDINL explicit SerializationWriterJson(OutputStream& jsonWritingStream)
+		GDINL explicit ObjectWriterJson(OutputStream& jsonWritingStream)
 			: SerializationWriterJsonBase(jsonWritingStream), m_FirstPropertyWritten(false)
 		{
-			BeginWriteStructPropertyValue();
+			BeginWriteArrayPropertyValue();
 		}
 
-		GDAPI virtual ~SerializationWriterJson()
+		GDAPI virtual ~ObjectWriterJson()
 		{
-			EndWriteStructPropertyValue();
+			EndWriteArrayPropertyValue();
 		}
 
 	private:
@@ -76,8 +76,12 @@ GD_NAMESPACE_BEGIN
 			m_WritingStream.Write('\n');
 		}
 
+		// ------------------------------------------------------------------------------------------
+		// Properties writing.
+		// ------------------------------------------------------------------------------------------
+
 	public:
-		GDINL virtual bool WritePropertyNameOrSelectNextArrayElement(String const& name) override final
+		GDAPI virtual bool TrySelectNextArrayElement() override final
 		{
 			if (m_FirstPropertyWritten)
 			{
@@ -89,14 +93,14 @@ GD_NAMESPACE_BEGIN
 				m_FirstPropertyWritten = true;
 			}
 			WriteTabs();
-			if (SerializationWriterJsonBase::WritePropertyNameOrSelectNextArrayElement(name))
-			{
-				m_WritingStream.Write("\"");
-				m_WritingStream.Write(name);
-				m_WritingStream.Write("\" : ");
-				return true;
-			}
-			return false;
+			return SerializationWriterJsonBase::TrySelectNextArrayElement();
+		}
+
+		GDAPI virtual void WritePropertyName(String const& name) override final
+		{
+			m_WritingStream.Write("\"");
+			m_WritingStream.Write(name);
+			m_WritingStream.Write("\" : ");
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -108,8 +112,8 @@ GD_NAMESPACE_BEGIN
             m_WritingStream.Write(String::FromBool(value));
 		}
 
-		template<typename TValue>
-		GDINL void WritePropertyValueImpl(TValue const value)
+		template<typename TNumericValue>
+		GDINL void WritePropertyValueImpl(TNumericValue const value)
 		{
 			m_WritingStream.Write(String::FromFloat64(static_cast<Float64>(value)));
 		}
@@ -121,21 +125,10 @@ GD_NAMESPACE_BEGIN
 			m_WritingStream.Write("\"");
 		}
         
-        GDINL void WritePropertyValueImpl(RefPtr<Object> const& value)
-        {
-            // Serializing as array containing GUID and class name.
-            m_WritingStream.Write("[ \"");
-            m_WritingStream.Write(value->GetGUID().ToString());
-            m_WritingStream.Write("\", \"");
-            m_WritingStream.Write(value->GetClass()->ClassName);
-            m_WritingStream.Write("\" ]");
-        }
-
 		// ------------------------------------------------------------------------------------------
 		// Array properties readers.
 		// ------------------------------------------------------------------------------------------
 
-	public:
 		GDINL virtual void BeginWriteArrayPropertyValue() override final
 		{
 			SerializationWriterJsonBase::BeginWriteArrayPropertyValue();

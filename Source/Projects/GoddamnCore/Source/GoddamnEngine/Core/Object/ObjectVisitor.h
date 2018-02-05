@@ -28,7 +28,7 @@ GD_NAMESPACE_BEGIN
 	{
 		PFNone = 0,			//!< Zero property flags.
 		PFNotSerializable,	//!< Property is not serializable.
-		PFChildObject,		//!< @todo
+		PFChildren,			//!< @todo
 		PFDefault = PFNone,
 	};	// enum PropertyFlags
 	GD_ENUM_DEFINE_FLAG_OPERATORS(PropertyFlags);
@@ -320,9 +320,10 @@ GD_NAMESPACE_BEGIN
         template<typename TObject>
         GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<TObject>& value)
         {
-            auto valueObject = static_cast<RefPtr<Object>>(value);
-            this->VisitPrimitiveProperty(propertyMetaInfo, valueObject);
-            value = object_cast<RefPtr<TObject>>(valueObject);
+			// @todo Implement this with union_cast
+			auto valueObject = static_cast<RefPtr<Object>>(value);
+			this->VisitPrimitiveProperty(propertyMetaInfo, valueObject);
+			value = object_cast<RefPtr<TObject>>(valueObject);
         }
         //! @}
         

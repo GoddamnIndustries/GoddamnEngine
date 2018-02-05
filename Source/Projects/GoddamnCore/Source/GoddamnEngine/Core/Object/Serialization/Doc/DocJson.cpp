@@ -329,16 +329,9 @@ GD_NAMESPACE_BEGIN
 
 	GDINT IDoc::Result Json::_TryParseDocument(InputStream& docInputStream)
 	{
-		// Expecting beginning of the m_RootNode object.
-		auto const nextToken = JsonGetNextToken(docInputStream);
-		if (nextToken.TokenType != JsonTokenType::Punctuation || nextToken.TokenPunctiation != '{')
-		{
-			return{ nullptr, "Unexpected token in the root object declaration, '{' expected." };
-		}
-
-		// Parsing the root object.
-		auto const jsonObject = JsonParseObject(docInputStream);
-		return{ static_cast<DocObjectPtr>(jsonObject.Result), jsonObject.ErrorDesc };
+		// Parsing the root value.
+		auto const jsonRootValue = JsonParseValue(docInputStream);
+		return{ jsonRootValue.Result, jsonRootValue.ErrorDesc };
 	}
 
 	// ------------------------------------------------------------------------------------------

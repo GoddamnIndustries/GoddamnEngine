@@ -13,6 +13,8 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
+#include <GoddamnEngine/Core/Object/Object.h>
+
 #include <GoddamnEngine/Core/IO/Stream.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Containers/String.h>
@@ -22,8 +24,10 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	//! Generic serialization reader.
 	// **------------------------------------------------------------------------------------------**
-	class ISerializationReader : public IVirtuallyDestructible
+	GD_OBJECT_KERNEL class ObjectReader : public IVirtuallyDestructible
 	{
+		friend struct ObjectReaderVisitor;
+
 	protected:
 		enum class CurrentlyReading
 		{
@@ -39,12 +43,12 @@ GD_NAMESPACE_BEGIN
 		 * Initializes the reader interface.
 		 * @param readingStream Pointer to the stream, from the one we are reading.
 		 */
-		GDINL explicit ISerializationReader(InputStream& readingStream)
+		GDAPI explicit ObjectReader(InputStream& readingStream)
 			: m_ReadingStream(readingStream)
 		{
 		}
 
-		GDAPI virtual ~ISerializationReader()
+		GDAPI virtual ~ObjectReader()
 		{
 			GD_DEBUG_VERIFY(m_ReadingScope.IsEmpty(), "Scoping error.");
 		}
@@ -52,15 +56,59 @@ GD_NAMESPACE_BEGIN
 	public:
 
 		/*!
+		 * Reads object.
+		 * @returns Pointer to the deserialized object or nullptr on failure.
+		 */
+		//! @{
+		GDAPI RefPtr<Object> ReadObject();
+		template<typename TObject>
+		GDINL RefPtr<TObject> ReadObject()
+		{
+			return object_cast<RefPtr<TObject>>(ReadObject());
+		}
+		//! @}
+
+	protected:
+
+		// ------------------------------------------------------------------------------------------
+		// Properties reading.
+		// ------------------------------------------------------------------------------------------
+
+		/*!
+		 * Selects next array element.
+		 * @returns True if next array element was selected.
+		 */
+		GDAPI virtual bool TrySelectNextArrayElement()
+		{
+			return m_ReadingScope.GetLast() == CurrentlyReading::Array;
+		}
+
+		/*!
 		 * Reads name of the property or selects next array element.
 		 *
 		 * @param name String property name.
 		 * @returns True if property with such name was found.
 		 */
-		GDAPI virtual bool TryReadPropertyNameOrSelectNextArrayElement(String const& name)
+		GDAPI virtual bool TryReadPropertyName(String const& name)
 		{
 			GD_NOT_USED(name);
-            return !m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReading::Array;
+			return false;
+		}
+
+		/*!
+		 * Reads name of the property or selects next array element.
+		 *
+		 * @param namePtr Pointer to the property name.
+		 * @returns True if property with such name was found.
+		 */
+		GDAPI bool TryReadPropertyNameOrSelectNextArrayElement(String const* const namePtr = nullptr)
+		{
+			if (!TrySelectNextArrayElement())
+			{
+				GD_DEBUG_VERIFY(namePtr != nullptr);
+				return TryReadPropertyName(*namePtr);
+			}
+			return true;
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -190,7 +238,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDAPI virtual void EndReadArrayPropertyValue()
 		{
-            GD_DEBUG_VERIFY(!m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReading::Array, "Array scoping error.");
+            GD_DEBUG_VERIFY(m_ReadingScope.GetLast() == CurrentlyReading::Array, "Array scoping error.");
 			m_ReadingScope.EraseLast();
 		}
 
@@ -217,112 +265,19 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDAPI virtual void EndReadStructPropertyValue()
 		{
-            GD_DEBUG_VERIFY(!m_ReadingScope.IsEmpty() && m_ReadingScope.GetLast() == CurrentlyReading::Struct, "Struct scoping error.");
+            GD_DEBUG_VERIFY(m_ReadingScope.GetLast() == CurrentlyReading::Struct, "Struct scoping error.");
 			m_ReadingScope.EraseLast();
 		}
 
-	};	// class ISerializationReader
-
-    // **------------------------------------------------------------------------------------------**
-    //! Wrappers for the generic serialization reader.
-    // **------------------------------------------------------------------------------------------**
-    template<typename TImplementation, typename TSerializationReaderBase = ISerializationReader>
-    class TSerializationReader : public TSerializationReaderBase
-    {
-    protected:
-        
-        /*!
-         * Initializes the reader interface.
-         * @param readingStream Pointer to the stream, from the one we are reading.
-         */
-        GDINL explicit TSerializationReader(InputStream& readingStream)
-            : TSerializationReaderBase(readingStream)
-        {
-        }
-        
-    protected:
-        
-        /*!
-         * Reads template property.
-         *
-         * @param value Template property value.
-         * @returns True if property value was successfully read.
-         */
-        template<typename TValue>
-        GDINL bool TryReadPropertyValueImpl(TValue& value)
-        {
-            GD_NOT_USED_L(this, value);
-            GD_NOT_IMPLEMENTED();
-        }
-        
-    public:
-        GDAPI virtual bool TryReadPropertyValue(bool& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(Int8& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(UInt8& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(Int16& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(UInt16& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(Int32& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(UInt32& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(Int64& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(UInt64& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(Float32& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(Float64& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-        
-        GDAPI virtual bool TryReadPropertyValue(String& value) override
-        {
-            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
-        }
-                
-    };  // class TSerializationReader
+	};	// class ObjectReader
 
 	// **------------------------------------------------------------------------------------------**
 	//! Generic serialization writer.
 	// **------------------------------------------------------------------------------------------**
-	class ISerializationWriter : public IVirtuallyDestructible
+	GD_OBJECT_KERNEL class ObjectWriter : public IVirtuallyDestructible
 	{
+		friend struct ObjectWriterVisitor;
+
 	protected:
 		enum class CurrentlyWriting
 		{
@@ -338,12 +293,12 @@ GD_NAMESPACE_BEGIN
 		 * Initializes the writer interface.
 		 * @param writingStream Pointer to the stream to the one we are writing.
 		 */
-		GDINL explicit ISerializationWriter(OutputStream& writingStream)
+		GDINL explicit ObjectWriter(OutputStream& writingStream)
 			: m_WritingStream(writingStream)
 		{
 		}
 
-		GDINL virtual ~ISerializationWriter()
+		GDINL virtual ~ObjectWriter()
 		{
 			GD_DEBUG_VERIFY(m_WritingScope.IsEmpty(), "Scoping error.");
 		}
@@ -351,15 +306,48 @@ GD_NAMESPACE_BEGIN
 	public:
 
 		/*!
-		 * Writes name of the property or selects next array element.
-		 *
-		 * @param name String property name.
-		 * @returns True false if property name should not be written (serializing arrays).
+		 * Writes object.
+		 * @param object Object to write.
 		 */
-		GDAPI virtual bool WritePropertyNameOrSelectNextArrayElement(String const& name)
+		GDAPI void WriteObject(RefPtr<Object> const& object);
+
+		// ------------------------------------------------------------------------------------------
+		// Properties writing.
+		// ------------------------------------------------------------------------------------------
+
+	protected:
+
+		/*!
+		 * Selects next array element.
+		 * @returns True if next array element was selected.
+		 */
+		GDAPI virtual bool TrySelectNextArrayElement()
+		{
+			return m_WritingScope.GetLast() == CurrentlyWriting::Array;
+		}
+
+		/*!
+		 * Writes name of the property.
+		 * @param name String property name.
+		 */
+		GDAPI virtual void WritePropertyName(String const& name)
 		{
 			GD_NOT_USED(name);
-            return !m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Struct;
+		}
+
+		/*!
+		 * Writes name of the property or selects next array element.
+		 *
+		 * @param namePtr Pointer to the property name.
+		 * @returns False if property name should not be written (e.g. while serializing arrays).
+		 */
+		GDAPI void WritePropertyNameOrSelectNextArrayElement(String const* const namePtr = nullptr)
+		{
+			if (!TrySelectNextArrayElement())
+			{
+				GD_DEBUG_VERIFY(namePtr != nullptr);
+				WritePropertyName(*namePtr);
+			}
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -490,11 +478,106 @@ GD_NAMESPACE_BEGIN
 
 	};	// class ISerializationWriter
 
+	// **------------------------------------------------------------------------------------------**
+    //! Wrappers for the generic serialization reader.
+    // **------------------------------------------------------------------------------------------**
+    template<typename TImplementation, typename TSerializationReaderBase = ObjectReader>
+    GD_OBJECT_HELPER class TObjectReader : public TSerializationReaderBase
+    {
+    protected:
+        
+        /*!
+         * Initializes the reader interface.
+         * @param readingStream Pointer to the stream, from the one we are reading.
+         */
+        GDINL explicit TObjectReader(InputStream& readingStream)
+            : TSerializationReaderBase(readingStream)
+        {
+        }
+        
+    protected:
+        
+        /*!
+         * Reads template property.
+         *
+         * @param value Template property value.
+         * @returns True if property value was successfully read.
+         */
+        template<typename TValue>
+        GDINL bool TryReadPropertyValueImpl(TValue& value)
+        {
+            GD_NOT_USED_L(this, value);
+            GD_NOT_IMPLEMENTED();
+        }
+        
+    public:
+        GDAPI virtual bool TryReadPropertyValue(bool& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Int8& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(UInt8& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Int16& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(UInt16& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Int32& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(UInt32& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Int64& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(UInt64& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Float32& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(Float64& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+        
+        GDAPI virtual bool TryReadPropertyValue(String& value) override
+        {
+            return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
+        }
+                
+    };  // class TSerializationReader
+
     // **------------------------------------------------------------------------------------------**
     //! Wrappers for the generic serialization writer.
     // **------------------------------------------------------------------------------------------**
-    template<typename TImplementation, typename TSerializationWriterBase = ISerializationWriter>
-    class TSerializationWriter : public TSerializationWriterBase
+    template<typename TImplementation, typename TSerializationWriterBase = ObjectWriter>
+	GD_OBJECT_HELPER class TObjectWriter : public TSerializationWriterBase
     {
     protected:
         
@@ -502,7 +585,7 @@ GD_NAMESPACE_BEGIN
          * Initializes the writer interface.
          * @param writingStream Pointer to the stream to the one we are writing.
          */
-        GDINL explicit TSerializationWriter(OutputStream& writingStream)
+        GDINL explicit TObjectWriter(OutputStream& writingStream)
             : TSerializationWriterBase(writingStream)
         {
         }
