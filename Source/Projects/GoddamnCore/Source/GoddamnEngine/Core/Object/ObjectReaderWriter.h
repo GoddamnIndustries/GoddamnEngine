@@ -211,6 +211,22 @@ GD_NAMESPACE_BEGIN
          */
         GDAPI virtual bool TryReadPropertyValue(String& value) GD_PURE_VIRTUAL;
         
+        /*!
+         * Reads GUID property.
+         *
+         * @param value GUID property value.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValue(GUID& value)
+        {
+            String valueString;
+            if (TryReadPropertyValue(valueString))
+            {
+                return GUID::TryParse(valueString, value);
+            }
+            return false;
+        }
+        
 		// ------------------------------------------------------------------------------------------
 		// Array properties reading.
 		// ------------------------------------------------------------------------------------------
@@ -293,12 +309,12 @@ GD_NAMESPACE_BEGIN
 		 * Initializes the writer interface.
 		 * @param writingStream Pointer to the stream to the one we are writing.
 		 */
-		GDINL explicit ObjectWriter(OutputStream& writingStream)
+		GDAPI explicit ObjectWriter(OutputStream& writingStream)
 			: m_WritingStream(writingStream)
 		{
 		}
 
-		GDINL virtual ~ObjectWriter()
+		GDAPI virtual ~ObjectWriter()
 		{
 			GD_DEBUG_VERIFY(m_WritingScope.IsEmpty(), "Scoping error.");
 		}
@@ -337,9 +353,7 @@ GD_NAMESPACE_BEGIN
 
 		/*!
 		 * Writes name of the property or selects next array element.
-		 *
 		 * @param namePtr Pointer to the property name.
-		 * @returns False if property name should not be written (e.g. while serializing arrays).
 		 */
 		GDAPI void WritePropertyNameOrSelectNextArrayElement(String const* const namePtr = nullptr)
 		{
@@ -425,6 +439,15 @@ GD_NAMESPACE_BEGIN
          * @param value String property value.
          */
         GDAPI virtual void WritePropertyValue(String const& value) GD_PURE_VIRTUAL;
+        
+        /*!
+         * Writes GUID property.
+         * @param value GUID property value.
+         */
+        GDAPI virtual void WritePropertyValue(GUID const& value)
+        {
+            WritePropertyValue(value.ToString());
+        }
         
 		// ------------------------------------------------------------------------------------------
 		// Array properties writing.

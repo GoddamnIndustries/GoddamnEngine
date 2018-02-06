@@ -26,7 +26,7 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! Provides functions for C string.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class CStringGeneric : public TNonCreatable
+	class CString : public TNonCreatable
 	{
 	public:
 
@@ -424,7 +424,7 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/CStdlib, CString)
+//#include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/CStdlib, CString)
 #undef GD_INSIDE_CSTRING_H
 
 GD_NAMESPACE_BEGIN

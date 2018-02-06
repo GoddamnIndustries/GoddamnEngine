@@ -10,8 +10,8 @@
  * @file GoddamnEngine/Core/Interaction/Windows.cpp
  * Cross-platform windows.
  */
-#include <GoddamnEngine/Core/Interaction/Window.h>
+//#include <GoddamnEngine/Core/Interaction/Window.h>
 
-GD_NAMESPACE_BEGIN
-	GD_IMPLEMENT_OBJECT_INTRINSIC(WindowGeneric);
-GD_NAMESPACE_END
+//GD_NAMESPACE_BEGIN
+//	GD_IMPLEMENT_OBJECT_INTRINSIC(WindowGeneric);
+//GD_NAMESPACE_END

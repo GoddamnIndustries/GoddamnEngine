@@ -41,8 +41,9 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	class ObjectWriterJson final : public TObjectWriter<ObjectWriterJson, ObjectWriterDoc>
 	{
+        using ObjectWriterJsonBase = TObjectWriter<ObjectWriterJson, ObjectWriterDoc>;
+        
 	private:
-        using SerializationWriterJsonBase = TObjectWriter<ObjectWriterJson, ObjectWriterDoc>;
 		bool m_FirstPropertyWritten;
 
 	public:
@@ -52,7 +53,7 @@ GD_NAMESPACE_BEGIN
          * @param jsonWritingStream Pointer to the stream to the one we are writing.
          */
 		GDINL explicit ObjectWriterJson(OutputStream& jsonWritingStream)
-			: SerializationWriterJsonBase(jsonWritingStream), m_FirstPropertyWritten(false)
+			: ObjectWriterJsonBase(jsonWritingStream), m_FirstPropertyWritten(false)
 		{
 			BeginWriteArrayPropertyValue();
 		}
@@ -93,7 +94,7 @@ GD_NAMESPACE_BEGIN
 				m_FirstPropertyWritten = true;
 			}
 			WriteTabs();
-			return SerializationWriterJsonBase::TrySelectNextArrayElement();
+			return ObjectWriterJsonBase::TrySelectNextArrayElement();
 		}
 
 		GDAPI virtual void WritePropertyName(String const& name) override final
@@ -131,7 +132,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL virtual void BeginWriteArrayPropertyValue() override final
 		{
-			SerializationWriterJsonBase::BeginWriteArrayPropertyValue();
+			ObjectWriterJsonBase::BeginWriteArrayPropertyValue();
 			m_FirstPropertyWritten = false;
 			m_WritingStream.Write("[");
 			WriteNewline();
@@ -139,7 +140,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL virtual void EndWriteArrayPropertyValue() override final
 		{
-			SerializationWriterJsonBase::EndWriteArrayPropertyValue();
+			ObjectWriterJsonBase::EndWriteArrayPropertyValue();
 			WriteNewline();
 			WriteTabs();
 			m_WritingStream.Write("]");
@@ -152,7 +153,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL virtual void BeginWriteStructPropertyValue() override final
 		{
-			SerializationWriterJsonBase::BeginWriteStructPropertyValue();
+			ObjectWriterJsonBase::BeginWriteStructPropertyValue();
 			m_FirstPropertyWritten = false;
 			m_WritingStream.Write("{");
 			WriteNewline();
@@ -160,13 +161,13 @@ GD_NAMESPACE_BEGIN
 
 		GDINL virtual void EndWriteStructPropertyValue() override final
 		{
-			SerializationWriterJsonBase::EndWriteStructPropertyValue();
+			ObjectWriterJsonBase::EndWriteStructPropertyValue();
 			WriteNewline();
 			WriteTabs();
 			m_WritingStream.Write("}");
 			m_FirstPropertyWritten = true;
 		}
 
-	};	// class JsonWriter
+	};	// class ObjectReaderJson
 
 GD_NAMESPACE_END

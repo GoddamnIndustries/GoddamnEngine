@@ -58,8 +58,8 @@ GD_NAMESPACE_BEGIN
 						"GODDAMN_OBJECT_GUID" : "8157833EDF004545-8DB762891FF11602",
 						"LastName" : "Smith",
 						"Address" : {
-								"__ObjectClass__" : "TestAddress",
-								"__ObjectGuid__" : "F1772840B0434D61-B38E58AB04D593C9"
+								"GODDAMN_OBJECT_CLASS" : "TestAddress",
+								"GODDAMN_OBJECT_GUID" : "F1772840B0434D61-B38E58AB04D593C9"
 						},
 						"PhoneNumbers" : [
 								{

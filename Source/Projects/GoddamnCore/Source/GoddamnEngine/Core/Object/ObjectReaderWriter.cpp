@@ -17,44 +17,8 @@
 
 GD_NAMESPACE_BEGIN
 
-	// **------------------------------------------------------------------------------------------**
-	//! Object reference as it is represented in the serialized data.
-	// **------------------------------------------------------------------------------------------**
-    GD_OBJECT_KERNEL struct ObjectStringReference final : public Struct
-    {
-        GD_DECLARE_STRUCT(ObjectStringReference, Struct)
-		GD_PROPERTY(public, String, __ObjectClass__);
-		GD_PROPERTY(public, String, __ObjectGuid__);
-        
-    public:
-		GDINL ObjectStringReference() = default;
-        GDINL explicit ObjectStringReference(RefPtr<Object> const& object)
-            : __ObjectClass__(object->GetClass()->ClassName), __ObjectGuid__(object->GetGUID().ToString())
-        {
-        }
-
-		/*!
-		 * Resolves the reference.
-		 * 
-		 * @param object Resolving output.
-		 * @return True if reference was successfully resolved.
-		 */
-		GDINL bool TryResolve(RefPtr<Object>& object) const
-        {
-			GUID objectGuid;
-			if (GUID::TryParse(__ObjectGuid__, objectGuid))
-			{
-				auto const objectClass = ObjectClass::FindClass(__ObjectClass__);
-				if (objectClass != nullptr)
-				{
-					object = Object::CreateOrFindClassRelatedObjectByGUID(objectGuid, objectClass);
-					return true;
-				}
-			}
-			return false;
-        }
-
-    };  // struct ObjectReference
+    static String const g_ObjectClassPropertyName("GODDAMN_OBJECT_CLASS");
+    static String const g_ObjectGuidPropertyName("GODDAMN_OBJECT_GUID");
 
 	// **------------------------------------------------------------------------------------------**
     //! Deserialization implementation based on reflection system.
@@ -63,11 +27,17 @@ GD_NAMESPACE_BEGIN
     {
     private:
         ObjectReader& m_ObjectReader;
+        SizeTp m_ChildObjectsCount;
         
     public:
 		GDINL explicit ObjectReaderVisitor(ObjectReader& objectReader)
-			: m_ObjectReader(objectReader)
+			: m_ObjectReader(objectReader), m_ChildObjectsCount(0)
         {
+        }
+        
+        GDINL SizeTp GetChildObjectsCount() const
+        {
+            return m_ChildObjectsCount;
         }
         
         // ------------------------------------------------------------------------------------------
@@ -132,12 +102,41 @@ GD_NAMESPACE_BEGIN
             // Deserializing object properties..
             if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
             {
-                ObjectStringReference valueReference;
-                VisitProperty(propertyMetaInfo, valueReference);
-                if (!valueReference.TryResolve(value))
+                if ((propertyMetaInfo->PropertyFlags & PFChildren) != 0)
                 {
-					Debug::LogWarningFormat("Unable to parse serialized data for property property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    m_ChildObjectsCount += 1;
                 }
+                
+                // Reading object class and GUID..
+                if (!m_ObjectReader.TryReadPropertyNameOrSelectNextArrayElement(&propertyMetaInfo->PropertyName))
+                {
+                    Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    return;
+                }
+                if (!m_ObjectReader.TryBeginReadStructPropertyValue())
+                {
+                    Debug::LogWarningFormat("Unable to read value of the serialized data for object property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    return;
+                }
+                GUID valueGuid;
+                String valueClassString;
+                if (!m_ObjectReader.TryReadPropertyName(g_ObjectClassPropertyName) || !m_ObjectReader.TryReadPropertyValue(valueClassString) ||
+                    !m_ObjectReader.TryReadPropertyName(g_ObjectGuidPropertyName) || !m_ObjectReader.TryReadPropertyValue(valueGuid))
+                {
+                    Debug::LogWarningFormat("Unable to read builtin values of the serialized data for object property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    m_ObjectReader.EndReadStructPropertyValue();
+                    return;
+                }
+                m_ObjectReader.EndReadStructPropertyValue();
+                
+                // Creating the object..
+                auto const valueClass = ObjectClass::FindClass(valueClassString);
+                if (valueClass == nullptr)
+                {
+                    Debug::LogWarningFormat("Unable to parse find class of the serialized data for object property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    return;
+                }
+                value = Object::CreateOrFindClassRelatedObjectByGUID(valueGuid, valueClass);
             }
         }
         
@@ -187,7 +186,7 @@ GD_NAMESPACE_BEGIN
                 }
                 if (!m_ObjectReader.TryBeginReadStructPropertyValue())
                 {
-                    Debug::LogWarningFormat("Unable to read value of the serialized data for array property '%s'", propertyMetaInfo->PropertyName.CStr());
+                    Debug::LogWarningFormat("Unable to read value of the serialized data for struct property '%s'", propertyMetaInfo->PropertyName.CStr());
                     return false;
                 }
 				return true;
@@ -277,9 +276,13 @@ GD_NAMESPACE_BEGIN
 				{
 					m_ChildObjects.InsertLast(value);
 				}
-
-                ObjectStringReference valueReference(value);
-                VisitProperty(propertyMetaInfo, valueReference);
+                m_ObjectWriter.WritePropertyNameOrSelectNextArrayElement(&propertyMetaInfo->PropertyName);
+                m_ObjectWriter.BeginWriteStructPropertyValue();
+                m_ObjectWriter.WritePropertyName(g_ObjectClassPropertyName);
+                m_ObjectWriter.WritePropertyValue(value->GetClass()->ClassName);
+                m_ObjectWriter.WritePropertyName(g_ObjectGuidPropertyName);
+                m_ObjectWriter.WritePropertyValue(value->GetGUID());
+                m_ObjectWriter.EndWriteStructPropertyValue();
             }
         }
         
@@ -341,7 +344,7 @@ GD_NAMESPACE_BEGIN
 	GDAPI RefPtr<Object> ObjectReader::ReadObject()
 	{
 		bool r;
-		r = TryReadPropertyNameOrSelectNextArrayElement();
+		r = TrySelectNextArrayElement();
 		r = TryBeginReadStructPropertyValue();
 
 		String objectClassString;
@@ -349,11 +352,9 @@ GD_NAMESPACE_BEGIN
 		TryReadPropertyValue(objectClassString);
 		auto const objectClass = ObjectClass::FindClass(objectClassString);
 
-		String objectGuidString;
+        GUID objectGuid;
 		TryReadPropertyName("GODDAMN_OBJECT_GUID");
-		TryReadPropertyValue(objectGuidString);
-		GUID objectGuid;
-		GUID::TryParse(objectGuidString, objectGuid);
+		TryReadPropertyValue(objectGuid);
 
 		auto const object = Object::CreateOrFindClassRelatedObjectByGUID(objectGuid, objectClass);
 
@@ -362,6 +363,10 @@ GD_NAMESPACE_BEGIN
 
 		EndReadStructPropertyValue();
 
+        for (SizeTp cnt = 0; cnt < objectReaderVisitor.GetChildObjectsCount(); ++cnt)
+        {
+            static_cast<void>(ReadObject());
+        }
 		return object;
 	}
 
@@ -373,12 +378,10 @@ GD_NAMESPACE_BEGIN
 	{
 		TrySelectNextArrayElement();
 		BeginWriteStructPropertyValue();
-
-		WritePropertyName("GODDAMN_OBJECT_CLASS");
+		WritePropertyName(g_ObjectClassPropertyName);
 		WritePropertyValue(object->GetClass()->ClassName);
-
-		WritePropertyName("GODDAMN_OBJECT_GUID");
-		WritePropertyValue(object->GetGUID().ToString());
+		WritePropertyName(g_ObjectGuidPropertyName);
+		WritePropertyValue(object->GetGUID());
 
 		ObjectWriterVisitor objectWriterVisitor(*this);
 		object->Reflect(objectWriterVisitor);

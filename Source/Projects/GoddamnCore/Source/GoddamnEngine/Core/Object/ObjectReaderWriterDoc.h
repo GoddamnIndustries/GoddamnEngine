@@ -23,8 +23,9 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	class ObjectReaderDoc : public TObjectReader<ObjectReaderDoc>
 	{
+        using ObjectReaderDocBase = TObjectReader<ObjectReaderDoc>;
+        
 	private:
-        using SerializationReaderDocBase = TObjectReader<ObjectReaderDoc>;
 		struct DocValueArrayScope
 		{
 			DocValueVector Array;
@@ -47,8 +48,8 @@ GD_NAMESPACE_BEGIN
          * @param doc Serialized data document.
          * @param docReadingStream Pointer to the stream, from the one we are reading.
          */
-		GDINL explicit ObjectReaderDoc(DocPtr const& doc, InputStream& docReadingStream)
-			: SerializationReaderDocBase(docReadingStream)
+		GDAPI explicit ObjectReaderDoc(DocPtr const& doc, InputStream& docReadingStream)
+			: ObjectReaderDocBase(docReadingStream)
 		{
 			auto const result = doc->_TryParseDocument(docReadingStream);
 			switch (result.RootValue->_GetTypeInfo())
@@ -59,7 +60,7 @@ GD_NAMESPACE_BEGIN
 						result.RootValue->_TryGetValue(docObject);
 						m_ObjectsScope.InsertLast({ docObject });
 						m_ReadingScope.InsertLast(CurrentlyReading::Struct);
-				}
+                    }
 					break;
 				case DocValueTypeInfo::Array:
 					{
@@ -67,12 +68,17 @@ GD_NAMESPACE_BEGIN
 						result.RootValue->_TryGetValue(docArray);
 						m_ArraysScope.InsertLast({ docArray, 0 });
 						m_ReadingScope.InsertLast(CurrentlyReading::Array);
-				}
+                    }
 					break;
 				default:
 					GD_NOT_SUPPORTED();
 			}
 		}
+        
+        GDAPI virtual ~ObjectReaderDoc()
+        {
+            m_ReadingScope.EraseLast();
+        }
 
 		// ------------------------------------------------------------------------------------------
 		// Properties reading.
@@ -91,7 +97,7 @@ GD_NAMESPACE_BEGIN
 
 		GDAPI virtual bool TrySelectNextArrayElement() override
 		{
-			if (SerializationReaderDocBase::TrySelectNextArrayElement())
+			if (ObjectReaderDocBase::TrySelectNextArrayElement())
 			{
 				// Selecting next element of the array.
 				GD_DEBUG_VERIFY(!m_ArraysScope.IsEmpty(), "Array scoping error.");
@@ -121,13 +127,13 @@ GD_NAMESPACE_BEGIN
 
 		GDAPI virtual bool TryBeginReadArrayPropertyValue(SizeTp& arraySize) override
 		{
-			if (!SerializationReaderDocBase::TryBeginReadArrayPropertyValue(arraySize))
+			if (!ObjectReaderDocBase::TryBeginReadArrayPropertyValue(arraySize))
 			{
 				DocValueVector value;
 				GD_DEBUG_VERIFY(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
 				if (!m_SelectedValue->_TryGetValue(value))
 				{
-					SerializationReaderDocBase::EndReadArrayPropertyValue();
+					ObjectReaderDocBase::EndReadArrayPropertyValue();
 					return false;
 				}
 				arraySize = value.GetLength();
@@ -138,7 +144,7 @@ GD_NAMESPACE_BEGIN
 			
 		GDAPI virtual void EndReadArrayPropertyValue() override
 		{
-			SerializationReaderDocBase::EndReadArrayPropertyValue();
+			ObjectReaderDocBase::EndReadArrayPropertyValue();
 			m_ArraysScope.EraseLast();
 		}
 
@@ -148,13 +154,13 @@ GD_NAMESPACE_BEGIN
 
 		GDINL virtual bool TryBeginReadStructPropertyValue() override
 		{
-			if (!SerializationReaderDocBase::TryBeginReadStructPropertyValue())
+			if (!ObjectReaderDocBase::TryBeginReadStructPropertyValue())
 			{
 				DocObjectPtr value;
 				GD_DEBUG_VERIFY(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
 				if (!m_SelectedValue->_TryGetValue(value))
 				{
-					SerializationReaderDocBase::EndReadArrayPropertyValue();
+					ObjectReaderDocBase::EndReadArrayPropertyValue();
 					return false;
 				}
                 m_ObjectsScope.InsertLast({ value });
@@ -164,7 +170,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL virtual void EndReadStructPropertyValue() override
 		{
-			SerializationReaderDocBase::EndReadStructPropertyValue();
+			ObjectReaderDocBase::EndReadStructPropertyValue();
 			m_ObjectsScope.EraseLast();
 		}
 
