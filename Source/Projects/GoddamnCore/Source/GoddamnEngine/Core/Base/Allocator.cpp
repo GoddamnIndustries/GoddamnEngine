@@ -56,6 +56,11 @@ GD_NAMESPACE_BEGIN
 		GD_DEBUG_VERIFY(alignment > 1, "Alignment should be greater than 1.");
 		GD_DEBUG_VERIFY((alignment & alignment - 1) == 0, "Alignment should power of 2.");
 
+		if (allocationSize == 0)
+		{
+			return nullptr;
+		}
+
 		ScopedConditionalCriticalSection const allocatorMutexLock(g_AllocatorMutex, !PlatformAllocator::IsThreadSafe());
 
 		Handle allocatedMemory;

@@ -54,7 +54,7 @@
  * @param TType Type of element.
  * @param Length The length of the array.
  */
-#define GD_MALLOC_ARRAY_T(TType, length) static_cast<TType*>(GD_MALLOC(length * sizeof(TType)))
+#define GD_MALLOC_ARRAY_T(TType, length) static_cast<TType*>(GD_MALLOC((length) * sizeof(TType)))
 
 /*!
  * Allocates block of memory with specified size that is aligned by specified value and returns pointer to it.
