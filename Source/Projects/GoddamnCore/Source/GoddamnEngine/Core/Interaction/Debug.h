@@ -257,5 +257,5 @@ GD_NAMESPACE_BEGIN
 GD_NAMESPACE_END
 
 // ReSharper disable once CppUnusedIncludeDirective
-//#include GD_PLATFORM_INCLUDE(GoddamnEngine/Core/Interaction, Debug)
+#include GD_PLATFORM_INCLUDE(GoddamnEngine/Core/Interaction, Debug)
 #undef GD_INSIDE_OUTPUT_OUTPUTDEVICE_H
