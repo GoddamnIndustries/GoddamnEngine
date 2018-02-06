@@ -25,7 +25,7 @@ namespace GoddamnEngine.BuildSystem.Target
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 yield return TargetPlatform.Windows;
-                //yield return TargetPlatform.XboxOne;
+                yield return TargetPlatform.XboxOne;
                 //yield return TargetPlatform.PlayStation4;   // Not sure here..
             }
             else

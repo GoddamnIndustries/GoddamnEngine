@@ -194,13 +194,13 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         vcxProj./**/WriteAttributeStringFormat("Condition", "'$(Configuration)|$(Platform)'=='{0}|{1}'", configurationName, platformString);
                         vcxProj./**/WriteAttributeString("Label", "Globals");
                         vcxProj./**/WriteElementString("WindowsTargetPlatformVersion", "10.0.16299.0");
-                        if (TargetInfo.IsMicrosoftPlatform(platform))
+                        if (platform == TargetPlatform.XboxOne)
                         {
-                            //vcxProj./**/WriteElementString("AppContainerApplication", "true");
-                            //vcxProj./**/WriteElementString("ApplicationType", "Windows Store");
+                            vcxProj./**/WriteElementString("AppContainerApplication", "true");
+                            vcxProj./**/WriteElementString("ApplicationType", "Windows Store");
                             //vcxProj./**/WriteElementString("WindowsTargetPlatformVersion", "10.0.10240.0");
                             //vcxProj./**/WriteElementString("WindowsTargetPlatformMinVersion", "10.0.10240.0");
-                            //vcxProj./**/WriteElementString("ApplicationTypeRevision", "10");
+                            vcxProj./**/WriteElementString("ApplicationTypeRevision", "10");
                         }
                         vcxProj.WriteEndElement();
                     }
