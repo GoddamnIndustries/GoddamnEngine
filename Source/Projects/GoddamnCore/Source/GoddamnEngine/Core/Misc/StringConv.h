@@ -116,8 +116,8 @@ GD_NAMESPACE_BEGIN
 		{
 			GD_DEBUG_VERIFY(text != nullptr);
 			auto const textEncodedLength = CalculateEncodedLength(text, textLength);
-			auto const textEncoded = gd_new Char[textEncodedLength + 1];
-			StringConvBase::EncodeUTF8(textEncoded, textEncodedLength, text, textLength);
+			String textEncoded(textEncodedLength);
+			StringConvBase::EncodeUTF8(textEncoded.CStr(), textEncodedLength, text, textLength);
 			return textEncoded;
 		}
 
@@ -150,8 +150,8 @@ GD_NAMESPACE_BEGIN
 		{
 			GD_DEBUG_VERIFY(text != nullptr);
 			auto const textDecodedLength = CalculateDecodedLength(text, textLength);
-			auto const textDecoded = gd_new WideChar[textDecodedLength + 1];
-			StringConvBase::DecodeUTF8(textDecoded, textDecodedLength, text, textLength);
+			WideString textDecoded(textDecodedLength);
+			StringConvBase::DecodeUTF8(textDecoded.CStr(), textDecodedLength, text, textLength);
 			return textDecoded;
 		}
 
