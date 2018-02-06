@@ -53,35 +53,31 @@ GD_NAMESPACE_BEGIN
     {
 		auto const r = R"(
     		[
-				{
-						"GODDAMN_OBJECT_CLASS" : "TestPerson",
-						"GODDAMN_OBJECT_GUID" : "8157833EDF004545-8DB762891FF11602",
-						"LastName" : "Smith",
-						"Address" : {
-								"GODDAMN_OBJECT_CLASS" : "TestAddress",
-								"GODDAMN_OBJECT_GUID" : "F1772840B0434D61-B38E58AB04D593C9"
-						},
-						"PhoneNumbers" : [
-								{
-										"Code" : 631.000000,
-										"Number" : 5964570.000000
-								},
-								{
-										"Code" : 917.000000,
-										"Number" : 7444138.000000
-								}
-						]
-				},
-				{
-						"GODDAMN_OBJECT_CLASS" : "TestAddress",
-						"GODDAMN_OBJECT_GUID" : "F1772840B0434D61-B38E58AB04D593C9",
-						"StreetAddress" : "779 Abia Martin Drive",
-						"City" : "New York",
-						"PostalCode" : 10011.000000
-				}
+					{
+							"GODDAMN_OBJECT_CLASS" : "TestPerson",
+							"GODDAMN_OBJECT_GUID" : "2C2B8DAF43B04180-B0C3FF1EEE764710",
+							"LastName" : "Smith",
+							"Address" : {
+									"GODDAMN_OBJECT_CLASS" : "TestAddress",
+									"GODDAMN_OBJECT_GUID" : "FE14B7B4C5ED4C2A-8CA88601ED981356",
+									"StreetAddress" : "779 Abia Martin Drive",
+									"City" : "New York",
+									"PostalCode" : 10011.000000
+							},
+							"PhoneNumbers" : [
+									{
+											"Code" : 631.000000,
+											"Number" : 5964570.000000
+									},
+									{
+											"Code" : 917.000000,
+											"Number" : 7444138.000000
+									}
+							]
+					}
 			])";
 
-        /*auto const address = TestAddress::CreateObject();
+		/*auto const address = TestAddress::CreateObject();
         address->StreetAddress = L"779 Abia Martin Drive";
         address->City = L"New York";
         address->PostalCode = 10011;
@@ -89,7 +85,7 @@ GD_NAMESPACE_BEGIN
         auto const person = TestPerson::CreateObject();
         person->FirstName = L"Jhon";
         person->LastName = L"Smith";
-        person->Address = address;
+        //person->Address = address;
         person->PhoneNumbers.InsertLast(TestPhoneNumber(631, 5964570));
         person->PhoneNumbers.InsertLast(TestPhoneNumber(917, 7444138));
         
@@ -113,8 +109,8 @@ GD_NAMESPACE_BEGIN
 		{
 			ObjectWriterJson objectWriter(outputStream);
 			objectWriter.WriteObject(person);
-			outputStream.Write('\0');
 		}
+		outputStream.Write('\0');
 
 		auto const str = (char*)outputStream.GetData().GetData();
 		printf(str);

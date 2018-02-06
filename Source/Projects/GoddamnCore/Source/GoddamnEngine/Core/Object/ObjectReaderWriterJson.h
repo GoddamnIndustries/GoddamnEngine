@@ -77,12 +77,7 @@ GD_NAMESPACE_BEGIN
 			m_WritingStream.Write('\n');
 		}
 
-		// ------------------------------------------------------------------------------------------
-		// Properties writing.
-		// ------------------------------------------------------------------------------------------
-
-	public:
-		GDAPI virtual bool TrySelectNextArrayElement() override final
+		GDINL void WritePropertyNewLineAndTabs()
 		{
 			if (m_FirstPropertyWritten)
 			{
@@ -94,11 +89,26 @@ GD_NAMESPACE_BEGIN
 				m_FirstPropertyWritten = true;
 			}
 			WriteTabs();
-			return ObjectWriterJsonBase::TrySelectNextArrayElement();
+		}
+
+		// ------------------------------------------------------------------------------------------
+		// Properties writing.
+		// ------------------------------------------------------------------------------------------
+
+	public:
+		GDAPI virtual bool TrySelectNextArrayElement() override final
+		{
+			if (ObjectWriterJsonBase::TrySelectNextArrayElement())
+			{
+				WritePropertyNewLineAndTabs();
+				return true;
+			}
+			return false;
 		}
 
 		GDAPI virtual void WritePropertyName(String const& name) override final
 		{
+			WritePropertyNewLineAndTabs();
 			m_WritingStream.Write("\"");
 			m_WritingStream.Write(name);
 			m_WritingStream.Write("\" : ");
@@ -108,7 +118,12 @@ GD_NAMESPACE_BEGIN
 		// Primitive properties writers.
 		// ------------------------------------------------------------------------------------------
 		
-		GDAPI void WritePropertyValueImpl(bool const value)
+		GDAPI void WritePropertyValueNull() override final
+		{
+			m_WritingStream.Write("null");
+		}
+
+		GDINL void WritePropertyValueImpl(bool const value)
 		{
             m_WritingStream.Write(String::FromBool(value));
 		}

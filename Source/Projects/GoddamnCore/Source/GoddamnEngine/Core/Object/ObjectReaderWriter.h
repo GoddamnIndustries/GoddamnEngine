@@ -53,21 +53,6 @@ GD_NAMESPACE_BEGIN
 			GD_DEBUG_VERIFY(m_ReadingScope.IsEmpty(), "Scoping error.");
 		}
 
-	public:
-
-		/*!
-		 * Reads object.
-		 * @returns Pointer to the deserialized object or nullptr on failure.
-		 */
-		//! @{
-		GDAPI RefPtr<Object> ReadObject();
-		template<typename TObject>
-		GDINL RefPtr<TObject> ReadObject()
-		{
-			return object_cast<RefPtr<TObject>>(ReadObject());
-		}
-		//! @}
-
 	protected:
 
 		// ------------------------------------------------------------------------------------------
@@ -115,6 +100,12 @@ GD_NAMESPACE_BEGIN
 		// Primitive properties reading.
 		// ------------------------------------------------------------------------------------------
         
+		/*!
+         * Reads null property.
+         * @returns True if property value was successfully read.
+         */
+        GDAPI virtual bool TryReadPropertyValueNull() GD_PURE_VIRTUAL;
+
         /*!
          * Reads boolean property.
          *
@@ -285,6 +276,29 @@ GD_NAMESPACE_BEGIN
 			m_ReadingScope.EraseLast();
 		}
 
+		// ------------------------------------------------------------------------------------------
+		// Object properties reading.
+		// ------------------------------------------------------------------------------------------
+
+	private:
+		GDINT bool TryBeginReadObjectPropertyValue(RefPtr<Object>& value);
+		GDINT void EndReadObjectPropertyValue();
+
+	public:
+
+		/*!
+		 * Reads object.
+		 * @returns Pointer to the deserialized object or nullptr on failure.
+		 */
+		//! @{
+		GDAPI RefPtr<Object> ReadObject();
+		template<typename TObject>
+		GDINL RefPtr<TObject> ReadObject()
+		{
+			return object_cast<RefPtr<TObject>>(ReadObject());
+		}
+		//! @}
+
 	};	// class ObjectReader
 
 	// **------------------------------------------------------------------------------------------**
@@ -318,14 +332,6 @@ GD_NAMESPACE_BEGIN
 		{
 			GD_DEBUG_VERIFY(m_WritingScope.IsEmpty(), "Scoping error.");
 		}
-
-	public:
-
-		/*!
-		 * Writes object.
-		 * @param object Object to write.
-		 */
-		GDAPI void WriteObject(RefPtr<Object> const& object);
 
 		// ------------------------------------------------------------------------------------------
 		// Properties writing.
@@ -368,6 +374,11 @@ GD_NAMESPACE_BEGIN
 		// Primitive properties writing.
 		// ------------------------------------------------------------------------------------------
         
+		/*!
+         * Writes null property.
+         */
+        GDAPI virtual void WritePropertyValueNull() GD_PURE_VIRTUAL;
+
         /*!
          * Writes boolean property.
          * @param value Boolean property value.
@@ -498,6 +509,22 @@ GD_NAMESPACE_BEGIN
             GD_DEBUG_VERIFY(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Struct, "Struct scoping error.");
 			m_WritingScope.EraseLast();
 		}
+
+		// ------------------------------------------------------------------------------------------
+		// Object properties writing.
+		// ------------------------------------------------------------------------------------------
+
+	private:
+		GDINT void BeginWriteObjectPropertyValue(RefPtr<Object> const& value);
+		GDINT void EndWriteObjectPropertyValue();
+
+	public:
+
+		/*!
+		 * Writes object.
+		 * @param object Object to write.
+		 */
+		GDAPI void WriteObject(RefPtr<Object> const& object);
 
 	};	// class ISerializationWriter
 

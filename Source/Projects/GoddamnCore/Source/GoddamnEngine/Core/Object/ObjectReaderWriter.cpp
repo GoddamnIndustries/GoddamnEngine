@@ -27,17 +27,11 @@ GD_NAMESPACE_BEGIN
     {
     private:
         ObjectReader& m_ObjectReader;
-        SizeTp m_ChildObjectsCount;
         
     public:
 		GDINL explicit ObjectReaderVisitor(ObjectReader& objectReader)
-			: m_ObjectReader(objectReader), m_ChildObjectsCount(0)
+			: m_ObjectReader(objectReader)
         {
-        }
-        
-        GDINL SizeTp GetChildObjectsCount() const
-        {
-            return m_ChildObjectsCount;
         }
         
         // ------------------------------------------------------------------------------------------
@@ -102,41 +96,24 @@ GD_NAMESPACE_BEGIN
             // Deserializing object properties..
             if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
             {
-                if ((propertyMetaInfo->PropertyFlags & PFChildren) != 0)
-                {
-                    m_ChildObjectsCount += 1;
-                }
-                
-                // Reading object class and GUID..
-                if (!m_ObjectReader.TryReadPropertyNameOrSelectNextArrayElement(&propertyMetaInfo->PropertyName))
-                {
-                    Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
-                    return;
-                }
-                if (!m_ObjectReader.TryBeginReadStructPropertyValue())
-                {
-                    Debug::LogWarningFormat("Unable to read value of the serialized data for object property '%s'", propertyMetaInfo->PropertyName.CStr());
-                    return;
-                }
-                GUID valueGuid;
-                String valueClassString;
-                if (!m_ObjectReader.TryReadPropertyName(g_ObjectClassPropertyName) || !m_ObjectReader.TryReadPropertyValue(valueClassString) ||
-                    !m_ObjectReader.TryReadPropertyName(g_ObjectGuidPropertyName) || !m_ObjectReader.TryReadPropertyValue(valueGuid))
-                {
-                    Debug::LogWarningFormat("Unable to read builtin values of the serialized data for object property '%s'", propertyMetaInfo->PropertyName.CStr());
-                    m_ObjectReader.EndReadStructPropertyValue();
-                    return;
-                }
-                m_ObjectReader.EndReadStructPropertyValue();
-                
-                // Creating the object..
-                auto const valueClass = ObjectClass::FindClass(valueClassString);
-                if (valueClass == nullptr)
-                {
-                    Debug::LogWarningFormat("Unable to parse find class of the serialized data for object property '%s'", propertyMetaInfo->PropertyName.CStr());
-                    return;
-                }
-                value = Object::CreateOrFindClassRelatedObjectByGUID(valueGuid, valueClass);
+				if (!m_ObjectReader.TryReadPropertyNameOrSelectNextArrayElement(&propertyMetaInfo->PropertyName))
+				{
+					Debug::LogWarningFormat("Unable to find serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
+					return;
+				}
+				if (!m_ObjectReader.TryReadPropertyValueNull())
+				{
+					if (!m_ObjectReader.TryBeginReadObjectPropertyValue(value))
+					{
+						Debug::LogWarningFormat("Unable to read value of the serialized data for property '%s'", propertyMetaInfo->PropertyName.CStr());
+						return;
+					}
+					if ((propertyMetaInfo->PropertyFlags & PFChildren) != 0)
+					{
+						value->Reflect(*this);
+					}
+					m_ObjectReader.EndReadObjectPropertyValue();
+				}
             }
         }
         
@@ -194,7 +171,7 @@ GD_NAMESPACE_BEGIN
             return false;
         }
         
-        GDINT virtual void EndVisitStructProperty(PropertyMetaInfo const* const propertyMetaInfo) override
+        GDINT virtual void EndVisitStructProperty(PropertyMetaInfo const* const propertyMetaInfo) override final
         {
             if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
             {
@@ -211,21 +188,11 @@ GD_NAMESPACE_BEGIN
 	{
 	private:
 		ObjectWriter& m_ObjectWriter;
-		Vector<RefPtr<Object>> m_ChildObjects;
 
 	public:
 		GDINL explicit ObjectWriterVisitor(ObjectWriter& objectWriter)
 			: m_ObjectWriter(objectWriter)
 		{
-		}
-
-		GDINL virtual ~ObjectWriterVisitor()
-		{
-		}
-
-		GDINL Vector<RefPtr<Object>> const& GetChildObjects() const
-		{
-			return m_ChildObjects;
 		}
 
         // ------------------------------------------------------------------------------------------
@@ -272,17 +239,20 @@ GD_NAMESPACE_BEGIN
             // Serializing object properties..
             if ((propertyMetaInfo->PropertyFlags & PFNotSerializable) == 0)
             {
-				if ((propertyMetaInfo->PropertyFlags & PFChildren) != 0)
+				m_ObjectWriter.WritePropertyNameOrSelectNextArrayElement(&propertyMetaInfo->PropertyName);
+				if (value != nullptr)
 				{
-					m_ChildObjects.InsertLast(value);
+					m_ObjectWriter.BeginWriteObjectPropertyValue(const_cast<RefPtr<Object> const&>(value));
+					if ((propertyMetaInfo->PropertyFlags & PFChildren) != 0)
+					{
+						value->Reflect(*this);
+					}
+					m_ObjectWriter.EndWriteObjectPropertyValue();
 				}
-                m_ObjectWriter.WritePropertyNameOrSelectNextArrayElement(&propertyMetaInfo->PropertyName);
-                m_ObjectWriter.BeginWriteStructPropertyValue();
-                m_ObjectWriter.WritePropertyName(g_ObjectClassPropertyName);
-                m_ObjectWriter.WritePropertyValue(value->GetClass()->ClassName);
-                m_ObjectWriter.WritePropertyName(g_ObjectGuidPropertyName);
-                m_ObjectWriter.WritePropertyValue(value->GetGUID());
-                m_ObjectWriter.EndWriteStructPropertyValue();
+				else
+				{
+					m_ObjectWriter.WritePropertyValueNull();
+				}
             }
         }
         
@@ -331,11 +301,51 @@ GD_NAMESPACE_BEGIN
 			}
 		}
 
-	};	// struct ObjectSerializationVisitor
+	};	// struct ObjectWriterVisitor
 
 	// ------------------------------------------------------------------------------------------
-	// ObjectReader class.
+	// Object properties reading.
 	// ------------------------------------------------------------------------------------------
+
+	/*!
+	 * @brief Reads structure property.
+	 * This function should be called to initialize object reading. 
+	 * After reading the whole structure, 'EndReadObjectPropertyValue' is called.
+	 *
+	 * @param value Object property value.
+	 * @returns True if reading struct property was successfully initialized.
+	 */
+	GDINT bool ObjectReader::TryBeginReadObjectPropertyValue(RefPtr<Object>& value)
+	{
+		GUID valueGuid;
+		String valueClassName;
+		if (!TryBeginReadStructPropertyValue())
+		{
+			return false;
+		}
+		if (!TryReadPropertyName(g_ObjectClassPropertyName) || !TryReadPropertyValue(valueClassName) ||
+			!TryReadPropertyName(g_ObjectGuidPropertyName) || !TryReadPropertyValue(valueGuid))
+		{
+			return false;
+		}
+
+		// Creating the object..
+		auto const valueClass = ObjectClass::FindClass(valueClassName);
+		if (valueClass == nullptr)
+		{
+			return false;
+		}
+		value = Object::CreateOrFindClassRelatedObjectByGUID(valueGuid, valueClass);
+		return true;
+	}
+
+	/*!
+	 * Notifies end of the object property.
+	 */
+	GDINT void ObjectReader::EndReadObjectPropertyValue()
+	{
+		EndReadStructPropertyValue();
+	}
 
 	/*!
 	 * Reads object.
@@ -343,31 +353,49 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI RefPtr<Object> ObjectReader::ReadObject()
 	{
-		bool r;
-		r = TrySelectNextArrayElement();
-		r = TryBeginReadStructPropertyValue();
-
-		String objectClassString;
-		TryReadPropertyName("GODDAMN_OBJECT_CLASS");
-		TryReadPropertyValue(objectClassString);
-		auto const objectClass = ObjectClass::FindClass(objectClassString);
-
-        GUID objectGuid;
-		TryReadPropertyName("GODDAMN_OBJECT_GUID");
-		TryReadPropertyValue(objectGuid);
-
-		auto const object = Object::CreateOrFindClassRelatedObjectByGUID(objectGuid, objectClass);
-
-		ObjectReaderVisitor objectReaderVisitor(*this);
-		object->Reflect(objectReaderVisitor);
-
-		EndReadStructPropertyValue();
-
-        for (SizeTp cnt = 0; cnt < objectReaderVisitor.GetChildObjectsCount(); ++cnt)
-        {
-            static_cast<void>(ReadObject());
-        }
+		if (!TrySelectNextArrayElement())
+		{
+			Debug::LogWarningFormat("Unable to find serialized data for object");
+			return nullptr;
+		}
+		RefPtr<Object> object;
+		if (!TryBeginReadObjectPropertyValue(object))
+		{
+			Debug::LogWarningFormat("Unable to read value of the serialized data for object");
+			return nullptr;
+		}
+		{
+			ObjectReaderVisitor objectReaderVisitor(*this);
+			object->Reflect(objectReaderVisitor);
+		}
+		EndReadObjectPropertyValue();
 		return object;
+	}
+
+	// ------------------------------------------------------------------------------------------
+	// Object properties writing.
+	// ------------------------------------------------------------------------------------------
+
+	/*!
+	 * @brief Writes object property.
+	 * This function should be called to initialize object writing. 
+	 * After writing the object structure, 'EndWriteObjectPropertyValue' should be called.
+	 */
+	GDINT void ObjectWriter::BeginWriteObjectPropertyValue(RefPtr<Object> const& value)
+	{
+		BeginWriteStructPropertyValue();
+		WritePropertyName(g_ObjectClassPropertyName);
+		WritePropertyValue(value->GetClass()->ClassName);
+		WritePropertyName(g_ObjectGuidPropertyName);
+		WritePropertyValue(value->GetGUID());
+	}
+
+	/*!
+	 * Notifies end of the object property.
+	 */
+	GDINT void ObjectWriter::EndWriteObjectPropertyValue()
+	{
+		EndWriteStructPropertyValue();
 	}
 
 	/*!
@@ -376,22 +404,17 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI void ObjectWriter::WriteObject(RefPtr<Object> const& object)
 	{
-		TrySelectNextArrayElement();
-		BeginWriteStructPropertyValue();
-		WritePropertyName(g_ObjectClassPropertyName);
-		WritePropertyValue(object->GetClass()->ClassName);
-		WritePropertyName(g_ObjectGuidPropertyName);
-		WritePropertyValue(object->GetGUID());
-
-		ObjectWriterVisitor objectWriterVisitor(*this);
-		object->Reflect(objectWriterVisitor);
-
-		EndWriteStructPropertyValue();
-
-		for (auto const& childObject : objectWriterVisitor.GetChildObjects())
+		if (!TrySelectNextArrayElement())
 		{
-			WriteObject(childObject);
+			Debug::LogWarningFormat("Invalid writer format");
+			return;
 		}
+		BeginWriteObjectPropertyValue(object);
+		{
+			ObjectWriterVisitor objectWriterVisitor(*this);
+			object->Reflect(objectWriterVisitor);
+		}
+		EndWriteObjectPropertyValue();
 	}
 
 GD_NAMESPACE_END

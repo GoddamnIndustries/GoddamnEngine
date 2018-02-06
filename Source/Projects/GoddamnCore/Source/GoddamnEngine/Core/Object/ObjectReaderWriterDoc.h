@@ -114,6 +114,11 @@ GD_NAMESPACE_BEGIN
 		// Primitive properties readers.
 		// ------------------------------------------------------------------------------------------
 
+		GDAPI virtual bool TryReadPropertyValueNull() override
+		{
+			return m_SelectedValue->_GetTypeInfo() == DocValueTypeInfo::Null;
+		}
+
 		template<typename TValue>
 		GDINL bool TryReadPropertyValueImpl(TValue& value)
 		{
