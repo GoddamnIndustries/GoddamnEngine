@@ -323,8 +323,8 @@ GD_NAMESPACE_BEGIN
 		{
 			return false;
 		}
-		if (!TryReadPropertyName(g_ObjectClassPropertyName) || !TryReadPropertyValue(valueClassName) ||
-			!TryReadPropertyName(g_ObjectGuidPropertyName) || !TryReadPropertyValue(valueGuid))
+		if (!(TryReadPropertyName(g_ObjectClassPropertyName) && TryReadPropertyValue(valueClassName)
+			&& TryReadPropertyName(g_ObjectGuidPropertyName) && TryReadPropertyValue(valueGuid)))
 		{
 			return false;
 		}

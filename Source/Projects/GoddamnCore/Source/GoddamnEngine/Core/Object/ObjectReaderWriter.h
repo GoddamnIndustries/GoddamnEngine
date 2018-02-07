@@ -204,6 +204,7 @@ GD_NAMESPACE_BEGIN
         
         /*!
          * Reads GUID property.
+         * Default implementation uses string GUID representation.
          *
          * @param value GUID property value.
          * @returns True if property value was successfully read.
@@ -453,6 +454,8 @@ GD_NAMESPACE_BEGIN
         
         /*!
          * Writes GUID property.
+		 * Default implementation uses string GUID representation.
+		 *
          * @param value GUID property value.
          */
         GDAPI virtual void WritePropertyValue(GUID const& value)
