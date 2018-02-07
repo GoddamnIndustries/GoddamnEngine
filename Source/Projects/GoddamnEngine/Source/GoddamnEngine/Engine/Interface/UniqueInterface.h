@@ -45,7 +45,7 @@
 //! Defines a base type for the unique interface partial declaration.
 //! @param IInterfaceType Type of the interface to declare.
 //! @param IBaseInterfaceType Base type for this interface.
-#define GD_DEFINE_PARTIAL_CALSS_FIRST(IInterfaceType, IBaseInterfaceType) \
+#define GD_DEFINE_PARTIAL_CLASS_FIRST(IInterfaceType, IBaseInterfaceType) \
 	uinterface __ ## IInterfaceType ## Zero : public IBaseInterfaceType {}; \
 	enum __ ## IInterfaceType ## ZeroCounterType { __ ## IInterfaceType ## CounterBase = __COUNTER__ };\
 	template<int __ ## IInterfaceType ## ChainID> struct __ ## IInterfaceType ## ByChainID { typedef __ ## IInterfaceType ## Zero Type; };

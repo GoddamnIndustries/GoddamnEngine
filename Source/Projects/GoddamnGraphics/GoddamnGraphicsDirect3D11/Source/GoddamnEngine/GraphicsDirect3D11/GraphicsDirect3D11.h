@@ -14,8 +14,6 @@
 
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Engine/Interface/Graphics/Graphics.h>
-#undef GD_PLATFORM_API_MICROSOFT
-#define GD_PLATFORM_API_MICROSOFT 0
 #if GD_PLATFORM_API_MICROSOFT
 
 #include <atlbase.h>
