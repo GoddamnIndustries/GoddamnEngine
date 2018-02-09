@@ -18,7 +18,7 @@
 GD_NAMESPACE_BEGIN
 
     // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-    //! Cross-platform allocator interface.
+	//! @copydoc PlatformAllocatorWindowsUWP
     // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
     using PlatformAllocator = PlatformAllocatorGeneric;
 

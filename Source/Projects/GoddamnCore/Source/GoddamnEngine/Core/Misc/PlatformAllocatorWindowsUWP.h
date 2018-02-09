@@ -8,7 +8,7 @@
 
 /*! 
  * @file
- * Windows allocator.
+ * UWP allocator.
  */
 #pragma once
 #if !defined(GD_INSIDE_ALLOCATOR_H)
@@ -17,8 +17,6 @@
 
 #if GD_DEBUG
 #	include <crtdbg.h>
-#else	// if GD_DEBUG
-#	include <GoddamnEngine/Core/Misc/PlatformAllocatorTBB.h>
 #endif	// if GD_DEBUG
 
 GD_NAMESPACE_BEGIN
@@ -27,7 +25,7 @@ GD_NAMESPACE_BEGIN
 	//! @copydoc PlatformAllocatorGeneric
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 #if GD_DEBUG
-	class PlatformAllocatorWindows : public PlatformAllocatorGeneric
+	class PlatformAllocatorWindowsUWP : public PlatformAllocatorGeneric
 	{
 	public:
 		
@@ -100,14 +98,14 @@ GD_NAMESPACE_BEGIN
 			_aligned_free_dbg(memory);
 		}
 
-	};	// class PlatformAllocatorWindows
+	};	// class PlatformAllocatorWindowsUWP
 #else	// if GD_DEBUG
-	using PlatformAllocatorWindows = PlatformAllocatorTBB;
+	using PlatformAllocatorWindowsUWP = PlatformAllocatorGeneric;
 #endif	// if GD_DEBUG
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! @copydoc PlatformAllocatorWindows
+	//! @copydoc PlatformAllocatorWindowsUWP
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	using PlatformAllocator = PlatformAllocatorWindows;
+	using PlatformAllocator = PlatformAllocatorWindowsUWP;
 
 GD_NAMESPACE_END
