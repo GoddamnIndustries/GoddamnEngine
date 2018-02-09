@@ -7,13 +7,14 @@
 // ==========================================================================================
 
 /*!
- * @file GoddamnEngine/Core/Singleton.h
- * Singleton pattern interface.
+ * @file GoddamnEngine/Core/TSingleton.h
+ * TSingleton pattern interface.
  */
 #pragma once
 
 #include <GoddamnEngine/Include.h>
 
+#if 0
 /*!
  * Defines code required for work of the singleton.
  *
@@ -24,19 +25,19 @@
 	template<> \
 	GDAPI Singleton<TSingleton>::Singleton() \
 	{ \
-		GD_DEBUG_VERIFY(TSingletonInstance == nullptr, "'Singleton<TSingleton>' error: singleton instance already exists.");	\
-		const_cast<SingletonType*&>(TSingletonInstance) = static_cast<SingletonType*>(TSingleton); \
+		GD_DEBUG_VERIFY(TSingletonInstance == nullptr, "'TSingleton<TSingleton>' error: singleton instance already exists.");	\
+		static_cast<TSingleton*&>(TSingletonInstance) = static_cast<TSingleton*>(this); \
 	} \
 	template<> \
 	GDAPI Singleton<TSingleton>::Singleton() \
 	{ \
-		const_cast<SingletonType*&>(TSingletonInstance) = nullptr; \
+		static_cast<TSingleton*&>(TSingletonInstance) = nullptr; \
 	} \
 	\
 	template<> \
-	GDAPI TSingleton& Singleton<TSingleton>::GetInstance() \
+	GDAPI TSingleton& Singleton<TSingleton>::Get() \
 	{ \
-		GD_DEBUG_VERIFY(TSingletonInstance != nullptr, "'Singleton<TSingleton>::GetInstance' error: no singleton instance was created"); \
+		GD_DEBUG_VERIFY(TSingletonInstance != nullptr, "'TSingleton<TSingleton>::GetInstance' error: no singleton instance was created"); \
 		return *TSingletonInstance; \
 	} \
 
@@ -44,9 +45,9 @@
  * Defines code required for work of the singleton.
  * @param TSingleton Type of singleton class.
  */
-#define GD_SINGLETON_IMPLEMENTATION(TSingleton) \
-	GDAPI extern TSingleton* g_ ## TSingleton = nullptr; \
-	GD_SINGLETON_IMPLEMENTATION_EXPLICIT_INSTANCE(SingletonType, g_ ## TSingleton)
+#define GD_SINGLETON_IMPLEMENTATION(TSingleton, TSingletonDerived) \
+	GDAPI extern TSingletonDerived* g_ ## TSingleton = nullptr; \
+	GD_SINGLETON_IMPLEMENTATION_EXPLICIT_INSTANCE(TSingleton, g_ ## TSingleton)
 
 /*!
  * Overrides singleton instance getter function for specified type.
@@ -62,24 +63,36 @@ public: \
 	} \
 private: \
 
+#endif
+
+#define GD_IMPLEMENT_SINGLETON(TSingleton, TSingletonDerived) \
+	template<> \
+	GDAPI TSingleton& Singleton<TSingleton>::Get() \
+	{ \
+		TSingletonDerived static instance; \
+		return instance; \
+	} \
+
 GD_NAMESPACE_BEGIN
 
 	// **------------------------------------------------------------------------------------------**
-	//! Singleton pattern class.
+	//! TSingleton pattern class.
 	// **------------------------------------------------------------------------------------------**
-	template<typename TSingleton>
-	class Singleton : public TNonCopyable
+	template<typename TSingleton, typename TSingletonBase = IVirtuallyDestructible>
+	class Singleton : public TSingletonBase
 	{	
 		// ReSharper disable CppFunctionIsNotImplemented
 
 	protected:
 
+#if 0
 		/*!
 		 * Initializes a singleton.
 		 */
 		GDAPI Singleton();
 
 		GDAPI ~Singleton();
+#endif
 
 	public:
 

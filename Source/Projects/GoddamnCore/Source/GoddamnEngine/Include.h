@@ -128,6 +128,9 @@
 // Configuration definitions.
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#define GD_PLATFORM_KERNEL
+#define GD_PLATFORM_WRAPPER
+
 #define GD_TESTING_ENABLED 1
 
 #include <GoddamnEngine/Core/Base/Version.h>
