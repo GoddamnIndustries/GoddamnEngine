@@ -6,164 +6,168 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
-#define GD_IGRAPHICS_DIRECT3D1X_IMPL 1
-
 /*!
- * @file GoddamnEngine/Core/System/Graphics/GraphicsDirect3D11/GraphicsDirect3D11Buffers.cpp
- * File contains Implementation for Direct3D11 Implementation of the graphics interface: buffer objects.
+ * @file
+ * Direct3D11 Implementation of the graphics interface: buffer objects.
  */
 #include <GoddamnEngine/GraphicsDirect3D11/GraphicsDirect3D11.h>
 #if GD_PLATFORM_API_MICROSOFT
 
 GD_NAMESPACE_BEGIN
 
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	GDEXP extern IGraphics* CreateIGraphicsInstance()
+	{
+#pragma comment(lib, "d3d11.lib")
+		auto a = gd_new IGraphicsDirect3D11WithTextures();
+		ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION, &a->m_D3DDevice.p, nullptr, &a->m_D3DDeviceContext.p));
+		return a;
+	}
+
+	// ------------------------------------------------------------------------------------------
 	// Buffers.
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	D3D11_(BIND_FLAG) static const g_D3DBufferTypesTable[IGRAPHICS_BUFFER_TYPES_COUNT] = {
-		/* IGRAPHICS_BUFFER_TYPE_VERTEX   */ D3D11_(BIND_VERTEX_BUFFER),
-		/* IGRAPHICS_BUFFER_TYPE_INDEX    */ D3D11_(BIND_INDEX_BUFFER),
-		/* IGRAPHICS_BUFFER_TYPE_UNIFORM  */ D3D11_(BIND_CONSTANT_BUFFER),
-		/* IGRAPHICS_BUFFER_TYPE_UNKNOWN  */ D3D11_(BIND_FLAG)(0),
-	};
-
-#if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11			
-	static_assert(&static_cast<D3D11_MAPPED_SUBRESOURCE*>(nullptr)->pData == nullptr
-			, "The 'pData' field of the mapped subresource has been moved.");
-#endif	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
-
-	/*!
-	 * Creates a GPU buffer with specified parameters.
-	 *
-	 * @param gfxBufferCreationInfo Pointer to the buffer creation information.
-	 * @param gfxBufferInitialData Initial data of the buffer. Can be null pointer for en empty buffer.
-	 */
-	GDAPI IGraphicsDirect3D11Buffer::IGraphicsDirect3D11Buffer(IGraphicsBufferCreationInfo const* const gfxBufferCreationInfo
-		, CHandle const gfxBufferInitialData)
-		: IGraphicsBuffer(gfxBufferCreationInfo)
-		, m_D3DBuffer(nullptr), m_D3DBufferMappedMemory(nullptr)
-	{
-		D3D11_(BUFFER_DESC) d3dBufferDesc = {};
-		d3dBufferDesc.ByteWidth = static_cast<UINT>(BufferSize);
-		d3dBufferDesc.BindFlags = g_D3DBufferTypesTable[BufferType];
-		if (BufferFlags != 0)
-		{
-			d3dBufferDesc.Usage = D3D11_(USAGE_IMMUTABLE);
-			if ((BufferFlags & IGRAPHICS_BUFFER_FLAGS_DYNAMIC_READ ) != 0) d3dBufferDesc.CPUAccessFlags |= D3D11_(CPU_ACCESS_READ);
-			if ((BufferFlags & IGRAPHICS_BUFFER_FLAGS_DYNAMIC_WRITE) != 0) d3dBufferDesc.CPUAccessFlags |= D3D11_(CPU_ACCESS_WRITE);
-		}
-
-		D3D11_(SUBRESOURCE_DATA) d3dBufferSubresource = {}, *d3dBufferSubresourcePtr = nullptr;
-		if (gfxBufferInitialData != nullptr)
-		{
-			d3dBufferSubresourcePtr = &d3dBufferSubresource;
-			d3dBufferSubresource.pSysMem = gfxBufferInitialData;
-		}
-
-		ThrowIfFailed(GD_IGRAPHICS_DIRECT3D1X->m_D3DDevice->CreateBuffer(&d3dBufferDesc, d3dBufferSubresourcePtr, &m_D3DBuffer.p));
-	}
-
-	/*!
-	 * Deletes current GPU buffer.
-	 */
-	GDAPI IGraphicsDirect3D11Buffer::~IGraphicsDirect3D11Buffer()
-	{
-		Imm_Unmap();
-		m_D3DBuffer.Release();
-	}
-
-	/*!
-	 * Maps all GPU's buffer data on the CPU memory.
-	 *
-	 * @param gfxMappedWOMemory Pointer to the write-only memory Handle.
-	 * @returns Non-negative value if the operation succeeded.
-	 */
-	GDAPI IResult IGraphicsDirect3D11Buffer::Imm_MapForWriting(Handle* const gfxMappedWOMemory)
-	{
-#if GD_DEBUG
-		GD_ARG_VERIFY(gfxMappedWOMemory != nullptr);
-#endif	// if GD_DEBUG
-		if (m_D3DBufferMappedMemory == nullptr)
-		{
-#if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11			
-			ThrowIfFailed(GD_IGRAPHICS_DIRECT3D1X->m_D3DDeviceContext->Map(m_D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0
-				, &m_D3DBufferMappedSubresource));
-#else	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
-			ThrowIfFailed(m_D3DBuffer->Map(D3D10_MAP_WRITE_DISCARD, 0
-				, const_cast<void**>(&m_D3DBufferMappedMemory)));
-#endif	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
-		}
-		*gfxMappedWOMemory = m_D3DBufferMappedMemory;
-		return IResult::Ok;
-	}
-
-	/*!
-	 * Maps all GPU's buffer data on the CPU memory.
-	 *
-	 * @param gfxMappedROMemory Pointer to the read-only memory Handle.
-	 * @returns Non-negative value if the operation succeeded.
-	 */
-	GDAPI IResult IGraphicsDirect3D11Buffer::Imm_MapForReading(CHandle* const gfxMappedROMemory)
-	{
-#if GD_DEBUG
-		GD_ARG_VERIFY(gfxMappedROMemory != nullptr);
-#endif	// if GD_DEBUG
-		if (m_D3DBufferMappedMemory == nullptr)
-		{
-#if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11			
-			ThrowIfFailed(GD_IGRAPHICS_DIRECT3D1X->m_D3DDeviceContext->Map(m_D3DBuffer, 0, D3D11_MAP_READ, 0
-				, &m_D3DBufferMappedSubresource));
-#else	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
-			ThrowIfFailed(m_D3DBuffer->Map(D3D10_MAP_READ, 0
-				, const_cast<void**>(&m_D3DBufferMappedMemory)));
-#endif	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
-		}
-		*gfxMappedROMemory = m_D3DBufferMappedMemory;
-		return IResult::Ok;
-	}
-
-	/*!
-	 * Unmaps the buffer from the CPU memory.
-	 */
-	GDAPI void IGraphicsDirect3D11Buffer::Imm_Unmap()
-	{
-#if GD_DEBUG
-		if (!GD_IGRAPHICS_CHECK_ARGS(Imm_Unmap(gfxBuffer)))
-			return;
-#endif	// if GD_DEBUG
-
-		if (m_D3DBufferMappedMemory != nullptr)
-		{
-#if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11			
-			GD_IGRAPHICS_DIRECT3D1X->m_D3DDeviceContext->Unmap(m_D3DBuffer, 0);
-			m_D3DBufferMappedSubresource = {};
-#else	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
-			m_D3DBuffer->Unmap();
-			m_D3DBufferMappedMemory = nullptr;
-#endif	// if GD_IGRAPHICS_DIRECT3D1X_VERSION >= 11
-		}
-	}
+	// ------------------------------------------------------------------------------------------
 
 	/*!
 	 * Creates a GPU buffer with specified parameters.
 	 *
 	 * @param gfxBufferPtr Pointer for output.
-	 * @param gfxBufferCreationInfo Pointer to the buffer creation information.
-	 * @param gfxBufferInitialData Initial data of the buffer. Can be null pointer for en empty buffer.
+	 * @param gfxBufferCreateInfo Pointer to the buffer creation information.
+	 * @param gfxBufferInitialData Initial data.
 	 *
 	 * @returns Non-negative value if the operation succeeded.
 	 */
-	GDAPI IResult IGraphicsDirect3D11WithBuffers::GfxImm_BufferCreate(IGraphicsBuffer** const gfxBufferPtr
-		, IGraphicsBufferCreationInfo const* const gfxBufferCreationInfo, CHandle const gfxBufferInitialData)
+	GDAPI IResult IGraphicsDirect3D11WithBuffers::GfxImm_BufferCreate(IGraphicsBuffer*& gfxBufferPtr, IGraphicsBufferCreateInfo const& gfxBufferCreateInfo, CHandle const gfxBufferInitialData)
 	{
-#if GD_DEBUG
-		GD_ARG_VERIFY(gfxBufferPtr != nullptr);
-		GD_ARG_VERIFY(gfxBufferCreationInfo != nullptr);
-		GD_ARG_VERIFY(gfxBufferCreationInfo->BufferType < IGRAPHICS_BUFFER_TYPE_UNKNOWN);
-#endif	// if GD_DEBUG
+		D3D11_BUFFER_DESC d3dBufferDesc = {};
+		d3dBufferDesc.ByteWidth = gfxBufferCreateInfo.BufferSize;
 
-		*gfxBufferPtr = gd_new IGraphicsDirect3D11Buffer(gfxBufferCreationInfo, gfxBufferInitialData);
+		// Setting up the buffer type..
+		switch (gfxBufferCreateInfo.BufferType)
+		{
+			case IGRAPHICS_BUFFER_TYPE_VERTEX:
+				d3dBufferDesc.BindFlags |= D3D11_BIND_VERTEX_BUFFER;
+				break;
+			case IGRAPHICS_BUFFER_TYPE_INDEX:
+				d3dBufferDesc.BindFlags |= D3D11_BIND_INDEX_BUFFER;
+				break;
+			case IGRAPHICS_BUFFER_TYPE_UNIFORM:
+				d3dBufferDesc.BindFlags |= D3D11_BIND_CONSTANT_BUFFER | D3D11_BIND_SHADER_RESOURCE;
+				break;
+			default:
+				return IResult::InvalidArguments;
+		}
+
+		// Setting up the usage..
+		switch (gfxBufferCreateInfo.ResourceUsage)
+		{
+			case IGRAPHICS_RESOURCE_USAGE_DEFAULT:
+				d3dBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+				break;
+			case IGRAPHICS_RESOURCE_USAGE_IMMUTABLE:
+				d3dBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+				break;
+			case IGRAPHICS_RESOURCE_USAGE_DYNAMIC:
+				d3dBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+				break;
+			case IGRAPHICS_RESOURCE_USAGE_STAGING:
+				d3dBufferDesc.Usage = D3D11_USAGE_STAGING;
+				break;
+			default:
+				return IResult::InvalidArguments;
+		}
+
+		// Setting up the CPU access flags..
+		if ((gfxBufferCreateInfo.ResourceCpuAccessFlags & IGRAPHICS_RESOURCE_CPU_ACCESS_FLAGS_WRITE) != 0)
+		{
+			d3dBufferDesc.CPUAccessFlags |= D3D11_CPU_ACCESS_WRITE;
+		}
+		if ((gfxBufferCreateInfo.ResourceCpuAccessFlags & IGRAPHICS_RESOURCE_CPU_ACCESS_FLAGS_READ) != 0)
+		{
+			d3dBufferDesc.CPUAccessFlags |= D3D11_CPU_ACCESS_READ;
+		}
+
+		// Setting up the initial data..
+		D3D11_SUBRESOURCE_DATA d3dInitialData;
+		d3dInitialData.pSysMem = gfxBufferInitialData;
+
+		// Creating the buffer..
+		CComPtr<ID3D11Buffer> d3dBufferID;
+		D3DThrowIfFailed(m_D3DDevice->CreateBuffer(&d3dBufferDesc, &d3dInitialData, &d3dBufferID.p));
+
+		gfxBufferPtr = gd_new IGraphicsDirect3DBuffer(gfxBufferCreateInfo, d3dBufferID);
+		return IResult::Ok;
+	}
+
+	/*!
+	 * Destroys the GPU buffer.
+	 *
+	 * @param gfxBuffer Buffer to destroy.
+	 * @returns Non-negative value if the operation succeeded.
+	 */
+	GDAPI IResult IGraphicsDirect3D11WithBuffers::GfxImm_BufferDestroy(IGraphicsBuffer* const gfxBuffer)
+	{
+		GD_DEBUG_VERIFY(gfxBuffer != nullptr);
+
+		gd_delete gfxBuffer;
+		return IResult::Ok;
+	}
+
+	/*!
+	 * Maps all GPU's buffer data on the CPU memory.
+	 *
+	 * @param gfxBuffer Buffer to map.
+	 * @param gfxMapMode Buffer map mode.
+	 * @param gfxMappedMemory Pointer to the memory handle.
+	 *
+	 * @returns Non-negative value if the operation succeeded.
+	 */
+	GDAPI IResult IGraphicsDirect3D11WithBuffers::GfxImm_BufferMap(IGraphicsBuffer* const gfxBuffer, IGraphicsResourceMapMode const gfxMapMode, Handle& gfxMappedMemory)
+	{
+		GD_DEBUG_VERIFY(gfxBuffer != nullptr);
+
+		auto const d3dBuffer = static_cast<IGraphicsDirect3DBuffer*>(gfxBuffer);
+		auto const d3dBufferID = d3dBuffer->BufferID;
+
+		D3D11_MAP d3dMapMode;
+		switch (gfxMapMode)
+		{
+			case IGRAPHICS_RESOURCE_MAP_MODE_READ:
+				d3dMapMode = D3D11_MAP_READ;
+				break;
+			case IGRAPHICS_RESOURCE_MAP_MODE_WRITE:
+				d3dMapMode = D3D11_MAP_WRITE;
+				break;
+			case IGRAPHICS_RESOURCE_MAP_MODE_READ_WRITE:
+				d3dMapMode = D3D11_MAP_READ_WRITE;
+				break;
+#if GD_DEBUG
+			default:
+				GD_DEBUG_VERIFY(gfxMapMode >= IGRAPHICS_RESOURCE_MAP_MODE_UNKNOWN);
+				return IResult::InvalidArguments;
+#endif	// if GD_DEBUG
+		}
+
+		D3D11_MAPPED_SUBRESOURCE d3dMappedMemory;
+		D3DThrowIfFailed(m_D3DDeviceContext->Map(d3dBufferID, 0, d3dMapMode, 0, &d3dMappedMemory));
+
+		gfxMappedMemory = d3dMappedMemory.pData;
+		return IResult::Ok;
+	}
+
+	/*!
+	 * Unmaps the buffer from the CPU memory.
+	 *
+	 * @param gfxBuffer Buffer to unmap.
+	 * @returns Non-negative value if the operation succeeded.
+	 */
+	GDAPI IResult IGraphicsDirect3D11WithBuffers::GfxImm_BufferUnmap(IGraphicsBuffer* const gfxBuffer)
+	{
+		GD_DEBUG_VERIFY(gfxBuffer != nullptr);
+
+		auto const d3dBuffer = static_cast<IGraphicsDirect3DBuffer*>(gfxBuffer);
+		auto const d3dBufferID = d3dBuffer->BufferID;
+
+		m_D3DDeviceContext->Unmap(d3dBufferID, 0);
 		return IResult::Ok;
 	}
 

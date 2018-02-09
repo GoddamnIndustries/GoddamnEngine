@@ -11,7 +11,7 @@
  * File contains Implementation for the export interface for Windows Implementation of the graphics interface.
  */
 #include <GoddamnEngine/Engine/Interface/Graphics/GraphicsWindows.h>
-#if GD_PLATFORM_WINDOWS || GD_PLATFORM_WINDOWS_UAP || GD_PLATFORM_WINDOWS_PHONE && 0
+#if GD_PLATFORM_WINDOWS || GD_PLATFORM_WINDOWS_UWP || GD_PLATFORM_WINDOWS_PHONE && 0
 
 //#include <GoddamnEngine/Engine/Interface/OutputDevice/OutputDevice.h>
 #define GD_DLOG_CAT "GFX device (Windows@Canvas)"
@@ -421,4 +421,4 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#endif	// if GD_PLATFORM_WINDOWS || GD_PLATFORM_WINDOWS_UAP || GD_PLATFORM_WINDOWS_PHONE
+#endif	// if GD_PLATFORM_WINDOWS || GD_PLATFORM_WINDOWS_UWP || GD_PLATFORM_WINDOWS_PHONE
