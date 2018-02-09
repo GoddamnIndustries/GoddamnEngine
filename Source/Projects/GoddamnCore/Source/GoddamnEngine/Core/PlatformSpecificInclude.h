@@ -47,8 +47,8 @@
 #	if GD_PLATFORM_WINDOWS_PHONE
 #		define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/Header ## WindowsPhone.h>
 #	endif	// if GD_PLATFORM_WINDOWS_PHONE
-#	if GD_PLATFORM_WINDOWS_UAP
-#		define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/Header ## WindowsUAP.h>
+#	if GD_PLATFORM_WINDOWS_UWP
+#		define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/Header ## WindowsUWP.h>
 #	endif	// if GD_PLATFORM_WINDOWS_RT
 #	if GD_PLATFORM_OS_X
 #		define GD_PLATFORM_INCLUDE(Directory, Header)	GD_GLUE(<Directory/Header, MacOS.h>)

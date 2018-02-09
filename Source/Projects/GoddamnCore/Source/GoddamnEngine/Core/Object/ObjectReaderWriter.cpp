@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
     //! Deserialization implementation based on reflection system.
     // **------------------------------------------------------------------------------------------**
-    GD_OBJECT_KERNEL struct ObjectReaderVisitor final : public TObjectVisitor<ObjectReaderVisitor>
+    struct GD_OBJECT_KERNEL ObjectReaderVisitor final : public TObjectVisitor<ObjectReaderVisitor>
     {
     private:
         ObjectReader& m_ObjectReader;
@@ -38,7 +38,7 @@ GD_NAMESPACE_BEGIN
         // Unknown properties visitors.
         // ------------------------------------------------------------------------------------------
         
-        GDINL virtual void VisitUnknownProperty(PropertyMetaInfo const* const propertyMetaInfo, Handle const valueHandle) override final
+        GDINT virtual void VisitUnknownProperty(PropertyMetaInfo const* const propertyMetaInfo, Handle const valueHandle) override final
         {
             // Deserializing unknown properties..
             GD_NOT_USED_L(this, valueHandle);
@@ -178,13 +178,12 @@ GD_NAMESPACE_BEGIN
                 m_ObjectReader.EndReadStructPropertyValue();
             }
         }
-        
     };    // struct ObjectReaderVisitor
 
     // **------------------------------------------------------------------------------------------**
     //! Serialization implementation based on reflection system.
     // **------------------------------------------------------------------------------------------**
-	GD_OBJECT_KERNEL struct ObjectWriterVisitor final : public TObjectVisitor<ObjectWriterVisitor>
+	struct GD_OBJECT_KERNEL ObjectWriterVisitor final : public TObjectVisitor<ObjectWriterVisitor>
 	{
 	private:
 		ObjectWriter& m_ObjectWriter;
@@ -300,7 +299,6 @@ GD_NAMESPACE_BEGIN
 				m_ObjectWriter.EndWriteStructPropertyValue();
 			}
 		}
-
 	};	// struct ObjectWriterVisitor
 
 	// ------------------------------------------------------------------------------------------

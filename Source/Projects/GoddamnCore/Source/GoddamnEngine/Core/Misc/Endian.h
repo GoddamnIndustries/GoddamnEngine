@@ -132,6 +132,7 @@ GD_NAMESPACE_BEGIN
 
 	/*!
 	 * Swaps to little endian.
+	 * 
 	 * @param valuePtr Pointer to the array.
 	 * @param count Array length.
 	 */
@@ -150,6 +151,7 @@ GD_NAMESPACE_BEGIN
 
 	/*!
 	 * Swaps to little endian.
+	 * 
 	 * @param valuePtr Pointer to the array.
 	 * @param size The size of array in bytes.
 	 */
@@ -162,6 +164,7 @@ GD_NAMESPACE_BEGIN
 
 	/*!
 	 * Swaps to big endian.
+	 * 
 	 * @param value The value to swap.
 	 */
 	template<typename TValue>
@@ -175,6 +178,7 @@ GD_NAMESPACE_BEGIN
 
 	/*!
 	 * Swaps to big endian.
+	 * 
 	 * @param valuePtr Pointer to the array.
 	 * @param count Array length.
 	 */
@@ -193,6 +197,7 @@ GD_NAMESPACE_BEGIN
 
 	/*!
 	 * Swaps to big endian.
+	 * 
 	 * @param valuePtr Pointer to the array.
 	 * @param size The size of array in bytes.
 	 */
@@ -216,6 +221,7 @@ GD_NAMESPACE_BEGIN
 
 	/*!
 	 * Swaps to endian, used by engine to store data.
+	 * 
 	 * @param valuePtr Pointer to the array.
 	 * @param count Array length.
 	 */
@@ -227,6 +233,7 @@ GD_NAMESPACE_BEGIN
 
 	/*!
 	 * Swaps to endian, used by engine to store data.
+	 * 
 	 * @param valuePtr Pointer to the array.
 	 * @param size The size of array in bytes.
 	 */
@@ -253,6 +260,7 @@ GD_NAMESPACE_BEGIN
 
 	/*!
 	 * Swaps to endian, used by CPU to store data.
+	 * 
 	 * @param valuePtr Pointer to the array.
 	 * @param count Array length.
 	 */
@@ -269,6 +277,7 @@ GD_NAMESPACE_BEGIN
 
 	/*!
 	 * Swaps to endian, used by CPU to store data.
+	 * 
 	 * @param valuePtr Pointer to the array.
 	 * @param size The size of array in bytes.
 	 */

@@ -7,8 +7,8 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Object/Object.cpp
- * File contains base class for all engine entities.
+ * @file
+ * Base class for all engine entities.
  */
 #include <GoddamnEngine/Core/Object/Object.h>
 
@@ -81,7 +81,7 @@ GD_NAMESPACE_BEGIN
 	 * @returns New value of the reference counter.
 	 * @see RefPtr<T> class for automated reference counting.
 	 */
-	GDAPI GD_OBJECT_KERNEL void Object::AddRef()
+	GDAPI void GD_OBJECT_KERNEL Object::AddRef()
 	{
 		++m_ReferenceCount;
 	}
@@ -94,13 +94,12 @@ GD_NAMESPACE_BEGIN
 	 * @returns New value of the reference counter.
 	 * @see RefPtr<T> class for automated reference counting.
 	 */
-	GDAPI GD_OBJECT_KERNEL void Object::Release()
+	GDAPI void GD_OBJECT_KERNEL Object::Release()
 	{
 		if (--m_ReferenceCount == 0)
 		{
 			// Zero reference counter reached, it is time to recycle object.
 			GetClass()->m_Instances.Erase(m_GUID);
-
 			gd_delete this;
 		}
 	}
@@ -114,7 +113,7 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns Found object or null pointer.
 	 */
-	GDINT GD_OBJECT_KERNEL RefPtr<Object> Object::FindClassRelatedObjectByGUID(GUID const& guid, ObjectClassPtr const klass)
+	GDINT RefPtr<Object> GD_OBJECT_KERNEL Object::FindClassRelatedObjectByGUID(GUID const& guid, ObjectClassPtr const klass)
 	{
 		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
 		GD_DEBUG_VERIFY(guid != EmptyGUID, "Invalid GUID was specified.");
@@ -137,7 +136,6 @@ GD_NAMESPACE_BEGIN
 				return object;
 			}
 		}
-		
 		return nullptr;
 	}
 
@@ -147,7 +145,7 @@ GD_NAMESPACE_BEGIN
 	 * @param guid GUID of the required object.
 	 * @returns Found object or null pointer.
 	 */
-	GDINT RefPtr<Object> Object::FindGlobalObjectByGUID(GUID const& guid)
+	GDINT RefPtr<Object> GD_OBJECT_HELPER Object::FindGlobalObjectByGUID(GUID const& guid)
 	{
 		return FindClassRelatedObjectByGUID(guid, GetStaticClass());
 	}
@@ -159,13 +157,13 @@ GD_NAMESPACE_BEGIN
 	 * @param klass Class of the required objects.
 	 * @returns Vector with all instances of the specified class.
 	 */
-	GDAPI GD_OBJECT_KERNEL Vector<RefPtr<Object>> Object::FindObjectsByClass(ObjectClassPtr const klass)
+	GDAPI Vector<RefPtr<Object>> GD_OBJECT_KERNEL Object::FindObjectsByClass(ObjectClassPtr const klass)
 	{
 		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
 		
 		// Safely copying all instances of the specified class into array.
-		GD_STUBBED(FindObjectsByClass);
 		Vector<RefPtr<Object>> foundObjects(0, klass->m_Instances.GetLength());
+		GD_STUBBED(FindObjectsByClass);
 		/*for (auto const& foundObjectPair : klass->m_ClassInstances)
 		{
 			foundObjects.InsertLast(foundObjectPair.Value);
@@ -181,7 +179,7 @@ GD_NAMESPACE_BEGIN
 	 * @param klass Class of the required objects.
 	 * @returns Vector with all instances of the specified class.
 	 */
-	GDAPI GD_OBJECT_KERNEL ChunkedVector<RefPtr<Object>> Object::FindClassRelatedObjects(ObjectClassPtr const klass)
+	GDAPI ChunkedVector<RefPtr<Object>> GD_OBJECT_KERNEL Object::FindClassRelatedObjects(ObjectClassPtr const klass)
 	{
 		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
 		
@@ -207,7 +205,7 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns Found or created object.
 	 */
-	GDAPI GD_OBJECT_KERNEL RefPtr<Object> Object::CreateOrFindClassRelatedObjectByGUID(GUID const& guid, ObjectClassPtr const klass /*= nullptr*/)
+	GDAPI RefPtr<Object> GD_OBJECT_KERNEL Object::CreateOrFindClassRelatedObjectByGUID(GUID const& guid, ObjectClassPtr const klass /*= nullptr*/)
 	{
 		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
 
@@ -219,21 +217,12 @@ GD_NAMESPACE_BEGIN
 			{
 				return object;
 			}
-
 			auto const globalObject = FindGlobalObjectByGUID(guid);
 			GD_VERIFY(globalObject == nullptr, "Object with specified GUID exists, but is of the unrelated type.");
 		}
 
 		// No object was found, and we are sure it does not exist. We need to create it.
 		GD_VERIFY(klass->m_InstanceCtor != nullptr, "Specified class is abstract.");
-
-		/*
-		 * Some life principles for the new-born object:
-		 * 1. Happiness lies in its absence. Suffering is a measure of creation.
-		 * 2. Creation justifies any expenses for creation.
-		 * 3. Creation should lead to creation.
-		 * (I was drunk when I've written this. Sorry)
-		 */
 		auto const object = klass->m_InstanceCtor();
 		if (guid == EmptyGUID)
 		{
@@ -251,7 +240,6 @@ GD_NAMESPACE_BEGIN
 
 		// Registering the object in the class table.
 		klass->m_Instances.Insert(object->m_GUID, object);
-
 		return object;
 	}
 
@@ -265,7 +253,7 @@ GD_NAMESPACE_BEGIN
 	 * @returns Pointer to the type information object for this class.
 	 * @see Class interface.
 	 */
-	GDAPI GD_OBJECT_GENERATED ObjectClassPtr Object::GetStaticClass()
+	GDAPI ObjectClassPtr GD_OBJECT_GENERATED Object::GetStaticClass()
 	{
 		static ObjectClass objectClass("Object", nullptr, ObjectCtorGetter<Object>::Get());
 		return &objectClass;
@@ -277,7 +265,7 @@ GD_NAMESPACE_BEGIN
 	 * @param klass Possible object class.
 	 * @returns True, if this object is instance of the specified class (or derived classes).
 	 */
-	GDAPI GD_OBJECT_HELPER bool Object::IsRelatedToClass(ObjectClassPtr const klass) const
+	GDAPI bool GD_OBJECT_HELPER Object::IsRelatedToClass(ObjectClassPtr const klass) const
 	{
 		for (auto thisKlass = GetClass(); thisKlass != nullptr; thisKlass = thisKlass->ClassSuper)
 		{

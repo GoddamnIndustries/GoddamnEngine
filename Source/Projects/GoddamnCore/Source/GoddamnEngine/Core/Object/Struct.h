@@ -20,7 +20,7 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	//! Zero-overhead base class for all reflectable structures.
 	// **------------------------------------------------------------------------------------------**
-	GD_OBJECT_KERNEL struct Struct
+	struct GD_OBJECT_KERNEL Struct
 	{
 	public:
 
@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 		 * @param objectVisitor Visitor to process this structure.
 		 * @see IObjectVisitor interface.
 		 */
-		GDINL GD_OBJECT_GENERATED void Reflect(ObjectVisitor& objectVisitor)
+		GDINL void GD_OBJECT_GENERATED Reflect(ObjectVisitor& objectVisitor)
 		{
 			GD_NOT_USED(objectVisitor);
 			GD_NOT_USED(this);
@@ -63,14 +63,24 @@ GD_NAMESPACE_BEGIN
 		 * @param TThisClass Name of this class.
 		 * @param TSuperClass Name of super class.
 		 */
+		//! @{
 		#define GD_DECLARE_STRUCT(TThisClass, TSuperClass, ...) GD_OBJECT_KERNEL \
 				GD_DECLARE_STRUCT_BASE(TThisClass, TSuperClass, ##__VA_ARGS__) \
 				private: template<unsigned TFieldIndex> void ReflectPrivate(ObjectVisitor&) { } \
-				public: GD_OBJECT_GENERATED /*virtual*/ void Reflect(ObjectVisitor& objectVisitor) /*override NOLINT*/ \
+				public: void GD_OBJECT_GENERATED Reflect(ObjectVisitor& objectVisitor) /*NOLINT*/ \
 				{ \
 					TSuperClass::Reflect(objectVisitor); \
 					ReflectPrivate<__COUNTER__ + 1>(objectVisitor); \
-				} \
+				}
+		#define GD_DECLARE_STRUCT_VIRTUAL(TThisClass, TSuperClass, ...) GD_OBJECT_KERNEL \
+				GD_DECLARE_STRUCT_BASE(TThisClass, TSuperClass, ##__VA_ARGS__) \
+				private: template<unsigned TFieldIndex> void ReflectPrivate(ObjectVisitor&) { } \
+				public: virtual void GD_OBJECT_GENERATED Reflect(ObjectVisitor& objectVisitor) override /*NOLINT*/ \
+				{ \
+					TSuperClass::Reflect(objectVisitor); \
+					ReflectPrivate<__COUNTER__ + 1>(objectVisitor); \
+				} 
+		//! @}
 
 		/*! 
 		 * Declares a reflectable property information. Can be used for both classes and structures. 
@@ -110,14 +120,24 @@ GD_NAMESPACE_BEGIN
 		 * @param TThisClass Name of this class.
 		 * @param TSuperClass Name of super class.
 		 */
+		//! @{
 		#define GD_DECLARE_STRUCT(TThisClass, TSuperClass, ...) GD_OBJECT_KERNEL \
 				GD_DECLARE_STRUCT_BASE(TThisClass, TSuperClass, ##__VA_ARGS__) \
 				private: template<typename TObjectVisitor, unsigned TFieldIndex> struct ReflectPrivate { static void Invoke(TObjectVisitor&, This* const) { } };\
-				public: GD_OBJECT_GENERATED /*virtual*/ void Reflect(ObjectVisitor& objectVisitor) /*override NOLINT*/ \
+				public: void GD_OBJECT_GENERATED Reflect(ObjectVisitor& objectVisitor) /*NOLINT*/ \
 				{ \
 					TSuperClass::Reflect(objectVisitor); \
 					ReflectPrivate<ObjectVisitor, __COUNTER__ + 1>::Invoke(objectVisitor, this); \
-				} \
+				}
+		#define GD_DECLARE_STRUCT_VIRTUAL(TThisClass, TSuperClass, ...) GD_OBJECT_KERNEL \
+				GD_DECLARE_STRUCT_BASE(TThisClass, TSuperClass, ##__VA_ARGS__) \
+				private: template<typename TObjectVisitor, unsigned TFieldIndex> struct ReflectPrivate { static void Invoke(TObjectVisitor&, This* const) { } };\
+				public: virtual void GD_OBJECT_GENERATED Reflect(ObjectVisitor& objectVisitor) override /*NOLINT*/ \
+				{ \
+					TSuperClass::Reflect(objectVisitor); \
+					ReflectPrivate<ObjectVisitor, __COUNTER__ + 1>::Invoke(objectVisitor, this); \
+				}
+		//! @}
 
 		/*! 
 		 * Declares a reflectable property information. Can be used for both classes and structures. 

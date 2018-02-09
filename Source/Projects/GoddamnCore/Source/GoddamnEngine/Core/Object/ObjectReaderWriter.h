@@ -24,7 +24,7 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	//! Generic serialization reader.
 	// **------------------------------------------------------------------------------------------**
-	GD_OBJECT_KERNEL class ObjectReader : public IVirtuallyDestructible
+	class GD_OBJECT_KERNEL ObjectReader : public IVirtuallyDestructible
 	{
 		friend struct ObjectReaderVisitor;
 
@@ -43,12 +43,12 @@ GD_NAMESPACE_BEGIN
 		 * Initializes the reader interface.
 		 * @param readingStream Pointer to the stream, from the one we are reading.
 		 */
-		GDAPI explicit ObjectReader(InputStream& readingStream)
+		GDINL explicit ObjectReader(InputStream& readingStream)
 			: m_ReadingStream(readingStream)
 		{
 		}
 
-		GDAPI virtual ~ObjectReader()
+		GDINT virtual ~ObjectReader()
 		{
 			GD_DEBUG_VERIFY(m_ReadingScope.IsEmpty(), "Scoping error.");
 		}
@@ -63,7 +63,7 @@ GD_NAMESPACE_BEGIN
 		 * Selects next array element.
 		 * @returns True if next array element was selected.
 		 */
-		GDAPI virtual bool TrySelectNextArrayElement()
+		GDINT virtual bool TrySelectNextArrayElement()
 		{
 			return m_ReadingScope.GetLast() == CurrentlyReading::Array;
 		}
@@ -74,7 +74,7 @@ GD_NAMESPACE_BEGIN
 		 * @param name String property name.
 		 * @returns True if property with such name was found.
 		 */
-		GDAPI virtual bool TryReadPropertyName(String const& name)
+		GDINT virtual bool TryReadPropertyName(String const& name)
 		{
 			GD_NOT_USED(name);
 			return false;
@@ -86,7 +86,7 @@ GD_NAMESPACE_BEGIN
 		 * @param namePtr Pointer to the property name.
 		 * @returns True if property with such name was found.
 		 */
-		GDAPI bool TryReadPropertyNameOrSelectNextArrayElement(String const* const namePtr = nullptr)
+		GDINL bool TryReadPropertyNameOrSelectNextArrayElement(String const* const namePtr = nullptr)
 		{
 			if (!TrySelectNextArrayElement())
 			{
@@ -104,7 +104,7 @@ GD_NAMESPACE_BEGIN
          * Reads null property.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValueNull() GD_PURE_VIRTUAL;
+        GDINT virtual bool TryReadPropertyValueNull() GD_PURE_VIRTUAL;
 
         /*!
          * Reads boolean property.
@@ -112,7 +112,7 @@ GD_NAMESPACE_BEGIN
          * @param value Boolean property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(bool& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(bool& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads signed 8-bit integer property.
@@ -120,7 +120,7 @@ GD_NAMESPACE_BEGIN
          * @param value Integer property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(Int8& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(Int8& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads unsigned 8-bit integer property.
@@ -128,7 +128,7 @@ GD_NAMESPACE_BEGIN
          * @param value Integer property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(UInt8& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(UInt8& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads signed 16-bit integer property.
@@ -136,7 +136,7 @@ GD_NAMESPACE_BEGIN
          * @param value Integer property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(Int16& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(Int16& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads unsigned 16-bit integer property.
@@ -144,7 +144,7 @@ GD_NAMESPACE_BEGIN
          * @param value Integer property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(UInt16& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(UInt16& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads signed 32-bit integer property.
@@ -152,7 +152,7 @@ GD_NAMESPACE_BEGIN
          * @param value Integer property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(Int32& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(Int32& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads unsigned 32-bit integer property.
@@ -160,7 +160,7 @@ GD_NAMESPACE_BEGIN
          * @param value Integer property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(UInt32& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(UInt32& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads signed 64-bit integer property.
@@ -168,7 +168,7 @@ GD_NAMESPACE_BEGIN
          * @param value Integer property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(Int64& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(Int64& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads unsigned 64-bit integer property.
@@ -176,7 +176,7 @@ GD_NAMESPACE_BEGIN
          * @param value Integer property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(UInt64& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(UInt64& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads 32-bit floating-point property.
@@ -184,7 +184,7 @@ GD_NAMESPACE_BEGIN
          * @param value Float property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(Float32& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(Float32& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads 64-bit floating-point property.
@@ -192,7 +192,7 @@ GD_NAMESPACE_BEGIN
          * @param value Float property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(Float64& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(Float64& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads string property.
@@ -200,7 +200,7 @@ GD_NAMESPACE_BEGIN
          * @param value String property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(String& value) GD_PURE_VIRTUAL;
+		GDINT virtual bool TryReadPropertyValue(String& value) GD_PURE_VIRTUAL;
         
         /*!
          * Reads GUID property.
@@ -209,7 +209,7 @@ GD_NAMESPACE_BEGIN
          * @param value GUID property value.
          * @returns True if property value was successfully read.
          */
-        GDAPI virtual bool TryReadPropertyValue(GUID& value)
+		GDINT virtual bool TryReadPropertyValue(GUID& value)
         {
             String valueString;
             if (TryReadPropertyValue(valueString))
@@ -234,7 +234,7 @@ GD_NAMESPACE_BEGIN
 		 * @param arraySize Output size of array we are going to read. Would be set to 0 on failure.
 		 * @returns True if reading array property was successfully initialized.
 		 */
-		GDAPI virtual bool TryBeginReadArrayPropertyValue(SizeTp& arraySize)
+		GDINT virtual bool TryBeginReadArrayPropertyValue(SizeTp& arraySize)
 		{
 			GD_NOT_USED(arraySize);
             m_ReadingScope.InsertLast(CurrentlyReading::Array);
@@ -244,7 +244,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Notifies end of the array property.
 		 */
-		GDAPI virtual void EndReadArrayPropertyValue()
+		GDINT virtual void EndReadArrayPropertyValue()
 		{
             GD_DEBUG_VERIFY(m_ReadingScope.GetLast() == CurrentlyReading::Array, "Array scoping error.");
 			m_ReadingScope.EraseLast();
@@ -262,7 +262,7 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @returns True if reading struct property was successfully initialized.
 		 */
-		GDAPI virtual bool TryBeginReadStructPropertyValue()
+		GDINT virtual bool TryBeginReadStructPropertyValue()
 		{
             m_ReadingScope.InsertLast(CurrentlyReading::Struct);
 			return false;
@@ -271,7 +271,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Notifies end of the structure property.
 		 */
-		GDAPI virtual void EndReadStructPropertyValue()
+		GDINT virtual void EndReadStructPropertyValue()
 		{
             GD_DEBUG_VERIFY(m_ReadingScope.GetLast() == CurrentlyReading::Struct, "Struct scoping error.");
 			m_ReadingScope.EraseLast();
@@ -305,7 +305,7 @@ GD_NAMESPACE_BEGIN
 	// **------------------------------------------------------------------------------------------**
 	//! Generic serialization writer.
 	// **------------------------------------------------------------------------------------------**
-	GD_OBJECT_KERNEL class ObjectWriter : public IVirtuallyDestructible
+	class GD_OBJECT_KERNEL ObjectWriter : public IVirtuallyDestructible
 	{
 		friend struct ObjectWriterVisitor;
 
@@ -324,12 +324,12 @@ GD_NAMESPACE_BEGIN
 		 * Initializes the writer interface.
 		 * @param writingStream Pointer to the stream to the one we are writing.
 		 */
-		GDAPI explicit ObjectWriter(OutputStream& writingStream)
+		GDINL explicit ObjectWriter(OutputStream& writingStream)
 			: m_WritingStream(writingStream)
 		{
 		}
 
-		GDAPI virtual ~ObjectWriter()
+		GDINT virtual ~ObjectWriter()
 		{
 			GD_DEBUG_VERIFY(m_WritingScope.IsEmpty(), "Scoping error.");
 		}
@@ -344,7 +344,7 @@ GD_NAMESPACE_BEGIN
 		 * Selects next array element.
 		 * @returns True if next array element was selected.
 		 */
-		GDAPI virtual bool TrySelectNextArrayElement()
+		GDINT virtual bool TrySelectNextArrayElement()
 		{
 			return m_WritingScope.GetLast() == CurrentlyWriting::Array;
 		}
@@ -353,7 +353,7 @@ GD_NAMESPACE_BEGIN
 		 * Writes name of the property.
 		 * @param name String property name.
 		 */
-		GDAPI virtual void WritePropertyName(String const& name)
+		GDINT virtual void WritePropertyName(String const& name)
 		{
 			GD_NOT_USED(name);
 		}
@@ -362,7 +362,7 @@ GD_NAMESPACE_BEGIN
 		 * Writes name of the property or selects next array element.
 		 * @param namePtr Pointer to the property name.
 		 */
-		GDAPI void WritePropertyNameOrSelectNextArrayElement(String const* const namePtr = nullptr)
+		GDINT void WritePropertyNameOrSelectNextArrayElement(String const* const namePtr = nullptr)
 		{
 			if (!TrySelectNextArrayElement())
 			{
@@ -378,79 +378,79 @@ GD_NAMESPACE_BEGIN
 		/*!
          * Writes null property.
          */
-        GDAPI virtual void WritePropertyValueNull() GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValueNull() GD_PURE_VIRTUAL;
 
         /*!
          * Writes boolean property.
          * @param value Boolean property value.
          */
-        GDAPI virtual void WritePropertyValue(bool const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(bool const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes signed 8-bit integer property.
          * @param value Integer property value.
          */
-        GDAPI virtual void WritePropertyValue(Int8 const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(Int8 const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes unsigned 8-bit integer property.
          * @param value Integer property value.
          */
-        GDAPI virtual void WritePropertyValue(UInt8 const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(UInt8 const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes signed 16-bit integer property.
          * @param value Integer property value.
          */
-        GDAPI virtual void WritePropertyValue(Int16 const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(Int16 const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes unsigned 16-bit integer property.
          * @param value Integer property value.
          */
-        GDAPI virtual void WritePropertyValue(UInt16 const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(UInt16 const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes signed 32-bit integer property.
          * @param value Integer property value.
          */
-        GDAPI virtual void WritePropertyValue(Int32 const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(Int32 const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes unsigned 32-bit integer property.
          * @param value Integer property value.
          */
-        GDAPI virtual void WritePropertyValue(UInt32 const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(UInt32 const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes signed 64-bit integer property.
          * @param value Integer property value.
          */
-        GDAPI virtual void WritePropertyValue(Int64 const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(Int64 const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes unsigned 64-bit integer property.
          * @param value Integer property value.
          */
-        GDAPI virtual void WritePropertyValue(UInt64 const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(UInt64 const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes 32-bit floating-point property.
          * @param value Float property value.
          */
-        GDAPI virtual void WritePropertyValue(Float32 const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(Float32 const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes 64-bit floating-point property.
          * @param value Float property value.
          */
-        GDAPI virtual void WritePropertyValue(Float64 const value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(Float64 const value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes string property.
          * @param value String property value.
          */
-        GDAPI virtual void WritePropertyValue(String const& value) GD_PURE_VIRTUAL;
+		GDINT virtual void WritePropertyValue(String const& value) GD_PURE_VIRTUAL;
         
         /*!
          * Writes GUID property.
@@ -458,7 +458,7 @@ GD_NAMESPACE_BEGIN
 		 *
          * @param value GUID property value.
          */
-        GDAPI virtual void WritePropertyValue(GUID const& value)
+		GDINT virtual void WritePropertyValue(GUID const& value)
         {
             WritePropertyValue(value.ToString());
         }
@@ -475,7 +475,7 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * While writing elements of array, any 'WritePropertyName' call are ignored.
 		 */
-		GDINL virtual void BeginWriteArrayPropertyValue()
+		GDINT virtual void BeginWriteArrayPropertyValue()
 		{
             m_WritingScope.InsertLast(CurrentlyWriting::Array);
 		}
@@ -483,7 +483,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Notifies end of the array property.
 		 */
-		GDAPI virtual void EndWriteArrayPropertyValue()
+		GDINT virtual void EndWriteArrayPropertyValue()
 		{
             GD_DEBUG_VERIFY(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Array, "Array scoping error.");
 			m_WritingScope.EraseLast();
@@ -499,7 +499,7 @@ GD_NAMESPACE_BEGIN
 		 * Structure properties should be written by 'WritePropertyValue*' calls.
 		 * After writing the whole structure, 'EndWriteStructPropertyValue' is called.
 		 */
-		GDAPI virtual void BeginWriteStructPropertyValue()
+		GDINT virtual void BeginWriteStructPropertyValue()
 		{
             m_WritingScope.InsertLast(CurrentlyWriting::Struct);
 		}
@@ -507,7 +507,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Notifies end of the structure property.
 		 */
-		GDAPI virtual void EndWriteStructPropertyValue()
+		GDINT virtual void EndWriteStructPropertyValue()
 		{
             GD_DEBUG_VERIFY(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Struct, "Struct scoping error.");
 			m_WritingScope.EraseLast();
@@ -535,7 +535,7 @@ GD_NAMESPACE_BEGIN
     //! Wrappers for the generic serialization reader.
     // **------------------------------------------------------------------------------------------**
     template<typename TImplementation, typename TSerializationReaderBase = ObjectReader>
-    GD_OBJECT_HELPER class TObjectReader : public TSerializationReaderBase
+    class GD_OBJECT_HELPER TObjectReader : public TSerializationReaderBase
     {
     protected:
         
@@ -563,74 +563,73 @@ GD_NAMESPACE_BEGIN
             GD_NOT_IMPLEMENTED();
         }
         
-    public:
-        GDAPI virtual bool TryReadPropertyValue(bool& value) override
+	private:
+		GDINT virtual bool TryReadPropertyValue(bool& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(Int8& value) override
+		GDINT virtual bool TryReadPropertyValue(Int8& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(UInt8& value) override
+		GDINT virtual bool TryReadPropertyValue(UInt8& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(Int16& value) override
+		GDINT virtual bool TryReadPropertyValue(Int16& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(UInt16& value) override
+		GDINT virtual bool TryReadPropertyValue(UInt16& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(Int32& value) override
+		GDINT virtual bool TryReadPropertyValue(Int32& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(UInt32& value) override
+		GDINT virtual bool TryReadPropertyValue(UInt32& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(Int64& value) override
+		GDINT virtual bool TryReadPropertyValue(Int64& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(UInt64& value) override
+		GDINT virtual bool TryReadPropertyValue(UInt64& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(Float32& value) override
+		GDINT virtual bool TryReadPropertyValue(Float32& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(Float64& value) override
+		GDINT virtual bool TryReadPropertyValue(Float64& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
         
-        GDAPI virtual bool TryReadPropertyValue(String& value) override
+		GDINT virtual bool TryReadPropertyValue(String& value) override
         {
             return static_cast<TImplementation*>(this)->TryReadPropertyValueImpl(value);
         }
-                
     };  // class TSerializationReader
 
     // **------------------------------------------------------------------------------------------**
     //! Wrappers for the generic serialization writer.
     // **------------------------------------------------------------------------------------------**
     template<typename TImplementation, typename TSerializationWriterBase = ObjectWriter>
-	GD_OBJECT_HELPER class TObjectWriter : public TSerializationWriterBase
+	class GD_OBJECT_HELPER TObjectWriter : public TSerializationWriterBase
     {
     protected:
         
@@ -656,67 +655,66 @@ GD_NAMESPACE_BEGIN
             GD_NOT_IMPLEMENTED();
         }
         
-    public:
-        GDAPI virtual void WritePropertyValue(bool const value) override
+    private:
+		GDINT virtual void WritePropertyValue(bool const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(Int8 const value) override
+		GDINT virtual void WritePropertyValue(Int8 const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(UInt8 const value) override
+		GDINT virtual void WritePropertyValue(UInt8 const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(Int16 const value) override
+		GDINT virtual void WritePropertyValue(Int16 const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(UInt16 const value) override
+		GDINT virtual void WritePropertyValue(UInt16 const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(Int32 const value) override
+		GDINT virtual void WritePropertyValue(Int32 const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(UInt32 const value) override
+		GDINT virtual void WritePropertyValue(UInt32 const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(Int64 const value) override
+		GDINT virtual void WritePropertyValue(Int64 const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(UInt64 const value) override
+		GDINT virtual void WritePropertyValue(UInt64 const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(Float32 const value) override
+		GDINT virtual void WritePropertyValue(Float32 const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(Float64 const value) override
+		GDINT virtual void WritePropertyValue(Float64 const value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
         
-        GDAPI virtual void WritePropertyValue(String const& value) override
+		GDINT virtual void WritePropertyValue(String const& value) override
         {
             static_cast<TImplementation*>(this)->WritePropertyValueImpl(value);
         }
-                
     };  // class TSerializationWriter
 
 GD_NAMESPACE_END

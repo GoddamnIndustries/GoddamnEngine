@@ -54,8 +54,8 @@ GD_NAMESPACE_BEGIN
 
 		enum class Base
 		{
-			Decimal = 10,		//!< Octal base.
-			Octal = 8,			//!< Octal base.
+			Decimal    = 10,	//!< Octal base.
+			Octal       = 8,	//!< Octal base.
 			Hexadecimal = 16,	//!< Hexadecimal base.
 			Unknown,
 		};	// enum class Base

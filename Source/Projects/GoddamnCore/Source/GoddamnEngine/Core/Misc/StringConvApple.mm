@@ -95,8 +95,3 @@ GD_NAMESPACE_BEGIN
 GD_NAMESPACE_END
 
 #endif  // if GD_PLATFORM_API_COCOA
-
-int main()
-{
-    return 0;
-}

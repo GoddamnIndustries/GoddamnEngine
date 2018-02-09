@@ -61,7 +61,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value Boolean output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(bool& value)
+		GDINT virtual bool TryGetValue(bool& value)
 		{
 			GD_NOT_USED(value);
 			return false;
@@ -93,7 +93,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 8-bit integer output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(Int8& value)
+		GDINT virtual bool TryGetValue(Int8& value)
 		{
 			return TryGetNumericValueImpl(value);
 		}
@@ -108,7 +108,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 8-bit integer output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(UInt8& value) final
+		GDINT virtual bool TryGetValue(UInt8& value) final
 		{
 			return TryGetNumericValueImpl(value);
 		}
@@ -123,7 +123,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 16-bit integer output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(Int16& value)
+		GDINT virtual bool TryGetValue(Int16& value)
 		{
 			return TryGetNumericValueImpl(value);
 		}
@@ -138,7 +138,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 16-bit integer output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(UInt16& value)
+		GDINT virtual bool TryGetValue(UInt16& value)
 		{
 			return TryGetNumericValueImpl(value);
 		}
@@ -153,7 +153,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 32-bit integer output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(Int32& value)
+		GDINT virtual bool TryGetValue(Int32& value)
 		{
 			return TryGetNumericValueImpl(value);
 		}
@@ -168,7 +168,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 32-bit integer output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(UInt32& value)
+		GDINT virtual bool TryGetValue(UInt32& value)
 		{
 			return TryGetNumericValueImpl(value);
 		}
@@ -183,7 +183,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 64-bit integer output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(Int64& value)
+		GDINT virtual bool TryGetValue(Int64& value)
 		{
 			return TryGetNumericValueImpl(value);
 		}
@@ -198,7 +198,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 64-bit integer output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(UInt64& value)
+		GDINT virtual bool TryGetValue(UInt64& value)
 		{
 			return TryGetNumericValueImpl(value);
 		}
@@ -213,7 +213,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 32-bit floating-point output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(Float32& value)
+		GDINT virtual bool TryGetValue(Float32& value)
 		{
 			return TryGetNumericValueImpl(value);
 		}
@@ -228,7 +228,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 64-bit floating-point output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(Float64& value)
+		GDINT virtual bool TryGetValue(Float64& value)
 		{
 			GD_NOT_USED(value);
 			return false;
@@ -244,7 +244,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value String output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(String& value)
+		GDINT virtual bool TryGetValue(String& value)
 		{
 			GD_NOT_USED(value);
 			return false;
@@ -260,7 +260,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value Array output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(JsonValueVector& value)
+		GDINT virtual bool TryGetValue(JsonValueVector& value)
 		{
 			GD_NOT_USED(value);
 			return false;
@@ -286,7 +286,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value Object output value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TryGetValue(JsonObjectPtr& value);
+		GDINT virtual bool TryGetValue(JsonObjectPtr& value);
 		GDINT virtual bool _TryGetValue(DocObjectPtr& value) override final;
 
 		// ------------------------------------------------------------------------------------------
@@ -299,7 +299,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value Boolean input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(bool const value)
+		GDINT virtual bool TrySetValue(bool const value)
 		{
 			GD_NOT_USED(value);
 			return false;
@@ -321,7 +321,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 8-bit integer input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(Int8 const value)
+		GDINT virtual bool TrySetValue(Int8 const value)
 		{
 			return TrySetNumericValueImpl(value);
 		}
@@ -332,7 +332,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 8-bit integer input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(UInt8 const value)
+		GDINT virtual bool TrySetValue(UInt8 const value)
 		{
 			return TrySetNumericValueImpl(value);
 		}
@@ -343,7 +343,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 16-bit integer input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(Int16 const value)
+		GDINT virtual bool TrySetValue(Int16 const value)
 		{
 			return TrySetNumericValueImpl(value);
 		}
@@ -354,7 +354,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 16-bit integer input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(UInt16 const value)
+		GDINT virtual bool TrySetValue(UInt16 const value)
 		{
 			return TrySetNumericValueImpl(value);
 		}
@@ -365,7 +365,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 32-bit integer input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(Int32 const value)
+		GDINT virtual bool TrySetValue(Int32 const value)
 		{
 			return TrySetNumericValueImpl(value);
 		}
@@ -376,7 +376,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 32-bit integer input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(UInt32 const value)
+		GDINT virtual bool TrySetValue(UInt32 const value)
 		{
 			return TrySetNumericValueImpl(value);
 		}
@@ -387,7 +387,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 64-bit integer input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(Int64 const value)
+		GDINT virtual bool TrySetValue(Int64 const value)
 		{
 			return TrySetNumericValueImpl(value);
 		}
@@ -398,7 +398,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 64-bit integer input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(UInt64 const value)
+		GDINT virtual bool TrySetValue(UInt64 const value)
 		{
 			return TrySetNumericValueImpl(value);
 		}
@@ -409,7 +409,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 32-bit floating-point input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(Float32 const value)
+		GDINT virtual bool TrySetValue(Float32 const value)
 		{
 			return TrySetNumericValueImpl(value);
 		}
@@ -420,7 +420,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value 64-bit floating-point input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(Float64 const value)
+		GDINT virtual bool TrySetValue(Float64 const value)
 		{
 			GD_NOT_USED(value);
 			return false;
@@ -432,7 +432,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value String input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(String const& value)
+		GDINT virtual bool TrySetValue(String const& value)
 		{
 			GD_NOT_USED(value);
 			return false;
@@ -444,7 +444,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value Array input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(JsonValueVector const& value)
+		GDINT virtual bool TrySetValue(JsonValueVector const& value)
 		{
 			GD_NOT_USED(value);
 			return false;
@@ -456,7 +456,7 @@ GD_NAMESPACE_BEGIN
 		 * @param value Object input value.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool TrySetValue(JsonObjectPtr const value);
+		GDINT virtual bool TrySetValue(JsonObjectPtr const value);
 
 	};	// class JsonValue
 
@@ -476,12 +476,12 @@ GD_NAMESPACE_BEGIN
 		 * @param name The name of the property.
 		 * @returns Pointer to the found value or null pointer.
 		 */
-		GDINT JsonValuePtr GetProperty(String const& name)
+		GDINL JsonValuePtr GetProperty(String const& name)
 		{
 			auto const propertyPtr = m_Properties.Find(name);
 			return propertyPtr != nullptr ? *propertyPtr : nullptr;
 		}
-		GDINT DocValuePtr _GetProperty(String const& name) override final
+		GDINT virtual DocValuePtr _GetProperty(String const& name) override final
         {
             return static_cast<DocValuePtr>(GetProperty(name));
         }
@@ -492,7 +492,7 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @param name The name of the property.
 		 */
-		GDINT void RemoveProperty(String const& name)
+		GDINL void RemoveProperty(String const& name)
 		{
 			if (m_Properties.Find(name) != nullptr)
 			{
@@ -506,7 +506,7 @@ GD_NAMESPACE_BEGIN
 		 * @param name The name of the property.
 		 * @param value The value of the property.
 		 */
-		GDINT void AddProperty(String const& name, JsonValuePtr const value)
+		GDINL void AddProperty(String const& name, JsonValuePtr const value)
 		{
 			m_Properties.Insert(name, value);
 		}
@@ -553,25 +553,25 @@ GD_NAMESPACE_BEGIN
 		// Getter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TryGetValue(bool& value) override final
+		GDINT virtual bool TryGetValue(bool& value) override final
 		{
 			value = false;
 			return true;
 		}
 
-		GDAPI virtual bool TryGetValue(Float64& value) override final
+		GDINT virtual bool TryGetValue(Float64& value) override final
 		{
 			value = 0.0;
 			return true;
 		}
 
-		GDAPI virtual bool TryGetValue(String& value) override final
+		GDINT virtual bool TryGetValue(String& value) override final
 		{
 			value = "null";
 			return true;
 		}
 
-		GDAPI virtual bool TryGetValue(JsonObjectPtr& value) override final
+		GDINT virtual bool TryGetValue(JsonObjectPtr& value) override final
 		{
 			value = nullptr;
 			return true;
@@ -603,19 +603,19 @@ GD_NAMESPACE_BEGIN
 		// Getter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TryGetValue(bool& value) override final
+		GDINT virtual bool TryGetValue(bool& value) override final
 		{
 			value = ValueBool;
 			return true;
 		}
 
-		GDAPI virtual bool TryGetValue(Float64& value) override final
+		GDINT virtual bool TryGetValue(Float64& value) override final
 		{
 			value = ValueBool ? 1.0 : 0.0;
 			return true;
 		}
 
-		GDAPI virtual bool TryGetValue(String& value) override final
+		GDINT virtual bool TryGetValue(String& value) override final
 		{
             value = String::FromBool(ValueBool);
 			return true;
@@ -625,19 +625,19 @@ GD_NAMESPACE_BEGIN
 		// Setter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TrySetValue(bool const value) override final
+		GDINT virtual bool TrySetValue(bool const value) override final
 		{
 			ValueBool = value;
 			return true;
 		}
 
-		GDAPI virtual bool TrySetValue(Float64 const value) override final
+		GDINT virtual bool TrySetValue(Float64 const value) override final
 		{
 			ValueBool = value != 0.0;
 			return true;
 		}
 
-		GDAPI virtual bool TrySetValue(String const& value) override final
+		GDINT virtual bool TrySetValue(String const& value) override final
 		{
 			auto result = false;
 			ValueBool = value.ToBool(&result);
@@ -670,19 +670,19 @@ GD_NAMESPACE_BEGIN
 		// Getter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TryGetValue(bool& value) override final
+		GDINT virtual bool TryGetValue(bool& value) override final
 		{
 			value = ValueNumber != 0.0;
 			return true;
 		}
 
-		GDAPI virtual bool TryGetValue(Float64& value) override final
+		GDINT virtual bool TryGetValue(Float64& value) override final
 		{
 			value = ValueNumber;
 			return true;
 		}
 
-		GDAPI virtual bool TryGetValue(String& value) override final
+		GDINT virtual bool TryGetValue(String& value) override final
 		{
 			value = String::FromFloat64(ValueNumber);
 			return true;
@@ -692,19 +692,19 @@ GD_NAMESPACE_BEGIN
 		// Setter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TrySetValue(bool const value) override final
+		GDINT virtual bool TrySetValue(bool const value) override final
 		{
 			ValueNumber = value ? 1.0 : 0.0;
 			return true;
 		}
 
-		GDAPI virtual bool TrySetValue(Float64 const value) override final
+		GDINT virtual bool TrySetValue(Float64 const value) override final
 		{
 			ValueNumber = value;
 			return true;
 		}
 
-		GDAPI virtual bool TrySetValue(String const& value) override final
+		GDINT virtual bool TrySetValue(String const& value) override final
 		{
 			auto result = false;
 			ValueNumber = value.ToFloat64(&result);
@@ -728,7 +728,7 @@ GD_NAMESPACE_BEGIN
 		}
 
 	public:
-		GDINT JsonTypeInfo GetTypeInfo() const override final
+		GDINT virtual JsonTypeInfo GetTypeInfo() const override final
 		{
 			return JsonTypeInfo::String;
 		}
@@ -737,21 +737,21 @@ GD_NAMESPACE_BEGIN
 		// Getter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TryGetValue(bool& value) override final
+		GDINT virtual bool TryGetValue(bool& value) override final
 		{
 			auto result = false;
 			value = ValueString.ToBool(&result);
 			return result;
 		}
 
-		GDAPI virtual bool TryGetValue(Float64& value) override final
+		GDINT virtual bool TryGetValue(Float64& value) override final
 		{
 			auto result = false;
 			value = ValueString.ToFloat64(&result);
 			return result;
 		}
 
-		GDAPI virtual bool TryGetValue(String& value) override final
+		GDINT virtual bool TryGetValue(String& value) override final
 		{
 			value = ValueString;
 			return true;
@@ -761,19 +761,19 @@ GD_NAMESPACE_BEGIN
 		// Setter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TrySetValue(bool const value) override final
+		GDINT virtual bool TrySetValue(bool const value) override final
 		{
             ValueString = String::FromBool(value);
 			return true;
 		}
 
-		GDAPI virtual bool TrySetValue(Float64 const value) override final
+		GDINT virtual bool TrySetValue(Float64 const value) override final
 		{
 			ValueString = String::FromFloat64(value);
 			return true;
 		}
 
-		GDAPI virtual bool TrySetValue(String const& value) override final
+		GDINT virtual bool TrySetValue(String const& value) override final
 		{
 			ValueString = value;
 			return true;
@@ -809,7 +809,7 @@ GD_NAMESPACE_BEGIN
 		// Getter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TryGetValue(JsonValueVector& value) override final
+		GDINT virtual bool TryGetValue(JsonValueVector& value) override final
 		{
 			value = ValueArray;
 			return true;
@@ -819,7 +819,7 @@ GD_NAMESPACE_BEGIN
 		// Setter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TrySetValue(JsonValueVector const& value) override final
+		GDINT virtual bool TrySetValue(JsonValueVector const& value) override final
 		{
 			ValueArray = value;
 			return true;
@@ -851,7 +851,7 @@ GD_NAMESPACE_BEGIN
 		// Getter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TryGetValue(JsonObjectPtr& value) override final
+		GDINT virtual bool TryGetValue(JsonObjectPtr& value) override final
 		{
 			value = ValueObject;
 			return true;
@@ -861,7 +861,7 @@ GD_NAMESPACE_BEGIN
 		// Setter operations.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TrySetValue(JsonObjectPtr const value) override final
+		GDINT virtual bool TrySetValue(JsonObjectPtr const value) override final
 		{
 			ValueObject = value;
 			return true;
@@ -875,7 +875,7 @@ GD_NAMESPACE_BEGIN
 	class Json final : public IDoc
 	{
     public:
-		GDAPI virtual Result _TryParseDocument(InputStream& docInputStream) override final;
+		GDINT virtual Result _TryParseDocument(InputStream& docInputStream) override final;
 
 	};	// class Json
 

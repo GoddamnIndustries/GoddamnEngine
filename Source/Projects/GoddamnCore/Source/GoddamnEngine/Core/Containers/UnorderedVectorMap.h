@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 	//! @tparam TAllocator Allocator used by this map.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TKey, typename TValue, typename TAllocator = DefaultContainerAllocator>
-	class UnorderedVectorMap : private Vector<MapPair<TKey, TValue>, TAllocator>, public TNonCopyable
+	class UnorderedVectorMap : public Vector<MapPair<TKey, TValue>, TAllocator>, public TNonCopyable
 	{
 	public:
 		using PairType             = MapPair<TKey, TValue>;

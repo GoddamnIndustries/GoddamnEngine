@@ -48,7 +48,7 @@ GD_NAMESPACE_BEGIN
          * @param doc Serialized data document.
          * @param docReadingStream Pointer to the stream, from the one we are reading.
          */
-		GDAPI explicit ObjectReaderDoc(DocPtr const& doc, InputStream& docReadingStream)
+		GDINT explicit ObjectReaderDoc(DocPtr const& doc, InputStream& docReadingStream)
 			: ObjectReaderDocBase(docReadingStream)
 		{
 			auto const result = doc->_TryParseDocument(docReadingStream);
@@ -75,7 +75,7 @@ GD_NAMESPACE_BEGIN
 			}
 		}
         
-        GDAPI virtual ~ObjectReaderDoc()
+		GDINT virtual ~ObjectReaderDoc()
         {
             m_ReadingScope.EraseLast();
         }
@@ -85,17 +85,21 @@ GD_NAMESPACE_BEGIN
 		// ------------------------------------------------------------------------------------------
 
 	public:
-		GDAPI virtual bool TryReadPropertyName(String const& name) override
+		GDINT virtual bool TryReadPropertyName(String const& name) override
 		{
-			// Selecting top object's property by name.
-			GD_DEBUG_VERIFY(!m_ObjectsScope.IsEmpty(), "Object scoping error.");
+			if (!ObjectReaderDocBase::TryReadPropertyName(name))
+			{
+				// Selecting top object's property by name.
+				GD_DEBUG_VERIFY(!m_ObjectsScope.IsEmpty(), "Object scoping error.");
 
-			auto const topDocObject = m_ObjectsScope.GetLast().Object;
-			m_SelectedValue = topDocObject->_GetProperty(name);
-			return m_SelectedValue != nullptr;
+				auto const topDocObject = m_ObjectsScope.GetLast().Object;
+				m_SelectedValue = topDocObject->_GetProperty(name);
+				return m_SelectedValue != nullptr;
+			}
+			return true;
 		}
 
-		GDAPI virtual bool TrySelectNextArrayElement() override
+		GDINT virtual bool TrySelectNextArrayElement() override
 		{
 			if (ObjectReaderDocBase::TrySelectNextArrayElement())
 			{
@@ -114,7 +118,7 @@ GD_NAMESPACE_BEGIN
 		// Primitive properties readers.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TryReadPropertyValueNull() override
+		GDINT virtual bool TryReadPropertyValueNull() override
 		{
 			return m_SelectedValue->_GetTypeInfo() == DocValueTypeInfo::Null;
 		}
@@ -130,7 +134,7 @@ GD_NAMESPACE_BEGIN
 		// Array properties readers.
 		// ------------------------------------------------------------------------------------------
 
-		GDAPI virtual bool TryBeginReadArrayPropertyValue(SizeTp& arraySize) override
+		GDINT virtual bool TryBeginReadArrayPropertyValue(SizeTp& arraySize) override
 		{
 			if (!ObjectReaderDocBase::TryBeginReadArrayPropertyValue(arraySize))
 			{
@@ -147,7 +151,7 @@ GD_NAMESPACE_BEGIN
 			return true;
 		}
 			
-		GDAPI virtual void EndReadArrayPropertyValue() override
+		GDINT virtual void EndReadArrayPropertyValue() override
 		{
 			ObjectReaderDocBase::EndReadArrayPropertyValue();
 			m_ArraysScope.EraseLast();
@@ -157,7 +161,7 @@ GD_NAMESPACE_BEGIN
 		// Structure properties readers.
 		// ------------------------------------------------------------------------------------------
 
-		GDINL virtual bool TryBeginReadStructPropertyValue() override
+		GDINT virtual bool TryBeginReadStructPropertyValue() override
 		{
 			if (!ObjectReaderDocBase::TryBeginReadStructPropertyValue())
 			{
@@ -173,7 +177,7 @@ GD_NAMESPACE_BEGIN
 			return true;
 		}
 
-		GDINL virtual void EndReadStructPropertyValue() override
+		GDINT virtual void EndReadStructPropertyValue() override
 		{
 			ObjectReaderDocBase::EndReadStructPropertyValue();
 			m_ObjectsScope.EraseLast();

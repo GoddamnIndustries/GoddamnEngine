@@ -55,7 +55,7 @@ GD_NAMESPACE_BEGIN
 	//! @warning Never implement this interface directly. Use ObjectVisitor class instead.
 	//! @see ObjectVisitor class.
 	// **------------------------------------------------------------------------------------------**
-	GD_OBJECT_KERNEL struct IObjectVisitor : public IVirtuallyDestructible
+	struct GD_OBJECT_KERNEL IObjectVisitor : public IVirtuallyDestructible
 	{
 	protected:
         
@@ -69,7 +69,7 @@ GD_NAMESPACE_BEGIN
          * @param propertyMetaInfo Meta information, declared with property.
          * @param valuePointer Pointer to the property value.
          */
-        GDAPI virtual void VisitUnknownProperty(PropertyMetaInfo const* const propertyMetaInfo, Handle valuePointer) GD_PURE_VIRTUAL;
+        GDINT virtual void VisitUnknownProperty(PropertyMetaInfo const* const propertyMetaInfo, Handle valuePointer) GD_PURE_VIRTUAL;
 
 		// ------------------------------------------------------------------------------------------
 		// Primitive properties visitors.
@@ -81,7 +81,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Boolean property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, bool& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, bool& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles signed 8-bit integer property.
@@ -89,7 +89,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Integer property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int8& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int8& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles unsigned 8-bit integer property.
@@ -97,7 +97,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Integer property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt8& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt8& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles signed 16-bit integer property.
@@ -105,7 +105,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Integer property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int16& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int16& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles unsigned 16-bit integer property.
@@ -113,7 +113,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Integer property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt16& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt16& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles signed 32-bit integer property.
@@ -121,7 +121,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Integer property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int32& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int32& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles unsigned 32-bit integer property.
@@ -129,7 +129,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Integer property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt32& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt32& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles signed 64-bit integer property.
@@ -137,7 +137,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Integer property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int64& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int64& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles unsigned 64-bit integer property.
@@ -145,7 +145,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Integer property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt64& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt64& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles 32-bit floating-point property.
@@ -153,7 +153,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Float property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float32& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float32& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles 64-bit floating-point property.
@@ -161,7 +161,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value Float property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float64& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float64& value) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Handles string property.
@@ -169,7 +169,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value String property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, String& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, String& value) GD_PURE_VIRTUAL;
         
         /*!
          * Handles wide string property.
@@ -177,7 +177,7 @@ GD_NAMESPACE_BEGIN
          * @param propertyMetaInfo Meta information, declared with property.
          * @param value Wide string property value.
          */
-        GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, WideString& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, WideString& value) GD_PURE_VIRTUAL;
 		
 		/*!
 		 * Handles object property.
@@ -185,7 +185,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @param value String property value.
 		 */
-		GDAPI virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<Object>& value) GD_PURE_VIRTUAL;
+		GDINT virtual void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<Object>& value) GD_PURE_VIRTUAL;
 
 		// ------------------------------------------------------------------------------------------
 		// Array properties visitors.
@@ -203,7 +203,7 @@ GD_NAMESPACE_BEGIN
 		 * @param arraySize Size of the array. May be modified.
 		 * @returns False is reflecting this array property should be skipped.
 		 */
-		GDAPI virtual bool BeginVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo, SizeTp& arraySize) GD_PURE_VIRTUAL;
+		GDINT virtual bool BeginVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo, SizeTp& arraySize) GD_PURE_VIRTUAL;
 
 		/*!
 		 * @brief Handles array property.
@@ -211,7 +211,7 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 */
-		GDAPI virtual void EndVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo) GD_PURE_VIRTUAL;
+		GDINT virtual void EndVisitArrayProperty(PropertyMetaInfo const* const propertyMetaInfo) GD_PURE_VIRTUAL;
 
 		// ------------------------------------------------------------------------------------------
 		// Structure properties visitors.
@@ -228,7 +228,7 @@ GD_NAMESPACE_BEGIN
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 * @returns False is reflecting this struct property should be skipped.
 		 */
-		GDAPI virtual bool BeginVisitStructProperty(PropertyMetaInfo const* const propertyMetaInfo) GD_PURE_VIRTUAL;
+		GDINT virtual bool BeginVisitStructProperty(PropertyMetaInfo const* const propertyMetaInfo) GD_PURE_VIRTUAL;
 
 		/*!
 		 * @brief Handles structure property.
@@ -236,14 +236,14 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @param propertyMetaInfo Meta information, declared with property.
 		 */
-		GDAPI virtual void EndVisitStructProperty(PropertyMetaInfo const* const propertyMetaInfo) GD_PURE_VIRTUAL;
+		GDINT virtual void EndVisitStructProperty(PropertyMetaInfo const* const propertyMetaInfo) GD_PURE_VIRTUAL;
 
 	};	// struct IObjectVisitor
 
 	// **------------------------------------------------------------------------------------------**
 	//! Wrappers from the 'IObjectVisitor' interface.
 	// **------------------------------------------------------------------------------------------**
-	GD_OBJECT_KERNEL struct ObjectVisitor : public IObjectVisitor
+	struct GD_OBJECT_KERNEL ObjectVisitor : public IObjectVisitor
 	{
 	public:
 
@@ -253,7 +253,7 @@ GD_NAMESPACE_BEGIN
          *
          * @param propertyMetaInfo Meta information, declared with property.
          */
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, ...)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, ...)
         {
             this->VisitUnknownProperty(propertyMetaInfo, nullptr);
         }
@@ -265,63 +265,63 @@ GD_NAMESPACE_BEGIN
 		 * @param value Primitive property value.
 		 */
         //! @{
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, bool& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, bool& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-		GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Int8& value)
+		GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Int8& value)
 		{
 			this->VisitPrimitiveProperty(propertyMetaInfo, value);
 		}
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt8& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt8& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Int16& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Int16& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt16& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt16& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Int32& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Int32& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt32& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt32& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Int64& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Int64& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt64& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt64& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Float32& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Float32& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Float64& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Float64& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, String& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, String& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, WideString& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, WideString& value)
         {
             this->VisitPrimitiveProperty(propertyMetaInfo, value);
         }
         template<typename TObject>
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<TObject>& value)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<TObject>& value)
         {
 			// @todo Implement this with union_cast
-			auto valueObject = static_cast<RefPtr<Object>>(value);
+			auto valueObject = object_cast<RefPtr<Object>>(value);
 			this->VisitPrimitiveProperty(propertyMetaInfo, valueObject);
 			value = object_cast<RefPtr<TObject>>(valueObject);
         }
@@ -334,7 +334,7 @@ GD_NAMESPACE_BEGIN
 		 * @param array Array property value.
 		 */
 		template<typename TElement>
-		GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Vector<TElement>& array)
+		GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, Vector<TElement>& array)
 		{
 			auto arraySize = array.GetLength();
 			if (this->BeginVisitArrayProperty(propertyMetaInfo, arraySize))
@@ -355,7 +355,7 @@ GD_NAMESPACE_BEGIN
          * @param theStruct Struct property value.
          */
         template<typename TStruct, typename = typename EnableIf<TypeTraits::IsBase<Struct, TStruct>::Value>::Type>
-        GDINL GD_OBJECT_KERNEL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, TStruct& theStruct)
+        GDINL void VisitProperty(PropertyMetaInfo const* const propertyMetaInfo, TStruct& theStruct)
         {
             if (this->BeginVisitStructProperty(propertyMetaInfo))
             {
@@ -370,7 +370,7 @@ GD_NAMESPACE_BEGIN
 	//! Template wrappers from the 'ObjectVisitor' primitive visiting interface.
 	// **------------------------------------------------------------------------------------------**
 	template<typename TImplementation, typename TObjectVisitorBase = ObjectVisitor>
-	GD_OBJECT_HELPER struct TObjectVisitor : public TObjectVisitorBase
+	struct GD_OBJECT_HELPER TObjectVisitor : public TObjectVisitorBase
 	{
 	public:
 
@@ -392,76 +392,75 @@ GD_NAMESPACE_BEGIN
 		}
 
 	private:
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, bool& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, bool& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int8& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int8& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt8& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt8& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int16& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int16& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt16& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt16& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int32& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int32& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt32& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt32& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int64& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Int64& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt64& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, UInt64& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float32& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float32& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float64& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, Float64& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
 
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, String& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, String& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
         
-        GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, WideString& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, WideString& value) override
         {
             static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
         }
 		
-		GDAPI void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<Object>& value) override
+		GDINT void VisitPrimitiveProperty(PropertyMetaInfo const* const propertyMetaInfo, RefPtr<Object>& value) override
 		{
 			static_cast<TImplementation*>(this)->VisitPrimitivePropertyImpl(propertyMetaInfo, value);
 		}
-
 	};	// struct TObjectVisitor
 
 GD_NAMESPACE_END
