@@ -77,9 +77,15 @@
  * @param Parameter Name of the unused variable.
  */
 //! @{
-#define GD_NOT_USED(Parameter)			static_cast<void>(Parameter)	/*NOLINT*/
-#define GD_NOT_USED_L(...)				static_cast<void>(__VA_ARGS__)	/*NOLINT*/
+#define GD_NOT_USED(Parameter)            NotUsed(Parameter)                /*NOLINT*/
+#define GD_NOT_USED_L(...)                NotUsed(__VA_ARGS__)            /*NOLINT*/
+#define GD_NOT_USED_CONSTEXPR(...)      NotUsedConstexpr(__VA_ARGS__)   /*NOLINT*/
 //! @}
+
+template<typename... T>
+static void NotUsed(T const&...) {}
+template<typename... T>
+constexpr static void NotUsedConstexpr(T...) {}
 
 /*!
  * Generates a compile-time constant with all bits set to zero instead of the specified one.

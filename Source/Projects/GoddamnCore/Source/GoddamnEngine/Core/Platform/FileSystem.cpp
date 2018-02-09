@@ -11,10 +11,75 @@
  * File system implementation.
  */
 #include <GoddamnEngine/Core/Platform/FileSystem.h>
-#include "GoddamnEngine/Core/IO/Directory.h"
-#include "GoddamnEngine/Core/IO/Paths.h"
+//#include "GoddamnEngine/Core/IO/Directory.h"
+//#include "GoddamnEngine/Core/IO/Paths.h"
 
 GD_NAMESPACE_BEGIN
+
+    // ------------------------------------------------------------------------------------------
+    // File utilities.
+    // ------------------------------------------------------------------------------------------
+
+    /*!
+     * Copies file from source path to destination.
+     *
+     * @param srcFilename Path to the file.
+     * @param dstFilename Destination file path.
+     * @param doOverwrite Do overwrite destination file if it exists.
+     *
+     * @returns True if file was successfully moved.
+     */
+    GDAPI bool IFileSystem::FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite /*= false*/)
+    {
+        if (FileExists(srcFilename) && (doOverwrite || FileExists(dstFilename)))
+        {
+            auto srcFileStream = FileOpenRead(srcFilename);
+            auto dstFileStream = FileOpenWrite(dstFilename);
+            if (srcFileStream->IsValid() && dstFileStream->IsValid())
+            {
+                auto operationSucceeded = true;
+                auto const sourceFileSize = srcFileStream->GetLength();
+                
+                // Copying file from source to the destination using 4KB blocks.
+                SizeTp const bufferBlockSize = 4 * 1024 * 1024;
+                auto const buffer = GD_MALLOC_ARRAY_T(Byte, Min(bufferBlockSize, sourceFileSize));
+                for (SizeTp cnt = 0; cnt < sourceFileSize / bufferBlockSize && operationSucceeded; ++cnt)
+                {
+                    operationSucceeded = srcFileStream->Read(buffer, bufferBlockSize, 1) == 1;
+                    if (operationSucceeded)
+                        operationSucceeded = dstFileStream->Write(buffer, bufferBlockSize, 1) == 1;
+                }
+                if (operationSucceeded)
+                {
+                    // Copying what is left in the source file.
+                    auto const leftoverSize = sourceFileSize % bufferBlockSize;
+                    if (leftoverSize != 0)
+                    {
+                        operationSucceeded = srcFileStream->Read(buffer, leftoverSize, 1) == 1;
+                        if (operationSucceeded)
+                            operationSucceeded = dstFileStream->Write(buffer, leftoverSize, 1) == 1;
+                    }
+                }
+                GD_FREE(buffer);
+                
+                if (!operationSucceeded)
+                {
+                    // If failed, removing destination file as this function was never called.
+                    dstFileStream->Close();
+                    FileRemove(dstFilename);
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // Directory utilities.
+    // ------------------------------------------------------------------------------------------
 
 	/*!
 	 * Removes the existing directory and everything inside it.
@@ -24,7 +89,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool IFileSystem::DirectoryRemoveRecursive(WideString const& directoryName)
 	{
-		Directory directory(directoryName.CStr());
+		/*Directory directory(directoryName.CStr());
 		if (directory.IsValid())
 		{
 			for (auto directoryEntry = directory.ReadEntry(); directoryEntry.EntryName != nullptr; directoryEntry = directory.ReadEntry())
@@ -43,7 +108,7 @@ GD_NAMESPACE_BEGIN
 
 			// If any internal removal has failed, attempt of removal outer directory will fail and false would be returned.
 			return DirectoryRemove(directoryName);
-		}
+		}*/
 		return false;
 	}
 

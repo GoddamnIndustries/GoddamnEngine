@@ -55,7 +55,7 @@ GD_NAMESPACE_BEGIN
 		 * 
 		 * @returns True if file size was succesfully obtained.
 		 */
-		GDINT virtual bool FileSize(WideString const& filename, UINT64& fileSize) const GD_PURE_VIRTUAL;
+		GDINT virtual bool FileSize(WideString const& filename, UInt64& fileSize) const GD_PURE_VIRTUAL;
 
 		/*!
 		 * Creates an empty file with the specified file name.
@@ -94,7 +94,7 @@ GD_NAMESPACE_BEGIN
 		 * 
 		 * @returns True if file was successfully moved.
 		 */
-		GDINT virtual bool FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite = false) GD_PURE_VIRTUAL;
+		GDINT virtual bool FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite = false);
 
 		/*!
 		 * Opens a input stream for the specified file.
@@ -112,7 +112,7 @@ GD_NAMESPACE_BEGIN
 		 * 
 		 * @returns Opened valid output stream or null pointer if operation has failed.
 		 */
-		GDINT virtual SharedPtr<OutputStream> FileOpenWrite(WideString const& filename, bool const doAppend) const GD_PURE_VIRTUAL;
+		GDINT virtual SharedPtr<OutputStream> FileOpenWrite(WideString const& filename, bool const doAppend = false) const GD_PURE_VIRTUAL;
 
 		// ------------------------------------------------------------------------------------------
 		// Directory utilities.
@@ -134,12 +134,6 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual bool DirectoryCreateEmpty(WideString const& directoryName) const GD_PURE_VIRTUAL;
 
 		/*!
-		 *
-		 * @returns True if directory exists or was successfully traversed.
-		 */
-		//GDINT virtual bool DirectoryVisit() const GD_PURE_VIRTUAL;
-
-		/*!
 		 * Removes the existing empty directory.
 		 *
 		 * @param directoryName Path to the directory.
@@ -155,6 +149,16 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool DirectoryRemoveRecursive(WideString const& directoryName);
 
+        /*!
+         * Iterates through all entities of a directory.
+         *
+         * @param directoryName Path to the directory.
+         * @param directoryVisitor Callback for the directory traversal.
+         *
+         * @returns True if directory exists or was successfully iterated.
+         */
+        GDINT virtual bool DirectoryIterate(WideString const& directoryName, IFileSystemDirectoryVistor& directoryVisitor) const GD_PURE_VIRTUAL;
+        
 	};	// class IFileSystem
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**

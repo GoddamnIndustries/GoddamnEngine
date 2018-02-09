@@ -11,8 +11,9 @@
  * File system implementation.
  */
 #include <GoddamnEngine/Core/Platform/FileSystem.h>
-#include "GoddamnEngine/Core/IO/Paths.h"
 #if GD_PLATFORM_API_MICROSOFT
+
+#include "GoddamnEngine/Core/IO/Paths.h"
 
 GD_NAMESPACE_BEGIN
 
@@ -195,7 +196,8 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool FileExists(WideString const& filename) const override final
 		{
-			auto const fileAttributes = GetFileAttributesW(Paths::Platformize(filename).CStr());
+            auto const filenameSystem = Paths::Platformize(filename);
+			auto const fileAttributes = GetFileAttributesW(filenameSystem.CStr());
 			return fileAttributes != INVALID_FILE_ATTRIBUTES && (fileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0;
 		}
 
@@ -207,10 +209,11 @@ GD_NAMESPACE_BEGIN
 		 * 
 		 * @returns True if file size was succesfully obtained.
 		 */
-		GDINT virtual bool FileSize(WideString const& filename, UINT64& fileSize) const override final
+		GDINT virtual bool FileSize(WideString const& filename, UInt64& fileSize) const override final
 		{
-			WIN32_FILE_ATTRIBUTE_DATA fileAttributeData = {};
-			if (GetFileAttributesExW(Paths::Platformize(filename).CStr(), GetFileExInfoStandard, &fileAttributeData) == TRUE)
+            WIN32_FILE_ATTRIBUTE_DATA fileAttributeData = {};
+            auto const filenameSystem = Paths::Platformize(filename);
+			if (GetFileAttributesExW(filenameSystem.CStr(), GetFileExInfoStandard, &fileAttributeData) == TRUE)
 			{
 				if ((fileAttributeData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
 				{
@@ -271,7 +274,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final
 		{
-			if (FileExists(dstFilename) && !doOverwrite)
+			if (doOverwrite || !FileExists(dstFilename))
 			{
 				auto const srcFilenameSystem = Paths::Platformize(srcFilename);
 				auto const dstFilenameSystem = Paths::Platformize(dstFilename);
@@ -296,13 +299,16 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final
 		{
-			auto const srcFilenameSystem = Paths::Platformize(srcFilename);
-			auto const dstFilenameSystem = Paths::Platformize(dstFilename);
-			if (CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == FALSE)
-			{
-				Sleep(0);
-				return CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == TRUE;
-			}
+            if (doOverwrite || !FileExists(dstFilename))
+            {
+                auto const srcFilenameSystem = Paths::Platformize(srcFilename);
+                auto const dstFilenameSystem = Paths::Platformize(dstFilename);
+                if (CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == FALSE)
+                {
+                    Sleep(0);
+                    return CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == TRUE;
+                }
+            }
 			return true;
 		}
 		
