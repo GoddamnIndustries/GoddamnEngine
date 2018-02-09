@@ -338,7 +338,7 @@ GD_NAMESPACE_BEGIN
 	struct IGraphicsBufferCreateInfo : public IGraphicsResourceCreateInfo
 	{
 	public:
-		SizeTp               BufferSize;	//!< Size of the buffer in bytes.
+		UInt32               BufferSize;	//!< Size of the buffer in bytes.
 		IGraphicsBufferType  BufferType;	//!< Type of the buffer: vertex, index, uniform or etc buffer.
 	};	// struct IGraphicsBufferCreateInfo
 
@@ -347,14 +347,14 @@ GD_NAMESPACE_BEGIN
 	GD_DEFINE_PARTIAL_CLASS(IGraphicsBaseWithBuffers, IGraphics)
 	{
 	public:
-		GDAPI virtual IResult GfxImm_BufferCreate(IGraphicsBuffer*& gfxObjPtr, IGraphicsBufferCreateInfo const& gfxObjCreateInfo) GD_PURE_VIRTUAL_BUT_NOT;
+		GDAPI virtual IResult GfxImm_BufferCreate(IGraphicsBuffer*& gfxObjPtr, IGraphicsBufferCreateInfo const& gfxObjCreateInfo, CHandle const gfxObjInitialData = nullptr) GD_PURE_VIRTUAL_BUT_NOT;
 		GDAPI virtual IResult GfxImm_BufferDestroy(IGraphicsBuffer* const gfxObj) GD_PURE_VIRTUAL_BUT_NOT;
-		GDAPI virtual IResult GfxImm_BufferMap(IGraphicsBuffer* const gfxObj, IGraphicsResourceMapMode const gfxMapMode, IGraphicsResourceData& gfxMappedMemory) GD_PURE_VIRTUAL_BUT_NOT;
+		GDAPI virtual IResult GfxImm_BufferMap(IGraphicsBuffer* const gfxObj, IGraphicsResourceMapMode const gfxMapMode, Handle& gfxMappedMemory) GD_PURE_VIRTUAL_BUT_NOT;
 		GDAPI virtual IResult GfxImm_BufferUnmap(IGraphicsBuffer* const gfxObj) GD_PURE_VIRTUAL_BUT_NOT;
 	};	// class IGraphicsBaseWithBuffers
 
 	// ------------------------------------------------------------------------------------------
-	// 1D, 2D, 3D Texture Arrays and Cube textures.
+	// 2D, 3D Texture Arrays and Cube textures.
 	// ------------------------------------------------------------------------------------------
 
 	/*!
@@ -396,15 +396,6 @@ GD_NAMESPACE_BEGIN
 	};	// struct IGraphicsTexture1DCreateInfo
 
 	/*!
-	 * Description of a GPU 1D texture.
-	 */
-	struct IGraphicsTexture1DCreateInfo : public IGraphicsTextureCreateInfo
-	{
-	public:
-		UInt32 Texture1DWidth;	//!< Width of the texture.
-	};	// struct IGraphicsTexture1DCreateInfo
-
-	/*!
 	 * Description of a GPU 2D texture.
 	 */
 	struct IGraphicsTexture2DCreateInfo : public IGraphicsTextureCreateInfo
@@ -425,18 +416,12 @@ GD_NAMESPACE_BEGIN
 		UInt32 Texture3DDepth;	//!< Depth of the texture.
 	};	// struct IGraphicsTexture3DCreateInfo
 
-	GD_DEFINE_IGRAPHICS_OBJECT(IGraphicsTexture1D, IGraphicsResource);
 	GD_DEFINE_IGRAPHICS_OBJECT(IGraphicsTexture2D, IGraphicsResource);
 	GD_DEFINE_IGRAPHICS_OBJECT(IGraphicsTexture3D, IGraphicsResource);
 
 	GD_DEFINE_PARTIAL_CLASS(IGraphicsBaseWithTextures, IGraphics)
 	{
 	public:
-		GDAPI virtual IResult GfxImm_Texture1DCreate(IGraphicsTexture1D*& gfxObjPtr, IGraphicsTexture1DCreateInfo const& gfxObjCreateInfo, IGraphicsResourceData const& gfxObjInitialData = {}) GD_PURE_VIRTUAL_BUT_NOT;
-		GDAPI virtual IResult GfxImm_Texture1DDestroy(IGraphicsTexture1D* const gfxObj) GD_PURE_VIRTUAL_BUT_NOT;
-		GDAPI virtual IResult GfxImm_Texture1DMap(IGraphicsTexture1D* const gfxObj, IGraphicsResourceMapMode const gfxMapMode, IGraphicsResourceData& gfxMappedMemory) GD_PURE_VIRTUAL_BUT_NOT;
-		GDAPI virtual IResult GfxImm_Texture1DUnmap(IGraphicsTexture1D* const gfxObj) GD_PURE_VIRTUAL_BUT_NOT;
-
 		GDAPI virtual IResult GfxImm_Texture2DCreate(IGraphicsTexture2D*& gfxObjPtr, IGraphicsTexture2DCreateInfo const& gfxObjCreateInfo, IGraphicsResourceData const& gfxObjInitialData = {}) GD_PURE_VIRTUAL_BUT_NOT;
 		GDAPI virtual IResult GfxImm_Texture2DDestroy(IGraphicsTexture2D* const gfxObj) GD_PURE_VIRTUAL_BUT_NOT;
 		GDAPI virtual IResult GfxImm_Texture2DMap(IGraphicsTexture2D* const gfxObj, IGraphicsResourceMapMode const gfxMapMode, IGraphicsResourceData& gfxMappedMemory) GD_PURE_VIRTUAL_BUT_NOT;
@@ -562,7 +547,7 @@ GD_NAMESPACE_BEGIN
 			struct {
 			} UavTexture3DArray;
 		};
-	};	// struct IGraphicsShaderResourceViewCreateInfo
+	};	// struct IGraphicsUnorderedAcessViewCreateInfo
 
 	GD_DEFINE_IGRAPHICS_OBJECT(IGraphicsUnorderedAcessView, IGraphicsView);
 
@@ -888,7 +873,7 @@ GD_NAMESPACE_BEGIN
 		 * @param gfxCommandList Command list into which this command would be written.
 		 * @param gfxVertexArray Pointer to the vertex array.
 		 */
-		GDAPI virtual void GfxCmd_VertexArrayBind(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_VertexArrayBind(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsVertexArray* const gfxVertexArray) GD_PURE_VIRTUAL_BUT_NOT;
 
 	};	// class IGraphicsBaseWithVertexArrays
@@ -934,7 +919,7 @@ GD_NAMESPACE_BEGIN
 		 * @param gfxCommandList Command list into which this command would be written.
 		 * @param gfxPipeline Pointer to the pipeline.
 		 */
-		GDAPI virtual void GfxCmd_PipelineBind(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_PipelineBind(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsPipelineState* const gfxPipeline) GD_PURE_VIRTUAL_BUT_NOT;
 
 	};	// class IGraphicsBaseWithPipelineStates
@@ -967,7 +952,7 @@ GD_NAMESPACE_BEGIN
 		 * Clears current render target depth buffer.
 		 * @param gfxCommandList Command list into which this command would be written.
 		 */
-		GDAPI virtual void GfxCmd_RenderTargetClearDepth(IGraphicsCommandList* const gfxCommandList) GD_PURE_VIRTUAL_BUT_NOT;
+		GDAPI virtual IResult GfxCmd_RenderTargetClearDepth(IGraphicsCommandList* const gfxCommandList) GD_PURE_VIRTUAL_BUT_NOT;
 
 		/*!
 		 * Clear current render target with a specified color.
@@ -975,7 +960,7 @@ GD_NAMESPACE_BEGIN
 		 * @param gfxCommandList Command list into which this command would be written.
 		 * @param gfxClearColor Color that would be used to fill the render target.
 		 */
-		GDAPI virtual void GfxCmd_RenderTargetClearColor(IGraphicsCommandList* const gfxCommandList, GeomColor const gfxClearColor) GD_PURE_VIRTUAL_BUT_NOT;
+		GDAPI virtual IResult GfxCmd_RenderTargetClearColor(IGraphicsCommandList* const gfxCommandList, GeomColor const gfxClearColor) GD_PURE_VIRTUAL_BUT_NOT;
 
 		/*!
 		 * Renders currently binded vertex array with the binded pipeline state.
@@ -984,7 +969,7 @@ GD_NAMESPACE_BEGIN
 		 * @param gfxTopology Topology of the binded vertex array.
 		 * @param gfxVerticesCount Amount of the vertices in the vertex array.
 		 */
-		GDAPI virtual void GfxCmd_RenderTargetRender(IGraphicsCommandList* const gfxCommandList, IGraphicsTopologyType const gfxTopology
+		GDAPI virtual IResult GfxCmd_RenderTargetRender(IGraphicsCommandList* const gfxCommandList, IGraphicsTopologyType const gfxTopology
 			, SizeTp const gfxVerticesCount) GD_PURE_VIRTUAL_BUT_NOT;
 
 		/*!
@@ -995,7 +980,7 @@ GD_NAMESPACE_BEGIN
 		 * @param gfxIndicesCount Amount of the indeces in the index array.
 		 * @param gfxIndexType Type of the single index.
 		 */
-		GDAPI virtual void GfxCmd_RenderTargetRenderIndexed(IGraphicsCommandList* const gfxCommandList, IGraphicsTopologyType const gfxTopology
+		GDAPI virtual IResult GfxCmd_RenderTargetRenderIndexed(IGraphicsCommandList* const gfxCommandList, IGraphicsTopologyType const gfxTopology
 			, SizeTp const gfxIndicesCount, IGraphicsFormatType gfxIndexType) GD_PURE_VIRTUAL_BUT_NOT;
 
 	};	// class IGraphicsBaseWithRenderTargets

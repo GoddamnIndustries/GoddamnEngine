@@ -133,7 +133,7 @@ GD_NAMESPACE_BEGIN
 	 * @param gfxShaderCreateInfo Creation information for the shader.
 	 */
 	template<typename TIGraphicsShaderBase>
-	GDINT IGraphicsOpenGLBaseShader<TIGraphicsShaderBase>::IGraphicsOpenGLBaseShader(IGraphicsShaderCreateInfo const* const gfxShaderCreateInfo)
+	GDINT IGraphicsOpenGLBaseShader<TIGraphicsShaderBase>::IGraphicsOpenGLBaseShader(IGraphicsShaderCreateInfo const& gfxShaderCreateInfo)
 		: TIGraphicsShaderBase(gfxShaderCreateInfo)
 		, m_GLShaderProgramID(0), m_GLShaderProgramType(g_OpenGLShaderTypesTable[ShaderType])
 	{
@@ -221,7 +221,7 @@ GD_NAMESPACE_BEGIN
 			{
 				// Binding current buffer...
 				auto const glUniformBuffer = glUniformBuffers[i];
-				glBindBufferBase(GL_UNIFORM_BUFFER, gfxUniformBufferBindingPointOffset + i, glUniformBuffer->m_GLBufferID);
+				glBindBufferBase(GL_UNIFORM_BUFFER, gfxUniformBufferBindingPointOffset + i, glUniformBuffer->BufferID);
 			}
 			else
 			{
@@ -258,7 +258,7 @@ GD_NAMESPACE_BEGIN
 			{
 				// Binding current texture...
 				auto const glResource = glResources[i];
-				glBindTexture(glResource->m_GLShaderResourceType, glResource->m_GLShaderResourceID);
+				glBindTexture(glResource->ShaderResourceType, glResource->ShaderResourceID);
 			}
 			else
 			{
@@ -320,14 +320,14 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns Non-negative value if the operation succeeded.
 	 */
-	GDAPI IResult IGraphicsOpenGLWithVertexShaders::GfxImm_VertexShaderCreate(IGraphicsVertexShader** const gfxVertexShaderPtr
-		, IGraphicsShaderCreateInfo const* const gfxShaderCreateInfo, IGraphicsVertexArrayLayout const* const gfxVertexArrayLayout)
+	GDAPI IResult IGraphicsOpenGLWithVertexShaders::GfxImm_VertexShaderCreate(IGraphicsVertexShader**& gfxVertexShaderPtr
+		, IGraphicsShaderCreateInfo const& gfxShaderCreateInfo, IGraphicsVertexArrayLayout const* const gfxVertexArrayLayout)
 	{
 #if GD_DEBUG
 		GD_ARG_VERIFY(gfxVertexShaderPtr != nullptr);
 		GD_ARG_VERIFY(gfxShaderCreateInfo != nullptr);
-		GD_ARG_VERIFY(gfxShaderCreateInfo->ShaderSource || gfxShaderCreateInfo->ShaderByteCode != nullptr);
-		GD_ARG_VERIFY(gfxShaderCreateInfo->ShaderSource || gfxShaderCreateInfo->ShaderByteCodeLength > 0);
+		GD_ARG_VERIFY(gfxShaderCreateInfo.ShaderSource || gfxShaderCreateInfo.ShaderByteCode != nullptr);
+		GD_ARG_VERIFY(gfxShaderCreateInfo.ShaderSource || gfxShaderCreateInfo.ShaderByteCodeLength > 0);
 #endif	// if GD_DEBUG
 
 		// Input layouts are not used in OpenGL.
@@ -394,26 +394,26 @@ GD_NAMESPACE_BEGIN
 	 * Creates a new Pixel GPU shader with specified parameters and specifies the input layout
 	 * of the Pixel GPU shader.
 	 *
-	 * @param gfxPixelShaderPtr Pointer for output.
+	 * @param gfxFragmentShaderPtr Pointer for output.
 	 * @param gfxShaderCreateInfo Creation information for the Pixel shader.
 	 *
 	 * @returns Non-negative value if the operation succeeded.
 	 */
-	GDAPI IResult IGraphicsOpenGLWithPixelShaders::GfxImm_PixelShaderCreate(IGraphicsPixelShader** const gfxPixelShaderPtr
-		, IGraphicsShaderCreateInfo const* const gfxShaderCreateInfo)
+	GDAPI IResult IGraphicsOpenGLWithFragmentShaders::GfxImm_FragmentShaderCreate(IGraphicsFragmentShader**& gfxFragmentShaderPtr
+		, IGraphicsShaderCreateInfo const& gfxShaderCreateInfo)
 	{
 #if GD_DEBUG
-		GD_ARG_VERIFY(gfxPixelShaderPtr != nullptr);
+		GD_ARG_VERIFY(gfxFragmentShaderPtr != nullptr);
 		GD_ARG_VERIFY(gfxShaderCreateInfo != nullptr);
-		GD_ARG_VERIFY(gfxShaderCreateInfo->ShaderSource || gfxShaderCreateInfo->ShaderByteCode != nullptr);
-		GD_ARG_VERIFY(gfxShaderCreateInfo->ShaderSource || gfxShaderCreateInfo->ShaderByteCodeLength > 0);
+		GD_ARG_VERIFY(gfxShaderCreateInfo.ShaderSource || gfxShaderCreateInfo.ShaderByteCode != nullptr);
+		GD_ARG_VERIFY(gfxShaderCreateInfo.ShaderSource || gfxShaderCreateInfo.ShaderByteCodeLength > 0);
 #endif	// if GD_DEBUG
 
 		// Copying parameters and forcedly specifying Pixel shader type.
 		auto gfxShaderCreateInfoCopy(*gfxShaderCreateInfo);
 		gfxShaderCreateInfoCopy.ShaderType = IGRAPHICS_SHADER_TYPE_PIXEL;
 		
-		*gfxPixelShaderPtr = gd_new IGraphicsOpenGLPixelShader(&gfxShaderCreateInfoCopy);
+		*gfxFragmentShaderPtr = gd_new IGraphicsOpenGLFragmentShader(&gfxShaderCreateInfoCopy);
 		return IResult::Ok;
 	}
 
@@ -425,7 +425,7 @@ GD_NAMESPACE_BEGIN
 	 * @param gfxUniformBuffers Pointer to the uniform buffers list.
 	 * @param gfxUniformBuffersCount Number of the uniform buffers to bind.
 	 */
-	GDAPI void IGraphicsOpenGLWithPixelShaders::GfxCmd_PixelShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
+	GDAPI void IGraphicsOpenGLWithFragmentShaders::GfxCmd_FragmentShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
 		, IGraphicsBuffer const* const* const gfxUniformBuffers, SizeTp const gfxUniformBuffersCount)
 	{
 		GD_NOT_USED(gfxCommandList);
@@ -440,7 +440,7 @@ GD_NAMESPACE_BEGIN
 	 * @param gfxResources Pointer to the resources list.
 	 * @param gfxResourcesCount Number of the resources to bind.
 	 */
-	GDAPI void IGraphicsOpenGLWithPixelShaders::GfxCmd_PixelShaderBindResources(IGraphicsCommandList* const gfxCommandList
+	GDAPI void IGraphicsOpenGLWithFragmentShaders::GfxCmd_FragmentShaderBindResources(IGraphicsCommandList* const gfxCommandList
 		, IGraphicsShaderResourceView const* const* const gfxResources, SizeTp const gfxResourcesCount)
 	{
 		GD_NOT_USED(gfxCommandList);
@@ -455,7 +455,7 @@ GD_NAMESPACE_BEGIN
 	 * @param gfxSamplers Pointer to the samplers list.
 	 * @param gfxSamplersCount Number of the resources to bind.
 	 */
-	GDAPI void IGraphicsOpenGLWithPixelShaders::GfxCmd_PixelShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
+	GDAPI void IGraphicsOpenGLWithFragmentShaders::GfxCmd_FragmentShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
 		, IGraphicsSampler const* const* const gfxSamplers, SizeTp const gfxSamplersCount)
 	{
 		GD_NOT_USED(gfxCommandList);
@@ -475,14 +475,14 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns Non-negative value if the operation succeeded.
 	 */
-	GDAPI IResult IGraphicsOpenGLWithGeometryShaders::GfxImm_GeometryShaderCreate(IGraphicsGeometryShader** const gfxGeometryShaderPtr
-		, IGraphicsShaderCreateInfo const* const gfxShaderCreateInfo)
+	GDAPI IResult IGraphicsOpenGLWithGeometryShaders::GfxImm_GeometryShaderCreate(IGraphicsGeometryShader**& gfxGeometryShaderPtr
+		, IGraphicsShaderCreateInfo const& gfxShaderCreateInfo)
 	{
 #if GD_DEBUG
 		GD_ARG_VERIFY(gfxGeometryShaderPtr != nullptr);
 		GD_ARG_VERIFY(gfxShaderCreateInfo != nullptr);
-		GD_ARG_VERIFY(gfxShaderCreateInfo->ShaderSource || gfxShaderCreateInfo->ShaderByteCode != nullptr);
-		GD_ARG_VERIFY(gfxShaderCreateInfo->ShaderSource || gfxShaderCreateInfo->ShaderByteCodeLength > 0);
+		GD_ARG_VERIFY(gfxShaderCreateInfo.ShaderSource || gfxShaderCreateInfo.ShaderByteCode != nullptr);
+		GD_ARG_VERIFY(gfxShaderCreateInfo.ShaderSource || gfxShaderCreateInfo.ShaderByteCodeLength > 0);
 #endif	// if GD_DEBUG
 
 		// Copying parameters and forcedly specifying Geometry shader type.

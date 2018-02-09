@@ -31,14 +31,14 @@
 GD_NAMESPACE_BEGIN
 
 #define glThrowIfFailed(...) __VA_ARGS__; CheckIfFailed();
-	GDINL static void CheckIfFailed(void)
+	GDINL static IResult CheckIfFailed()
 	{
 		//auto a = glGetError();
 		//GD_VERIFY(a == GL_NO_ERROR, "WINAPI\\D3D11 function has failed.");
 	}
 
 	GDEXP extern IGraphics* CreateIGraphicsInstance();
-	GD_DEFINE_PARTIAL_CALSS_FIRST(IGraphicsOpenGL, IGraphicsOpenGLPlatform);
+	GD_DEFINE_PARTIAL_CLASS_FIRST(IGraphicsOpenGL, IGraphicsOpenGLPlatform);
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	// ******                         IGraphicsCommandList interface.                          ******
@@ -47,113 +47,88 @@ GD_NAMESPACE_BEGIN
 	GD_DEFINE_PARTIAL_CLASS(IGraphicsOpenGLWithCommandLists, IGraphicsOpenGL)
 	{
 	public:
-		GDAPI virtual IResult GfxImm_CommandListCreate(IGraphicsCommandList** const gfxCommandListPtr
-			, IGraphicsCommandListCreateInfo const* const gfxCommandListCreateInfo) override final;
+		GDAPI virtual IResult GfxImm_CommandListCreate(IGraphicsCommandList*& gfxObjPtr, IGraphicsCommandListCreateInfo const& gfxObjCreateInfo) override final;
+		GDAPI virtual IResult GfxImm_CommandListDestroy(IGraphicsCommandList* const gfxObj) override final;
 	};	// class IGraphicsOpenGLWithCommandLists
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	// ******                            IGraphicsBuffer interface.                            ******
+	// ******                           Graphics Resource interface.                           ******
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+
+	// ------------------------------------------------------------------------------------------
+	// Buffers.
+	// ------------------------------------------------------------------------------------------
 
 	class IGraphicsOpenGLBuffer final : public IGraphicsBuffer
 	{
 	public:
-		GLuint const m_GLBufferID;
-		GLenum const m_GLBufferType;
-		Handle m_GLBufferMappedMemory = nullptr;
-
+		GLuint const BufferID;
+		GLenum const BufferType;
+		Handle BufferMappedMemory = nullptr;
 	public:
-		GDINL explicit IGraphicsOpenGLBuffer(IGraphicsBufferCreateInfo const& gfxBufferCreateInfo
-			, GLuint const glBufferID, GLenum const glBufferType)
-			: IGraphicsBuffer(gfxBufferCreateInfo), m_GLBufferID(glBufferID), m_GLBufferType(glBufferType) {}
+		GDINL explicit IGraphicsOpenGLBuffer(IGraphicsBufferCreateInfo const& gfxBufferCreateInfo, GLuint const glBufferID, GLenum const glBufferType)
+			: IGraphicsBuffer(gfxBufferCreateInfo), BufferID(glBufferID), BufferType(glBufferType) {}
 	};	// class IGraphicsOpenGLBuffer
 
 	GD_DEFINE_PARTIAL_CLASS(IGraphicsOpenGLWithBuffers, IGraphicsOpenGL)
 	{
 	public:
+		GDAPI virtual IResult GfxImm_BufferCreate(IGraphicsBuffer*& gfxBufferPtr, IGraphicsBufferCreateInfo const& gfxBufferCreateInfo, CHandle const gfxBufferInitialData) override final;
 		GDAPI virtual IResult GfxImm_BufferDestroy(IGraphicsBuffer* const gfxBufferPtr) override final;
-		GDAPI virtual IResult GfxImm_BufferCreate(IGraphicsBuffer*& const gfxBufferPtr
-			, IGraphicsBufferCreateInfo const& gfxBufferCreateInfo) override final;
-
+		GDAPI virtual IResult GfxImm_BufferMap(IGraphicsBuffer* const gfxBuffer, IGraphicsResourceMapMode const gfxMapMode, Handle& gfxMappedMemory) override final;
 		GDAPI virtual IResult GfxImm_BufferUnmap(IGraphicsBuffer* const gfxBuffer) override final;
-		GDAPI virtual IResult GfxImm_BufferMap(IGraphicsBuffer* const gfxBuffer
-			, IGraphicsResourceMapMode const gfxMapMode, Handle& gfxMappedMemory) override final;
 	};	// class IGraphicsOpenGLWithBuffers
 
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	// ******                            IGraphicsTexture2D interface.                         ******
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	// ------------------------------------------------------------------------------------------
+	// 2D, 3D Texture Arrays and Cube textures.
+	// ------------------------------------------------------------------------------------------
 
 	class IGraphicsOpenGLTexture2D final : public IGraphicsTexture2D
 	{
 	public:
-		GLuint const m_GLTexture2DID;
-		GLuint const m_GLTexture2DBufferID;
-	
+		GLuint const Texture2DID;
+		GLuint const Texture2DBufferID;
 	public:
-		GDINL explicit IGraphicsOpenGLTexture2D(IGraphicsTexture2DCreateInfo const& gfxTexture2DCreateInfo
-			, GLuint const glTexture2DID, GLuint const glTexture2DBufferID)
-			: IGraphicsTexture2D(gfxTexture2DCreateInfo), m_GLTexture2DID(glTexture2DID), m_GLTexture2DBufferID(glTexture2DBufferID) {}
+		GDINL explicit IGraphicsOpenGLTexture2D(IGraphicsTexture2DCreateInfo const& gfxTexture2DCreateInfo, GLuint const glTexture2DID, GLuint const glTexture2DBufferID)
+			: IGraphicsTexture2D(gfxTexture2DCreateInfo), Texture2DID(glTexture2DID), Texture2DBufferID(glTexture2DBufferID) {}
 	};	// class IGraphicsOpenGLTexture2D
 
-	GD_DEFINE_PARTIAL_CLASS(IGraphicsBaseOpenGLWithTextures2D, IGraphicsOpenGL)
+	class IGraphicsOpenGLTexture3D final : public IGraphicsTexture3D
 	{
 	public:
-		GDAPI virtual IResult GfxImm_Texture2DDestroy(IGraphicsTexture2D* const gfxTexture2D) override final;
-		GDAPI virtual IResult GfxImm_Texture2DCreate(IGraphicsTexture2D*& gfxTexture2DPtr
-			, IGraphicsTexture2DCreateInfo const& gfxTexture2DCreateInfo) override final;
+		GLuint const Texture3DID;
+		GLuint const Texture3DBufferID;
+	public:
+		GDINL explicit IGraphicsOpenGLTexture3D(IGraphicsTexture3DCreateInfo const& gfxTexture3DCreateInfo, GLuint const glTexture3DID, GLuint const glTexture3DBufferID)
+			: IGraphicsTexture3D(gfxTexture3DCreateInfo), Texture3DID(glTexture3DID), Texture3DBufferID(glTexture3DBufferID) {}
+	};	// class IGraphicsOpenGLTexture3D
 
-		GDAPI virtual IResult GfxImm_TextureUnmap(IGraphicsTexture2D* const gfxTexture2D) override final;
-		GDAPI virtual IResult GfxImm_Texture2DMap(IGraphicsTexture2D* const gfxTexture2D
-			, IGraphicsResourceMapMode const gfxMapMode, Handle& gfxMappedMemory) override final;
-	};	// class IGraphicsBaseOpenGLWithTextures2D
-	
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	// ******                           IGraphicsTextureCube interface.                        ******
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-
-#if 0
-	class IGraphicsOpenGLTextureCube final : public IGraphicsTextureCube
+	GD_DEFINE_PARTIAL_CLASS(IGraphicsOpenGLWithTextures, IGraphicsOpenGL)
 	{
 	public:
-		GLuint m_GLTextureCubeID;
-		SharedPtr<IGraphicsOpenGLShaderResourceView> m_GLShaderResourceView;
-	
-	public:
-		GDAPI explicit IGraphicsOpenGLTextureCube(IGraphicsTextureCubeCreateInfo const* const gfxTextureCubeCreateInfo
-			, IGraphicsTextureCubeData const* const gfxTextureCubeInitialData);
-		GDAPI virtual ~IGraphicsOpenGLTextureCube();
+		GDAPI virtual IResult GfxImm_Texture2DCreate(IGraphicsTexture2D*& gfxObjPtr, IGraphicsTexture2DCreateInfo const& gfxObjCreateInfo, IGraphicsResourceData const& gfxObjInitialData) override final;
+		GDAPI virtual IResult GfxImm_Texture2DDestroy(IGraphicsTexture2D* const gfxObj) override final;
+		GDAPI virtual IResult GfxImm_Texture2DMap(IGraphicsTexture2D* const gfxObj, IGraphicsResourceMapMode const gfxMapMode, IGraphicsResourceData& gfxMappedMemory) override final;
+		GDAPI virtual IResult GfxImm_Texture2DUnmap(IGraphicsTexture2D* const gfxObj) override final;
 
-	public:
-		GDAPI virtual IGraphicsShaderResourceView const* CPU_GetShaderResourceView() const override final;
-		GDAPI virtual IResult Imm_UpdateData(IGraphicsTextureCubeData const* const gfxTextureCubeData) override final;
-	};	// class IGraphicsOpenGLTextureCube
-
-	GD_UNIQUE_INTERFACE_DEFINE_PARTIAL(IGraphicsBaseOpenGLWithTexturesCube, IGraphicsOpenGL)
-	{
-	public:
-		GDAPI virtual IResult GfxImm_TextureCubeCreate(IGraphicsTextureCube** const gfxTextureCubePtr
-			, IGraphicsTextureCubeCreateInfo const* const gfxTextureCubeCreateInfo
-			, IGraphicsTextureCubeData const* const gfxTextureInitialCubeData) override final;
-	};	// class IGraphicsBaseOpenGLWithTexturesCube
-#endif
+		GDAPI virtual IResult GfxImm_Texture3DCreate(IGraphicsTexture3D*& gfxObjPtr, IGraphicsTexture3DCreateInfo const& gfxObjCreateInfo, IGraphicsResourceData const& gfxObjInitialData) override final;
+		GDAPI virtual IResult GfxImm_Texture3DDestroy(IGraphicsTexture3D* const gfxObj) override final;
+		GDAPI virtual IResult GfxImm_Texture3DMap(IGraphicsTexture3D* const gfxObj, IGraphicsResourceMapMode const gfxMapMode, IGraphicsResourceData& gfxMappedMemory) override final;
+		GDAPI virtual IResult GfxImm_Texture3DUnmap(IGraphicsTexture3D* const gfxObj) override final;
+	};	// class IGraphicsOpenGLWithTextures
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	// ******                         IGraphicsResource(View) interface.                       ******
+	// ******                              Graphics View interface.                            ******
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 
 	class IGraphicsOpenGLShaderResourceView : public IGraphicsShaderResourceView
 	{
 	public:
-		GLuint m_GLShaderResourceID;
-		GLenum m_GLShaderResourceType;
-
+		GLuint ShaderResourceID;
+		GLenum ShaderResourceType;
 	public:
-		GDAPI explicit IGraphicsOpenGLShaderResourceView(IGraphicsShaderResourceType const gfxResourceType);
+		GDAPI explicit IGraphicsOpenGLShaderResourceView(IGraphicsShaderResourceViewType const gfxResourceType);
 		GDAPI virtual ~IGraphicsOpenGLShaderResourceView();
-
-	public:
-		// No public interface functions here..
 	};	// class IGraphicsShaderResourceView
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
@@ -191,7 +166,7 @@ GD_NAMESPACE_BEGIN
 		GLenum m_GLShaderProgramType;
 
 	public:
-		GDINT explicit IGraphicsOpenGLBaseShader(IGraphicsShaderCreateInfo const* const gfxShaderCreateInfo);
+		GDINT explicit IGraphicsOpenGLBaseShader(IGraphicsShaderCreateInfo const& gfxShaderCreateInfo);
 		GDINT virtual ~IGraphicsOpenGLBaseShader();
 
 	public:
@@ -202,13 +177,13 @@ GD_NAMESPACE_BEGIN
 	{
 	protected:
 		template<IGraphicsShaderType TShaderType>
-		GDINT void GfxCmd_BaseShaderBindUniformBuffers(IGraphicsBuffer const* const* const gfxUniformBuffers
+		GDINT IResult GfxCmd_BaseShaderBindUniformBuffers(IGraphicsBuffer const* const* const gfxUniformBuffers
 			, SizeTp const gfxUniformBuffersCount);
 		template<IGraphicsShaderType TShaderType>
-		GDINT void GfxCmd_BaseShaderBindResources(IGraphicsShaderResourceView const* const* const gfxResources
+		GDINT IResult GfxCmd_BaseShaderBindResources(IGraphicsShaderResourceView const* const* const gfxResources
 			, SizeTp const gfxResourcesCount);
 		template<IGraphicsShaderType TShaderType>
-		GDINT void GfxCmd_BaseShaderBindSamplers(IGraphicsSampler const* const* const gfxSamplers
+		GDINT IResult GfxCmd_BaseShaderBindSamplers(IGraphicsSampler const* const* const gfxSamplers
 			, SizeTp const gfxSamplersCount);
 	};	// class IGraphicsBaseOpenGLWithTextures2D
 
@@ -220,14 +195,14 @@ GD_NAMESPACE_BEGIN
 	GD_DEFINE_PARTIAL_CLASS(IGraphicsOpenGLWithVertexShaders, IGraphicsOpenGL)
 	{
 	public:
-		GDAPI virtual IResult GfxImm_VertexShaderCreate(IGraphicsVertexShader** const gfxVertexShaderPtr
-			, IGraphicsShaderCreateInfo const* const gfxShaderCreateInfo
+		GDAPI virtual IResult GfxImm_VertexShaderCreate(IGraphicsVertexShader*& gfxVertexShaderPtr
+			, IGraphicsShaderCreateInfo const& gfxShaderCreateInfo
 			, IGraphicsVertexArrayLayout const* const gfxVertexArrayLayout) override final;
-		GDAPI virtual void GfxCmd_VertexShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_VertexShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsBuffer const* const* const gfxUniformBuffers, SizeTp const gfxUniformBuffersCount) override final;
-		GDAPI virtual void GfxCmd_VertexShaderBindResources(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_VertexShaderBindResources(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsShaderResourceView const* const* const gfxResources, SizeTp const gfxResourcesCount) override final;
-		GDAPI virtual void GfxCmd_VertexShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_VertexShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsSampler const* const* const gfxSamplers, SizeTp const gfxSamplersCount) override final;
 	};	// class IGraphicsOpenGLWithVertexShaders
 
@@ -235,19 +210,19 @@ GD_NAMESPACE_BEGIN
 	// Pixel (fragment) shaders.
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	typedef IGraphicsOpenGLBaseShader<IGraphicsPixelShader> IGraphicsOpenGLPixelShader;
-	GD_DEFINE_PARTIAL_CLASS(IGraphicsOpenGLWithPixelShaders, IGraphicsOpenGL)
+	typedef IGraphicsOpenGLBaseShader<IGraphicsFragmentShader> IGraphicsOpenGLFragmentShader;
+	GD_DEFINE_PARTIAL_CLASS(IGraphicsOpenGLWithFragmentShaders, IGraphicsOpenGL)
 	{
 	public:
-		GDAPI virtual IResult GfxImm_PixelShaderCreate(IGraphicsPixelShader** const gfxPixelShaderPtr
-			, IGraphicsShaderCreateInfo const* const gfxShaderCreateInfo) override final;
-		GDAPI virtual void GfxCmd_PixelShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxImm_FragmentShaderCreate(IGraphicsFragmentShader*& gfxFragmentShaderPtr
+			, IGraphicsShaderCreateInfo const& gfxShaderCreateInfo) override final;
+		GDAPI virtual IResult GfxCmd_FragmentShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsBuffer const* const* const gfxUniformBuffers, SizeTp const gfxUniformBuffersCount) override final;
-		GDAPI virtual void GfxCmd_PixelShaderBindResources(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_FragmentShaderBindResources(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsShaderResourceView const* const* const gfxResources, SizeTp const gfxResourcesCount) override final;
-		GDAPI virtual void GfxCmd_PixelShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_FragmentShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsSampler const* const* const gfxSamplers, SizeTp const gfxSamplersCount) override final;
-	};	// class IGraphicsOpenGLWithPixelShaders
+	};	// class IGraphicsOpenGLWithFragmentShaders
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Geometry shaders.
@@ -257,13 +232,13 @@ GD_NAMESPACE_BEGIN
 	GD_DEFINE_PARTIAL_CLASS(IGraphicsOpenGLWithGeometryShaders, IGraphicsOpenGL)
 	{
 	public:
-		GDAPI virtual IResult GfxImm_GeometryShaderCreate(IGraphicsGeometryShader** const gfxGeometryShaderPtr
-			, IGraphicsShaderCreateInfo const* const gfxShaderCreateInfo) override final;
-		GDAPI virtual void GfxCmd_GeometryShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxImm_GeometryShaderCreate(IGraphicsGeometryShader*& gfxGeometryShaderPtr
+			, IGraphicsShaderCreateInfo const& gfxShaderCreateInfo) override final;
+		GDAPI virtual IResult GfxCmd_GeometryShaderBindUniformBuffers(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsBuffer const* const* const gfxUniformBuffers, SizeTp const gfxUniformBuffersCount) override final;
-		GDAPI virtual void GfxCmd_GeometryShaderBindResources(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_GeometryShaderBindResources(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsShaderResourceView const* const* const gfxResources, SizeTp const gfxResourcesCount) override final;
-		GDAPI virtual void GfxCmd_GeometryShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_GeometryShaderBindSamplers(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsSampler const* const* const gfxSamplers, SizeTp const gfxSamplersCount) override final;
 	};	// class IGraphicsOpenGLWithGeometryShaders
 
@@ -277,7 +252,7 @@ GD_NAMESPACE_BEGIN
 		GLuint m_GLVertexArrayID;
 
 	public:
-		GDAPI explicit IGraphicsOpenGLVertexArray(IGraphicsVertexArrayCreateInfo const* const gfxVertexArrayCreateInfo);
+		GDAPI explicit IGraphicsOpenGLVertexArray(IGraphicsVertexArrayCreateInfo const& gfxVertexArrayCreateInfo);
 		GDAPI virtual ~IGraphicsOpenGLVertexArray();
 
 	public:
@@ -287,9 +262,9 @@ GD_NAMESPACE_BEGIN
 	GD_DEFINE_PARTIAL_CLASS(IGraphicsOpenGLWithVertexArrays, IGraphicsOpenGL)
 	{
 	public:
-		GDAPI virtual IResult GfxImm_VertexArrayCreate(IGraphicsVertexArray** const gfxVertexArrayPtr
-			, IGraphicsVertexArrayCreateInfo const* const gfxVertexArrayCreateInfo) override final;
-		GDAPI virtual void GfxCmd_VertexArrayBind(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxImm_VertexArrayCreate(IGraphicsVertexArray*& gfxVertexArrayPtr
+			, IGraphicsVertexArrayCreateInfo const& gfxVertexArrayCreateInfo) override final;
+		GDAPI virtual IResult GfxCmd_VertexArrayBind(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsVertexArray* const gfxVertexArray) override final;
 	};	// class IGraphicsOpenGLWithVertexArrays
 
@@ -303,7 +278,7 @@ GD_NAMESPACE_BEGIN
 		GLuint m_GLProgramPipelineID;
 
 	public:
-		GDAPI explicit IGraphicsOpenGLPipelineState(IGraphicsPipelineStateCreateInfo const* const gfxPipelineStateCreateInfo);
+		GDAPI explicit IGraphicsOpenGLPipelineState(IGraphicsPipelineStateCreateInfo const& gfxPipelineStateCreateInfo);
 		GDAPI virtual ~IGraphicsOpenGLPipelineState();
 
 	public:
@@ -312,9 +287,9 @@ GD_NAMESPACE_BEGIN
 	GD_DEFINE_PARTIAL_CLASS(IGraphicsOpenGLWithPipelineStates, IGraphicsOpenGL)
 	{
 	public:
-		GDAPI virtual IResult GfxImm_PipelineCreate(IGraphicsPipelineState** const gfxPipelinePtr
-			, IGraphicsPipelineStateCreateInfo const* const gfxPipelineCreateInfo) override final;
-		GDAPI virtual void GfxCmd_PipelineBind(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxImm_PipelineCreate(IGraphicsPipelineState*& gfxPipelinePtr
+			, IGraphicsPipelineStateCreateInfo const& gfxPipelineCreateInfo) override final;
+		GDAPI virtual IResult GfxCmd_PipelineBind(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsPipelineState* const gfxPipeline) override final;
 	};	// class IGraphicsOpenGLPipelineState
 
@@ -325,12 +300,12 @@ GD_NAMESPACE_BEGIN
 	GD_DEFINE_PARTIAL_CLASS(IGraphicsOpenGLWithRenderTargets, IGraphicsOpenGL)
 	{
 	public:
-		GDAPI virtual void GfxCmd_RenderTargetClearDepth(IGraphicsCommandList* const gfxCommandList) override final;
-		GDAPI virtual void GfxCmd_RenderTargetClearColor(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_RenderTargetClearDepth(IGraphicsCommandList* const gfxCommandList) override final;
+		GDAPI virtual IResult GfxCmd_RenderTargetClearColor(IGraphicsCommandList* const gfxCommandList
 			, GeomColor const gfxClearColor) override final;
-		GDAPI virtual void GfxCmd_RenderTargetRender(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_RenderTargetRender(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsTopologyType const gfxTopology, SizeTp const gfxVerticesCount) override final;
-		GDAPI virtual void GfxCmd_RenderTargetRenderIndexed(IGraphicsCommandList* const gfxCommandList
+		GDAPI virtual IResult GfxCmd_RenderTargetRenderIndexed(IGraphicsCommandList* const gfxCommandList
 			, IGraphicsTopologyType const gfxTopology, SizeTp const gfxIndicesCount, IGraphicsFormatType gfxIndexType) override final;
 	};	// class IGraphicsOpenGLPipelineState
 

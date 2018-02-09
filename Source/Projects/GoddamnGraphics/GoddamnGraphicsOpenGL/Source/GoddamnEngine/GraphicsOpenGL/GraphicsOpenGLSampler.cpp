@@ -29,8 +29,7 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns Non-negative value if the operation succeeded.
 	 */
-	GDAPI IResult IGraphicsOpenGLWithSamplers::GfxImm_SamplerCreate(IGraphicsSampler*& gfxSamplerPtr
-		, IGraphicsSamplerCreateInfo const& gfxSamplerCreateInfo)
+	GDAPI IResult IGraphicsOpenGLWithSamplers::GfxImm_SamplerCreate(IGraphicsSampler*& gfxSamplerPtr, IGraphicsSamplerCreateInfo const& gfxSamplerCreateInfo)
 	{
 		GLuint glSamplerID = 0;
 		glThrowIfFailed(glCreateSamplers(1, &glSamplerID));
@@ -44,12 +43,9 @@ GD_NAMESPACE_BEGIN
 			case IGRAPHICS_SAMPLER_MINMAG_FILTER_LINEAR:
 				glThrowIfFailed(glSamplerParameteri(glSamplerID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 				break;
-#if GD_DEBUG
 			default:
-				GD_DEBUG_VERIFY(gfxSamplerCreateInfo.SamplerMinFilter >= IGRAPHICS_SAMPLER_MINMAG_FILTER_UNKNOWN);
 				glDeleteSamplers(1, &glSamplerID);
 				return IResult::InvalidArguments;
-#endif	// if GD_DEBUG
 		}
 		switch (gfxSamplerCreateInfo.SamplerMagFilter)
 		{
@@ -59,12 +55,9 @@ GD_NAMESPACE_BEGIN
 			case IGRAPHICS_SAMPLER_MINMAG_FILTER_LINEAR:
 				glThrowIfFailed(glSamplerParameteri(glSamplerID, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 				break;
-#if GD_DEBUG
 			default:
-				GD_DEBUG_VERIFY(gfxSamplerCreateInfo.SamplerMagFilter >= IGRAPHICS_SAMPLER_MINMAG_FILTER_UNKNOWN);
 				glDeleteSamplers(1, &glSamplerID);
 				return IResult::InvalidArguments;
-#endif	// if GD_DEBUG
 		}
 
 		// Setting up the wrap modes..
@@ -82,12 +75,9 @@ GD_NAMESPACE_BEGIN
 			case IGRAPHICS_SAMPLER_ADDRESS_MODE_MIRROR:
 				glThrowIfFailed(glSamplerParameteri(glSamplerID, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT));
 				break;
-#if GD_DEBUG
 			default:
-				GD_DEBUG_VERIFY(gfxSamplerCreateInfo.SamplerAddressModeU >= IGRAPHICS_SAMPLER_ADDRESS_MODE_UNKNOWN);
 				glDeleteSamplers(1, &glSamplerID);
 				return IResult::InvalidArguments;
-#endif	// if GD_DEBUG
 		}
 		switch (gfxSamplerCreateInfo.SamplerAddressModeV)
 		{
@@ -103,12 +93,9 @@ GD_NAMESPACE_BEGIN
 			case IGRAPHICS_SAMPLER_ADDRESS_MODE_MIRROR:
 				glThrowIfFailed(glSamplerParameteri(glSamplerID, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT));
 				break;
-#if GD_DEBUG
 			default:
-				GD_DEBUG_VERIFY(gfxSamplerCreateInfo.SamplerAddressModeV >= IGRAPHICS_SAMPLER_ADDRESS_MODE_UNKNOWN);
 				glDeleteSamplers(1, &glSamplerID);
 				return IResult::InvalidArguments;
-#endif	// if GD_DEBUG
 		}
 		switch (gfxSamplerCreateInfo.SamplerAddressModeW)
 		{
@@ -124,12 +111,9 @@ GD_NAMESPACE_BEGIN
 			case IGRAPHICS_SAMPLER_ADDRESS_MODE_MIRROR:
 				glThrowIfFailed(glSamplerParameteri(glSamplerID, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT));
 				break;
-#if GD_DEBUG
 			default:
-				GD_DEBUG_VERIFY(gfxSamplerCreateInfo.SamplerAddressModeW >= IGRAPHICS_SAMPLER_ADDRESS_MODE_UNKNOWN);
 				glDeleteSamplers(1, &glSamplerID);
 				return IResult::InvalidArguments;
-#endif	// if GD_DEBUG
 		}
 
 		// Setting up the border color..
@@ -151,12 +135,9 @@ GD_NAMESPACE_BEGIN
 				glSamplerBorderColor[0] = glSamplerBorderColor[1] = glSamplerBorderColor[2] = 1.0f;
 				glThrowIfFailed(glSamplerParameterfv(glSamplerID, GL_TEXTURE_BORDER_COLOR, glSamplerBorderColor));
 				break;
-#if GD_DEBUG
 			default:
-				GD_DEBUG_VERIFY(gfxSamplerCreateInfo.SamplerBorderColor >= IGRAPHICS_SAMPLER_BORDER_COLOR_UNKNOWN);
 				glDeleteSamplers(1, &glSamplerID);
 				return IResult::InvalidArguments;
-#endif	// if GD_DEBUG
 		}
 
 		// Setting up the comparison function..
@@ -186,12 +167,9 @@ GD_NAMESPACE_BEGIN
 			case IGRAPHICS_COMPARISON_MODE_GREATER_OR_EQUAL:
 				glThrowIfFailed(glSamplerParameteri(glSamplerID, GL_TEXTURE_COMPARE_FUNC, GL_GEQUAL));
 				break;
-#if GD_DEBUG
 			default:
-				GD_DEBUG_VERIFY(gfxSamplerCreateInfo.SamplerCompFunc >= IGRAPHICS_COMPARISON_MODE_UNKNOWN);
 				glDeleteSamplers(1, &glSamplerID);
 				return IResult::InvalidArguments;
-#endif	// if GD_DEBUG
 		}
 
 		// Setting up the MIP level-of-details bias..

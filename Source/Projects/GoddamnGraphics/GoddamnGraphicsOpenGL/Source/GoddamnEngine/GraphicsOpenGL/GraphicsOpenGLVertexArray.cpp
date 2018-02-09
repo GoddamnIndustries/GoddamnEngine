@@ -25,7 +25,7 @@ GD_NAMESPACE_BEGIN
 	 * Creates a GPU vertex array with specified parameters.
 	 * @param gfxVertexArrayCreateInfo Pointer to the vertex array creation information.
 	 */
-	GDAPI IGraphicsOpenGLVertexArray::IGraphicsOpenGLVertexArray(IGraphicsVertexArrayCreateInfo const* const gfxVertexArrayCreateInfo)
+	GDAPI IGraphicsOpenGLVertexArray::IGraphicsOpenGLVertexArray(IGraphicsVertexArrayCreateInfo const& gfxVertexArrayCreateInfo)
 		: IGraphicsVertexArray(gfxVertexArrayCreateInfo)
 		, m_GLVertexArrayID(0)
 	{
@@ -42,7 +42,7 @@ GD_NAMESPACE_BEGIN
 			// it matches our vertex layout model in better way.
 			// https://www.opengl.org/wiki/Vertex_Specification#Separate_attribute_format
 			glEnableVertexAttribArray(gfxSlotIndex);
-			glBindBuffer(GL_ARRAY_BUFFER, gfxVertexBuffer->m_GLBufferID);
+			glBindBuffer(GL_ARRAY_BUFFER, gfxVertexBuffer->BufferID);
 			glVertexAttribPointer(gfxSlotIndex, static_cast<GLint>(IGraphicsFormatGetLayout(gfxVertexArrayLayoutSlot.SlotFormat))
 				, IGraphicsOpenGLFormatGetType(gfxVertexArrayLayoutSlot.SlotFormat), GL_FALSE, 0
 				, reinterpret_cast<CHandle>(ArrayLayout.LayoutSlots->SlotAlignedOffset));
@@ -57,7 +57,7 @@ GD_NAMESPACE_BEGIN
 		{
 			// Binding the index buffer (if it actually exists)..
 			auto const gfxIndexBuffer = static_cast<IGraphicsOpenGLBuffer const*>(ArrayIndexBuffer);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfxIndexBuffer->m_GLBufferID);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfxIndexBuffer->BufferID);
 		}
 
 		// Cleaning up..
@@ -81,8 +81,8 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns Non-negative value if the operation succeeded.
 	 */
-	GDAPI IResult IGraphicsOpenGLWithVertexArrays::GfxImm_VertexArrayCreate(IGraphicsVertexArray** const gfxVertexArrayPtr
-		, IGraphicsVertexArrayCreateInfo const* const gfxVertexArrayCreateInfo)
+	GDAPI IResult IGraphicsOpenGLWithVertexArrays::GfxImm_VertexArrayCreate(IGraphicsVertexArray**& gfxVertexArrayPtr
+		, IGraphicsVertexArrayCreateInfo const& gfxVertexArrayCreateInfo)
 	{
 #if GD_DEBUG
 		GD_ARG_VERIFY(gfxVertexArrayPtr != nullptr);
