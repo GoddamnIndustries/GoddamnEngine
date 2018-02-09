@@ -7,11 +7,11 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Concurrency/ThreadWindows.cpp
- * File contains Windows thread implementation.
+ * @file
+ * Thread implementation.
  */
 #include <GoddamnEngine/Core/Concurrency/Thread.h>
-#if GD_PLATFORM_WINDOWS
+#if GD_PLATFORM_API_MICROSOFT
 
 #include <process.h>
 
@@ -23,7 +23,7 @@ GD_NAMESPACE_BEGIN
 	 * @param threadObject Thread object to execute.
 	 * @returns Thread execution status.
 	 */
-	GDINT unsigned __stdcall ThreadWindows::ThreadWindowsProc(ThreadWindows* const threadObject)
+	GDINT unsigned __stdcall ThreadMicrosoft::ThreadProc(ThreadMicrosoft* const threadObject)
 	{
 		GD_DEBUG_VERIFY(threadObject != nullptr, "Null pointer thread object was specified.");
 
@@ -75,7 +75,7 @@ GD_NAMESPACE_BEGIN
 	 * @param threadName Name of the thread.
 	 * @param threadPriority Priority of the thread.
 	 */
-	GDAPI ThreadWindows::ThreadWindows(CStr const threadName, ThreadPriority const threadPriority /*= ThreadPriority::Normal*/)
+	GDAPI ThreadMicrosoft::ThreadMicrosoft(CStr const threadName, ThreadPriority const threadPriority /*= ThreadPriority::Normal*/)
 		: ThreadGeneric(threadName, threadPriority)
 		, m_ThreadID(0), m_ThreadHandle(nullptr), m_ThreadStartEvent(nullptr), m_ThreadName(threadName)
 	{
@@ -86,7 +86,7 @@ GD_NAMESPACE_BEGIN
 		// Creating the thread itself and setting up the parameters.
 		m_ThreadHandle = reinterpret_cast<HANDLE>(
 			_beginthreadex(nullptr, 5 * 1024 * 1024
-				, reinterpret_cast<_beginthreadex_proc_type>(&ThreadWindowsProc)
+				, reinterpret_cast<_beginthreadex_proc_type>(&ThreadProc)
 				, this, STACK_SIZE_PARAM_IS_A_RESERVATION, nullptr)
 			);
 		GD_VERIFY(m_ThreadHandle != nullptr, "'_beginthreadex' function has failed.");
@@ -112,7 +112,7 @@ GD_NAMESPACE_BEGIN
 		GD_VERIFY(SetEvent(m_ThreadStartEvent) == TRUE, "'SetEvent' function has failed.");
 	}
 
-	GDAPI ThreadWindows::~ThreadWindows()
+	GDAPI ThreadMicrosoft::~ThreadMicrosoft()
 	{
 		Wait();
 		CloseHandle(m_ThreadHandle);
@@ -122,11 +122,11 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * Waits for thread to end execution.
 	 */
-	GDAPI void ThreadWindows::Wait() const
+	GDAPI void ThreadMicrosoft::Wait() const
 	{
 		GD_VERIFY(WaitForSingleObject(m_ThreadHandle, INFINITE) == WAIT_OBJECT_0, "'WaitForSingleObject' function has failed.");
 	}
 
 GD_NAMESPACE_END
 
-#endif	// if GD_PLATFORM_WINDOWS
+#endif	// if GD_PLATFORM_API_MICROSOFT

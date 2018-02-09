@@ -7,8 +7,8 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Concurrency/ThreadWindows.h
- * File contains Windows thread implementation.
+ * @file
+ * Thread implementation.
  */
 #pragma once
 #if !defined(GD_INSIDE_THREAD_H)
@@ -21,9 +21,9 @@
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Windows thread implementation.
+	//! @copydoc ThreadGeneric
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class ThreadWindows : public ThreadGeneric
+	class ThreadMicrosoft : public ThreadGeneric
 	{
 	private:
 		UInt32 m_ThreadID;
@@ -31,13 +31,13 @@ GD_NAMESPACE_BEGIN
 		HANDLE m_ThreadStartEvent;
 		String m_ThreadName;
 
-		GDINT static unsigned __stdcall ThreadWindowsProc(ThreadWindows* const threadObject);
+		GDINT static unsigned __stdcall ThreadProc(ThreadMicrosoft* const threadObject);
 
 	public:
 
-		GDAPI explicit ThreadWindows(CStr const threadName, ThreadPriority const threadPriority = ThreadPriority::Normal);
+		GDAPI explicit ThreadMicrosoft(CStr const threadName, ThreadPriority const threadPriority = ThreadPriority::Normal);
 
-		GDAPI virtual ~ThreadWindows();
+		GDAPI virtual ~ThreadMicrosoft();
 
 		GDAPI void Wait() const;
 
@@ -49,11 +49,11 @@ GD_NAMESPACE_BEGIN
 			return static_cast<ThreadID>(::GetCurrentThreadId());
 		}
 
-	};	// class ThreadWindows
+	};	// class ThreadMicrosoft
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Cross-platform thread implementation.
+	//! @copydoc ThreadMicrosoft
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	typedef ThreadWindows Thread;
+	using Thread = ThreadMicrosoft;
 
 GD_NAMESPACE_END

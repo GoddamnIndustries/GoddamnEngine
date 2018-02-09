@@ -7,8 +7,8 @@
 // ==========================================================================================
 
 /*! 
- * @file GoddamnEngine/Core/Concurrency/Thread.h
- * File contains cross-platform thread implementation.
+ * @file
+ * Thread implementation.
  */
 #pragma once
 #define GD_INSIDE_THREAD_H
@@ -95,5 +95,5 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#include GD_PLATFORM_INCLUDE(GoddamnEngine/Core/Concurrency, Thread)
+#include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/Concurrency, Thread)
 #undef GD_INSIDE_ATOMICS_H
