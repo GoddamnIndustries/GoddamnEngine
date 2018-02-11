@@ -10,7 +10,7 @@
  * @file
  * Critical section implementation.
  */
-#include <GoddamnEngine/Core/Platform/CriticalSection.h>
+#include <GoddamnEngine/Core/Platform/PlatformCriticalSection.h>
 #if GD_PLATFORM_API_MICROSOFT
 
 #include <Windows.h>

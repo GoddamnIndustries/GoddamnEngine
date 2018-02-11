@@ -10,7 +10,7 @@
  * @file
  * File system implementation.
  */
-#include <GoddamnEngine/Core/Platform/FileSystem.h>
+#include <GoddamnEngine/Core/Platform/PlatformFileSystem.h>
 #if GD_PLATFORM_API_MICROSOFT
 
 #include "GoddamnEngine/Core/IO/Paths.h"
@@ -196,7 +196,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool FileExists(WideString const& filename) const override final
 		{
-            auto const filenameSystem = Paths::Platformize(filename);
+			auto const filenameSystem = Paths::Platformize(filename);
 			auto const fileAttributes = GetFileAttributesW(filenameSystem.CStr());
 			return fileAttributes != INVALID_FILE_ATTRIBUTES && (fileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0;
 		}
@@ -211,8 +211,8 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool FileSize(WideString const& filename, UInt64& fileSize) const override final
 		{
-            WIN32_FILE_ATTRIBUTE_DATA fileAttributeData = {};
-            auto const filenameSystem = Paths::Platformize(filename);
+			WIN32_FILE_ATTRIBUTE_DATA fileAttributeData = {};
+			auto const filenameSystem = Paths::Platformize(filename);
 			if (GetFileAttributesExW(filenameSystem.CStr(), GetFileExInfoStandard, &fileAttributeData) == TRUE)
 			{
 				if ((fileAttributeData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
@@ -278,10 +278,10 @@ GD_NAMESPACE_BEGIN
 			{
 				auto const srcFilenameSystem = Paths::Platformize(srcFilename);
 				auto const dstFilenameSystem = Paths::Platformize(dstFilename);
-				if (MoveFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr()) == FALSE)
+				if (MoveFileExW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), 0) == FALSE)
 				{
 					Sleep(0);
-					return MoveFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr()) == TRUE;
+					return MoveFileExW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), 0) == TRUE;
 				}
 				return true;
 			}
@@ -299,16 +299,16 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final
 		{
-            if (doOverwrite || !FileExists(dstFilename))
-            {
-                auto const srcFilenameSystem = Paths::Platformize(srcFilename);
-                auto const dstFilenameSystem = Paths::Platformize(dstFilename);
-                if (CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == FALSE)
-                {
-                    Sleep(0);
-                    return CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == TRUE;
-                }
-            }
+			if (doOverwrite || !FileExists(dstFilename))
+			{
+				auto const srcFilenameSystem = Paths::Platformize(srcFilename);
+				auto const dstFilenameSystem = Paths::Platformize(dstFilename);
+				if (CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == FALSE)
+				{
+					Sleep(0);
+					return CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == TRUE;
+				}
+			}
 			return true;
 		}
 		
@@ -389,6 +389,35 @@ GD_NAMESPACE_BEGIN
 			{
 				Sleep(0);
 				return RemoveDirectoryW(directoryNameSystem.CStr()) == TRUE;
+			}
+			return false;
+		}
+
+		/*!
+		 * Iterates through all entities of a directory.
+		 *
+		 * @param directoryName Path to the directory.
+		 * @param directoryVisitor Callback for the directory traversal.
+		 *
+		 * @returns True if directory exists or was successfully iterated.
+		 */
+		GDINT virtual bool DirectoryIterate(WideString const& directoryName, IFileSystemDirectoryVistor const directoryVisitor) const override final
+		{
+			WIN32_FIND_DATAW directoryEntry = {};
+			auto const directoryNameSystem = Paths::Platformize(Paths::Combine(directoryName, L"*"));
+			auto const directoryHandle = FindFirstFileW(directoryNameSystem.CStr(), &directoryEntry);
+			if (directoryHandle != INVALID_HANDLE_VALUE)
+			{
+				do
+				{
+					if (CString::Strcmp(directoryEntry.cFileName, L".") != 0 && CString::Strcmp(directoryEntry.cFileName, L"..") != 0)
+					{
+						auto const directoryEntryName = Paths::Combine(directoryName, directoryEntry.cFileName);
+						directoryVisitor(directoryEntryName.CStr(), (directoryEntry.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0);
+					}
+				} while (FindNextFileW(directoryHandle, &directoryEntry));
+				FindClose(directoryHandle);
+				return true;
 			}
 			return false;
 		}

@@ -23,20 +23,6 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class GD_PLATFORM_KERNEL IPlatformAtomics : public Singleton<IPlatformAtomics>
 	{
-	protected:
-
-		/*!
-		 * Checks if a pointer is aligned and can be used with atomic functions.
-		 *
-		 * @param pointer The pointer to check.
-		 * @param alignment The alignment value.
-		 * @returns True if pointer is aligned.
-		 */
-		GDINL static bool IsPointerAligned(VHandle const pointer, UInt32 const alignment = sizeof(Handle))
-		{
-			return (reinterpret_cast<IntPtr>(pointer) & alignment - 1) == 0;
-		}
-
 	public:
 
 		// ------------------------------------------------------------------------------------------
@@ -44,14 +30,14 @@ GD_NAMESPACE_BEGIN
 		// ------------------------------------------------------------------------------------------
 
 		/*!
-		* Atomically exchanges specified value to other one if original value is equal to comparand.
-		*
-		* @param value The value on which exchange is performed.
-		* @param exchange The value which is exchanged.
-		* @param comparand The comparand with which original value is compared.
-		*
-		* @returns Original value.
-		*/
+		 * Atomically exchanges specified value to other one if original value is equal to comparand.
+		 *
+		 * @param value The value on which exchange is performed.
+		 * @param exchange The value which is exchanged.
+		 * @param comparand The comparand with which original value is compared.
+		 *
+		 * @returns Original value.
+		 */
 		//! @{
 		GDINT virtual Int32 AtomicCompareExchange(Int32 volatile* const value, Int32 const exchange, Int32 const comparand) const GD_PURE_VIRTUAL;
 		GDINT virtual Int64 AtomicCompareExchange(Int64 volatile* const value, Int64 const exchange, Int64 const comparand) const GD_PURE_VIRTUAL;
@@ -181,6 +167,19 @@ GD_NAMESPACE_BEGIN
 		}
 		//! @}
 
+	protected:
+
+		/*!
+		 * Checks if a pointer is aligned and can be used with atomic functions.
+		 *
+		 * @param pointer The pointer to check.
+		 * @param alignment The alignment value.
+		 * @returns True if pointer is aligned.
+		 */
+		GDINL static bool IsPointerAligned(VHandle const pointer, UInt32 const alignment = sizeof(Handle))
+		{
+			return (reinterpret_cast<IntPtr>(pointer) & alignment - 1) == 0;
+		}
 	};	// class IPlatformAtomics
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
@@ -320,6 +319,7 @@ GD_NAMESPACE_BEGIN
 	using AtomicUInt32 = AtomicInteger<UInt32>;
 	using AtomicInt64  = AtomicInteger<Int64>;
 	using AtomicUInt64 = AtomicInteger<UInt64>;
+	using AtomicBool   = AtomicUInt32;
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! Pointer atomic value.

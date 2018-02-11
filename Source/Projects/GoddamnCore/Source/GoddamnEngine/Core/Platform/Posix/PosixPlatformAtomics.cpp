@@ -10,7 +10,7 @@
  * @file
  * Atomics implementation.
  */
-#include <GoddamnEngine/Core/Platform/Atomics.h>
+#include <GoddamnEngine/Core/Platform/PlatformAtomics.h>
 #if GD_PLATFORM_API_POSIX
 
 GD_NAMESPACE_BEGIN

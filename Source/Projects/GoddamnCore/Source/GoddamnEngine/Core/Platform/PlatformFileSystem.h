@@ -19,16 +19,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! File directory visitor.
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class IFileSystemDirectoryVistor : public IVirtuallyDestructible
-	{
-	public:
-
-		GDINT virtual void Visit(WideString const& path, bool const isDirectory) GD_PURE_VIRTUAL;
-
-	};	// class IFileSystemDirectoryVistor
+	using IFileSystemDirectoryVistor = void(*)(WideString const& path, bool const isDirectory);
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! File system.
@@ -157,7 +148,7 @@ GD_NAMESPACE_BEGIN
          *
          * @returns True if directory exists or was successfully iterated.
          */
-        GDINT virtual bool DirectoryIterate(WideString const& directoryName, IFileSystemDirectoryVistor& directoryVisitor) const GD_PURE_VIRTUAL;
+        GDINT virtual bool DirectoryIterate(WideString const& directoryName, IFileSystemDirectoryVistor const directoryVisitor) const GD_PURE_VIRTUAL;
         
 	};	// class IFileSystem
 

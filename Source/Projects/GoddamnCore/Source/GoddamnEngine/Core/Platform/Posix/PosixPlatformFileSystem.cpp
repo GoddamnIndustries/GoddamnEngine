@@ -10,7 +10,7 @@
  * @file
  * File system implementation.
  */
-#include <GoddamnEngine/Core/Platform/FileSystem.h>
+#include <GoddamnEngine/Core/Platform/PlatformFileSystem.h>
 #if GD_PLATFORM_API_POSIX
 
 #include <sys/stat.h>
@@ -379,7 +379,7 @@ GD_NAMESPACE_BEGIN
          *
          * @returns True if directory exists or was successfully iterated.
          */
-        GDINT virtual bool DirectoryIterate(WideString const& directoryName, IFileSystemDirectoryVistor& directoryVisitor) const override final
+        GDINT virtual bool DirectoryIterate(WideString const& directoryName, IFileSystemDirectoryVistor const directoryVisitor) const override final
         {
             auto const directoryNameSystem = StringConv::EncodeUTF8(Paths::Platformize(directoryName));
             auto const directoryHandle = opendir(directoryNameSystem.CStr());
@@ -400,7 +400,7 @@ GD_NAMESPACE_BEGIN
                         )
                     {
                         auto const directoryEntryName = Paths::Combine(directoryName, StringConv::DecodeUTF8(directoryEntryHandle->d_name, directoryEntryHandle->d_namlen));
-                        directoryVisitor.Visit(directoryEntryName, directoryEntryHandle->d_type == DT_DIR);
+                        directoryVisitor(directoryEntryName, directoryEntryHandle->d_type == DT_DIR);
                     }
                 }
                 closedir(directoryHandle);

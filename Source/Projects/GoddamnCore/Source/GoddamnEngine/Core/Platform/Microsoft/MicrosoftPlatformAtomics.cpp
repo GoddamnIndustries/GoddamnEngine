@@ -10,7 +10,7 @@
  * @file
  * Atomics implementation.
  */
-#include <GoddamnEngine/Core/Platform/Atomics.h>
+#include <GoddamnEngine/Core/Platform/PlatformAtomics.h>
 #if GD_PLATFORM_API_MICROSOFT
 
 #include <Windows.h>
@@ -29,14 +29,14 @@ GD_NAMESPACE_BEGIN
 		// ------------------------------------------------------------------------------------------
 
 		/*!
-		* Atomically exchanges specified value to other one if original value is equal to comparand.
-		*
-		* @param value The value on which exchange is performed.
-		* @param exchange The value which is exchanged.
-		* @param comparand The comparand with which original value is compared.
-		*
-		* @returns Original value.
-		*/
+		 * Atomically exchanges specified value to other one if original value is equal to comparand.
+		 *
+		 * @param value The value on which exchange is performed.
+		 * @param exchange The value which is exchanged.
+		 * @param comparand The comparand with which original value is compared.
+		 *
+		 * @returns Original value.
+		 */
 		//! @{
 		GDINT virtual Int32 AtomicCompareExchange(Int32 volatile* const value, Int32 const exchange, Int32 const comparand) const override final
 		{

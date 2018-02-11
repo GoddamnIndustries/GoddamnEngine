@@ -10,7 +10,7 @@
  * @file
  * File system implementation.
  */
-#include <GoddamnEngine/Core/Platform/FileSystem.h>
+#include <GoddamnEngine/Core/Platform/PlatformFileSystem.h>
 //#include "GoddamnEngine/Core/IO/Directory.h"
 //#include "GoddamnEngine/Core/IO/Paths.h"
 
@@ -29,13 +29,13 @@ GD_NAMESPACE_BEGIN
      *
      * @returns True if file was successfully moved.
      */
-    GDAPI bool IFileSystem::FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite /*= false*/)
+    GDINT bool IFileSystem::FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite /*= false*/)
     {
         if (FileExists(srcFilename) && (doOverwrite || FileExists(dstFilename)))
         {
             auto srcFileStream = FileOpenRead(srcFilename);
             auto dstFileStream = FileOpenWrite(dstFilename);
-            if (srcFileStream->IsValid() && dstFileStream->IsValid())
+            if (srcFileStream != nullptr && dstFileStream != nullptr)
             {
                 auto operationSucceeded = true;
                 auto const sourceFileSize = srcFileStream->GetLength();

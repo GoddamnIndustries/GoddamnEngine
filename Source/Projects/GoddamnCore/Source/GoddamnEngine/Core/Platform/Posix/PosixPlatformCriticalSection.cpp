@@ -10,8 +10,8 @@
  * @file
  * Critical section implementation.
  */
-#include <GoddamnEngine/Core/Platform/CriticalSection.h>
-#if GD_PLATFORM_API_MICROSOFT
+#include <GoddamnEngine/Core/Platform/PlatformCriticalSection.h>
+#if GD_PLATFORM_API_POSIX
 
 #include <pthread.h>
 
@@ -63,5 +63,5 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#endif    // if GD_PLATFORM_API_MICROSOFT
+#endif    // if GD_PLATFORM_API_POSIX
 
