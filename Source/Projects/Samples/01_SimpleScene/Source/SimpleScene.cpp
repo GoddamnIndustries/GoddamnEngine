@@ -13,7 +13,7 @@ class TestAppDelegate final : public IPlatformApplicationDelegate
 
 	GDINT virtual void OnKeyboardButtonUp(KeyboardButton const keyboardButton) override final
 	{
-		printf_s("%c\n", keyboardButton);
+		printf("%c\n", keyboardButton);
 	}
 };	// class TestAppDelegate
 

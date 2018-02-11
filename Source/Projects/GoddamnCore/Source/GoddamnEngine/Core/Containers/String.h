@@ -147,11 +147,6 @@ GD_NAMESPACE_BEGIN
 		 * @param text String initial data.
 		 */
 		//! @{   
-		template<SizeTp const TLength>	
-		GDINL implicit BaseString(TChar const(&text)[TLength])  // NOLINT
-			: BaseString(text, TLength - 1)
-		{
-		}
 		GDINL implicit BaseString(TChar const* const text)  // NOLINT
 			: BaseString(text, CString::Strlen(text))
 		{

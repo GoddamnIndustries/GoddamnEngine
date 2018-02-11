@@ -1008,7 +1008,7 @@ GD_NAMESPACE_BEGIN
 GD_NAMESPACE_END
 
 #include <GoddamnEngine/Core/PlatformSpecificInclude.h>
-#if GD_PLATFORM_API_LIBSDL1 || GD_PLATFORM_API_LIBSDL2
+#if 0
 #	include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Engine/Interface/Graphics, Graphics)
 #else // if GD_PLATFORM_API_LIBSDL1 || GD_PLATFORM_API_LIBSDL2
 #	include GD_PLATFORM_INCLUDE(GoddamnEngine/Engine/Interface/Graphics, Graphics)
