@@ -11,7 +11,7 @@
  * File contains Windows file system watcher interface.
  */
 #include <GoddamnEngine/Include.h>
-#if GD_PLATFORM_HAS_MULTITHREADING
+#if GD_PLATFORM_HAS_MULTITHREADING && 0
 
 #include <GoddamnEngine/Core/IO/FileSystemWatcher.h>
 #if GD_PLATFORM_WINDOWS
