@@ -180,9 +180,9 @@ GD_NAMESPACE_BEGIN
 		F12,
 	};	// enum class KeyboardButton
 
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Window delegate.
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	/*!
+	 * Window delegate.
+	 */
 	class IWindowDelegate : public IVirtuallyDestructible
 	{
 	public:

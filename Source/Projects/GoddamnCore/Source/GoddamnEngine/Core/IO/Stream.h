@@ -30,7 +30,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Returns true if this stream is valid and ready for I/O operations.
 		 */
-		GDAPI virtual bool IsValid() const GD_PURE_VIRTUAL;
+		GDINT virtual bool IsValid() const GD_PURE_VIRTUAL;
 
 	};	// class BaseStream
 
@@ -44,17 +44,30 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Returns current position in stream or -1 on error.
 		 */
-		GDAPI virtual SizeTp GetPosition() const GD_PURE_VIRTUAL;
+		GDINT virtual SizeTp GetPosition() const GD_PURE_VIRTUAL;
 
 		/*!
 		 * Returns size of data that stream handles or -1 on error.
 		 */
-		GDAPI virtual SizeTp GetLength() const GD_PURE_VIRTUAL;
+		GDINT virtual SizeTp GetLength() const
+		{
+			GD_VERIFY(IsValid());
+			auto const fileSavedPos = GetPosition();
+			if (fileSavedPos == SizeTpMax)
+			{
+				return SizeTpMax;
+			}
+			auto const mutableThis = const_cast<InputStream*>(this);
+			mutableThis->Seek(0, SeekOrigin::End);
+			auto const fileEndPos = GetPosition();
+			mutableThis->Seek(fileSavedPos, SeekOrigin::Beginning);
+			return fileEndPos;
+		}
 
 		/*!
 		 * Closes this stream and releases all resources associated with this stream.
 		 */
-		GDAPI virtual void Close() GD_PURE_VIRTUAL;
+		GDINT virtual void Close() GD_PURE_VIRTUAL;
 
 		/*!
 		 * Reposition this stream to new specified position.
@@ -64,13 +77,13 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @returns New position in file, -1 on error.
 		 */
-		GDAPI virtual SizeTp Seek(PtrDiffTp const offset, SeekOrigin const origin = SeekOrigin::Current) GD_PURE_VIRTUAL;
+		GDINT virtual SizeTp Seek(PtrDiffTp const offset, SeekOrigin const origin = SeekOrigin::Current) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Reads next byte from input stream.
 		 * @returns Read byte from stream, or -1 on the error.
 		 */
-		GDAPI virtual Int16 Read() GD_PURE_VIRTUAL;
+		GDINT virtual Int16 Read() GD_PURE_VIRTUAL;
 
 		/*!
 		 * Reads several elements from input stream.
@@ -81,7 +94,7 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @returns Total amount of elements read.
 		 */
-		GDAPI virtual SizeTp Read(Handle const array, SizeTp const size, SizeTp const count)
+		GDINT virtual SizeTp Read(Handle const array, SizeTp const size, SizeTp const count)
 		{
 			SizeTp cnt = 0;
 			for (; cnt < size * count; ++cnt)
@@ -127,12 +140,12 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Closes this stream and releases all resources associated with this stream.
 		 */
-		GDAPI virtual void Close() GD_PURE_VIRTUAL;
+		GDINT virtual void Close() GD_PURE_VIRTUAL;
 
 		/*!
 		 * Writes all unsaved to the resource.
 		 */
-		GDAPI virtual void Flush() GD_PURE_VIRTUAL;
+		GDINT virtual void Flush() GD_PURE_VIRTUAL;
 
 		/*!
 		 * Writes a byte into output.
@@ -140,7 +153,7 @@ GD_NAMESPACE_BEGIN
 		 * @param byte Value that would be written to output.
 		 * @returns True if operation succeeded.
 		 */
-		GDAPI virtual bool Write(Byte const byte) GD_PURE_VIRTUAL;
+		GDINT virtual bool Write(Byte const byte) GD_PURE_VIRTUAL;
 
 		/*!
 		 * Writes several elements to output.
@@ -151,7 +164,7 @@ GD_NAMESPACE_BEGIN
 		 *
 		 * @returns Total amount of elements written.
 		 */
-		GDAPI virtual SizeTp Write(CHandle const array, SizeTp const size, SizeTp const count)
+		GDINT virtual SizeTp Write(CHandle const array, SizeTp const size, SizeTp const count)
 		{
 			SizeTp cnt = 0;
 			for (; cnt < size * count; ++cnt)

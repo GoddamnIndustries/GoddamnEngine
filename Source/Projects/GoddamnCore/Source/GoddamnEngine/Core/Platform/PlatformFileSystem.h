@@ -18,15 +18,60 @@
 #include <GoddamnEngine/Core/Templates/Singleton.h>
 
 GD_NAMESPACE_BEGIN
+	
+	/*!
+	 * Directory iteration delegate.
+	 */
+	class IFileSystemDirectoryIterateDelegate : public ReferenceTarget
+	{
+	public:
 
-	using IFileSystemDirectoryVistor = void(*)(WideString const& path, bool const isDirectory);
+		/*!
+		 * Directory iteration callback.
+		 * 
+		 * @param path Path to the directory entry.
+		 * @param isDirectory True if the entry itself is a subdirectory.
+		 */
+		GDINT virtual void OnVisitDirectoryEntry(WideString const& path, bool const isDirectory)
+		{
+			GD_NOT_USED_L(path, isDirectory);
+		}
+	};	// class IFileSystemDirectoryIterateDelegate
+
+	/*!
+	 * File system watcher delegate.
+	 */
+	class IFileSystemWatcherDelegate : public ReferenceTarget
+	{
+	public:
+
+		GDINT virtual void OnFileOrDirectoryAdded(WideString const& path)
+		{
+		}
+
+		GDINT virtual void OnFileOrDirectoryRemoved(WideString const& path)
+		{
+		}
+
+		GDINT virtual void OnFileOrDirectoryModified(WideString const& path)
+		{
+		}
+
+		GDINT virtual void OnFileOrDirectoryRenamed(WideString const& oldPath, WideString const& newPath)
+		{
+		}
+	};	// class IFileSystemWatcherDelegate
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! File system.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class GD_PLATFORM_KERNEL IFileSystem : public IVirtuallyDestructible
+	class IFileSystem : public IVirtuallyDestructible
 	{
 	public:
+
+		// ------------------------------------------------------------------------------------------
+		// Path utilities.
+		// ------------------------------------------------------------------------------------------
 
 		// ------------------------------------------------------------------------------------------
 		// File utilities.
@@ -144,12 +189,21 @@ GD_NAMESPACE_BEGIN
          * Iterates through all entities of a directory.
          *
          * @param directoryName Path to the directory.
-         * @param directoryVisitor Callback for the directory traversal.
+         * @param directoryIterateDelegate Delegate for the directory traversal.
          *
          * @returns True if directory exists or was successfully iterated.
          */
-        GDINT virtual bool DirectoryIterate(WideString const& directoryName, IFileSystemDirectoryVistor const directoryVisitor) const GD_PURE_VIRTUAL;
-        
+        GDINT virtual bool DirectoryIterate(WideString const& directoryName, IFileSystemDirectoryIterateDelegate& directoryIterateDelegate) const GD_PURE_VIRTUAL;
+
+		/*!
+         * Recursively iterates through all entities of a directory.
+         *
+         * @param directoryName Path to the directory.
+         * @param directoryIterateDelegate Delegate for the directory traversal.
+         *
+         * @returns True if directory exists or was successfully iterated.
+         */
+        GDINT virtual bool DirectoryIterateRecursive(WideString const& directoryName, IFileSystemDirectoryIterateDelegate& directoryIterateDelegate) const;
 	};	// class IFileSystem
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
@@ -158,5 +212,33 @@ GD_NAMESPACE_BEGIN
 	class GD_PLATFORM_KERNEL IPlatformDiskFileSystem : public IFileSystem, public Singleton<IPlatformDiskFileSystem>
 	{
 	};	// class IPlatformDiskFileSystem
+
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	//! Disk file system watcher.
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	class GD_PLATFORM_KERNEL IPlatformDiskFileSystemWatcher : public Singleton<IPlatformDiskFileSystemWatcher>
+	{
+	public:
+
+		/*!
+		 * Adds a watch on the specified directory.
+		 *
+		 * @param directoryName Path to the directory.
+		 * @param directoryWatcherDelegate Wacth event delegate.
+		 * 
+		 * @returns True if directory exists or new watch was succesfully added.
+		 */
+		GDINT virtual bool AddWatch(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate) GD_PURE_VIRTUAL;
+
+		/*!
+		 * Adds a watch on the specified directory and all it's subdirectories.
+		 *
+		 * @param directoryName Path to the directory.
+		 * @param directoryWatcherDelegate Wacth event delegate.
+		 * 
+		 * @returns True if directory exists or new watch was succesfully added.
+		 */
+		GDINT virtual bool AddWatchRecursive(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate) GD_PURE_VIRTUAL;
+	};	// class IPlatformDiskFileSystemWatcher
 
 GD_NAMESPACE_END

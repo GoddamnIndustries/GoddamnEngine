@@ -45,9 +45,7 @@ GD_NAMESPACE_BEGIN
                 auto const buffer = GD_MALLOC_ARRAY_T(Byte, Min(bufferBlockSize, sourceFileSize));
                 for (SizeTp cnt = 0; cnt < sourceFileSize / bufferBlockSize && operationSucceeded; ++cnt)
                 {
-                    operationSucceeded = srcFileStream->Read(buffer, bufferBlockSize, 1) == 1;
-                    if (operationSucceeded)
-                        operationSucceeded = dstFileStream->Write(buffer, bufferBlockSize, 1) == 1;
+                    operationSucceeded = srcFileStream->Read(buffer, bufferBlockSize, 1) == 1 && dstFileStream->Write(buffer, bufferBlockSize, 1) == 1;
                 }
                 if (operationSucceeded)
                 {
@@ -55,9 +53,7 @@ GD_NAMESPACE_BEGIN
                     auto const leftoverSize = sourceFileSize % bufferBlockSize;
                     if (leftoverSize != 0)
                     {
-                        operationSucceeded = srcFileStream->Read(buffer, leftoverSize, 1) == 1;
-                        if (operationSucceeded)
-                            operationSucceeded = dstFileStream->Write(buffer, leftoverSize, 1) == 1;
+                        operationSucceeded = srcFileStream->Read(buffer, leftoverSize, 1) == 1 && dstFileStream->Write(buffer, leftoverSize, 1) == 1;
                     }
                 }
                 GD_FREE(buffer);
@@ -82,6 +78,19 @@ GD_NAMESPACE_BEGIN
     // ------------------------------------------------------------------------------------------
 
 	/*!
+     * Recursively iterates through all entities of a directory.
+     *
+     * @param directoryName Path to the directory.
+     * @param directoryIterateDelegate Delegate for the directory traversal.
+     *
+     * @returns True if directory exists or was successfully iterated.
+     */
+    GDINT bool IFileSystem::DirectoryIterateRecursive(WideString const& directoryName, IFileSystemDirectoryIterateDelegate& directoryIterateDelegate) const
+	{
+		return false;
+	}
+
+	/*!
 	 * Removes the existing directory and everything inside it.
 	 *
 	 * @param directoryName Path to the directory.
@@ -89,6 +98,27 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool IFileSystem::DirectoryRemoveRecursive(WideString const& directoryName)
 	{
+		class DirectoryRemoveRecursiveDelegate final : public IFileSystemDirectoryIterateDelegate
+		{
+		public:
+			IFileSystem* FileSystem;
+		private:
+			GDINT virtual void OnVisitDirectoryEntry(WideString const& path, bool const isDirectory) override final
+			{
+				if (isDirectory)
+				{
+					FileSystem->DirectoryRemoveRecursive(path);
+				}
+				else
+				{
+					FileSystem->FileRemove(path);
+				}
+			}
+		};	// class DirectoryRemoveRecursiveDelegate
+
+		//DirectoryRemoveRecursiveDelegate directoryRemoveRecursiveDelegate{this};
+		//DirectoryIterateRecursive(directoryName, directoryRemoveRecursiveDelegate);
+
 		/*Directory directory(directoryName.CStr());
 		if (directory.IsValid())
 		{

@@ -23,11 +23,11 @@
 // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 //! Cocoa window on MacOS platform.
 // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-@interface GD_PLATFORM_KERNEL GoddamnMacOSCocoaWindow : NSWindow<NSWindowDelegate>
+@interface GoddamnMacOSCocoaWindow : NSWindow<NSWindowDelegate>
 {
     GD::IWindowDelegate* m_WindowDelegate;
 }
-@end
+@end	// @interface GoddamnMacOSCocoaWindow 
 
 @implementation GoddamnMacOSCocoaWindow
 
@@ -65,7 +65,7 @@
     printf("kek");
 }
 
-@end
+@end	// @implementation GoddamnMacOSCocoaWindow
 
 GD_NAMESPACE_BEGIN
 
@@ -144,4 +144,4 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-#endif    // if GD_PLATFORM_MacOS
+#endif    // if GD_PLATFORM_OS_X

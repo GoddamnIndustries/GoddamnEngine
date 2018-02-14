@@ -57,7 +57,7 @@
 #		define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/Header ## iOS.h>
 #	endif	// if GD_PLATFORM_IOS
 #	if GD_PLATFORM_GNU_LINUX
-#		define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/Header ## GNULinux.h>
+#		define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/Header ## Linux.h>
 #	endif	// if GD_PLATFORM_GNU_LINUX
 #	if GD_PLATFORM_ANDROID
 #		define GD_PLATFORM_INCLUDE(Directory, Header)	<Directory/Header ## Android.h>
