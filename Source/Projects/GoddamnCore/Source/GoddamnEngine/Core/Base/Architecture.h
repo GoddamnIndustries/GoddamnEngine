@@ -37,15 +37,15 @@
 #	endif	// if 0
 #	include <winapifamily.h>
 #	define GD_PLATFORM_API_MICROSOFT									GD_TRUE
-#	if (WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP))					//   Windows Desktop application.
+#	if WINAPI_PARTITION_DESKTOP											//   Windows Desktop application.
 #		define GD_PLATFORM_WINDOWS										GD_TRUE
 #		define GD_PLATFORM_DESKTOP										GD_TRUE
-#	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PHONE_APP))				//   Windows Phone 8 application.
+#	elif WINAPI_PARTITION_PHONE_APP										//   Windows Phone 8 application.
 #		define GD_PLATFORM_WINDOWS_PHONE								GD_TRUE
 #		define GD_PLATFORM_MOBILE										GD_TRUE
 #	elif (WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_PC_APP))				//   Windows Store application (Windows Desktop or Windows RT).
 #		if (defined(__WRL_WINRT_STRICT__))	|| 1						//   Windows RT application.
-#			define GD_PLATFORM_WINDOWS_UAP								GD_TRUE
+#			define GD_PLATFORM_WINDOWS_UWP								GD_TRUE
 #			define GD_PLATFORM_DESKTOP									GD_TRUE
 #		else	// if (defined(__WRL_WINRT_STRICT__))					//   Windows Desktop application.
 #			define GD_PLATFORM_WINDOWS									GD_TRUE
@@ -137,9 +137,9 @@
 #if (!defined(GD_PLATFORM_WINDOWS_PHONE))
 #	define GD_PLATFORM_WINDOWS_PHONE									GD_FALSE
 #endif	// if (!defined(GD_PLATFORM_WINDOWS_PHONE))
-#if (!defined(GD_PLATFORM_WINDOWS_UAP))
-#	define GD_PLATFORM_WINDOWS_UAP										GD_FALSE
-#endif	// if (!defined(GD_PLATFORM_WINDOWS_UAP))
+#if (!defined(GD_PLATFORM_WINDOWS_UWP))
+#	define GD_PLATFORM_WINDOWS_UWP										GD_FALSE
+#endif	// if (!defined(GD_PLATFORM_WINDOWS_UWP))
 #if (!defined(GD_PLATFORM_OS_X))
 #	define GD_PLATFORM_OS_X												GD_FALSE
 #endif	// if (!defined(GD_PLATFORM_OS_X))
@@ -164,7 +164,7 @@
 #if (!(0 \
 	^ GD_PLATFORM_WINDOWS \
 	^ GD_PLATFORM_WINDOWS_PHONE \
-	^ GD_PLATFORM_WINDOWS_UAP \
+	^ GD_PLATFORM_WINDOWS_UWP \
 	^ GD_PLATFORM_OS_X \
 	^ GD_PLATFORM_IOS \
 	^ GD_PLATFORM_GNU_LINUX \
@@ -240,7 +240,7 @@
 #define GD_PLATFORM_WINDOWS_PHONE										Compile-Time Value
 
 //! Engine is being built as a Microsoft Windows RT application.
-#define GD_PLATFORM_WINDOWS_UAP											Compile-Time Value
+#define GD_PLATFORM_WINDOWS_UWP											Compile-Time Value
 
 //! Engine is being built as an Apple OS X application.
 #define GD_PLATFORM_OS_X												Compile-Time Value

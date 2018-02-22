@@ -19,11 +19,11 @@
 GD_NAMESPACE_BEGIN
 
 #if defined(GD_NAMESPACE)
-	GDINT CHAR static const g_WindowBackgroundClassName[] = TEXT(GD_GLUE(GD_STRIGIFY(GD_NAMESPACE), "WindowWindowsBackgroundWindowClass"));
-	GDINT CHAR static const g_WindowMainClassName[] = TEXT(GD_GLUE(GD_STRIGIFY(GD_NAMESPACE), "WindowWindowsMainWindowClass"));
+	GDINT WCHAR static const g_WindowBackgroundClassName[] = TEXT(GD_GLUE(GD_STRIGIFY(GD_NAMESPACE), "WindowWindowsBackgroundWindowClass"));
+	GDINT WCHAR static const g_WindowMainClassName[] = TEXT(GD_GLUE(GD_STRIGIFY(GD_NAMESPACE), "WindowWindowsMainWindowClass"));
 #else	// if defined(GD_NAMESPACE)
-	GDINT CHAR static const g_WindowBackgroundClassName[] = TEXT("Goddamn_WindowWindowsBackgroundWindowClass");
-	GDINT CHAR static const g_WindowMainClassName[] = TEXT("Goddamn_WindowWindowsMainWindowClass");
+	GDINT WCHAR static const g_WindowBackgroundClassName[] = TEXT("Goddamn_WindowWindowsBackgroundWindowClass");
+	GDINT WCHAR static const g_WindowMainClassName[] = TEXT("Goddamn_WindowWindowsMainWindowClass");
 #endif	// if defined(GD_NAMESPACE)
 
 	/*!
@@ -112,7 +112,7 @@ GD_NAMESPACE_BEGIN
 
 		// And finally creating the window.
 		m_WindowBackgroundHandle = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT
-			, g_WindowBackgroundClassName, "(GoddamnEngine) Black background window."
+			, g_WindowBackgroundClassName, L"(GoddamnEngine) Black background window."
 			, WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_DISABLED
 			, 0, 0, 0, 0
 			, nullptr, nullptr, windowHinstance, nullptr
@@ -120,7 +120,7 @@ GD_NAMESPACE_BEGIN
 		GD_VERIFY(m_WindowBackgroundHandle != nullptr, "'CreateWindowEx' (background window) function returned invalid Handle.");
 
 		m_WindowMainHandle = CreateWindowEx(windowMainStyleEx
-			, g_WindowMainClassName, "(GoddamnEngine) Main window."
+			, g_WindowMainClassName, L"(GoddamnEngine) Main window."
 			, windowMainStyle
 			, windowMainX, windowMainY, windowMainWidth, windowMainHeight
 			, m_WindowBackgroundHandle, nullptr, windowHinstance, nullptr

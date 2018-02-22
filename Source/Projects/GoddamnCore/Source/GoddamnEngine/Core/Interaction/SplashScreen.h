@@ -38,7 +38,7 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! Generic splash screen UI class. 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class SplashScreenGeneric : public Window
+	class SplashScreenGeneric : public WindowGeneric
 	{
 	protected:
 		CriticalSection m_SplashLock;

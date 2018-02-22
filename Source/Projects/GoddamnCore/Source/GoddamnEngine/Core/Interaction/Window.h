@@ -35,11 +35,18 @@ GD_NAMESPACE_BEGIN
 	 * Defines the list of the supported window flags.
 	 */
 	//! @{
-	enum class WindowFlags : UInt8
+	enum class WindowFlags : UInt32
 	{
-		Borderless = GD_BIT(0),	//!< Initializes a borderless window.
-		WithOpenGL = GD_BIT(1),	//!< Initializes a window with OpenGL 1.1 Context.
-		Centered   = GD_BIT(2),	//!< Window would be centered.
+		None			= 0,
+#if GD_PLATFORM_DESKTOP
+		Borderless		= GD_BIT(0),	//!< Initializes a borderless window.
+		Titled			= GD_BIT(1),	//!< Initializes a window with title bar.
+		Closable		= GD_BIT(3),	//!< Initializes a window with close button.
+		Miniaturizable	= GD_BIT(4),	//!< Initializes a window with minimize button.
+		Resizable		= GD_BIT(5),	//!< Initializes a resizable window with maximize button.
+		WithOpenGL      = GD_BIT(6),	//!< Initializes a window with OpenGL 1.1 Context.
+		Centered		= GD_BIT(7),	//!< Window would be centered.
+#endif	// if GD_PLATFORM_DESKTOP
 	};	// enum class WindowFlags
 	GD_ENUM_CLASS_DEFINE_FLAG_OPERATORS(WindowFlags);
 	//! @}

@@ -29,11 +29,23 @@ GD_NAMESPACE_BEGIN
 		struct DocValueArrayScope
 		{
 			DocValueVector Array;
-			UInt32 mutable CurrentIndex = 0;
+			UInt32 mutable CurrentIndex;
+		public:
+			GDINL explicit DocValueArrayScope(UInt32 const currentIndex = 0) : CurrentIndex(currentIndex) {}
+			GDINL explicit DocValueArrayScope(DocValueVector&& array, UInt32 const currentIndex = 0)
+				: Array(Utils::Forward<DocValueVector>(array)), CurrentIndex(currentIndex)
+			{
+			}
 		};	// struct DocValueArrayScope
         struct DocObjectPtrScope
         {
             DocObjectPtr Object;
+		public:
+			GDINL explicit DocObjectPtrScope() {}
+			GDINL explicit DocObjectPtrScope(DocObjectPtr const object)
+				: Object(object)
+			{
+			}
         };  // struct DocObjectPtrScope
 
 		DocValuePtr m_SelectedValue;
@@ -58,7 +70,7 @@ GD_NAMESPACE_BEGIN
 					{
 						DocObjectPtr docObject;
 						result.RootValue->_TryGetValue(docObject);
-						m_ObjectsScope.InsertLast({ docObject });
+						m_ObjectsScope.InsertLast(DocObjectPtrScope(docObject));
 						m_ReadingScope.InsertLast(CurrentlyReading::Struct);
                     }
 					break;
@@ -66,7 +78,7 @@ GD_NAMESPACE_BEGIN
 					{
 						DocValueVector docArray;
 						result.RootValue->_TryGetValue(docArray);
-						m_ArraysScope.InsertLast({ docArray, 0 });
+						m_ArraysScope.InsertLast(DocValueArrayScope(Utils::Move(docArray)));
 						m_ReadingScope.InsertLast(CurrentlyReading::Array);
                     }
 					break;
@@ -146,7 +158,7 @@ GD_NAMESPACE_BEGIN
 					return false;
 				}
 				arraySize = value.GetLength();
-				m_ArraysScope.InsertLast({ value, 0 });
+				m_ArraysScope.InsertLast(DocValueArrayScope(Utils::Move(value)));
 			}
 			return true;
 		}
@@ -172,7 +184,7 @@ GD_NAMESPACE_BEGIN
 					ObjectReaderDocBase::EndReadArrayPropertyValue();
 					return false;
 				}
-                m_ObjectsScope.InsertLast({ value });
+                m_ObjectsScope.InsertLast(DocObjectPtrScope(value));
 			}
 			return true;
 		}
@@ -182,7 +194,6 @@ GD_NAMESPACE_BEGIN
 			ObjectReaderDocBase::EndReadStructPropertyValue();
 			m_ObjectsScope.EraseLast();
 		}
-
 	};	// class ObjectReaderDoc
 
     // **------------------------------------------------------------------------------------------**

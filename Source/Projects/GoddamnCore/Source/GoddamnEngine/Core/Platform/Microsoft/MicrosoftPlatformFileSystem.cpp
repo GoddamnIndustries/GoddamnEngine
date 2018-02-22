@@ -200,7 +200,7 @@ GD_NAMESPACE_BEGIN
 	// File utilities.
 	// ------------------------------------------------------------------------------------------
 
-	/*
+	/*!
 	 * Returns true if the specified file exists and is not directory.
 	 * @param filename Path to the file.
 	 */
@@ -428,10 +428,11 @@ GD_NAMESPACE_BEGIN
 				if (CString::Strcmp(directoryEntry.cFileName, L".") != 0 && CString::Strcmp(directoryEntry.cFileName, L"..") != 0)
 				{
 					auto const directoryEntryName = Paths::Combine(directoryName, directoryEntry.cFileName);
-					directoryIterateDelegate.OnVisitDirectoryEntry(directoryEntryName.CStr(), (directoryEntry.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0);
+					auto const directoryEntryIsDirectory = (directoryEntry.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+					directoryIterateDelegate.OnVisitDirectoryEntry(directoryEntryName.CStr(), directoryEntryIsDirectory);
 				}
 			} while (FindNextFileW(directoryHandle, &directoryEntry));
-			return FindClose(directoryHandle) == true;
+			return FindClose(directoryHandle) == TRUE;
 		}
 		return false;
 	}

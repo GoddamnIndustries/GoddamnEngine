@@ -16,7 +16,6 @@
 
 #include <GoddamnEngine/Core/App/App.h>
 #include <GoddamnEngine/Core/Misc/Misc.h>
-#include <GoddamnEngine/Core/IO/FileStream.h>
 
 #include <GoddamnEngine/Core/Containers/String.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>

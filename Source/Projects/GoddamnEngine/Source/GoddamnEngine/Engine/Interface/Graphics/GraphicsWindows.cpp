@@ -10,8 +10,8 @@
  * @file GoddamnEngine/Engine/Interface/Graphics/Graphics/GraphicsWindows.cpp
  * File contains Implementation for the export interface for Windows Implementation of the graphics interface.
  */
-#include <GoddamnEngine/Engine/Interface/Graphics/GraphicsWindows.h>
-#if GD_PLATFORM_WINDOWS || GD_PLATFORM_WINDOWS_UWP || GD_PLATFORM_WINDOWS_PHONE && 0
+//#include <GoddamnEngine/Engine/Interface/Graphics/GraphicsWindows.h>
+#if GD_PLATFORM_WINDOWS && 0
 
 //#include <GoddamnEngine/Engine/Interface/OutputDevice/OutputDevice.h>
 #define GD_DLOG_CAT "GFX device (Windows@Canvas)"

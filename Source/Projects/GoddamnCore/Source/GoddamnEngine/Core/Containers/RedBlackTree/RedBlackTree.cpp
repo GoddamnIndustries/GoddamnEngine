@@ -50,9 +50,7 @@ GD_NAMESPACE_BEGIN
 	{
 		InternalCreateNodeBase(m_NullNode);
 		InternalCreateNodeBase(m_RootNode);
-#if GD_PLATFORM_WINDOWS && !GD_RELEASE
 		m_NullNode->m_IsNull = true;
-#endif	// if GD_PLATFORM_WINDOWS && !GD_RELEASE
 	}
 
 	/*!

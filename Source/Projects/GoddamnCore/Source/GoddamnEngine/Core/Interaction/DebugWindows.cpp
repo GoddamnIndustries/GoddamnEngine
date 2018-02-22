@@ -11,7 +11,7 @@
  * Windows output device definitions.
  */
 #include <GoddamnEngine/Core/Interaction/Debug.h>
-#if GD_PLATFORM_WINDOWS
+#if GD_PLATFORM_WINDOWS && 0
 
 GD_NAMESPACE_BEGIN
 
