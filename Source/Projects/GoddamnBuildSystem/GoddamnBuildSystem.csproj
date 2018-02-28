@@ -43,21 +43,21 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\bin\Tools\</OutputPath>
+    <OutputPath>..\..\..\Bin\Tools\</OutputPath>
     <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>..\..\..\bin\Tools\GoddamnBuildSystem.XML</DocumentationFile>
+    <DocumentationFile>..\..\..\Bin\Tools\GoddamnBuildSystem.XML</DocumentationFile>
     <NoWarn>1591;</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\bin\Tools\</OutputPath>
+    <OutputPath>..\..\..\Bin\Tools\</OutputPath>
     <DefineConstants>TRACE;CODE_ANALYSIS;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -65,7 +65,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>..\..\..\bin\Tools\GoddamnBuildSystem.XML</DocumentationFile>
+    <DocumentationFile>..\..\..\Bin\Tools\GoddamnBuildSystem.XML</DocumentationFile>
     <NoWarn>1591;</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
