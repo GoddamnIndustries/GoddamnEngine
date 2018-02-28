@@ -14,7 +14,6 @@
 #include <GoddamnEngine/Core/Concurrency/Thread.h>
 #include <GoddamnEngine/Core/Concurrency/LockFreeStack.h>
 
-#include <GoddamnEngine/Core/App/App.h>
 #include <GoddamnEngine/Core/Misc/Misc.h>
 
 #include <GoddamnEngine/Core/Containers/String.h>
@@ -72,7 +71,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT void JobManager::JobWorkerThread::OnRun()
 	{
-		while (!App::IsTerminating())
+		while (true)
 		{
 			Job job;
 			while (m_Jobs.PopBack(job))

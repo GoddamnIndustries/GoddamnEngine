@@ -11,7 +11,6 @@
  * File contains generic file system watcher interface.
  */
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/App/App.h>
 #if GD_PLATFORM_HAS_MULTITHREADING && 0
 
 #include <GoddamnEngine/Core/IO/FileSystemWatcher.h>
