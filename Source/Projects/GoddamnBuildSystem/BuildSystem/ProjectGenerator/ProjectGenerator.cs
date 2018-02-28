@@ -74,7 +74,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 case PlatformID.Win32NT:
                     return new VisualStudioProjectGenerator();
                 case PlatformID.Unix:
-                    //return new CMakeProjectGenerator();
+                    return new CMakeProjectGenerator();
                 case PlatformID.MacOSX:
                     return new XCodeProjectGenerator();
             }
@@ -119,7 +119,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             try
             {
                 var projectGenerator = ProjectGeneratorFactory.Create();
-                var solution = SolutionFactory.Create(arguments.Length > 0 ? arguments[0] : Path.Combine(BuildSystem.GetSdkLocation(), "source", "GoddamnEngine.gdsln.cs"));
+                var solution = SolutionFactory.Create(arguments.Length > 0 ? arguments[0] : Path.Combine(BuildSystem.GetSdkLocation(), "Source", "GoddamnEngine.gdsln.cs"));
 
                 // Generating project files..
                 foreach (var solutionProject in solution.CachedProjects)

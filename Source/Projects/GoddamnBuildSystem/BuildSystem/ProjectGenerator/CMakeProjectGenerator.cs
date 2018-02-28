@@ -52,7 +52,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 cmakeLists.WriteLine("project({0})", project.CachedName);
                 cmakeLists.WriteLine("include_directories({0})", project.GenerateIncludePaths("\n\t").Replace('\\', '/'));
                 cmakeLists.WriteLine("set(CMAKE_CXX_FLAGS -std=c++14)");
-                switch (project.CachedBuildTypes[TargetPlatform.Windows, TargetConfiguration.Debug])
+				switch (project.CachedBuildTypes[TargetPlatform.MacOS, TargetConfiguration.Debug])
                 {
                     case ProjectBuildType.Application:
                         cmakeLists.WriteLine("add_executable({0}", project.CachedName);
