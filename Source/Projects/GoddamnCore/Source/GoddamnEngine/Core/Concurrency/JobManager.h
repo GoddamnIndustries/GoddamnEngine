@@ -14,7 +14,7 @@
 #define GD_INSIDE_JOBMANAGER_H
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Concurrency/Atomics.h>
+#include <GoddamnEngine/Core/Platform/PlatformAtomics.h>
 
 GD_NAMESPACE_BEGIN
 
