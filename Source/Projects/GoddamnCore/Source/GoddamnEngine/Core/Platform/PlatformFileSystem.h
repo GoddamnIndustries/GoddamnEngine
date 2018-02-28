@@ -13,8 +13,7 @@
 #pragma once
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/IO/Stream.h>
-#include <GoddamnEngine/Core/Containers/String.h>
+#include <GoddamnEngine/Core/Platform/PlatformIO.h>
 #include <GoddamnEngine/Core/Templates/Singleton.h>
 
 GD_NAMESPACE_BEGIN
@@ -31,10 +30,13 @@ GD_NAMESPACE_BEGIN
 		 * 
 		 * @param path Path to the directory entry.
 		 * @param isDirectory True if the entry itself is a subdirectory.
+		 * 
+		 * @returns If false was returned, iterations would stop.
 		 */
-		GDINT virtual void OnVisitDirectoryEntry(WideString const& path, bool const isDirectory)
+		GDINT virtual bool OnVisitDirectoryEntry(WideString const& path, bool const isDirectory)
 		{
 			GD_NOT_USED_L(path, isDirectory);
+			return true;
 		}
 	};	// class IFileSystemDirectoryIterateDelegate
 
@@ -45,20 +47,42 @@ GD_NAMESPACE_BEGIN
 	{
 	public:
 
-		GDINT virtual void OnFileOrDirectoryAdded(WideString const& path)
+		/*!
+		 * Callback being triggered by the filesystem watcher when new file or directory was created.
+		 * @param path Path the entity that was created.
+		 */
+		GDINT virtual void OnFileOrDirectoryCreated(WideString const& path)
 		{
+			GD_NOT_USED_L(path);
 		}
 
+		/*!
+		 * Callback being triggered by the filesystem watcher when new file or directory was removed.
+		 * @param path Path the entity that was removed.
+		 */
 		GDINT virtual void OnFileOrDirectoryRemoved(WideString const& path)
 		{
+			GD_NOT_USED_L(path);
 		}
 
+		/*!
+		 * Callback being triggered by the filesystem watcher when new file or directory was modified.
+		 * @param path Path the enitity that was removed.
+		 */
 		GDINT virtual void OnFileOrDirectoryModified(WideString const& path)
 		{
+			GD_NOT_USED_L(path);
 		}
 
-		GDINT virtual void OnFileOrDirectoryRenamed(WideString const& oldPath, WideString const& newPath)
+		/*!
+		 * Callback being triggered by the filesystem watcher when new file or directory was moved.
+		 * 
+		 * @param srcPath Old path to the entity that was moved.
+		 * @param dstPath New path to the entity that was moved.
+		 */
+		GDINT virtual void OnFileOrDirectoryMoved(WideString const& srcPath, WideString const& dstPath)
 		{
+			GD_NOT_USED_L(srcPath, dstPath);
 		}
 	};	// class IFileSystemWatcherDelegate
 
@@ -70,14 +94,10 @@ GD_NAMESPACE_BEGIN
 	public:
 
 		// ------------------------------------------------------------------------------------------
-		// Path utilities.
-		// ------------------------------------------------------------------------------------------
-
-		// ------------------------------------------------------------------------------------------
 		// File utilities.
 		// ------------------------------------------------------------------------------------------
 
-		/*
+		/*!
 		 * Returns true if the specified file exists and is not directory.
 		 * @param filename Path to the file.
 		 */
@@ -119,7 +139,7 @@ GD_NAMESPACE_BEGIN
 		 * 
 		 * @returns True if file was successfully moved.
 		 */
-		GDINT virtual bool FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite = false) GD_PURE_VIRTUAL;
+		GDINT virtual bool FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite = false);
 
 		/*!
 		 * Copies file from source path to destination.
@@ -138,7 +158,7 @@ GD_NAMESPACE_BEGIN
 		 * @param filename Path to the file.
 		 * @returns Opened valid input stream or null pointer if operation has failed.
 		 */
-		GDINT virtual SharedPtr<InputStream> FileOpenRead(WideString const& filename) const GD_PURE_VIRTUAL;
+		GDINT virtual SharedPtr<IInputStream> FileStreamOpenRead(WideString const& filename) const GD_PURE_VIRTUAL;
 
 		/*!
 		 * Opens a output stream for the specified file.
@@ -148,7 +168,7 @@ GD_NAMESPACE_BEGIN
 		 * 
 		 * @returns Opened valid output stream or null pointer if operation has failed.
 		 */
-		GDINT virtual SharedPtr<OutputStream> FileOpenWrite(WideString const& filename, bool const doAppend = false) const GD_PURE_VIRTUAL;
+		GDINT virtual SharedPtr<IOutputStream> FileStreamOpenWrite(WideString const& filename, bool const doAppend = false) GD_PURE_VIRTUAL;
 
 		// ------------------------------------------------------------------------------------------
 		// Directory utilities.
@@ -211,6 +231,80 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class GD_PLATFORM_KERNEL IPlatformDiskFileSystem : public IFileSystem, public Singleton<IPlatformDiskFileSystem>
 	{
+	private:
+		GDINT virtual SharedPtr<IInputStream> FileStreamOpenRead(WideString const& filename) const override final;
+		GDINT virtual SharedPtr<IOutputStream> FileStreamOpenWrite(WideString const& filename, bool const doAppend) override final;
+
+	public:
+
+		// ------------------------------------------------------------------------------------------
+		// File IO utilities.
+		// ------------------------------------------------------------------------------------------
+
+		/*!
+		 * Opens a input handle for the specified file.
+		 * 
+		 * @param filename Path to the file.
+		 * @param fileHandle File handle.
+		 * 
+		 * @returns True if file was successfully opened.
+		 */
+		GDINT virtual bool FileOpenRead(WideString const& filename, Handle& fileHandle) const GD_PURE_VIRTUAL;
+
+		/*!
+		 * Opens a output handle for the specified file.
+		 * 
+		 * @param filename Path to the file.
+		 * @param fileHandle File handle.
+		 * @param doAppend If true new data would be written to the end of file.
+		 * 
+		 * @returns True if file was successfully opened.
+		 */
+		GDINT virtual bool FileOpenWrite(WideString const& filename, Handle& fileHandle, bool const doAppend = false) GD_PURE_VIRTUAL;
+
+		/*!
+		 * Closes a file handle.
+		 * 
+		 * @param fileHandle File handle.
+		 * @returns True if file was successfully closed.
+		 */
+		GDINT virtual bool FileClose(Handle const fileHandle) const GD_PURE_VIRTUAL;
+
+		/*!
+		 * Reposition this file handle to new specified position.
+		 *
+		 * @param fileHandle File handle.
+		 * @param offset The offset in bytes from specified origin.
+		 * @param origin Defines origin from which point make offset.
+		 * @param newPosition New position in file.
+		 * 
+		 * @returns True if operation succeeded.
+		 */
+		GDINT virtual bool FileSeek(Handle const fileHandle, Int64 const offset, SeekOrigin const origin, UInt64* const newPosition = nullptr) const GD_PURE_VIRTUAL;
+
+		/*!
+		 * Reads data from file.
+		 *
+		 * @param fileHandle File handle.
+		 * @param readBuffer Output memory to which data would be written.
+		 * @param readBufferSizeBytes Length of the element in bytes.
+		 * @param numBytesRead Amount of bytes that was read from file.
+		 * 
+		 * @returns True if operation succeeded.
+		 */
+		GDINT virtual bool FileRead(Handle const fileHandle, Handle const readBuffer, UInt32 const readBufferSizeBytes, UInt32* const numBytesRead = nullptr) const GD_PURE_VIRTUAL;
+
+		/*!
+		 * Writes data to file.
+		 *
+		 * @param fileHandle File handle.
+		 * @param writeBuffer Input memory that would be written.
+		 * @param writeBufferSizeBytes Length of the element in bytes.
+		 * @param numBytesWritten Amount of bytes that were written to file.
+		 * 
+		 * @returns True if operation succeeded.
+		 */
+		GDINT virtual bool FileWrite(Handle const fileHandle, CHandle const writeBuffer, UInt32 const writeBufferSizeBytes, UInt32* const numBytesWritten = nullptr) GD_PURE_VIRTUAL;
 	};	// class IPlatformDiskFileSystem
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**

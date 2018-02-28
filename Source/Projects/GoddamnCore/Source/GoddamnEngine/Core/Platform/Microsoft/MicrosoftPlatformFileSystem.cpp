@@ -18,153 +18,6 @@
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! File input stream on Microsoft platforms.
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class GD_PLATFORM_KERNEL MicrosoftFileInputStream final : public InputStream
-	{
-	private:
-		HANDLE m_FileHandle;
-
-	public:
-		GDINL explicit MicrosoftFileInputStream(HANDLE const fileHandle)
-			: m_FileHandle(fileHandle)
-		{
-		}
-
-		GDINT virtual ~MicrosoftFileInputStream()
-		{
-			Close();
-		}
-
-	public:
-		GDINT virtual bool IsValid() const override final
-		{
-			return m_FileHandle != INVALID_HANDLE_VALUE && m_FileHandle != nullptr;
-		}
-
-		GDINT virtual SizeTp GetPosition() const override final
-		{
-			GD_VERIFY(IsValid());
-			return const_cast<MicrosoftFileInputStream*>(this)->Seek(0, SeekOrigin::Current);
-		}
-
-		GDINT virtual void Close() override final
-		{
-			CloseHandle(m_FileHandle);
-			m_FileHandle = nullptr;
-		}
-
-		GDINT virtual SizeTp Seek(PtrDiffTp const offset, SeekOrigin const origin) override final
-		{
-			GD_VERIFY(IsValid());
-			DWORD originSystem = 0;
-			switch (origin)
-			{
-				case SeekOrigin::Beginning:
-					originSystem = FILE_BEGIN;
-					break;
-				case SeekOrigin::Current:
-					originSystem = FILE_CURRENT;
-					break;
-				case SeekOrigin::End:
-					originSystem = FILE_END;
-					break;
-			}
-			LARGE_INTEGER offsetSystem, newFilePointerSystem;
-			offsetSystem.QuadPart = offset;
-			if (SetFilePointerEx(m_FileHandle, offsetSystem, &newFilePointerSystem, originSystem) == FALSE)
-			{
-				return SizeTpMax;
-			}
-			return newFilePointerSystem.QuadPart;
-		}
-
-		GDINT virtual Int16 Read() override final
-		{
-			GD_VERIFY(IsValid());
-			Byte byte;
-			if (Read(&byte, sizeof(byte), 1) != 1)
-			{
-				return -1;
-			}
-			return byte;
-		}
-
-		GDINT virtual SizeTp Read(Handle const array, SizeTp const size, SizeTp const count) override final
-		{
-			GD_VERIFY(IsValid());
-			for (SizeTp i = 0; i < count; ++i)
-			{
-				DWORD numBytesRead = 0;
-				auto const arrayBlock = static_cast<Byte*>(array) + i * size;
-				auto const arrayBlockSize = static_cast<DWORD>(size);
-				if (ReadFile(m_FileHandle, arrayBlock, arrayBlockSize, &numBytesRead, nullptr) == FALSE || numBytesRead != arrayBlockSize)
-				{
-					return i;
-				}
-			}
-			return count;
-		}
-	};	// class MicrosoftFileInputStream
-
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! File output stream on Microsoft platforms.
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class GD_PLATFORM_KERNEL MicrosoftFileOutputStream : public OutputStream
-	{
-	private:
-		HANDLE m_FileHandle;
-
-	public:
-		GDINL explicit MicrosoftFileOutputStream(HANDLE const fileHandle)
-			: m_FileHandle(fileHandle)
-		{
-		}
-
-		GDINT virtual ~MicrosoftFileOutputStream()
-		{
-			Close();
-		}
-
-	public:
-		GDINT virtual bool IsValid() const override final
-		{
-			return m_FileHandle != INVALID_HANDLE_VALUE && m_FileHandle != nullptr;
-		}
-
-		GDINT virtual void Close() override final
-		{
-			CloseHandle(m_FileHandle);
-			m_FileHandle = nullptr;
-		}
-
-		GDINT virtual void Flush() override final
-		{
-		}
-
-		GDINT virtual bool Write(Byte const byte) override final
-		{
-			return Write(&byte, sizeof(byte), 1) == 1;
-		}
-
-		GDINT virtual SizeTp Write(CHandle const array, SizeTp const size, SizeTp const count) override final
-		{
-			GD_VERIFY(IsValid(), "Writing to invalid stream.");
-			for (SizeTp i = 0; i < count; ++i)
-			{
-				DWORD numBytesWritten = 0;
-				auto const arrayBlock = static_cast<Byte const*>(array) + i * size;
-				auto const arrayBlockSize = static_cast<DWORD>(size);
-				if (WriteFile(m_FileHandle, arrayBlock, arrayBlockSize, &numBytesWritten, nullptr) == FALSE || numBytesWritten != arrayBlockSize)
-				{
-					return i;
-				}
-			}
-			return count;
-		}
-	};	// class MicrosoftFileOutputStream
-
-	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! Disk file system on Microsoft platforms.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class GD_PLATFORM_KERNEL MicrosoftPlatformDiskFileSystem final : public IPlatformDiskFileSystem
@@ -181,8 +34,17 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual bool FileRemove(WideString const& filename) override final;
 		GDINT virtual bool FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final;
 		GDINT virtual bool FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final;
-		GDINT virtual SharedPtr<InputStream> FileOpenRead(WideString const& filename) const override final;
-		GDINT virtual SharedPtr<OutputStream> FileOpenWrite(WideString const& filename, bool const doAppend) const override final;
+
+		// ------------------------------------------------------------------------------------------
+		// File IO utilities.
+		// ------------------------------------------------------------------------------------------
+
+		GDINT virtual bool FileOpenRead(WideString const& filename, Handle& fileHandle) const override final;
+		GDINT virtual bool FileOpenWrite(WideString const& filename, Handle& fileHandle, bool const doAppend) override final;
+		GDINT virtual bool FileClose(Handle const fileHandle) const override final;
+		GDINT virtual bool FileSeek(Handle const fileHandle, Int64 const offset, SeekOrigin const origin, UInt64* const newPosition) const override final;
+		GDINT virtual bool FileRead(Handle const fileHandle, Handle const readBuffer, UInt32 const readBufferSizeBytes, UInt32* const numBytesRead) const override final;
+		GDINT virtual bool FileWrite(Handle const fileHandle, CHandle const readBuffer, UInt32 const readBufferSizeBytes, UInt32* const numBytesRead) override final;
 
 		// ------------------------------------------------------------------------------------------
 		// Directory utilities.
@@ -318,44 +180,179 @@ GD_NAMESPACE_BEGIN
 				Sleep(0);
 				return CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == TRUE;
 			}
+			return true;
 		}
-		return true;
+		return false;
 	}
+
+	// ------------------------------------------------------------------------------------------
+	// File IO utilities.
+	// ------------------------------------------------------------------------------------------
 		
 	/*!
-	 * Opens a input stream for the specified file.
+	 * Opens a input handle for the specified file.
 	 * 
 	 * @param filename Path to the file.
-	 * @returns Opened valid input stream or null pointer if operation has failed.
+	 * @param fileHandle File handle.
+	 * 
+	 * @returns True if file was successfully opened.
 	 */
-	GDINT SharedPtr<InputStream> MicrosoftPlatformDiskFileSystem::FileOpenRead(WideString const& filename) const
+	GDINT bool MicrosoftPlatformDiskFileSystem::FileOpenRead(WideString const& filename, Handle& fileHandle) const
 	{
 		auto const filenameSystem = Paths::Platformize(filename);
-		auto const fileHandle = CreateFile2(filenameSystem.CStr(), GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, nullptr);
-		if (fileHandle != INVALID_HANDLE_VALUE)
+		auto const fileHandleSystem = CreateFile2(filenameSystem.CStr(), GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, nullptr);
+		if (fileHandleSystem != INVALID_HANDLE_VALUE)
 		{
-			return gd_new MicrosoftFileInputStream(fileHandle);
+			fileHandle = fileHandleSystem;
+			return true;
 		}
-		return nullptr;
+		return false;
 	}
 
 	/*!
-	 * Opens a output stream for the specified file.
+	 * Opens a output handle for the specified file.
 	 * 
 	 * @param filename Path to the file.
+	 * @param fileHandle File handle.
 	 * @param doAppend If true new data would be written to the end of file.
 	 * 
-	 * @returns Opened valid output stream or null pointer if operation has failed.
+	 * @returns True if file was successfully opened.
 	 */
-	GDINT SharedPtr<OutputStream> MicrosoftPlatformDiskFileSystem::FileOpenWrite(WideString const& filename, bool const doAppend) const
+	GDINT bool MicrosoftPlatformDiskFileSystem::FileOpenWrite(WideString const& filename, Handle& fileHandle, bool const doAppend)
 	{
 		auto const filenameSystem = Paths::Platformize(filename);
-		auto const fileHandle = CreateFile2(filenameSystem.CStr(), GENERIC_WRITE, FILE_SHARE_READ, doAppend ? OPEN_ALWAYS : CREATE_ALWAYS, nullptr);
-		if (fileHandle != INVALID_HANDLE_VALUE)
+		auto const fileHandleSystem = CreateFile2(filenameSystem.CStr(), GENERIC_WRITE, FILE_SHARE_READ, doAppend ? OPEN_ALWAYS : CREATE_ALWAYS, nullptr);
+		if (fileHandleSystem != INVALID_HANDLE_VALUE)
 		{
-			return gd_new MicrosoftFileOutputStream(fileHandle);
+			fileHandle = fileHandleSystem;
+			return true;
 		}
-		return nullptr;
+		return false;
+	}
+
+	/*!
+	 * Closes a file handle.
+	 * 
+	 * @param fileHandle File handle.
+	 * @returns True if file was successfully closed.
+	 */
+	GDINT bool MicrosoftPlatformDiskFileSystem::FileClose(Handle const fileHandle) const
+	{
+		GD_DEBUG_VERIFY(fileHandle != nullptr);
+		return CloseHandle(fileHandle) == TRUE;
+	}
+
+	/*!
+	 * Reposition this file handle to new specified position.
+	 *
+	 * @param fileHandle File handle.
+	 * @param offset The offset in bytes from specified origin.
+	 * @param origin Defines origin from which point make offset.
+	 * @param newPosition New position in file.
+	 * 
+	 * @returns True if operation succeeded.
+	 */
+	GDINT bool MicrosoftPlatformDiskFileSystem::FileSeek(Handle const fileHandle, Int64 const offset, SeekOrigin const origin, UInt64* const newPosition) const
+	{
+		GD_DEBUG_VERIFY(fileHandle != nullptr);
+
+		DWORD originSystem = 0;
+		switch (origin)
+		{
+			case SeekOrigin::Beginning:
+				originSystem = FILE_BEGIN;
+				break;
+			case SeekOrigin::Current:
+				originSystem = FILE_CURRENT;
+				break;
+			case SeekOrigin::End:
+				originSystem = FILE_END;
+				break;
+		}
+
+		LARGE_INTEGER offsetSystem;
+		offsetSystem.QuadPart = offset;
+		if (newPosition != nullptr)
+		{
+			LARGE_INTEGER newFilePointerSystem;
+			if (SetFilePointerEx(fileHandle, offsetSystem, &newFilePointerSystem, originSystem) == TRUE)
+			{
+				*newPosition = newFilePointerSystem.QuadPart;
+				return true;
+			}
+		}
+		else
+		{
+			if (SetFilePointerEx(fileHandle, offsetSystem, nullptr, originSystem) == TRUE)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*!
+	 * Reads data from file.
+	 * 
+	 * @param fileHandle File handle.
+	 * @param readBuffer Output memory to which data would be written.
+	 * @param readBufferSizeBytes Length of the element in bytes.
+	 * @param numBytesRead Amount of bytes that was read from file.
+	 *
+	 * @returns True if operation succeeded.
+	 */
+	GDINT bool MicrosoftPlatformDiskFileSystem::FileRead(Handle const fileHandle, Handle const readBuffer, UInt32 const readBufferSizeBytes, UInt32* const numBytesRead) const
+	{
+		GD_DEBUG_VERIFY(fileHandle != nullptr);
+		if (numBytesRead != nullptr)
+		{
+			DWORD numBytesReadSystem = 0;
+			if (ReadFile(fileHandle, readBuffer, readBufferSizeBytes, &numBytesReadSystem, nullptr) == FALSE)
+			{
+				*numBytesRead = numBytesReadSystem;
+				return true;
+			}
+		}
+		else
+		{
+			if (ReadFile(fileHandle, readBuffer, readBufferSizeBytes, nullptr, nullptr) == FALSE)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*!
+	 * Writes data to file.
+	 *
+	 * @param fileHandle File handle.
+	 * @param writeBuffer Input memory that would be written.
+	 * @param writeBufferSizeBytes Length of the element in bytes.
+	 * @param numBytesWritten Amount of bytes that were written to file.
+	 * 
+	 * @returns True if operation succeeded.
+	 */
+	GDINT bool MicrosoftPlatformDiskFileSystem::FileWrite(Handle const fileHandle, CHandle const writeBuffer, UInt32 const writeBufferSizeBytes, UInt32* const numBytesWritten)
+	{
+		GD_DEBUG_VERIFY(fileHandle != nullptr);
+		if (numBytesWritten != nullptr)
+		{
+			DWORD numBytesReadSystem = 0;
+			if (WriteFile(fileHandle, writeBuffer, writeBufferSizeBytes, &numBytesReadSystem, nullptr) == FALSE)
+			{
+				*numBytesWritten = numBytesReadSystem;
+				return true;
+			}
+		}
+		else
+		{
+			if (WriteFile(fileHandle, writeBuffer, writeBufferSizeBytes, nullptr, nullptr) == FALSE)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -429,7 +426,10 @@ GD_NAMESPACE_BEGIN
 				{
 					auto const directoryEntryName = Paths::Combine(directoryName, directoryEntry.cFileName);
 					auto const directoryEntryIsDirectory = (directoryEntry.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
-					directoryIterateDelegate.OnVisitDirectoryEntry(directoryEntryName.CStr(), directoryEntryIsDirectory);
+					if (!directoryIterateDelegate.OnVisitDirectoryEntry(directoryEntryName.CStr(), directoryEntryIsDirectory))
+					{
+						return false;
+					}
 				}
 			} while (FindNextFileW(directoryHandle, &directoryEntry));
 			return FindClose(directoryHandle) == TRUE;
@@ -509,7 +509,7 @@ GD_NAMESPACE_BEGIN
 					switch (directoryChange->Action)
 					{
 						case FILE_ACTION_ADDED:
-							directoryWatcherDelegate.OnFileOrDirectoryAdded(directoryChangePath);
+							directoryWatcherDelegate.OnFileOrDirectoryCreated(directoryChangePath);
 							break;
 						case FILE_ACTION_REMOVED:
 							directoryWatcherDelegate.OnFileOrDirectoryRemoved(directoryChangePath);

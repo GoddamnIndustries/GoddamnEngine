@@ -11,14 +11,165 @@
  * File system implementation.
  */
 #include <GoddamnEngine/Core/Platform/PlatformFileSystem.h>
-//#include "GoddamnEngine/Core/IO/Directory.h"
-//#include "GoddamnEngine/Core/IO/Paths.h"
 
 GD_NAMESPACE_BEGIN
+
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	//! File input stream.
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	class GD_PLATFORM_WRAPPER FileInputStream final : public IInputStream
+	{
+	private:
+		IPlatformDiskFileSystem const& m_FileSystem;
+		Handle m_FileHandle;
+	public:
+		GDINL FileInputStream(IPlatformDiskFileSystem const& fileSystem, Handle const fileHandle)
+			: m_FileSystem(fileSystem), m_FileHandle(fileHandle)
+		{
+		}
+		GDINT virtual ~FileInputStream()
+		{
+			Close(nullptr);
+		}
+	private:
+		GDINT virtual void Close(bool* const resultPtr) override final
+		{
+			auto const result = m_FileSystem.FileClose(m_FileHandle);
+			if (resultPtr != nullptr)
+			{
+				*resultPtr = result;
+			}
+			else if (!result)
+			{
+				GD_VERIFY_FALSE("Unhandled IO error: failed to close a file.");
+			}
+			else
+			{
+				m_FileHandle = nullptr;
+			}
+		}
+		GDINT virtual UInt32 Read(Handle const readBuffer, UInt32 const readBufferSizeBytes, bool* const resultPtr) override final
+		{
+			UInt32 numBytesRead = 0;
+			auto const result = m_FileSystem.FileRead(m_FileHandle, readBuffer, readBufferSizeBytes, &numBytesRead);
+			if (resultPtr != nullptr)
+			{
+				*resultPtr = result;
+			}
+			else if (!result)
+			{
+				GD_VERIFY_FALSE("Unhandled IO error: reading from file failed.");
+			}
+			return numBytesRead;
+		}
+		GDINT virtual UInt64 Seek(Int64 const offset, SeekOrigin const origin, bool* const resultPtr) override final
+		{
+			UInt64 newPosition = 0;
+			auto const result = m_FileSystem.FileSeek(m_FileHandle, offset, origin, &newPosition);
+			if (resultPtr != nullptr)
+			{
+				*resultPtr = result;
+			}
+			else if (!result)
+			{
+				GD_VERIFY_FALSE("Unhandled IO error: repositioning file failed.");
+			}
+			return newPosition;
+		}
+	};	// class FileInputStream
+
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	//! File output stream.
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	class GD_PLATFORM_WRAPPER FileOutputStream final : public IOutputStream
+	{
+	private:
+		IPlatformDiskFileSystem& m_FileSystem;
+		Handle m_FileHandle;
+
+	public:
+		GDINL FileOutputStream(IPlatformDiskFileSystem& fileSystem, Handle const fileHandle)
+			: m_FileSystem(fileSystem), m_FileHandle(fileHandle)
+		{
+		}
+		GDINT virtual ~FileOutputStream()
+		{
+			Close(nullptr);
+		}
+	private:
+		GDINT virtual void Close(bool* const resultPtr) override final
+		{
+			auto const result = m_FileSystem.FileClose(m_FileHandle);
+			if (resultPtr != nullptr)
+			{
+				*resultPtr = result;
+			}
+			else if (!result)
+			{
+				GD_VERIFY_FALSE("Unhandled IO error: failed to close a file.");
+			}
+			else
+			{
+				m_FileHandle = nullptr;
+			}
+		}
+		GDINT virtual UInt64 Seek(Int64 const offset, SeekOrigin const origin, bool* const resultPtr) override final
+		{
+			UInt64 newPosition = 0;
+			auto const result = m_FileSystem.FileSeek(m_FileHandle, offset, origin, &newPosition);
+			if (resultPtr != nullptr)
+			{
+				*resultPtr = result;
+			}
+			else if (!result)
+			{
+				GD_VERIFY_FALSE("Unhandled IO error: repositioning file failed.");
+			}
+			return newPosition;
+		}
+		GDINT virtual UInt32 Write(CHandle const writeBuffer, UInt32 const writeBufferSizeBytes, bool* const resultPtr) override final
+		{
+			UInt32 numBytesWritten = 0;
+			auto const result = m_FileSystem.FileWrite(m_FileHandle, writeBuffer, writeBufferSizeBytes, &numBytesWritten);
+			if (resultPtr != nullptr)
+			{
+				*resultPtr = result;
+			}
+			else if (!result)
+			{
+				GD_VERIFY_FALSE("Unhandled IO error: writing to file failed.");
+			}
+			return numBytesWritten;
+		}
+	};	// class FileOutputStream
 
     // ------------------------------------------------------------------------------------------
     // File utilities.
     // ------------------------------------------------------------------------------------------
+
+	/*!
+	 * Moves file from source path to destination.
+	 *
+	 * @param srcFilename Path to the file.
+	 * @param dstFilename Destination file path.
+	 * @param doOverwrite Do overwrite destination file if it exists.
+	 * 
+	 * @returns True if file was successfully moved.
+	 */
+	GDINT bool IFileSystem::FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite)
+	{
+		if (FileCopy(srcFilename, dstFilename, doOverwrite))
+		{
+			if (!FileRemove(srcFilename))
+			{
+				// If failed, removing destination file as this function was never called.
+				FileRemove(dstFilename);
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 
     /*!
      * Copies file from source path to destination.
@@ -33,32 +184,35 @@ GD_NAMESPACE_BEGIN
     {
         if (FileExists(srcFilename) && (doOverwrite || FileExists(dstFilename)))
         {
-            auto srcFileStream = FileOpenRead(srcFilename);
-            auto dstFileStream = FileOpenWrite(dstFilename);
+            auto srcFileStream = FileStreamOpenRead(srcFilename);
+            auto dstFileStream = FileStreamOpenWrite(dstFilename);
             if (srcFileStream != nullptr && dstFileStream != nullptr)
             {
-                auto operationSucceeded = true;
-                auto const sourceFileSize = srcFileStream->GetLength();
-                
                 // Copying file from source to the destination using 4KB blocks.
-                SizeTp const bufferBlockSize = 4 * 1024 * 1024;
-                auto const buffer = GD_MALLOC_ARRAY_T(Byte, Min(bufferBlockSize, sourceFileSize));
-                for (SizeTp cnt = 0; cnt < sourceFileSize / bufferBlockSize && operationSucceeded; ++cnt)
-                {
-                    operationSucceeded = srcFileStream->Read(buffer, bufferBlockSize, 1) == 1 && dstFileStream->Write(buffer, bufferBlockSize, 1) == 1;
-                }
-                if (operationSucceeded)
-                {
-                    // Copying what is left in the source file.
-                    auto const leftoverSize = sourceFileSize % bufferBlockSize;
-                    if (leftoverSize != 0)
-                    {
-                        operationSucceeded = srcFileStream->Read(buffer, leftoverSize, 1) == 1 && dstFileStream->Write(buffer, leftoverSize, 1) == 1;
-                    }
-                }
-                GD_FREE(buffer);
-                
-                if (!operationSucceeded)
+                auto const bufferSize = 4 * 1024 * 1024;
+                auto const buffer = GD_MALLOC_ARRAY_T(Byte, bufferSize);
+				
+				auto result = true;
+				while(result)
+				{
+					auto const numBytesRead = srcFileStream->Read(buffer, bufferSize, &result);
+					if (result)
+					{
+						if (numBytesRead == 0)
+						{
+							break;
+						}
+						auto const numBytesWritten = dstFileStream->Write(buffer, numBytesRead, &result);
+						if (result)
+						{
+							result = numBytesRead == numBytesWritten;
+						}
+					}
+				}
+
+				GD_FREE(buffer);
+
+                if (!result)
                 {
                     // If failed, removing destination file as this function was never called.
                     dstFileStream->Close();
@@ -72,6 +226,40 @@ GD_NAMESPACE_BEGIN
         }
         return false;
     }
+
+	/*!
+	 * Opens a input stream for the specified file.
+	 * 
+	 * @param filename Path to the file.
+	 * @returns Opened valid input stream or null pointer if operation has failed.
+	 */
+	GDINT SharedPtr<IInputStream> IPlatformDiskFileSystem::FileStreamOpenRead(WideString const& filename) const
+	{
+		Handle fileHandle = nullptr;
+		if (FileOpenRead(filename, fileHandle))
+		{
+			gd_new FileInputStream(*this, fileHandle);
+		}
+		return nullptr;
+	}
+
+	/*!
+	 * Opens a output stream for the specified file.
+	 * 
+	 * @param filename Path to the file.
+	 * @param doAppend If true new data would be written to the end of file.
+	 * 
+	 * @returns Opened valid output stream or null pointer if operation has failed.
+	 */
+	GDINT SharedPtr<IOutputStream> IPlatformDiskFileSystem::FileStreamOpenWrite(WideString const& filename, bool const doAppend)
+	{
+		Handle fileHandle = nullptr;
+		if (FileOpenWrite(filename, fileHandle, doAppend))
+		{
+			gd_new FileOutputStream(*this, fileHandle);
+		}
+		return nullptr;
+	}
 
     // ------------------------------------------------------------------------------------------
     // Directory utilities.
@@ -87,7 +275,30 @@ GD_NAMESPACE_BEGIN
      */
     GDINT bool IFileSystem::DirectoryIterateRecursive(WideString const& directoryName, IFileSystemDirectoryIterateDelegate& directoryIterateDelegate) const
 	{
-		return false;
+		class DirectoryIterateRecursiveDelegate final : public IFileSystemDirectoryIterateDelegate
+		{
+		private:
+			IFileSystem const& m_FileSystem;
+			IFileSystemDirectoryIterateDelegate& m_Delegate;
+		public:
+			GDINL DirectoryIterateRecursiveDelegate(IFileSystem const& fileSystem, IFileSystemDirectoryIterateDelegate& delegate)
+				: m_FileSystem(fileSystem), m_Delegate(delegate) {}
+		public:
+			GDINT virtual bool OnVisitDirectoryEntry(WideString const& path, bool const isDirectory) override final
+			{
+				if (isDirectory)
+				{
+					if (!m_FileSystem.DirectoryIterateRecursive(path, m_Delegate))
+					{
+						return false;
+					}
+				}
+				return m_Delegate.OnVisitDirectoryEntry(path, isDirectory);
+			}
+		};	// class DirectoryIterateRecursiveDelegate
+
+		DirectoryIterateRecursiveDelegate directoryIterateRecursiveDelegate(*this, directoryIterateDelegate);
+		return DirectoryIterate(directoryName, directoryIterateRecursiveDelegate);
 	}
 
 	/*!
@@ -100,46 +311,34 @@ GD_NAMESPACE_BEGIN
 	{
 		class DirectoryRemoveRecursiveDelegate final : public IFileSystemDirectoryIterateDelegate
 		{
-		public:
-			IFileSystem* FileSystem;
 		private:
-			GDINT virtual void OnVisitDirectoryEntry(WideString const& path, bool const isDirectory) override final
+			IFileSystem& m_FileSystem;
+		public:
+			GDINL explicit DirectoryRemoveRecursiveDelegate(IFileSystem& fileSystem)
+				: m_FileSystem(fileSystem) {}
+		private:
+			GDINT virtual bool OnVisitDirectoryEntry(WideString const& path, bool const isDirectory) override final
 			{
 				if (isDirectory)
 				{
-					FileSystem->DirectoryRemoveRecursive(path);
+					if (!m_FileSystem.DirectoryRemoveRecursive(path))
+					{
+						return false;
+					}
 				}
 				else
 				{
-					FileSystem->FileRemove(path);
+					if (!m_FileSystem.FileRemove(path))
+					{
+						return false;
+					}
 				}
+				return true;
 			}
 		};	// class DirectoryRemoveRecursiveDelegate
 
-		//DirectoryRemoveRecursiveDelegate directoryRemoveRecursiveDelegate{this};
-		//DirectoryIterateRecursive(directoryName, directoryRemoveRecursiveDelegate);
-
-		/*Directory directory(directoryName.CStr());
-		if (directory.IsValid())
-		{
-			for (auto directoryEntry = directory.ReadEntry(); directoryEntry.EntryName != nullptr; directoryEntry = directory.ReadEntry())
-			{
-				auto const directoryEntryPath = Paths::Combine(directoryName, directoryEntry.EntryName);
-				if (directoryEntry.EntryIsDirectory)
-				{
-					DirectoryRemoveRecursive(directoryEntryPath);
-				}
-				else
-				{
-					FileRemove(directoryEntryPath);
-				}
-			}
-			directory.Close();
-
-			// If any internal removal has failed, attempt of removal outer directory will fail and false would be returned.
-			return DirectoryRemove(directoryName);
-		}*/
-		return false;
+		DirectoryRemoveRecursiveDelegate directoryIterateRecursiveDelegate(*this);
+		return DirectoryIterate(directoryName, directoryIterateRecursiveDelegate);
 	}
 
 GD_NAMESPACE_END

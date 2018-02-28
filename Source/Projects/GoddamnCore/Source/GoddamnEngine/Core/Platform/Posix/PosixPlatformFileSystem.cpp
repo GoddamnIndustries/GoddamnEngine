@@ -178,8 +178,8 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual bool FileRemove(WideString const& filename) override final;
 		GDINT virtual bool FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final;
 		GDINT virtual bool FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final;
-		GDINT virtual SharedPtr<InputStream> FileOpenRead(WideString const& filename) const override final;
-		GDINT virtual SharedPtr<OutputStream> FileOpenWrite(WideString const& filename, bool const doAppend) const override final;
+		GDINT virtual SharedPtr<InputStream> FileStreamOpenRead(WideString const& filename) const override final;
+		GDINT virtual SharedPtr<OutputStream> FileStreamOpenWrite(WideString const& filename, bool const doAppend) const override final;
 
 		// ------------------------------------------------------------------------------------------
 		// Directory utilities.
@@ -302,7 +302,7 @@ GD_NAMESPACE_BEGIN
      * @param filename Path to the file.
      * @returns Opened valid input stream or null pointer if operation has failed.
      */
-    GDINT SharedPtr<InputStream> PosixPlatformDiskFileSystem::FileOpenRead(WideString const& filename) const
+    GDINT SharedPtr<InputStream> PosixPlatformDiskFileSystem::FileStreamOpenRead(WideString const& filename) const
     {
         auto const filenameSystem = StringConv::EncodeUTF8(Paths::Platformize(filename));
         auto const fileHandle = open(filenameSystem.CStr(), O_RDONLY);
@@ -321,7 +321,7 @@ GD_NAMESPACE_BEGIN
      *
      * @returns Opened valid output stream or null pointer if operation has failed.
      */
-    GDINT SharedPtr<OutputStream> PosixPlatformDiskFileSystem::FileOpenWrite(WideString const& filename, bool const doAppend) const
+    GDINT SharedPtr<OutputStream> PosixPlatformDiskFileSystem::FileStreamOpenWrite(WideString const& filename, bool const doAppend) const
     {
         auto const filenameSystem = StringConv::EncodeUTF8(Paths::Platformize(filename));
         auto const fileHandle = open(filenameSystem.CStr(), O_CREAT | O_WRONLY | (doAppend ? O_APPEND : O_TRUNC));
