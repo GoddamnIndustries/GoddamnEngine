@@ -71,7 +71,7 @@ function InstallGoddamnSDK {
 	fi
 	
 	# Building the GoddamnBuildSystem..
-	$MsBuildOrXBuild /nologo /verbosity:quiet "./Source/Projects/GoddamnBuildSystem/GoddamnBuildSystem.csproj" /property:Configuration=Release /property:Platform=AnyCPU > /dev/null
+	$MsBuildOrXBuild /nologo /verbosity:quiet "./Source/Projects/GoddamnBuildSystem/GoddamnBuildSystem-MonoDevelop.csproj" /property:Configuration=Release /property:Platform=AnyCPU > /dev/null
 	if [[ $? != 0 ]]; then
 		printf "Failed to compile GoddamnBuildSystem.\n"
 		ExitOnFailure
