@@ -307,7 +307,7 @@ GD_NAMESPACE_BEGIN
 		if (numBytesRead != nullptr)
 		{
 			DWORD numBytesReadSystem = 0;
-			if (ReadFile(fileHandle, readBuffer, readBufferSizeBytes, &numBytesReadSystem, nullptr) == FALSE)
+			if (ReadFile(fileHandle, readBuffer, readBufferSizeBytes, &numBytesReadSystem, nullptr) == TRUE)
 			{
 				*numBytesRead = numBytesReadSystem;
 				return true;
@@ -315,7 +315,7 @@ GD_NAMESPACE_BEGIN
 		}
 		else
 		{
-			if (ReadFile(fileHandle, readBuffer, readBufferSizeBytes, nullptr, nullptr) == FALSE)
+			if (ReadFile(fileHandle, readBuffer, readBufferSizeBytes, nullptr, nullptr) == TRUE)
 			{
 				return true;
 			}
@@ -339,7 +339,7 @@ GD_NAMESPACE_BEGIN
 		if (numBytesWritten != nullptr)
 		{
 			DWORD numBytesReadSystem = 0;
-			if (WriteFile(fileHandle, writeBuffer, writeBufferSizeBytes, &numBytesReadSystem, nullptr) == FALSE)
+			if (WriteFile(fileHandle, writeBuffer, writeBufferSizeBytes, &numBytesReadSystem, nullptr) == TRUE)
 			{
 				*numBytesWritten = numBytesReadSystem;
 				return true;
@@ -347,7 +347,7 @@ GD_NAMESPACE_BEGIN
 		}
 		else
 		{
-			if (WriteFile(fileHandle, writeBuffer, writeBufferSizeBytes, nullptr, nullptr) == FALSE)
+			if (WriteFile(fileHandle, writeBuffer, writeBufferSizeBytes, nullptr, nullptr) == TRUE)
 			{
 				return true;
 			}

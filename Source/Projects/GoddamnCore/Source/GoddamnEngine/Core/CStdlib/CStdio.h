@@ -234,7 +234,7 @@ GD_NAMESPACE_BEGIN
 	{
 		// ReSharper disable CppInconsistentNaming
 		remove, _wremove, wremove,
-		rename, _wrename, wrename,
+		//rename, _wrename, wrename,
 		tmpfile_s, tmpfile,
 		tmpnam_s, tmpnam,
 		fopen_s, fopen, _wfopen_s, wfopen,

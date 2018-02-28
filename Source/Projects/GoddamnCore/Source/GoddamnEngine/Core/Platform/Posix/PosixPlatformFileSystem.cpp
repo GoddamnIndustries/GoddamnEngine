@@ -178,8 +178,17 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual bool FileRemove(WideString const& filename) override final;
 		GDINT virtual bool FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final;
 		GDINT virtual bool FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final;
-		GDINT virtual SharedPtr<InputStream> FileStreamOpenRead(WideString const& filename) const override final;
-		GDINT virtual SharedPtr<OutputStream> FileStreamOpenWrite(WideString const& filename, bool const doAppend) const override final;
+
+        // ------------------------------------------------------------------------------------------
+        // File IO utilities.
+        // ------------------------------------------------------------------------------------------
+
+        GDINT virtual bool FileOpenRead(WideString const& filename, Handle& fileHandle) const override final;
+        GDINT virtual bool FileOpenWrite(WideString const& filename, Handle& fileHandle, bool const doAppend) override final;
+        GDINT virtual bool FileClose(Handle const fileHandle) const override final;
+        GDINT virtual bool FileSeek(Handle const fileHandle, Int64 const offset, SeekOrigin const origin, UInt64* const newPosition) const override final;
+        GDINT virtual bool FileRead(Handle const fileHandle, Handle const readBuffer, UInt32 const readBufferSizeBytes, UInt32* const numBytesRead) const override final;
+        GDINT virtual bool FileWrite(Handle const fileHandle, CHandle const readBuffer, UInt32 const readBufferSizeBytes, UInt32* const numBytesRead) override final;
 
 		// ------------------------------------------------------------------------------------------
 		// Directory utilities.
@@ -295,43 +304,179 @@ GD_NAMESPACE_BEGIN
         }
         return false;
     }
-        
+
+    // ------------------------------------------------------------------------------------------
+    // File IO utilities.
+    // ------------------------------------------------------------------------------------------
+
     /*!
-     * Opens a input stream for the specified file.
+     * Opens a input handle for the specified file.
      *
      * @param filename Path to the file.
-     * @returns Opened valid input stream or null pointer if operation has failed.
+     * @param fileHandle File handle.
+     *
+     * @returns True if file was successfully opened.
      */
-    GDINT SharedPtr<InputStream> PosixPlatformDiskFileSystem::FileStreamOpenRead(WideString const& filename) const
+    GDINT bool PosixPlatformDiskFileSystem::FileOpenRead(WideString const& filename, Handle& fileHandle) const
     {
         auto const filenameSystem = StringConv::EncodeUTF8(Paths::Platformize(filename));
-        auto const fileHandle = open(filenameSystem.CStr(), O_RDONLY);
-        if (fileHandle != -1)
+        auto const fileHandleSystem = open(filenameSystem.CStr(), O_RDONLY);
+        if (fileHandleSystem != -1)
         {
-            return gd_new PosixFileInputStream(fileHandle);
+            fileHandle = reinterpret_cast<Handle>(fileHandleSystem);
+            return true;
         }
-        return nullptr;
+        return false;
     }
-        
+
     /*!
-     * Opens a output stream for the specified file.
+     * Opens a output handle for the specified file.
      *
      * @param filename Path to the file.
+     * @param fileHandle File handle.
      * @param doAppend If true new data would be written to the end of file.
      *
-     * @returns Opened valid output stream or null pointer if operation has failed.
+     * @returns True if file was successfully opened.
      */
-    GDINT SharedPtr<OutputStream> PosixPlatformDiskFileSystem::FileStreamOpenWrite(WideString const& filename, bool const doAppend) const
+    GDINT bool PosixPlatformDiskFileSystem::FileOpenWrite(WideString const& filename, Handle& fileHandle, bool const doAppend)
     {
         auto const filenameSystem = StringConv::EncodeUTF8(Paths::Platformize(filename));
-        auto const fileHandle = open(filenameSystem.CStr(), O_CREAT | O_WRONLY | (doAppend ? O_APPEND : O_TRUNC));
-        if (fileHandle != -1)
+        auto const fileHandleSystem = open(filenameSystem.CStr(), O_CREAT | O_WRONLY | (doAppend ? O_APPEND : O_TRUNC));
+        if (fileHandleSystem != -1)
         {
-            return gd_new PosixFileOutputStream(fileHandle);
+            fileHandle = reinterpret_cast<Handle>(fileHandleSystem);
+            return true;
         }
-        return nullptr;
+        return false;
     }
-        
+
+    /*!
+     * Closes a file handle.
+     *
+     * @param fileHandle File handle.
+     * @returns True if file was successfully closed.
+     */
+    GDINT bool PosixPlatformDiskFileSystem::FileClose(Handle const fileHandle) const
+    {
+        GD_DEBUG_VERIFY(fileHandle != nullptr);
+        auto const fileHandleSystem = reinterpret_cast<Int32>(fileHandle);
+        return close(fileHandleSystem) == 0;
+    }
+
+    /*!
+     * Reposition this file handle to new specified position.
+     *
+     * @param fileHandle File handle.
+     * @param offset The offset in bytes from specified origin.
+     * @param origin Defines origin from which point make offset.
+     * @param newPosition New position in file.
+     *
+     * @returns True if operation succeeded.
+     */
+    GDINT bool PosixPlatformDiskFileSystem::FileSeek(Handle const fileHandle, Int64 const offset, SeekOrigin const origin, UInt64* const newPosition) const
+    {
+        GD_DEBUG_VERIFY(fileHandle != nullptr);
+
+        Int32 originSystem = 0;
+        switch (origin)
+        {
+            case SeekOrigin::Beginning:
+                originSystem = SEEK_SET;
+                break;
+            case SeekOrigin::Current:
+                originSystem = SEEK_CUR;
+                break;
+            case SeekOrigin::End:
+                originSystem = SEEK_END;
+                break;
+        }
+
+        auto const fileHandleSystem = reinterpret_cast<Int32>(fileHandle);
+        if (newPosition != nullptr)
+        {
+            auto const newFilePointerSystem = lseek64(fileHandleSystem, offset, originSystem);
+            if (newFilePointerSystem != -1)
+            {
+                *newPosition = static_cast<UInt64>(newFilePointerSystem);
+                return true;
+            }
+        }
+        else
+        {
+            if (lseek64(fileHandleSystem, offset, originSystem) != -1)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*!
+     * Reads data from file.
+     *
+     * @param fileHandle File handle.
+     * @param readBuffer Output memory to which data would be written.
+     * @param readBufferSizeBytes Length of the element in bytes.
+     * @param numBytesRead Amount of bytes that was read from file.
+     *
+     * @returns True if operation succeeded.
+     */
+    GDINT bool PosixPlatformDiskFileSystem::FileRead(Handle const fileHandle, Handle const readBuffer, UInt32 const readBufferSizeBytes, UInt32* const numBytesRead) const
+    {
+        GD_DEBUG_VERIFY(fileHandle != nullptr);
+        auto const fileHandleSystem = reinterpret_cast<Int32>(fileHandle);
+        if (numBytesRead != nullptr)
+        {
+            auto const numBytesReadSystem = read(fileHandleSystem, readBuffer, readBufferSizeBytes);
+            if (numBytesReadSystem != -1)
+            {
+                *numBytesRead = static_cast<UInt32>(numBytesReadSystem);
+                return true;
+            }
+        }
+        else
+        {
+            if (read(fileHandleSystem, readBuffer, readBufferSizeBytes) != -1)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*!
+     * Writes data to file.
+     *
+     * @param fileHandle File handle.
+     * @param writeBuffer Input memory that would be written.
+     * @param writeBufferSizeBytes Length of the element in bytes.
+     * @param numBytesWritten Amount of bytes that were written to file.
+     *
+     * @returns True if operation succeeded.
+     */
+    GDINT bool PosixPlatformDiskFileSystem::FileWrite(Handle const fileHandle, CHandle const writeBuffer, UInt32 const writeBufferSizeBytes, UInt32* const numBytesWritten)
+    {
+        GD_DEBUG_VERIFY(fileHandle != nullptr);
+        auto const fileHandleSystem = reinterpret_cast<Int32>(fileHandle);
+        if (numBytesWritten != nullptr)
+        {
+            auto const numBytesWrittenSystem = write(fileHandleSystem, writeBuffer, writeBufferSizeBytes);
+            if (numBytesWrittenSystem != -1)
+            {
+                *numBytesWritten = static_cast<UInt32>(numBytesWrittenSystem);
+                return true;
+            }
+        }
+        else
+        {
+            if (write(fileHandleSystem, writeBuffer, writeBufferSizeBytes) != -1)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // ------------------------------------------------------------------------------------------
     // Directory utilities.
     // ------------------------------------------------------------------------------------------
