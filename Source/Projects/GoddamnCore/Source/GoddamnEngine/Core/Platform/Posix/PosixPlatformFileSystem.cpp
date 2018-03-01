@@ -17,149 +17,10 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <stdio.h>
 
-#include <GoddamnEngine/Core/Misc/StringConv.h>
 #include "GoddamnEngine/Core/IO/Paths.h"
 
 GD_NAMESPACE_BEGIN
-
-    // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-    //! File input stream on Posix platforms.
-    // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-    class GD_PLATFORM_KERNEL PosixFileInputStream final : public InputStream
-    {
-    private:
-        Int32 m_FileHandle;
-        
-    public:
-        GDINL explicit PosixFileInputStream(Int32 const fileHandle)
-            : m_FileHandle(fileHandle)
-        {
-        }
-        
-        GDINT virtual ~PosixFileInputStream()
-        {
-            Close();
-        }
-        
-    public:
-        GDINT virtual bool IsValid() const override final
-        {
-            return m_FileHandle != -1;
-        }
-        
-        GDINT virtual SizeTp GetPosition() const override final
-        {
-            GD_VERIFY(IsValid());
-            return const_cast<PosixFileInputStream*>(this)->Seek(0, SeekOrigin::Current);
-        }
-        
-        GDINT virtual void Close() override final
-        {
-            close(m_FileHandle);
-            m_FileHandle = -1;
-        }
-        
-        GDINT virtual SizeTp Seek(PtrDiffTp const offset, SeekOrigin const origin) override final
-        {
-            GD_VERIFY(IsValid());
-            Int32 originSystem = 0;
-            switch (origin)
-            {
-                case SeekOrigin::Beginning:
-                    originSystem = SEEK_SET;
-                    break;
-                case SeekOrigin::Current:
-                    originSystem = SEEK_CUR;
-                    break;
-                case SeekOrigin::End:
-                    originSystem = SEEK_END;
-                    break;
-            }
-            return lseek(m_FileHandle, offset, originSystem);
-        }
-        
-        GDINT virtual Int16 Read() override final
-        {
-            GD_VERIFY(IsValid());
-            Byte byte;
-            if (Read(&byte, sizeof(byte), 1) != 1)
-            {
-                return -1;
-            }
-            return byte;
-        }
-        
-        GDINT virtual SizeTp Read(Handle const array, SizeTp const size, SizeTp const count) override final
-        {
-            GD_VERIFY(IsValid());
-            for (SizeTp i = 0; i < count; ++i)
-            {
-                auto const arrayBlock = static_cast<Byte*>(array) + i * size;
-                if (read(m_FileHandle, arrayBlock, size) != size)
-                {
-                    return i;
-                }
-            }
-            return count;
-        }
-    };    // class PosixFileInputStream
-
-    // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-    //! File output stream on Posix platforms.
-    // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-    class GD_PLATFORM_KERNEL PosixFileOutputStream : public OutputStream
-    {
-    private:
-        Int32 m_FileHandle;
-        
-    public:
-        GDINL explicit PosixFileOutputStream(Int32 const fileHandle)
-            : m_FileHandle(fileHandle)
-        {
-        }
-        
-        GDINT virtual ~PosixFileOutputStream()
-        {
-            Close();
-        }
-        
-    public:
-        GDINT virtual bool IsValid() const override final
-        {
-            return m_FileHandle != -1;
-        }
-        
-        GDINT virtual void Close() override final
-        {
-            close(m_FileHandle);
-            m_FileHandle = -1;
-        }
-        
-        GDINT virtual void Flush() override final
-        {
-        }
-        
-        GDINT virtual bool Write(Byte const byte) override final
-        {
-            return Write(&byte, sizeof(byte), 1) == 1;
-        }
-        
-        GDINT virtual SizeTp Write(CHandle const array, SizeTp const size, SizeTp const count) override final
-        {
-            GD_VERIFY(IsValid(), "Writing to invalid stream.");
-            for (SizeTp i = 0; i < count; ++i)
-            {
-                auto const arrayBlock = static_cast<Byte const*>(array) + i * size;
-                if (write(m_FileHandle, arrayBlock, size) != size)
-                {
-                    return i;
-                }
-            }
-            return count;
-        }
-    };    // class PosixFileOutputStream
 
     // **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
     //! Disk file system on Posix platforms.
@@ -177,7 +38,6 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual bool FileCreateEmpty(WideString const& filename) override final;
 		GDINT virtual bool FileRemove(WideString const& filename) override final;
 		GDINT virtual bool FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final;
-		GDINT virtual bool FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite) override final;
 
         // ------------------------------------------------------------------------------------------
         // File IO utilities.
@@ -237,7 +97,7 @@ GD_NAMESPACE_BEGIN
         {
             if (!S_ISDIR(fileAttributeData.st_mode))
             {
-                fileSize = fileAttributeData.st_size;
+                fileSize = static_cast<UInt64>(fileAttributeData.st_size);
                 return true;
             }
         }
@@ -359,7 +219,7 @@ GD_NAMESPACE_BEGIN
     GDINT bool PosixPlatformDiskFileSystem::FileClose(Handle const fileHandle) const
     {
         GD_DEBUG_VERIFY(fileHandle != nullptr);
-        auto const fileHandleSystem = reinterpret_cast<Int32>(fileHandle);
+        auto const fileHandleSystem = static_cast<Int32>(reinterpret_cast<IntPtr>(fileHandle));
         return close(fileHandleSystem) == 0;
     }
 
@@ -391,7 +251,7 @@ GD_NAMESPACE_BEGIN
                 break;
         }
 
-        auto const fileHandleSystem = reinterpret_cast<Int32>(fileHandle);
+        auto const fileHandleSystem = static_cast<Int32>(reinterpret_cast<IntPtr>(fileHandle));
         if (newPosition != nullptr)
         {
             auto const newFilePointerSystem = lseek64(fileHandleSystem, offset, originSystem);
@@ -424,7 +284,7 @@ GD_NAMESPACE_BEGIN
     GDINT bool PosixPlatformDiskFileSystem::FileRead(Handle const fileHandle, Handle const readBuffer, UInt32 const readBufferSizeBytes, UInt32* const numBytesRead) const
     {
         GD_DEBUG_VERIFY(fileHandle != nullptr);
-        auto const fileHandleSystem = reinterpret_cast<Int32>(fileHandle);
+        auto const fileHandleSystem = static_cast<Int32>(reinterpret_cast<IntPtr>(fileHandle));
         if (numBytesRead != nullptr)
         {
             auto const numBytesReadSystem = read(fileHandleSystem, readBuffer, readBufferSizeBytes);
@@ -457,7 +317,7 @@ GD_NAMESPACE_BEGIN
     GDINT bool PosixPlatformDiskFileSystem::FileWrite(Handle const fileHandle, CHandle const writeBuffer, UInt32 const writeBufferSizeBytes, UInt32* const numBytesWritten)
     {
         GD_DEBUG_VERIFY(fileHandle != nullptr);
-        auto const fileHandleSystem = reinterpret_cast<Int32>(fileHandle);
+        auto const fileHandleSystem = static_cast<Int32>(reinterpret_cast<IntPtr>(fileHandle));
         if (numBytesWritten != nullptr)
         {
             auto const numBytesWrittenSystem = write(fileHandleSystem, writeBuffer, writeBufferSizeBytes);
@@ -559,7 +419,7 @@ GD_NAMESPACE_BEGIN
 #endif  // if GD_PLATFORM_API_COCOA
                     )
                 {
-                    auto const directoryEntryName = Paths::Combine(directoryName, StringConv::DecodeUTF8(directoryEntryHandle->d_name, directoryEntryHandle->d_namlen));
+                    auto const directoryEntryName = Paths::Combine(directoryName, StringConv::DecodeUTF8(directoryEntryHandle->d_name));
                     directoryIterateDelegate.OnVisitDirectoryEntry(directoryEntryName, directoryEntryHandle->d_type == DT_DIR);
                 }
             }

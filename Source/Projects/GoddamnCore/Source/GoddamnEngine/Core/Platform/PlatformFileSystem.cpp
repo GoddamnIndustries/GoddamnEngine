@@ -180,7 +180,7 @@ GD_NAMESPACE_BEGIN
      *
      * @returns True if file was successfully moved.
      */
-    GDINT bool IFileSystem::FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite /*= false*/)
+    GDINT bool IFileSystem::FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite)
     {
         if (FileExists(srcFilename) && (doOverwrite || FileExists(dstFilename)))
         {

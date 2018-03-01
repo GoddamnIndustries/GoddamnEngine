@@ -11,6 +11,8 @@
  * Encoding conversion.
  */
 #pragma once
+#include <GoddamnEngine/Core/Platform/PlatformEncoding.h>
+#if 0
 #define GD_STRINGCONV_H
 
 #include <GoddamnEngine/Include.h>
@@ -87,10 +89,11 @@ GD_NAMESPACE_BEGIN
 		}
 
 	};	// class StringConvBaseGeneric
+	typedef StringConvBaseGeneric StringConvBase;
 
 GD_NAMESPACE_END
 
-#include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/Misc, StringConv)
+//#include GD_PLATFORM_API_INCLUDE(GoddamnEngine/Core/Misc, StringConv)
 #undef GD_STRINGCONV_H
 
 GD_NAMESPACE_BEGIN
@@ -173,3 +176,4 @@ GD_NAMESPACE_BEGIN
 	};	// class StringConv
 
 GD_NAMESPACE_END
+#endif
