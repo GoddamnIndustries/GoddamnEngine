@@ -77,11 +77,61 @@ GD_NAMESPACE_BEGIN
 		gd_testing_assert(IPlatformDiskFileSystem::Get().FileExists(L"Tests/FileCreateEmpty.txt"));
 
 		// Checking if function returns true for an existing file.
-		// If this function modifies contents of the directory then PlatformFileSystemFileOpenRead test will fail.
+		// If this function modifies contents of the directory then PlatformFileSystemFileSize test will fail.
 		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileAlreadyExists.txt"));
 
 		// Checking if function returns false for an existing directory.
 		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/DirectoryExists") == false);
+	};
+
+	gd_testing_unit_test(PlatformFileSystemFileCopy)
+	{
+		// Checking if function copies existing file.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/FileExists.txt", L"Tests/FileExists2.txt"));
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileExists(L"Tests/FileExists2.txt"));
+
+		// Checking if function copies existing file with overwrite.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/FileExists.txt", L"Tests/FileExists2.txt") == false);
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/FileExists.txt", L"Tests/FileExists2.txt", true));
+
+		// Checking if function failes on non-existing destination file directory.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/FileExists.txt", L"Tests/DirectoryDoesNotExist/FileExists2.txt") == false);
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/FileExists.txt", L"Tests/DirectoryDoesNotExist/FileExists2.txt", true) == false);
+
+		// Checking if function failes on non-existing file.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/FileDoesNotExist.txt", L"Tests/FileDoesNotExist2.txt") == false);
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/FileDoesNotExist.txt", L"Tests/FileDoesNotExist2.txt", true) == false);
+
+		// Checking if function returns false for an existing directory source.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/DirectoryExists", L"Tests/FileExists2.txt") == false);
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/DirectoryExists", L"Tests/FileExists2.txt", true) == false);
+
+		// Checking if function returns false for an existing directory destination.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/FileExists.txt", L"Tests/DirectoryExists") == false);
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCopy(L"Tests/FileExists.txt", L"Tests/DirectoryExists", true) == false);
+	};
+
+	gd_testing_unit_test(PlatformFileSystemFileMove)
+	{
+		// Checking if function copies existing file with overwrite.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileExists2.txt", L"Tests/FileExists.txt") == false);
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileExists2.txt", L"Tests/FileExists.txt", true));
+
+		// Checking if function failes on non-existing destination file directory.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileExists.txt", L"Tests/DirectoryDoesNotExist/FileExists2.txt") == false);
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileExists.txt", L"Tests/DirectoryDoesNotExist/FileExists2.txt", true) == false);
+
+		// Checking if function failes on non-existing file.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileDoesNotExist.txt", L"Tests/FileDoesNotExist2.txt") == false);
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileDoesNotExist.txt", L"Tests/FileDoesNotExist2.txt", true) == false);
+
+		// Checking if function returns false for an existing directory source.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/DirectoryExists", L"Tests/FileExists2.txt") == false);
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/DirectoryExists", L"Tests/FileExists2.txt", true) == false);
+
+		// Checking if function returns false for an existing directory destination.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileExists.txt", L"Tests/DirectoryExists") == false);
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileExists.txt", L"Tests/DirectoryExists", true) == false);
 	};
 
 	gd_testing_unit_test(PlatformFileSystemFileSize)
@@ -196,36 +246,6 @@ GD_NAMESPACE_BEGIN
 	//		gd_testing_assert(IPlatformDiskFileSystem::Get().FileExists(L"Tests/FileCreateEmpty2.txt"));
 	//		gd_testing_assert(IPlatformDiskFileSystem::Get().FileExists(L"Tests/FileCreateEmpty.txt") == false);
 	//	}
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty2.txt");
-
-	//	// Checking if function failes on non-existing file.
-	//	gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileDoesNotExist.txt", L"Tests/FileDoesNotExist2.txt") == false);
-
-	//	// Checking if function failes on non-existing destination path.
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty.txt");
-	//	gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileCreateEmpty.txt", L"Tests/DirectoryDoesNotExist/FileCreateEmpty.txt") == false);
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty.txt");
-
-	//	// Checking if function failes on existing destination file without overwrite option.
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty.txt");
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty2.txt");
-	//	gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileCreateEmpty.txt", L"Tests/FileCreateEmpty2.txt") == false);
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty.txt");
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty2.txt");
-	//};
-
-	//gd_testing_unit_test(PlatformFileSystemFileCopy)
-	//{
-	//	// Checking if function moves existing file to the exising location.
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty.txt");
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty2.txt");
-	//	gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileCreateEmpty.txt", L"Tests/FileCreateEmpty2.txt"));
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty2.txt");
-
-	//	// Checking if function moves existing file to the exising location and overwrites exising file.
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty.txt");
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty2.txt");
-	//	gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileCreateEmpty.txt", L"Tests/FileCreateEmpty2.txt", true));
 	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty2.txt");
 
 	//	// Checking if function failes on non-existing file.

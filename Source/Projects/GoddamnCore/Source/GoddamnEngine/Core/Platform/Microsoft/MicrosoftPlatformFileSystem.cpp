@@ -150,6 +150,11 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystem::FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite)
 	{
+		if (DirectoryExists(srcFilename))
+		{
+			// Specified path is a path to file, this is an error.
+			return false;
+		}
 		auto const srcFilenameSystem = Paths::Platformize(srcFilename);
 		auto const dstFilenameSystem = Paths::Platformize(dstFilename);
 		if (MoveFileExW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), doOverwrite ? MOVEFILE_REPLACE_EXISTING : 0) == FALSE)
@@ -171,6 +176,11 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystem::FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite)
 	{
+		if (DirectoryExists(srcFilename))
+		{
+			// Specified path is a path to file, this is an error.
+			return false;
+		}
 		auto const srcFilenameSystem = Paths::Platformize(srcFilename);
 		auto const dstFilenameSystem = Paths::Platformize(dstFilename);
 		if (CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == FALSE)
