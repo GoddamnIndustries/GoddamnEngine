@@ -56,7 +56,7 @@ GD_NAMESPACE_BEGIN
 		 * @param other The other string builder to move into this.
 		 */
 		GDINL BaseStringBuilder(BaseStringBuilder&& other) noexcept
-			: m_Container(Move(other.m_Container))
+			: m_Container(Utils::Move(other.m_Container))
 		{
 		}
 
@@ -172,6 +172,10 @@ GD_NAMESPACE_BEGIN
 		{
 			return Append(text.CStr(), text.GetLength());
 		}
+		GDINL BaseStringBuilder& Append(BaseStringBuilder const& text)
+		{
+			return Append(text.CStr(), text.GetLength());
+		}
 		//! @}
 
 		/*!
@@ -214,7 +218,7 @@ GD_NAMESPACE_BEGIN
 		{
 			if (this != &other)
 			{
-				m_Container = Move(other.m_Container);
+				m_Container = Utils::Move(other.m_Container);
 			}
 			return *this;
 		}

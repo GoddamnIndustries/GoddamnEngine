@@ -21,11 +21,22 @@ GD_NAMESPACE_BEGIN
 	class DirectoryTestIterateDelegate : public IFileSystemDirectoryIterateDelegate
 	{
 	public:
-		WideStringBuilder Content;
+		WideStringBuilder Contents;
 	private:
 		GDINT virtual bool OnVisitDirectoryEntry(WideString const& path, bool const isDirectory) override final
 		{
-			Content.AppendFormat(L"%s %d;", Paths::GetFileName(path).CStr(), isDirectory);
+			// Directories and files may come in different order on different platforms, so we need to sort entries.
+			if (isDirectory)
+			{
+				Contents.AppendFormat(L"%ls 1;", Paths::GetFileName(path).CStr());
+			}
+			else
+			{
+				WideStringBuilder newContents;
+				newContents.AppendFormat(L"%ls 0;", Paths::GetFileName(path).CStr());
+				newContents.Append(Contents);
+				Contents = Utils::Move(newContents);
+			}
 			return true;
 		}
 	};	// class DirectoryTestIterateDelegate
@@ -126,7 +137,7 @@ GD_NAMESPACE_BEGIN
 		// Checking if function returns true existing directory and iteration result is equal to expected.
 		DirectoryTestIterateDelegate directoryTestIterateDelegate;
 		gd_testing_assert(IPlatformDiskFileSystem::Get().DirectoryIterate(L"Tests/DirectoryExists", directoryTestIterateDelegate));
-		gd_testing_assert(directoryTestIterateDelegate.Content.ToString() == L"1.txt 0;2 1;");
+		gd_testing_assert(directoryTestIterateDelegate.Contents.ToString() == L"1.txt 0;2 1;");
 
 		// Checking if function returns false for non-existing directory.
 		gd_testing_assert(IPlatformDiskFileSystem::Get().DirectoryIterate(L"Tests/DirectoryDoesNotExist", directoryTestIterateDelegate) == false);
@@ -140,7 +151,7 @@ GD_NAMESPACE_BEGIN
 		// Checking if function returns true existing directory and iteration result is equal to expected.
 		DirectoryTestIterateDelegate directoryTestIterateDelegate;
 		gd_testing_assert(IPlatformDiskFileSystem::Get().DirectoryIterateRecursive(L"Tests/DirectoryExists", directoryTestIterateDelegate));
-		gd_testing_assert(directoryTestIterateDelegate.Content.ToString() == L"1.txt 0;3.txt 0;2 1;");
+		gd_testing_assert(directoryTestIterateDelegate.Contents.ToString() == L"1.txt 0;3.txt 0;2 1;");
 
 		// Checking if function returns false for non-existing directory.
 		gd_testing_assert(IPlatformDiskFileSystem::Get().DirectoryIterateRecursive(L"Tests/DirectoryDoesNotExist", directoryTestIterateDelegate) == false);
