@@ -151,6 +151,11 @@ GD_NAMESPACE_BEGIN
      */
     GDINT bool PosixPlatformDiskFileSystem::FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite)
     {
+	    if (DirectoryExists(srcFilename))
+	    {
+		    // Specified path is a path to file, this is an error.
+		    return false;
+	    }
         if (doOverwrite || !FileExists(dstFilename))
         {
             auto const srcFilenameSystem = StringConv::EncodeUTF8(Paths::Platformize(srcFilename));
@@ -179,6 +184,11 @@ GD_NAMESPACE_BEGIN
      */
     GDINT bool PosixPlatformDiskFileSystem::FileOpenRead(WideString const& filename, Handle& fileHandle) const
     {
+	    if (DirectoryExists(filename))
+	    {
+		    // Specified path is a path to file, this is an error.
+		    return false;
+	    }
         auto const filenameSystem = StringConv::EncodeUTF8(Paths::Platformize(filename));
         auto const fileHandleSystem = open(filenameSystem.CStr(), O_RDONLY);
         if (fileHandleSystem != -1)
@@ -200,6 +210,11 @@ GD_NAMESPACE_BEGIN
      */
     GDINT bool PosixPlatformDiskFileSystem::FileOpenWrite(WideString const& filename, Handle& fileHandle, bool const doAppend)
     {
+	    if (DirectoryExists(filename))
+	    {
+		    // Specified path is a path to file, this is an error.
+		    return false;
+	    }
         auto const filenameSystem = StringConv::EncodeUTF8(Paths::Platformize(filename));
         auto const fileHandleSystem = open(filenameSystem.CStr(), O_CREAT | O_WRONLY | (doAppend ? O_APPEND : O_TRUNC));
         if (fileHandleSystem != -1)
@@ -365,12 +380,20 @@ GD_NAMESPACE_BEGIN
      */
     GDINT bool PosixPlatformDiskFileSystem::DirectoryCreateEmpty(WideString const& directoryName) const
     {
-        auto const directoryNameSystem = StringConv::EncodeUTF8(Paths::Platformize(directoryName));
-        if (mkdir(directoryNameSystem.CStr(), 0755) != 0)
-        {
-			sleep(0);
-			return mkdir(directoryNameSystem.CStr(), 0755) == 0;
-		}
+	    if (!DirectoryExists(directoryName))
+	    {
+		    if (FileExists(directoryName))
+		    {
+			    // Specified path is a path to file, this is an error.
+			    return false;
+		    }
+	        auto const directoryNameSystem = StringConv::EncodeUTF8(Paths::Platformize(directoryName));
+	        if (mkdir(directoryNameSystem.CStr(), 0755) != 0)
+	        {
+				sleep(0);
+				return mkdir(directoryNameSystem.CStr(), 0755) == 0;
+			}
+	    }
 		return true;
     }
         

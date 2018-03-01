@@ -141,7 +141,6 @@ GD_NAMESPACE_BEGIN
             return __sync_fetch_and_add(value, amount);
         }
         //! @}
-        
     };    // class PosixPlatformAtomics
 
     GD_IMPLEMENT_SINGLETON(IPlatformAtomics, PosixPlatformAtomics);

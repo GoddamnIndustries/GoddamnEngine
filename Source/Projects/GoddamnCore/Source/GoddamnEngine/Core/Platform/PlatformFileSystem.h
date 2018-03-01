@@ -231,7 +231,7 @@ GD_NAMESPACE_BEGIN
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class GD_PLATFORM_KERNEL IPlatformDiskFileSystem : public IFileSystem, public Singleton<IPlatformDiskFileSystem>
 	{
-	private:
+	public:
 		GDINT virtual SharedPtr<IInputStream> FileStreamOpenRead(WideString const& filename) const override final;
 		GDINT virtual SharedPtr<IOutputStream> FileStreamOpenWrite(WideString const& filename, bool const doAppend) override final;
 

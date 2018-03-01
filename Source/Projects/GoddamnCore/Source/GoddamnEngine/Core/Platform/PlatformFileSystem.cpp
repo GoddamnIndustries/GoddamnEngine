@@ -34,7 +34,11 @@ GD_NAMESPACE_BEGIN
 	private:
 		GDINT virtual void Close(bool* const resultPtr) override final
 		{
-			auto const result = m_FileSystem.FileClose(m_FileHandle);
+			auto const result = m_FileHandle == nullptr || m_FileSystem.FileClose(m_FileHandle);
+			if (result)
+			{
+				m_FileHandle = nullptr;
+			}
 			if (resultPtr != nullptr)
 			{
 				*resultPtr = result;
@@ -43,27 +47,10 @@ GD_NAMESPACE_BEGIN
 			{
 				GD_VERIFY_FALSE("Unhandled IO error: failed to close a file.");
 			}
-			else
-			{
-				m_FileHandle = nullptr;
-			}
-		}
-		GDINT virtual UInt32 Read(Handle const readBuffer, UInt32 const readBufferSizeBytes, bool* const resultPtr) override final
-		{
-			UInt32 numBytesRead = 0;
-			auto const result = m_FileSystem.FileRead(m_FileHandle, readBuffer, readBufferSizeBytes, &numBytesRead);
-			if (resultPtr != nullptr)
-			{
-				*resultPtr = result;
-			}
-			else if (!result)
-			{
-				GD_VERIFY_FALSE("Unhandled IO error: reading from file failed.");
-			}
-			return numBytesRead;
 		}
 		GDINT virtual UInt64 Seek(Int64 const offset, SeekOrigin const origin, bool* const resultPtr) override final
 		{
+			GD_DEBUG_VERIFY(m_FileHandle != nullptr);
 			UInt64 newPosition = 0;
 			auto const result = m_FileSystem.FileSeek(m_FileHandle, offset, origin, &newPosition);
 			if (resultPtr != nullptr)
@@ -75,6 +62,21 @@ GD_NAMESPACE_BEGIN
 				GD_VERIFY_FALSE("Unhandled IO error: repositioning file failed.");
 			}
 			return newPosition;
+		}
+		GDINT virtual UInt32 Read(Handle const readBuffer, UInt32 const readBufferSizeBytes, bool* const resultPtr) override final
+		{
+			GD_DEBUG_VERIFY(m_FileHandle != nullptr);
+			UInt32 numBytesRead = 0;
+			auto const result = m_FileSystem.FileRead(m_FileHandle, readBuffer, readBufferSizeBytes, &numBytesRead);
+			if (resultPtr != nullptr)
+			{
+				*resultPtr = result;
+			}
+			else if (!result)
+			{
+				GD_VERIFY_FALSE("Unhandled IO error: reading from file failed.");
+			}
+			return numBytesRead;
 		}
 	};	// class FileInputStream
 
@@ -99,7 +101,11 @@ GD_NAMESPACE_BEGIN
 	private:
 		GDINT virtual void Close(bool* const resultPtr) override final
 		{
-			auto const result = m_FileSystem.FileClose(m_FileHandle);
+			auto const result = m_FileHandle == nullptr || m_FileSystem.FileClose(m_FileHandle);
+			if (result)
+			{
+				m_FileHandle = nullptr;
+			}
 			if (resultPtr != nullptr)
 			{
 				*resultPtr = result;
@@ -108,13 +114,10 @@ GD_NAMESPACE_BEGIN
 			{
 				GD_VERIFY_FALSE("Unhandled IO error: failed to close a file.");
 			}
-			else
-			{
-				m_FileHandle = nullptr;
-			}
 		}
 		GDINT virtual UInt64 Seek(Int64 const offset, SeekOrigin const origin, bool* const resultPtr) override final
 		{
+			GD_DEBUG_VERIFY(m_FileHandle != nullptr);
 			UInt64 newPosition = 0;
 			auto const result = m_FileSystem.FileSeek(m_FileHandle, offset, origin, &newPosition);
 			if (resultPtr != nullptr)
@@ -129,6 +132,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINT virtual UInt32 Write(CHandle const writeBuffer, UInt32 const writeBufferSizeBytes, bool* const resultPtr) override final
 		{
+			GD_DEBUG_VERIFY(m_FileHandle != nullptr);
 			UInt32 numBytesWritten = 0;
 			auto const result = m_FileSystem.FileWrite(m_FileHandle, writeBuffer, writeBufferSizeBytes, &numBytesWritten);
 			if (resultPtr != nullptr)
@@ -182,7 +186,7 @@ GD_NAMESPACE_BEGIN
      */
     GDINT bool IFileSystem::FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite)
     {
-        if (FileExists(srcFilename) && (doOverwrite || FileExists(dstFilename)))
+        if (FileExists(srcFilename) && (doOverwrite || !FileExists(dstFilename)))
         {
             auto srcFileStream = FileStreamOpenRead(srcFilename);
             auto dstFileStream = FileStreamOpenWrite(dstFilename);
@@ -193,7 +197,7 @@ GD_NAMESPACE_BEGIN
                 auto const buffer = GD_MALLOC_ARRAY_T(Byte, bufferSize);
 				
 				auto result = true;
-				while(result)
+				while (result)
 				{
 					auto const numBytesRead = srcFileStream->Read(buffer, bufferSize, &result);
 					if (result)
@@ -238,7 +242,7 @@ GD_NAMESPACE_BEGIN
 		Handle fileHandle = nullptr;
 		if (FileOpenRead(filename, fileHandle))
 		{
-			gd_new FileInputStream(*this, fileHandle);
+			return gd_new FileInputStream(*this, fileHandle);
 		}
 		return nullptr;
 	}
@@ -256,7 +260,7 @@ GD_NAMESPACE_BEGIN
 		Handle fileHandle = nullptr;
 		if (FileOpenWrite(filename, fileHandle, doAppend))
 		{
-			gd_new FileOutputStream(*this, fileHandle);
+			return gd_new FileOutputStream(*this, fileHandle);
 		}
 		return nullptr;
 	}
