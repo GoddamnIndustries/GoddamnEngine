@@ -108,14 +108,18 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystem::FileCreateEmpty(WideString const& filename)
 	{
-		auto const filenameSystem = Paths::Platformize(filename);
-		auto const emptyOrExistingFile = CreateFile2(filenameSystem.CStr(), GENERIC_WRITE, 0, CREATE_NEW | OPEN_EXISTING, nullptr);
-		if (emptyOrExistingFile != INVALID_HANDLE_VALUE)
+		if (!FileExists(filename))
 		{
-			CloseHandle(emptyOrExistingFile);
-			return true;
+			auto const filenameSystem = Paths::Platformize(filename);
+			auto const emptyFile = CreateFile2(filenameSystem.CStr(), GENERIC_WRITE, FILE_SHARE_READ, CREATE_NEW, nullptr);
+			if (emptyFile != INVALID_HANDLE_VALUE)
+			{
+				CloseHandle(emptyFile);
+				return true;
+			}
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	/*!
@@ -146,18 +150,14 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystem::FileMove(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite)
 	{
-		if (doOverwrite || !FileExists(dstFilename))
+		auto const srcFilenameSystem = Paths::Platformize(srcFilename);
+		auto const dstFilenameSystem = Paths::Platformize(dstFilename);
+		if (MoveFileExW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), doOverwrite ? MOVEFILE_REPLACE_EXISTING : 0) == FALSE)
 		{
-			auto const srcFilenameSystem = Paths::Platformize(srcFilename);
-			auto const dstFilenameSystem = Paths::Platformize(dstFilename);
-			if (MoveFileExW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), 0) == FALSE)
-			{
-				Sleep(0);
-				return MoveFileExW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), 0) == TRUE;
-			}
-			return true;
+			Sleep(0);
+			return MoveFileExW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), doOverwrite ? MOVEFILE_REPLACE_EXISTING : 0) == TRUE;
 		}
-		return false;
+		return true;
 	}
 
 	/*!
@@ -171,18 +171,14 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystem::FileCopy(WideString const& srcFilename, WideString const& dstFilename, bool const doOverwrite)
 	{
-		if (doOverwrite || !FileExists(dstFilename))
+		auto const srcFilenameSystem = Paths::Platformize(srcFilename);
+		auto const dstFilenameSystem = Paths::Platformize(dstFilename);
+		if (CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == FALSE)
 		{
-			auto const srcFilenameSystem = Paths::Platformize(srcFilename);
-			auto const dstFilenameSystem = Paths::Platformize(dstFilename);
-			if (CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == FALSE)
-			{
-				Sleep(0);
-				return CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == TRUE;
-			}
-			return true;
+			Sleep(0);
+			return CopyFileW(srcFilenameSystem.CStr(), dstFilenameSystem.CStr(), !doOverwrite) == TRUE;
 		}
-		return false;
+		return true;
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -380,10 +376,18 @@ GD_NAMESPACE_BEGIN
 	GDINT bool MicrosoftPlatformDiskFileSystem::DirectoryCreateEmpty(WideString const& directoryName) const
 	{
 		auto const directoryNameSystem = Paths::Platformize(directoryName);
-		if (CreateDirectoryW(directoryNameSystem.CStr(), nullptr) == FALSE && GetLastError() != ERROR_ALREADY_EXISTS)
+		if (CreateDirectoryW(directoryNameSystem.CStr(), nullptr) == FALSE)
 		{
-			Sleep(0);
-			return CreateDirectoryW(directoryNameSystem.CStr(), nullptr) == TRUE;
+			if (GetLastError() != ERROR_ALREADY_EXISTS)
+			{
+				Sleep(0);
+				return CreateDirectoryW(directoryNameSystem.CStr(), nullptr) == TRUE;
+			}
+			if (FileExists(directoryName))
+			{
+				// Specified path is a path to file, this is an error.
+				return false;
+			}
 		}
 		return true;
 	}
