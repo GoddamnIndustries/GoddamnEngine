@@ -47,7 +47,7 @@ GD_NAMESPACE_BEGIN
          * Starts the main event loop.
          *
          * @param appDelegate Application event delegate.
-         * @returns True if the main loop was succesfully ran.
+         * @returns True if the main loop was successfully ran.
          */
         GDINT virtual bool Run(IPlatformApplicationDelegate& appDelegate) override final
         {

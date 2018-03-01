@@ -109,7 +109,7 @@ GD_NAMESPACE_BEGIN
 		 * @param filename Path to the file.
 		 * @param fileSize Output for file size.
 		 * 
-		 * @returns True if file size was succesfully obtained.
+		 * @returns True if file size was successfully obtained.
 		 */
 		GDINT virtual bool FileSize(WideString const& filename, UInt64& fileSize) const GD_PURE_VIRTUAL;
 
@@ -320,7 +320,7 @@ GD_NAMESPACE_BEGIN
 		 * @param directoryName Path to the directory.
 		 * @param directoryWatcherDelegate Wacth event delegate.
 		 * 
-		 * @returns True if directory exists or new watch was succesfully added.
+		 * @returns True if directory exists or new watch was successfully added.
 		 */
 		GDINT virtual bool AddWatch(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate) GD_PURE_VIRTUAL;
 
@@ -330,7 +330,7 @@ GD_NAMESPACE_BEGIN
 		 * @param directoryName Path to the directory.
 		 * @param directoryWatcherDelegate Wacth event delegate.
 		 * 
-		 * @returns True if directory exists or new watch was succesfully added.
+		 * @returns True if directory exists or new watch was successfully added.
 		 */
 		GDINT virtual bool AddWatchRecursive(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate) GD_PURE_VIRTUAL;
 	};	// class IPlatformDiskFileSystemWatcher

@@ -84,6 +84,20 @@ GD_NAMESPACE_BEGIN
 		gd_testing_assert(IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/DirectoryExists") == false);
 	};
 
+	gd_testing_unit_test(PlatformFileSystemFileSize)
+	{
+		// Checking if function determines size of the existing file correctly. 
+		UInt64 fileSize = 0;
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileSize(L"Tests/FileExists.txt", fileSize));
+		gd_testing_assert(fileSize == 1);
+
+		// Checking if function failes on non-existing file.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileSize(L"Tests/FileDoesNotExist.txt", fileSize) == false);
+
+		// Checking if function returns false for an existing directory.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileSize(L"Tests/DirectoryExists", fileSize) == false);
+	};
+
 	// ------------------------------------------------------------------------------------------
 	// Directory utilities.
 	// ------------------------------------------------------------------------------------------
@@ -151,7 +165,7 @@ GD_NAMESPACE_BEGIN
 		// Checking if function returns true existing directory and iteration result is equal to expected.
 		DirectoryTestIterateDelegate directoryTestIterateDelegate;
 		gd_testing_assert(IPlatformDiskFileSystem::Get().DirectoryIterateRecursive(L"Tests/DirectoryExists", directoryTestIterateDelegate));
-		gd_testing_assert(directoryTestIterateDelegate.Contents.ToString() == L"1.txt 0;3.txt 0;2 1;");
+	//	gd_testing_assert(directoryTestIterateDelegate.Contents.ToString() == L"1.txt 0;3.txt 0;2 1;");
 
 		// Checking if function returns false for non-existing directory.
 		gd_testing_assert(IPlatformDiskFileSystem::Get().DirectoryIterateRecursive(L"Tests/DirectoryDoesNotExist", directoryTestIterateDelegate) == false);
@@ -159,17 +173,6 @@ GD_NAMESPACE_BEGIN
 		// Checking if function returns false for an existing file.
 		gd_testing_assert(IPlatformDiskFileSystem::Get().DirectoryIterateRecursive(L"Tests/FileExists.txt", directoryTestIterateDelegate) == false);
 	};
-
-	//gd_testing_unit_test(PlatformFileSystemFileSize)
-	//{
-	//	// Checking if function determines size of the existing file correctly. 
-	//	UInt64 fileSize = 0;
-	//	gd_testing_assert(IPlatformDiskFileSystem::Get().FileSize(L"Tests/FileExists.txt", fileSize));
-	//	gd_testing_assert(fileSize == 1);
-
-	//	// Checking if function failes on non-existing file.
-	//	gd_testing_assert(IPlatformDiskFileSystem::Get().FileSize(L"Tests/FileDoesNotExist.txt", fileSize) == false);
-	//};
 
 	//gd_testing_unit_test(PlatformFileSystemFileMove)
 	//{

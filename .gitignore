@@ -31,6 +31,7 @@
 !*.gddep.cs_
 !*.csproj
 !*.csproj.DotSettings
+!*.sln
 
 # HLSL/GLSL shaders.
 !*.hlsl
@@ -90,6 +91,7 @@
 
 # Build results.
 Bin
+!/Bin/Tests/*
 Lib
 
 # Documentation.

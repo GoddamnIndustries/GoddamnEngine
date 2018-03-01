@@ -87,7 +87,7 @@ GD_NAMESPACE_BEGIN
      * @param filename Path to the file.
      * @param fileSize Output for file size.
      *
-     * @returns True if file size was succesfully obtained.
+     * @returns True if file size was successfully obtained.
      */
     GDINT bool PosixPlatformDiskFileSystem::FileSize(WideString const& filename, UInt64& fileSize) const
     {
