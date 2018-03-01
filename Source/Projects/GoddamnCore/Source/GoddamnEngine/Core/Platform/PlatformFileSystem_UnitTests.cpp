@@ -14,9 +14,6 @@
 #include "GoddamnEngine/Core/IO/Paths.h"
 #if GD_TESTING_ENABLED
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCSimplifyInspection"
-
 #include <GoddamnEngine/Core/Containers/StringBuilder.h>
 
 GD_NAMESPACE_BEGIN
@@ -159,7 +156,7 @@ GD_NAMESPACE_BEGIN
 
 		// Checking contents of the file.
 		Char contents[256] = {};
-		bool result = false;
+		auto result = false;
 		auto numBytesRead = fileInputStream->Read(contents, sizeof(contents), &result);
 		gd_testing_assert(result && numBytesRead == 1 && contents[0] == '1');
 
@@ -181,12 +178,13 @@ GD_NAMESPACE_BEGIN
 		gd_testing_assert(fileOutputStream != nullptr);
 
 		Char contents[256] = { '2' };
-		bool result = false;
+		auto result = false;
 		auto numBytesWritten = fileOutputStream->Write(contents, sizeof(contents[0]), &result);
 		gd_testing_assert(result && numBytesWritten == sizeof(contents[0]));
 		fileOutputStream->Close(&result);
 		gd_testing_assert(result);
 
+		// Checking contents of the file.
 		auto fileInputStream = IPlatformDiskFileSystem::Get().FileStreamOpenRead(L"Tests/FileExists.txt");
 		gd_testing_assert(fileInputStream != nullptr);
 		auto numBytesRead = fileInputStream->Read(contents, sizeof(contents), &result);
@@ -197,18 +195,21 @@ GD_NAMESPACE_BEGIN
 		// Checking if function opens an input stream for the existing file correctly.
 		fileOutputStream = IPlatformDiskFileSystem::Get().FileStreamOpenWrite(L"Tests/FileExists.txt", false);
 		gd_testing_assert(fileOutputStream != nullptr);
-		contents[0] = '1';
 		numBytesWritten = fileOutputStream->Write(contents, sizeof(contents[0]), &result);
 		gd_testing_assert(result && numBytesWritten == sizeof(contents[0]));
 		fileOutputStream->Close(&result);
 		gd_testing_assert(result);
 
+		// Checking contents of the file.
 		fileInputStream = IPlatformDiskFileSystem::Get().FileStreamOpenRead(L"Tests/FileExists.txt");
 		gd_testing_assert(fileInputStream != nullptr);
 		numBytesRead = fileInputStream->Read(contents, sizeof(contents), &result);
 		gd_testing_assert(result && numBytesRead == 1 && contents[0] == '1');
 		fileInputStream->Close(&result);
 		gd_testing_assert(result);
+
+		// Checking if function fails on an existing directory.
+		gd_testing_assert(IPlatformDiskFileSystem::Get().FileStreamOpenRead(L"Tests/DirectoryExists") == nullptr);
 	};
 
 	// ------------------------------------------------------------------------------------------
@@ -275,60 +276,8 @@ GD_NAMESPACE_BEGIN
 
 	gd_testing_unit_test(PlatformFileSystemDirectoryIterateRecursive)
 	{
-		// Checking if function returns true existing directory and iteration result is equal to expected.
-		DirectoryTestIterateDelegate directoryTestIterateDelegate;
-		gd_testing_assert(IPlatformDiskFileSystem::Get().DirectoryIterateRecursive(L"Tests/DirectoryExists", directoryTestIterateDelegate));
-	//	gd_testing_assert(directoryTestIterateDelegate.Contents.ToString() == L"1.txt 0;3.txt 0;2 1;");
-
-		// Checking if function fails on non-existing directory.
-		gd_testing_assert(IPlatformDiskFileSystem::Get().DirectoryIterateRecursive(L"Tests/DirectoryDoesNotExist", directoryTestIterateDelegate) == false);
-
-		// Checking if function fails on an existing file.
-		gd_testing_assert(IPlatformDiskFileSystem::Get().DirectoryIterateRecursive(L"Tests/FileExists.txt", directoryTestIterateDelegate) == false);
 	};
 
-	//gd_testing_unit_test(PlatformFileSystemFileMove)
-	//{
-	//	// Checking if function moves existing file to the exising location.
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty.txt");
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty2.txt");
-	//	{
-	//		// Checking if function moves existing file to the exising location.
-	//		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileCreateEmpty.txt", L"Tests/FileCreateEmpty2.txt"));
-	//		gd_testing_assert(IPlatformDiskFileSystem::Get().FileExists(L"Tests/FileCreateEmpty2.txt"));
-	//		gd_testing_assert(IPlatformDiskFileSystem::Get().FileExists(L"Tests/FileCreateEmpty.txt") == false);
-	//	}
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty2.txt");
-
-	//	// Checking if function moves existing file to the exising location and overwrites exising file.
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty.txt");
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty2.txt");
-	//	{
-	//		// Checking if function moves existing file to the exising location and overwrites exising file.
-	//		gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileCreateEmpty.txt", L"Tests/FileCreateEmpty2.txt", true));
-	//		gd_testing_assert(IPlatformDiskFileSystem::Get().FileExists(L"Tests/FileCreateEmpty2.txt"));
-	//		gd_testing_assert(IPlatformDiskFileSystem::Get().FileExists(L"Tests/FileCreateEmpty.txt") == false);
-	//	}
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty2.txt");
-
-	//	// Checking if function fails on non-existing file.
-	//	gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileDoesNotExist.txt", L"Tests/FileDoesNotExist2.txt") == false);
-
-	//	// Checking if function fails on non-existing destination path.
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty.txt");
-	//	gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileCreateEmpty.txt", L"Tests/DirectoryDoesNotExist/FileCreateEmpty.txt") == false);
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty.txt");
-
-	//	// Checking if function fails on existing destination file without overwrite option.
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty.txt");
-	//	IPlatformDiskFileSystem::Get().FileCreateEmpty(L"Tests/FileCreateEmpty2.txt");
-	//	gd_testing_assert(IPlatformDiskFileSystem::Get().FileMove(L"Tests/FileCreateEmpty.txt", L"Tests/FileCreateEmpty2.txt") == false);
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty.txt");
-	//	IPlatformDiskFileSystem::Get().FileRemove(L"Tests/FileCreateEmpty2.txt");
-	//};
-
 GD_NAMESPACE_END
-
-#pragma clang diagnostic pop
 
 #endif	// if GD_TESTING_ENABLED

@@ -227,7 +227,7 @@ GD_NAMESPACE_BEGIN
 	GDINT bool MicrosoftPlatformDiskFileSystem::FileOpenWrite(WideString const& filename, Handle& fileHandle, bool const doAppend)
 	{
 		auto const filenameSystem = Paths::Platformize(filename);
-		auto const fileHandleSystem = CreateFile2(filenameSystem.CStr(), GENERIC_WRITE, FILE_SHARE_READ, doAppend ? OPEN_ALWAYS : CREATE_ALWAYS, nullptr);
+		auto const fileHandleSystem = CreateFile2(filenameSystem.CStr(), doAppend ? FILE_APPEND_DATA : GENERIC_WRITE, FILE_SHARE_READ, doAppend ? OPEN_ALWAYS : CREATE_ALWAYS, nullptr);
 		if (fileHandleSystem != INVALID_HANDLE_VALUE)
 		{
 			fileHandle = fileHandleSystem;
