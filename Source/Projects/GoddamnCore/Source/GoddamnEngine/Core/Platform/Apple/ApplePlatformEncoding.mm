@@ -11,25 +11,17 @@
  * Text encoding conversions.
  */
 #include <GoddamnEngine/Core/Platform/PlatformEncoding.h>
-#if GD_PLATFORM_API_POSIX && !GD_PLATFORM_API_COCOA
+#if GD_PLATFORM_API_COCOA
 
-#include <iconv.h>
+#import <Foundation/Foundation.h>
 
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Text encoding conversions on Posix platforms.
+	//! Text encoding conversions on Apple platforms.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class GD_PLATFORM_KERNEL PosixPlatformTextEncoding final : public IPlatformTextEncoding
+	class GD_PLATFORM_KERNEL ApplePlatformTextEncoding final : public IPlatformTextEncoding
 	{
-	private:
-		iconv_t m_WideCharToUTF8;
-		iconv_t m_UTF8ToWideChar;
-
-	public:
-		GDINT PosixPlatformTextEncoding();
-		GDINT virtual ~PosixPlatformTextEncoding();
-
 	private:
 
 		// ------------------------------------------------------------------------------------------
@@ -45,22 +37,9 @@ GD_NAMESPACE_BEGIN
 
 		GDINT virtual bool CalculateDecodedLength(CStr const text, SizeTp const textLength, SizeTp& decodedLength) const override final;
 		GDINT virtual bool DecodeUTF8(WideChar* const dst, SizeTp const dstLength, CStr const src, SizeTp const srcLength) const override final;
-	};  // class PosixPlatformTextEncoding
+	};  // class ApplePlatformTextEncoding
 
-	GD_IMPLEMENT_SINGLETON(IPlatformTextEncoding, PosixPlatformTextEncoding)
-
-	GDINT PosixPlatformTextEncoding::PosixPlatformTextEncoding()
-		: m_WideCharToUTF8(), m_UTF8ToWideChar()
-	{
-		m_WideCharToUTF8 = iconv_open("UTF-8", "UTF-32LE");
-		m_UTF8ToWideChar = iconv_open("UTF-32LE", "UTF-8");
-	}
-
-	GDINT PosixPlatformTextEncoding::~PosixPlatformTextEncoding()
-	{
-		iconv_close(m_WideCharToUTF8);
-		iconv_close(m_UTF8ToWideChar);
-	}
+	GD_IMPLEMENT_SINGLETON(IPlatformTextEncoding, ApplePlatformTextEncoding)
 
 	// ------------------------------------------------------------------------------------------
 	// Encoding.
@@ -75,22 +54,15 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns True if operation succeeded.
 	 */
-	GDINT bool PosixPlatformTextEncoding::CalculateEncodedLength(WideCStr const text, SizeTp const textLength, SizeTp& encodedLength) const
+	GDINT bool ApplePlatformTextEncoding::CalculateEncodedLength(WideCStr const text, SizeTp const textLength, SizeTp& encodedLength) const
 	{
 		GD_DEBUG_VERIFY(text != nullptr && textLength > 0);
-		if (m_WideCharToUTF8 != nullptr)
+		auto const textApple = [[NSString alloc] initWithBytes:text length:textLength * sizeof(*text) encoding:NSUTF32LittleEndianStringEncoding];
+        auto const textAppleUTF8 = [textApple UTF8String];
+		if (textAppleUTF8 != nullptr)
 		{
-			auto inBuffer = reinterpret_cast<Char*>(const_cast<WideChar*>(text));
-			auto inBufferBytesLeft = ::size_t(sizeof(*text) * textLength);
-			String textEncoded(textLength * 4);
-			auto outBuffer = textEncoded.CStr();
-			auto outBufferBytesLeft = ::size_t(sizeof(textEncoded[0]) * textEncoded.GetLength());
-			if (iconv(m_WideCharToUTF8, &inBuffer, &inBufferBytesLeft, &outBuffer, &outBufferBytesLeft) != -1)
-			{
-				auto const encodedLengthInBytes = sizeof(textEncoded[0]) * textEncoded.GetLength() - outBufferBytesLeft;
-				encodedLength = encodedLengthInBytes / sizeof(textEncoded[0]);
-				return true;
-			}
+			encodedLength = CString::Strlen(textAppleUTF8);
+			return true;
 		}
 		return false;
 	}
@@ -105,17 +77,16 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns True if operation succeeded.
 	 */
-	GDINT bool PosixPlatformTextEncoding::EncodeUTF8(Char* const dst, SizeTp const dstLength, WideCStr const src, SizeTp const srcLength) const
+	GDINT bool ApplePlatformTextEncoding::EncodeUTF8(Char* const dst, SizeTp const dstLength, WideCStr const src, SizeTp const srcLength) const
 	{
 		GD_DEBUG_VERIFY(dst != nullptr && dstLength > 0);
 		GD_DEBUG_VERIFY(src != nullptr && srcLength > 0);
-		if (m_WideCharToUTF8 != nullptr)
+		auto const srcApple = [[NSString alloc] initWithBytes:src length:srcLength * sizeof(*src) encoding:NSUTF32LittleEndianStringEncoding];
+        auto const srcAppleUTF8 = [sourceApple UTF8String];
+		if (srcAppleUTF8 != nullptr)
 		{
-			auto inBuffer = reinterpret_cast<Char*>(const_cast<WideChar*>(src));
-			auto inBufferBytesLeft = ::size_t(sizeof(*src) * srcLength);
-			auto outBuffer = dst;
-			auto outBufferBytesLeft = ::size_t(sizeof(*dst) * dstLength);
-			return iconv(m_WideCharToUTF8, &inBuffer, &inBufferBytesLeft, &outBuffer, &outBufferBytesLeft) != -1;
+			CMemory::CMemcpy(dst, srcAppleUTF8, (dstLength + 1) * sizeof(*dst));
+			return true;
 		}
 		return false;
 	}
@@ -133,24 +104,12 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns True if operation succeeded.
 	 */
-	GDINT bool PosixPlatformTextEncoding::CalculateDecodedLength(CStr const text, SizeTp const textLength, SizeTp& decodedLength) const
+	GDINT bool ApplePlatformTextEncoding::CalculateDecodedLength(CStr const text, SizeTp const textLength, SizeTp& decodedLength) const
 	{
 		GD_DEBUG_VERIFY(text != nullptr && textLength > 0);
-		if (m_WideCharToUTF8 != nullptr)
-		{
-			auto inBuffer = const_cast<Char*>(text);
-			auto inBufferBytesLeft = ::size_t(sizeof(*text) * textLength);
-			WideString textDecoded(textLength);
-			auto outBuffer = reinterpret_cast<Char*>(textDecoded.CStr());
-			auto outBufferBytesLeft = ::size_t(sizeof(textDecoded[0]) * textDecoded.GetLength());
-			if (iconv(m_UTF8ToWideChar, &inBuffer, &inBufferBytesLeft, &outBuffer, &outBufferBytesLeft) != -1)
-			{
-				auto const decodedLengthInBytes = sizeof(textDecoded[0]) * textDecoded.GetLength() - outBufferBytesLeft;
-				decodedLength = decodedLengthInBytes / sizeof(textDecoded[0]);
-				return true;
-			}
-		}
-		return false;
+        auto const textApple = [NSString stringWithUTF8String:text];
+        decodedLength = static_cast<SizeTp>([textApple length]);
+		return true;
 	}
 
 	/*!
@@ -163,21 +122,20 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns True if operation succeeded.
 	 */
-	GDINT bool PosixPlatformTextEncoding::DecodeUTF8(WideChar* const dst, SizeTp const dstLength, CStr const src, SizeTp const srcLength) const
+	GDINT bool ApplePlatformTextEncoding::DecodeUTF8(WideChar* const dst, SizeTp const dstLength, CStr const src, SizeTp const srcLength) const
 	{
 		GD_DEBUG_VERIFY(dst != nullptr && dstLength > 0);
 		GD_DEBUG_VERIFY(src != nullptr && srcLength > 0);
-		if (m_UTF8ToWideChar != nullptr)
+		auto const srcApple = [NSString stringWithUTF8String:src];
+		auto const srcAppleUTF32 = reinterpret_cast<WideCStr>([srcApple cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
+		if (srcAppleUTF32 != nullptr)
 		{
-			auto inBuffer = const_cast<Char*>(src);
-			auto inBufferBytesLeft = ::size_t(sizeof(*src) * srcLength);
-			auto outBuffer = reinterpret_cast<Char*>(dst);
-			auto outBufferBytesLeft = ::size_t(sizeof(*dst) * dstLength);
-			return iconv(m_UTF8ToWideChar, &inBuffer, &inBufferBytesLeft, &outBuffer, &outBufferBytesLeft) != -1;
+			CMemory::CMemcpy(dst, sourceAppleUTF32, (dstLength + 1) * sizeof(*dst));
+			return true;
 		}
 		return false;
 	}
 
 GD_NAMESPACE_END
 
-#endif  // if GD_PLATFORM_API_POSIX && !GD_PLATFORM_API_COCOA
+#endif  // if GD_PLATFORM_API_COCOA

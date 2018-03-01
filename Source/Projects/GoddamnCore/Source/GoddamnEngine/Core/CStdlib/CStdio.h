@@ -14,7 +14,7 @@
 #define GD_INSIDE_CSTDIO_H
 
 #include <GoddamnEngine/Include.h>
-#include <GoddamnEngine/Core/Misc/StringConv.h>
+#include <GoddamnEngine/Core/Platform/PlatformEncoding.h>
 
 #include <cstdio>
 #include <cwchar>

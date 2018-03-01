@@ -11,25 +11,17 @@
  * Text encoding conversions.
  */
 #include <GoddamnEngine/Core/Platform/PlatformEncoding.h>
-#if GD_PLATFORM_API_POSIX && !GD_PLATFORM_API_COCOA
+#if GD_PLATFORM_API_MICROSOFT
 
-#include <iconv.h>
+#include <Windows.h>
 
 GD_NAMESPACE_BEGIN
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! Text encoding conversions on Posix platforms.
+	//! Text encoding conversions on Microsoft platforms.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class GD_PLATFORM_KERNEL PosixPlatformTextEncoding final : public IPlatformTextEncoding
+	class GD_PLATFORM_KERNEL MicrosoftPlatformTextEncoding final : public IPlatformTextEncoding
 	{
-	private:
-		iconv_t m_WideCharToUTF8;
-		iconv_t m_UTF8ToWideChar;
-
-	public:
-		GDINT PosixPlatformTextEncoding();
-		GDINT virtual ~PosixPlatformTextEncoding();
-
 	private:
 
 		// ------------------------------------------------------------------------------------------
@@ -45,22 +37,9 @@ GD_NAMESPACE_BEGIN
 
 		GDINT virtual bool CalculateDecodedLength(CStr const text, SizeTp const textLength, SizeTp& decodedLength) const override final;
 		GDINT virtual bool DecodeUTF8(WideChar* const dst, SizeTp const dstLength, CStr const src, SizeTp const srcLength) const override final;
-	};  // class PosixPlatformTextEncoding
+	};  // class MicrosoftPlatformTextEncoding
 
-	GD_IMPLEMENT_SINGLETON(IPlatformTextEncoding, PosixPlatformTextEncoding)
-
-	GDINT PosixPlatformTextEncoding::PosixPlatformTextEncoding()
-		: m_WideCharToUTF8(), m_UTF8ToWideChar()
-	{
-		m_WideCharToUTF8 = iconv_open("UTF-8", "UTF-32LE");
-		m_UTF8ToWideChar = iconv_open("UTF-32LE", "UTF-8");
-	}
-
-	GDINT PosixPlatformTextEncoding::~PosixPlatformTextEncoding()
-	{
-		iconv_close(m_WideCharToUTF8);
-		iconv_close(m_UTF8ToWideChar);
-	}
+	GD_IMPLEMENT_SINGLETON(IPlatformTextEncoding, MicrosoftPlatformTextEncoding)
 
 	// ------------------------------------------------------------------------------------------
 	// Encoding.
@@ -75,22 +54,14 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns True if operation succeeded.
 	 */
-	GDINT bool PosixPlatformTextEncoding::CalculateEncodedLength(WideCStr const text, SizeTp const textLength, SizeTp& encodedLength) const
+	GDINT bool MicrosoftPlatformTextEncoding::CalculateEncodedLength(WideCStr const text, SizeTp const textLength, SizeTp& encodedLength) const
 	{
 		GD_DEBUG_VERIFY(text != nullptr && textLength > 0);
-		if (m_WideCharToUTF8 != nullptr)
+		auto const result = WideCharToMultiByte(CP_UTF8, 0, text, static_cast<int>(textLength), nullptr, 0, nullptr, nullptr);
+		if (result != 0)
 		{
-			auto inBuffer = reinterpret_cast<Char*>(const_cast<WideChar*>(text));
-			auto inBufferBytesLeft = ::size_t(sizeof(*text) * textLength);
-			String textEncoded(textLength * 4);
-			auto outBuffer = textEncoded.CStr();
-			auto outBufferBytesLeft = ::size_t(sizeof(textEncoded[0]) * textEncoded.GetLength());
-			if (iconv(m_WideCharToUTF8, &inBuffer, &inBufferBytesLeft, &outBuffer, &outBufferBytesLeft) != -1)
-			{
-				auto const encodedLengthInBytes = sizeof(textEncoded[0]) * textEncoded.GetLength() - outBufferBytesLeft;
-				encodedLength = encodedLengthInBytes / sizeof(textEncoded[0]);
-				return true;
-			}
+			encodedLength = static_cast<SizeTp>(result);
+			return true;
 		}
 		return false;
 	}
@@ -105,17 +76,14 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns True if operation succeeded.
 	 */
-	GDINT bool PosixPlatformTextEncoding::EncodeUTF8(Char* const dst, SizeTp const dstLength, WideCStr const src, SizeTp const srcLength) const
+	GDINT bool MicrosoftPlatformTextEncoding::EncodeUTF8(Char* const dst, SizeTp const dstLength, WideCStr const src, SizeTp const srcLength) const
 	{
 		GD_DEBUG_VERIFY(dst != nullptr && dstLength > 0);
 		GD_DEBUG_VERIFY(src != nullptr && srcLength > 0);
-		if (m_WideCharToUTF8 != nullptr)
+		if (WideCharToMultiByte(CP_UTF8, 0, src, static_cast<int>(srcLength), dst, static_cast<int>(dstLength), nullptr, nullptr) != 0)
 		{
-			auto inBuffer = reinterpret_cast<Char*>(const_cast<WideChar*>(src));
-			auto inBufferBytesLeft = ::size_t(sizeof(*src) * srcLength);
-			auto outBuffer = dst;
-			auto outBufferBytesLeft = ::size_t(sizeof(*dst) * dstLength);
-			return iconv(m_WideCharToUTF8, &inBuffer, &inBufferBytesLeft, &outBuffer, &outBufferBytesLeft) != -1;
+			dst[dstLength] = '\0';
+			return true;
 		}
 		return false;
 	}
@@ -133,22 +101,14 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns True if operation succeeded.
 	 */
-	GDINT bool PosixPlatformTextEncoding::CalculateDecodedLength(CStr const text, SizeTp const textLength, SizeTp& decodedLength) const
+	GDINT bool MicrosoftPlatformTextEncoding::CalculateDecodedLength(CStr const text, SizeTp const textLength, SizeTp& decodedLength) const
 	{
 		GD_DEBUG_VERIFY(text != nullptr && textLength > 0);
-		if (m_WideCharToUTF8 != nullptr)
+		auto const result = MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(textLength), nullptr, 0);
+		if (result != 0)
 		{
-			auto inBuffer = const_cast<Char*>(text);
-			auto inBufferBytesLeft = ::size_t(sizeof(*text) * textLength);
-			WideString textDecoded(textLength);
-			auto outBuffer = reinterpret_cast<Char*>(textDecoded.CStr());
-			auto outBufferBytesLeft = ::size_t(sizeof(textDecoded[0]) * textDecoded.GetLength());
-			if (iconv(m_UTF8ToWideChar, &inBuffer, &inBufferBytesLeft, &outBuffer, &outBufferBytesLeft) != -1)
-			{
-				auto const decodedLengthInBytes = sizeof(textDecoded[0]) * textDecoded.GetLength() - outBufferBytesLeft;
-				decodedLength = decodedLengthInBytes / sizeof(textDecoded[0]);
-				return true;
-			}
+			decodedLength = static_cast<SizeTp>(result);
+			return true;
 		}
 		return false;
 	}
@@ -163,21 +123,18 @@ GD_NAMESPACE_BEGIN
 	 *
 	 * @returns True if operation succeeded.
 	 */
-	GDINT bool PosixPlatformTextEncoding::DecodeUTF8(WideChar* const dst, SizeTp const dstLength, CStr const src, SizeTp const srcLength) const
+	GDINT bool MicrosoftPlatformTextEncoding::DecodeUTF8(WideChar* const dst, SizeTp const dstLength, CStr const src, SizeTp const srcLength) const
 	{
 		GD_DEBUG_VERIFY(dst != nullptr && dstLength > 0);
 		GD_DEBUG_VERIFY(src != nullptr && srcLength > 0);
-		if (m_UTF8ToWideChar != nullptr)
+		if (MultiByteToWideChar(CP_UTF8, 0, src, static_cast<int>(srcLength), dst, static_cast<int>(dstLength)) != 0)
 		{
-			auto inBuffer = const_cast<Char*>(src);
-			auto inBufferBytesLeft = ::size_t(sizeof(*src) * srcLength);
-			auto outBuffer = reinterpret_cast<Char*>(dst);
-			auto outBufferBytesLeft = ::size_t(sizeof(*dst) * dstLength);
-			return iconv(m_UTF8ToWideChar, &inBuffer, &inBufferBytesLeft, &outBuffer, &outBufferBytesLeft) != -1;
+			dst[dstLength] = L'\0';
+			return true;
 		}
 		return false;
 	}
 
 GD_NAMESPACE_END
 
-#endif  // if GD_PLATFORM_API_POSIX && !GD_PLATFORM_API_COCOA
+#endif  // if GD_PLATFORM_API_MICROSOFT

@@ -10,12 +10,12 @@
  * @file
  * Encoding conversion.
  */
-#include <GoddamnEngine/Core/Misc/StringConv.h>
+#include <GoddamnEngine/Core/Platform/PlatformEncoding.h>
 #if GD_TESTING_ENABLED
 
 GD_NAMESPACE_BEGIN
 
-	gd_testing_unit_test(StringConvEncode)
+	gd_testing_unit_test(PlatformEncoding)
 	{
 		// Some mysterious text in Russian.
 		WideString textInRussianWide(L"\x0413\x043E\x0432\x043D\x043E\x0020\x0436\x043E\x043F\x0430");

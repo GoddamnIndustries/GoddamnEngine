@@ -12,7 +12,7 @@
  */
 #include <GoddamnEngine/Core/Object/ObjectReaderWriter.h>
 
-#include <GoddamnEngine/Core/Misc/StringConv.h>
+#include <GoddamnEngine/Core/Platform/PlatformEncoding.h>
 #include <GoddamnEngine/Core/Interaction/Debug.h>
 
 GD_NAMESPACE_BEGIN

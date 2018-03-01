@@ -14,7 +14,7 @@
 #if GD_PLATFORM_API_MICROSOFT
 
 #include <GoddamnEngine/Core/IO/Paths.h>
-#include <GoddamnEngine/Core/Misc/StringConv.h>
+#include <GoddamnEngine/Core/Platform/PlatformEncoding.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
 
 #include <Windows.h>
