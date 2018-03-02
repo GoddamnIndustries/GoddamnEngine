@@ -343,7 +343,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Reads all pending file system events of the specified watch.
 		 *
-		 * @param directoryName Path to the directory.
+		 * @param watchHandle Watch handle.
 		 * @param directoryWatcherDelegate Watch event delegate.
 		 * 
 		 * @returns True if directory exists or new watch was successfully added.

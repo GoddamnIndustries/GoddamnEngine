@@ -13,6 +13,7 @@
 #include <GoddamnEngine/Core/Platform/PlatformFileSystem.h>
 #if GD_PLATFORM_API_MICROSOFT
 
+#include <GoddamnEngine/Core/Templates/UniquePtr.h>
 #include "GoddamnEngine/Core/IO/Paths.h"
 
 GD_NAMESPACE_BEGIN
@@ -452,93 +453,201 @@ GD_NAMESPACE_BEGIN
 	}
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	//! INotify event iterator.
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	class GD_PLATFORM_KERNEL DirectoryChangesEventIterator final
+	{
+	private:
+		Byte const* m_BufferCurrent;
+		Byte const* m_BufferEnd;
+	public:
+		GDINL explicit DirectoryChangesEventIterator(Byte const* const bufferCurrent, Byte const* const bufferEnd)
+			: m_BufferCurrent(bufferCurrent), m_BufferEnd(bufferEnd)
+		{
+		}
+	public:
+		GDINL bool IsValid() const
+		{
+			return m_BufferCurrent < m_BufferEnd;
+		}
+	public:
+		// *iterator
+		GDINL FILE_NOTIFY_INFORMATION const& operator* () const
+		{
+			GD_DEBUG_VERIFY(IsValid());
+			return *reinterpret_cast<FILE_NOTIFY_INFORMATION const*>(m_BufferCurrent);
+		}
+		// iterator->
+		GDINL FILE_NOTIFY_INFORMATION const* operator-> () const
+		{
+			GD_DEBUG_VERIFY(IsValid());
+			return reinterpret_cast<FILE_NOTIFY_INFORMATION const*>(m_BufferCurrent);
+		}
+		// iterator++
+		GDINL DirectoryChangesEventIterator& operator++ ()
+		{
+			auto const nextEntryOffset = (**this).NextEntryOffset;
+			if (nextEntryOffset != 0)
+			{
+				m_BufferCurrent += nextEntryOffset;
+			}
+			else
+			{
+				m_BufferCurrent = m_BufferEnd;
+			}
+			return *this;
+		}
+		GDINL DirectoryChangesEventIterator operator++ (int const unused)
+		{
+			GD_NOT_USED_L(unused);
+			auto const copy(*this);
+			++*this;
+			return copy;
+		}
+	};  // class DirectoryChangesEventIterator
+
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	//! INotify event container.
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
+	class GD_PLATFORM_KERNEL INotifyEventContainer final : public TNonCopyable
+	{
+	private:
+		UniquePtr<Byte[]> m_Buffer;
+		DWORD m_BufferLength;
+	public:
+		GDINL explicit INotifyEventContainer(DWORD const length)
+			: m_Buffer(gd_new Byte[length * (sizeof(FILE_NOTIFY_INFORMATION) + FILENAME_MAX)]), m_BufferLength(length)
+		{
+		}
+	public:
+		GDINL Byte* GetData() const
+		{
+			return m_Buffer.Get();
+		}
+		GDINL DWORD GetLength() const
+		{
+			return m_BufferLength;
+		}
+	public:
+		GDINL DirectoryChangesEventIterator Begin(DWORD const lengthOfEvents) const
+		{
+			return DirectoryChangesEventIterator(m_Buffer.Get(), m_Buffer.Get() + lengthOfEvents);
+		}
+	};  // class INotifyEventContainer
+
+	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! Disk file system watcher on Microsoft platforms.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	class GD_PLATFORM_KERNEL MicrosoftPlatformDiskFileSystemWatcher : public IPlatformDiskFileSystemWatcher
 	{
 	private:
-
-		/*!
-		 * Adds a watch on the specified directory.
-		 *
-		 * @param directoryName Path to the directory.
-		 * @param directoryWatcherDelegate Wacth event delegate.
-		 * 
-		 * @returns True if directory exists or new watch was successfully added.
-		 */
-		GDINT virtual bool AddWatch(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate) override final
-		{
-			return AddWatch(directoryName, directoryWatcherDelegate, false);
-		}
-
-		/*!
-		 * Adds a watch on the specified directory and all it's subdirectories.
-		 *
-		 * @param directoryName Path to the directory.
-		 * @param directoryWatcherDelegate Wacth event delegate.
-		 * 
-		 * @returns True if directory exists or new watch was successfully added.
-		 */
-		GDINT virtual bool AddWatchRecursive(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate) override final
-		{
-			return AddWatch(directoryName, directoryWatcherDelegate, true);
-		}
-
-	private:
-		GDINT bool AddWatch(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate, bool const recursive);
+		GDINT virtual bool WatchCreate(WideString const& directoryName, Handle& watchHandle) override final;
+		GDINT virtual bool WatchDestroy(Handle const watchHandle) override final;
+		GDINT virtual bool WatchReadEvents(Handle const watchHandle, IFileSystemWatcherDelegate& directoryWatcherDelegate) override final;
 	};	// class MicrosoftPlatformDiskFileSystemWatcher
 
 	GD_IMPLEMENT_SINGLETON(IPlatformDiskFileSystemWatcher, MicrosoftPlatformDiskFileSystemWatcher);
 
+	// ------------------------------------------------------------------------------------------
+	// Watch utilities.
+	// ------------------------------------------------------------------------------------------
+
 	/*!
-	 * Adds a watch on the specified directory and all it's subdirectories.
+	 * Creates a new watch for the specified directory.
 	 *
 	 * @param directoryName Path to the directory.
-	 * @param directoryWatcherDelegate Wacth event delegate.
-	 * @param recursive 
-	 * 
-	 * @returns True if directory exists or new watch was successfully added.
+	 * @param watchHandle Watch handle.
+	 *
+	 * @returns True if directory exists or new watch was successfully created.
 	 */
-	GDINT bool MicrosoftPlatformDiskFileSystemWatcher::AddWatch(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate, bool const recursive)
+	GDINT bool MicrosoftPlatformDiskFileSystemWatcher::WatchCreate(WideString const& directoryName, Handle& watchHandle)
 	{
 		auto const directoryNameSystem = Paths::Platformize(directoryName);
 		auto const directoryHandle = CreateFileW(directoryNameSystem.CStr(), FILE_LIST_DIRECTORY
 			, FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
 		if (directoryHandle != INVALID_HANDLE_VALUE)
 		{
-			DWORD directoryChangesLength;
-			Byte directoryChangesBuffer[1024 * 128];
-			while (ReadDirectoryChangesW(directoryHandle
-				, directoryChangesBuffer, sizeof(directoryChangesBuffer), recursive
-				, FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_FILE_NAME
-				, &directoryChangesLength, nullptr, nullptr))
+			watchHandle = directoryHandle;
+			return true;
+		}
+		return false;
+	}
+
+	/*!
+	 * Closes a watch handle.
+	 *
+	 * @param watchHandle Watch handle.
+	 * @returns True if operation succeeded.
+	 */
+	GDINT bool MicrosoftPlatformDiskFileSystemWatcher::WatchDestroy(Handle const watchHandle)
+	{
+		GD_DEBUG_VERIFY(watchHandle != nullptr);
+		return CloseHandle(watchHandle) == TRUE;
+	}
+
+	/*!
+	 * Reads all pending file system events of the specified watch.
+	 *
+	 * @param watchHandle Watch handle.
+	 * @param directoryWatcherDelegate Watch event delegate.
+	 *
+	 * @returns True if directory exists or new watch was successfully added.
+	 */
+	GDINT bool MicrosoftPlatformDiskFileSystemWatcher::WatchReadEvents(Handle const watchHandle, IFileSystemWatcherDelegate& directoryWatcherDelegate)
+	{
+		GD_DEBUG_VERIFY(watchHandle != nullptr);
+		INotifyEventContainer watchBuffer(1024);
+		DWORD lengthOfEvents = 0;
+		if (ReadDirectoryChangesW(watchHandle
+			, watchBuffer.GetData(), watchBuffer.GetLength(), FALSE
+			, FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_FILE_NAME
+			, &lengthOfEvents, nullptr, nullptr) == TRUE)
+		{
+			for (auto watchEventIterator = watchBuffer.Begin(lengthOfEvents); watchEventIterator.IsValid(); ++watchEventIterator)
 			{
-				DWORD directoryChangeOffset = 0;
-				PFILE_NOTIFY_INFORMATION directoryChange;
-				do
+				switch (watchEventIterator->Action)
 				{
-					directoryChange = reinterpret_cast<PFILE_NOTIFY_INFORMATION>(directoryChangesBuffer + directoryChangeOffset);
-
-					WideString const directoryChangePath(directoryChange->FileName, directoryChange->FileNameLength);
-					switch (directoryChange->Action)
+					// File or directory was created or moved into watch directory.
+					case FILE_ACTION_ADDED:
+						{
+							WideString const watchEventPath(watchEventIterator->FileName, watchEventIterator->FileNameLength / sizeof(watchEventIterator->FileName[0]));
+							directoryWatcherDelegate.OnFileOrDirectoryCreated(watchEventPath);
+							break;
+						}
+					// File or directory was removed or moved from watch directory.
+					case FILE_ACTION_REMOVED:
+						{
+							WideString const watchEventPath(watchEventIterator->FileName, watchEventIterator->FileNameLength);
+							directoryWatcherDelegate.OnFileOrDirectoryRemoved(watchEventPath);
+							break;
+						}
+					// File or directory was modified.
+					case FILE_ACTION_MODIFIED:
+						{
+							WideString const watchEventPath(watchEventIterator->FileName, watchEventIterator->FileNameLength);
+							directoryWatcherDelegate.OnFileOrDirectoryModified(watchEventPath);
+							break;
+						}
+					// File or directory was renamed.
+					case FILE_ACTION_RENAMED_OLD_NAME:
 					{
-						case FILE_ACTION_ADDED:
-							directoryWatcherDelegate.OnFileOrDirectoryCreated(directoryChangePath);
-							break;
-						case FILE_ACTION_REMOVED:
-							directoryWatcherDelegate.OnFileOrDirectoryRemoved(directoryChangePath);
-							break;
-						case FILE_ACTION_MODIFIED:
-							directoryWatcherDelegate.OnFileOrDirectoryModified(directoryChangePath);
-							break;
-						case FILE_ACTION_RENAMED_OLD_NAME:
-							break;
+						auto const newNameEventIterator = ++DirectoryChangesEventIterator(watchEventIterator);
+						if (newNameEventIterator.IsValid() && newNameEventIterator->Action == FILE_ACTION_RENAMED_NEW_NAME)
+						{
+							WideString const watchRenamedOldNameEventPath(watchEventIterator->FileName, watchEventIterator->FileNameLength);
+							WideString const watchRenamedNewNameEventPath(newNameEventIterator->FileName, newNameEventIterator->FileNameLength);
+							directoryWatcherDelegate.OnFileOrDirectoryMoved(watchRenamedOldNameEventPath, watchRenamedNewNameEventPath);
+						}
+						else
+						{
+							return false;
+						}
+						break;
 					}
-
-					directoryChangeOffset += directoryChange->NextEntryOffset;
-				} while (directoryChange->NextEntryOffset != 0);
+					default:
+						break;
+				}
 			}
-			CloseHandle(directoryHandle);
 			return true;
 		}
 		return false;

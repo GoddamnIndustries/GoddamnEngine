@@ -71,7 +71,7 @@ GD_NAMESPACE_BEGIN
 		GDINL INotifyEventIterator operator++ (int const unused)
 		{
 			GD_NOT_USED_L(unused);
-			INotifyEventIterator copy(*this);
+			auto const copy(*this);
 			++*this;
 			return copy;
 		}
@@ -91,7 +91,7 @@ GD_NAMESPACE_BEGIN
 		{
 		}
 	public:
-		GDINL Byte* GetData()
+		GDINL Byte* GetData() const
 		{
 			return m_Buffer.Get();
 		}
@@ -162,7 +162,7 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * Reads all pending file system events of the specified watch.
 	 *
-	 * @param directoryName Path to the directory.
+	 * @param watchHandle Watch handle.
 	 * @param directoryWatcherDelegate Watch event delegate.
 	 *
 	 * @returns True if directory exists or new watch was successfully added.
