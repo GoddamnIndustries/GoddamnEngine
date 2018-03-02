@@ -175,7 +175,7 @@ GD_NAMESPACE_BEGIN
     // ------------------------------------------------------------------------------------------
 
     /*!
-     * Opens a input handle for the specified file.
+     * Opens an input handle for the specified file.
      *
      * @param filename Path to the file.
      * @param fileHandle File handle.
@@ -200,7 +200,7 @@ GD_NAMESPACE_BEGIN
     }
 
     /*!
-     * Opens a output handle for the specified file.
+     * Opens an output handle for the specified file.
      *
      * @param filename Path to the file.
      * @param fileHandle File handle.

@@ -20,19 +20,19 @@
  * @param this_type Type of this container. Should contain const and mutable versions of 'Begin' and 'End' methods.
  */
 #define GD_CONTAINER_DEFINE_ITERATION_SUPPORT(this_type) \
-	GDINL friend Iterator begin(this_type& some_container) \
+	GDINL friend auto begin(this_type& some_container) \
 	{ \
 		return some_container.Begin(); \
 	} \
-	GDINL friend ConstIterator begin(this_type const& some_container) \
+	GDINL friend auto begin(this_type const& some_container) \
 	{ \
 		return some_container.Begin(); \
 	} \
-	GDINL friend Iterator end(this_type& some_container) \
+	GDINL friend auto end(this_type& some_container) \
 	{ \
 		return some_container.End(); \
 	} \
-	GDINL friend ConstIterator end(this_type const& some_container) \
+	GDINL friend auto end(this_type const& some_container) \
 	{ \
 		return some_container.End(); \
 	} \

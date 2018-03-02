@@ -184,5 +184,10 @@ GD_NAMESPACE_BEGIN
 	{
 		return UniquePtr<TPointee>(pointee);
 	}
+	template<typename TPointee>
+	GDINL static UniquePtr<TPointee[]> MakeUniqueArray(TPointee* const pointee)
+	{
+		return UniquePtr<TPointee[]>(pointee);
+	}
 
 GD_NAMESPACE_END
