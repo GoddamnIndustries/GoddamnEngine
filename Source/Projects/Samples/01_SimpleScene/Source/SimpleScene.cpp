@@ -31,21 +31,27 @@ int main()
 #endif
 {
 	Handle pipe[2];
-	IPlatformProcess::Get().PipeCreate(pipe[0], pipe[1]);
+	//IPlatformProcess::Get().PipeCreate(pipe[0], pipe[1]);
 
 	Handle p;
 	ProcessCreateInfo pci = { L"cmd.exe /c dir" };
 	pci.ProcessStandardOutput = pipe[1];
-	IPlatformProcess::Get().ProcessCreate(pci, p);
+	//IPlatformProcess::Get().ProcessCreate(pci, p);
+
+	Handle w;
+	auto r = IPlatformDiskFileSystemWatcher::Get().WatchCreate(L"/tmp", w);
+	IFileSystemWatcherDelegate d;
+	while(1){r = IPlatformDiskFileSystemWatcher::Get().WatchReadEvents(w, d);}
+	r = IPlatformDiskFileSystemWatcher::Get().WatchDestroy(w);
 
 	WideString c;
-	while(!IPlatformProcess::Get().PipeReadPendingContent(pipe[0], c));
-	IPlatformProcess::Get().ProcessTerminateRecursive(p);
+	//while(!IPlatformProcess::Get().PipeReadPendingContent(pipe[0], c));
+	//IPlatformProcess::Get().ProcessTerminateRecursive(p);
 
-	DesktopWatcherDelegate watcherDelegate;
-	IPlatformDiskFileSystemWatcher::Get().AddWatch(L"C:\\Users\\Oleg\\Desktop", watcherDelegate);
+	//DesktopWatcherDelegate watcherDelegate;
+	//IPlatformDiskFileSystemWatcher::Get().AddWatch(L"C:\\Users\\Oleg\\Desktop", watcherDelegate);
 
-	TestAppDelegate appDelegate;
-	IPlatformApplication::Get().Run(appDelegate);
+	//TestAppDelegate appDelegate;
+	//IPlatformApplication::Get().Run(appDelegate);
 	return 0;
 }
