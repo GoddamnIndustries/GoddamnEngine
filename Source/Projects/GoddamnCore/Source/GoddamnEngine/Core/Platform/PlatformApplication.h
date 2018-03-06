@@ -47,6 +47,11 @@ GD_NAMESPACE_BEGIN
 		// Main event loop.
 		// ------------------------------------------------------------------------------------------
 
+		GDINT virtual bool IsRunning() const
+		{
+			return true;
+		}
+
 		/*!
 		 * Starts the main event loop.
 		 * 

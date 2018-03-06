@@ -13,6 +13,7 @@
 #include <GoddamnEngine/Core/Platform/PlatformFileSystem.h>
 #if GD_PLATFORM_API_MICROSOFT
 
+#include <GoddamnEngine/Core/Platform/PlatformApplication.h>
 #include <GoddamnEngine/Core/Templates/UniquePtr.h>
 #include "GoddamnEngine/Core/IO/Paths.h"
 
@@ -453,38 +454,38 @@ GD_NAMESPACE_BEGIN
 	}
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! INotify event iterator.
+	//! ReadDirectoryChangesW event iterator.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class GD_PLATFORM_KERNEL DirectoryChangesEventIterator final
+	class GD_PLATFORM_KERNEL ReadDirectoryChangesEventIterator final
 	{
 	private:
 		Byte const* m_BufferCurrent;
 		Byte const* m_BufferEnd;
 	public:
-		GDINL explicit DirectoryChangesEventIterator(Byte const* const bufferCurrent, Byte const* const bufferEnd)
+		GDINL explicit ReadDirectoryChangesEventIterator(Byte const* const bufferCurrent, Byte const* const bufferEnd)
 			: m_BufferCurrent(bufferCurrent), m_BufferEnd(bufferEnd)
 		{
 		}
 	public:
-		GDINL bool IsValid() const
+		GDINL bool IsEnd() const
 		{
 			return m_BufferCurrent < m_BufferEnd;
 		}
 	public:
 		// *iterator
-		GDINL FILE_NOTIFY_INFORMATION const& operator* () const
+		GDINL FILE_NOTIFY_EXTENDED_INFORMATION const& operator* () const
 		{
-			GD_DEBUG_VERIFY(IsValid());
-			return *reinterpret_cast<FILE_NOTIFY_INFORMATION const*>(m_BufferCurrent);
+			GD_DEBUG_VERIFY(IsEnd());
+			return *reinterpret_cast<FILE_NOTIFY_EXTENDED_INFORMATION const*>(m_BufferCurrent);
 		}
 		// iterator->
-		GDINL FILE_NOTIFY_INFORMATION const* operator-> () const
+		GDINL FILE_NOTIFY_EXTENDED_INFORMATION const* operator-> () const
 		{
-			GD_DEBUG_VERIFY(IsValid());
-			return reinterpret_cast<FILE_NOTIFY_INFORMATION const*>(m_BufferCurrent);
+			GD_DEBUG_VERIFY(IsEnd());
+			return reinterpret_cast<FILE_NOTIFY_EXTENDED_INFORMATION const*>(m_BufferCurrent);
 		}
 		// iterator++
-		GDINL DirectoryChangesEventIterator& operator++ ()
+		GDINL ReadDirectoryChangesEventIterator& operator++ ()
 		{
 			auto const nextEntryOffset = (**this).NextEntryOffset;
 			if (nextEntryOffset != 0)
@@ -497,43 +498,44 @@ GD_NAMESPACE_BEGIN
 			}
 			return *this;
 		}
-		GDINL DirectoryChangesEventIterator operator++ (int const unused)
-		{
-			GD_NOT_USED_L(unused);
-			auto const copy(*this);
-			++*this;
-			return copy;
-		}
-	};  // class DirectoryChangesEventIterator
+	};  // class ReadDirectoryChangesEventIterator
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	//! INotify event container.
+	//! ReadDirectoryChangesW event queue.
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
-	class GD_PLATFORM_KERNEL INotifyEventContainer final : public TNonCopyable
+	class GD_PLATFORM_KERNEL ReadDirectoryChangesEventQueue final : public TNonCopyable
 	{
 	private:
-		UniquePtr<Byte[]> m_Buffer;
-		DWORD m_BufferLength;
+		UniquePtr<Byte[]> m_QueueBuffer;
+		DWORD m_QueueLength;
 	public:
-		GDINL explicit INotifyEventContainer(DWORD const length)
-			: m_Buffer(gd_new Byte[length * (sizeof(FILE_NOTIFY_INFORMATION) + FILENAME_MAX)]), m_BufferLength(length)
+		GDINL explicit ReadDirectoryChangesEventQueue()
+			: m_QueueBuffer(gd_new Byte[GetCapacity()]), m_QueueLength(0)
 		{
 		}
 	public:
+		GDINL static DWORD GetCapacity()
+		{
+			return 1024 * (sizeof(FILE_NOTIFY_INFORMATION) + FILENAME_MAX);
+		}
 		GDINL Byte* GetData() const
 		{
-			return m_Buffer.Get();
+			return m_QueueBuffer.Get();
 		}
 		GDINL DWORD GetLength() const
 		{
-			return m_BufferLength;
+			return m_QueueLength;
+		}
+		GDINL void Resize(DWORD const newLength)
+		{
+			m_QueueLength = newLength;
 		}
 	public:
-		GDINL DirectoryChangesEventIterator Begin(DWORD const lengthOfEvents) const
+		GDINL ReadDirectoryChangesEventIterator Begin() const
 		{
-			return DirectoryChangesEventIterator(m_Buffer.Get(), m_Buffer.Get() + lengthOfEvents);
+			return ReadDirectoryChangesEventIterator(m_QueueBuffer.Get(), m_QueueBuffer.Get() + GetLength());
 		}
-	};  // class INotifyEventContainer
+	};  // class ReadDirectoryChangesEventQueue
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	//! Disk file system watcher on Microsoft platforms.
@@ -541,9 +543,7 @@ GD_NAMESPACE_BEGIN
 	class GD_PLATFORM_KERNEL MicrosoftPlatformDiskFileSystemWatcher : public IPlatformDiskFileSystemWatcher
 	{
 	private:
-		GDINT virtual bool WatchCreate(WideString const& directoryName, Handle& watchHandle) override final;
-		GDINT virtual bool WatchDestroy(Handle const watchHandle) override final;
-		GDINT virtual bool WatchReadEvents(Handle const watchHandle, IFileSystemWatcherDelegate& directoryWatcherDelegate) override final;
+		GDINT virtual bool WatchDirectoryRecursive(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate) override final;
 	};	// class MicrosoftPlatformDiskFileSystemWatcher
 
 	GD_IMPLEMENT_SINGLETON(IPlatformDiskFileSystemWatcher, MicrosoftPlatformDiskFileSystemWatcher);
@@ -553,104 +553,91 @@ GD_NAMESPACE_BEGIN
 	// ------------------------------------------------------------------------------------------
 
 	/*!
-	 * Creates a new watch for the specified directory.
+	 * Watches all filesystem events on the specified directory.
+	 * This function returns on application exit.
 	 *
 	 * @param directoryName Path to the directory.
-	 * @param watchHandle Watch handle.
-	 *
-	 * @returns True if operation succeeded.
-	 */
-	GDINT bool MicrosoftPlatformDiskFileSystemWatcher::WatchCreate(WideString const& directoryName, Handle& watchHandle)
-	{
-		auto const directoryNameSystem = Paths::Platformize(directoryName);
-		auto const directoryHandle = CreateFileW(directoryNameSystem.CStr(), FILE_LIST_DIRECTORY
-			, FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
-		if (directoryHandle != INVALID_HANDLE_VALUE)
-		{
-			watchHandle = directoryHandle;
-			return true;
-		}
-		return false;
-	}
-
-	/*!
-	 * Closes a watch handle.
-	 *
-	 * @param watchHandle Watch handle.
-	 * @returns True if operation succeeded.
-	 */
-	GDINT bool MicrosoftPlatformDiskFileSystemWatcher::WatchDestroy(Handle const watchHandle)
-	{
-		GD_DEBUG_VERIFY(watchHandle != nullptr);
-		return CloseHandle(watchHandle) == TRUE;
-	}
-
-	/*!
-	 * Reads all pending file system events of the specified watch.
-	 *
-	 * @param watchHandle Watch handle.
 	 * @param directoryWatcherDelegate Watch event delegate.
 	 *
 	 * @returns True if operation succeeded.
 	 */
-	GDINT bool MicrosoftPlatformDiskFileSystemWatcher::WatchReadEvents(Handle const watchHandle, IFileSystemWatcherDelegate& directoryWatcherDelegate)
+	GDINT bool MicrosoftPlatformDiskFileSystemWatcher::WatchDirectoryRecursive(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate)
 	{
-		GD_DEBUG_VERIFY(watchHandle != nullptr);
-		INotifyEventContainer watchBuffer(1024);
-		DWORD lengthOfEvents = 0;
-		if (ReadDirectoryChangesW(watchHandle
-			, watchBuffer.GetData(), watchBuffer.GetLength(), FALSE
-			, FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_FILE_NAME
-			, &lengthOfEvents, nullptr, nullptr) == TRUE)
+		auto const directoryNameSystem = Paths::Platformize(directoryName);
+		auto const directoryHandle = CreateFileW(directoryNameSystem.CStr(), FILE_LIST_DIRECTORY
+			, FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
+		if (directoryHandle == INVALID_HANDLE_VALUE)
 		{
-			for (auto watchEventIterator = watchBuffer.Begin(lengthOfEvents); watchEventIterator.IsValid(); ++watchEventIterator)
+			return false;
+		}
+
+		ReadDirectoryChangesEventQueue directoryEventQueue;
+		while (IPlatformApplication::Get().IsRunning())
+		{
+			DWORD lengthOfEvents = 0;
+			if (ReadDirectoryChangesExW(directoryHandle
+				, directoryEventQueue.GetData(), directoryEventQueue.GetCapacity(), TRUE
+				, FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_FILE_NAME
+				, &lengthOfEvents, nullptr, nullptr, ReadDirectoryNotifyExtendedInformation) == FALSE)
+			{
+				CloseHandle(directoryHandle);
+				return false;
+			}
+
+			directoryEventQueue.Resize(lengthOfEvents);
+			for (auto watchEventIterator = directoryEventQueue.Begin(); watchEventIterator.IsEnd(); ++watchEventIterator)
 			{
 				switch (watchEventIterator->Action)
 				{
 					// File or directory was created or moved into watch directory.
 					case FILE_ACTION_ADDED:
 						{
+							auto const watchEventIsDir = (watchEventIterator->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 							WideString const watchEventPath(watchEventIterator->FileName, watchEventIterator->FileNameLength / sizeof(watchEventIterator->FileName[0]));
-							directoryWatcherDelegate.OnFileOrDirectoryCreated(watchEventPath);
+							directoryWatcherDelegate.OnFileOrDirectoryCreated(watchEventPath, watchEventIsDir);
 							break;
 						}
 					// File or directory was removed or moved from watch directory.
 					case FILE_ACTION_REMOVED:
 						{
+							auto const watchEventIsDir = (watchEventIterator->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 							WideString const watchEventPath(watchEventIterator->FileName, watchEventIterator->FileNameLength);
-							directoryWatcherDelegate.OnFileOrDirectoryRemoved(watchEventPath);
+							directoryWatcherDelegate.OnFileOrDirectoryRemoved(watchEventPath, watchEventIsDir);
 							break;
 						}
 					// File or directory was modified.
 					case FILE_ACTION_MODIFIED:
 						{
+							auto const watchEventIsDir = (watchEventIterator->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 							WideString const watchEventPath(watchEventIterator->FileName, watchEventIterator->FileNameLength);
-							directoryWatcherDelegate.OnFileOrDirectoryModified(watchEventPath);
+							directoryWatcherDelegate.OnFileOrDirectoryModified(watchEventPath, watchEventIsDir);
 							break;
 						}
 					// File or directory was renamed.
 					case FILE_ACTION_RENAMED_OLD_NAME:
-					{
-						auto const newNameEventIterator = ++DirectoryChangesEventIterator(watchEventIterator);
-						if (newNameEventIterator.IsValid() && newNameEventIterator->Action == FILE_ACTION_RENAMED_NEW_NAME)
 						{
-							WideString const watchRenamedOldNameEventPath(watchEventIterator->FileName, watchEventIterator->FileNameLength);
-							WideString const watchRenamedNewNameEventPath(newNameEventIterator->FileName, newNameEventIterator->FileNameLength);
-							directoryWatcherDelegate.OnFileOrDirectoryMoved(watchRenamedOldNameEventPath, watchRenamedNewNameEventPath);
+							auto const newNameEventIterator = ++ReadDirectoryChangesEventIterator(watchEventIterator);
+							if (newNameEventIterator.IsEnd() && newNameEventIterator->Action == FILE_ACTION_RENAMED_NEW_NAME)
+							{
+								auto const watchEventIsDir = (watchEventIterator->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+								WideString const watchRenamedOldNameEventPath(watchEventIterator->FileName, watchEventIterator->FileNameLength);
+								WideString const watchRenamedNewNameEventPath(newNameEventIterator->FileName, newNameEventIterator->FileNameLength);
+								directoryWatcherDelegate.OnFileOrDirectoryMoved(watchRenamedOldNameEventPath, watchRenamedNewNameEventPath, watchEventIsDir);
+							}
+							else
+							{
+								return false;
+							}
+							break;
 						}
-						else
-						{
-							return false;
-						}
-						break;
-					}
 					default:
 						break;
 				}
 			}
-			return true;
 		}
-		return false;
+
+		CloseHandle(directoryHandle);
+		return true;
 	}
 
 GD_NAMESPACE_END

@@ -13,14 +13,14 @@
 #include <GoddamnEngine/Core/Platform/PlatformFileSystem.h>
 #if GD_PLATFORM_GNU_LINUX
 
-#include <sys/inotify.h>
-#include <unistd.h>
-
 #include <GoddamnEngine/Core/Platform/PlatformApplication.h>
 
 #include <GoddamnEngine/Core/Templates/UniquePtr.h>
 #include <GoddamnEngine/Core/Containers/Map.h>
 #include "GoddamnEngine/Core/IO/Paths.h"
+
+#include <sys/inotify.h>
+#include <unistd.h>
 
 GD_NAMESPACE_BEGIN
 
