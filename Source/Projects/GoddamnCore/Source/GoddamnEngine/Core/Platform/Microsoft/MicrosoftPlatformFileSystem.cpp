@@ -558,7 +558,7 @@ GD_NAMESPACE_BEGIN
 	 * @param directoryName Path to the directory.
 	 * @param watchHandle Watch handle.
 	 *
-	 * @returns True if directory exists or new watch was successfully created.
+	 * @returns True if operation succeeded.
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystemWatcher::WatchCreate(WideString const& directoryName, Handle& watchHandle)
 	{
@@ -591,7 +591,7 @@ GD_NAMESPACE_BEGIN
 	 * @param watchHandle Watch handle.
 	 * @param directoryWatcherDelegate Watch event delegate.
 	 *
-	 * @returns True if directory exists or new watch was successfully added.
+	 * @returns True if operation succeeded.
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystemWatcher::WatchReadEvents(Handle const watchHandle, IFileSystemWatcherDelegate& directoryWatcherDelegate)
 	{

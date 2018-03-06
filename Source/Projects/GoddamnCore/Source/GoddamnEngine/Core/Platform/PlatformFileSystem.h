@@ -52,10 +52,12 @@ GD_NAMESPACE_BEGIN
 		 * or some existing file or directory is moved into the watch directory.
 		 *
 		 * @param path Path the entity that was created.
+		 * @param isDirectory True if the entry is a directory.
 		 */
-		GDINT virtual void OnFileOrDirectoryCreated(WideString const& path)
+		GDINT virtual bool OnFileOrDirectoryCreated(WideString const& path, bool const isDirectory)
 		{
-			GD_NOT_USED_L(path);
+			GD_NOT_USED_L(path, isDirectory);
+			return true;
 		}
 
 		/*!
@@ -63,19 +65,24 @@ GD_NAMESPACE_BEGIN
 		 * or some existing file or directory is moved out from the watch directory.
 		 *
 		 * @param path Path the entity that was removed.
+		 * @param isDirectory True if the entry is a directory.
 		 */
-		GDINT virtual void OnFileOrDirectoryRemoved(WideString const& path)
+		GDINT virtual bool OnFileOrDirectoryRemoved(WideString const& path, bool const isDirectory)
 		{
-			GD_NOT_USED_L(path);
+			GD_NOT_USED_L(path, isDirectory);
+			return true;
 		}
 
 		/*!
 		 * Callback being triggered by the filesystem watcher when new file or directory was modified.
+		 *
 		 * @param path Path the entity that was removed.
+		 * @param isDirectory True if the entry is a directory.
 		 */
-		GDINT virtual void OnFileOrDirectoryModified(WideString const& path)
+		GDINT virtual bool OnFileOrDirectoryModified(WideString const& path, bool const isDirectory)
 		{
-			GD_NOT_USED_L(path);
+			GD_NOT_USED_L(path, isDirectory);
+			return true;
 		}
 
 		/*!
@@ -83,10 +90,12 @@ GD_NAMESPACE_BEGIN
 		 * 
 		 * @param srcPath Old path to the entity that was moved.
 		 * @param dstPath New path to the entity that was moved.
+		 * @param isDirectory True if the entry is a directory.
 		 */
-		GDINT virtual void OnFileOrDirectoryMoved(WideString const& srcPath, WideString const& dstPath)
+		GDINT virtual bool OnFileOrDirectoryMoved(WideString const& srcPath, WideString const& dstPath, bool const isDirectory)
 		{
-			GD_NOT_USED_L(srcPath, dstPath);
+			GD_NOT_USED_L(srcPath, dstPath, isDirectory);
+			return true;
 		}
 	};	// class IFileSystemWatcherDelegate
 
@@ -323,32 +332,15 @@ GD_NAMESPACE_BEGIN
 		// ------------------------------------------------------------------------------------------
 
 		/*!
-		 * Creates a new watch for the specified directory.
+		 * Watches all filesystem events on the specified directory.
+		 * This function returns on application exit.
 		 *
 		 * @param directoryName Path to the directory.
-		 * @param watchHandle Watch handle.
+		 * @param directoryWatcherDelegate Watch event delegate.
 		 *
-		 * @returns True if directory exists or new watch was successfully created.
-		 */
-		GDINT virtual bool WatchCreate(WideString const& directoryName, Handle& watchHandle) GD_PURE_VIRTUAL;
-
-		/*!
-		 * Closes a watch handle.
-		 *
-		 * @param watchHandle Watch handle.
 		 * @returns True if operation succeeded.
 		 */
-		GDINT virtual bool WatchDestroy(Handle const watchHandle) GD_PURE_VIRTUAL;
-
-		/*!
-		 * Reads all pending file system events of the specified watch.
-		 *
-		 * @param watchHandle Watch handle.
-		 * @param directoryWatcherDelegate Watch event delegate.
-		 * 
-		 * @returns True if directory exists or new watch was successfully added.
-		 */
-		GDINT virtual bool WatchReadEvents(Handle const watchHandle, IFileSystemWatcherDelegate& directoryWatcherDelegate) GD_PURE_VIRTUAL;
+		GDINT virtual bool WatchDirectoryRecursive(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate) GD_PURE_VIRTUAL;
 	};	// class IPlatformDiskFileSystemWatcher
 
 GD_NAMESPACE_END

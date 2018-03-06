@@ -286,7 +286,9 @@ GD_NAMESPACE_BEGIN
 			IFileSystemDirectoryIterateDelegate& m_Delegate;
 		public:
 			GDINL DirectoryIterateRecursiveDelegate(IFileSystem const& fileSystem, IFileSystemDirectoryIterateDelegate& delegate)
-				: m_FileSystem(fileSystem), m_Delegate(delegate) {}
+				: m_FileSystem(fileSystem), m_Delegate(delegate)
+			{
+			}
 		public:
 			GDINT virtual bool OnVisitDirectoryEntry(WideString const& path, bool const isDirectory) override final
 			{
@@ -319,7 +321,9 @@ GD_NAMESPACE_BEGIN
 			IFileSystem& m_FileSystem;
 		public:
 			GDINL explicit DirectoryRemoveRecursiveDelegate(IFileSystem& fileSystem)
-				: m_FileSystem(fileSystem) {}
+				: m_FileSystem(fileSystem)
+			{
+			}
 		private:
 			GDINT virtual bool OnVisitDirectoryEntry(WideString const& path, bool const isDirectory) override final
 			{
@@ -344,5 +348,9 @@ GD_NAMESPACE_BEGIN
 		DirectoryRemoveRecursiveDelegate directoryIterateRecursiveDelegate(*this);
 		return DirectoryIterate(directoryName, directoryIterateRecursiveDelegate);
 	}
+
+	// ------------------------------------------------------------------------------------------
+	// Watch utilities.
+	// ------------------------------------------------------------------------------------------
 
 GD_NAMESPACE_END
