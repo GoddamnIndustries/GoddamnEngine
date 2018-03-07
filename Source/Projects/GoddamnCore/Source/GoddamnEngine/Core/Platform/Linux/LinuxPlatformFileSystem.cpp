@@ -204,8 +204,8 @@ GD_NAMESPACE_BEGIN
 				{
 					WatchDescriptors.Erase(*watchDescriptorPtr);
 					WatchDescriptorsPaths.Erase(directoryName);
+					return true;
 				}
-				return true;
 			}
 			return false;
 		}
@@ -259,8 +259,7 @@ GD_NAMESPACE_BEGIN
 			return false;
 		}
 
-		//! @todo
-		while (/*IPlatformApplication::Get().IsRunning()*/ true)
+		while (IPlatformApplication::Get().IsRunning())
 		{
 			if (!iNotifyWatch.Read())
 			{
