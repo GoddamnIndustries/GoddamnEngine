@@ -594,7 +594,10 @@ GD_NAMESPACE_BEGIN
 						{
 							auto const watchEventIsDir = (watchEventIterator->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 							auto const watchEventPath = Paths::Combine(directoryName, WideString(watchEventIterator->FileName, watchEventIterator->FileNameLength / sizeof(watchEventIterator->FileName[0])));
-							directoryWatcherDelegate.OnFileOrDirectoryCreated(watchEventPath, watchEventIsDir);
+							if (!directoryWatcherDelegate.OnFileOrDirectoryCreated(watchEventPath, watchEventIsDir))
+							{
+								return false;
+							}
 							break;
 						}
 					// File or directory was removed or moved from watch directory.
@@ -602,7 +605,10 @@ GD_NAMESPACE_BEGIN
 						{
 							auto const watchEventIsDir = (watchEventIterator->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 							auto const watchEventPath = Paths::Combine(directoryName, WideString(watchEventIterator->FileName, watchEventIterator->FileNameLength / sizeof(watchEventIterator->FileName[0])));
-							directoryWatcherDelegate.OnFileOrDirectoryRemoved(watchEventPath, watchEventIsDir);
+							if (!directoryWatcherDelegate.OnFileOrDirectoryRemoved(watchEventPath, watchEventIsDir))
+							{
+								return false;
+							}
 							break;
 						}
 					// File or directory was modified.
@@ -610,7 +616,10 @@ GD_NAMESPACE_BEGIN
 						{
 							auto const watchEventIsDir = (watchEventIterator->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 							auto const watchEventPath = Paths::Combine(directoryName, WideString(watchEventIterator->FileName, watchEventIterator->FileNameLength / sizeof(watchEventIterator->FileName[0])));
-							directoryWatcherDelegate.OnFileOrDirectoryModified(watchEventPath, watchEventIsDir);
+							if (!directoryWatcherDelegate.OnFileOrDirectoryModified(watchEventPath, watchEventIsDir))
+							{
+								return false;
+							}
 							break;
 						}
 					// File or directory was renamed.
@@ -622,7 +631,10 @@ GD_NAMESPACE_BEGIN
 								auto const watchEventIsDir = (watchEventIterator->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 								auto const watchRenamedOldNameEventPath = Paths::Combine(directoryName, WideString(watchEventIterator->FileName, watchEventIterator->FileNameLength / sizeof(watchEventIterator->FileName[0])));
 								auto const watchRenamedNewNameEventPath = Paths::Combine(directoryName, WideString(newNameEventIterator->FileName, newNameEventIterator->FileNameLength / sizeof(watchEventIterator->FileName[0])));
-								directoryWatcherDelegate.OnFileOrDirectoryMoved(watchRenamedOldNameEventPath, watchRenamedNewNameEventPath, watchEventIsDir);
+								if (!directoryWatcherDelegate.OnFileOrDirectoryMoved(watchRenamedOldNameEventPath, watchRenamedNewNameEventPath, watchEventIsDir))
+								{
+									return false;
+								}
 							}
 							else
 							{
