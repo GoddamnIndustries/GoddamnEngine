@@ -130,12 +130,15 @@ GD_NAMESPACE_BEGIN
 		 * @param allocationPointer Allocated memory pointer.
 		 * @returns True if operation succeeded.
 		 */
-		GDINT virtual bool MemoryFreeAlignedDebug(Handle const allocationPointer) GD_PURE_VIRTUAL
+		GDINT virtual bool MemoryFreeAlignedDebug(Handle const allocationPointer)
 		{
 			return MemoryFreeAligned(allocationPointer);
 		}
 #endif	// if GD_DEBUG
 	};	// class IPlatformAllocator
+
+	template<>
+	GDAPI IPlatformAllocator& Singleton<IPlatformAllocator>::Get();
 
 	/*!
 	 * Helper function for memory allocation.
