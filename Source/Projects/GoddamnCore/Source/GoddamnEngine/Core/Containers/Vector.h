@@ -1258,27 +1258,11 @@ GD_NAMESPACE_BEGIN
 	};	// class Vector<bool>
 
 	/*!
-	 * Temporary vector implementation.
-	 */
-	template<typename TElement, SizeTp TCapacity = InlineAllocatorCapacityNormal>
-	using TempVector = Vector<TElement, InlineDoubleEndedStackAllocator<InlineAllocatorCapacityNormal>>;
-	template<typename TElement>
-	using TempTinyVector = TempVector<TElement, InlineAllocatorCapacityTiny>;
-	template<typename TElement>
-	using TempHugeVector = TempVector<TElement, InlineAllocatorCapacityHuge>;
-
-	/*!
 	 * Dynamic stack implementation.
 	 * @todo Impelemnt me
 	 */
 	template<typename TElement>
 	using Stack = Vector<TElement>;
-	template<typename TElement, SizeTp TCapacity = InlineAllocatorCapacityNormal>
-	using TempStack = Vector<TElement, InlineStackAllocator<InlineAllocatorCapacityNormal>>;
-	template<typename TElement>
-	using TempTinyStack = TempStack<TElement, InlineAllocatorCapacityTiny>;
-	template<typename TElement>
-	using TempHugeStack = TempStack<TElement, InlineAllocatorCapacityHuge>;
 
 	/*!
 	 * Chunk vector implementation.

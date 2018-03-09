@@ -39,9 +39,7 @@
 
 GD_NAMESPACE_BEGIN
 
-	typedef Allocator DefaultContainerAllocator;
-	template<typename>
-	using GCContainerAllocator = void;
+	typedef class HeapAllocator {} DefaultContainerAllocator;
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
 	// ******                               Iterator traits.                                   ******

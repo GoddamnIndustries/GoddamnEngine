@@ -148,7 +148,7 @@ constexpr static void NotUsedConstexpr(T...) {}
 #	include <GoddamnEngine/Core/Base/Architecture.h>
 #	include <GoddamnEngine/Core/Base/Types.h>
 #	include <GoddamnEngine/Core/Base/Assert.h>
-#	include <GoddamnEngine/Core/Base/Allocator.h>
+#	include <GoddamnEngine/Core/Platform/PlatformAllocator.h>
 #endif	// if !GD_RESOURCE_COMPILER
 
 #undef GD_INSIDE_INCLUDE_H

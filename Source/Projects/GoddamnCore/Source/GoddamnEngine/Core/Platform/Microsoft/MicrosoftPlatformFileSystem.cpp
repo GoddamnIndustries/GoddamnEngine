@@ -546,7 +546,7 @@ GD_NAMESPACE_BEGIN
 		GDINT virtual bool WatchDirectoryRecursive(WideString const& directoryName, IFileSystemWatcherDelegate& directoryWatcherDelegate) override final;
 	};	// class MicrosoftPlatformDiskFileSystemWatcher
 
-	GD_IMPLEMENT_SINGLETON(IPlatformDiskFileSystemWatcher, MicrosoftPlatformDiskFileSystemWatcher);
+	GD_IMPLEMENT_SINGLETON(IPlatformDiskFileSystemWatcher, MicrosoftPlatformDiskFileSystemWatcher)
 
 	// ------------------------------------------------------------------------------------------
 	// Watch utilities.
