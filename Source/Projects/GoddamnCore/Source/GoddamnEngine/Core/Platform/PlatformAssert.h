@@ -15,8 +15,6 @@
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Templates/Singleton.h>
 
-#include <cstdlib>
-
 #define GD_ASSERT_DIALOG_TITLE			  "Assert Failed"
 #define GD_ASSERT_DIALOG_GROUP_BOX_TEXT	  "What the mess is going on?"
 #define GD_ASSERT_DIALOG_DESCRIPTION_TEXT "Whoa, seems that you have just broken the world's most stable piece of code!\n" \
@@ -93,12 +91,12 @@ GD_NAMESPACE_BEGIN
 		 * @param assertData Assertion information.
 		 */
 		GD_NORETURN GDINT virtual void ReportAndExit(AssertData const* const assertData) GD_PURE_VIRTUAL;
-	};	// class IPlatformAllocator
+	};	// class IPlatformAssert
 
 	template<>
 	GDAPI IPlatformAssert& Singleton<IPlatformAssert>::Get();
 
-	GD_NAMESPACE_END
+GD_NAMESPACE_END
 
 /*!
  * @brief Defines an enabled fatal assertion.
