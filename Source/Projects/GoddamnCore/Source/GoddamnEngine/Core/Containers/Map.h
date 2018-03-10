@@ -193,7 +193,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TValue& Insert(TKey&& key, TValue&& value = TValue())
 		{
-			GD_DEBUG_VERIFY(!this->Contains(key), "Element with specified key already exists.");
+			GD_ASSERT(!this->Contains(key), "Element with specified key already exists.");
 
 			RedBlackTreeNodeType* const newNode = this->InternalCreateNode(Utils::Forward<TKey>(key), Utils::Forward<TValue>(value));
 			this->InsertNodeBase(newNode);
@@ -201,7 +201,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL TValue& Insert(TKey const& key, TValue const& value = TValue())
 		{
-			GD_DEBUG_VERIFY(!this->Contains(key), "Element with specified key already exists.");
+			GD_ASSERT(!this->Contains(key), "Element with specified key already exists.");
 
 			RedBlackTreeNodeType* const newNode = this->InternalCreateNode(key, value);
 			this->InsertNodeBase(newNode);
@@ -216,7 +216,7 @@ GD_NAMESPACE_BEGIN
 		GDINL void Erase(TKey const& key)
 		{
 			auto const foundNode = this->FindNodeBase(&key);
-			GD_DEBUG_VERIFY(foundNode != this->GetNullNodeBase(), "Element with specified key does not exist.");
+			GD_ASSERT(foundNode != this->GetNullNodeBase(), "Element with specified key does not exist.");
 			this->RemoveNodeBase(foundNode);
 		}
 
@@ -253,7 +253,7 @@ GD_NAMESPACE_BEGIN
 		GDINL TValue const& operator[] (TKey const& key) const
 		{
 			auto const queriedIterator = this->FindIterator(key);
-			GD_DEBUG_VERIFY(queriedIterator == this->End(), "Element with specified key does not exist.");
+			GD_ASSERT(queriedIterator == this->End(), "Element with specified key does not exist.");
 			return queriedIterator->Value;
 		}
 

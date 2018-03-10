@@ -40,17 +40,17 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINT virtual Int32 AtomicCompareExchange(Int32 volatile* const value, Int32 const exchange, Int32 const comparand) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return static_cast<Int32>(InterlockedCompareExchange(reinterpret_cast<LONG volatile*>(value), static_cast<LONG>(exchange), static_cast<LONG>(comparand)));
 		}
 		GDINT virtual Int64 AtomicCompareExchange(Int64 volatile* const value, Int64 const exchange, Int64 const comparand) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return static_cast<Int64>(InterlockedCompareExchange64(reinterpret_cast<LONG64 volatile*>(value), static_cast<LONG64>(exchange), static_cast<LONG64>(comparand)));
 		}
 		GDINT virtual CHandle AtomicCompareExchangePtr(CHandle volatile* const value, CHandle const exchange, CHandle const comparand) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return InterlockedCompareExchangePointer(static_cast<PVOID volatile*>(const_cast<Handle volatile*>(value)), const_cast<Handle>(exchange), const_cast<Handle>(comparand));
 		}
 		//! @}
@@ -66,17 +66,17 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINT virtual Int32 AtomicExchange(Int32 volatile* const value, Int32 const exchange) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return static_cast<Int32>(InterlockedExchange(reinterpret_cast<LONG volatile*>(value), static_cast<LONG>(exchange)));
 		}
 		GDINT virtual Int64 AtomicExchange(Int64 volatile* const value, Int64 const exchange) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return static_cast<Int64>(InterlockedExchange64(reinterpret_cast<LONG64 volatile*>(value), static_cast<LONG64>(exchange)));
 		}
 		GDINT virtual CHandle AtomicExchangePtr(CHandle volatile* const value, CHandle const exchange) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return InterlockedExchangePointer(static_cast<PVOID volatile*>(const_cast<Handle volatile*>(value)), const_cast<Handle>(exchange));
 		}
 		//! @}
@@ -94,12 +94,12 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINT virtual Int32 AtomicIncrement(Int32 volatile* const value) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return static_cast<Int32>(InterlockedIncrement(reinterpret_cast<LONG volatile*>(value)));
 		}
 		GDINT virtual Int64 AtomicIncrement(Int64 volatile* const value) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return static_cast<Int64>(InterlockedIncrement64(reinterpret_cast<LONG64 volatile*>(value)));
 		}
 		//! @}
@@ -113,12 +113,12 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINT virtual Int32 AtomicDecrement(Int32 volatile* const value) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return static_cast<Int32>(InterlockedDecrement(reinterpret_cast<LONG volatile*>(value)));
 		}
 		GDINT virtual Int64 AtomicDecrement(Int64 volatile* const value) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return static_cast<Int64>(InterlockedDecrement64(reinterpret_cast<LONG64 volatile*>(value)));
 		}
 		//! @}
@@ -134,12 +134,12 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINT virtual Int32 AtomicAdd(Int32 volatile* const value, Int32 const amount) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return static_cast<Int32>(InterlockedAdd(reinterpret_cast<LONG volatile*>(value), static_cast<LONG>(amount)));
 		}
 		GDINT virtual Int64 AtomicAdd(Int64 volatile* const value, Int64 const amount) const override final
 		{
-			GD_DEBUG_VERIFY(IsPointerAligned(value));
+			GD_ASSERT(IsPointerAligned(value));
 			return static_cast<Int64>(InterlockedAdd64(reinterpret_cast<LONG64 volatile*>(value), static_cast<LONG64>(amount)));
 		}
 		//! @}

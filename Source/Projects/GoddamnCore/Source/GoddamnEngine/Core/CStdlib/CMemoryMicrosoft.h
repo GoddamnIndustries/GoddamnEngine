@@ -31,7 +31,7 @@ GD_NAMESPACE_BEGIN
 		GDINL static Handle Memcpy(Handle const dest, CHandle const source, SizeTp const sourceLength)
 		{
 			auto const result = ::memcpy_s(dest, sourceLength, source, sourceLength);
-			GD_DEBUG_VERIFY(result == 0, "memcpy_s failed.");
+			GD_ASSERT(result == 0, "memcpy_s failed.");
 			return dest;
 		}
 		GDINL static Char* CMemcpy(Char* const dest, CStr const source, SizeTp const sourceLength)
@@ -41,7 +41,7 @@ GD_NAMESPACE_BEGIN
 		GDINL static WideChar* CMemcpy(WideChar* const dest, WideCStr const source, SizeTp const sourceLength)
 		{
 			auto const result = ::wmemcpy_s(dest, sourceLength, source, sourceLength);
-			GD_DEBUG_VERIFY(result == 0, "wmemcpy_s failed.");
+			GD_ASSERT(result == 0, "wmemcpy_s failed.");
 			return dest;
 		}
 		//! @}
@@ -53,7 +53,7 @@ GD_NAMESPACE_BEGIN
 		GDINL static Handle Memmove(Handle const dest, CHandle const source, SizeTp const sourceLength)
 		{
 			auto const result = ::memmove_s(dest, sourceLength, source, sourceLength);
-			GD_DEBUG_VERIFY(result == 0, "memcpy_s failed.");
+			GD_ASSERT(result == 0, "memcpy_s failed.");
 			return dest;
 		}
 		GDINL static Char* CMemmove(Char* const dest, CStr const source, SizeTp const sourceLength)
@@ -63,7 +63,7 @@ GD_NAMESPACE_BEGIN
 		GDINL static WideChar* CMemmove(WideChar* const dest, WideCStr const source, SizeTp const sourceLength)
 		{
 			auto const result = ::wmemmove_s(dest, sourceLength, source, sourceLength);
-			GD_DEBUG_VERIFY(result == 0, "wmemmov_s failed.");
+			GD_ASSERT(result == 0, "wmemmov_s failed.");
 			return dest;
 		}
 		//! @}

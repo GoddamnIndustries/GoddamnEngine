@@ -50,7 +50,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINT virtual ~ObjectReader()
 		{
-			GD_DEBUG_VERIFY(m_ReadingScope.IsEmpty(), "Scoping error.");
+			GD_ASSERT(m_ReadingScope.IsEmpty(), "Scoping error.");
 		}
 
 	protected:
@@ -90,7 +90,7 @@ GD_NAMESPACE_BEGIN
 		{
 			if (!TrySelectNextArrayElement())
 			{
-				GD_DEBUG_VERIFY(namePtr != nullptr);
+				GD_ASSERT(namePtr != nullptr);
 				return TryReadPropertyName(*namePtr);
 			}
 			return true;
@@ -246,7 +246,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual void EndReadArrayPropertyValue()
 		{
-            GD_DEBUG_VERIFY(m_ReadingScope.GetLast() == CurrentlyReading::Array, "Array scoping error.");
+            GD_ASSERT(m_ReadingScope.GetLast() == CurrentlyReading::Array, "Array scoping error.");
 			m_ReadingScope.EraseLast();
 		}
 
@@ -273,7 +273,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual void EndReadStructPropertyValue()
 		{
-            GD_DEBUG_VERIFY(m_ReadingScope.GetLast() == CurrentlyReading::Struct, "Struct scoping error.");
+            GD_ASSERT(m_ReadingScope.GetLast() == CurrentlyReading::Struct, "Struct scoping error.");
 			m_ReadingScope.EraseLast();
 		}
 
@@ -331,7 +331,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINT virtual ~ObjectWriter()
 		{
-			GD_DEBUG_VERIFY(m_WritingScope.IsEmpty(), "Scoping error.");
+			GD_ASSERT(m_WritingScope.IsEmpty(), "Scoping error.");
 		}
 
 		// ------------------------------------------------------------------------------------------
@@ -366,7 +366,7 @@ GD_NAMESPACE_BEGIN
 		{
 			if (!TrySelectNextArrayElement())
 			{
-				GD_DEBUG_VERIFY(namePtr != nullptr);
+				GD_ASSERT(namePtr != nullptr);
 				WritePropertyName(*namePtr);
 			}
 		}
@@ -485,7 +485,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual void EndWriteArrayPropertyValue()
 		{
-            GD_DEBUG_VERIFY(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Array, "Array scoping error.");
+            GD_ASSERT(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Array, "Array scoping error.");
 			m_WritingScope.EraseLast();
 		}
 
@@ -509,7 +509,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual void EndWriteStructPropertyValue()
 		{
-            GD_DEBUG_VERIFY(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Struct, "Struct scoping error.");
+            GD_ASSERT(!m_WritingScope.IsEmpty() && m_WritingScope.GetLast() == CurrentlyWriting::Struct, "Struct scoping error.");
 			m_WritingScope.EraseLast();
 		}
 

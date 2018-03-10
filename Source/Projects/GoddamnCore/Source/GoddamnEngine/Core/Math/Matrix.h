@@ -123,8 +123,8 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL Float32 const& GD_VECTORCALL operator()(SizeTp const IndexRow, SizeTp const IndexColumn) const
 		{
-			GD_DEBUG_VERIFY(IndexRow < 4, "Row index out of range.");
-			GD_DEBUG_VERIFY(IndexColumn < 4, "Column index out of range.");
+			GD_ASSERT(IndexRow < 4, "Row index out of range.");
+			GD_ASSERT(IndexColumn < 4, "Column index out of range.");
 			return M[IndexRow][IndexColumn];
 		}
 		GDINL Float32& GD_VECTORCALL operator()(SizeTp const IndexRow, SizeTp const IndexColumn)

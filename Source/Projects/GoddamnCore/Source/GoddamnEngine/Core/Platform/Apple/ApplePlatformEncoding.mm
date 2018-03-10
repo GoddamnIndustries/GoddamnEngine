@@ -56,7 +56,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool ApplePlatformTextEncoding::CalculateEncodedLength(WideCStr const text, SizeTp const textLength, SizeTp& encodedLength) const
 	{
-		GD_DEBUG_VERIFY(text != nullptr && textLength > 0);
+		GD_ASSERT(text != nullptr && textLength > 0);
 		auto const textApple = [[NSString alloc] initWithBytes:text length:textLength * sizeof(*text) encoding:NSUTF32LittleEndianStringEncoding];
         auto const textAppleUTF8 = [textApple UTF8String];
 		if (textAppleUTF8 != nullptr)
@@ -79,8 +79,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool ApplePlatformTextEncoding::EncodeUTF8(Char* const dst, SizeTp const dstLength, WideCStr const src, SizeTp const srcLength) const
 	{
-		GD_DEBUG_VERIFY(dst != nullptr && dstLength > 0);
-		GD_DEBUG_VERIFY(src != nullptr && srcLength > 0);
+		GD_ASSERT(dst != nullptr && dstLength > 0);
+		GD_ASSERT(src != nullptr && srcLength > 0);
 		auto const srcApple = [[NSString alloc] initWithBytes:src length:srcLength * sizeof(*src) encoding:NSUTF32LittleEndianStringEncoding];
         auto const srcAppleUTF8 = [sourceApple UTF8String];
 		if (srcAppleUTF8 != nullptr)
@@ -106,7 +106,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool ApplePlatformTextEncoding::CalculateDecodedLength(CStr const text, SizeTp const textLength, SizeTp& decodedLength) const
 	{
-		GD_DEBUG_VERIFY(text != nullptr && textLength > 0);
+		GD_ASSERT(text != nullptr && textLength > 0);
         auto const textApple = [NSString stringWithUTF8String:text];
         decodedLength = static_cast<SizeTp>([textApple length]);
 		return true;
@@ -124,8 +124,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool ApplePlatformTextEncoding::DecodeUTF8(WideChar* const dst, SizeTp const dstLength, CStr const src, SizeTp const srcLength) const
 	{
-		GD_DEBUG_VERIFY(dst != nullptr && dstLength > 0);
-		GD_DEBUG_VERIFY(src != nullptr && srcLength > 0);
+		GD_ASSERT(dst != nullptr && dstLength > 0);
+		GD_ASSERT(src != nullptr && srcLength > 0);
 		auto const srcApple = [NSString stringWithUTF8String:src];
 		auto const srcAppleUTF32 = reinterpret_cast<WideCStr>([srcApple cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
 		if (srcAppleUTF32 != nullptr)

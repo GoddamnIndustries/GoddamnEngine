@@ -38,17 +38,17 @@ GD_NAMESPACE_BEGIN
         //! @{
         GDINT virtual Int32 AtomicCompareExchange(Int32 volatile* const value, Int32 const exchange, Int32 const comparand) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_val_compare_and_swap(value, comparand, exchange);
         }
         GDINT virtual Int64 AtomicCompareExchange(Int64 volatile* const value, Int64 const exchange, Int64 const comparand) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_val_compare_and_swap(value, comparand, exchange);
         }
         GDINT virtual CHandle AtomicCompareExchangePtr(CHandle volatile* const value, CHandle const exchange, CHandle const comparand) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_val_compare_and_swap(value, comparand, exchange);
         }
         //! @}
@@ -64,17 +64,17 @@ GD_NAMESPACE_BEGIN
         //! @{
         GDINT virtual Int32 AtomicExchange(Int32 volatile* const value, Int32 const exchange) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_lock_test_and_set(value, exchange);
         }
         GDINT virtual Int64 AtomicExchange(Int64 volatile* const value, Int64 const exchange) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_lock_test_and_set(value, exchange);
         }
         GDINT virtual CHandle AtomicExchangePtr(CHandle volatile* const value, CHandle const exchange) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_lock_test_and_set(value, exchange);
         }
         //! @}
@@ -92,12 +92,12 @@ GD_NAMESPACE_BEGIN
         //! @{
         GDINT virtual Int32 AtomicIncrement(Int32 volatile* const value) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_fetch_and_add(value, 1) + 1;
         }
         GDINT virtual Int64 AtomicIncrement(Int64 volatile* const value) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_fetch_and_add(value, 1) + 1;
         }
         //! @}
@@ -111,12 +111,12 @@ GD_NAMESPACE_BEGIN
         //! @{
         GDINT virtual Int32 AtomicDecrement(Int32 volatile* const value) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_fetch_and_sub(value, 1) - 1;
         }
         GDINT virtual Int64 AtomicDecrement(Int64 volatile* const value) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_fetch_and_sub(value, 1) - 1;
         }
         //! @}
@@ -132,12 +132,12 @@ GD_NAMESPACE_BEGIN
         //! @{
         GDINT virtual Int32 AtomicAdd(Int32 volatile* const value, Int32 const amount) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_fetch_and_add(value, amount);
         }
         GDINT virtual Int64 AtomicAdd(Int64 volatile* const value, Int64 const amount) const override final
         {
-            GD_DEBUG_VERIFY(IsPointerAligned(value));
+            GD_ASSERT(IsPointerAligned(value));
             return __sync_fetch_and_add(value, amount);
         }
         //! @}

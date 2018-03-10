@@ -85,7 +85,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL Float32 const& GD_VECTORCALL operator()(SizeTp const Index) const
 		{
-			GD_DEBUG_VERIFY(Index < 4, "index out of range.");
+			GD_ASSERT(Index < 4, "index out of range.");
 			return *(&this->X + Index);
 		}
 		GDINL Float32& GD_VECTORCALL operator()(SizeTp const Index)

@@ -75,13 +75,13 @@ GD_NAMESPACE_BEGIN
 		// *iterator
 		GDINL inotify_event const& operator* () const
 		{
-			GD_DEBUG_VERIFY(IsEnd());
+			GD_ASSERT(IsEnd());
 			return *reinterpret_cast<inotify_event const*>(m_BufferCurrent);
 		}
 		// iterator->
 		GDINL inotify_event const* operator-> () const
 		{
-			GD_DEBUG_VERIFY(IsEnd());
+			GD_ASSERT(IsEnd());
 			return reinterpret_cast<inotify_event const*>(m_BufferCurrent);
 		}
 		// ++iterator

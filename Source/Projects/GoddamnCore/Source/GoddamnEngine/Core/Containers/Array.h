@@ -203,11 +203,11 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TElement const* GetData() const
 		{
-			GD_DEBUG_VERIFY_FALSE("Zero-sized Array data access.");
+			GD_ASSERT_FALSE("Zero-sized Array data access.");
 		}
 		GDINL TElement* GetData()
 		{
-			GD_DEBUG_VERIFY_FALSE("Zero-sized Array data access.");
+			GD_ASSERT_FALSE("Zero-sized Array data access.");
 		}
 		//! @}
 

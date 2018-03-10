@@ -43,7 +43,7 @@ GD_NAMESPACE_BEGIN
 		: m_DeviceDefaultColor(deviceDefaultColor), m_DeviceDefaultVerbosity(deviceDefaultVerbosity)
 		, m_DeviceTimeFormat(deviceTimeFormat), m_DeviceDoAutoEmitLineTerminator(deviceDoAutoEmitLineTerminator)
 	{
-		//GD_DEBUG_VERIFY(Thread::GetCurrentThreadID() == Thread::GetMainThreadID(), "Creating output devices is allowed only inside main thread.");
+		//GD_ASSERT(Thread::GetCurrentThreadID() == Thread::GetMainThreadID(), "Creating output devices is allowed only inside main thread.");
 		g_OutputDevices.InsertLast(UniquePtr<DebugOutputDevice>(this));
 	}
 

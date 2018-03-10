@@ -77,7 +77,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool PosixPlatformTextEncoding::CalculateEncodedLength(WideCStr const text, SizeTp const textLength, SizeTp& encodedLength) const
 	{
-		GD_DEBUG_VERIFY(text != nullptr && textLength > 0);
+		GD_ASSERT(text != nullptr && textLength > 0);
 		if (m_WideCharToUTF8 != nullptr)
 		{
 			auto inBuffer = reinterpret_cast<Char*>(const_cast<WideChar*>(text));
@@ -107,8 +107,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool PosixPlatformTextEncoding::EncodeUTF8(Char* const dst, SizeTp const dstLength, WideCStr const src, SizeTp const srcLength) const
 	{
-		GD_DEBUG_VERIFY(dst != nullptr && dstLength > 0);
-		GD_DEBUG_VERIFY(src != nullptr && srcLength > 0);
+		GD_ASSERT(dst != nullptr && dstLength > 0);
+		GD_ASSERT(src != nullptr && srcLength > 0);
 		if (m_WideCharToUTF8 != nullptr)
 		{
 			auto inBuffer = reinterpret_cast<Char*>(const_cast<WideChar*>(src));
@@ -135,7 +135,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool PosixPlatformTextEncoding::CalculateDecodedLength(CStr const text, SizeTp const textLength, SizeTp& decodedLength) const
 	{
-		GD_DEBUG_VERIFY(text != nullptr && textLength > 0);
+		GD_ASSERT(text != nullptr && textLength > 0);
 		if (m_WideCharToUTF8 != nullptr)
 		{
 			auto inBuffer = const_cast<Char*>(text);
@@ -165,8 +165,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool PosixPlatformTextEncoding::DecodeUTF8(WideChar* const dst, SizeTp const dstLength, CStr const src, SizeTp const srcLength) const
 	{
-		GD_DEBUG_VERIFY(dst != nullptr && dstLength > 0);
-		GD_DEBUG_VERIFY(src != nullptr && srcLength > 0);
+		GD_ASSERT(dst != nullptr && dstLength > 0);
+		GD_ASSERT(src != nullptr && srcLength > 0);
 		if (m_UTF8ToWideChar != nullptr)
 		{
 			auto inBuffer = const_cast<Char*>(src);

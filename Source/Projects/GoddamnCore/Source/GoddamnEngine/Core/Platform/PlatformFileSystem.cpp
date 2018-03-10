@@ -50,7 +50,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINT virtual UInt64 Seek(Int64 const offset, SeekOrigin const origin, bool* const resultPtr) override final
 		{
-			GD_DEBUG_VERIFY(m_FileHandle != nullptr);
+			GD_ASSERT(m_FileHandle != nullptr);
 			UInt64 newPosition = 0;
 			auto const result = m_FileSystem.FileSeek(m_FileHandle, offset, origin, &newPosition);
 			if (resultPtr != nullptr)
@@ -65,7 +65,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINT virtual UInt32 Read(Handle const readBuffer, UInt32 const readBufferSizeBytes, bool* const resultPtr) override final
 		{
-			GD_DEBUG_VERIFY(m_FileHandle != nullptr);
+			GD_ASSERT(m_FileHandle != nullptr);
 			UInt32 numBytesRead = 0;
 			auto const result = m_FileSystem.FileRead(m_FileHandle, readBuffer, readBufferSizeBytes, &numBytesRead);
 			if (resultPtr != nullptr)
@@ -117,7 +117,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINT virtual UInt64 Seek(Int64 const offset, SeekOrigin const origin, bool* const resultPtr) override final
 		{
-			GD_DEBUG_VERIFY(m_FileHandle != nullptr);
+			GD_ASSERT(m_FileHandle != nullptr);
 			UInt64 newPosition = 0;
 			auto const result = m_FileSystem.FileSeek(m_FileHandle, offset, origin, &newPosition);
 			if (resultPtr != nullptr)
@@ -132,7 +132,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINT virtual UInt32 Write(CHandle const writeBuffer, UInt32 const writeBufferSizeBytes, bool* const resultPtr) override final
 		{
-			GD_DEBUG_VERIFY(m_FileHandle != nullptr);
+			GD_ASSERT(m_FileHandle != nullptr);
 			UInt32 numBytesWritten = 0;
 			auto const result = m_FileSystem.FileWrite(m_FileHandle, writeBuffer, writeBufferSizeBytes, &numBytesWritten);
 			if (resultPtr != nullptr)

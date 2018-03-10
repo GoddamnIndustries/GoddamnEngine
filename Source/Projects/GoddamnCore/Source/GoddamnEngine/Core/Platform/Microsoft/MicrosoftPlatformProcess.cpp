@@ -93,7 +93,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool DynamicLibraryUnload(Handle const libraryHandle) override final
 		{
-			GD_DEBUG_VERIFY(libraryHandle != nullptr);
+			GD_ASSERT(libraryHandle != nullptr);
 			auto const libraryHandleSystem = static_cast<HMODULE>(libraryHandle);
 			return FreeLibrary(libraryHandleSystem) == TRUE;
 		}
@@ -109,7 +109,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool DynamicLibraryResolve(Handle const libraryHandle, String const& libraryExportedFunctionName, Handle& libraryExportedFunctionPointer) const override final
 		{
-			GD_DEBUG_VERIFY(libraryHandle != nullptr);
+			GD_ASSERT(libraryHandle != nullptr);
 			auto const libraryHandleSystem = static_cast<HMODULE>(libraryHandle);
 			auto const libraryExportedFunctionPointerSystem = GetProcAddress(libraryHandleSystem, libraryExportedFunctionName.CStr());
 			if (libraryHandleSystem != nullptr)
@@ -157,7 +157,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool PipeDestroy(Handle const pipeReadEndHandle, Handle const pipeWriteEndHandle) override final
 		{
-			GD_DEBUG_VERIFY(pipeReadEndHandle != nullptr && pipeWriteEndHandle != nullptr);
+			GD_ASSERT(pipeReadEndHandle != nullptr && pipeWriteEndHandle != nullptr);
 			return CloseHandle(pipeReadEndHandle) == TRUE && CloseHandle(pipeWriteEndHandle) == TRUE;
 		}
 
@@ -171,7 +171,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool PipeReadPendingContent(Handle const pipeReadEndHandle, WideString& pipeContent) override final
 		{
-			GD_DEBUG_VERIFY(pipeReadEndHandle != nullptr);
+			GD_ASSERT(pipeReadEndHandle != nullptr);
 			DWORD pipeContentUTF8Length;
 			if (PeekNamedPipe(pipeReadEndHandle, nullptr, 0, nullptr, &pipeContentUTF8Length, nullptr) == TRUE)
 			{
@@ -279,7 +279,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool ProcessTerminate(Handle const processHandle) override final
 		{
-			GD_DEBUG_VERIFY(processHandle != nullptr);
+			GD_ASSERT(processHandle != nullptr);
 			return TerminateProcess(processHandle, 0) == TRUE && CloseHandle(processHandle) == TRUE;
 		}
 
@@ -291,7 +291,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool ProcessTerminateRecursive(Handle const processHandle) override final
 		{
-			GD_DEBUG_VERIFY(processHandle != nullptr);
+			GD_ASSERT(processHandle != nullptr);
 			auto result = false;
 			auto const processId = GetProcessId(processHandle);
 			auto const runningProcessesSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);

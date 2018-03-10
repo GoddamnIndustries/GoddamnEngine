@@ -246,7 +246,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystem::FileClose(Handle const fileHandle) const
 	{
-		GD_DEBUG_VERIFY(fileHandle != nullptr);
+		GD_ASSERT(fileHandle != nullptr);
 		return CloseHandle(fileHandle) == TRUE;
 	}
 
@@ -262,7 +262,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystem::FileSeek(Handle const fileHandle, Int64 const offset, SeekOrigin const origin, UInt64* const newPosition) const
 	{
-		GD_DEBUG_VERIFY(fileHandle != nullptr);
+		GD_ASSERT(fileHandle != nullptr);
 
 		DWORD originSystem = 0;
 		switch (origin)
@@ -311,7 +311,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystem::FileRead(Handle const fileHandle, Handle const readBuffer, UInt32 const readBufferSizeBytes, UInt32* const numBytesRead) const
 	{
-		GD_DEBUG_VERIFY(fileHandle != nullptr);
+		GD_ASSERT(fileHandle != nullptr);
 		if (numBytesRead != nullptr)
 		{
 			DWORD numBytesReadSystem = 0;
@@ -343,7 +343,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformDiskFileSystem::FileWrite(Handle const fileHandle, CHandle const writeBuffer, UInt32 const writeBufferSizeBytes, UInt32* const numBytesWritten)
 	{
-		GD_DEBUG_VERIFY(fileHandle != nullptr);
+		GD_ASSERT(fileHandle != nullptr);
 		if (numBytesWritten != nullptr)
 		{
 			DWORD numBytesReadSystem = 0;
@@ -475,13 +475,13 @@ GD_NAMESPACE_BEGIN
 		// *iterator
 		GDINL FILE_NOTIFY_EXTENDED_INFORMATION const& operator* () const
 		{
-			GD_DEBUG_VERIFY(IsEnd());
+			GD_ASSERT(IsEnd());
 			return *reinterpret_cast<FILE_NOTIFY_EXTENDED_INFORMATION const*>(m_BufferCurrent);
 		}
 		// iterator->
 		GDINL FILE_NOTIFY_EXTENDED_INFORMATION const* operator-> () const
 		{
-			GD_DEBUG_VERIFY(IsEnd());
+			GD_ASSERT(IsEnd());
 			return reinterpret_cast<FILE_NOTIFY_EXTENDED_INFORMATION const*>(m_BufferCurrent);
 		}
 		// iterator++

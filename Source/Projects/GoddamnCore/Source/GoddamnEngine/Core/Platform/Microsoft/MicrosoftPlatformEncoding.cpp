@@ -56,7 +56,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformTextEncoding::CalculateEncodedLength(WideCStr const text, SizeTp const textLength, SizeTp& encodedLength) const
 	{
-		GD_DEBUG_VERIFY(text != nullptr && textLength > 0);
+		GD_ASSERT(text != nullptr && textLength > 0);
 		auto const result = WideCharToMultiByte(CP_UTF8, 0, text, static_cast<int>(textLength), nullptr, 0, nullptr, nullptr);
 		if (result != 0)
 		{
@@ -78,8 +78,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformTextEncoding::EncodeUTF8(Char* const dst, SizeTp const dstLength, WideCStr const src, SizeTp const srcLength) const
 	{
-		GD_DEBUG_VERIFY(dst != nullptr && dstLength > 0);
-		GD_DEBUG_VERIFY(src != nullptr && srcLength > 0);
+		GD_ASSERT(dst != nullptr && dstLength > 0);
+		GD_ASSERT(src != nullptr && srcLength > 0);
 		if (WideCharToMultiByte(CP_UTF8, 0, src, static_cast<int>(srcLength), dst, static_cast<int>(dstLength), nullptr, nullptr) != 0)
 		{
 			dst[dstLength] = '\0';
@@ -103,7 +103,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformTextEncoding::CalculateDecodedLength(CStr const text, SizeTp const textLength, SizeTp& decodedLength) const
 	{
-		GD_DEBUG_VERIFY(text != nullptr && textLength > 0);
+		GD_ASSERT(text != nullptr && textLength > 0);
 		auto const result = MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(textLength), nullptr, 0);
 		if (result != 0)
 		{
@@ -125,8 +125,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT bool MicrosoftPlatformTextEncoding::DecodeUTF8(WideChar* const dst, SizeTp const dstLength, CStr const src, SizeTp const srcLength) const
 	{
-		GD_DEBUG_VERIFY(dst != nullptr && dstLength > 0);
-		GD_DEBUG_VERIFY(src != nullptr && srcLength > 0);
+		GD_ASSERT(dst != nullptr && dstLength > 0);
+		GD_ASSERT(src != nullptr && srcLength > 0);
 		if (MultiByteToWideChar(CP_UTF8, 0, src, static_cast<int>(srcLength), dst, static_cast<int>(dstLength)) != 0)
 		{
 			dst[dstLength] = L'\0';

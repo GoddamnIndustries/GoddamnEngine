@@ -102,7 +102,7 @@ GD_NAMESPACE_BEGIN
 			if (!ObjectReaderDocBase::TryReadPropertyName(name))
 			{
 				// Selecting top object's property by name.
-				GD_DEBUG_VERIFY(!m_ObjectsScope.IsEmpty(), "Object scoping error.");
+				GD_ASSERT(!m_ObjectsScope.IsEmpty(), "Object scoping error.");
 
 				auto const topDocObject = m_ObjectsScope.GetLast().Object;
 				m_SelectedValue = topDocObject->_GetProperty(name);
@@ -116,10 +116,10 @@ GD_NAMESPACE_BEGIN
 			if (ObjectReaderDocBase::TrySelectNextArrayElement())
 			{
 				// Selecting next element of the array.
-				GD_DEBUG_VERIFY(!m_ArraysScope.IsEmpty(), "Array scoping error.");
+				GD_ASSERT(!m_ArraysScope.IsEmpty(), "Array scoping error.");
 
 				auto const& topDocArray = m_ArraysScope.GetLast();
-				GD_DEBUG_VERIFY(topDocArray.CurrentIndex < topDocArray.Array.GetLength(), "Reading array element runs out of bounds.");
+				GD_ASSERT(topDocArray.CurrentIndex < topDocArray.Array.GetLength(), "Reading array element runs out of bounds.");
 				m_SelectedValue = topDocArray.Array[topDocArray.CurrentIndex++];
 				return true;
 			}
@@ -138,7 +138,7 @@ GD_NAMESPACE_BEGIN
 		template<typename TValue>
 		GDINL bool TryReadPropertyValueImpl(TValue& value)
 		{
-			GD_DEBUG_VERIFY(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
+			GD_ASSERT(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
 			return m_SelectedValue->_TryGetValue(value);
 		}
 
@@ -151,7 +151,7 @@ GD_NAMESPACE_BEGIN
 			if (!ObjectReaderDocBase::TryBeginReadArrayPropertyValue(arraySize))
 			{
 				DocValueVector value;
-				GD_DEBUG_VERIFY(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
+				GD_ASSERT(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
 				if (!m_SelectedValue->_TryGetValue(value))
 				{
 					ObjectReaderDocBase::EndReadArrayPropertyValue();
@@ -178,7 +178,7 @@ GD_NAMESPACE_BEGIN
 			if (!ObjectReaderDocBase::TryBeginReadStructPropertyValue())
 			{
 				DocObjectPtr value;
-				GD_DEBUG_VERIFY(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
+				GD_ASSERT(m_SelectedValue != nullptr, "No property was selected with 'TryReadPropertyName' call.");
 				if (!m_SelectedValue->_TryGetValue(value))
 				{
 					ObjectReaderDocBase::EndReadArrayPropertyValue();

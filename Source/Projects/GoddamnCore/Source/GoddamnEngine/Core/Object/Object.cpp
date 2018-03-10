@@ -67,7 +67,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI GD_OBJECT_KERNEL Object::~Object()
 	{
-		GD_DEBUG_VERIFY(m_ReferenceCount == 0, "Attempting to delete a referenced object.");
+		GD_ASSERT(m_ReferenceCount == 0, "Attempting to delete a referenced object.");
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -115,8 +115,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT RefPtr<Object> GD_OBJECT_KERNEL Object::FindClassRelatedObjectByGUID(GUID const& guid, ObjectClassPtr const klass)
 	{
-		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
-		GD_DEBUG_VERIFY(guid != EmptyGUID, "Invalid GUID was specified.");
+		GD_ASSERT(klass != nullptr, "Null pointer class was specified.");
+		GD_ASSERT(guid != EmptyGUID, "Invalid GUID was specified.");
 			
 		// First, trying to find this object among instances of this class.
 		auto const classObjectPtr = klass->m_Instances.Find(guid);
@@ -159,7 +159,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI Vector<RefPtr<Object>> GD_OBJECT_KERNEL Object::FindObjectsByClass(ObjectClassPtr const klass)
 	{
-		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
+		GD_ASSERT(klass != nullptr, "Null pointer class was specified.");
 		
 		// Safely copying all instances of the specified class into array.
 		Vector<RefPtr<Object>> foundObjects(0, klass->m_Instances.GetLength());
@@ -181,7 +181,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI ChunkedVector<RefPtr<Object>> GD_OBJECT_KERNEL Object::FindClassRelatedObjects(ObjectClassPtr const klass)
 	{
-		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
+		GD_ASSERT(klass != nullptr, "Null pointer class was specified.");
 		
 		// Safely copying all instances of the specified class into array.
 		auto foundObjects(FindObjectsByClass(klass));
@@ -207,7 +207,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI RefPtr<Object> GD_OBJECT_KERNEL Object::CreateOrFindClassRelatedObjectByGUID(GUID const& guid, ObjectClassPtr const klass /*= nullptr*/)
 	{
-		GD_DEBUG_VERIFY(klass != nullptr, "Null pointer class was specified.");
+		GD_ASSERT(klass != nullptr, "Null pointer class was specified.");
 
 		// First, trying to find the object among registered.
 		if (guid != EmptyGUID)

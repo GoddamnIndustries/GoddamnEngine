@@ -25,7 +25,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDINT unsigned __stdcall ThreadMicrosoft::ThreadProc(ThreadMicrosoft* const threadObject)
 	{
-		GD_DEBUG_VERIFY(threadObject != nullptr, "Null pointer thread object was specified.");
+		GD_ASSERT(threadObject != nullptr, "Null pointer thread object was specified.");
 
 #if GD_DEBUG
 		// Setting name of the thread. 

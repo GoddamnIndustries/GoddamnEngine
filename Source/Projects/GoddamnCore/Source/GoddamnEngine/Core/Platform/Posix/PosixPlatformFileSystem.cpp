@@ -233,7 +233,7 @@ GD_NAMESPACE_BEGIN
      */
     GDINT bool PosixPlatformDiskFileSystem::FileClose(Handle const fileHandle) const
     {
-        GD_DEBUG_VERIFY(fileHandle != nullptr);
+        GD_ASSERT(fileHandle != nullptr);
         auto const fileHandleSystem = static_cast<Int32>(reinterpret_cast<IntPtr>(fileHandle));
         return close(fileHandleSystem) == 0;
     }
@@ -250,7 +250,7 @@ GD_NAMESPACE_BEGIN
      */
     GDINT bool PosixPlatformDiskFileSystem::FileSeek(Handle const fileHandle, Int64 const offset, SeekOrigin const origin, UInt64* const newPosition) const
     {
-        GD_DEBUG_VERIFY(fileHandle != nullptr);
+        GD_ASSERT(fileHandle != nullptr);
 
         Int32 originSystem = 0;
         switch (origin)
@@ -298,7 +298,7 @@ GD_NAMESPACE_BEGIN
      */
     GDINT bool PosixPlatformDiskFileSystem::FileRead(Handle const fileHandle, Handle const readBuffer, UInt32 const readBufferSizeBytes, UInt32* const numBytesRead) const
     {
-        GD_DEBUG_VERIFY(fileHandle != nullptr);
+        GD_ASSERT(fileHandle != nullptr);
         auto const fileHandleSystem = static_cast<Int32>(reinterpret_cast<IntPtr>(fileHandle));
         if (numBytesRead != nullptr)
         {
@@ -331,7 +331,7 @@ GD_NAMESPACE_BEGIN
      */
     GDINT bool PosixPlatformDiskFileSystem::FileWrite(Handle const fileHandle, CHandle const writeBuffer, UInt32 const writeBufferSizeBytes, UInt32* const numBytesWritten)
     {
-        GD_DEBUG_VERIFY(fileHandle != nullptr);
+        GD_ASSERT(fileHandle != nullptr);
         auto const fileHandleSystem = static_cast<Int32>(reinterpret_cast<IntPtr>(fileHandle));
         if (numBytesWritten != nullptr)
         {

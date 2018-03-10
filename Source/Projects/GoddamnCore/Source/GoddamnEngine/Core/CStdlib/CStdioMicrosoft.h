@@ -135,7 +135,7 @@ GD_NAMESPACE_BEGIN
 		{
 			FILE* temporaryFile = nullptr;
 			auto const result = ::tmpfile_s(&temporaryFile);
-			GD_DEBUG_VERIFY(result == 0, "tmpfile_s failed.");
+			GD_ASSERT(result == 0, "tmpfile_s failed.");
 			return temporaryFile;
 		}
 
@@ -150,7 +150,7 @@ GD_NAMESPACE_BEGIN
 		GDINL static void TmpnamSafe(Char* const temporaryPath, SizeTp const temporaryPathLength)
 		{
 			auto const result = ::tmpnam_s(temporaryPath, temporaryPathLength);
-			GD_DEBUG_VERIFY(result == 0, "tmpnam_s failed.");
+			GD_ASSERT(result == 0, "tmpnam_s failed.");
 		}
 
 	};	// class CStdioMicrosoft

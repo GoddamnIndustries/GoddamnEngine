@@ -50,7 +50,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL explicit ThreadGeneric(CStr const threadName, ThreadPriority const threadPriority = ThreadPriority::Normal)
 		{
-			GD_DEBUG_VERIFY(threadName != nullptr, "Null pointer thread name was specified.");
+			GD_ASSERT(threadName != nullptr, "Null pointer thread name was specified.");
 			GD_NOT_USED(threadPriority);
 		}
 

@@ -200,14 +200,14 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TElement& Insert(TElement&& element)
 		{
-			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
+			GD_ASSERT(!this->Contains(element), "Specified element already exists.");
 
 			this->VectorType::InsertLast(Utils::Forward<TElement>(element));
 			return this->GetLast();
 		}
 		GDINL TElement& Insert(TElement const& element)
 		{
-			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
+			GD_ASSERT(!this->Contains(element), "Specified element already exists.");
 
 			this->VectorType::InsertLast(element);
 			return this->GetLast();
@@ -221,7 +221,7 @@ GD_NAMESPACE_BEGIN
 		GDINL void Erase(TElement const& element)
 		{
 			auto const foundIndex = this->FindFirst(element);
-			GD_DEBUG_VERIFY(foundIndex != SizeTpMax, "Specified element does not exist.");
+			GD_ASSERT(foundIndex != SizeTpMax, "Specified element does not exist.");
 			this->EraseAt(foundIndex);
 		}
 

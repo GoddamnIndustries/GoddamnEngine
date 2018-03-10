@@ -265,7 +265,7 @@ GD_NAMESPACE_BEGIN
 		y->m_Left = x;
 		x->m_Parent = y;
 
-		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in _InternalRotateLeft");
+		GD_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in _InternalRotateLeft");
 	}
 
 	/*!
@@ -310,7 +310,7 @@ GD_NAMESPACE_BEGIN
 		x->m_Right = y;
 		y->m_Parent = x;
 
-		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in _RightRotate");
+		GD_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in _RightRotate");
 	}
 
 	/*!
@@ -395,7 +395,7 @@ GD_NAMESPACE_BEGIN
 		//! While removing the first element of map this assert fails.
 		//! @todo But now everything works, check the whole source.
 		m_NullNode->m_IsRed = false;
-		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not black in InternalRepair");
+		GD_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not black in InternalRepair");
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -446,8 +446,8 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI void RedBlackTreeBase::InsertNodeBase(RedBlackTreeBaseNode* z)
 	{
-		GD_DEBUG_VERIFY(z != nullptr, "Null pointer node.");
-		GD_DEBUG_VERIFY(FindNodeBase(z->GetDataUntyped()) == GetNullNodeBase(), "node with specified element already exist in the tree.");
+		GD_ASSERT(z != nullptr, "Null pointer node.");
+		GD_ASSERT(FindNodeBase(z->GetDataUntyped()) == GetNullNodeBase(), "node with specified element already exist in the tree.");
 		m_Length += 1;
 
 		RedBlackTreeBaseNode* y;
@@ -481,7 +481,7 @@ GD_NAMESPACE_BEGIN
 			y->m_Right = z;
 		}
 
-		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in TreeInsertHelp");
+		GD_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in TreeInsertHelp");
 
 		x = z;
 		x->m_IsRed = true;
@@ -536,8 +536,8 @@ GD_NAMESPACE_BEGIN
 		}
 		m_RootNode->m_Left->m_IsRed = false;
 
-		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in Insert");
-		GD_DEBUG_VERIFY(!m_RootNode->m_IsRed, "m_RootNode not m_IsRed in Insert");
+		GD_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not m_IsRed in Insert");
+		GD_ASSERT(!m_RootNode->m_IsRed, "m_RootNode not m_IsRed in Insert");
 	}
 
 	/*!
@@ -570,7 +570,7 @@ GD_NAMESPACE_BEGIN
 		if (y != z)
 		{ 
 			// Y should not be m_NullNode in this case
-			GD_DEBUG_VERIFY(y != m_NullNode, "Y is m_NullNode in RBDelete\n");
+			GD_ASSERT(y != m_NullNode, "Y is m_NullNode in RBDelete\n");
 			
 			// Y is the node to splice out and X is its child
 			if (!y->m_IsRed)
@@ -608,7 +608,7 @@ GD_NAMESPACE_BEGIN
 			//free(Y);
 		}
 
-		GD_DEBUG_VERIFY(!m_NullNode->m_IsRed, "m_NullNode not black in RBDelete");
+		GD_ASSERT(!m_NullNode->m_IsRed, "m_NullNode not black in RBDelete");
 		--m_Length;
 	}
 

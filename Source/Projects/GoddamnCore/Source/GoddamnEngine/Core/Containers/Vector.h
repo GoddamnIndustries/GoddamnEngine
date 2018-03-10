@@ -351,7 +351,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL SizeTp InsertAt(SizeTp const index, TElement&& element = TElement())
 		{
-			GD_DEBUG_VERIFY(index <= m_Length, "Index is out of bounds");
+			GD_ASSERT(index <= m_Length, "Index is out of bounds");
 
 			ReserveToLength(m_Length + 1);
 			m_Length += 1;
@@ -369,7 +369,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL SizeTp InsertAt(SizeTp const index, TElement const& element)
 		{
-			GD_DEBUG_VERIFY(index <= m_Length, "Index is out of bounds");
+			GD_ASSERT(index <= m_Length, "Index is out of bounds");
 
 			ReserveToLength(m_Length + 1);
 			m_Length += 1;
@@ -414,7 +414,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL void EraseAt(SizeTp const index, SizeTp const amount = 1)
 		{
-			GD_DEBUG_VERIFY(index + amount <= m_Length, "Index is out of bounds");
+			GD_ASSERT(index + amount <= m_Length, "Index is out of bounds");
 			for (auto iterator = Begin() + index; iterator != (End() - amount); ++iterator)
 			{
 				*iterator = Utils::Move(*(iterator + amount));
@@ -428,7 +428,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL void EraseLast()
 		{
-			GD_DEBUG_VERIFY(m_Length != 0, "vector size is zero");
+			GD_ASSERT(m_Length != 0, "vector size is zero");
 			Resize(m_Length - 1);
 		}
 
@@ -528,7 +528,7 @@ GD_NAMESPACE_BEGIN
 		// vector[]
 		GDINL TElement const& operator[] (SizeTp const index) const
 		{
-			GD_DEBUG_VERIFY(index < m_Length, "Index is out of bounds");
+			GD_ASSERT(index < m_Length, "Index is out of bounds");
 			return GetData()[index];
 		}
 		GDINL TElement& operator[] (SizeTp const index)
@@ -1038,7 +1038,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL SizeTp InsertAt(SizeTp const index, bool const element = bool())
 		{
-			GD_DEBUG_VERIFY(index <= m_Length, "Index is out of bounds");
+			GD_ASSERT(index <= m_Length, "Index is out of bounds");
 			ReserveToLength(m_Length + 1);
 			m_Length += 1;
 			GD_STUBBED(Suboptimal bitwise shift);
@@ -1073,7 +1073,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL void EraseAt(SizeTp const index, SizeTp const amount = 1)
 		{
-			GD_DEBUG_VERIFY(index + amount <= m_Length, "Index is out of bounds");
+			GD_ASSERT(index + amount <= m_Length, "Index is out of bounds");
 			GD_STUBBED(Suboptimal bitwise shift);
 			{
 				for (auto iterator = Begin() + index; iterator != (End() - amount); ++iterator)
@@ -1089,7 +1089,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL void EraseLast()
 		{
-			GD_DEBUG_VERIFY(m_Length != 0, "vector size is zero");
+			GD_ASSERT(m_Length != 0, "vector size is zero");
 			Resize(m_Length - 1); 
 		}
 
@@ -1168,12 +1168,12 @@ GD_NAMESPACE_BEGIN
 		// vector[]
 		GDINL ConstReferenceType operator[] (SizeTp const index) const
 		{
-			GD_DEBUG_VERIFY(index < m_Length, "Index is out of bounds");
+			GD_ASSERT(index < m_Length, "Index is out of bounds");
 			return{ m_Memory[index / s_BitPerWord], index % s_BitPerWord };
 		}
 		GDINL ReferenceType operator[] (SizeTp const index)
 		{
-			GD_DEBUG_VERIFY(index < m_Length, "Index is out of bounds");
+			GD_ASSERT(index < m_Length, "Index is out of bounds");
 			return{ m_Memory[index / s_BitPerWord], index % s_BitPerWord };
 		}
 

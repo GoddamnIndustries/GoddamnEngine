@@ -103,7 +103,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static String EncodeUTF8(WideCStr const text, SizeTp const textLength, bool* const resultPtr = nullptr)
 		{
-			GD_DEBUG_VERIFY(text != nullptr);
+			GD_ASSERT(text != nullptr);
 			SizeTp textEncodedLength = 0;
 			if (IPlatformTextEncoding::Get().CalculateEncodedLength(text, textLength, textEncodedLength))
 			{
@@ -154,7 +154,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static WideString DecodeUTF8(CStr const text, SizeTp const textLength, bool* const resultPtr = nullptr)
 		{
-			GD_DEBUG_VERIFY(text != nullptr);
+			GD_ASSERT(text != nullptr);
 			SizeTp textDecodedLength = 0;
 			if (IPlatformTextEncoding::Get().CalculateDecodedLength(text, textLength, textDecodedLength))
 			{

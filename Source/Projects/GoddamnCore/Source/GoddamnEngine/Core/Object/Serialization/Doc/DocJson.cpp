@@ -430,7 +430,7 @@ GD_NAMESPACE_BEGIN
 			} break;
 
 			default: 
-				GD_DEBUG_VERIFY_FALSE("Invalid JSON value type.");
+				GD_ASSERT_FALSE("Invalid JSON value type.");
 		}
 	}
 
@@ -472,7 +472,7 @@ GD_NAMESPACE_BEGIN
 
 	GDAPI void JsonSerializer::Write(JsonObjectPtr const json, class OutputStream* const stream)
 	{
-		GD_DEBUG_VERIFY(stream != nullptr, "Null pointer output stream specified.");
+		GD_ASSERT(stream != nullptr, "Null pointer output stream specified.");
 
 		StringBuilder builder;
 		JsonWriteObject(json, builder);

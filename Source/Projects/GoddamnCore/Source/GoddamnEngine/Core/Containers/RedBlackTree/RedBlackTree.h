@@ -381,7 +381,7 @@ GD_NAMESPACE_BEGIN
 
 		GDINL RedBlackTreeIterator& operator= (RedBlackTreeIterator const& other)
 		{
-			GD_DEBUG_VERIFY(&m_Container == &other.m_Container, "Iterators have different base containers.");
+			GD_ASSERT(&m_Container == &other.m_Container, "Iterators have different base containers.");
 			m_IterNode = other.m_IterNode;
 			return *this;
 		}
@@ -463,7 +463,7 @@ GD_NAMESPACE_BEGIN
 		// *iterator
 		GDINL ElementType& operator* () const
 		{
-			GD_DEBUG_VERIFY(!m_IterNode->IsNull(), "Null node pointer.");
+			GD_ASSERT(!m_IterNode->IsNull(), "Null node pointer.");
 			return reinterpret_cast<ElementType&>(*m_IterNode->GetData());
 		}
 		GDINL ElementType* operator-> () const
@@ -567,7 +567,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TElement const& GetFirst() const
 		{
-			GD_DEBUG_VERIFY(!IsEmpty(), "Red-black tree is empty.");
+			GD_ASSERT(!IsEmpty(), "Red-black tree is empty.");
 			return *static_cast<RedBlackTreeNodeType const*>(GetFirstNodeBase())->GetData();
 		}
 		GDINL TElement& GetFirst()
@@ -582,7 +582,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TElement const& GetLast() const
 		{
-			GD_DEBUG_VERIFY(!IsEmpty(), "Red-black tree is empty.");
+			GD_ASSERT(!IsEmpty(), "Red-black tree is empty.");
 			return *static_cast<RedBlackTreeNodeType const*>(GetLastNodeBase())->GetData();
 		}
 		GDINL TElement& GetLast()

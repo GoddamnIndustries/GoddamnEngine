@@ -133,7 +133,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TElement& Insert(TElement&& element)
 		{
-			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
+			GD_ASSERT(!this->Contains(element), "Specified element already exists.");
 			
 			auto const newNode = this->InternalCreateNode(Utils::Forward<TElement>(element));
 			this->InsertNodeBase(newNode);
@@ -141,7 +141,7 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL TElement& Insert(TElement const& element)
 		{
-			GD_DEBUG_VERIFY(!this->Contains(element), "Specified element already exists.");
+			GD_ASSERT(!this->Contains(element), "Specified element already exists.");
 			
 			auto const newNode = this->InternalCreateNode(element);
 			this->InsertNodeBase(newNode);
@@ -156,7 +156,7 @@ GD_NAMESPACE_BEGIN
 		GDINL void Erase(TElement const& element)
 		{
 			auto const foundNode = this->FindNodeBase(&element);
-			GD_DEBUG_VERIFY(foundNode != this->GetNullNodeBase(), "Specified element does not exist.");
+			GD_ASSERT(foundNode != this->GetNullNodeBase(), "Specified element does not exist.");
 			this->RemoveNodeBase(foundNode);
 		}
 

@@ -205,14 +205,14 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TValue& Insert(TKey&& key, TValue&& value = TValue())
 		{
-			GD_DEBUG_VERIFY(!this->Contains(key), "Element with specified key already exists.");
+			GD_ASSERT(!this->Contains(key), "Element with specified key already exists.");
 
 			this->VectorType::InsertLast(Utils::Move(PairType(Utils::Forward<TKey>(key), Utils::Forward<TValue>(value))));
 			return this->GetLast().Value;
 		}
 		GDINL TValue& Insert(TKey const& key, TValue const& value = TValue())
 		{
-			GD_DEBUG_VERIFY(!this->Contains(key), "Element with specified key already exists.");
+			GD_ASSERT(!this->Contains(key), "Element with specified key already exists.");
 
 			this->VectorType::InsertLast(PairType(key, value));
 			return this->GetLast().Value;
@@ -226,7 +226,7 @@ GD_NAMESPACE_BEGIN
 		GDINL void Erase(TKey const& key)
 		{
 			auto const foundIter = this->FindIterator(key);
-			GD_DEBUG_VERIFY(foundIter != this->End(), "Specified element does not exist.");
+			GD_ASSERT(foundIter != this->End(), "Specified element does not exist.");
 			this->EraseAt(foundIter - this->Begin());
 		}
 
@@ -263,7 +263,7 @@ GD_NAMESPACE_BEGIN
 		GDINL TValue const& operator[] (TKey const& key) const
 		{
 			auto const queriedIterator = this->FindIterator(key);
-			GD_DEBUG_VERIFY(queriedIterator == this->End(), "Element with specified key does not exist.");
+			GD_ASSERT(queriedIterator == this->End(), "Element with specified key does not exist.");
 			return queriedIterator->Value;
 		}
 

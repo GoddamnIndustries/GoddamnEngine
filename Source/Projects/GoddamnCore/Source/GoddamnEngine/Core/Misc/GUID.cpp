@@ -179,7 +179,7 @@ GD_NAMESPACE_BEGIN
 				break;
 
 			default: 
-				GD_DEBUG_VERIFY_FALSE("Invalid format was specified.");
+				GD_ASSERT_FALSE("Invalid format was specified.");
 		}
 		
 		// Converting normalized sting to the bytes sequence..
@@ -304,7 +304,7 @@ GD_NAMESPACE_BEGIN
 					);
 
 			default: 
-				GD_DEBUG_VERIFY_FALSE("Invalid format was specified.");
+				GD_ASSERT_FALSE("Invalid format was specified.");
 		}
 	}
 

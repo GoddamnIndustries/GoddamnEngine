@@ -98,7 +98,7 @@ GD_NAMESPACE_BEGIN
 	template<>
 	GDAPI IPlatformAssert& Singleton<IPlatformAssert>::Get();
 
-GD_NAMESPACE_END
+	GD_NAMESPACE_END
 
 /*!
  * @brief Defines an enabled fatal assertion.
@@ -174,24 +174,26 @@ GD_NAMESPACE_END
 	/*!
 	 * Defines a fatal assertion that is enabled only in debug mode.
 	 */
-#   define GD_DEBUG_VERIFY_FALSE GD_ENABLED_FALSE_VERIFY
+#	define GD_ASSERT_FALSE GD_ENABLED_FALSE_VERIFY
+#   define GD_ASSERT_FALSE GD_ASSERT_FALSE
 
 	/*!
 	 * Defines a regular assertion that is enabled only in debug mode.
 	 */
-#   define GD_DEBUG_VERIFY GD_ENABLED_VERIFY
+#	define GD_ASSERT GD_ENABLED_VERIFY
+#   define GD_DEBUG_VERIFY GD_ASSERT
 
 #else	// if GD_DEBUG
 
 	/*!
 	 * Defines a fatal assertion that is enabled only in debug mode.
 	 */
-#   define GD_DEBUG_VERIFY_FALSE GD_ENABLED_FALSE_VERIFY
+#   define GD_ASSERT_FALSE GD_ENABLED_FALSE_VERIFY
 
 	/*!
 	 * Defines a regular assertion that is enabled only in debug mode.
 	 */
-#   define GD_DEBUG_VERIFY GD_DISABLED_VERIFY
+#   define GD_ASSERT GD_DISABLED_VERIFY
 
 #endif	// if GD_DEBUG
 
@@ -208,9 +210,9 @@ GD_NAMESPACE_END
 /*!
  * Defines a fatal "Not Implemented" assertion.
  */
-#define GD_NOT_IMPLEMENTED() GD_DEBUG_VERIFY_FALSE("A part or whole function is not implemented.")
+#define GD_NOT_IMPLEMENTED() GD_ASSERT_FALSE("A part or whole function is not implemented.")
 
 /*!
  * Defines a fatal "Not Supported" assertion.
  */
-#define GD_NOT_SUPPORTED() GD_DEBUG_VERIFY_FALSE("A part or whole function is not supported.")
+#define GD_NOT_SUPPORTED() GD_ASSERT_FALSE("A part or whole function is not supported.")

@@ -38,13 +38,13 @@ GD_NAMESPACE_BEGIN
 		GDINL static CStr Strcpy(Char* const dest, SizeTp const destLength, CStr const source)
 		{
 			auto const result = ::strcpy_s(dest, destLength, source);
-			GD_DEBUG_VERIFY(result == 0, "strcpy_s failed.");
+			GD_ASSERT(result == 0, "strcpy_s failed.");
 			return dest;
 		}
 		GDINL static WideCStr Strcpy(WideChar* const dest, SizeTp const destLength, WideCStr const source)
 		{
 			auto const result = ::wcscpy_s(dest, destLength, source);
-			GD_DEBUG_VERIFY(result == 0, "wcscpy_s failed.");
+			GD_ASSERT(result == 0, "wcscpy_s failed.");
 			return dest;
 		}
 		//! @}
@@ -56,13 +56,13 @@ GD_NAMESPACE_BEGIN
 		GDINL static CStr Strncpy(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
 			auto const result = ::strncpy_s(dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "strncpy_s failed.");
+			GD_ASSERT(result == 0, "strncpy_s failed.");
 			return dest;
 		}
 		GDINL static WideCStr Strncpy(WideChar* const dest, SizeTp const destLength, WideCStr const source, SizeTp const maxCount)
 		{
 			auto const result = ::wcsncpy_s(dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "wcsncpy_s failed.");
+			GD_ASSERT(result == 0, "wcsncpy_s failed.");
 			return dest;
 		}
 		//! @}
@@ -78,13 +78,13 @@ GD_NAMESPACE_BEGIN
 		GDINL static CStr Strcat(Char* const dest, SizeTp const destLength, CStr const source)
 		{
 			auto const result = ::strcat_s(dest, destLength, source);
-			GD_DEBUG_VERIFY(result == 0, "strcat_s failed.");
+			GD_ASSERT(result == 0, "strcat_s failed.");
 			return dest;
 		}
 		GDINL static WideCStr Strcat(WideChar* const dest, SizeTp const destLength, WideCStr const source)
 		{
 			auto const result = ::wcscat_s(dest, destLength, source);
-			GD_DEBUG_VERIFY(result == 0, "wcscat_s failed.");
+			GD_ASSERT(result == 0, "wcscat_s failed.");
 			return dest;
 		}
 		//! @}
@@ -96,13 +96,13 @@ GD_NAMESPACE_BEGIN
 		GDINL static CStr Strncat(Char* const dest, SizeTp const destLength, CStr const source, SizeTp const maxCount)
 		{
 			auto const result = ::strncat_s(dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "strncat_s failed.");
+			GD_ASSERT(result == 0, "strncat_s failed.");
 			return dest;
 		}
 		GDINL static WideCStr Strncat(WideChar* const dest, SizeTp const destLength, WideCStr const source, SizeTp const maxCount)
 		{
 			auto const result = ::wcsncat_s(dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "wcsncat_s failed.");
+			GD_ASSERT(result == 0, "wcsncat_s failed.");
 			return dest;
 		}
 		//! @}
@@ -118,7 +118,7 @@ GD_NAMESPACE_BEGIN
 		{
 			SizeTp output = 0;
 			auto const result = ::wcstombs_s(&output, dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "wcstombs_s failed.");
+			GD_ASSERT(result == 0, "wcstombs_s failed.");
 			return output;
 		}
 
@@ -129,7 +129,7 @@ GD_NAMESPACE_BEGIN
 		{
 			SizeTp output = 0;
 			auto const result = ::mbstowcs_s(&output, dest, destLength, source, maxCount);
-			GD_DEBUG_VERIFY(result == 0, "mbstowcs_s failed.");
+			GD_ASSERT(result == 0, "mbstowcs_s failed.");
 			return output;
 		}
 

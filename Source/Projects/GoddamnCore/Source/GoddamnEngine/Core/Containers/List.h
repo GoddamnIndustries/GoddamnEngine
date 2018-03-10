@@ -287,7 +287,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL TElement const& GetFirst() const
 		{
-			GD_DEBUG_VERIFY(m_FirstNode != nullptr, "Index is out of bounds");
+			GD_ASSERT(m_FirstNode != nullptr, "Index is out of bounds");
 			return m_FirstNode->GetElement();
 		}
 		GDINL TElement& GetFirst()
@@ -326,7 +326,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL void InsertNodeAfter(LinkedListNodeType* const node, LinkedListNodeType* const after = nullptr)
 		{
-			GD_DEBUG_VERIFY(node != nullptr, "Null pointer node specified.");
+			GD_ASSERT(node != nullptr, "Null pointer node specified.");
 			if (after == nullptr)
 			{
 				this->InsertNodeFirst(node);
@@ -358,7 +358,7 @@ GD_NAMESPACE_BEGIN
 		//! @param Node	Node that would be removed from the list.
 		GDINL void RemoveNode(LinkedListNodeType* const Node)
 		{
-			GD_DEBUG_VERIFY(Node != nullptr, "Null pointer node specified.");
+			GD_ASSERT(Node != nullptr, "Null pointer node specified.");
 
 			//! @todo Check if the node is related to list...
 			if (this->m_FirstNode == this->LastNode)
@@ -728,7 +728,7 @@ GD_NAMESPACE_BEGIN
 		//! @param Node Node that would be inserted.
 		GDINL void InsertNodeFirst(DoubleLinkedListNodeType* const Node)
 		{
-			GD_DEBUG_VERIFY(Node != nullptr, "Null pointer node specified.");
+			GD_ASSERT(Node != nullptr, "Null pointer node specified.");
 			if (this->FirstNode == nullptr)
 			{
 				this->FirstNode = Node;
@@ -760,7 +760,7 @@ GD_NAMESPACE_BEGIN
 		//! @param Node Node that would be inserted.
 		GDINL void InsertNodeLast(DoubleLinkedListNodeType* const Node)
 		{
-			GD_DEBUG_VERIFY(Node != nullptr, "Null pointer node specified.");
+			GD_ASSERT(Node != nullptr, "Null pointer node specified.");
 			if (this->LastNode == nullptr)
 			{
 				this->LastNode = Node;
@@ -793,7 +793,7 @@ GD_NAMESPACE_BEGIN
 		//! @param After Node after that new one would be inserted. By default, it is last node.
 		GDINL void InsertNodeAfter(DoubleLinkedListNodeType* const Node, DoubleLinkedListNodeType* const After = nullptr)
 		{
-			GD_DEBUG_VERIFY(Node != nullptr, "Null pointer node specified.");
+			GD_ASSERT(Node != nullptr, "Null pointer node specified.");
 			if (After == nullptr)
 			{
 				this->InsertNodeLast(Node);
@@ -827,7 +827,7 @@ GD_NAMESPACE_BEGIN
 		//! @param Node	Node that would be removed from the list.
 		GDINL void RemoveNode(DoubleLinkedListNodeType* const Node)
 		{
-			GD_DEBUG_VERIFY(Node != nullptr, "Null pointer node specified.");
+			GD_ASSERT(Node != nullptr, "Null pointer node specified.");
 
 			//! @todo Check if the node is related to list...
 			if (this->FirstNode == this->LastNode)

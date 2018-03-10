@@ -25,7 +25,7 @@
 	template<> \
 	GDAPI Singleton<TSingleton>::Singleton() \
 	{ \
-		GD_DEBUG_VERIFY(TSingletonInstance == nullptr, "'TSingleton<TSingleton>' error: singleton instance already exists.");	\
+		GD_ASSERT(TSingletonInstance == nullptr, "'TSingleton<TSingleton>' error: singleton instance already exists.");	\
 		static_cast<TSingleton*&>(TSingletonInstance) = static_cast<TSingleton*>(this); \
 	} \
 	template<> \
@@ -37,7 +37,7 @@
 	template<> \
 	GDAPI TSingleton& Singleton<TSingleton>::Get() \
 	{ \
-		GD_DEBUG_VERIFY(TSingletonInstance != nullptr, "'TSingleton<TSingleton>::GetInstance' error: no singleton instance was created"); \
+		GD_ASSERT(TSingletonInstance != nullptr, "'TSingleton<TSingleton>::GetInstance' error: no singleton instance was created"); \
 		return *TSingletonInstance; \
 	} \
 

@@ -152,7 +152,7 @@ GD_NAMESPACE_BEGIN
 		template<typename TChar>
 		GDINL static UInt8 ToDigit(TChar const character)
 		{
-			GD_DEBUG_VERIFY(IsHexDigit(character), "Specified character is not a digit.");
+			GD_ASSERT(IsHexDigit(character), "Specified character is not a digit.");
 			if ((character >= GD_TEXT(TChar, '0')) && (character <= GD_TEXT(TChar, '9')))
 			{
 				return character - GD_TEXT(TChar, '0');

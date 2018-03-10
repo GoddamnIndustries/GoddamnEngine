@@ -129,7 +129,7 @@ GD_NAMESPACE_BEGIN
 		GDINL BaseString(TChar const* const text, SizeTp const textLength)
 			: m_Length(textLength)
 		{
-			GD_DEBUG_VERIFY(text != nullptr, "Null pointer data specified");
+			GD_ASSERT(text != nullptr, "Null pointer data specified");
 			if (m_Length >= s_MaxInlineLength)
 			{
 				m_HeapMemory = CMemory::CMemcpy(GD_MALLOC_ARRAY_T(TChar, m_Length + 1), text, m_Length);
@@ -403,9 +403,9 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL BaseString Substring(SizeTp const from, SizeTp const to) const
 		{
-			GD_DEBUG_VERIFY(to >= from, "Invalid substring indices.");
-			GD_DEBUG_VERIFY(to < m_Length, "Invalid substring indices.");
-			GD_DEBUG_VERIFY(from < m_Length, "Invalid substring indices.");
+			GD_ASSERT(to >= from, "Invalid substring indices.");
+			GD_ASSERT(to < m_Length, "Invalid substring indices.");
+			GD_ASSERT(from < m_Length, "Invalid substring indices.");
 
 			BaseString result(to - from + 1);
 			CMemory::CMemcpy(result.CStr(), CStr() + from, result.m_Length);
@@ -744,7 +744,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL Int64 ToUInt64(bool* const succeeded = nullptr, Base const valueBase = Base::Decimal) const
 		{
-			GD_DEBUG_VERIFY(valueBase < Base::Unknown);
+			GD_ASSERT(valueBase < Base::Unknown);
 
 			Int64 value = 0; 
 			TChar const* endPtr = nullptr;
@@ -788,7 +788,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static BaseString FromUInt64(UInt64 const value, Base const valueBase = Base::Decimal, bool const valueBasePrefix = false)
 		{
-			GD_DEBUG_VERIFY(valueBase < Base::Unknown);
+			GD_ASSERT(valueBase < Base::Unknown);
 			switch (valueBase)
 			{
 				case Base::Decimal:
@@ -839,7 +839,7 @@ GD_NAMESPACE_BEGIN
 		//! @{
 		GDINL bool MatchesWildcard(TChar const* const wildcard) const 
 		{
-			GD_DEBUG_VERIFY(wildcard != nullptr, "Null pointer wildcard was specified.");
+			GD_ASSERT(wildcard != nullptr, "Null pointer wildcard was specified.");
 
 			// Originally written by Jack Handy - 
 			// <A href="mailto:jakkhandy@hotmail.com">jakkhandy@hotmail.com</A>.
@@ -940,7 +940,7 @@ GD_NAMESPACE_BEGIN
 		// string[]
 		GDINL TChar const& operator[] (SizeTp const index) const
 		{
-			GD_DEBUG_VERIFY(index <= GetLength(), "Invalid string subindex.");
+			GD_ASSERT(index <= GetLength(), "Invalid string subindex.");
 			return *(CStr() + index);
 		}
 		GDINL TChar& operator[] (SizeTp const index)

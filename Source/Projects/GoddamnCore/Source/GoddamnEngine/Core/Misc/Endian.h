@@ -158,7 +158,7 @@ GD_NAMESPACE_BEGIN
 	template<typename TValue>
 	GDINL static void SwapToLittleEndianArraySized(TValue* valuePtr, SizeTp const size)
 	{
-		GD_DEBUG_VERIFY(size % sizeof *valuePtr == 0, "Incorrect size of data specified.");
+		GD_ASSERT(size % sizeof *valuePtr == 0, "Incorrect size of data specified.");
 		GD::SwapToLittleEndianArray(valuePtr, size / sizeof *valuePtr);
 	}
 
@@ -204,7 +204,7 @@ GD_NAMESPACE_BEGIN
 	template<typename TValue>
 	GDINL static void SwapToLittleBigArraySized(TValue* valuePtr, SizeTp const size)
 	{
-		GD_DEBUG_VERIFY(size % sizeof *valuePtr == 0, "Incorrect size of data specified.");
+		GD_ASSERT(size % sizeof *valuePtr == 0, "Incorrect size of data specified.");
 		GD::SwapToBigEndianArray(valuePtr, size / sizeof *valuePtr);
 	}
 

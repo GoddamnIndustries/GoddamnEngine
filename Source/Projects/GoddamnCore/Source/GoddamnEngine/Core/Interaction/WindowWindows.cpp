@@ -297,7 +297,7 @@ GD_NAMESPACE_BEGIN
 					break;
 
 				default: 
-					GD_DEBUG_VERIFY_FALSE("Invalid window mode was specified.");
+					GD_ASSERT_FALSE("Invalid window mode was specified.");
 			}
 			m_WindowMode = windowMode;
 		}

@@ -111,7 +111,7 @@ GD_NAMESPACE_BEGIN
 	 */
 	GDAPI void JobManager::ParallelJobList::SubmitJob(Job& job)
 	{
-		GD_DEBUG_VERIFY(job.Delegate != nullptr, "Invalid job was specified.");
+		GD_ASSERT(job.Delegate != nullptr, "Invalid job was specified.");
 
 		++m_NumJobs;
 

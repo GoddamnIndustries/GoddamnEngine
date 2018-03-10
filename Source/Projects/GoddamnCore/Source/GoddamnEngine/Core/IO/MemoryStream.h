@@ -41,7 +41,7 @@ GD_NAMESPACE_BEGIN
 		GDINL MemoryInputStream(CHandle const memory, SizeTp const memoryLength)
 			: m_Memory(static_cast<Byte const*>(memory)), m_MemoryLength(memoryLength), m_MemoryPosition(0)
 		{
-			GD_DEBUG_VERIFY(m_Memory != nullptr, "Invalid memory specified.");
+			GD_ASSERT(m_Memory != nullptr, "Invalid memory specified.");
 		}
 
 	public:
@@ -106,7 +106,7 @@ GD_NAMESPACE_BEGIN
 					newMemoryPosition = m_MemoryLength; 
 					break;
 				default: 
-					GD_DEBUG_VERIFY_FALSE("Invalid origin specified.");
+					GD_ASSERT_FALSE("Invalid origin specified.");
 			}
 			newMemoryPosition += offset;
 			if (newMemoryPosition <= m_MemoryLength)
