@@ -175,7 +175,7 @@ GD_NAMESPACE_BEGIN
 	 * Defines a fatal assertion that is enabled only in debug mode.
 	 */
 #	define GD_ASSERT_FALSE GD_ENABLED_FALSE_VERIFY
-#   define GD_ASSERT_FALSE GD_ASSERT_FALSE
+#   define GD_DEBUG_VERIFY_FALSE GD_ASSERT_FALSE
 
 	/*!
 	 * Defines a regular assertion that is enabled only in debug mode.
