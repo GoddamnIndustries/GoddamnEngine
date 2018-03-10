@@ -10,8 +10,8 @@
  * @file GoddamnEngine/Core/Interaction/Debug.cpp
  * Cross-platform output device implementation.
  */
+#if 1
 #include <GoddamnEngine/Core/Interaction/Debug.h>
-#include <GoddamnEngine/Core/Concurrency/Thread.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
 #include <GoddamnEngine/Core/Containers/String.h>
 #include <GoddamnEngine/Core/Templates/UniquePtr.h>
@@ -43,7 +43,7 @@ GD_NAMESPACE_BEGIN
 		: m_DeviceDefaultColor(deviceDefaultColor), m_DeviceDefaultVerbosity(deviceDefaultVerbosity)
 		, m_DeviceTimeFormat(deviceTimeFormat), m_DeviceDoAutoEmitLineTerminator(deviceDoAutoEmitLineTerminator)
 	{
-		GD_DEBUG_VERIFY(Thread::GetCurrentThreadID() == Thread::GetMainThreadID(), "Creating output devices is allowed only inside main thread.");
+		//GD_DEBUG_VERIFY(Thread::GetCurrentThreadID() == Thread::GetMainThreadID(), "Creating output devices is allowed only inside main thread.");
 		g_OutputDevices.InsertLast(UniquePtr<DebugOutputDevice>(this));
 	}
 
@@ -174,7 +174,7 @@ GD_NAMESPACE_BEGIN
 	 * @param data Pointer to assertion description data structure.
 	 * @param args Arguments for formatting Message string.
 	 */
-	GDAPI CStr DebugGeneric::FormatAssertMessage(DebugAssertData const* const data, va_list const args)
+	GDAPI CStr DebugGeneric::FormatAssertMessage(AssertData const* const data, va_list const args)
 	{
 		return "";
 	}
@@ -185,7 +185,7 @@ GD_NAMESPACE_BEGIN
 	 * @param data Pointer to assertion description data structure.
 	 * @param args Arguments for formatting Message string.
 	 */
-	GDAPI void DebugGeneric::HandleFatalAssertData(DebugAssertData const* const data, va_list const args)
+	GDAPI void DebugGeneric::HandleFatalAssertData(AssertData const* const data, va_list const args)
 	{
 		abort();
 	}
@@ -196,9 +196,10 @@ GD_NAMESPACE_BEGIN
 	 * @param data Pointer to assertion description data structure.
 	 * @param args Arguments for formatting Message string.
 	 */
-	GDAPI DebugAssertDialogResult DebugGeneric::HandleAssertData(DebugAssertData const* const data, va_list const args)
+	GDAPI AssertDialogResult DebugGeneric::HandleAssertData(AssertData const* const data, va_list const args)
 	{
-		return VERIFY_DIALOG_BTN_BREAK;
+		return ASSERT_DIALOG_BTN_BREAK;
 	}
 
 GD_NAMESPACE_END
+#endif

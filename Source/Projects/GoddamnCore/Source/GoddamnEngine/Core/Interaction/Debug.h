@@ -232,7 +232,7 @@ GD_NAMESPACE_BEGIN
 		 * @param data Pointer to assertion description data structure.
 		 * @param args Arguments for formatting Message string.
 		 */
-		GDAPI static CStr FormatAssertMessage(DebugAssertData const* const data, va_list const args);
+		GDAPI static CStr FormatAssertMessage(AssertData const* const data, va_list const args);
 
 		/*!
 		 * Provides inner functionality for handling fatal asserts. Should not be invoked directly.
@@ -240,7 +240,7 @@ GD_NAMESPACE_BEGIN
 		 * @param data Pointer to assertion description data structure.
 		 * @param args Arguments for formatting Message string.
 		 */
-		GDAPI static GD_NORETURN void HandleFatalAssertData(DebugAssertData const* const data, va_list const args);
+		GDAPI static GD_NORETURN void HandleFatalAssertData(AssertData const* const data, va_list const args);
 
 		/*!
 		 * Provides inner functionality for handling regular asserts. Should not be invoked directly.
@@ -248,7 +248,7 @@ GD_NAMESPACE_BEGIN
 		 * @param data Pointer to assertion description data structure.
 		 * @param args Arguments for formatting Message string.
 		 */
-		GDAPI static DebugAssertDialogResult HandleAssertData(DebugAssertData const* const data, va_list const args);
+		GDAPI static AssertDialogResult HandleAssertData(AssertData const* const data, va_list const args);
 
 	};	// class DebugGeneric
 
