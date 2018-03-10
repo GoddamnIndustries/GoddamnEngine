@@ -95,7 +95,7 @@ GD_NAMESPACE_BEGIN
 			free(allocationPointer);
 			return true;
 		}
-	};	// class IPlatformAllocator
+	};	// class PosixPlatformAllocator
 
 	GD_IMPLEMENT_SINGLETON(IPlatformAllocator, PosixPlatformAllocator);
 

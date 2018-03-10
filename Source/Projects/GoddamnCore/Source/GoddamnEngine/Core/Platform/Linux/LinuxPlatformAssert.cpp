@@ -141,7 +141,7 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Pushes new frame container.
 		 */
-		GDINL GtkWidget* BeginFrame(gchar const *const frameText, guint const frameSpacing = 3)
+		GDINL GtkWidget* BeginFrame(gchar const* const frameText, guint const frameSpacing = 3)
 		{
 			auto const frame = gtk_frame_new(frameText);
 			gtk_container_set_border_width(GTK_CONTAINER(frame), frameSpacing);
@@ -155,14 +155,14 @@ GD_NAMESPACE_BEGIN
 			return m_DialogTopContainer = static_cast<GtkWidget*>(g_object_get_data(G_OBJECT(m_DialogTopContainer), "m_ParentContainer"));
 		}
 	private:
-		GDINT static void CallBackDialogClosed(GtkWindow *, GtkPlusDialog *const dialog)
+		GDINT static void CallBackDialogClosed(GtkWindow*, GtkPlusDialog* const dialog)
 		{
 			if (dialog != nullptr && dialog->m_DialogProc != nullptr)
 			{
 				dialog->m_DialogProc(dialog, GtkPlusDialogCommand::CommandDialogClosed, 0);
 			}
 		}
-		GDINT static void CallBackButtonClicked(GtkButton *const dialogButton, GtkPlusDialog *const dialog)
+		GDINT static void CallBackButtonClicked(GtkButton* const dialogButton, GtkPlusDialog* const dialog)
 		{
 			if (dialog->m_DialogProc != nullptr)
 			{
@@ -178,7 +178,7 @@ GD_NAMESPACE_BEGIN
 	class GD_PLATFORM_KERNEL LinuxPlatformAssert final : public IPlatformAssert
 	{
 	private:
-		GDAPI virtual AssertDialogResult RunAssertDialog(AssertData const *const data) override final;
+		GDAPI virtual AssertDialogResult RunAssertDialog(AssertData const* const data) override final;
 		GDINT virtual void ReportAndExit(AssertData const* const assertData) override final;
 	private:
 		GDINT static void AssertDialogProc(GtkPlusDialog* const dialog, GtkPlusDialogCommand const dialogCommand, GtkPlusDialogID const dialogCommandID);
