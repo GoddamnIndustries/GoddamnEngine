@@ -178,7 +178,7 @@ GD_NAMESPACE_BEGIN
 	class GD_PLATFORM_KERNEL LinuxPlatformAssert final : public IPlatformAssert
 	{
 	private:
-		GDAPI virtual AssertDialogResult RunAssertDialog(AssertData const* const data) override final;
+		GDINT virtual AssertDialogResult RunAssertDialog(AssertData const* const data) override final;
 		GDINT virtual void ReportAndExit(AssertData const* const assertData) override final;
 	private:
 		GDINT static void AssertDialogProc(GtkPlusDialog* const dialog, GtkPlusDialogCommand const dialogCommand, GtkPlusDialogID const dialogCommandID);
@@ -196,7 +196,7 @@ GD_NAMESPACE_BEGIN
 	 * @param assertData Assertion information.
 	 * @returns Dialog result.
 	 */
-	GDAPI AssertDialogResult LinuxPlatformAssert::RunAssertDialog(AssertData const* const assertData)
+	GDINT AssertDialogResult LinuxPlatformAssert::RunAssertDialog(AssertData const* const assertData)
 	{
 		gtk_init(nullptr, nullptr);
 		gdk_beep();
@@ -208,7 +208,7 @@ GD_NAMESPACE_BEGIN
 			{
 				dialog.BeginBox(GTK_ORIENTATION_VERTICAL);
 				{
-					static gchar assertMessageDesc[16384] = {};
+					static gchar assertMessageDesc[16 * 1024] = {};
 					if (assertData->AssertExpression != nullptr)
 					{
 						g_sprintf(assertMessageDesc, "%s\n\nAt: \n[File]: %s\n[Line]: %u\n[Function]: %s\n[Expression]: %s\n"

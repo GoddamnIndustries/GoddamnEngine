@@ -58,7 +58,7 @@ GD_NAMESPACE_BEGIN
 	/*!
 	 * User reactions on the assert.
 	 */
-	enum AssertDialogResult
+	enum AssertDialogResult : UInt8
 	{
 		ASSERT_DIALOG_BTN_ABORT = 100,
 		ASSERT_DIALOG_BTN_RETRY,
@@ -66,6 +66,7 @@ GD_NAMESPACE_BEGIN
 		ASSERT_DIALOG_BTN_IGNORE_ALL,
 		ASSERT_DIALOG_BTN_REPORT,
 		ASSERT_DIALOG_BTN_BREAK,
+		ASSERT_DIALOG_BTN_UNKNOWN,
 	};  // enum AssertDialogResult
 
 	// **~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**
@@ -99,11 +100,16 @@ GD_NAMESPACE_BEGIN
 
 GD_NAMESPACE_END
 
-/*!
- * @brief Defines an enabled fatal assertion.
- * Reports a failure via some UI window (if is available on target platform) and asks if user wants to send it to tracker.
- */
-#define GD_ENABLED_FALSE_VERIFY(...) \
+#if GD_TESTING_ENABLED
+#	define GD_ENABLED_FALSE_VERIFY gd_testing_assert_false
+#	define GD_ENABLED_VERIFY gd_testing_assert
+#else	// if GD_TESTING_ENABLED
+
+	/*!
+	 * @brief Defines an enabled fatal assertion.
+	 * Reports a failure via some UI window (if is available on target platform) and asks if user wants to send it to tracker.
+	 */
+#	define GD_ENABLED_FALSE_VERIFY(...) \
 		do \
 		{ \
 			GD_USING_NAMESPACE; \
@@ -119,15 +125,15 @@ GD_NAMESPACE_END
 			abort(); \
 		} while (false)
 
-/*!
- * @brief Defines a enabled assertion.
- * Reports a failure via some UI (if is available on target platform) and asks if user wants
- * to abort application (control is redirected to failure reporter then with provide of feedback via tracker),
- * or to debug application, or to just to ignore this assertion once or forever during this launch.
- *
- * @param expression The Expression that would be evaluated.
- */
-#define GD_ENABLED_VERIFY(expression, ...) \
+	/*!
+	 * @brief Defines a enabled assertion.
+	 * Reports a failure via some UI (if is available on target platform) and asks if user wants
+	 * to abort application (control is redirected to failure reporter then with provide of feedback via tracker),
+	 * or to debug application, or to just to ignore this assertion once or forever during this launch.
+	 *
+	 * @param expression The Expression that would be evaluated.
+	 */
+#	define GD_ENABLED_VERIFY(expression, ...) \
 		do \
 		{ \
 			GD_USING_NAMESPACE; \
@@ -153,6 +159,8 @@ GD_NAMESPACE_END
 			} \
 		GD_GLUE(AssertBreakOuter, __LINE__):; \
 		} while (false)
+
+#endif	// if GD_TESTING_ENABLED
 
 /*!
  * @brief Defines a disabled assertion.

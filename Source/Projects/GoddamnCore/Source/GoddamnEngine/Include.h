@@ -137,7 +137,9 @@ constexpr static void NotUsedConstexpr(T...) {}
 #define GD_PLATFORM_KERNEL
 #define GD_PLATFORM_WRAPPER
 
-#define GD_TESTING_ENABLED 1
+#ifndef GD_TESTING_ENABLED
+#define GD_TESTING_ENABLED 0
+#endif	// ifndef GD_TESTING_ENABLED
 
 #include <GoddamnEngine/Core/Base/Version.h>
 #if !GD_RESOURCE_COMPILER
