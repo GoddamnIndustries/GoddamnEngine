@@ -11,6 +11,22 @@
  * Contains unit tests framework.
  */
 #include "Testing.h"
+#include "GoddamnEngine/Include.h"
+
+GD_NAMESPACE_BEGIN
+	class TestPlatformAssert final : public IPlatformAssert
+	{
+		GDINT virtual AssertDialogResult RunAssertDialog(AssertData const* const assertData) override final
+		{
+			throw goddamn_testing::assertion_exception(assertData->AssertFileName, assertData->AssertFunctionName, assertData->AssertLineNumber, assertData->AssertExpression, assertData->AssertMessage);
+		}
+		GDINT virtual void ReportAndExit(AssertData const* const assertData) override final
+		{
+			GD_NOT_USED_L(assertData);
+			exit(-1);
+		}
+	};	// class TestPlatformAssert
+GD_NAMESPACE_END
 
 namespace goddamn_testing
 {
@@ -37,7 +53,10 @@ namespace goddamn_testing
 		/// @todo Implement a cool testing framework, not just the automated test executing on each engine run.
 		//try
 		//{
+			static GD::TestPlatformAssert TestPlatformAssert;
+			GD::IPlatformAssert::Push(TestPlatformAssert);
 			test_function(m_test_results);
+			GD::IPlatformAssert::Pop();
 		//}
 		//catch (testing_exception const&)
 		//{

@@ -66,12 +66,39 @@ private: \
 #endif
 
 #define GD_IMPLEMENT_SINGLETON(TSingleton, TSingletonDerived) \
-	template<> \
-	GDAPI TSingleton& Singleton<TSingleton>::Get() \
-	{ \
-		TSingletonDerived static instance; \
-		return instance; \
-	} \
+		GDINT static TSingleton* g_##TSingleton##Stack[8] = {}; \
+		GDINT static SizeTp g_##TSingleton##StackIndex = 0; \
+		\
+		template<> \
+		GDAPI TSingleton& Singleton<TSingleton>::Get() \
+		{ \
+			if (g_##TSingleton##Stack[0] == nullptr) \
+			{ \
+				TSingletonDerived static instance; \
+				g_##TSingleton##Stack[g_##TSingleton##StackIndex] = &instance; \
+			} \
+			return *g_##TSingleton##Stack[g_##TSingleton##StackIndex]; \
+		} \
+		template<> \
+		GDAPI TSingleton* Singleton<TSingleton>::Prev() \
+		{ \
+			return g_##TSingleton##StackIndex > 0 ? g_##TSingleton##Stack[g_##TSingleton##StackIndex - 1] : nullptr; \
+		} \
+		\
+		template<> \
+		GDAPI void Singleton<TSingleton>::Push(TSingleton& instance) \
+		{ \
+			Get(); /*We need to be sure that root instance is created. */ \
+			g_##TSingleton##Stack[++g_##TSingleton##StackIndex] = &instance;\
+		} \
+		template<> \
+		GDAPI void Singleton<TSingleton>::Pop() \
+		{ \
+			if (g_##TSingleton##StackIndex != 0) \
+			{ \
+				g_##TSingleton##Stack[g_##TSingleton##StackIndex--] = nullptr;\
+			} \
+		} \
 
 GD_NAMESPACE_BEGIN
 
@@ -81,8 +108,6 @@ GD_NAMESPACE_BEGIN
 	template<typename TSingleton, typename TSingletonBase = IVirtuallyDestructible>
 	class Singleton : public TSingletonBase
 	{	
-		// ReSharper disable CppFunctionIsNotImplemented
-
 	protected:
 
 #if 0
@@ -101,8 +126,20 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDAPI static TSingleton& Get();
 
-		// ReSharper restore CppFunctionIsNotImplemented
+		/*!
+		 * Returns pointer to the previous instance in the singleton stack.
+		 */
+		GDAPI static TSingleton* Prev();
 
+		/*!
+		 * Insters a new instance into singleton stack.
+		 */
+		GDAPI static void Push(TSingleton&);
+		
+		/*!
+		 * Removes last instance of the singleton stack.
+		 */
+		GDAPI static void Pop();
 	};	// class Singleton
 
 GD_NAMESPACE_END
