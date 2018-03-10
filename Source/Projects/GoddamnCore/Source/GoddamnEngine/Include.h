@@ -147,7 +147,7 @@ constexpr static void NotUsedConstexpr(T...) {}
 #	endif	// if GD_TESTING_ENABLED
 #	include <GoddamnEngine/Core/Base/Architecture.h>
 #	include <GoddamnEngine/Core/Base/Types.h>
-#	include <GoddamnEngine/Core/Base/Assert.h>
+#	include <GoddamnEngine/Core/Platform/PlatformAssert.h>
 #	include <GoddamnEngine/Core/Platform/PlatformAllocator.h>
 #endif	// if !GD_RESOURCE_COMPILER
 

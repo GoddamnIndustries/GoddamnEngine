@@ -10,6 +10,7 @@
  * @file GoddamnEngine/Core/Base/Assert.cpp
  * Contains error-checking mechanism definitions.
  */
+#if 0
 #include <GoddamnEngine/Include.h>
 #include <GoddamnEngine/Core/Interaction/Debug.h>
 
@@ -38,3 +39,4 @@ GD_NAMESPACE_BEGIN
 	}
 
 GD_NAMESPACE_END
+#endif

@@ -182,7 +182,7 @@ GD_NAMESPACE_BEGIN
 			return true;
 		}
 #endif	// if GD_DEBUG
-	};	// class IPlatformAllocator
+	};	// class MicrosoftPlatformAllocator
 
 	GD_IMPLEMENT_SINGLETON(IPlatformAllocator, MicrosoftPlatformAllocator);
 

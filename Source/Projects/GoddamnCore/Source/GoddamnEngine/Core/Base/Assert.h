@@ -12,6 +12,8 @@
  * Contains error-checking mechanism definitions.
  */
 #pragma once
+#include <GoddamnEngine/Core/Platform/PlatformAssert.h>
+#if 0
 #if !defined(GD_INSIDE_INCLUDE_H)
 #	error This file should be never directly included, please consider using <GoddamnEngine/Include.h> instead.
 #endif	// if !defined(GD_INSIDE_INCLUDE_H)
@@ -253,3 +255,4 @@ GD_NAMESPACE_BEGIN
 	#define GD_NOT_SUPPORTED() GD_DEBUG_VERIFY_FALSE("A part or whole function '%s' is not supported.", __FUNCTION__)
 
 GD_NAMESPACE_END
+#endif
