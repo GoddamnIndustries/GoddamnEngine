@@ -397,7 +397,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 vcxProjFilters./**/WriteAttributeString("ToolsVersion", c_ToolsFiltersVersion);
 
                 var projectFoldersCache = new HashSet<string>();
-                foreach (var projectSourceFile in project.Files[TargetPlatform.Windows, TargetConfiguration.Any])
+                foreach (var projectSourceFile in project.Files[TargetPlatform.Any, TargetConfiguration.Any])
                 {
                     var projectSourceFileDirectory = Path.GetDirectoryName(projectSourceFile.FilePath);
                     string projectSourceFilter;

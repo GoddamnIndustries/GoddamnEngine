@@ -18,6 +18,7 @@ namespace GoddamnEngine.BuildSystem.Target
     /// </summary>
     public enum TargetPlatform : byte
     {
+        Any,
         Unknown,
         Windows,
         MacOS,

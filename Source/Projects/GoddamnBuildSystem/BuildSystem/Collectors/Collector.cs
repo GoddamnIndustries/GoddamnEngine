@@ -11,7 +11,7 @@ using System.IO;
 using System.Dynamic;
 using System.Diagnostics;
 using System.Collections.Generic;
-
+using System.Linq;
 using GoddamnEngine.BuildSystem.Target;
 using GoddamnEngine.BuildSystem.Support;
 
@@ -136,8 +136,21 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// </summary>
         /// <param name="platform">One of the target platforms.</param>
         /// <param name="configuration">One of the target configurations.</param>
-        /// <returns>Platform/configuration specific value of the container.</returns>
-        public T this[TargetPlatform platform, TargetConfiguration configuration] => m_Container[CompressPlatformConfiguration(platform, configuration)];
+        public T this[TargetPlatform platform, TargetConfiguration configuration]
+        {
+            get
+            {
+                if (platform == TargetPlatform.Any)
+                {
+                    platform = TargetInfo.EnumerateAllPlatforms().First();
+                }
+                if (configuration == TargetConfiguration.Any)
+                {
+                    configuration = TargetInfo.EnumerateAllConfigurations().First();
+                }
+                return m_Container[CompressPlatformConfiguration(platform, configuration)];
+            }
+        }
     }   // public class CollectorContainer<T>
 
     /// <summary>
