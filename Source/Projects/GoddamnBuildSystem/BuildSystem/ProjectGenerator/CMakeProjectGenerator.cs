@@ -39,7 +39,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// </summary>
         /// <param name="project">Parsed project object.</param>
         /// <returns>Path to CMake's 'CMakeLists.txt' file.</returns>
-        public sealed override string GenerateProjectFiles(ProjectCache project)
+        public sealed override string GenerateProjectFiles(Project project)
         {
             var cmakeListsPath = Path.Combine(base.GenerateProjectFiles(project), "CMakeLists.txt");
 
@@ -49,25 +49,25 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             using (var cmakeLists = new StreamWriter(cmakeListsPath))
             {
                 cmakeLists.WriteLine("cmake_minimum_required (VERSION 3.0)");
-                cmakeLists.WriteLine("project({0})", project.CachedName);
-                cmakeLists.WriteLine("include_directories({0})", project.GenerateIncludePaths("\n\t").Replace('\\', '/'));
+                cmakeLists.WriteLine("project({0})", project.Name);
+                cmakeLists.WriteLine("include_directories({0})", project.GenerateIncludePaths(TargetPlatform.MacOS, TargetConfiguration.Debug, "\n\t").Replace('\\', '/'));
                 cmakeLists.WriteLine("set(CMAKE_CXX_FLAGS -std=c++14)");
-				switch (project.CachedBuildTypes[TargetPlatform.MacOS, TargetConfiguration.Debug])
+				switch (project.BuildType[TargetPlatform.MacOS, TargetConfiguration.Debug])
                 {
                     case ProjectBuildType.Application:
-                        cmakeLists.WriteLine("add_executable({0}", project.CachedName);
+                        cmakeLists.WriteLine("add_executable({0}", project.Name);
                         break;
                     case ProjectBuildType.StaticLibrary:
-                        cmakeLists.WriteLine("add_library({0}", project.CachedName);
+                        cmakeLists.WriteLine("add_library({0}", project.Name);
                         break;
                     case ProjectBuildType.DynamicLibrary:
-                        cmakeLists.WriteLine("add_library({0} SHARED", project.CachedName);
+                        cmakeLists.WriteLine("add_library({0} SHARED", project.Name);
                         break;
                 }
-                foreach (var projectSource in project.CachedSourceFiles)
+                foreach (var projectSource in project.Files[TargetPlatform.MacOS, TargetConfiguration.Debug])
                 {
                     if (projectSource.FileType != ProjectSourceFileType.SupportFile)
-                        cmakeLists.WriteLine("\t{0}", projectSource.FileName.Replace('\\', '/'));
+                        cmakeLists.WriteLine("\t{0}", projectSource.FilePath.Replace('\\', '/'));
                 }
                 cmakeLists.WriteLine("\t)");
             }
@@ -80,18 +80,18 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// </summary>
         /// <param name="solution">Parsed solution object.</param>
         /// <returns>Path to CMake's 'CMakeLists.txt' file.</returns>
-        public sealed override string GenerateSolutionFiles(SolutionCache solution)
+        public sealed override string GenerateSolutionFiles(Solution solution)
         {
-            var cmakeListsPath = Path.Combine(solution.CachedLocation, "CMakeLists.txt");
+            var cmakeListsPath = Path.Combine(solution.Location, "CMakeLists.txt");
             using (var cmakeLists = new StreamWriter(cmakeListsPath))
             {
                 cmakeLists.WriteLine("cmake_minimum_required (VERSION 2.8)");
-                cmakeLists.WriteLine("project({0})", solution.CachedName);
-                foreach (var solutionProject in solution.CachedProjects)
+                cmakeLists.WriteLine("project({0})", solution.Name);
+                foreach (var solutionProject in solution.Projects)
                 {
                     if (solutionProject.IsBuildTool) continue;
                     cmakeLists.WriteLine("add_subdirectory({0})", 
-                                         Path.Combine(solutionProject.CachedLocation, "Build").Replace('\\', '/'));
+                                         Path.Combine(solutionProject.Location, "Build").Replace('\\', '/'));
                 }
 
             }

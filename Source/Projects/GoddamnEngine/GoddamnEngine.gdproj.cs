@@ -12,7 +12,7 @@ using GoddamnEngine.BuildSystem.Collectors;
 /// <summary>
 /// Represents a 'GoddamnEngine' project file.
 /// </summary>
-public sealed class GoddamnEngineProject : Project
+public sealed class GoddamnEngineProject : ProjectEnumerator
 {
     public override string GetFilter()
     {

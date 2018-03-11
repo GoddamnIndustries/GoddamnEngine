@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -21,7 +20,6 @@ namespace GoddamnEngine.BuildSystem.Collectors
     /// </summary>
     public enum DependencyFileType
     {
-        Other,
         StaticLibrary,
         DynamicLibrary,
     }   // enum DependencyFileType
@@ -31,9 +29,20 @@ namespace GoddamnEngine.BuildSystem.Collectors
     /// </summary>
     public class DependencyFile
     {
+        /// <summary>
+        /// Path to the dependency file.
+        /// </summary>
         public readonly string FilePath;
+
+        /// <summary>
+        /// Type of the dependency file.
+        /// </summary>
         public readonly DependencyFileType FileType;
-        public readonly dynamic FileMisc = new ExpandoObject();
+
+        /// <summary>
+        /// Empty object that can be used internally.
+        /// </summary>
+        internal readonly dynamic FileMisc = new ExpandoObject();
 
         /// <summary>
         /// Initializes a dependency file.
@@ -48,43 +57,17 @@ namespace GoddamnEngine.BuildSystem.Collectors
     }   // class DependencyFile
 
     /// <summary>
-    /// Project dependency interface.
+    /// Project dependency enumerator.
     /// </summary>
-    public interface IDependency : ICollector
-    {
-        /// <summary>
-        /// Collects list of directories that contain header files.
-        /// </summary>
-        /// <returns>Iterator for list of header files.</returns>
-        IEnumerable<string> EnumerateHeaderDirectories();
-
-        /// <summary>
-        /// Collects list of files that should be copied to project build output directory.
-        /// </summary>
-        /// <param name="platform">One of the target platforms.</param>
-        /// <param name="configuration">One of the target configurations.</param>
-        /// <returns>Iterator for list of files that should be copied to project build output directory.</returns>
-        IEnumerable<DependencyFile> EnumerateCopyFiles(TargetPlatform platform, TargetConfiguration configuration);
-
-        /// <summary>
-        /// Collects list of libraries that should be linked with project build file.
-        /// </summary>
-        /// <param name="platform">One of the target platforms.</param>
-        /// <param name="configuration">One of the target configurations.</param>
-        /// <returns>Iterator for list of libraries that should be linked with project build file.</returns>
-        IEnumerable<DependencyFile> EnumerateLinkedLibraries(TargetPlatform platform, TargetConfiguration configuration);
-    }   // public interface IDependency
-
-    /// <summary>
-    /// Project dependency.
-    /// </summary>
-    public class Dependency : Collector, IDependency
+    /// <inheritdoc />
+    public class DependencyEnumerator : CollectorEnumerator
     {
         /// <summary>
         /// Enumerates list of directories that contain header files.
         /// </summary>
-        /// <returns>Iterator for list of header files .</returns>
-        public virtual IEnumerable<string> EnumerateHeaderDirectories()
+        /// <param name="platform">One of the target platforms.</param>
+        /// <param name="configuration">One of the target configurations.</param>
+        public virtual IEnumerable<string> EnumerateHeaderDirectories(TargetPlatform platform, TargetConfiguration configuration)
         {
             // TODO: '.framework' bundles on Apple platforms.
             var standardIncludePath = Path.Combine(GetLocation(), "include");
@@ -95,68 +78,18 @@ namespace GoddamnEngine.BuildSystem.Collectors
         }
 
         /// <summary>
-        /// Enumerates list of files that should be copied to project build output directory.
+        /// Enumerates list of libraries that should be linked with project build file.
         /// </summary>
         /// <param name="platform">One of the target platforms.</param>
         /// <param name="configuration">One of the target configurations.</param>
-        /// <returns>Iterator for list of files that should be copied to project build output directory.</returns>
-        public virtual IEnumerable<DependencyFile> EnumerateCopyFiles(TargetPlatform platform, TargetConfiguration configuration)
-        {
-            Debug.Assert(platform != TargetPlatform.Unknown);
-            Debug.Assert(configuration != TargetConfiguration.Unknown);
-            if (TargetInfo.IsDesktopPlatform(platform))
-            {
-                foreach (var copyFilePath in Directory.EnumerateFiles(GetLocation()))
-                {
-                    if (!MatchesPlatformConfiguration(copyFilePath, platform, configuration))
-                    {
-                        continue;
-                    }
-
-                    var copyFileExtension = (Path.GetExtension(copyFilePath) ?? "").ToLowerInvariant();
-                    if (TargetInfo.IsMicrosoftPlatform(platform))
-                    {
-                        switch (copyFileExtension)
-                        {
-                            case ".dll":
-                                yield return new DependencyFile(copyFilePath, DependencyFileType.DynamicLibrary);
-                                break;
-                        }
-                    }
-                    else if (TargetInfo.IsApplePlatform(platform))
-                    {
-                        switch (copyFileExtension)
-                        {
-                            case ".dylib":
-                                yield return new DependencyFile(copyFilePath, DependencyFileType.DynamicLibrary);
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        throw new NotSupportedException();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Collects list of libraries that should be linked with project build file.
-        /// </summary>
-        /// <param name="platform">One of the target platforms.</param>
-        /// <param name="configuration">One of the target configurations.</param>
-        /// <returns>Iterator for list of libraries that should be linked with project build file.</returns>
         public virtual IEnumerable<DependencyFile> EnumerateLinkedLibraries(TargetPlatform platform, TargetConfiguration configuration)
         {
-            Debug.Assert(platform != TargetPlatform.Unknown);
-            Debug.Assert(configuration != TargetConfiguration.Unknown);
             foreach (var libraryFile in Directory.EnumerateFiles(GetLocation()))
             {
                 if (!MatchesPlatformConfiguration(libraryFile, platform, configuration))
                 {
                     continue;
                 }
-
                 var libraryFileExtension = (Path.GetExtension(libraryFile) ?? "").ToLowerInvariant();
                 if (TargetInfo.IsMicrosoftPlatform(platform))
                 {
@@ -194,46 +127,9 @@ namespace GoddamnEngine.BuildSystem.Collectors
                 }
                 else
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("Unknown target platform for depenedency linked libraries.");
                 }
             }
-        }
-    }   // class Dependency
-
-    /// <summary>
-    /// Adapter that converts projects to dependencies for other projects.
-    /// </summary>
-    public class ProjectDependency : Dependency
-    {
-        ProjectCache m_Project;
-
-        /// <summary>
-        /// Returns project caches that is used in this dependency.
-        /// </summary>
-        protected virtual ProjectCache GetProject()
-        {
-            if (m_Project == null)
-            {
-                var projectSource = Path.Combine(GetLocation(), GetName()) + ".gdproj.cs";
-                if (File.Exists(projectSource))
-                {
-                    m_Project = ProjectFactory.Create(projectSource);
-                }
-                else
-                {
-                    throw new BuildSystemException("Corresponding \"{0}\" project source file was not found.", projectSource);
-                }
-            }
-            return m_Project;
-        }
-
-        /// <summary>
-        /// Collects list of directories that contain header files.
-        /// </summary>
-        /// <returns>Iterator for list of header files.</returns>
-        public sealed override IEnumerable<string> EnumerateHeaderDirectories()
-        {
-            yield return Path.Combine(GetProject().CachedLocation, "Source");
         }
 
         /// <summary>
@@ -241,134 +137,89 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// </summary>
         /// <param name="platform">One of the target platforms.</param>
         /// <param name="configuration">One of the target configurations.</param>
-        /// <returns>Iterator for list of files that should be copied to project build output directory.</returns>
-        public sealed override IEnumerable<DependencyFile> EnumerateCopyFiles(TargetPlatform platform, TargetConfiguration configuration)
+        public virtual IEnumerable<DependencyFile> EnumerateCopyFiles(TargetPlatform platform, TargetConfiguration configuration)
         {
-            if (GetProject().CachedBuildTypes[platform, configuration] == ProjectBuildType.DynamicLibrary)
+            foreach (var copyFilePath in Directory.EnumerateFiles(GetLocation()))
             {
-                yield return new DependencyFile(GetProject().CachedOutputPaths[platform, configuration], DependencyFileType.DynamicLibrary);
-            }
-        }
-
-        /// <summary>
-        /// Collects list of libraries that should be linked with project build file.
-        /// </summary>
-        /// <param name="platform">One of the target platforms.</param>
-        /// <param name="configuration">One of the target configurations.</param>
-        /// <returns>Iterator for list of libraries that should be linked with project build file.</returns>
-        public sealed override IEnumerable<DependencyFile> EnumerateLinkedLibraries(TargetPlatform platform, TargetConfiguration configuration)
-        {
-            if (TargetInfo.IsMicrosoftPlatform(platform))
-            {
-                yield return new DependencyFile(GetProject().CachedImportLibraryOutputPaths[platform, configuration], DependencyFileType.StaticLibrary);
-            }
-            else
-            {
-                switch (GetProject().CachedBuildTypes[platform, configuration])
+                if (!MatchesPlatformConfiguration(copyFilePath, platform, configuration))
                 {
-                    case ProjectBuildType.StaticLibrary:
-                        yield return new DependencyFile(GetProject().CachedOutputPaths[platform, configuration], DependencyFileType.StaticLibrary);
-                        break;
-                    case ProjectBuildType.DynamicLibrary:
-                        yield return new DependencyFile(GetProject().CachedOutputPaths[platform, configuration], DependencyFileType.DynamicLibrary);
-                        break;
+                    continue;
+                }
+
+                var copyFileExtension = (Path.GetExtension(copyFilePath) ?? "").ToLowerInvariant();
+                if (TargetInfo.IsMicrosoftPlatform(platform))
+                {
+                    switch (copyFileExtension)
+                    {
+                        case ".dll":
+                            yield return new DependencyFile(copyFilePath, DependencyFileType.DynamicLibrary);
+                            break;
+                    }
+                }
+                else if (TargetInfo.IsApplePlatform(platform))
+                {
+                    switch (copyFileExtension)
+                    {
+                        case ".dylib":
+                            yield return new DependencyFile(copyFilePath, DependencyFileType.DynamicLibrary);
+                            break;
+                    }
+                }
+                else
+                {
+                    throw new NotSupportedException("Unknown target platform for depenedency copy files.");
                 }
             }
         }
-
-    }   // class ProjectDependency
+    }   // public class Dependency
 
     /// <summary>
-    /// Represents a collection of cached data that was by dependency object.
+    /// Dependency object.
     /// </summary>
-    public sealed class DependencyCache : CollectorCache
+    /// <inheritdoc />
+    public sealed class Dependency : Collector
     {
-        public readonly string[] CachedHeaderDirectories;
-        public readonly CollectorContainer<DependencyFile[]> CachedCopyFiles;
-        public readonly CollectorContainer<DependencyFile[]> CachedLinkedLibraries;
+        /// <summary>
+        /// List of directories that contain header files.
+        /// </summary>
+        public readonly CollectorContainer<string[]> HeaderDirectories;
 
         /// <summary>
-        /// Generates cache for specified dependency.
+        /// List of libraries that should be linked with project build file.
         /// </summary>
-        /// <param name="dependency">Dependency which dynamic properties would be cached.</param>
-        public DependencyCache(Dependency dependency)
-            : base(dependency)
-        {
-            if (IsSupported)
-            {
-                CachedHeaderDirectories = dependency.EnumerateHeaderDirectories().ToArray();
-                CachedCopyFiles = new CollectorContainer<DependencyFile[]>((p, c) => dependency.EnumerateCopyFiles(p, c).ToArray());
-                CachedLinkedLibraries = new CollectorContainer<DependencyFile[]>((p, c) => dependency.EnumerateLinkedLibraries(p, c).ToArray());
-            }
-        }
+        public readonly CollectorContainer<DependencyFile[]> LinkedLibraries;
 
-    }   // class DependencyCache
+        /// <summary>
+        /// List of files that should be copied to project build output directory.
+        /// </summary>
+        public readonly CollectorContainer<DependencyFile[]> CopyFiles;
+
+        /// <inheritdoc />
+        public Dependency(DependencyEnumerator dependencyEnumerator)
+            : base(dependencyEnumerator)
+        {
+            HeaderDirectories 
+                = new CollectorContainer<string[]>((p, c) => dependencyEnumerator.EnumerateHeaderDirectories(p, c).ToArray());
+            LinkedLibraries 
+                = new CollectorContainer<DependencyFile[]>((p, c) => dependencyEnumerator.EnumerateLinkedLibraries(p, c).ToArray());
+            CopyFiles 
+                = new CollectorContainer<DependencyFile[]>((p, c) => dependencyEnumerator.EnumerateCopyFiles(p, c).ToArray());
+        }
+    }   // public class Dependency
 
     /// <summary>
-    /// Represents a factory of dependencies.
+    /// Factory of dependencies.
     /// </summary>
     public static class DependencyFactory
     {
-        static DependencyCache s_GoddamnCoreDependency;
-        static DependencyCache s_GoddamnEngineDependency;
-
         /// <summary>
         /// Constructs new dependency instance and it's cached data.
         /// </summary>
         /// <param name="dependencySourcePath">Path so source file of the dependency.</param>
         /// <returns>Created instance of cached dependency data.</returns>
-        public static DependencyCache Create(string dependencySourcePath)
+        public static Dependency Create(string dependencySourcePath)
         {
-            return CollectorFactory<Dependency, DependencyCache>.Create(dependencySourcePath);
+            return CollectorFactory<DependencyEnumerator, Dependency>.Create(dependencySourcePath);
         }
-
-        /// <summary>
-        /// Returns cached dependency for GoddamnCore project.
-        /// </summary>
-        /// <returns>Cached dependency for GoddamnCore project.</returns>
-        public static DependencyCache GetGoddamnCoreDependency()
-        {
-            if (s_GoddamnCoreDependency == null)
-            {
-                var goddamnCoreDependencyPath = Path.Combine(BuildSystem.GetSdkLocation(), 
-                                                             "Source", "Projects", "GoddamnCore", "GoddamnCore.gddep.cs");
-                if (File.Exists(goddamnCoreDependencyPath))
-                {
-                    s_GoddamnCoreDependency = Create(goddamnCoreDependencyPath);
-                    Debug.Assert(s_GoddamnCoreDependency.Collector is ProjectDependency);
-                }
-                else
-                {
-                    throw new BuildSystemException("GoddamnCore dependency was not found at \"{0}\".", goddamnCoreDependencyPath);
-                }
-            }
-
-            return s_GoddamnCoreDependency;
-        }
-
-        /// <summary>
-        /// Returns cached dependency for GoddamnEngine project.
-        /// </summary>
-        /// <returns>Cached dependency for GoddamnEngine project.</returns>
-        public static DependencyCache GetGoddamnEngineDependency()
-        {
-            if (s_GoddamnEngineDependency == null)
-            {
-                var goddamnEngineDependencyPath = Path.Combine(BuildSystem.GetSdkLocation(), "Source", "Projects", "GoddamnEngine", "GoddamnEngine.gddep.cs");
-                if (File.Exists(goddamnEngineDependencyPath))
-                {
-                    s_GoddamnEngineDependency = Create(goddamnEngineDependencyPath);
-                    Debug.Assert(s_GoddamnEngineDependency.Collector is ProjectDependency);
-                }
-                else
-                {
-                    throw new BuildSystemException("GoddamnEngine dependency was not found at \"{0}\".", goddamnEngineDependencyPath);
-                }
-            }
-
-            return s_GoddamnEngineDependency;
-        }
-
     }   // class DependencyFactory
-
 }   // namespace GoddamnEngine.BuildSystem

@@ -6,6 +6,7 @@
 // terms of Goddamn Industries End User License Agreement.
 // ==========================================================================================
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,50 +14,56 @@ using System.Linq;
 namespace GoddamnEngine.BuildSystem.Collectors
 {
     /// <summary>
-    /// Represents a solution (set of projects).
+    /// Solution enumerator.
+    /// </summary>
+    public class SolutionEnumerator : CollectorEnumerator
+    {
+        /// <summary>
+        /// Collects list of projects in solution.
+        /// </summary>
+        public virtual IEnumerable<Project> EnumerateProjects()
+        {
+            foreach (var solutionSourcePath in Directory.EnumerateFiles(Path.Combine(GetLocation(), "Projects"), "*.gdproj.cs", SearchOption.AllDirectories))
+            {
+                Project project;
+                try
+                {
+                    project = ProjectFactory.Create(solutionSourcePath);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine($"Failed to load project {solutionSourcePath} with exception {exception}");
+                    continue;
+                }
+                //if (solutionCache.IsSupported)
+                {
+                    yield return project;
+                }
+            }
+        }
+    }   // public class SolutionEnumerator
+
+    /// <summary>
+    /// Solution object.
     /// </summary>
     public class Solution : Collector
     {
         /// <summary>
-        /// Collects list of projects in solution.
-        /// All unsupported projects should be filtered by this function.
+        /// List of projects.
         /// </summary>
-        /// <returns>Iterator for list of projects in solution.</returns>
-        public virtual IEnumerable<ProjectCache> EnumerateProjects()
-        {
-            foreach (var solutionSourcePath in Directory.EnumerateFiles(
-                Path.Combine(GetLocation(), "Projects"), "*.gdproj.cs", SearchOption.AllDirectories))
-            {
-                var solutionCache = ProjectFactory.Create(solutionSourcePath);
-                if (solutionCache.IsSupported)
-                {
-                    yield return solutionCache;
-                }
-            }
-        }
-
-    }   // class Solution
-
-    /// <summary>
-    /// Represents a collection of cached data that was by dependency object.
-    /// </summary>
-    public class SolutionCache : CollectorCache
-    {
-        public string GeneratedSolutionPath;
-        public readonly ProjectCache[] CachedProjects;
+        public readonly Project[] Projects;
 
         /// <summary>
-        /// Generates cache for specified dependency.
+        /// Path the the generated solution file.
         /// </summary>
-        /// <param name="solution">Solution which dynamic properties would be cached.</param>
-        public SolutionCache(Solution solution) : base(solution)
+        public string GeneratedSolutionPath;
+
+        /// <inheritdoc />
+        public Solution(SolutionEnumerator solution) : base(solution)
         {
-            if (IsSupported)
-            {
-                CachedProjects = solution.EnumerateProjects().ToArray();
-            }
+            Projects = solution.EnumerateProjects().ToArray();
         }
-    }   // class SolutionCache
+    }   // class Solution
 
     /// <summary>
     /// Represents a factory of dependencies.
@@ -68,9 +75,9 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// </summary>
         /// <param name="solutionSourcePath">Path to the source file of the solution.</param>
         /// <returns>Created instance of cached solution data.</returns>
-        public static SolutionCache Create(string solutionSourcePath)
+        public static Solution Create(string solutionSourcePath)
         {
-            return CollectorFactory<Solution, SolutionCache>.Create(solutionSourcePath);
+            return CollectorFactory<SolutionEnumerator, Solution>.Create(solutionSourcePath);
         }
     }   // class SolutionFactory
 

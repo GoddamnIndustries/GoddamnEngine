@@ -18,41 +18,13 @@ using GoddamnEngine.BuildSystem.Support;
 namespace GoddamnEngine.BuildSystem.Collectors
 {
     /// <summary>
-    /// Abstract data collector interface.
+    /// Abstract data collector enumerator.
     /// </summary>
-    public interface ICollector
-    {
-        /// <summary>
-        /// Returns path to source file of this collector.
-        /// </summary>
-        string GetSource();
-
-        /// <summary>
-        /// Returns path directory of this collector.
-        /// </summary>
-        string GetLocation();
-
-        /// <summary>
-        /// Returns name of this collector.
-        /// </summary>
-        string GetName();
-
-        /// <summary>
-        /// Returns false is this object should be skipped.
-        /// </summary>
-        /// <param name="platform">One of the target platforms.</param>
-        /// <param name="configuration">One of the target configurations.</param>
-        bool GetIsSupported(TargetPlatform platform, TargetConfiguration configuration);
-    }   // public interface ICollector
-
-    /// <summary>
-    /// Abstract data collector.
-    /// </summary>
-    public class Collector : ICollector
+    public class CollectorEnumerator
     {
         internal string Source;
-        string m_Location;
-        string m_Name;
+        private string m_Location;
+        private string m_Name;
 
         /// <summary>
         /// Returns path to source file of this collector.
@@ -103,7 +75,7 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// <param name="objectPath">Path to check.</param>
         /// <param name="platform">One of the target platforms.</param>
         /// <param name="configuration">One of the target configurations.</param>
-        public static bool MatchesPlatformConfiguration(string objectPath, TargetPlatform platform, TargetConfiguration configuration)
+        protected static bool MatchesPlatformConfiguration(string objectPath, TargetPlatform platform, TargetConfiguration configuration)
         {
             var objectPathExtensionless = Path.GetFileNameWithoutExtension(objectPath);
             var objectPlatform = Path.GetExtension(objectPathExtensionless);
@@ -127,21 +99,19 @@ namespace GoddamnEngine.BuildSystem.Collectors
             }
             return true;
         }
-    }   // class TargetCollector
+    }   // public class CollectorEnumerator
 
     /// <summary>
-    /// Represents a data structure, that contains pre-cached from collector for different platforms/configurations.
+    /// Pre-cached from collector enumerator for different platforms/configurations.
     /// </summary>
     /// <typeparam name="T">Type of data stored in the container.</typeparam>
     public sealed class CollectorContainer<T>
     {
-        readonly Dictionary<ushort, T> m_Container;
-
-        static ushort CompressPlatformConfiguration(TargetPlatform platform, TargetConfiguration configuration)
+        private readonly Dictionary<ushort, T> m_Container;
+        private static ushort CompressPlatformConfiguration(TargetPlatform platform, TargetConfiguration configuration)
         {
             ushort platformValue = (byte)Convert.ChangeType(platform, platform.GetTypeCode());
             ushort configurationValue = (byte)Convert.ChangeType(configuration, platform.GetTypeCode());
-
             return (ushort)(platformValue | (configurationValue << 8));
         }
 
@@ -167,55 +137,67 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// <param name="platform">One of the target platforms.</param>
         /// <param name="configuration">One of the target configurations.</param>
         /// <returns>Platform/configuration specific value of the container.</returns>
-        public T this[TargetPlatform platform, TargetConfiguration configuration]
-        {
-            get { return m_Container[CompressPlatformConfiguration(platform, configuration)]; }
-            set { m_Container[CompressPlatformConfiguration(platform, configuration)] = value; }
-        }
-
-    }   // class CollectorContainer<T>
+        public T this[TargetPlatform platform, TargetConfiguration configuration] => m_Container[CompressPlatformConfiguration(platform, configuration)];
+    }   // public class CollectorContainer<T>
 
     /// <summary>
-    /// Contains cached data of some abstract collector.
+    /// Abstract collector.
     /// </summary>
-    public class CollectorCache
+    public abstract class Collector
     {
-        public readonly Collector Collector;
-        public readonly dynamic Misc;
-        public readonly bool IsSupported;
-        public readonly string CachedSource;
-        public readonly string CachedName;
-        public readonly string CachedLocation;
+        /// <summary>
+        /// Name of the collector.
+        /// </summary>
+        public readonly string Name;
+
+        /// <summary>
+        /// Path to the source file of the collector.
+        /// </summary>
+        public readonly string Source;
+
+        /// <summary>
+        /// Directory of the collector.
+        /// </summary>
+        public readonly string Location;
+
+        /// <summary>
+        /// Enumerator of the collector.
+        /// </summary>
+        public readonly CollectorEnumerator Enumerator;
+
+        /// <summary>
+        /// List of supported platforms.
+        /// </summary>
+        public readonly CollectorContainer<bool> IsSupported;
+
+        /// <summary>
+        /// Empty object that can be used internally.
+        /// </summary>
+        internal readonly dynamic Misc = new ExpandoObject();
 
         /// <summary>
         /// Initializes a new generic collector cache.
         /// </summary>
-        /// <param name="collector">Collector which dynamic properties would be cached.</param>
-        protected CollectorCache(Collector collector)
+        /// <param name="enumerator">Collector which dynamic properties would be cached.</param>
+        protected Collector(CollectorEnumerator enumerator)
         {
-            Collector = collector;
-            IsSupported = true;//collector.GetIsSupported();
-            if (IsSupported)
-            {
-                Misc = new ExpandoObject();
-                CachedSource = collector.GetSource();
-                CachedName = collector.GetName();
-                CachedLocation = collector.GetLocation();
-            }
+            Name = enumerator.GetName();
+            Source = enumerator.GetSource();
+            Location = enumerator.GetLocation();
+            Enumerator = enumerator;
+            IsSupported = new CollectorContainer<bool>(enumerator.GetIsSupported);
         }
-    }   // class TargetCollectorCache
+    }   // public class Collector
 
     /// <summary>
     /// Collects data and generates cache.
     /// </summary>
-    /// <typeparam name="TCollector">Type of collector.</typeparam>
-    /// <typeparam name="TCollectorCache">Type of cache of collector.</typeparam>
-    public static class CollectorFactory<TCollector, TCollectorCache> 
-        where TCollector : Collector 
-        where TCollectorCache : CollectorCache
+    /// <typeparam name="TCollectorEnumerator">Type of the collector enumerator.</typeparam>
+    /// <typeparam name="TCollector">Type of the collector.</typeparam>
+    public static class CollectorFactory<TCollectorEnumerator, TCollector> where TCollectorEnumerator : CollectorEnumerator where TCollector : Collector
     {
 #pragma warning disable RECS0108
-        static readonly Dictionary<string, TCollectorCache> s_CachedCache = new Dictionary<string, TCollectorCache>();
+        private static readonly Dictionary<string, TCollector> s_CachedCache = new Dictionary<string, TCollector>();
 #pragma warning restore RECS0108
 
         /// <summary>
@@ -223,36 +205,34 @@ namespace GoddamnEngine.BuildSystem.Collectors
         /// </summary>
         /// <param name="collectorSourcePath">Path so source file of the collector.</param>
         /// <returns>Created instance of cached collector data.</returns>
-        public static TCollectorCache Create(string collectorSourcePath)
+        public static TCollector Create(string collectorSourcePath)
         {
-            var safeCollectorSourcePath = collectorSourcePath ?? typeof(TCollector).Name;
+            var safeCollectorSourcePath = collectorSourcePath ?? typeof(TCollectorEnumerator).Name;
             if (!s_CachedCache.ContainsKey(safeCollectorSourcePath))
             {
-                TCollector collector = null;
+                TCollectorEnumerator collector = null;
                 if (collectorSourcePath != null)
                 {
                     var assembly = CSharpCompiler.CompileSourceFile(collectorSourcePath);
                     var assemblyExportedTypes = assembly.GetExportedTypes();
                     foreach (var assemblyExportedType in assemblyExportedTypes)
                     {
-                        if (assemblyExportedType.IsSubclassOf(typeof (TCollector)))
+                        if (assemblyExportedType.IsSubclassOf(typeof (TCollectorEnumerator)))
                         {
-                            collector = (TCollector) Activator.CreateInstance(assemblyExportedType);
+                            collector = (TCollectorEnumerator) Activator.CreateInstance(assemblyExportedType);
                             break;
                         }
                     }
                 }
 
-                collector = collector ?? Activator.CreateInstance<TCollector>();
+                collector = collector ?? Activator.CreateInstance<TCollectorEnumerator>();
                 collector.Source = collectorSourcePath;
 
-                var cache = (TCollectorCache)Activator.CreateInstance(typeof(TCollectorCache), collector);
+                var cache = (TCollector)Activator.CreateInstance(typeof(TCollector), collector);
                 s_CachedCache.Add(safeCollectorSourcePath, cache);
                 return cache;
             }
             return s_CachedCache[safeCollectorSourcePath];
         }
-
-    }   // class TargetCollectorFactory<TCollector, TCache>
-
+    }   // class CollectorFactory<TCollector, TCache>
 }   // namespace GoddamnEngine.BuildSystem

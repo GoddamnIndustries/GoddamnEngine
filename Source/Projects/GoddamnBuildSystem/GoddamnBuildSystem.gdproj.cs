@@ -12,10 +12,10 @@ using GoddamnEngine.BuildSystem.Collectors;
 /// <summary>
 /// Represents a 'GoddamnBuildSystem' project file.
 /// </summary>
-public class GoddamnBuildSystem : BuildToolProject
+public class GoddamnBuildSystemEnumerator : BuildToolProjectEnumerator
 {
-    public GoddamnBuildSystem()
+    public GoddamnBuildSystemEnumerator()
     {
         Console.WriteLine("Hui");
     }
-}   // class GoddamnBuildSystem
+}   // class GoddamnBuildSystemEnumerator

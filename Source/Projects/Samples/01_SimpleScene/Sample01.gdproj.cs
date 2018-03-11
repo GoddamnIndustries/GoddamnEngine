@@ -7,7 +7,7 @@ using System.IO;
 using GoddamnEngine.BuildSystem.Target;
 using GoddamnEngine.BuildSystem.Collectors;
 
-public sealed class Sample01Project : Project
+public sealed class Sample01Project : ProjectEnumerator
 {
     public override string GetFilter()
     {

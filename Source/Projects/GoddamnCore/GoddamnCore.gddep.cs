@@ -11,6 +11,6 @@ using GoddamnEngine.BuildSystem.Collectors;
 /// <summary>
 /// Represents a 'GoddamnCore' project file dependency.
 /// </summary>
-public sealed class GoddamnCoreProjectDependency : ProjectDependency
+public sealed class GoddamnCoreProjectDependency : ProjectDependencyEnumerator
 {
 }   // class GoddamnCoreProjectDependency

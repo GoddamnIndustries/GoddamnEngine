@@ -100,9 +100,9 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// <param name="project">Parsed project object.</param>
         /// <returns>Path to XCode '.xcodeproj' file.</returns>
         /// <inheritdoc />
-        public sealed override string GenerateProjectFiles(ProjectCache project)
+        public sealed override string GenerateProjectFiles(Project project)
         {
-            var xcodeProjPath = Path.Combine(base.GenerateProjectFiles(project), project.CachedName) + ".xcodeproj";
+            var xcodeProjPath = Path.Combine(base.GenerateProjectFiles(project), project.Name) + ".xcodeproj";
             var xcodePbxProjPath = Path.Combine(xcodeProjPath, "project.pbxproj");
             Directory.CreateDirectory(xcodeProjPath);
 
@@ -132,7 +132,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
 
                 // Writing down product reference..
                 string xcodeProductExplicitFileType;
-                switch (project.CachedBuildTypes[platform, TargetConfiguration.Debug])
+                switch (project.BuildType[platform, TargetConfiguration.Debug])
                 {
                     case ProjectBuildType.Application:
                         xcodeProductExplicitFileType = "compiled.mach-o.executable";
@@ -149,18 +149,18 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
 
                 var xcodeProductRefUUID = new PbxUUID();
                 xcodeProj.WriteLine($@"
-                    {xcodeProductRefUUID} /*{project.CachedName}*/ = {{
+                    {xcodeProductRefUUID} /*{project.Name}*/ = {{
                         isa = PBXFileReference;
                         explicitFileType = ""{xcodeProductExplicitFileType}"";
                         includeInIndex = 0;
-                        path = {project.CachedName};
+                        path = {project.Name};
                         sourceTree = BUILT_PRODUCTS_DIR;
                     }};");
 
                 // Writing down referenced dependencies..
-                foreach (var projectDependency in project.CachedDependencies)
+                foreach (var projectDependency in project.Dependencies[platform, TargetConfiguration.Any])
                 {
-                    foreach (var projectDependencyFramework in projectDependency.CachedLinkedLibraries[platform, TargetConfiguration.Debug])
+                    foreach (var projectDependencyFramework in projectDependency.LinkedLibraries[platform, TargetConfiguration.Debug])
                     {
                         string xcodeDependencyRefLastKnownType;
                         switch (projectDependencyFramework.FileType)
@@ -188,7 +188,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 }
 
                 // Writing down referenced files..
-                foreach (var projectSource in project.CachedSourceFiles)
+                foreach (var projectSource in project.Files[platform, TargetConfiguration.Any])
                 {
                     string xcodeFileRefLastKnownType;
                     switch (projectSource.FileType)
@@ -215,14 +215,15 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
 
                     projectSource.FileMisc.RefUUID = new PbxUUID();
                     xcodeProj.WriteLine($@"
-                        {projectSource.FileMisc.RefUUID} /*{projectSource.FileName}*/ = {{
+                        {projectSource.FileMisc.RefUUID} /*{projectSource.FilePath}*/ = {{
                             isa = PBXFileReference;
                             lastKnownFileType = {xcodeFileRefLastKnownType};
-                            path = {projectSource.FileName};
-                            name = {Path.GetFileName(projectSource.FileName)};
+                            path = {projectSource.FilePath};
+                            name = {Path.GetFileName(projectSource.FilePath)};
                             sourceTree = ""<group>"";
                         }};");
                 }
+
                 xcodeProj.WriteLine("/* End PBXFileReference section */\n");
 
                 // ------------------------------------------------------------------------------------------
@@ -234,15 +235,15 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 // Product..
                 var xcodeProductBuildUUID = new PbxUUID();
                 xcodeProj.WriteLine($@"
-                    {xcodeProductBuildUUID} /*{project.CachedName}*/ = {{
+                    {xcodeProductBuildUUID} /*{project.Name}*/ = {{
                         isa = PBXBuildFile;
                         fileRef = {xcodeProductRefUUID};
                     }};");
 
                 // Frameworks..
-                foreach (var projectDependency in project.CachedDependencies)
+                foreach (var projectDependency in project.Dependencies[platform, TargetConfiguration.Any])
                 {
-                    foreach (var projectDependencyFramework in projectDependency.CachedLinkedLibraries[platform, TargetConfiguration.Debug])
+                    foreach (var projectDependencyFramework in projectDependency.LinkedLibraries[platform, TargetConfiguration.Debug])
                     {
                         projectDependencyFramework.FileMisc.BuildUUID = new PbxUUID();
                         xcodeProj.WriteLine($@"
@@ -254,7 +255,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 }
 
                 // Source files..
-                foreach (var projectSource in project.CachedSourceFiles)
+                foreach (var projectSource in project.Files[platform, TargetConfiguration.Any])
                 {
                     // Writing down only files that need to be compiled..
                     switch (projectSource.FileType)
@@ -269,11 +270,12 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
 
                     projectSource.FileMisc.BuildUUID = new PbxUUID();
                     xcodeProj.WriteLine($@"
-                        {projectSource.FileMisc.BuildUUID} /*{projectSource.FileName}*/ = {{
+                        {projectSource.FileMisc.BuildUUID} /*{projectSource.FilePath}*/ = {{
                             isa = PBXBuildFile;
                             fileRef = {projectSource.FileMisc.RefUUID};
                         }};");
                 }
+
                 xcodeProj.WriteLine("/* End PBXBuildFile section */\n");
 
                 // ------------------------------------------------------------------------------------------
@@ -284,14 +286,14 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
 
                 // Generating groups for sources..
                 var xcodeGroupSource = new PbxGroup();
-                foreach (var projectSource in project.CachedSourceFiles)
+                foreach (var projectSource in project.Files[platform, TargetConfiguration.Any])
                 {
-                    var projectSourceDirectory = Path.GetDirectoryName(projectSource.FileName);
-                    if (projectSourceDirectory != null && projectSourceDirectory.StartsWith(project.CachedSourcesFilterOrigin, StringComparison.Ordinal)
-                                                       && projectSourceDirectory.Length > project.CachedSourcesFilterOrigin.Length + 1)
+                    var projectSourceDirectory = Path.GetDirectoryName(projectSource.FilePath);
+                    if (projectSourceDirectory != null && projectSourceDirectory.StartsWith(project.SourcesFilterOrigin, StringComparison.Ordinal)
+                                                       && projectSourceDirectory.Length > project.SourcesFilterOrigin.Length + 1)
                     {
                         // Source would be added to some child group.
-                        var projectSourceGroupPath = projectSourceDirectory.Substring(project.CachedSourcesFilterOrigin.Length + 1);
+                        var projectSourceGroupPath = projectSourceDirectory.Substring(project.SourcesFilterOrigin.Length + 1);
                         var projectSourceGroupPathSplitted = projectSourceGroupPath.Trim().Split(Path.DirectorySeparatorChar);
                         xcodeGroupSource.Add(projectSourceGroupPathSplitted, projectSource.FileMisc.RefUUID);
                     }
@@ -333,7 +335,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                     {xcodeGroupProductsUUID} /*Products*/ = {{
                         isa = PBXGroup;
                         children = (
-                            {xcodeProductRefUUID} /*{project.CachedName}*/,
+                            {xcodeProductRefUUID} /*{project.Name}*/,
                         );
                         name = Products;
                         sourceTree = ""<group>"";
@@ -341,9 +343,9 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
 
                 // Writing frameworks group..
                 var xcodeGroupFrameworksChildrenUUIDList = new StringBuilder();
-                foreach (var projectDependency in project.CachedDependencies)
+                foreach (var projectDependency in project.Dependencies[platform, TargetConfiguration.Any])
                 {
-                    foreach (var projectDependencyFramework in projectDependency.CachedLinkedLibraries[platform, TargetConfiguration.Debug])
+                    foreach (var projectDependencyFramework in projectDependency.LinkedLibraries[platform, TargetConfiguration.Any])
                     {
                         xcodeGroupFrameworksChildrenUUIDList.Append($"{projectDependencyFramework.FileMisc.RefUUID}, ");
                     }
@@ -373,14 +375,17 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         sourceTree = ""<group>"";
                         usesTabs = 0;
                     }};");
+
                 xcodeProj.WriteLine("/* End PBXGroup section */\n");
 
                 // ------------------------------------------------------------------------------------------
                 // Source build phase section.
                 // ------------------------------------------------------------------------------------------
 
+                xcodeProj.WriteLine("/* Begin PBXSourcesBuildPhase section */");
+
                 var xcodeBuildPhaseSourcesUUIDList = new StringBuilder();
-                foreach (var projectSource in project.CachedSourceFiles)
+                foreach (var projectSource in project.Files[platform, TargetConfiguration.Any])
                 {
                     // Writing down only files that need to be compiled..
                     switch (projectSource.FileType)
@@ -396,7 +401,6 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 }
 
                 var xcodeBuildPhaseSourcesUUID = new PbxUUID();
-                xcodeProj.WriteLine("/* Begin PBXSourcesBuildPhase section */");
                 xcodeProj.WriteLine($@"
                     {xcodeBuildPhaseSourcesUUID} /*Sources*/ = {{
                         isa = PBXSourcesBuildPhase;
@@ -406,23 +410,25 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         );
                         runOnlyForDeploymentPostprocessing = 0;
                     }};");
+
                 xcodeProj.WriteLine("/* End PBXSourcesBuildPhase section */\n");
 
                 // ------------------------------------------------------------------------------------------
                 // Framework build phase section.
                 // ------------------------------------------------------------------------------------------
 
+                xcodeProj.WriteLine("/* Begin PBXFrameworksBuildPhase section */");
+
                 var xcodeBuildPhaseFrameworksUUIDList = new StringBuilder();
-                foreach (var projectDependency in project.CachedDependencies)
+                foreach (var projectDependency in project.Dependencies[platform, TargetConfiguration.Any])
                 {
-                    foreach (var projectDependencyFramework in projectDependency.CachedLinkedLibraries[platform, TargetConfiguration.Debug])
+                    foreach (var projectDependencyFramework in projectDependency.LinkedLibraries[platform, TargetConfiguration.Debug])
                     {
                         xcodeBuildPhaseFrameworksUUIDList.Append($"{projectDependencyFramework.FileMisc.BuildUUID},");
                     }
                 }
 
                 var xcodeBuildPhaseFrameworksUUID = new PbxUUID();
-                xcodeProj.WriteLine("/* Begin PBXFrameworksBuildPhase section */");
                 xcodeProj.WriteLine($@"
                     {xcodeBuildPhaseFrameworksUUID} /*Frameworks*/ = {{
                         isa = PBXFrameworksBuildPhase;
@@ -432,26 +438,29 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         );
                         runOnlyForDeploymentPostprocessing = 0;
                     }};");
+
                 xcodeProj.WriteLine("/* End PBXFrameworksBuildPhase section */\n");
 
                 // ------------------------------------------------------------------------------------------
                 // Copy files build phase section.
                 // ------------------------------------------------------------------------------------------
 
+                xcodeProj.WriteLine("/* Begin PBXCopyFilesBuildPhase section */");
+
                 // TODO: Copy files from dependencies.
                 var xcodeBuildPhaseCopyFilesUUID = new PbxUUID();
-                xcodeProj.WriteLine("/* Begin PBXCopyFilesBuildPhase section */");
                 xcodeProj.WriteLine($@"
                     {xcodeBuildPhaseCopyFilesUUID} /*Copy Files*/ = {{
                         isa = PBXCopyFilesBuildPhase;
                         buildActionMask = 12;
-                        dstPath = ""{Path.GetDirectoryName(project.CachedOutputPaths[platform, TargetConfiguration.Debug])}"";
+                        dstPath = ""{Path.GetDirectoryName(project.OutputPath[platform, TargetConfiguration.Debug])}"";
                         dstSubfolderSpec = 0;
                         files = (
                             {xcodeProductBuildUUID}, /*Product*/
                         );
                         runOnlyForDeploymentPostprocessing = 0;
                     }};");
+
                 xcodeProj.WriteLine("/* End PBXCopyFilesBuildPhase section */\n");
 
                 // ------------------------------------------------------------------------------------------
@@ -476,7 +485,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                             buildSettings = {{
                                 CODE_SIGN_STYLE = Automatic;
                                 HEADER_SEARCH_PATHS = (
-                                    {project.GenerateIncludePaths(", ")}
+                                    {project.GenerateIncludePaths(platform, configuration, ", ")}
                                 );
                                 LIBRARY_SEARCH_PATHS = (
                                     ""$(inherited)"",
@@ -553,10 +562,10 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 // Configuration List section.
                 // ------------------------------------------------------------------------------------------
                 
+                xcodeProj.WriteLine("/* Begin XCConfigurationList section */");
+
                 var xcodeConfigurationListNativeTarget = new PbxUUID();
                 var xcodeConfigurationListProjectUUID = new PbxUUID();
-                
-                xcodeProj.WriteLine("/* Begin XCConfigurationList section */");
                 xcodeProj.WriteLine($@"
                     {xcodeConfigurationListNativeTarget} /*PBXNativeTarget*/ = {{
                         isa = XCConfigurationList;
@@ -575,18 +584,21 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         defaultConfigurationIsVisible = 0;
                         defaultConfigurationName = {TargetConfiguration.Release};
                     }};");
+
                 xcodeProj.WriteLine("/* End XCConfigurationList section */\n");
 
                 // ------------------------------------------------------------------------------------------
                 // Native Target section.
                 // ------------------------------------------------------------------------------------------
 
+                xcodeProj.WriteLine("/* Begin PBXNativeTarget section */");
+
                 string xcodeNativeTargetProductType;
-                switch (project.CachedBuildTypes[TargetPlatform.MacOS, TargetConfiguration.Release])
+                switch (project.BuildType[TargetPlatform.MacOS, TargetConfiguration.Release])
                 {
                     case ProjectBuildType.Application:
                         // TODO: Actually, here should be .application.
-                        // But this required to embed a plist.
+                        // But this requires to embed a plist.
                         xcodeNativeTargetProductType = "com.apple.product-type.tool";
                         break;
                     case ProjectBuildType.StaticLibrary:
@@ -600,9 +612,8 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 }
 
                 var xcodeNativeTargetUUID = project.Misc.NativeTargetUUID = new PbxUUID();
-                xcodeProj.WriteLine("/* Begin PBXNativeTarget section */");
                 xcodeProj.WriteLine($@"
-                    {xcodeNativeTargetUUID} /*{project.CachedName}*/ = {{
+                    {xcodeNativeTargetUUID} /*{project.Name}*/ = {{
                         isa = PBXNativeTarget;
                         buildConfigurationList = {xcodeConfigurationListNativeTarget};
                         buildPhases = (
@@ -614,21 +625,23 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         );
                         dependencies = (
                         );
-                        name = {project.CachedName};
-                        productName = ""{project.CachedName}"";
+                        name = {project.Name};
+                        productName = ""{project.Name}"";
                         productReference = {xcodeProductRefUUID};
                         productType = ""{xcodeNativeTargetProductType}"";
                     }};");
+
                 xcodeProj.WriteLine("/* End PBXNativeTarget section */\n");
-        
+
                 // ------------------------------------------------------------------------------------------
                 // Project section.
                 // ------------------------------------------------------------------------------------------
 
-                var xcodeProjectUUID = project.Misc.ProjectUUID = new PbxUUID();
                 xcodeProj.WriteLine("/* Begin PBXProject section */");
+
+                var xcodeProjectUUID = project.Misc.ProjectUUID = new PbxUUID();
                 xcodeProj.WriteLine($@"
-                    {xcodeProjectUUID} /*{project.CachedName}*/ = {{ 
+                    {xcodeProjectUUID} /*{project.Name}*/ = {{ 
                         isa = PBXProject; 
                         attributes = {{
                             LastUpgradeCheck = 0920;
@@ -655,6 +668,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                             {xcodeNativeTargetUUID} /*PBXNativeTarget*/
                         );
                     }};");
+
                 xcodeProj.WriteLine("/* End PBXProject section */\n");
 
                 // ==========================================================================================
@@ -677,9 +691,9 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// <param name="solution">Parsed solution object.</param>
         /// <returns>Path to XCode's '.xcworkspace' file.</returns>
         /// <inheritdoc />
-        public sealed override string GenerateSolutionFiles(SolutionCache solution)
+        public sealed override string GenerateSolutionFiles(Solution solution)
         {
-            var xcodeWorkspacePath = Path.Combine(base.GenerateSolutionFiles(solution), solution.CachedName) + ".xcworkspace";
+            var xcodeWorkspacePath = Path.Combine(base.GenerateSolutionFiles(solution), solution.Name) + ".xcworkspace";
             Directory.CreateDirectory(xcodeWorkspacePath);
 
             // ------------------------------------------------------------------------------------------
@@ -691,7 +705,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             {
                 xcodeWorkspaceContents.WriteLine($@"<?xml version=""1.0"" encoding=""UTF-8""?>
                     <Workspace>");
-                foreach (var solutionProject in solution.CachedProjects)
+                foreach (var solutionProject in solution.Projects)
                 {
                     if (solutionProject.IsBuildTool)
                         continue;
@@ -714,7 +728,8 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
 
             using (var xcodeWorkspaceScheme = new StreamWriter(xcodeWorkspaceSchemePath))
             {
-                xcodeWorkspaceScheme.WriteLine($@"<?xml version=""1.0"" encoding=""UTF-8""?>
+                xcodeWorkspaceScheme.WriteLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+                xcodeWorkspaceScheme.WriteLine(@"
                     <Scheme 
                         LastUpgradeVersion = ""0920"" 
                         version = ""1.3"">");
@@ -724,7 +739,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                         parallelizeBuildables=""NO"" 
                         buildImplicitDependencies = ""YES"">
                         <BuildActionEntries>");
-                foreach (var solutionProject in solution.CachedProjects)
+                foreach (var solutionProject in solution.Projects)
                 {
                     if (solutionProject.IsBuildTool)
                         continue;
@@ -738,8 +753,8 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                             <BuildableReference
                                BuildableIdentifier = ""primary""
                                BlueprintIdentifier = ""{solutionProject.Misc.NativeTargetUUID}""
-                               BuildableName = ""{solutionProject.CachedName}""
-                               BlueprintName = ""{solutionProject.CachedName}""
+                               BuildableName = ""{solutionProject.Name}""
+                               BlueprintName = ""{solutionProject.Name}""
                                ReferencedContainer = ""container:{solutionProject.GeneratorOutputPath}"">
                             </BuildableReference>
                          </BuildActionEntry>");
@@ -766,8 +781,9 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             var xcodeWorkspaceSchemeManagementPath = Path.Combine(xcodeWorkspaceSchemeDirectory, "xcschememanagement.plist");
             using (var xcodeWorkspaceSchemeManagement = new StreamWriter(xcodeWorkspaceSchemeManagementPath))
             {
-                xcodeWorkspaceSchemeManagement.WriteLine($@"<?xml version=""1.0"" encoding=""UTF-8""?>
-                    <!DOCTYPE plist PUBLIC ""-//Apple//DTD PLIST 1.0//EN"" ""http://www.apple.com/DTDs/PropertyList-1.0.dtd"">
+                xcodeWorkspaceSchemeManagement.WriteLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+                xcodeWorkspaceSchemeManagement.WriteLine(@"<!DOCTYPE plist PUBLIC ""-//Apple//DTD PLIST 1.0//EN"" ""http://www.apple.com/DTDs/PropertyList-1.0.dtd"">");
+                xcodeWorkspaceSchemeManagement.WriteLine(@"
                     <plist version=""1.0"">
                         <dict>
                             <key>SchemeUserState</key>

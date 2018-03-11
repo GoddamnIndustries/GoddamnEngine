@@ -19,6 +19,7 @@ namespace GoddamnEngine.BuildSystem.Target
         Debug,
         Development,
         Release,
+        Any = Debug
     }   // enum TargetConfigurations
 
     /// <summary>

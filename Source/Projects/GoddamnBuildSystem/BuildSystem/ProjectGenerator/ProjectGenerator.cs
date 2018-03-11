@@ -35,9 +35,9 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// </summary>
         /// <param name="project">Parsed project object.</param>
         /// <returns>Path to main project file.</returns>
-        public virtual string GenerateProjectFiles(ProjectCache project)
+        public virtual string GenerateProjectFiles(Project project)
         {
-            var projectDirectoryPath = Path.Combine(project.CachedLocation, "Build");
+            var projectDirectoryPath = Path.Combine(project.Location, "Build");
             Directory.CreateDirectory(projectDirectoryPath);
 
             return projectDirectoryPath;
@@ -48,9 +48,9 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
         /// </summary>
         /// <param name="solution">Parsed solution object.</param>
         /// <returns>Path to main solution file.</returns>
-        public virtual string GenerateSolutionFiles(SolutionCache solution)
+        public virtual string GenerateSolutionFiles(Solution solution)
         {
-            var solutionDirectoryPath = Path.Combine(solution.CachedLocation, "Build");
+            var solutionDirectoryPath = Path.Combine(solution.Location, "Build");
             Directory.CreateDirectory(solutionDirectoryPath);
 
             return solutionDirectoryPath;
@@ -122,7 +122,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                 var solution = SolutionFactory.Create(arguments.Length > 0 ? arguments[0] : Path.Combine(BuildSystem.GetSdkLocation(), "Source", "GoddamnEngine.gdsln.cs"));
 
                 // Generating project files..
-                foreach (var solutionProject in solution.CachedProjects)
+                foreach (var solutionProject in solution.Projects)
                 {
                     if (solutionProject.IsBuildTool)
                     {
