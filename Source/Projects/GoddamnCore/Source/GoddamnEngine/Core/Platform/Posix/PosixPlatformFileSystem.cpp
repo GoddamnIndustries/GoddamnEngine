@@ -13,12 +13,12 @@
 #include <GoddamnEngine/Core/Platform/PlatformFileSystem.h>
 #if GD_PLATFORM_API_POSIX
 
+#include <GoddamnEngine/Core/Platform/PlatformPaths.h>
+
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
-
-#include "GoddamnEngine/Core/IO/Paths.h"
 
 GD_NAMESPACE_BEGIN
 

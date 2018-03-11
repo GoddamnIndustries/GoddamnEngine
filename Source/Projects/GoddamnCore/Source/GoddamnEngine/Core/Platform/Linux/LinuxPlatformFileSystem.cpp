@@ -14,10 +14,10 @@
 #if GD_PLATFORM_GNU_LINUX
 
 #include <GoddamnEngine/Core/Platform/PlatformApplication.h>
+#include <GoddamnEngine/Core/Platform/PlatformPaths.h>
 
 #include <GoddamnEngine/Core/Templates/UniquePtr.h>
 #include <GoddamnEngine/Core/Containers/Map.h>
-#include "GoddamnEngine/Core/IO/Paths.h"
 
 #include <sys/inotify.h>
 #include <unistd.h>

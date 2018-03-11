@@ -13,7 +13,7 @@
 #include <GoddamnEngine/Core/Platform/PlatformProcess.h>
 #if GD_PLATFORM_API_MICROSOFT
 
-#include <GoddamnEngine/Core/IO/Paths.h>
+#include <GoddamnEngine/Core/Platform/PlatformPaths.h>
 #include <GoddamnEngine/Core/Platform/PlatformEncoding.h>
 #include <GoddamnEngine/Core/Containers/Vector.h>
 

@@ -11,7 +11,7 @@
  * File system implementation.
  */
 #include <GoddamnEngine/Core/Platform/PlatformFileSystem.h>
-#include "GoddamnEngine/Core/IO/Paths.h"
+#include <GoddamnEngine/Core/Platform/PlatformPaths.h>
 #if GD_TESTING_ENABLED
 
 #include <GoddamnEngine/Core/Containers/StringBuilder.h>
