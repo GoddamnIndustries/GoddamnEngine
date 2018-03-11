@@ -21,6 +21,7 @@ namespace GoddamnEngine.BuildSystem.Target
         Unknown,
         Windows,
         MacOS,
+		Linux,
         XboxOne,
         PlayStation4,
     }   // enum TargetPlatforms

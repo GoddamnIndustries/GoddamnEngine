@@ -8,7 +8,7 @@
 # augmented to provide output around 'GODDAMN_SDK' directory.
 ##########################################################################
 -->
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -39,6 +39,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -53,6 +54,8 @@
     <NoWarn>1591;</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\Bin\Tools\</OutputPath>
     <DefineConstants>TRACE;CODE_ANALYSIS;CODE_ANALYSIS;INCLUDE_GODDAMNSDK_SPECIFIC;INCLUDE_ADDITIONALS;RELEASE</DefineConstants>
@@ -76,9 +79,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildSystem\BuildSystem.cs" />
+    <Compile Include="BuildSystem\Collectors\BuildToolProjectEnumerator.cs" />
     <Compile Include="BuildSystem\Collectors\Collector.cs" />
     <Compile Include="BuildSystem\Collectors\Dependency.cs" />
     <Compile Include="BuildSystem\Collectors\Project.cs" />
+    <Compile Include="BuildSystem\Collectors\ProjectDependency.cs" />
     <Compile Include="BuildSystem\Collectors\Solution.cs" />
     <Compile Include="BuildSystem\ProjectGenerator\CMakeProjectGenerator.cs" />
     <Compile Include="BuildSystem\ProjectGenerator\ProjectGenerator.cs" />

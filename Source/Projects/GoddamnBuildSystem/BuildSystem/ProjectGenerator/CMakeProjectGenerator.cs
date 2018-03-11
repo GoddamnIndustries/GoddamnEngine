@@ -48,26 +48,39 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
             // ==========================================================================================
             using (var cmakeLists = new StreamWriter(cmakeListsPath))
             {
+				var platform = TargetPlatform.Linux;
+				var configuration = TargetConfiguration.Debug;
+
                 cmakeLists.WriteLine("cmake_minimum_required (VERSION 3.0)");
                 cmakeLists.WriteLine("project({0})", project.Name);
-                cmakeLists.WriteLine("include_directories({0})", project.GenerateIncludePaths(TargetPlatform.MacOS, TargetConfiguration.Debug, "\n\t").Replace('\\', '/'));
-                cmakeLists.WriteLine("set(CMAKE_CXX_FLAGS -std=c++14)");
-				switch (project.BuildType[TargetPlatform.MacOS, TargetConfiguration.Debug])
+				cmakeLists.WriteLine("include_directories({0})", project.GenerateIncludePaths(platform, configuration, "\n\t").Replace('\\', '/'));
+				cmakeLists.WriteLine("link_libraries({0})", project.GenerateLinkedLibrariesPaths(platform, configuration, "\n\t").Replace('\\', '/'));
+				cmakeLists.WriteLine("set(CMAKE_CXX_FLAGS \"-std=c++14 -fpermissive\")");
+				switch (project.BuildType[platform, configuration])
                 {
                     case ProjectBuildType.Application:
+						cmakeLists.WriteLine("set(CMAKE_RUNTIME_OUTPUT_DIRECTORY \"{0}\")", Path.GetDirectoryName(project.OutputPath[platform, configuration]));
                         cmakeLists.WriteLine("add_executable({0}", project.Name);
                         break;
                     case ProjectBuildType.StaticLibrary:
+						cmakeLists.WriteLine("set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY \"{0}\")", Path.GetDirectoryName(project.OutputPath[platform, configuration]));
                         cmakeLists.WriteLine("add_library({0}", project.Name);
                         break;
                     case ProjectBuildType.DynamicLibrary:
+						cmakeLists.WriteLine("set(CMAKE_LIBRARY_OUTPUT_DIRECTORY \"{0}\")", Path.GetDirectoryName(project.OutputPath[platform, configuration]));
                         cmakeLists.WriteLine("add_library({0} SHARED", project.Name);
                         break;
                 }
-                foreach (var projectSource in project.Files[TargetPlatform.MacOS, TargetConfiguration.Debug])
+				foreach (var projectSource in project.Files[platform, configuration])
                 {
-                    if (projectSource.FileType != ProjectSourceFileType.SupportFile)
-                        cmakeLists.WriteLine("\t{0}", projectSource.FilePath.Replace('\\', '/'));
+					switch (projectSource.FileType)
+					{
+						case ProjectSourceFileType.SourceCode:
+						case ProjectSourceFileType.HeaderFile:
+						case ProjectSourceFileType.InlineImplementation:
+							cmakeLists.WriteLine ("\t{0}", projectSource.FilePath.Replace ('\\', '/'));
+							break;
+					}
                 }
                 cmakeLists.WriteLine("\t)");
             }
@@ -93,9 +106,7 @@ namespace GoddamnEngine.BuildSystem.ProjectGenerator
                     cmakeLists.WriteLine("add_subdirectory({0})", 
                                          Path.Combine(solutionProject.Location, "Build").Replace('\\', '/'));
                 }
-
             }
-
             return cmakeListsPath;
         }
     }   // class CMakeProjectGenerator

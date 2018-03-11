@@ -7,6 +7,7 @@
 // ==========================================================================================
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 
 namespace GoddamnEngine.BuildSystem.Target
@@ -30,7 +31,13 @@ namespace GoddamnEngine.BuildSystem.Target
             }
             else
             {
-                yield return TargetPlatform.MacOS;
+				if (Directory.Exists("/Applications")
+					& Directory.Exists("/System")
+					& Directory.Exists("/Users")
+					& Directory.Exists("/Volumes"))
+					yield return TargetPlatform.MacOS;
+				else
+					yield return TargetPlatform.Linux;
             }
         }
 
@@ -52,7 +59,7 @@ namespace GoddamnEngine.BuildSystem.Target
         /// <returns>True if target platform is desktop.</returns>
         public static bool IsDesktopPlatform(TargetPlatform platform)
         {
-            return platform == TargetPlatform.Windows || platform == TargetPlatform.MacOS;
+			return platform == TargetPlatform.Windows || platform == TargetPlatform.MacOS || platform == TargetPlatform.Linux;
         }
 
         /// <summary>
@@ -102,7 +109,7 @@ namespace GoddamnEngine.BuildSystem.Target
         /// <returns>True if target platform is POSIX compatible.</returns>
         public static bool IsPosixPlatform(TargetPlatform platform)
         {
-            return platform == TargetPlatform.MacOS || platform == TargetPlatform.Windows;
+			return platform == TargetPlatform.MacOS || platform == TargetPlatform.Linux;
         }
 
     }   // class TargetInfo
