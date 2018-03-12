@@ -165,13 +165,70 @@ namespace GoddamnEngine.BuildSystem.Collectors
                             break;
                     }
                 }
+				else if (TargetInfo.IsPosixPlatform(platform))
+				{
+					switch (copyFileExtension)
+					{
+						case ".so":
+							yield return new DependencyFile(copyFilePath, DependencyFileType.DynamicLibrary);
+							break;
+					}
+				}
                 else
                 {
                     throw new NotSupportedException("Unknown target platform for depenedency copy files.");
                 }
             }
         }
-    }   // public class Dependency
+	}   // public class DependencyEnumerator
+
+	public class PkgConfigDependencyEnumerator : DependencyEnumerator
+	{
+		private string Run(string cmd, string args)
+		{
+			var process = new System.Diagnostics.Process();
+			process.StartInfo.FileName = cmd;
+			process.StartInfo.Arguments = args;
+            process.StartInfo.EnvironmentVariables["PKG_CONFIG_PATH"] = "/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig";
+			process.StartInfo.RedirectStandardOutput = true;
+			process.StartInfo.RedirectStandardError = true;
+			process.StartInfo.CreateNoWindow = true;
+			process.StartInfo.UseShellExecute = false;
+			process.Start();
+
+			process.WaitForExit();
+			var v = process.ExitCode;
+			return process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
+		}
+
+		public override bool GetIsSupported(TargetPlatform platform, TargetConfiguration configuration)
+		{
+			return platform == TargetPlatform.Linux;
+		}
+
+		public override IEnumerable<string> EnumerateHeaderDirectories(TargetPlatform platform, TargetConfiguration configuration)
+		{
+            var s = Run("pkg-config", "--cflags-only-I gtk+-3.0").Split(' ');
+            foreach (var i in s)
+            {
+                yield return i.Substring(2);
+            }
+		}
+
+		public override IEnumerable<DependencyFile> EnumerateLinkedLibraries(TargetPlatform platform, TargetConfiguration configuration)
+		{
+            var s = Run("pkg-config", "--libs-only-l gtk+-3.0").Split(' ');
+            foreach (var i in s)
+            {
+                yield return new DependencyFile(i.Substring(2), DependencyFileType.DynamicLibrary);
+            }
+		}
+
+		public override IEnumerable<DependencyFile> EnumerateCopyFiles(TargetPlatform platform, TargetConfiguration configuration)
+		{
+			yield break;
+		}
+	}	// public class PkgConfigDependencyEnumerator
 
     /// <summary>
     /// Dependency object.
