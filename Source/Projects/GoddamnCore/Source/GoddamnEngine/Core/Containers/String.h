@@ -256,9 +256,13 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Returns length of this string.
 		 */
-		GDINL SizeTp GetLength() const
+		GDINL SizeTp Length() const
 		{
 			return m_Length;
+		}
+		GD_DEPRECATED("Length") GDINL auto GetLength() const
+		{
+			return Length();
 		}
 
 		/*!
@@ -776,7 +780,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static BaseString FromInt64(Int64 const value)
 		{
-			return Format("%lld", value);
+			return Format(GD_TEXT(TChar, "%lld"), value);
 		}
 
 		/*!
@@ -792,11 +796,11 @@ GD_NAMESPACE_BEGIN
 			switch (valueBase)
 			{
 				case Base::Decimal:
-					return Format("%llu", value);
+					return Format(GD_TEXT(TChar, "%llu"), value);
 				case Base::Octal:
-					return Format(valueBasePrefix ? "0%llo" : "%llo", value);
+					return Format(valueBasePrefix ? GD_TEXT(TChar, "0%llo") : GD_TEXT(TChar, "%llo"), value);
 				case Base::Hexadecimal:
-					return Format(valueBasePrefix ? "0x%llx" : "%llx", value);
+					return Format(valueBasePrefix ? GD_TEXT(TChar, "0x%llx") : GD_TEXT(TChar, "%llx"), value);
 				default:
 					GD_NOT_SUPPORTED();
 			}
@@ -823,7 +827,7 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINL static BaseString FromFloat64(Float64 const value)
 		{
-			return Format("%f", value);
+			return Format(GD_TEXT(TChar, "%f"), value);
 		}
 
 		// ------------------------------------------------------------------------------------------
