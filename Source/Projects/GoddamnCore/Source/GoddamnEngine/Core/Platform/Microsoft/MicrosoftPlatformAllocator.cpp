@@ -14,6 +14,7 @@
 #if GD_PLATFORM_API_MICROSOFT
 
 #include <crtdbg.h>
+#include <excpt.h>
 
 GD_NAMESPACE_BEGIN
 
@@ -178,8 +179,15 @@ GD_NAMESPACE_BEGIN
 		 */
 		GDINT virtual bool MemoryFreeAlignedDebug(Handle const allocationPointer) override final
 		{
-			_aligned_free_dbg(allocationPointer);
-			return true;
+			__try
+			{
+				_aligned_free_dbg(allocationPointer);
+				return true;
+			} 
+			__except (EXCEPTION_EXECUTE_HANDLER)
+			{
+				return false;
+			}
 		}
 #endif	// if GD_DEBUG
 	};	// class MicrosoftPlatformAllocator

@@ -108,8 +108,8 @@ GD_NAMESPACE_BEGIN
 		template<typename, typename>
 		friend struct SharedPtr;
 
-		static_assert(TypeTraits::HasMemberFunction_AddRef<TPointee>::Value, "Target type for shared pointers should be contain 'AddRef' function.");
-		static_assert(TypeTraits::HasMemberFunction_Release<TPointee>::Value, "Target type for shared pointers should be contain 'Release' function.");
+		//static_assert(TypeTraits::HasMemberFunction_AddRef<TPointee>::Value, "Target type for shared pointers should be contain 'AddRef' function.");
+		//static_assert(TypeTraits::HasMemberFunction_Release<TPointee>::Value, "Target type for shared pointers should be contain 'Release' function.");
 
 	public:
 		using PointeeType = TPointee;
@@ -199,7 +199,6 @@ GD_NAMESPACE_BEGIN
 		{
 			GD::SafeRelease(m_RawPointer);
 			m_RawPointer = rawPointer;
-			GD::SafeAddRef(m_RawPointer);
 
 			return *this;
 		}
@@ -215,7 +214,9 @@ GD_NAMESPACE_BEGIN
 		}
 		GDINL SharedPtr& operator= (SharedPtr const& otherSharedPtr)
 		{
-			*this = otherSharedPtr.m_RawPointer;
+			GD::SafeRelease(m_RawPointer);
+			m_RawPointer = otherSharedPtr.m_RawPointer;
+			GD::SafeAddRef(m_RawPointer);
 			return *this;
 		}
 
@@ -275,6 +276,17 @@ GD_NAMESPACE_BEGIN
 			return m_RawPointer;
 		}
 
+		/////////////////////////////////////////////////////////////////////////
+		GDINL TPointee** GetPtr()
+		{
+			//GD_DEBUG_VERIFY(m_RawPointer == nullptr);
+			return &m_RawPointer;
+		}
+		GDINL implicit operator TPointee* () const
+		{
+			return Get();
+		}
+		/////////////////////////////////////////////////////////////////////////
 	};	// struct SharedPtr<TPointee>
 
 	/*!

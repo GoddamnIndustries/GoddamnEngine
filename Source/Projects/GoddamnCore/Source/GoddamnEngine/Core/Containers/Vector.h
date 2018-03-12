@@ -355,6 +355,7 @@ GD_NAMESPACE_BEGIN
 
 			ReserveToLength(m_Length + 1);
 			m_Length += 1;
+			Algo::InitializeIterator(End() - 1, Utils::Forward<TElement>(TElement()));
 			for (auto iterator = End() - 1; iterator != Begin() + index; --iterator)
 			{
 				*iterator = Utils::Move(*(iterator - 1));
@@ -373,6 +374,7 @@ GD_NAMESPACE_BEGIN
 
 			ReserveToLength(m_Length + 1);
 			m_Length += 1;
+			Algo::InitializeIterator(End() - 1, Utils::Forward<TElement>(TElement()));
 			for (auto iterator = End() - 1; iterator != Begin() + index - 1; --iterator)
 			{
 				*iterator = Utils::Move(*(iterator - 1));
