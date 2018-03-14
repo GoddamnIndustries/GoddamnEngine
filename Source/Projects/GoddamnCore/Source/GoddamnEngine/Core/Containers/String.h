@@ -256,13 +256,9 @@ GD_NAMESPACE_BEGIN
 		/*!
 		 * Returns length of this string.
 		 */
-		GDINL SizeTp Length() const
+		GDINL SizeTp GetLength() const
 		{
 			return m_Length;
-		}
-		GD_DEPRECATED("Length") GDINL auto GetLength() const
-		{
-			return Length();
 		}
 
 		/*!
